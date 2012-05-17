@@ -1,0 +1,6 @@
+kurtosis                Finding excessive kurtosis
+measurementInvariance   Measurement Invariance Tests
+moreFitIndices          Calculate more fit indices
+orthogonalize           Orthogonalize data for 2-way interaction in SEM
+runMI                   Multiply impute and analyze data using lavaan
+skew                    Finding skewness

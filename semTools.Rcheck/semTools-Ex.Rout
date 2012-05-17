@@ -1,0 +1,381 @@
+
+R version 2.15.0 (2012-03-30)
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: i386-pc-mingw32/i386 (32-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "semTools"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> options(pager = "console")
+> library('semTools')
+Loading required package: MASS
+Loading required package: lavaan
+This is lavaan 0.4-12
+lavaan is BETA software! Please report any bugs.
+
+Attaching package: 'semTools'
+
+The following object(s) are masked from 'package:lavaan':
+
+    measurementInvariance
+
+> 
+> assign(".oldSearch", search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("kurtosis")
+> ### * kurtosis
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: kurtosis
+> ### Title: Finding excessive kurtosis
+> ### Aliases: kurtosis
+> 
+> ### ** Examples
+> 
+> kurtosis(1:5)
+Excess Kur (g2)              se               z               p 
+     -1.2000000       2.1908902      -0.5477226       0.5838824 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("measurementInvariance")
+> ### * measurementInvariance
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: measurementInvariance
+> ### Title: Measurement Invariance Tests
+> ### Aliases: measurementInvariance measurementinvariance
+> 
+> ### ** Examples
+> 
+> HW.model <- ' visual =~ x1 + x2 + x3
++               textual =~ x4 + x5 + x6
++               speed =~ x7 + x8 + x9 '
+> 
+> measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
+
+Measurement invariance tests:
+
+Model 1: configural invariance:
+   chisq       df   pvalue      cfi    rmsea      bic 
+ 115.851   48.000    0.000    0.923    0.097 7706.822 
+
+Model 2: weak invariance (equal loadings):
+   chisq       df   pvalue      cfi    rmsea      bic 
+ 124.044   54.000    0.000    0.921    0.093 7680.771 
+
+[Model 1 versus model 2]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+        8.192         6.000         0.224         0.002 
+
+Model 3: strong invariance (equal loadings + intercepts):
+   chisq       df   pvalue      cfi    rmsea      bic 
+ 164.103   60.000    0.000    0.882    0.107 7686.588 
+
+[Model 1 versus model 3]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       48.251        12.000         0.000         0.041 
+
+[Model 2 versus model 3]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       40.059         6.000         0.000         0.038 
+
+Model 4: equal loadings + intercepts + means:
+   chisq       df   pvalue      cfi    rmsea      bic 
+ 204.605   63.000    0.000    0.840    0.122 7709.969 
+
+[Model 1 versus model 4]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       88.754        15.000         0.000         0.083 
+
+[Model 3 versus model 4]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       40.502         3.000         0.000         0.042 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("moreFitIndices")
+> ### * moreFitIndices
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: moreFitIndices
+> ### Title: Calculate more fit indices
+> ### Aliases: moreFitIndices moreFitIndices
+> 
+> ### ** Examples
+> 
+> HS.model <- ' visual  =~ x1 + x2 + x3
++               textual =~ x4 + x5 + x6
++               speed   =~ x7 + x8 + x9 '
+> 
+> fit <- cfa(HS.model, data=HolzingerSwineford1939)
+> moreFitIndices(fit)
+         nfi          ifi         gfi*        agfi*         ciac         ecvi 
+   0.9071607    0.9314908    0.9565611    0.9185521 7476.5731866 7475.5695875 
+         sic         bic*          hqc 
+3794.0917612 7544.0149775 7517.2909607 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("orthogonalize")
+> ### * orthogonalize
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: orthogonalize
+> ### Title: Orthogonalize data for 2-way interaction in SEM
+> ### Aliases: orthogonalize
+> 
+> ### ** Examples
+> 
+> 
+> library(MASS)
+> 
+> n <- 500
+> means <- c(0,0)
+> covmat <- matrix(c(1, 0.3, 0.3, 1),nrow=2)
+> 
+> data <- mvrnorm(n,means,covmat)
+> 
+> x<-as.vector(data[,1])
+> z<-as.vector(data[,2])
+> 
+> y<-rnorm(n,0,1)+.4*x+.4*z+.2*x*z
+> 
+> x1<-rnorm(n,0.2,.2)+.7*x
+> x2<-rnorm(n,0.2,.2)+.7*x
+> x3<-rnorm(n,0.2,.2)+.7*x
+> z1<-rnorm(n,0.2,.2)+.7*z
+> z2<-rnorm(n,0.2,.2)+.7*z
+> z3<-rnorm(n,0.2,.2)+.7*z
+> y1<-rnorm(n,0.2,.2)+.7*y
+> y2<-rnorm(n,0.2,.2)+.7*y
+> y3<-rnorm(n,0.2,.2)+.7*y
+> 
+> dat<-data.frame(cbind(x1,x2,x3,z1,z2,z3,y1,y2,y3))
+> 
+> datOrth <-orthogonalize(dat,(1:3), (4:6))
+> 
+> #Fit model in Lavaan
+> library(lavaan)
+> 
+> syntax <- ' 
++ x =~ x1 + x2 +x3
++ z =~ z1 + z2 + z3
++ xz =~ x1z1 + x1z2 + x1z3 + x2z1 + x2z2 + x2z3 + x3z1 + x3z2 + x3z3
++ y =~ y1 + y2 + y3
++ x ~~ z
++ x ~~ 0*xz
++ z ~~ 0*xz
++ y ~ x + z +xz
++ '
+> 
+> fit <- sem(model = syntax, data=datOrth, std.lv=TRUE)
+> summary(fit, fit.measures=TRUE)
+lavaan (0.4-12) converged normally after 174 iterations
+
+  Number of observations                           500
+
+  Estimator                                         ML
+  Minimum Function Chi-square                 4657.538
+  Degrees of freedom                               131
+  P-value                                        0.000
+
+Chi-square test baseline model:
+
+  Minimum Function Chi-square                19804.671
+  Degrees of freedom                               153
+  P-value                                        0.000
+
+Full model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.770
+  Tucker-Lewis Index (TLI)                       0.731
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -1838.278
+  Loglikelihood unrestricted model (H1)        490.491
+
+  Number of free parameters                         40
+  Akaike (AIC)                                3756.557
+  Bayesian (BIC)                              3925.141
+  Sample-size adjusted Bayesian (BIC)         3798.179
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.263
+  90 Percent Confidence Interval          0.256  0.269
+  P-value RMSEA <= 0.05                          0.000
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.016
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                             Standard
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  x =~
+    x1                0.719    0.025   28.988    0.000
+    x2                0.709    0.024   29.097    0.000
+    x3                0.705    0.024   29.228    0.000
+  z =~
+    z1                0.731    0.025   29.281    0.000
+    z2                0.719    0.025   28.921    0.000
+    z3                0.733    0.025   29.624    0.000
+  xz =~
+    x1z1              0.584    0.020   29.002    0.000
+    x1z2              0.573    0.020   28.232    0.000
+    x1z3              0.586    0.020   28.893    0.000
+    x2z1              0.589    0.020   28.956    0.000
+    x2z2              0.577    0.020   28.426    0.000
+    x2z3              0.593    0.021   28.780    0.000
+    x3z1              0.556    0.019   28.905    0.000
+    x3z2              0.543    0.019   28.330    0.000
+    x3z3              0.555    0.019   28.978    0.000
+  y =~
+    y1                0.700    0.024   29.504    0.000
+    y2                0.710    0.024   29.690    0.000
+    y3                0.704    0.024   29.252    0.000
+
+Regressions:
+  y ~
+    x                 0.330    0.050    6.586    0.000
+    z                 0.464    0.052    8.875    0.000
+    xz                0.232    0.047    4.945    0.000
+
+Covariances:
+  x ~~
+    z                 0.256    0.043    5.948    0.000
+    xz                0.000
+  z ~~
+    xz                0.000
+
+Variances:
+    x1                0.046    0.004
+    x2                0.043    0.004
+    x3                0.040    0.004
+    z1                0.042    0.004
+    z2                0.048    0.004
+    z3                0.035    0.004
+    x1z1              0.032    0.002
+    x1z2              0.041    0.003
+    x1z3              0.033    0.002
+    x2z1              0.033    0.002
+    x2z2              0.039    0.003
+    x2z3              0.036    0.003
+    x3z1              0.030    0.002
+    x3z2              0.036    0.002
+    x3z3              0.029    0.002
+    y1                0.039    0.004
+    y2                0.034    0.004
+    y3                0.046    0.004
+    x                 1.000
+    z                 1.000
+    xz                1.000
+    y                 1.000
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("runMI")
+> ### * runMI
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: runMI
+> ### Title: Multiply impute and analyze data using lavaan
+> ### Aliases: runMI
+> 
+> ### ** Examples
+> 
+> ##---- Should be DIRECTLY executable !! ----
+> ##-- ==>  Define data, use random,
+> ##--	or do  help(data=index)  for the standard data sets.
+> 
+> ## The function is currently defined as
+> function(data.mat,data.model,imps) {
++   #Impute missing data
++   imputed.l<-imputeMissing(data.mat,imps)
++   
++   #Run models on each imputed data set
++   #Does this give results from each dataset in the list?
++   
++   imputed.results<-result.object(imputed.l[[1]],sim.data.model,10)
++ 
++   imputed.results <- lapply(imputed.l,result.object,data.model,1)
++   comb.results<-MIpool(imputed.results,imps)
++   
++   return(comb.results)
++ 
++   }
+function (data.mat, data.model, imps) 
+{
+    imputed.l <- imputeMissing(data.mat, imps)
+    imputed.results <- result.object(imputed.l[[1]], sim.data.model, 
+        10)
+    imputed.results <- lapply(imputed.l, result.object, data.model, 
+        1)
+    comb.results <- MIpool(imputed.results, imps)
+    return(comb.results)
+}
+> 
+> 
+> 
+> cleanEx()
+> nameEx("skew")
+> ### * skew
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: skew
+> ### Title: Finding skewness
+> ### Aliases: skew
+> 
+> ### ** Examples
+> 
+> skew(1:5)
+skew (g1)        se         z         p 
+ 0.000000  1.095445  0.000000  1.000000 
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  1.51 0.02 1.52 NA NA 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')
