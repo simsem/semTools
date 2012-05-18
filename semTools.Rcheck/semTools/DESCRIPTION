@@ -3,6 +3,12 @@ Type: Package
 Title: Useful tools for structural equation modeling.
 Version: 0.1-0
 Date: 2012-05-17
+Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut",
+        "cre"), email = "psunthud@ku.edu"), person("Patrick", "Miller",
+        role = c("aut", "cre"), email="patr1ckm@ku.edu"),
+        person("Alexander", "Schoemann", role = c("aut", "cre"),
+        email="schoemann@ku.edu"), person("Yves", "Rosseel", role =
+        c("aut"), email="Yves.Rosseel@UGent.be") )
 Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Patrick Miller
         <patr1ckm@ku.edu>, Alex Schoemann <schoemann@ku.edu>, Yves Rosseel <Yves.Rosseel@UGent.be>
 Maintainer: Sunthud Pornprasertmanit <psunthud@ku.edu>, Patrick Miller
@@ -13,4 +19,5 @@ Description: This package provide useful tools for structural equation modeling 
 License: GPL (>= 2)
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
-Built: R 2.15.0; ; 2012-05-18 02:24:46 UTC; windows
+Packaged: 2012-05-18 02:39:41 UTC; Sunthud
+Built: R 2.15.0; ; 2012-05-18 02:40:09 UTC; windows

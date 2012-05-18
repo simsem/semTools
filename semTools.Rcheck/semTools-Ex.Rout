@@ -369,7 +369,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.46 0 1.47 NA NA 
+Time elapsed:  1.48 0 1.5 NA NA 
 > grDevices::dev.off()
 null device 
           1 
