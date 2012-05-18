@@ -1,8 +1,8 @@
 Package: semTools
 Type: Package
 Title: Useful tools for structural equation modeling.
-Version: 0.0-3
-Date: 2012-05-16
+Version: 0.1-0
+Date: 2012-05-17
 Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Patrick Miller
         <patr1ckm@ku.edu>, Alex Schoemann <schoemann@ku.edu>, Yves Rosseel <Yves.Rosseel@UGent.be>
 Maintainer: Sunthud Pornprasertmanit <psunthud@ku.edu>, Patrick Miller
@@ -12,4 +12,5 @@ Suggests: parallel, Amelia, mice
 Description: This package provide useful tools for structural equation modeling analysis. 
 License: GPL (>= 2)
 LazyLoad: yes
-Built: R 2.15.0; ; 2012-05-17 01:06:35 UTC; windows
+URL: https://github.com/simsem/semTools/wiki
+Built: R 2.15.0; ; 2012-05-18 02:24:46 UTC; windows

@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  16 MAY 2012 20:06
+This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  17 MAY 2012 21:25
 entering extended mode
-**C:/Users/Sunthud/AppData/Local/Temp/RtmpgJ5TLR/Rd2pdf1a2cd7e1ff6/Rd2.tex
-(C:/Users/Sunthud/AppData/Local/Temp/RtmpgJ5TLR/Rd2pdf1a2cd7e1ff6/Rd2.tex
+**C:/Users/Sunthud/AppData/Local/Temp/RtmpQxcCQE/Rd2pdf158428e2185/Rd2.tex
+(C:/Users/Sunthud/AppData/Local/Temp/RtmpQxcCQE/Rd2pdf158428e2185/Rd2.tex
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -601,7 +601,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpgJ5TLR\Rd2pdf1a2cd7e1ff6\Rd2.aux)
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpQxcCQE\Rd2pdf158428e2185\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -656,8 +656,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpgJ5TLR\Rd2pdf1a2cd7e1ff6\Rd2.out)
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpgJ5TLR\Rd2pdf1a2cd7e1ff6\Rd2.out)
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpQxcCQE\Rd2pdf158428e2185\Rd2.out)
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpQxcCQE\Rd2pdf158428e2185\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -671,13 +671,13 @@ LaTeX Font Info:    Try loading font information for T1+fi4 on input line 20.
 File: t1fi4.fd 2009/05/28 T1/Inconsolata
 )
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 30.
-LaTeX Font Info:    Try loading font information for T1+phv on input line 30.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 31.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 31.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpgJ5TLR\Rd2pdf1a2cd7e1ff6\Rd2.toc
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpQxcCQE\Rd2pdf158428e2185\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -703,7 +703,7 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [8]
-Overfull \hbox (24.38837pt too wide) in paragraph at lines 430--434
+Overfull \hbox (24.38837pt too wide) in paragraph at lines 431--435
 \T1/ptm/m/n/10 of Kansas; \T1/fi4/m/n/10 <patr1ckm@ku.edu>\T1/ptm/m/n/10 ) Sun-
 thud Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/fi4/m/n/10 <psunthud@ku.ed
 u>\T1/ptm/m/n/10 )
@@ -712,7 +712,7 @@ u>\T1/ptm/m/n/10 )
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [9]
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpgJ5TLR\Rd2pdf1a2cd7e1ff6\Rd2.ind
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpQxcCQE\Rd2pdf158428e2185\Rd2.ind
 [10]
 
 LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
@@ -722,18 +722,18 @@ LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 527.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 527.
- (C:\Users\Sunthud\AppData\Local\Temp\RtmpgJ5TLR\Rd2pdf1a2cd7e1ff6\Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 527.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 527.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 528.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 528.
+ (C:\Users\Sunthud\AppData\Local\Temp\RtmpQxcCQE\Rd2pdf158428e2185\Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 528.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 528.
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
 (rerunfilecheck)             Checksum: E68AEC87FCE6D42EB712EFFB0396740E;367.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 527.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 528.
  ) 
 Here is how much of TeX's memory you used:
  6226 strings out of 494053
@@ -762,7 +762,7 @@ nts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts
 rw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/ut
 mr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (11 pages, 195534 bytes).
+Output written on Rd2.pdf (11 pages, 195652 bytes).
 PDF statistics:
  261 PDF objects out of 1000 (max. 8388607)
  95 named destinations out of 1000 (max. 500000)
