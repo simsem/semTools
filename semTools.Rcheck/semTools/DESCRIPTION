@@ -19,5 +19,4 @@ Description: This package provide useful tools for structural equation modeling 
 License: GPL (>= 2)
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
-Packaged: 2012-05-18 02:39:41 UTC; Sunthud
-Built: R 2.15.0; ; 2012-05-18 02:40:09 UTC; windows
+Built: R 2.15.0; ; 2012-05-18 14:05:00 UTC; windows

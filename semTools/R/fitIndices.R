@@ -47,7 +47,7 @@ moreFitIndices <- function(object, nPrior = 1) {
 ## lresults = lavaan sem output object
 
 sic <- function(f, lresults = NULL) {
-	expinf <- solve(vcov(lresults)) / lresults@Sample@ntotal
-	sic <- as.numeric(f + log(det(lresults@Sample@ntotal * (expinf))))/2
+	expinf <- solve(vcov(lresults)) / lresults@SampleStats@ntotal
+	sic <- as.numeric(f + log(det(lresults@SampleStats@ntotal * (expinf))))/2
 	return(sic)
 }

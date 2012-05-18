@@ -44,24 +44,6 @@ Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 Mijke Rhemtulla (University of Kansas; \email{mijke@ku.edu})
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+## No Example
 
-## The function is currently defined as
-function(data.mat,data.model,imps) {
-  #Impute missing data
-  imputed.l<-imputeMissing(data.mat,imps)
-  
-  #Run models on each imputed data set
-  #Does this give results from each dataset in the list?
-  
-  imputed.results<-result.object(imputed.l[[1]],sim.data.model,10)
-
-  imputed.results <- lapply(imputed.l,result.object,data.model,1)
-  comb.results<-MIpool(imputed.results,imps)
-  
-  return(comb.results)
-
-  }
 }
