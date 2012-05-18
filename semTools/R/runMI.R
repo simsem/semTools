@@ -11,7 +11,7 @@ runMI<- function(data.mat,data.model, m, miPackage="Amelia", digits=3, ...) {
 
 	
   #Currently only supports imputation by Amelia. We want to add mice, and maybe EM imputatin too...
-  if(!miPackage=="Amelia" || !miPackage=="mice") stop("Currently runMI only supports imputation by Amelia or mice")
+  if(!miPackage=="Amelia" || !miPackage=="mice" || !miPackage=="user") stop("Currently runMI only supports imputation by Amelia or mice")
   args <- list(...)
  
   #Impute missing data
@@ -21,6 +21,10 @@ runMI<- function(data.mat,data.model, m, miPackage="Amelia", digits=3, ...) {
   
   if(miPackage=="mice"){
   imputed.l<-imputeMissingMice(data.mat,m, ...)
+  }
+  
+  if(miPackage=="user"){
+  imputed.l<-data.mat
   }
 
   

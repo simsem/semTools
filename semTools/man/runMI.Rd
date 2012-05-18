@@ -11,7 +11,7 @@ runMI(data.mat, data.model, m, miPackage="Amelia", digits = 3, ...)
 }
 \arguments{
   \item{data.mat}{
-Data frame with missing observations. 
+Data frame with missing observations. Or a list of data frames where each data frame is one imputed data set. 
 }
   \item{data.model}{
 lavaan syntax for the the model to be analyzed. 
@@ -20,7 +20,7 @@ lavaan syntax for the the model to be analyzed.
 Number of imputations wanted.
 }
  \item{miPackage}{
-Package to be used for imputation. Currently runMI only uses Amelia or mice for imputation.
+Package to be used for imputation. Currently runMI only uses Amelia or mice for imputation. If users supply a list of imputed data frames to the data.mat argument, miPackage should be set to "user"
 }
  \item{digits}{
 	Number of digits to print in the results.
