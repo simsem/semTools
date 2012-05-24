@@ -5,11 +5,11 @@
 ##  Last modified 5/25/2012
 
 ##Currently outputs a list of parameter estimates, standard errors, fit indices and fraction missing information
+##Add lavaan options! e.g. std.lv, estimator, groups, group.constraints....
 
+runMI<- function(data.mat,data.model, m, miPackage="Amelia", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) {
 
-runMI<- function(data.mat,data.model, m, miPackage="Amelia", digits=3, ...) {
-
-
+set.seed(12345)
   #Currently only supports imputation by Amelia and mice. We want to add mi and maybe EM imputatin too...
 
 #@@ARb: if data.mat is a list of data frames then do omit imputation!
@@ -38,7 +38,7 @@ if (! imputed.data){
 					}
   
  	#Run imputed data
-    imputed.results.l <- lapply(imputed.l, runlavaanMI, data.model)
+    imputed.results.l <- lapply(imputed.l, runlavaanMI, data.model, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal)
     
 	coefs <- matrix(NA, nrow = m, ncol = length(imputed.results.l[[1]][[1]]$est))
 	se <- coefs
@@ -136,8 +136,8 @@ imputeMissingMice <- function(data.mat,m, ...){
 } # end imputeMissingAmelia
 
 #Conveniance function to run lavaan models and get results out. For easy use with lapply
-    runlavaanMI <- function(MIdata,syntax) {
-     fit <- cfa(syntax, data=MIdata)
+    runlavaanMI <- function(MIdata,syntax, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "") {
+     fit <- cfa(syntax, data=MIdata, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal)
      FitIndices <- inspect(fit, 'fit')
 	Converged = TRUE
 	if(sum(unlist(lapply(inspect(fit, "se"), sum))) == 0) Converged = FALSE
