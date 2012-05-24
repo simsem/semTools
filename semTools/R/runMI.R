@@ -1,19 +1,28 @@
 ##  Functon to impute missing data, run Lavaan on each one 
 ##  input: data frames of raw data with missing data, model specification (lavaan script), number of imputations wanted, number of digits to print in output.)
 ##  Output: list of results with:  fit parameter estimates, standard errors fit indices, and two types of fraction of missing information
-##  Alexander Schoemann, Patrick Mille, Mijke Rhemtulla, Sunthud
-##  Last modified 4/16/2012
+##  Alexander Schoemann, Patrick Mille, Mijke Rhemtulla, Sunthud Pornprasertmanit, Alexander Robitzsch
+##  Last modified 5/25/2012
 
 ##Currently outputs a list of parameter estimates, standard errors, fit indices and fraction missing information
 
 
 runMI<- function(data.mat,data.model, m, miPackage="Amelia", digits=3, ...) {
 
-	
-  #Currently only supports imputation by Amelia. We want to add mice, and maybe EM imputatin too...
-  if(!miPackage=="Amelia" || !miPackage=="mice" || !miPackage=="user") stop("Currently runMI only supports imputation by Amelia or mice")
+
+  #Currently only supports imputation by Amelia and mice. We want to add mi and maybe EM imputatin too...
+
+#@@ARb: if data.mat is a list of data frames then do omit imputation!
+imputed.data <- is.list( data.mat)	*( 1 - is.data.frame( data.mat ) )
+if (! imputed.data){		
+  if( ( miPackage!="Amelia" )  &  ( miPackage !="mice")  )
+		{ stop("Currently runMI only supports imputation by Amelia or mice") }
+#@@ARb: I changed the logical query a bit, because it did not seem to work in my example. 		
+		
   args <- list(...)
- 
+
+
+  
   #Impute missing data
   if(miPackage=="Amelia"){
   imputed.l<-imputeMissingAmelia(data.mat,m, ...)
@@ -22,11 +31,11 @@ runMI<- function(data.mat,data.model, m, miPackage="Amelia", digits=3, ...) {
   if(miPackage=="mice"){
   imputed.l<-imputeMissingMice(data.mat,m, ...)
   }
-  
-  if(miPackage=="user"){
-  imputed.l<-data.mat
-  }
-
+ #@@ARb
+		} else { #@@ARb: set imputed data sets
+				imputed.l <- data.mat 
+				m <- length( data.mat )
+					}
   
  	#Run imputed data
     imputed.results.l <- lapply(imputed.l, runlavaanMI, data.model)
