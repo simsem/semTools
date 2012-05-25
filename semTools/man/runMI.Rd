@@ -57,7 +57,8 @@ Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & So
 Patrick Miller(University of Kansas; \email{patr1ckm@ku.edu})
 Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 Mijke Rhemtulla (University of Kansas; \email{mijke@ku.edu})
-Alexander Robitzsch (UNIVERSITY?; \email{a.robitzsch@bifie.at})
+Alexander Robitzsch (Federal Institute for Education Research, Innovation, and
+Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
 }
 \examples{
 ## No Example
