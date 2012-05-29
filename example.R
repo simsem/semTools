@@ -1,3 +1,7 @@
+library(tools)
+dirMan <- "C:/Users/student/Dropbox/semTools/semTools/man/runMI.Rd"
+showNonASCIIfile(dirMan)
+
 sourceDir <- function(path, trace = TRUE, ...) {
      for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
 		if(nm != "AllClass.R" & nm != "AllGenerics.R") {
