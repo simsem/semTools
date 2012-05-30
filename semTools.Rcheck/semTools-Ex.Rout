@@ -27,6 +27,11 @@ Loading required package: MASS
 Loading required package: lavaan
 This is lavaan 0.4-14
 lavaan is BETA software! Please report any bugs.
+ 
+###############################################################################
+This is semTools 0.1-1
+All users of R (or SEM) are invited to submit functions or ideas for functions.
+###############################################################################
 
 Attaching package: 'semTools'
 
@@ -341,7 +346,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.43 0.01 1.45 NA NA 
+Time elapsed:  1.44 0.01 1.45 NA NA 
 > grDevices::dev.off()
 null device 
           1 

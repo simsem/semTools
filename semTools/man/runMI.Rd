@@ -7,7 +7,8 @@ Multiply impute and analyze data using lavaan
 This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules.
 }
 \usage{
-runMI(data.mat, data.model, m, miPackage="Amelia", digits = 3, ...)
+runMI(data.mat,data.model, m, miPackage="Amelia", digits=3, seed=12345, 
+    std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...)
 }
 \arguments{
   \item{data.mat}{
@@ -32,7 +33,7 @@ Package to be used for imputation. Currently runMI only uses Amelia or mice for 
 	lavaan option. If TRUE, the metric of each latent variable is determined by fixing their variances to 1.0. If FALSE, the metric of each latent variable is determined by fixing the factor loading of the first indicator to 1.0.
 }
  \item{estimator}{
-	lavaan option. The estimator to be used. Can be one of the following: "ML" for maximum likelihood, "GLS" for generalized least squares, "WLS" for weighted least squares (sometimes called ADF estimation), "MLM" for maximum likelihood estimation with robust standard errors and a Satorra-Bentler scaled test statistic, "MLF" for maximum likelihood estimation with standard errors based on first-order derivatives and a conventional test statistic, "MLR" for maximum likelihood estimation with robust ‘Huber-White’ standard errors and a scaled test statistic which is asymptotically equivalent to the Yuan-Bentler T2-star test statistic. Note that the "MLM", "MLF" and "MLR" choices only affect the standard errors and the test statistic. 
+	lavaan option. The estimator to be used. Can be one of the following: "ML" for maximum likelihood, "GLS" for generalized least squares, "WLS" for weighted least squares (sometimes called ADF estimation), "MLM" for maximum likelihood estimation with robust standard errors and a Satorra-Bentler scaled test statistic, "MLF" for maximum likelihood estimation with standard errors based on first-order derivatives and a conventional test statistic, "MLR" for maximum likelihood estimation with robust 'Huber-White' standard errors and a scaled test statistic which is asymptotically equivalent to the Yuan-Bentler T2-star test statistic. Note that the "MLM", "MLF" and "MLR" choices only affect the standard errors and the test statistic. 
 }
  \item{group}{
 	lavaan option. A variable name in the data frame defining the groups in a multiple group analysis.
@@ -57,8 +58,7 @@ Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & So
 Patrick Miller(University of Kansas; \email{patr1ckm@ku.edu})
 Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 Mijke Rhemtulla (University of Kansas; \email{mijke@ku.edu})
-Alexander Robitzsch (Federal Institute for Education Research, Innovation, and
-Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
+Alexander Robitzsch (Federal Institute for Education Research, Innovation, and Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
 }
 \examples{
 ## No Example
