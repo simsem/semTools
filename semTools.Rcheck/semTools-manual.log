@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  28 MAY 2012 19:20
+This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  31 MAY 2012 01:05
 entering extended mode
-**C:/Users/Sunthud/AppData/Local/Temp/RtmpmGrTC7/Rd2pdf1a883d8e3e2d/Rd2.tex
-(C:/Users/Sunthud/AppData/Local/Temp/RtmpmGrTC7/Rd2pdf1a883d8e3e2d/Rd2.tex
+**C:/Users/Sunthud/AppData/Local/Temp/Rtmp0oD0XS/Rd2pdf233c345b6619/Rd2.tex
+(C:/Users/Sunthud/AppData/Local/Temp/Rtmp0oD0XS/Rd2pdf233c345b6619/Rd2.tex
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -601,7 +601,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpmGrTC7\Rd2pdf1a883d8e3e2d\Rd2.aux)
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp0oD0XS\Rd2pdf233c345b6619\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -656,8 +656,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpmGrTC7\Rd2pdf1a883d8e3e2d\Rd2.out)
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpmGrTC7\Rd2pdf1a883d8e3e2d\Rd2.out)
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp0oD0XS\Rd2pdf233c345b6619\Rd2.out)
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp0oD0XS\Rd2pdf233c345b6619\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -677,7 +677,7 @@ LaTeX Font Info:    Try loading font information for T1+phv on input line 31.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpmGrTC7\Rd2pdf1a883d8e3e2d\Rd2.toc
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp0oD0XS\Rd2pdf233c345b6619\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -696,20 +696,31 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [2] [3]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [4] [5]
+)
+Overfull \hbox (84.78088pt too wide) in paragraph at lines 193--193
+ []\T1/fi4/m/n/10 miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intc
+ept=0.2, stdDelta=NULL, delta=NULL)[] 
+ []
+
+[4] [5] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
+) [6]
+[7] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
+) [8] [9]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [6] [7]
+) [10]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [8]
-Overfull \hbox (15.95746pt too wide) in paragraph at lines 430--431
+) [11]
+Overfull \hbox (15.95746pt too wide) in paragraph at lines 589--590
 \T1/ptm/m/n/10 "re-gres-sions", "resid-u-als", "resid-ual.covariances", "lv.var
 iances" or "lv.covariances",
  []
 
-
-Overfull \hbox (24.38837pt too wide) in paragraph at lines 447--452
+[12]
+Overfull \hbox (24.38837pt too wide) in paragraph at lines 606--611
 \T1/ptm/m/n/10 of Kansas; \T1/fi4/m/n/10 <patr1ckm@ku.edu>\T1/ptm/m/n/10 ) Sun-
 thud Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/fi4/m/n/10 <psunthud@ku.ed
 u>\T1/ptm/m/n/10 )
@@ -717,39 +728,39 @@ u>\T1/ptm/m/n/10 )
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [9]
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpmGrTC7\Rd2pdf1a883d8e3e2d\Rd2.ind
-[10]
+) [13]
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp0oD0XS\Rd2pdf233c345b6619\Rd2.ind
+[14]
 
 LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
 (Font)              using `T1/fi4/m/n' instead on input line 12.
 
-[11
+[15
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 527.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 527.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 686.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 686.
 
-(C:\Users\Sunthud\AppData\Local\Temp\RtmpmGrTC7\Rd2pdf1a883d8e3e2d\Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 527.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 527.
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp0oD0XS\Rd2pdf233c345b6619\Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 686.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 686.
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
-(rerunfilecheck)             Checksum: E68AEC87FCE6D42EB712EFFB0396740E;367.
+(rerunfilecheck)             Checksum: 96398CB6DCFC986B58DFCAB9D8A99049;481.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 527.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 686.
  ) 
 Here is how much of TeX's memory you used:
- 6226 strings out of 494053
- 89827 string characters out of 3146180
- 167277 words of memory out of 3000000
- 9319 multiletter control sequences out of 15000+200000
+ 6269 strings out of 494053
+ 90458 string characters out of 3146180
+ 168277 words of memory out of 3000000
+ 9321 multiletter control sequences out of 15000+200000
  37881 words of font info for 47 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 38i,6n,27p,813b,586s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,6n,27p,1136b,586s stack positions out of 5000i,500n,10000p,200000b,50000s
 pdfTeX warning (dest): name{Rfn.cfa} has been referenced but does not exist, 
 replaced by a fixed one
 
@@ -769,9 +780,9 @@ nts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts
 rw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/ut
 mr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (11 pages, 195936 bytes).
+Output written on Rd2.pdf (15 pages, 213444 bytes).
 PDF statistics:
- 261 PDF objects out of 1000 (max. 8388607)
- 95 named destinations out of 1000 (max. 500000)
- 57 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 329 PDF objects out of 1000 (max. 8388607)
+ 132 named destinations out of 1000 (max. 500000)
+ 73 words of extra memory for PDF output out of 10000 (max. 10000000)
 

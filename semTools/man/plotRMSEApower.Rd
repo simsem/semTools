@@ -23,9 +23,9 @@ This function creates plot of power for RMSEA against a range of sample sizes. T
 }
 
 \value{
-\enumerate{
-    \item{plot} Plot of power for RMSEA against a range of sample sizes
-}
+	\enumerate{
+		\item{plot} Plot of power for RMSEA against a range of sample sizes
+	}
 }
 \references{
 MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing differences between nested covariance structure models: Power analysis and null hypotheses. \emph{Psychological Methods, 11,} 19-35.
@@ -39,12 +39,11 @@ Preacher, K. J., Cai, L., & MacCallum, R. C. (2007). Alternatives to traditional
 Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit index. \emph{Structural Equation Modeling, 5,} 411-419.
 
 Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests for the number of factors.} Paper presented at the annual meeting of the Psychometric Society, Iowa City, IA.
-
 }
-\authors{
-    Alexander M. Schoemann, University of Kansas, <schoemann@ku.edu>
-	Kristopher J. Preacher, Vanderbilt University, <kris.preacher@vanderbilt.edu>
-	Donna L. Coffman, Pennsylvania State University, <dlc30@psu.edu.>
+\author{
+    Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
+	Kristopher J. Preacher (Vanderbilt University; \email{kris.preacher@vanderbilt.edu})
+	Donna L. Coffman (Pennsylvania State University; \email{dlc30@psu.edu.})
 }
 \examples{
 plotRMSEApower(.025, .075, 23, 100, 500, 10)

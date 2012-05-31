@@ -1,7 +1,9 @@
 kurtosis	kurtosis
 measurementInvariance	measurementInvariance
 measurementinvariance	measurementInvariance
+miPowerFit	miPowerFit
 moreFitIndices	moreFitIndices
 orthogonalize	orthogonalize
+plotRMSEApower	plotRMSEApower
 runMI	runMI
 skew	skew

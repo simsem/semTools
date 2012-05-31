@@ -1,6 +1,9 @@
 kurtosis                Finding excessive kurtosis
 measurementInvariance   Measurement Invariance Tests
+miPowerFit              Modification indices and their power approach
+                        for model fit evaluation
 moreFitIndices          Calculate more fit indices
 orthogonalize           Orthogonalize data for 2-way interaction in SEM
+plotRMSEApower          Plot power curves for RMSEA
 runMI                   Multiply impute and analyze data using lavaan
 skew                    Finding skewness
