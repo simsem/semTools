@@ -29,7 +29,7 @@ Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of orthogo
 
 }
 \author{
-    Alexander M. Schoemann <schoemann@ku.edu>
+    Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
 }
 \examples{
 
