@@ -6,15 +6,16 @@ Monte Carlo Confidence Intervals to Test Complex Indirect Effects
 This function takes an expression for an indirect effect, the parameters and standard errors associated with the expression and returns a confidence interval based on a Monte Carlo test of mediation (MacKinnon, Lockwood, & Williams, 2004).
 }
 \usage{
-monteCarloMed(expression, ..., rep=20000, CI=95, plot=FALSE, outputValues=FALSE)
+monteCarloMed(expression, ..., rep=20000, CI=95, plot=FALSE, outputValues=FALSE, ACOV=NULL)
 }
 \arguments{
   \item{expression}{A character scalar representing the computation of an indirect effect. Different parameters in the expression should have different alphanumeric values. Expressions can use either addition (+) or multiplication (*) operators.}
-  \item{\dots}{Parameter estimates and standard errors for all parameters named in the expression. The order of parameters should follow from the expression (the first parameter named in the expression should be the first parameter listed in \dots). Paramters and standard errors should be grouped together (e.g., parameter1, standard error1, parameter 2, standard error2, ...). }
+  \item{\dots}{Parameter estimates and standard errors for all parameters named in the expression. The order of parameters should follow from the expression (the first parameter named in the expression should be the first parameter listed in \dots). Paramters and standard errors should be grouped together (e.g., parameter1, standard error1, parameter 2, standard error2, ...). If the asymptotic covariance matrix is provided in ACOV, the \dots should only contain parameter estimates.}
   \item{rep}{The number of replications to compute. Many thousand are reccomended.}	
   \item{CI}{Width of the confidence interval computed.}
   \item{plot}{Should the function output a plot of simulated values of the indirect effect?}
   \item{outputValues}{Should the function output all simulated values of the indirect effect?}
+  \item{ACOV} {A matrix representing the asymptotic covariance matrix of the parameters described in the expression. If the ACOV is provided, then \dots should only contain parameter estimates, not standard errors)
   }
 \details{
 This function implements the Monte Carlo test of mediation first described in MacKinnon, Lockwood, & Williams (2004) and extends it to complex cases where the indirect effect is more than a function of two parameters. The function takes an expression for the indirect effect, randomly simulated values of the indirect effect based on the values of the parameters (and the associated standard errors) comprising the indirect effect, and outputs a confidence interval of the indirect effect based on the simulated values. For further information on the Monte Carlo test of mediation see MacKinnon, Lockwood, & Williams (2004), Preacher & Selig (in press), and Selig & Preacher (2008). For a Monte Carlo test of mediation with a random effects model see Selig & Preacher (2010).
