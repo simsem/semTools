@@ -6,19 +6,24 @@ Monte Carlo Confidence Intervals to Test Complex Indirect Effects
 This function takes an expression for an indirect effect, the parameters and standard errors associated with the expression and returns a confidence interval based on a Monte Carlo test of mediation (MacKinnon, Lockwood, & Williams, 2004).
 }
 \usage{
-monteCarloMed(expression, ..., rep=20000, CI=95, plot=FALSE, outputValues=FALSE, ACOV=NULL)
+monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE, outputValues=FALSE)
 }
 \arguments{
   \item{expression}{A character scalar representing the computation of an indirect effect. Different parameters in the expression should have different alphanumeric values. Expressions can use either addition (+) or multiplication (*) operators.}
-  \item{\dots}{Parameter estimates and standard errors for all parameters named in the expression. The order of parameters should follow from the expression (the first parameter named in the expression should be the first parameter listed in \dots). Paramters and standard errors should be grouped together (e.g., parameter1, standard error1, parameter 2, standard error2, ...). If the asymptotic covariance matrix is provided in ACOV, the \dots should only contain parameter estimates.}
+  \item{\dots}{Parameter estimates for all parameters named in \code{expression}. The order of parameters should follow from \code{expression} (the first parameter named in \code{expression} should be the first parameter listed in \dots). Alternatively \dots can be a vector of parameter estimates.}
+  \item{ACM} {A matrix representing the asymptotic covariance matrix of the parameters described in \code{expression}. This matrix should be a symetric matrix with dimensions equal to the number of parameters names in \code{expression}. Information on finding the ACOV is popular SEM software is described below.)
   \item{rep}{The number of replications to compute. Many thousand are reccomended.}	
   \item{CI}{Width of the confidence interval computed.}
   \item{plot}{Should the function output a plot of simulated values of the indirect effect?}
   \item{outputValues}{Should the function output all simulated values of the indirect effect?}
-  \item{ACOV} {A matrix representing the asymptotic covariance matrix of the parameters described in the expression. If the ACOV is provided, then \dots should only contain parameter estimates, not standard errors)
   }
 \details{
 This function implements the Monte Carlo test of mediation first described in MacKinnon, Lockwood, & Williams (2004) and extends it to complex cases where the indirect effect is more than a function of two parameters. The function takes an expression for the indirect effect, randomly simulated values of the indirect effect based on the values of the parameters (and the associated standard errors) comprising the indirect effect, and outputs a confidence interval of the indirect effect based on the simulated values. For further information on the Monte Carlo test of mediation see MacKinnon, Lockwood, & Williams (2004), Preacher & Selig (in press), and Selig & Preacher (2008). For a Monte Carlo test of mediation with a random effects model see Selig & Preacher (2010).
+
+The asymptotic covariance matrix can be easily found in many popular SEM software applications.
+	\item{LISREL}{Including the EC option on the OU line will print the ACM to a seperate file. The file contains the lower triangular elements of the ACM in free format and scientific notation}
+	\item{Mplus}{Include the command TECH3; in the OUTPUT section. The ACM will be printed in the output.}
+	\item{lavaan} {Use the command \code{vcov} on the fitted lavaan object to print the ACM to the screen}
 }
 \value{
 A matrix with values for the upper and lower limits of the confidence interval generated from the Monte Carlo test of mediation. If outputValues=TRUE, output will be a list with a matrix with values for the upper and lower limits of the confidence interval as the first element and a vector of simulated values of the indirect effect as the second element.
@@ -34,19 +39,24 @@ Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method for assessing m
     Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
 	Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
 	James P. Selig (University of New Mexico; \email{selig@unm.edu}}
-	Kristopher J. Preacher {Vanderbilt University; \email{kris.preacher@vanderbilt.edu}}
-}
+	}
 \examples{
 #Simple two path mediation
 #Write expression of indirect effect
 med <- 'a*b'
-#Paramter values and standard errors from analyses
+#Paramter values from analyses
 aparam <- 1
-ase <- .01
 bparam<-2
-bse <- .02
-#Compute CI include a plot
-monteCarloMed(med, coef1=aparam, se1=ase, coef2=bparam, se2=bse, plot=T)
+#Asymptotic covariance matrix from analyses
+AC <- matrix(c(.01,.00002,
+               .00002,.02), nrow=2, byrow=TRUE)
+#Compute CI, include a plot
+monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FALSE, plot=TRUE, ACOV=AC)
+
+#Use a matrix of parameter estimates as input
+aparam<-c(1,2)
+monteCarloMed(med, coef1=aparam, outputValues=FALSE, plot=TRUE, ACM=AC)
+
 
 
 #complex mediation with two paths for the indirect effect
@@ -54,11 +64,12 @@ monteCarloMed(med, coef1=aparam, se1=ase, coef2=bparam, se2=bse, plot=T)
 med <- 'a1*b1 + a1*b2'
 #Paramter values and standard errors from analyses
 aparam <- 1
-ase <- .5
 b1param<-2
-b1se <- .2
 b2param<-1
-b2se<-.005
+#Asymptotic covariance matrix from analyses
+AC <- matrix(c(1,.00002, .00003,
+                    .00002,1, .00002,
+					.00003, .00002, 1), nrow=3, byrow=TRUE)
 #Compute CI do not include a plot
-monteCarloMed(med, coef1=aparam, se1=ase, coef2=b1c, se2=b1se, coef3=b2c, se3=b2se)
+monteCarloMed(med, coef1=aparam, coef2=b1param, coef3=b2param, ACM=AC)
 }
