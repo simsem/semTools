@@ -1,5 +1,6 @@
 \name{monteCarloMed}
 \alias{monteCarloMed}
+\title{
 Monte Carlo Confidence Intervals to Test Complex Indirect Effects
 }
 \description{
@@ -11,7 +12,7 @@ monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE, outputVal
 \arguments{
   \item{expression}{A character scalar representing the computation of an indirect effect. Different parameters in the expression should have different alphanumeric values. Expressions can use either addition (+) or multiplication (*) operators.}
   \item{\dots}{Parameter estimates for all parameters named in \code{expression}. The order of parameters should follow from \code{expression} (the first parameter named in \code{expression} should be the first parameter listed in \dots). Alternatively \dots can be a vector of parameter estimates.}
-  \item{ACM} {A matrix representing the asymptotic covariance matrix of the parameters described in \code{expression}. This matrix should be a symetric matrix with dimensions equal to the number of parameters names in \code{expression}. Information on finding the ACOV is popular SEM software is described below.)
+  \item{ACM}{A matrix representing the asymptotic covariance matrix of the parameters described in \code{expression}. This matrix should be a symetric matrix with dimensions equal to the number of parameters names in \code{expression}. Information on finding the ACOV is popular SEM software is described below.)}
   \item{rep}{The number of replications to compute. Many thousand are reccomended.}	
   \item{CI}{Width of the confidence interval computed.}
   \item{plot}{Should the function output a plot of simulated values of the indirect effect?}
@@ -21,25 +22,28 @@ monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE, outputVal
 This function implements the Monte Carlo test of mediation first described in MacKinnon, Lockwood, & Williams (2004) and extends it to complex cases where the indirect effect is more than a function of two parameters. The function takes an expression for the indirect effect, randomly simulated values of the indirect effect based on the values of the parameters (and the associated standard errors) comprising the indirect effect, and outputs a confidence interval of the indirect effect based on the simulated values. For further information on the Monte Carlo test of mediation see MacKinnon, Lockwood, & Williams (2004), Preacher & Selig (in press), and Selig & Preacher (2008). For a Monte Carlo test of mediation with a random effects model see Selig & Preacher (2010).
 
 The asymptotic covariance matrix can be easily found in many popular SEM software applications.
-	\item{LISREL}{Including the EC option on the OU line will print the ACM to a seperate file. The file contains the lower triangular elements of the ACM in free format and scientific notation}
-	\item{Mplus}{Include the command TECH3; in the OUTPUT section. The ACM will be printed in the output.}
-	\item{lavaan} {Use the command \code{vcov} on the fitted lavaan object to print the ACM to the screen}
+	\itemize{
+		\item{LISREL}{Including the EC option on the OU line will print the ACM to a seperate file. The file contains the lower triangular elements of the ACM in free format and scientific notation}
+		\item{Mplus}{Include the command TECH3; in the OUTPUT section. The ACM will be printed in the output.}
+		\item{lavaan} {Use the command \code{vcov} on the fitted lavaan object to print the ACM to the screen}
+	}
 }
 \value{
-A matrix with values for the upper and lower limits of the confidence interval generated from the Monte Carlo test of mediation. If outputValues=TRUE, output will be a list with a matrix with values for the upper and lower limits of the confidence interval as the first element and a vector of simulated values of the indirect effect as the second element.
+A matrix with values for the upper and lower limits of the confidence interval generated from the Monte Carlo test of mediation. If \code{outputValues=TRUE}, output will be a list with a matrix with values for the upper and lower limits of the confidence interval as the first element and a vector of simulated values of the indirect effect as the second element.
 }
 \references{
+Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method for assessing multilevel mediation: An interactive tool for creating confidence intervals for indirect effects in 1-1-1 multilevel models [Computer software]. Available from \url{http://quantpsy.org/}.
+
 Preacher, K. J., & Selig, J. P. (in press). Advantages of Monte Carlo confidence intervals for indirect effects. \emph{Communication Methods and Measures}.
 
 Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for assessing mediation: An interactive tool for creating confidence intervals for indirect effects [Computer software]. Available from \url{http://quantpsy.org/}.
 
-Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method for assessing multilevel mediation: An interactive tool for creating confidence intervals for indirect effects in 1-1-1 multilevel models [Computer software]. Available from \url{http://quantpsy.org/}.
 }
-\authors{
+\author{
     Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
 	Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
-	James P. Selig (University of New Mexico; \email{selig@unm.edu}}
-	}
+	James P. Selig (University of New Mexico; \email{selig@unm.edu}
+}
 \examples{
 #Simple two path mediation
 #Write expression of indirect effect
@@ -51,7 +55,7 @@ bparam<-2
 AC <- matrix(c(.01,.00002,
                .00002,.02), nrow=2, byrow=TRUE)
 #Compute CI, include a plot
-monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FALSE, plot=TRUE, ACOV=AC)
+monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FALSE, plot=TRUE, ACM=AC)
 
 #Use a matrix of parameter estimates as input
 aparam<-c(1,2)

@@ -59,6 +59,7 @@ Patrick Miller(University of Kansas; \email{patr1ckm@ku.edu})
 Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 Mijke Rhemtulla (University of Kansas; \email{mijke@ku.edu})
 Alexander Robitzsch (Federal Institute for Education Research, Innovation, and Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
+Craig Enders (Arizona State University; \email{Craig.Enders@asu.edu})
 }
 \examples{
 ## No Example
