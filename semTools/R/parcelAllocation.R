@@ -1,6 +1,6 @@
 ##Parcel Allocation
-##Corbin Quick
-##02/29/12
+##Corbin Quick & Alex Schoemann
+##6/4/12
 ##Vector of numbers of indicators in each parcel, vector assigning each indicator to its factor, Number allocations, lavaan syntax, Data set, parcel names, variables left out of parceling, additional arguments to be passed to lavaan
 
 parcelAllocation <- function(nPerPar,facPlc,nAlloc=100,syntax,dataset,names='default',leaveout=0, ...) {
