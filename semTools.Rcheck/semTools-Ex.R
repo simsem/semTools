@@ -166,6 +166,32 @@ summary(fit, fit.measures=TRUE)
 
 
 cleanEx()
+nameEx("parcelAllocation")
+### * parcelAllocation
+
+flush(stderr()); flush(stdout())
+
+### Name: parcelAllocation
+### Title: Random Allocation of Items to Parcels in a Structural Equation
+###   Model
+### Aliases: parcelAllocation
+
+### ** Examples
+
+#Fit 3 factor CFA to simulated data.
+#Each factor has 9 indicators that are randomly parceled into 3 parcels
+#Lavaan syntax for the model to be fit to parceled data
+syntax <- 'La =~ V1 + V2 + V3 
+           Lb =~ V4 + V5 + V6
+'
+#Parcel and fit data 20 times. The actual parcel number should be higher than 20 times.
+name1 <- colnames(simParcel)[1:9]
+name2 <- colnames(simParcel)[10:18]
+parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, dataset=simParcel)
+
+
+
+cleanEx()
 nameEx("plotRMSEApower")
 ### * plotRMSEApower
 
@@ -195,6 +221,22 @@ flush(stderr()); flush(stdout())
 
 ## No Example
 
+
+
+
+cleanEx()
+nameEx("simParcel")
+### * simParcel
+
+flush(stderr()); flush(stdout())
+
+### Name: simParcel
+### Title: Simulated Data set to Demonstrate Random Allocations of Parcels
+### Aliases: simParcel
+
+### ** Examples
+
+head(simParcel)
 
 
 

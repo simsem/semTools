@@ -4,6 +4,10 @@ miPowerFit              Modification indices and their power approach
                         for model fit evaluation
 moreFitIndices          Calculate more fit indices
 orthogonalize           Orthogonalize data for 2-way interaction in SEM
+parcelAllocation        Random Allocation of Items to Parcels in a
+                        Structural Equation Model
 plotRMSEApower          Plot power curves for RMSEA
 runMI                   Multiply impute and analyze data using lavaan
+simParcel               Simulated Data set to Demonstrate Random
+                        Allocations of Parcels
 skew                    Finding skewness

@@ -4,6 +4,8 @@ measurementinvariance	measurementInvariance
 miPowerFit	miPowerFit
 moreFitIndices	moreFitIndices
 orthogonalize	orthogonalize
+parcelAllocation	parcelAllocation
 plotRMSEApower	plotRMSEApower
 runMI	runMI
+simParcel	simParcel
 skew	skew

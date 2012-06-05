@@ -1,5 +1,7 @@
 * installing *source* package 'semTools' ...
 ** R
+** data
+**  moving datasets to lazyload DB
 ** preparing package for lazy loading
 ** help
 *** installing help indices

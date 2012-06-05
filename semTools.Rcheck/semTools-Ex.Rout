@@ -29,7 +29,7 @@ This is lavaan 0.4-14
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.1-2
+This is semTools 0.1-3
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 
@@ -731,6 +731,76 @@ Variances:
 > 
 > 
 > cleanEx()
+> nameEx("parcelAllocation")
+> ### * parcelAllocation
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: parcelAllocation
+> ### Title: Random Allocation of Items to Parcels in a Structural Equation
+> ###   Model
+> ### Aliases: parcelAllocation
+> 
+> ### ** Examples
+> 
+> #Fit 3 factor CFA to simulated data.
+> #Each factor has 9 indicators that are randomly parceled into 3 parcels
+> #Lavaan syntax for the model to be fit to parceled data
+> syntax <- 'La =~ V1 + V2 + V3 
++            Lb =~ V4 + V5 + V6
++ '
+> #Parcel and fit data 20 times. The actual parcel number should be higher than 20 times.
+> name1 <- colnames(simParcel)[1:9]
+> name2 <- colnames(simParcel)[10:18]
+> parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, dataset=simParcel)
+$Estimates
+   lhs op rhs   est  S.D.   MAX   MIN Range % Sig
+1   La =~  V1 1.000 0.000 1.000 1.000 0.000    NA
+2   La =~  V2 0.995 0.054 1.130 0.912 0.218     1
+3   La =~  V3 1.002 0.047 1.090 0.926 0.164     1
+4   Lb =~  V4 1.000 0.000 1.000 1.000 0.000    NA
+5   Lb =~  V5 0.987 0.041 1.070 0.902 0.168     1
+6   Lb =~  V6 0.994 0.047 1.062 0.898 0.164     1
+7   V1 ~~  V1 0.219 0.014 0.247 0.196 0.052     1
+8   V2 ~~  V2 0.211 0.017 0.237 0.174 0.063     1
+9   V3 ~~  V3 0.203 0.018 0.240 0.162 0.078     1
+10  V4 ~~  V4 0.208 0.020 0.240 0.165 0.075     1
+11  V5 ~~  V5 0.216 0.018 0.249 0.187 0.062     1
+12  V6 ~~  V6 0.206 0.019 0.240 0.161 0.079     1
+13  La ~~  La 0.377 0.021 0.398 0.326 0.072     1
+14  Lb ~~  Lb 0.361 0.019 0.395 0.329 0.066     1
+15  La ~~  Lb 0.195 0.007 0.208 0.180 0.028     1
+
+$SE
+   lhs op rhs Avg SE  S.D.   MAX   MIN Range
+1   La =~  V1  0.000 0.000 0.000 0.000 0.000
+2   La =~  V2  0.046 0.003 0.054 0.041 0.013
+3   La =~  V3  0.046 0.003 0.052 0.041 0.011
+4   Lb =~  V4  0.000 0.000 0.000 0.000 0.000
+5   Lb =~  V5  0.047 0.002 0.050 0.044 0.007
+6   Lb =~  V6  0.047 0.002 0.049 0.041 0.008
+7   V1 ~~  V1  0.016 0.001 0.018 0.015 0.003
+8   V2 ~~  V2  0.016 0.001 0.018 0.015 0.003
+9   V3 ~~  V3  0.016 0.001 0.017 0.014 0.003
+10  V4 ~~  V4  0.016 0.001 0.018 0.014 0.004
+11  V5 ~~  V5  0.016 0.001 0.018 0.015 0.003
+12  V6 ~~  V6  0.016 0.001 0.017 0.014 0.003
+13  La ~~  La  0.030 0.001 0.032 0.028 0.005
+14  Lb ~~  Lb  0.029 0.001 0.032 0.028 0.004
+15  La ~~  Lb  0.019 0.001 0.020 0.017 0.003
+
+$Fit
+      Avg Ind  S.D.    MAX   MIN  Range
+chisq   6.906 3.652 14.543 1.456 13.087
+cfi     0.999 0.001  1.000 0.997  0.003
+tli     1.001 0.003  1.006 0.994  0.012
+rmsea   0.007 0.011  0.032 0.000  0.032
+srmr    0.011 0.003  0.019 0.006  0.013
+
+> 
+> 
+> 
+> cleanEx()
 > nameEx("plotRMSEApower")
 > ### * plotRMSEApower
 > 
@@ -764,6 +834,43 @@ Variances:
 > 
 > 
 > cleanEx()
+> nameEx("simParcel")
+> ### * simParcel
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: simParcel
+> ### Title: Simulated Data set to Demonstrate Random Allocations of Parcels
+> ### Aliases: simParcel
+> 
+> ### ** Examples
+> 
+> head(simParcel)
+     f1item1      f1item2     f1item3    f1item4    f1item5    f1item6
+1 -1.7896958 -1.951487976  0.06921463 -1.4553012 -0.8801326 -0.6760663
+2  0.5245525 -0.009665777  2.02336708 -0.5052323  1.2978291  0.4663007
+3 -0.5121904  0.101476908 -0.41061133  0.1037776  1.0748526  0.7012178
+4 -0.7769473 -0.547552458 -1.01396947  0.4581587 -0.6279040 -0.3917189
+5  1.1383346  0.444802803  0.38796807 -0.9788030 -0.2293250  0.4426714
+6 -0.6525078  0.080539695 -2.00157281 -0.3997432 -1.2986350 -1.4376393
+      f1item7    f1item8    f1item9    f2item1    f2item2    f2item3
+1  0.07133309 -1.6728790 -0.7473949 -0.4374817 -0.1431815 -1.0342390
+2  2.74670484  1.3816698  1.8065698  0.1358011  0.8965890  1.6516467
+3  1.31352970  0.2770826  1.1031422  0.9553923  1.0204971  0.1568082
+4  0.96030051  0.2503113 -0.8986681  0.5973238  1.4027800  0.9871376
+5  0.28534016  0.3281577  0.1932261 -0.7980739 -1.6738395 -0.5503140
+6 -0.97896255 -1.0324955 -1.2430591 -0.4373219 -0.8818279  1.2320996
+      f2item4     f2item5    f2item6    f2item7    f2item8    f2item9
+1 -1.44552176  0.09842477 -1.1666086 -1.5057074 -3.3265526 -1.4957729
+2  1.65291809 -0.12436952 -0.5910034  1.7282434  2.2468441  2.2650310
+3  0.70208355  0.36394797  0.2040989  1.8288085  0.1438386  0.2629538
+4  0.00197898 -0.27991938  1.6400470  0.6514612  0.7272645  2.5138630
+5  0.76802013 -0.93197593 -0.7515958  0.7287445 -0.2093306 -0.1923059
+6 -1.32456576  0.52782351  2.1100907 -1.0557662  0.5176468 -0.1303705
+> 
+> 
+> 
+> cleanEx()
 > nameEx("skew")
 > ### * skew
 > 
@@ -784,7 +891,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.79 0.03 1.86 NA NA 
+Time elapsed:  2.95 0.01 2.96 NA NA 
 > grDevices::dev.off()
 null device 
           1 

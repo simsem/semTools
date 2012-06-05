@@ -3,50 +3,50 @@
 ##02/29/12
 ##Vector of numbers of indicators in each parcel, vector assigning each indicator to its factor, Number allocations, lavaan syntax, Data set, parcel names, variables left out of parceling, additional arguments to be passed to lavaan
 
-parcelAllocation <- function(Nperpar,Facplc,Nalloc=100,syntax,Dataset,names='default',leaveout=0, ...) {
+parcelAllocation <- function(nPerPar,facPlc,nAlloc=100,syntax,dataset,names='default',leaveout=0, ...) {
   
   require(lavaan)
   
-  if(is.character(Dataset)){
-    Dataset <- read.csv(Dataset)
+  if(is.character(dataset)){
+    dataset <- read.csv(dataset)
   }  
 
-  Dataset <- as.matrix(Dataset)
+  dataset <- as.matrix(dataset)
   
-  if(Nalloc<2) stop("Minimum of two allocations required.")
+  if(nAlloc<2) stop("Minimum of two allocations required.")
   
-  if(is.list(Facplc)){ 
+  if(is.list(facPlc)){ 
     
-    if(is.numeric(Facplc[[1]][1])==FALSE){
-      Facplcb <- Facplc
-      Namesv <- colnames(Dataset)
+    if(is.numeric(facPlc[[1]][1])==FALSE){
+      facPlcb <- facPlc
+      Namesv <- colnames(dataset)
       
-      for(i in 1:length(Facplc)){
-        for(j in 1:length(Facplc[[i]])){
-          Facplcb[[i]][j] <- match(Facplc[[i]][j],Namesv)
+      for(i in 1:length(facPlc)){
+        for(j in 1:length(facPlc[[i]])){
+          facPlcb[[i]][j] <- match(facPlc[[i]][j],Namesv)
         }
-        Facplcb[[i]] <- as.numeric(Facplcb[[i]])
+        facPlcb[[i]] <- as.numeric(facPlcb[[i]])
       }
-      Facplc <- Facplcb
+      facPlc <- facPlcb
       
     }
     
-    # Facplc2 <- rep(0, sum(sapply(Facplc, length)))
-    Facplc2 <- rep(0,ncol(Dataset))
+    # facPlc2 <- rep(0, sum(sapply(facPlc, length)))
+    facPlc2 <- rep(0,ncol(dataset))
     
-    for(i in 1:length(Facplc)){
-      for(j in 1:length(Facplc[[i]])){
-        Facplc2[Facplc[[i]][j]] <- i
+    for(i in 1:length(facPlc)){
+      for(j in 1:length(facPlc[[i]])){
+        facPlc2[facPlc[[i]][j]] <- i
       }
     }
-    Facplc <- Facplc2
+    facPlc <- facPlc2
   }
   
   if(leaveout!=0){
     
     if(is.numeric(leaveout)==FALSE){
       leaveoutb <- rep(0,length(leaveout))
-      Namesv <- colnames(Dataset)
+      Namesv <- colnames(dataset)
       
       for(i in 1:length(leaveout)){
         leaveoutb[i] <- match(leaveout[i],Namesv)
@@ -57,39 +57,39 @@ parcelAllocation <- function(Nperpar,Facplc,Nalloc=100,syntax,Dataset,names='def
     
     k1 <- .001
     for(i in 1:length(leaveout)){
-      Facplc[leaveout[i]] <- Facplc[leaveout[i]] + k1
+      facPlc[leaveout[i]] <- facPlc[leaveout[i]] + k1
       k1 <- k1 +.001
     }
   }
   
-  if(0 %in% Facplc == TRUE){
-    Zfreq <- sum(Facplc==0)
+  if(0 %in% facPlc == TRUE){
+    Zfreq <- sum(facPlc==0)
     for (i in 1:Zfreq){
-      Zplc <- match(0,Facplc)
-      Dataset <- Dataset[ , -Zplc]
-      Facplc <- Facplc[-Zplc]
+      Zplc <- match(0,facPlc)
+      dataset <- dataset[ , -Zplc]
+      facPlc <- facPlc[-Zplc]
     }
     ## this allows for unused variables in dataset, 
     ## which are specified by zeros, and deleted
   }
 
-if(is.list(Nperpar)){
+if(is.list(nPerPar)){
     
-  Nperpar2 <- c()
-  for (i in 1:length(Nperpar)){
-    Onesp <- sum(Facplc>i & Facplc<i+1) 
-    Nperpar2 <- c(Nperpar2, Nperpar[i], rep(1, Onesp), recursive = TRUE)
+  nPerPar2 <- c()
+  for (i in 1:length(nPerPar)){
+    Onesp <- sum(facPlc>i & facPlc<i+1) 
+    nPerPar2 <- c(nPerPar2, nPerPar[i], rep(1, Onesp), recursive = TRUE)
   }
     
-  Nperpar <- Nperpar2
+  nPerPar <- nPerPar2
 }
   
   Npp <- c()
-  for (i in 1:length(Nperpar)){
-    Npp <- c(Npp, rep(i, Nperpar[i]))
+  for (i in 1:length(nPerPar)){
+    Npp <- c(Npp, rep(i, nPerPar[i]))
   }
   
-  Locate <- sort(round(Facplc))
+  Locate <- sort(round(facPlc))
   Maxv <- max(Locate)-1
   
   if(length(Locate)!=length(Npp)){
@@ -106,9 +106,9 @@ if(is.list(Nperpar)){
       ## if variables are in the same parcel, but different factors
       ## error message given in output
     
-  Onevec <- Facplc - round(Facplc)
+  Onevec <- facPlc - round(facPlc)
   NleaveA <- length(Onevec) - sum(Onevec==0)
-  NleaveP <- sum(Nperpar==1)
+  NleaveP <- sum(nPerPar==1)
   
   if(NleaveA < NleaveP){
     print('** WARNING! ** Single-variable parcels have been requested. Check input!')}
@@ -117,26 +117,26 @@ if(is.list(Nperpar)){
     print('** WARNING! ** More non-parceled variables have been requested than provided for in parcel vector. Check input!')
   
   if(length(names)>1){
-    if(length(names) != length(Nperpar)){
+    if(length(names) != length(nPerPar)){
       print('** WARNING! ** Number of parcel names provided not equal to number of parcels requested. Check input!')}}
   
-  if(NA %in% Dataset == TRUE){ 
+  if(NA %in% dataset == TRUE){ 
     print('** WARNING! ** Missing data detected. Prior multiple imputation recommended.')}
 
-  Data <- c(1:ncol(Dataset))
+  Data <- c(1:ncol(dataset))
     ## creates a vector of the number of indicators
     ## e.g. for three indicators, c(1, 2, 3)
-  Nfactors <- max(Facplc)
+  Nfactors <- max(facPlc)
     ## scalar, number of factors
   Nindicators <- length(Data)
     ## scalar, number of indicators
-  Npar <- length(Nperpar)
+  Npar <- length(nPerPar)
     ## scalar, number of parcels
   Rmize <- runif(Nindicators, 1, Nindicators)
     ## create vector of randomly ordered numbers, 
     ## length of number of indicators
   
-  Data <- rbind(Facplc, Rmize, Data)
+  Data <- rbind(facPlc, Rmize, Data)
     ## "Data" becomes object of three rows, consisting of
     ##    1) factor to which each indicator belongs
     ##          (in order to preserve indicator/factor 
@@ -144,18 +144,18 @@ if(is.list(Nperpar)){
     ##    2) randomly order numbers
     ##    3) indicator number
   
-  Results <- matrix(numeric(0), Nalloc, Nindicators)
+  Results <- matrix(numeric(0), nAlloc, Nindicators)
     ##create empty matrix for parcel allocation matrix
   
-  Pin <- Nperpar[1]
-  for (i in 2:length(Nperpar)){
+  Pin <- nPerPar[1]
+  for (i in 2:length(nPerPar)){
 
-    Pin <- c(Pin, Nperpar[i]+Pin[i-1])
+    Pin <- c(Pin, nPerPar[i]+Pin[i-1])
       ## creates vector which indicates the range
       ## of columns (endpoints) in each parcel
   }
   
-  for (i in 1:Nalloc) {
+  for (i in 1:nAlloc) {
     Data[2,]<-runif(Nindicators, 1, Nindicators)
       ## Replace second row with newly randomly ordered numbers
 
@@ -172,13 +172,13 @@ if(is.list(Nperpar)){
       ## assign result to allocation matrix
   }
   
-  Alpha <- rbind(Results[1,], Dataset)
+  Alpha <- rbind(Results[1,], dataset)
       ## bind first random allocation to dataset "Alpha"
   
   Allocations <- list()
       ## create empty list for allocation data matrices
 
-  for (i in 1:Nalloc){
+  for (i in 1:nAlloc){
     
     Ineff <- rep(NA, ncol(Results))
     Ineff2 <- c(1:ncol(Results))
@@ -194,7 +194,7 @@ if(is.list(Nperpar)){
       ## arrangle dataset columns by values of first row 
       ## assign to temporary matrix "Beta"
     
-    Temp <- matrix(NA, nrow(Dataset), Npar)
+    Temp <- matrix(NA, nrow(dataset), Npar)
       ## create empty matrix for averaged parcel variables
     
     TempAA <- if(length(1:Pin[1])>1) Beta[2:nrow(Beta) , 1:Pin[1]] else cbind(Beta[2:nrow(Beta) , 1:Pin[1]],Beta[2:nrow(Beta) , 1:Pin[1]])
@@ -217,8 +217,8 @@ if(is.list(Nperpar)){
   }
   
   if(as.vector(regexpr("/",syntax))!=-1){
-    replist<-matrix(NA,Nalloc,1)
-    for (i in 1:Nalloc){
+    replist<-matrix(NA,nAlloc,1)
+    for (i in 1:nAlloc){
       if(names!='default'){colnames(Allocations[[i]])<-names}else{colnames(Allocations[[i]])<-NULL}
       write.table(Allocations[[i]],paste(syntax,'parcelruns',i,'.dat',sep=''),row.names=FALSE,col.names=TRUE)
       replist[i,1]<-paste('parcelrun',i,'.dat',sep='')
@@ -232,7 +232,7 @@ if(is.list(Nperpar)){
   Fitind <- list()
   ## list for fit indices estimated for each imputation
   
-  for (i in 1:Nalloc){
+  for (i in 1:nAlloc){
     data <- as.data.frame(Allocations[[i]], row.names = NULL, optional = FALSE)
     ## convert allocation matrix to dataframe for model estimation 
     fit <- sem(syntax, data=data, ...)
@@ -246,22 +246,22 @@ if(is.list(Nperpar)){
   Parmn <- Param[[1]]
   ## assign first parameter estimates to mean dataframe
   
-  ParSE <- matrix(NA, nrow(Parmn), Nalloc)
+  ParSE <- matrix(NA, nrow(Parmn), nAlloc)
   ParSEmn <- Parmn[,5]
   
-  Parsd <- matrix(NA, nrow(Parmn), Nalloc)
+  Parsd <- matrix(NA, nrow(Parmn), nAlloc)
   ## assign parameter estimates for S.D. calculation
   
   Fitmn <- Fitind[[1]]
   ## assign first fit indices to mean dataframe
   
-  Fitsd <- matrix(NA, 5, Nalloc)
+  Fitsd <- matrix(NA, 5, nAlloc)
   ## assign fit indices for S.D. calculation
   
-  Sigp <- matrix(NA, nrow(Parmn), Nalloc)
+  Sigp <- matrix(NA, nrow(Parmn), nAlloc)
   ## assign p-values to calculate percentage significant
   
-  for (i in 1:Nalloc){
+  for (i in 1:nAlloc){
     
     Parsd[,i] <- Param[[i]][,4]
     ## assign parameter estimates for S.D. estimation
@@ -294,7 +294,7 @@ if(is.list(Nperpar)){
   colnames(Parsum) <- c("S.D.","MAX","MIN","Range", "% Sig")
   ## calculate parameter S.D., minimum, maximum, range, bind to percentage significant
   
-  ParSEmn <- cbind(Parmn[,1:3], ParSEmn/Nalloc)
+  ParSEmn <- cbind(Parmn[,1:3], ParSEmn/nAlloc)
   ParSEfn <- cbind(ParSEmn,apply(ParSE,1,sd),apply(ParSE,1,max),apply(ParSE,1,min),apply(ParSE,1,max)-apply(ParSE,1,min))
   colnames(ParSEfn) <- c("lhs", "op", "rhs", "Avg SE","S.D.","MAX","MIN","Range")
   
@@ -302,13 +302,13 @@ if(is.list(Nperpar)){
   rownames(Fitsum) <- c("chisq","cfi","tli","rmsea","srmr")
   ## calculate fit S.D., minimum, maximum, range
   
-  Parmn[,4:ncol(Parmn)] <- Parmn[,4:ncol(Parmn)] / Nalloc
+  Parmn[,4:ncol(Parmn)] <- Parmn[,4:ncol(Parmn)] / nAlloc
   ## divide totalled parameter estimates by number allocations
   Parmn <- Parmn[,1:4]
   ## remove confidence intervals from output
   Parmn <- cbind(Parmn, Parsum)
   ## bind parameter average estimates to cross-allocation information
-  Fitmn <- Fitmn / Nalloc
+  Fitmn <- Fitmn / nAlloc
   ## divide totalled fit indices by number allocations
   
   Fitsum <- cbind(rbind(Fitmn[1],Fitmn[7],Fitmn[8],Fitmn[16],Fitmn[20]),Fitsum)
