@@ -10,8 +10,8 @@ This function generates a given number of randomly generated item-to-parcel allo
 parcelAllocation(nPerPar, facPlc, nAlloc=100, syntax, dataset, names='default', leaveout=0, ...)
 }
 \arguments{
-  \item{nPerPar}{A list in which each element is a vector corresponding to each factor indicating sizes of parcels. If variables are left out of parceling, they need not be accounted for here (i.e., parcels of size "1").}
-  \item{facPlc}{A list in which each element is a vector corresponding to each factor indicating manifest variables in respective factor. Either variable names or column numbers. Variables not included listed will not be included in output datasets. }
+  \item{nPerPar}{A list in which each element is a vector corresponding to each factor indicating sizes of parcels. If variables are left out of parceling, they should not be accounted for here (there should NOT be parcels of size "1").}
+  \item{facPlc}{A list of vectors, each corresponding to a factor, specifying the variables in that factor (whether included in parceling or not). Either variable names or column numbers. Variables not listed will not be modeled or included in output datasets. }
   \item{nAlloc}{The number of random allocations of items to parcels to generate.}	
   \item{syntax}{\link{lavaan} syntax. If substituted with a file name, parcelAllocation will print output data sets to a specified folder rather than analyzing using lavaan (note for Windows users: file path must be specified using forward slashes).}
   \item{dataset}{Data set. Can be file path or R object (matrix or dataframe). If the data has missing values multiple imputation before parceling is recommended.}
