@@ -1,15 +1,9 @@
-## Title: Measurement Invariance Testing
-## Author: Yves Rosseel 
-# Description: Testing measurement invariance across groups using a typical sequence of
-# 				model comparison tests.
-# Print a pairwise comparison between the sequence of parent and nested models.
-# Remark: initial version YR from the lavaan package
-
 measurementInvariance <- measurementinvariance <- function(...,
     strict=FALSE, quiet=FALSE) {
 
     # check for a group.equal argument in ...
-    if(!is.null(as.list(...)$group.equal))
+    dotdotdot <- list(...)
+    if(!is.null(dotdotdot$group.equal))
         stop("lavaan ERROR: group.equal argument should not be used")
 
     res <- list()
@@ -188,4 +182,3 @@ print.lavaan.vector <- function(x, ..., nd=3) {
     print( round(y, nd), ... )
     invisible(x)
 }
-

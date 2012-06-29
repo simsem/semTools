@@ -1,29 +1,23 @@
 ##  Functon to impute missing data, run Lavaan on each one 
 ##  input: data frames of raw data with missing data, model specification (lavaan script), number of imputations wanted, number of digits to print in output.)
 ##  Output: list of results with:  fit parameter estimates, standard errors fit indices, and two types of fraction of missing information
-##  Alexander Schoemann, Patrick Mille, Mijke Rhemtulla, Sunthud Pornprasertmanit, Alexander Robitzsch
+##  Alexander Schoemann, Patrick Miller, Mijke Rhemtulla, Sunthud Pornprasertmanit, Alexander Robitzsch, Mauricio Garnier Villarreal
 ##  Last modified 5/25/2012
 
 ##Currently outputs a list of parameter estimates, standard errors, fit indices and fraction missing information
-##Add lavaan options! e.g. std.lv, estimator, groups, group.constraints....
 
-runMI<- function(data.mat,data.model, m, miPackage="Amelia", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) {
+runMI <- function(data.mat,data.model, m, miPackage="Amelia", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) 
+{
 
-set.seed(12345)
-  #Currently only supports imputation by Amelia and mice. We want to add mi and maybe EM imputatin too...
-
-#@@ARb: if data.mat is a list of data frames then do omit imputation!
-imputed.data <- is.list( data.mat)	*( 1 - is.data.frame( data.mat ) )
-if (! imputed.data){		
+set.seed(seed)
+imputed.data <- is.list(data.mat) & (!is.data.frame(data.mat))
+imputed.l <- NULL
+if (!imputed.data){		
   if( ( miPackage!="Amelia" )  &  ( miPackage !="mice")  )
 		{ stop("Currently runMI only supports imputation by Amelia or mice") }
-#@@ARb: I changed the logical query a bit, because it did not seem to work in my example. 		
 		
   args <- list(...)
 
-
-  
-  #Impute missing data
   if(miPackage=="Amelia"){
   imputed.l<-imputeMissingAmelia(data.mat,m, ...)
   }
@@ -31,44 +25,60 @@ if (! imputed.data){
   if(miPackage=="mice"){
   imputed.l<-imputeMissingMice(data.mat,m, ...)
   }
- #@@ARb
-		} else { #@@ARb: set imputed data sets
+
+		} else { 
 				imputed.l <- data.mat 
 				m <- length( data.mat )
 					}
-  
- 	#Run imputed data
-    imputed.results.l <- lapply(imputed.l, runlavaanMI, data.model, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal)
+    imputed.results.l <- lapply(imputed.l, runlavaanMI, syntax=data.model, std.lv = std.lv, 
+	estimator = estimator, group = group, group.equal = group.equal)
     
 	coefs <- matrix(NA, nrow = m, ncol = length(imputed.results.l[[1]][[1]]$est))
+	stdlv <- matrix(NA, nrow = m, ncol = length(imputed.results.l[[1]][[1]]$std.lv))
+	stdall <- matrix(NA, nrow = m, ncol = length(imputed.results.l[[1]][[1]]$std.all))
+	stdnox <- matrix(NA, nrow = m, ncol = length(imputed.results.l[[1]][[1]]$std.nox))
 	se <- coefs
 	fit <- matrix(NA, nrow = m, ncol = length(imputed.results.l[[1]][[2]]))
 	
 	for(i in 1:length(imputed.results.l)){
 		coefs[i,] <- imputed.results.l[[i]][[1]]$est
+		stdlv[i,] <- imputed.results.l[[i]][[1]]$std.lv
+		stdall[i,] <- imputed.results.l[[i]][[1]]$std.all
+		stdnox[i,] <- imputed.results.l[[i]][[1]]$std.nox
 		se[i,] <- imputed.results.l[[i]][[1]]$se
 		fit[i,] <- imputed.results.l[[i]][[2]]
 		}
 
-  ##Use two MI pool functions for parameters and chi square. 
   comb.results <- miPoolVector(coefs,se, m)
+  comb.stdlv <- miPoolVector(stdlv,se, m)
+  comb.stdall <- miPoolVector(stdall,se, m)
+  comb.stdnox <- miPoolVector(stdnox,se, m)
   Wald <- comb.results[[1]]/comb.results[[2]]
   p <- 2*pnorm(-abs(Wald))
 
-  comb.results <- cbind(comb.results[[1]],comb.results[[2]], Wald, p, comb.results[[3]], comb.results[[4]])
-  colnames(comb.results) <- c('coef', 'se', 'Wald', 'p', 'FMI.1', 'FMI.2')
-  rownames(comb.results) <- paste(imputed.results.l[[1]][[1]]$lhs, imputed.results.l[[1]][[1]]$op, imputed.results.l[[1]][[1]]$rhs)
+  comb.results <- cbind(comb.results[[1]],comb.results[[2]], Wald, p, comb.stdlv[[1]], comb.stdall[[1]], comb.stdnox[[1]], comb.results[[3]], comb.results[[4]])
   comb.results <- as.data.frame(comb.results)
   comb.results <- round(comb.results, digits=digits)
-  pval <- comb.results[,4] == 0
-  comb.results[,4][pval] <- paste("<.", paste(rep(0, (digits-1)),collapse=""), 1, sep="")
+  pval <- comb.results[,"p"] == 0
+  pval[is.na(pval)] <- FALSE
+  comb.results[pval,"p"] <- paste("<.", paste(rep(0, (digits-1)),collapse=""), 1, sep="")
+  colnames(comb.results) <- c('coef', 'se', 'Wald', 'p', 'std.lv', 'std.all', 'std.nox',
+  'FMI.1', 'FMI.2')
   
-  fixedParam <- is.nan(comb.results[,5])
+    fixedParam <- is.nan(comb.results[,8])
   comb.results[,2][fixedParam] <- ""
   comb.results[,3][fixedParam] <- ""
   comb.results[,4][fixedParam] <- ""
   comb.results[,5][fixedParam] <- ""
   comb.results[,6][fixedParam] <- ""
+  comb.results[,7][fixedParam] <- ""
+  comb.results[,8][fixedParam] <- ""
+  comb.results[,9][fixedParam] <- ""
+  
+  headings <- cbind(lhs = imputed.results.l[[1]][[1]]$lhs, op = imputed.results.l[[1]][[1]]$op, rhs = imputed.results.l[[1]][[1]]$rhs, group = imputed.results.l[[1]][[1]]$group)
+  comb.results <- data.frame(headings, comb.results)
+  
+
   
   comb.fit <- colMeans(fit)
   names(comb.fit) <- names(imputed.results.l[[1]][[2]])
@@ -89,7 +99,17 @@ if (! imputed.data){
   return(results)
 }
   
-
+#Conveniance function to run lavaan models and get results out. For easy use with lapply
+runlavaanMI <- function(MIdata,syntax, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "") {
+     fit <- cfa(syntax, data=MIdata, std.lv = std.lv, estimator = estimator, 
+	 group = group, group.equal = group.equal, meanstructure = TRUE)
+     FitIndices <- inspect(fit, 'fit')
+	Converged = TRUE
+	if(sum(unlist(lapply(inspect(fit, "se"), sum))) == 0) Converged = FALSE
+	params <- parameterEstimates(fit,standardized=T)
+    return(list(params, FitIndices, Converged))
+}
+	
 testMI <- function() {
 ##Shamelessly using the example in lavaan
 
@@ -135,17 +155,7 @@ imputeMissingMice <- function(data.mat,m, ...){
 
 } # end imputeMissingAmelia
 
-#Conveniance function to run lavaan models and get results out. For easy use with lapply
-    runlavaanMI <- function(MIdata,syntax, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "") {
-     fit <- cfa(syntax, data=MIdata, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal)
-     FitIndices <- inspect(fit, 'fit')
-	Converged = TRUE
-	if(sum(unlist(lapply(inspect(fit, "se"), sum))) == 0) Converged = FALSE
-	#Return list of results. Not SimModelOut object...
-	#Ooooh. paramEstimates function fixes all of my problems.
-	params <- parameterEstimates(fit)
-    return(list(params, FitIndices, Converged))
-    }
+
 
  
 # miPoolVector

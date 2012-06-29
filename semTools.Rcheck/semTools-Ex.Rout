@@ -29,7 +29,7 @@ This is lavaan 0.4-14
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.1-4
+This is semTools 0.1-5
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 
@@ -41,6 +41,37 @@ The following object(s) are masked from 'package:lavaan':
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("exLong")
+> ### * exLong
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: exLong
+> ### Title: Simulated Data set to Demonstrate Longitudinal Measurement
+> ###   Invariance
+> ### Aliases: exLong
+> 
+> ### ** Examples
+> 
+> head(exLong)
+     sex       y1t1       y2t1        y3t1       y1t2        y2t2      y3t2
+1 female  2.7625423  2.2812510  2.49656014  2.9499400  1.12338865 2.1505466
+2 female  0.2707267 -0.7830365 -0.23554656  0.4631038  0.37536412 2.0283960
+3 female -0.2604141  0.3146881  1.21590069  0.3528803  0.00986991 1.0709696
+4 female -1.0227953 -1.3454733  0.04899156  1.9530137 -1.03357363 2.7817132
+5 female  0.7385408 -0.6027341  0.42557808 -0.2027779 -0.34937717 1.1865013
+6 female  0.5864878 -0.4659974  0.10691644  0.7869085 -0.31982170 0.4825864
+       y1t3       y2t3       y3t3
+1  1.912824  1.9625734  2.4403812
+2  2.112440  0.4326280  2.6352259
+3  1.472736  1.1951005  1.4287358
+4  1.249376 -0.5369589  2.3371304
+5  1.425101  1.8539630  2.0861627
+6 -1.201912 -2.0090700 -0.8366951
+> 
+> 
+> 
 > cleanEx()
 > nameEx("kurtosis")
 > ### * kurtosis
@@ -56,6 +87,124 @@ The following object(s) are masked from 'package:lavaan':
 > kurtosis(1:5)
 Excess Kur (g2)              se               z               p 
      -1.2000000       2.1908902      -0.5477226       0.5838824 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("longInvariance")
+> ### * longInvariance
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: longInvariance
+> ### Title: Measurement Invariance Tests Within Person
+> ### Aliases: longInvariance longInvariance
+> 
+> ### ** Examples
+> 
+> model <- ' f1t1 =~ y1t1 + y2t1 + y3t1
++               f1t2 =~ y1t2 + y2t2 + y3t2
++ 			  f1t3 =~ y1t3 + y2t3 + y3t3'
+> 
+> # Create list of variables
+> var1 <- c("y1t1", "y2t1", "y3t1")
+> var2 <- c("y1t2", "y2t2", "y3t2")
+> var3 <- c("y1t3", "y2t3", "y3t3")
+> constrainedVar <- list(var1, var2, var3)
+> 
+> # Invariance of the same factor across timepoints
+> longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong)
+
+#################### Measurement invariance tests ####################
+
+The order of autocorrelation:  1 
+
+#################### Model 1: configural invariance:
+   chisq       df   pvalue      cfi    rmsea      bic 
+  21.806   21.000    0.411    0.999    0.014 4542.613 
+
+#################### Model 2: weak invariance (equal loadings):
+   chisq       df   pvalue      cfi    rmsea      bic 
+  27.038   25.000    0.354    0.998    0.020 4526.652 
+
+[Model 1 versus model 2]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+        5.232         4.000         0.264         0.001 
+
+#################### Model 3: strong invariance (equal loadings + intercepts):
+   chisq       df   pvalue      cfi    rmsea      bic 
+  44.500   29.000    0.033    0.986    0.052 4522.921 
+
+[Model 1 versus model 3]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       22.695         8.000         0.004         0.013 
+
+[Model 2 versus model 3]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       17.462         4.000         0.002         0.012 
+
+#################### Model 4: equal loadings + intercepts + means:
+   chisq       df   pvalue      cfi    rmsea      bic 
+ 150.143   31.000    0.000    0.891    0.139 4617.967 
+
+[Model 1 versus model 4]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+      128.337        10.000         0.000         0.109 
+
+[Model 2 versus model 4]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+      123.105         6.000         0.000         0.107 
+
+[Model 3 versus model 4]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+      105.643         2.000         0.000         0.095 
+> 
+> # Invariance of the same factor across timepoints and groups
+> longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong, group="sex", group.equal=c("loadings", "intercepts"))
+
+#################### Measurement invariance tests ####################
+
+The order of autocorrelation:  1 
+
+#################### Model 1: configural invariance:
+   chisq       df   pvalue      cfi    rmsea      bic 
+  43.993   54.000    0.833    1.000    0.000 4631.688 
+
+#################### Model 2: weak invariance (equal loadings):
+   chisq       df   pvalue      cfi    rmsea      bic 
+  49.247   58.000    0.787    1.000    0.000 4615.748 
+
+[Model 1 versus model 2]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+        5.254         4.000         0.262         0.000 
+
+#################### Model 3: strong invariance (equal loadings + intercepts):
+   chisq       df   pvalue      cfi    rmsea      bic 
+  66.896   62.000    0.313    0.995    0.028 4612.204 
+
+[Model 1 versus model 3]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       22.903         8.000         0.003         0.005 
+
+[Model 2 versus model 3]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       17.649         4.000         0.001         0.005 
+
+#################### Model 4: equal loadings + intercepts + means:
+   chisq       df   pvalue      cfi    rmsea      bic 
+ 142.192   66.000    0.000    0.930    0.107 4666.306 
+
+[Model 1 versus model 4]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       98.198        12.000         0.000         0.070 
+
+[Model 2 versus model 4]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       92.944         8.000         0.000         0.070 
+
+[Model 3 versus model 4]
+  delta.chisq      delta.df delta.p.value     delta.cfi 
+       75.296         4.000         0.000         0.066 
 > 
 > 
 > 
@@ -884,12 +1033,72 @@ srmr    0.011 0.003  0.019 0.006  0.013
 > 
 > ### ** Examples
 > 
-> ## No Example
+> 
+> library(lavaan)
+> 
+> HS.model <- ' visual  =~ x1 + x2 + x3
++               textual =~ x4 + x5 + x6
++               speed   =~ x7 + x8 + x9 '
+> 
+> HSMiss <- HolzingerSwineford1939[,paste("x", 1:9, sep="")]
+> randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
+> randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
+> HSMiss[randomMiss] <- NA
+> 
+> out <- runMI(HSMiss, HS.model, m = 3)
+Loading required package: Amelia
+Warning: package 'Amelia' was built under R version 2.15.1
+Loading required package: foreign
+## 
+## Amelia II: Multiple Imputation
+## (Version 1.6.3, built: 2012-06-21)
+## Copyright (C) 2005-2012 James Honaker, Gary King and Matthew Blackwell
+## Refer to http://gking.harvard.edu/amelia/ for more information
+## 
+> 
+> HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
+> out2 <- runMI(HSMiss2, HS.model, m = 3, group="school", noms="school")
+> 
+> library(Amelia)
+> 
+> modsim <- '
++ f1 =~ 0.7*y1+0.7*y2+0.7*y3
++ f2 =~ 0.7*y4+0.7*y5+0.7*y6
++ f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+> 
+> mod <- '
++ f1 =~ y1+y2+y3
++ f2 =~ y4+y5+y6
++ f3 =~ y7+y8+y9'
+> 
+> datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
++ 	std.lv=TRUE, sample.nobs=c(200,200))
+> randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+> randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+> datsim[randomMiss2] <- NA
+> datsimMI <- amelia(datsim,m=3, noms="group")
+-- Imputation 1 --
+
+ 1  2  3  4  5  6  7 
+
+-- Imputation 2 --
+
+ 1  2  3  4  5  6  7 
+
+-- Imputation 3 --
+
+ 1  2  3  4  5  6  7  8 
+
+> 
+> out3 <- runMI(datsimMI$imputations, mod, group="group")
 > 
 > 
 > 
 > 
 > cleanEx()
+
+detaching 'package:Amelia', 'package:foreign'
+
 > nameEx("simParcel")
 > ### * simParcel
 > 
@@ -947,7 +1156,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  2.88 0.04 2.97 NA NA 
+Time elapsed:  7.01 0.08 7.11 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  5 JUN 2012 15:26
+This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  29 JUN 2012 18:34
 entering extended mode
-**C:/Users/Sunthud/AppData/Local/Temp/Rtmp2LMbrA/Rd2pdf114c7aa277f6/Rd2.tex
-(C:/Users/Sunthud/AppData/Local/Temp/Rtmp2LMbrA/Rd2pdf114c7aa277f6/Rd2.tex
+**C:/Users/Sunthud/AppData/Local/Temp/Rtmp2zgQzk/Rd2pdff9c7ba07169/Rd2.tex
+(C:/Users/Sunthud/AppData/Local/Temp/Rtmp2zgQzk/Rd2pdff9c7ba07169/Rd2.tex
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -601,7 +601,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2LMbrA\Rd2pdf114c7aa277f6\Rd2.aux)
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -656,8 +656,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2LMbrA\Rd2pdf114c7aa277f6\Rd2.out)
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2LMbrA\Rd2pdf114c7aa277f6\Rd2.out)
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.out)
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -677,7 +677,7 @@ LaTeX Font Info:    Try loading font information for T1+phv on input line 32.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2LMbrA\Rd2pdf114c7aa277f6\Rd2.toc
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -693,122 +693,134 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [2] [3]
+) [2]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
+) [3] [4] [5]
+Overfull \hbox (234.78088pt too wide) in paragraph at lines 241--241
+ []\T1/fi4/m/n/9 longInvariance(model, auto=1, constrainAuto=TRUE, varList=cons
+trainedVar, data=exLong, group="sex", group.equal=c("loadings", "intercepts"))[
+] 
+ []
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
+) [6]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (84.78088pt too wide) in paragraph at lines 194--194
+Overfull \hbox (84.78088pt too wide) in paragraph at lines 344--344
  []\T1/fi4/m/n/10 miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intc
 ept=0.2, stdDelta=NULL, delta=NULL)[] 
  []
 
-[4] [5] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+[7] [8] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (54.78088pt too wide) in paragraph at lines 288--288
+Overfull \hbox (54.78088pt too wide) in paragraph at lines 438--438
  []\T1/fi4/m/n/10 monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, pl
 ot=FALSE, outputValues=FALSE)[] 
  []
 
-[6]
-Overfull \hbox (12.97842pt too wide) in paragraph at lines 295--296
+[9]
+Overfull \hbox (12.97842pt too wide) in paragraph at lines 445--446
 \T1/ptm/m/n/10 ram-e-ters should fol-low from \T1/fi4/m/n/10 expression \T1/ptm
 /m/n/10 (the first pa-ram-e-ter named in \T1/fi4/m/n/10 expression
  []
 
-LaTeX Font Info:    Try loading font information for TS1+ptm on input line 311.
+LaTeX Font Info:    Try loading font information for TS1+ptm on input line 461.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\ts1ptm.fd"
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
-) [7]
+) [10]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [8] [9] [10]
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+) [11] [12]
+[13] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [11]
+) [14]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (84.78088pt too wide) in paragraph at lines 585--585
+Overfull \hbox (84.78088pt too wide) in paragraph at lines 735--735
  []\T1/fi4/m/n/10 parcelAllocation(nPerPar, facPlc, nAlloc=100, syntax, dataset
 , names='default', leaveout=0, ...)[] 
  []
 
-[12] [13]
-Overfull \hbox (81.78088pt too wide) in paragraph at lines 635--635
+[15] [16]
+Overfull \hbox (81.78088pt too wide) in paragraph at lines 785--785
  []\T1/fi4/m/n/9 parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), 
 nAlloc=20, syntax=syntax, dataset=simParcel)[] 
  []
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [14]
+) [17]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [15]
-Overfull \hbox (15.95746pt too wide) in paragraph at lines 746--747
+) [18]
+Overfull \hbox (15.95746pt too wide) in paragraph at lines 896--897
 \T1/ptm/m/n/10 "re-gres-sions", "resid-u-als", "resid-ual.covariances", "lv.var
 iances" or "lv.covariances",
  []
 
 
-Overfull \hbox (24.38837pt too wide) in paragraph at lines 763--769
+Overfull \hbox (24.38837pt too wide) in paragraph at lines 913--920
 \T1/ptm/m/n/10 of Kansas; \T1/fi4/m/n/10 <patr1ckm@ku.edu>\T1/ptm/m/n/10 ) Sun-
 thud Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/fi4/m/n/10 <psunthud@ku.ed
 u>\T1/ptm/m/n/10 )
  []
 
 
-Overfull \hbox (27.48857pt too wide) in paragraph at lines 763--769
+Overfull \hbox (27.48857pt too wide) in paragraph at lines 913--920
 \T1/ptm/m/n/10 Aus-tria; \T1/fi4/m/n/10 <a.robitzsch@bifie.at>\T1/ptm/m/n/10 ) 
 Craig En-ders (Ari-zona State Uni-ver-sity; \T1/fi4/m/n/10 <Craig.Enders@asu.ed
-u>\T1/ptm/m/n/10 ) 
+u>\T1/ptm/m/n/10 )
  []
 
-[16] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+[19] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [17]
+) [20]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [18]
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2LMbrA\Rd2pdf114c7aa277f6\Rd2.ind
-[19]
+) [21]
+(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.ind
+[22]
 
 LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
-(Font)              using `T1/fi4/m/n' instead on input line 16.
+(Font)              using `T1/fi4/m/n' instead on input line 22.
 
-[20
+[23
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 893.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 893.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1080.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1080.
+ (C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1080.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1080.
 
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2LMbrA\Rd2pdf114c7aa277f6\Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 893.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 893.
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
-(rerunfilecheck)             Checksum: A5EF46ADA0E09889632D8D251E02185E;659.
+(rerunfilecheck)             Checksum: ACD7E41BB1B19083471102DA425029C5;767.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 893.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1080.
  ) 
 Here is how much of TeX's memory you used:
- 6335 strings out of 494053
- 91604 string characters out of 3146180
+ 6370 strings out of 494053
+ 92140 string characters out of 3146180
  168277 words of memory out of 3000000
- 9344 multiletter control sequences out of 15000+200000
+ 9346 multiletter control sequences out of 15000+200000
  38195 words of font info for 48 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 38i,6n,27p,1136b,586s stack positions out of 5000i,500n,10000p,200000b,50000s
-pdfTeX warning (dest): name{Rfn.lavaan} has been referenced but does not exis
-t, replaced by a fixed one
+ 38i,6n,27p,1135b,586s stack positions out of 5000i,500n,10000p,200000b,50000s
+pdfTeX warning (dest): name{Rfn.cfa} has been referenced but does not exist, 
+replaced by a fixed one
 
-pdfTeX warning (dest): name{Rfn.cfa} has been referenced but does not exist, re
-placed by a fixed one
+pdfTeX warning (dest): name{Rfn.lavaan} has been referenced but does not exist,
+ replaced by a fixed one
 
 {C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}{C:/Program 
 Files (x86)/MiKTeX 2.9/fonts/enc/dvips/inconsolata/fi4-ec.enc}<C:/Program Files
@@ -826,9 +838,9 @@ nts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts
 rw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/ut
 mr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (20 pages, 233981 bytes).
+Output written on Rd2.pdf (23 pages, 247353 bytes).
 PDF statistics:
- 406 PDF objects out of 1000 (max. 8388607)
- 165 named destinations out of 1000 (max. 500000)
- 97 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 471 PDF objects out of 1000 (max. 8388607)
+ 194 named destinations out of 1000 (max. 500000)
+ 113 words of extra memory for PDF output out of 10000 (max. 10000000)
 

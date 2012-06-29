@@ -55,13 +55,50 @@ Li, K.H., Meng, X.-L., Raghunathan, T.E. and Rubin, D.B. (1991). Significance Le
 Rubin, D.B. (1987) Multiple Imputation for Nonresponse in Surveys. J. Wiley & Sons, New York.
 }
 \author{Alexander M. Schoemann (University of Kansas;  \email{schoemann@ku.edu})
-Patrick Miller(University of Kansas; \email{patr1ckm@ku.edu})
+Patrick Miller (University of Kansas; \email{patr1ckm@ku.edu})
 Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 Mijke Rhemtulla (University of Kansas; \email{mijke@ku.edu})
 Alexander Robitzsch (Federal Institute for Education Research, Innovation, and Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
 Craig Enders (Arizona State University; \email{Craig.Enders@asu.edu})
+Mauricio Garnier Villarreal (University of Kansas; \email{mgv@ku.edu})
 }
 \examples{
-## No Example
+
+library(lavaan)
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+HSMiss <- HolzingerSwineford1939[,paste("x", 1:9, sep="")]
+randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
+randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
+HSMiss[randomMiss] <- NA
+
+out <- runMI(HSMiss, HS.model, m = 3)
+
+HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
+out2 <- runMI(HSMiss2, HS.model, m = 3, group="school", noms="school")
+
+library(Amelia)
+
+modsim <- '
+f1 =~ 0.7*y1+0.7*y2+0.7*y3
+f2 =~ 0.7*y4+0.7*y5+0.7*y6
+f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+
+mod <- '
+f1 =~ y1+y2+y3
+f2 =~ y4+y5+y6
+f3 =~ y7+y8+y9'
+
+datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
+	std.lv=TRUE, sample.nobs=c(200,200))
+randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+datsim[randomMiss2] <- NA
+datsimMI <- amelia(datsim,m=3, noms="group")
+
+out3 <- runMI(datsimMI$imputations, mod, group="group")
 
 }

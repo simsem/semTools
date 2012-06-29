@@ -11,7 +11,7 @@ data(simParcel)
 }
 \format{
   A data frame with 800 observations of 18 variables.
-	\describe{
+\describe{
    \item{f1item1}{Item 1 loading on factor 1}
    \item{f1item2}{Item 2 loading on factor 1}
    \item{f1item3}{Item 3 loading on factor 1}

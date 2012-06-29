@@ -3,16 +3,9 @@
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------##
 
-## Gamma Hat (GFI*)
-## p = number of manifest variables in covariance matrix
-## csquare = chi-square value for hypothesized model
-## df = degrees of freedom for hypothesized model
-## N = total number of subjects
-
 moreFitIndices <- function(object, nPrior = 1) {
 	# Extract fit indices information from lavaan object
 	fit <- inspect(object, "fit")
-	
 	# Get the number of variable
 	p <- length(fitted(object)$mean)
 	
@@ -28,7 +21,9 @@ moreFitIndices <- function(object, nPrior = 1) {
 	# Compute fit indices
 	gfiStarValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
 	agfiStarValue <- 1 - (((p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
-	sicValue <- sic(f, object)
+	sicValue <- NA
+	estSpec <- as.list(object@call)$estimator
+	if(!(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf")))) try(sicValue <- sic(f, object), silent=TRUE)
 	nfiValue <- (fit["baseline.chisq"] - fit["chisq"])/fit["baseline.chisq"]
 	ifiValue <- (fit["baseline.chisq"] - fit["chisq"])/(fit["baseline.chisq"] - fit["df"])
 	ciacValue <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
@@ -47,7 +42,10 @@ moreFitIndices <- function(object, nPrior = 1) {
 ## lresults = lavaan sem output object
 
 sic <- function(f, lresults = NULL) {
-	expinf <- solve(vcov(lresults)) / lresults@SampleStats@ntotal
+	expinf <- NA
+	v <- NA
+	try(v <- vcov(lresults), silent=TRUE)
+	ifelse(is.na(v), return(NA), try(expinf <- solve(v) / lresults@SampleStats@ntotal, silent=TRUE))
 	sic <- as.numeric(f + log(det(lresults@SampleStats@ntotal * (expinf))))/2
 	return(sic)
 }

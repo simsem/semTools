@@ -1,4 +1,7 @@
+exLong                  Simulated Data set to Demonstrate Longitudinal
+                        Measurement Invariance
 kurtosis                Finding excessive kurtosis
+longInvariance          Measurement Invariance Tests Within Person
 measurementInvariance   Measurement Invariance Tests
 miPowerFit              Modification indices and their power approach
                         for model fit evaluation

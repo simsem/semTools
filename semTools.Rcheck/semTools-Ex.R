@@ -6,6 +6,23 @@ library('semTools')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("exLong")
+### * exLong
+
+flush(stderr()); flush(stdout())
+
+### Name: exLong
+### Title: Simulated Data set to Demonstrate Longitudinal Measurement
+###   Invariance
+### Aliases: exLong
+
+### ** Examples
+
+head(exLong)
+
+
+
+cleanEx()
 nameEx("kurtosis")
 ### * kurtosis
 
@@ -18,6 +35,36 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 kurtosis(1:5)
+
+
+
+cleanEx()
+nameEx("longInvariance")
+### * longInvariance
+
+flush(stderr()); flush(stdout())
+
+### Name: longInvariance
+### Title: Measurement Invariance Tests Within Person
+### Aliases: longInvariance longInvariance
+
+### ** Examples
+
+model <- ' f1t1 =~ y1t1 + y2t1 + y3t1
+              f1t2 =~ y1t2 + y2t2 + y3t2
+			  f1t3 =~ y1t3 + y2t3 + y3t3'
+
+# Create list of variables
+var1 <- c("y1t1", "y2t1", "y3t1")
+var2 <- c("y1t2", "y2t2", "y3t2")
+var3 <- c("y1t3", "y2t3", "y3t3")
+constrainedVar <- list(var1, var2, var3)
+
+# Invariance of the same factor across timepoints
+longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong)
+
+# Invariance of the same factor across timepoints and groups
+longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong, group="sex", group.equal=c("loadings", "intercepts"))
 
 
 
@@ -266,7 +313,43 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-## No Example
+
+library(lavaan)
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+HSMiss <- HolzingerSwineford1939[,paste("x", 1:9, sep="")]
+randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
+randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
+HSMiss[randomMiss] <- NA
+
+out <- runMI(HSMiss, HS.model, m = 3)
+
+HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
+out2 <- runMI(HSMiss2, HS.model, m = 3, group="school", noms="school")
+
+library(Amelia)
+
+modsim <- '
+f1 =~ 0.7*y1+0.7*y2+0.7*y3
+f2 =~ 0.7*y4+0.7*y5+0.7*y6
+f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+
+mod <- '
+f1 =~ y1+y2+y3
+f2 =~ y4+y5+y6
+f3 =~ y7+y8+y9'
+
+datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
+	std.lv=TRUE, sample.nobs=c(200,200))
+randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+datsim[randomMiss2] <- NA
+datsimMI <- amelia(datsim,m=3, noms="group")
+
+out3 <- runMI(datsimMI$imputations, mod, group="group")
 
 
 
