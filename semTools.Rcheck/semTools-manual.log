@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  29 JUN 2012 18:34
+This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  29 JUN 2012 18:47
 entering extended mode
-**C:/Users/Sunthud/AppData/Local/Temp/Rtmp2zgQzk/Rd2pdff9c7ba07169/Rd2.tex
-(C:/Users/Sunthud/AppData/Local/Temp/Rtmp2zgQzk/Rd2pdff9c7ba07169/Rd2.tex
+**C:/Users/Sunthud/AppData/Local/Temp/RtmpGQ339h/Rd2pdf13a036f34794/Rd2.tex
+(C:/Users/Sunthud/AppData/Local/Temp/RtmpGQ339h/Rd2pdf13a036f34794/Rd2.tex
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -601,7 +601,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.aux)
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpGQ339h\Rd2pdf13a036f34794\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -656,8 +656,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.out)
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.out)
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpGQ339h\Rd2pdf13a036f34794\Rd2.out)
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpGQ339h\Rd2pdf13a036f34794\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -677,20 +677,21 @@ LaTeX Font Info:    Try loading font information for T1+phv on input line 32.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.toc
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpGQ339h\Rd2pdf13a036f34794\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 1.
-)
+
+[1
+
+
+{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}])
 \tf@toc=\write5
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [1
-
-
-{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
+)
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [2]
@@ -784,38 +785,42 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [21]
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.ind
-[22]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
+) [22] [23]
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpGQ339h\Rd2pdf13a036f34794\Rd2.ind
+[24]
 
 LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
 (Font)              using `T1/fi4/m/n' instead on input line 22.
 
-[23
+[25
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1080.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1080.
- (C:\Users\Sunthud\AppData\Local\Temp\Rtmp2zgQzk\Rd2pdff9c7ba07169\Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1080.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1080.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1143.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1143.
+
+(C:\Users\Sunthud\AppData\Local\Temp\RtmpGQ339h\Rd2pdf13a036f34794\Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1143.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1143.
 
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
-(rerunfilecheck)             Checksum: ACD7E41BB1B19083471102DA425029C5;767.
+(rerunfilecheck)             Checksum: 65ACC898A89C38A51509F72672BD6D61;823.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1080.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1143.
  ) 
 Here is how much of TeX's memory you used:
- 6370 strings out of 494053
- 92140 string characters out of 3146180
+ 6384 strings out of 494053
+ 92418 string characters out of 3146180
  168277 words of memory out of 3000000
- 9346 multiletter control sequences out of 15000+200000
+ 9347 multiletter control sequences out of 15000+200000
  38195 words of font info for 48 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 38i,6n,27p,1135b,586s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,6n,27p,1136b,586s stack positions out of 5000i,500n,10000p,200000b,50000s
 pdfTeX warning (dest): name{Rfn.cfa} has been referenced but does not exist, 
 replaced by a fixed one
 
@@ -838,9 +843,9 @@ nts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts
 rw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/ut
 mr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (23 pages, 247353 bytes).
+Output written on Rd2.pdf (25 pages, 253124 bytes).
 PDF statistics:
- 471 PDF objects out of 1000 (max. 8388607)
- 194 named destinations out of 1000 (max. 500000)
- 113 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 496 PDF objects out of 1000 (max. 8388607)
+ 205 named destinations out of 1000 (max. 500000)
+ 121 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1153,10 +1153,63 @@ skew (g1)        se         z         p
 > 
 > 
 > 
+> cleanEx()
+> nameEx("splitSample")
+> ### * splitSample
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: splitSample
+> ### Title: Randomly Split a Data Set into Halves
+> ### Aliases: splitSample
+> 
+> ### ** Examples
+> 
+> #### Input is .dat file
+> #splitSample("C:/Users/Default/Desktop/MYDATA.dat")
+> #### Output saved to "C:/Users/Default/Desktop/" in .dat format
+> #### Names are "MYDATA_s1.dat" and "MYDATA_s2.dat"
+> 
+> #### Input is R object
+> ##Split C02 dataset from the datasets package
+> library(datasets)
+> splitMyData <- splitSample(CO2, path="object")
+> summary(splitMyData[[1]])
+     Plant             Type         Treatment    conc       uptake  
+ Qc1    : 6   Mississippi:23   chilled   :23     95:6   18.9   : 2  
+ Mn2    : 5   Quebec     :19   nonchilled:19    175:3   32.4   : 2  
+ Mc1    : 4                                     250:6    7.7   : 1  
+ Mc2    : 4                                     350:7   10.5   : 1  
+ Mc3    : 4                                     500:8   10.6   : 1  
+ Mn3    : 4                                     675:7   11.3   : 1  
+ (Other):15                                    1000:5   (Other):34  
+> summary(splitMyData[[2]])
+     Plant             Type         Treatment    conc       uptake  
+ Qn3    : 6   Mississippi:19   chilled   :19     95:6   17.9   : 2  
+ Mn1    : 5   Quebec     :23   nonchilled:23    175:9   41.4   : 2  
+ Qc3    : 5                                     250:6    9.3   : 1  
+ Qc2    : 4                                     350:5   10.6   : 1  
+ Qn1    : 4                                     500:4   11.4   : 1  
+ Mc1    : 3                                     675:5   12.0   : 1  
+ (Other):15                                    1000:7   (Other):34  
+> #### Output object splitMyData becomes list of output data sets
+> 
+> #### Input is .dat file in "C:/" folder
+> #splitSample("C:/testdata.dat", path = "C:/Users/Default/Desktop/", type = "csv")
+> #### Output saved to "C:/Users/Default/Desktop/" in .csv format
+> #### Names are "testdata_s1.csv" and "testdata_s2.csv"
+> 
+> #### Input is R object
+> #splitSample(myData, path = "C:/Users/Default/Desktop/", name = "splitdata")
+> #### Output saved to "C:/Users/Default/Desktop/" in .dat format
+> #### Names are "splitdata_s1.dat" and "splitdata_s2.dat"
+> 
+> 
+> 
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  7.01 0.08 7.11 NA NA 
+Time elapsed:  6.78 0.07 6.9 NA NA 
 > grDevices::dev.off()
 null device 
           1 

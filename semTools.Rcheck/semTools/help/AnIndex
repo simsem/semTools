@@ -12,3 +12,4 @@ plotRMSEApower	plotRMSEApower
 runMI	runMI
 simParcel	simParcel
 skew	skew
+splitSample	splitSample

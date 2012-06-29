@@ -16,3 +16,4 @@ runMI                   Multiply impute and analyze data using lavaan
 simParcel               Simulated Data set to Demonstrate Random
                         Allocations of Parcels
 skew                    Finding skewness
+splitSample             Randomly Split a Data Set into Halves
