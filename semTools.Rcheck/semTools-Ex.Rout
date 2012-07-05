@@ -1,5 +1,5 @@
 
-R version 2.15.0 (2012-03-30)
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i386-pc-mingw32/i386 (32-bit)
@@ -29,7 +29,7 @@ This is lavaan 0.4-14
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.1-5
+This is semTools 0.2-0
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 
@@ -69,6 +69,41 @@ The following object(s) are masked from 'package:lavaan':
 4  1.249376 -0.5369589  2.3371304
 5  1.425101  1.8539630  2.0861627
 6 -1.201912 -2.0090700 -0.8366951
+> 
+> 
+> 
+> cleanEx()
+> nameEx("findRMSEApower")
+> ### * findRMSEApower
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: findRMSEApower
+> ### Title: Find the statistical power based on population RMSEA
+> ### Aliases: findRMSEApower
+> 
+> ### ** Examples
+> 
+> findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
+[1] 0.454368
+> 
+> 
+> 
+> cleanEx()
+> nameEx("findRMSEAsamplesize")
+> ### * findRMSEAsamplesize
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: findRMSEAsamplesize
+> ### Title: Find the minimum sample size for a given statistical power based
+> ###   on population RMSEA
+> ### Aliases: findRMSEAsamplesize
+> 
+> ### ** Examples
+> 
+> findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
+[1] 434
 > 
 > 
 > 
@@ -209,6 +244,44 @@ The order of autocorrelation:  1
 > 
 > 
 > cleanEx()
+> nameEx("mardiaKurtosis")
+> ### * mardiaKurtosis
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mardiaKurtosis
+> ### Title: Finding Mardia's multivariate kurtosis
+> ### Aliases: mardiaKurtosis
+> 
+> ### ** Examples
+> 
+> library(lavaan)
+> mardiaKurtosis(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+         b2d            z            p 
+102.90374304   2.40658874   0.01610229 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("mardiaSkew")
+> ### * mardiaSkew
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mardiaSkew
+> ### Title: Finding Mardia's multivariate skewness
+> ### Aliases: mardiaSkew
+> 
+> ### ** Examples
+> 
+> library(lavaan)
+> mardiaSkew(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+       b1d        chi         df          p 
+  6.806892 341.479091 165.000000   1.000000 
+> 
+> 
+> 
+> cleanEx()
 > nameEx("measurementInvariance")
 > ### * measurementInvariance
 > 
@@ -263,6 +336,25 @@ Model 4: equal loadings + intercepts + means:
 [Model 3 versus model 4]
   delta.chisq      delta.df delta.p.value     delta.cfi 
        40.502         3.000         0.000         0.042 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("miPoolChi")
+> ### * miPoolChi
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: miPoolChi
+> ### Title: Function to pool chi-square statistics from the result from
+> ###   multiple imputation
+> ### Aliases: miPoolChi
+> 
+> ### ** Examples
+> 
+> miPoolChi(c(89.864, 81.116, 71.500, 49.022, 61.986, 64.422, 55.256, 57.890, 79.416, 63.944), 2)
+           F          df1          df2          p.F 
+1.981628e+01 2.000000e+00 4.616817e+01 6.122891e-07 
 > 
 > 
 > 
@@ -1006,6 +1098,25 @@ srmr    0.011 0.003  0.019 0.006  0.013
 > 
 > 
 > cleanEx()
+> nameEx("plotRMSEAdist")
+> ### * plotRMSEAdist
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: plotRMSEAdist
+> ### Title: Plot the sampling distributions of RMSEA
+> ### Aliases: plotRMSEAdist
+> 
+> ### ** Examples
+> 
+> plotRMSEAdist(rmsea=c(.05, .08), n=200, df=20, ptile=0.95, rmseaScale = TRUE)
+Warning in plotRMSEAdist(rmsea = c(0.05, 0.08), n = 200, df = 20, ptile = 0.95,  :
+  The density at RMSEA = 0 cannot be trusted because the plots are truncated.
+> plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rmseaScale = FALSE)
+> 
+> 
+> 
+> cleanEx()
 > nameEx("plotRMSEApower")
 > ### * plotRMSEApower
 > 
@@ -1047,7 +1158,6 @@ srmr    0.011 0.003  0.019 0.006  0.013
 > 
 > out <- runMI(HSMiss, HS.model, m = 3)
 Loading required package: Amelia
-Warning: package 'Amelia' was built under R version 2.15.1
 Loading required package: foreign
 ## 
 ## Amelia II: Multiple Imputation
@@ -1209,7 +1319,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  6.78 0.07 6.9 NA NA 
+Time elapsed:  10.56 0.02 10.64 NA NA 
 > grDevices::dev.off()
 null device 
           1 

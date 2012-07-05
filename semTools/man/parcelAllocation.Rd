@@ -29,6 +29,7 @@ This function implements the random item to parcel allocation procedure describe
 }
 \references{
 Sterba, S.K. (2011). Implications of parcel-allocation variability for comparing fit of item-solutions and parcel-solutions. \emph{Structural Equation Modeling, 18,} 554-577.
+
 Sterba, S.K. & MacCallum, R.C. (2010). Variability in parameter estimates and model fit across random allocations of items to parcels. \emph{Multivariate Behavioral Research, 45,} 322-358.
 }
 \author{

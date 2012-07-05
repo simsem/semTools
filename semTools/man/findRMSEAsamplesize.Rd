@@ -1,0 +1,37 @@
+\name{findRMSEAsamplesize}
+\alias{findRMSEAsamplesize}
+\title{
+Find the minimum sample size for a given statistical power based on population RMSEA
+}
+\description{
+Find the minimum sample size for a specified statistical power based on population RMSEA. This function can be applied for both test of close fit and test of not-close fit (MacCallum, Browne, & Suguwara, 1996)
+}
+\usage{
+findRMSEAsamplesize(rmsea0, rmseaA, df, power=0.80, alpha=.05)
+}
+\arguments{
+  \item{rmsea0}{Null RMSEA}
+  \item{rmseaA}{Alternative RMSEA}
+  \item{df}{Model degrees of freedom}
+  \item{power}{Desired statistical power to reject misspecified model (test of close fit) or retain good model (test of not-close fit)}
+  \item{alpha}{Alpha level used in power calculations}
+  }
+\details{
+This function find the minimum sample size for a specified power based on an iterative routine. The sample size keep increasing until the calculated power from \code{\link{findRMSEApower}} function is just over the specified power. 
+}
+\references{
+MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis and determination of sample size for covariance structure modeling. \emph{Psychological Methods, 1,} 130-149.
+}
+\author{
+    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+}
+\seealso{
+	\itemize{
+		\item \code{\link{plotRMSEApower}} to plot the statistical power based on population RMSEA given the sample size
+		\item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
+		\item \code{\link{findRMSEApower}} to find the statistical power based on population RMSEA given a sample size
+	}
+}
+\examples{
+findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
+}

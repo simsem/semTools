@@ -7,7 +7,7 @@ Plot power curves for RMSEA
 Plots power of RMSEA over a range of sample sizes
 }
 \usage{
-plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps, alpha=.05)
+plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05)
 }
 \arguments{
   \item{rmsea0}{Null RMSEA}
@@ -44,6 +44,13 @@ Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests for 
     Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
 	Kristopher J. Preacher (Vanderbilt University; \email{kris.preacher@vanderbilt.edu})
 	Donna L. Coffman (Pennsylvania State University; \email{dlc30@psu.edu.})
+}
+\seealso{
+	\itemize{
+		\item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
+		\item \code{\link{findRMSEApower}} to find the statistical power based on population RMSEA given a sample size
+		\item \code{\link{findRMSEAsamplesize}} to find the minium sample size for a given statistical power based on population RMSEA
+	}
 }
 \examples{
 plotRMSEApower(.025, .075, 23, 100, 500, 10)

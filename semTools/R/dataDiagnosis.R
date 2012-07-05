@@ -81,4 +81,44 @@ kurtosis <- function(object, population=FALSE) {
 	}
 }
 
-# Put Mardia's test of normality here!
+# mardiaSkew
+# Calculate the Mardia's skewness 
+# Argument:
+#	dat: Datasets with multiple variables
+mardiaSkew <- function(dat) {
+	centeredDat <- scale(dat, center=TRUE, scale=FALSE)
+	invS <- solve(cov(dat))
+	FUN <- function(vec1, vec2, invS) {
+		as.numeric(t(as.matrix(vec1)) %*% invS %*% as.matrix(vec2))
+	}
+	FUN2 <- function(vec1, listVec2, invS) {
+		sapply(listVec2, FUN, vec1=vec1, invS=invS)
+	}
+	indivTerm <- sapply(as.list(data.frame(t(centeredDat))), FUN2, listVec2=as.list(data.frame(t(centeredDat))), invS=invS)
+	b1d <- sum(indivTerm^3)/(nrow(dat)^2)
+	d <- ncol(dat)
+	chi <- nrow(dat) * b1d / 6
+	df <- d * (d + 1) * (d + 2) / 6
+	p <- pchisq(chi, df = df)
+	return(c(b1d = b1d, chi = chi, df=df, p=p))
+}
+
+# mardiaKurtosis
+# Calculate the Mardia's Kurtosis 
+# Argument:
+#	dat: Datasets with multiple variables
+mardiaKurtosis <- function(dat) {
+	centeredDat <- scale(dat, center=TRUE, scale=FALSE)
+	invS <- solve(cov(dat))
+	FUN <- function(vec, invS) {
+		as.numeric(t(as.matrix(vec)) %*% invS %*% as.matrix(vec))
+	}
+	indivTerm <- sapply(as.list(data.frame(t(centeredDat))), FUN, invS=invS)
+	b2d <- sum(indivTerm^2)/nrow(dat)
+	d <- ncol(dat)
+	m <- d * (d + 2)
+	v <- 8 * d * (d + 2) / nrow(dat)
+	z <- (b2d - m)/sqrt(v)
+	p <- pnorm(-abs(z)) * 2
+	return(c(b2d = b2d, z = z, p=p))
+}

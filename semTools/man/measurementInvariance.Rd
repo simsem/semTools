@@ -66,6 +66,9 @@ Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the measur
 \author{
     Yves Rosseel <Yves.Rosseel@UGent.be>
 }
+\seealso{
+	\code{\link{longInvariance}} For the measurement invariance test within person
+}
 \examples{
 HW.model <- ' visual =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6

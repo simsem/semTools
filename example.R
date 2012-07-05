@@ -23,6 +23,8 @@ sourceDir(dir)
 
 skew(1:5)
 kurtosis(1:5)
+mardiaSkew(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+mardiaKurtosis(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
 
 ######### measurementInvariance
 
@@ -154,3 +156,21 @@ var3 <- c("y1t3", "y2t3", "y3t3")
 constrainedVar <- list(var1, var2, var3)
 longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong)
 longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong, group="sex", group.equal=c("loadings", "intercepts"))
+
+################ Power Analysis ################################################
+
+plotRMSEApower(rmsea0=.05, rmseaA=.075, df=23, nlow=100, nhigh=500, steps=10)
+
+plotRMSEAdist(rmsea=c(.05, .08), n=200, df=20, ptile=0.95, rmseaScale = TRUE)
+plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rmseaScale = FALSE)
+
+findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
+
+findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
+
+
+
+
+
+
+

@@ -23,6 +23,39 @@ head(exLong)
 
 
 cleanEx()
+nameEx("findRMSEApower")
+### * findRMSEApower
+
+flush(stderr()); flush(stdout())
+
+### Name: findRMSEApower
+### Title: Find the statistical power based on population RMSEA
+### Aliases: findRMSEApower
+
+### ** Examples
+
+findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
+
+
+
+cleanEx()
+nameEx("findRMSEAsamplesize")
+### * findRMSEAsamplesize
+
+flush(stderr()); flush(stdout())
+
+### Name: findRMSEAsamplesize
+### Title: Find the minimum sample size for a given statistical power based
+###   on population RMSEA
+### Aliases: findRMSEAsamplesize
+
+### ** Examples
+
+findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
+
+
+
+cleanEx()
 nameEx("kurtosis")
 ### * kurtosis
 
@@ -69,6 +102,40 @@ longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=e
 
 
 cleanEx()
+nameEx("mardiaKurtosis")
+### * mardiaKurtosis
+
+flush(stderr()); flush(stdout())
+
+### Name: mardiaKurtosis
+### Title: Finding Mardia's multivariate kurtosis
+### Aliases: mardiaKurtosis
+
+### ** Examples
+
+library(lavaan)
+mardiaKurtosis(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+
+
+
+cleanEx()
+nameEx("mardiaSkew")
+### * mardiaSkew
+
+flush(stderr()); flush(stdout())
+
+### Name: mardiaSkew
+### Title: Finding Mardia's multivariate skewness
+### Aliases: mardiaSkew
+
+### ** Examples
+
+library(lavaan)
+mardiaSkew(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+
+
+
+cleanEx()
 nameEx("measurementInvariance")
 ### * measurementInvariance
 
@@ -85,6 +152,23 @@ HW.model <- ' visual =~ x1 + x2 + x3
               speed =~ x7 + x8 + x9 '
 
 measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
+
+
+
+cleanEx()
+nameEx("miPoolChi")
+### * miPoolChi
+
+flush(stderr()); flush(stdout())
+
+### Name: miPoolChi
+### Title: Function to pool chi-square statistics from the result from
+###   multiple imputation
+### Aliases: miPoolChi
+
+### ** Examples
+
+miPoolChi(c(89.864, 81.116, 71.500, 49.022, 61.986, 64.422, 55.256, 57.890, 79.416, 63.944), 2)
 
 
 
@@ -282,6 +366,23 @@ syntax <- 'La =~ V1 + V2 + V3
 name1 <- colnames(simParcel)[1:9]
 name2 <- colnames(simParcel)[10:18]
 parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, dataset=simParcel)
+
+
+
+cleanEx()
+nameEx("plotRMSEAdist")
+### * plotRMSEAdist
+
+flush(stderr()); flush(stdout())
+
+### Name: plotRMSEAdist
+### Title: Plot the sampling distributions of RMSEA
+### Aliases: plotRMSEAdist
+
+### ** Examples
+
+plotRMSEAdist(rmsea=c(.05, .08), n=200, df=20, ptile=0.95, rmseaScale = TRUE)
+plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rmseaScale = FALSE)
 
 
 

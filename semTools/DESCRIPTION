@@ -1,8 +1,8 @@
 Package: semTools
 Type: Package
 Title: Useful tools for structural equation modeling.
-Version: 0.1-5
-Date: 2012-06-29
+Version: 0.2-0
+Date: 2012-07-03
 Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@ku.edu"), 
 		person("Patrick", "Miller", role = c("aut", "cre"), email="patr1ckm@ku.edu"), 
 		person("Alexander", "Schoemann", role = c("aut", "cre"), email="schoemann@ku.edu"),

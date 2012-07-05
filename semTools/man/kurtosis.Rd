@@ -18,7 +18,7 @@ kurtosis(object, population=FALSE)
   }
 }
 \value{
-	A value of an excessive kurtosis with a test statistic if the population is specified as \code{TRUE}
+	A value of an excessive kurtosis with a test statistic if the population is specified as \code{FALSE}
 }
 \details{
 	The excessive kurtosis computed is g2. The parameter excessive kurtosis \eqn{\gamma_{2}} formula is
@@ -41,6 +41,13 @@ kurtosis(object, population=FALSE)
 }
 \references{
 Weisstein, Eric W. (n.d.). \emph{Kurtosis.} Retrived from MathWorld--A Wolfram Web Resource \url{http://mathworld.wolfram.com/Kurtosis.html} 
+}
+\seealso{
+	\itemize{
+		\item \code{\link{skew}} Find the univariate skewness of a variable
+		\item \code{\link{mardiaSkew}} Find the Mardia's multivariate skewness of a set of variables
+		\item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate kurtosis of a set of variables
+	}
 }
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})

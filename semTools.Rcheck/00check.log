@@ -1,10 +1,10 @@
 * using log directory 'C:/Users/Sunthud/Desktop/My Dropbox/semTools/semTools.Rcheck'
-* using R version 2.15.0 (2012-03-30)
+* using R version 2.15.1 (2012-06-22)
 * using platform: i386-pc-mingw32 (32-bit)
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'semTools' version '0.1-5'
+* this is package 'semTools' version '0.2-0'
 * checking CRAN incoming feasibility ... OK
 * checking package namespace information ... OK
 * checking package dependencies ... OK

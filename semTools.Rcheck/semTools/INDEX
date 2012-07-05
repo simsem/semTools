@@ -1,8 +1,16 @@
 exLong                  Simulated Data set to Demonstrate Longitudinal
                         Measurement Invariance
+findRMSEApower          Find the statistical power based on population
+                        RMSEA
+findRMSEAsamplesize     Find the minimum sample size for a given
+                        statistical power based on population RMSEA
 kurtosis                Finding excessive kurtosis
 longInvariance          Measurement Invariance Tests Within Person
+mardiaKurtosis          Finding Mardia's multivariate kurtosis
+mardiaSkew              Finding Mardia's multivariate skewness
 measurementInvariance   Measurement Invariance Tests
+miPoolChi               Function to pool chi-square statistics from the
+                        result from multiple imputation
 miPowerFit              Modification indices and their power approach
                         for model fit evaluation
 monteCarloMed           Monte Carlo Confidence Intervals to Test
@@ -11,6 +19,7 @@ moreFitIndices          Calculate more fit indices
 orthogonalize           Orthogonalize data for 2-way interaction in SEM
 parcelAllocation        Random Allocation of Items to Parcels in a
                         Structural Equation Model
+plotRMSEAdist           Plot the sampling distributions of RMSEA
 plotRMSEApower          Plot power curves for RMSEA
 runMI                   Multiply impute and analyze data using lavaan
 simParcel               Simulated Data set to Demonstrate Random

@@ -88,6 +88,9 @@ West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection in st
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 	Aaron Boulton (University of Kansas; \email{aboulton@ku.edu})
 }
+\seealso{
+	\code{\link{miPowerFit}} For the modification indices and their power approach for model fit evaluation
+}
 \examples{
 HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
