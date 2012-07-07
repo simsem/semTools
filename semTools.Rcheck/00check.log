@@ -5,7 +5,12 @@
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
 * this is package 'semTools' version '0.2-0'
-* checking CRAN incoming feasibility ... OK
+* checking CRAN incoming feasibility ... NOTE
+New maintainer:
+  Sunthud Pornprasertmanit <psunthud@ku.edu>
+Old maintainer(s):
+  Sunthud Pornprasertmanit <psunthud@ku.edu>, Patrick Miller
+    <patr1ckm@ku.edu>, Alex Schoemann <schoemann@ku.edu>
 * checking package namespace information ... OK
 * checking package dependencies ... OK
 * checking if this is a source package ... OK
@@ -44,3 +49,7 @@
 * checking data for ASCII and uncompressed saves ... OK
 * checking examples ... OK
 * checking PDF version of manual ... OK
+NOTE: There was 1 note.
+See
+  'C:/Users/Sunthud/Desktop/My Dropbox/semTools/semTools.Rcheck/00check.log'
+for details.
