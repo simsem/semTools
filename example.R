@@ -12,6 +12,16 @@ sourceDir <- function(path, trace = TRUE, ...) {
      }
 }
 
+sourceDirData <- function(path, trace = TRUE) {
+     for (nm in list.files(path, pattern = "\\.[Rr]da$")) {
+		if(nm != "AllClass.R" & nm != "AllGenerics.R") {
+        if(trace) cat(nm,":") 
+        load(file.path(path, nm))
+        if(trace) cat("\n")
+		}
+     }
+}
+
 #get
 #assign
 #dir <- "C:/Users/Sunthud/Desktop/My Dropbox/simsem/simsem/R/"
@@ -19,6 +29,8 @@ sourceDir <- function(path, trace = TRUE, ...) {
 dir <- "C:/Users/student/Dropbox/semTools/semTools/R/"
 sourceDir(dir)
 
+dirData <- "C:/Users/student/Dropbox/semTools/semTools/data/"
+sourceDirData(dirData)
 ######### Distribution
 
 skew(1:5)
@@ -168,9 +180,97 @@ findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
 
 findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
 
+################ Probing interaction ###########################################
 
+dat2wayRC <- orthogonalize(dat2way, 1:3, 4:6)
+dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+dat2wayDMC <- indProd(dat2way, 1:3, 4:6, doubleMC=TRUE)
 
+dat3wayRC <- orthogonalize(dat3way, 1:3, 4:6, 7:9)
+dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
+dat3wayDMC <- indProd(dat3way, 1:3, 4:6, 7:9, doubleMC=TRUE)
 
+library(lavaan) 
+model1 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f3 =~ x7 + x8 + x9
+f3 ~ f1 + f2 + f12
+f12 ~~0*f1
+f12 ~~ 0*f2
+x1 ~ 0*1
+x4 ~ 0*1
+x1.x4 ~ 0*1
+x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f12 ~ NA*1
+f3 ~ NA*1
+"
+fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitRC2way)
+result2wayRC <- probe2WayRC(fitRC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+result2wayRC
 
+fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitMC2way)
+result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+result2wayMC
 
+plotProbe(result2wayRC, xlim=c(-2, 2))
+plotProbe(result2wayMC, xlim=c(-2, 2))
 
+library(lavaan)
+model3 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f3 =~ x7 + x8 + x9
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f13 =~ x1.x7 + x2.x8 + x3.x9
+f23 =~ x4.x7 + x5.x8 + x6.x9
+f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
+f4 =~ x10 + x11 + x12
+f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
+f1 ~~ 0*f12
+f1 ~~ 0*f13
+f1 ~~ 0*f123
+f2 ~~ 0*f12
+f2 ~~ 0*f23
+f2 ~~ 0*f123
+f3 ~~ 0*f13
+f3 ~~ 0*f23
+f3 ~~ 0*f123
+f12 ~~ 0*f123
+f13 ~~ 0*f123
+f23 ~~ 0*f123
+x1 ~ 0*1
+x4 ~ 0*1
+x7 ~ 0*1
+x10 ~ 0*1
+x1.x4 ~ 0*1
+x1.x7 ~ 0*1
+x4.x7 ~ 0*1
+x1.x4.x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f3 ~ NA*1
+f12 ~ NA*1
+f13 ~ NA*1
+f23 ~ NA*1
+f123 ~ NA*1
+f4 ~ NA*1
+" 
+
+fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitRC3way)
+result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayRC
+
+fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitMC3way)
+result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayMC
+
+plotProbe(result3wayRC, xlim=c(-2, 2))
+plotProbe(result3wayMC, xlim=c(-2, 2))
