@@ -24,7 +24,7 @@ residualCovariate(data, targetVar, covVar)
 	The data that the target variables replaced by the residuals
 }
 \references{
-Geldhof, G. J., Pornprasertmanit, S., Schoemann, A., & Little, T. D. (in press). Orthogonalizing through residual centering: Applications and caveats. \emph{Educational and Psychological Measurement.}
+Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., & Little, T. D. (in press). Orthogonalizing through residual centering: Applications and caveats. \emph{Educational and Psychological Measurement.}
 }
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
