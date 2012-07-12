@@ -4,13 +4,9 @@
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'semTools' version '0.2-0'
+* this is package 'semTools' version '0.2-1'
 * checking CRAN incoming feasibility ... NOTE
-New maintainer:
-  Sunthud Pornprasertmanit <psunthud@ku.edu>
-Old maintainer(s):
-  Sunthud Pornprasertmanit <psunthud@ku.edu>, Patrick Miller
-    <patr1ckm@ku.edu>, Alex Schoemann <schoemann@ku.edu>
+Days since last update: 2
 * checking package namespace information ... OK
 * checking package dependencies ... OK
 * checking if this is a source package ... OK

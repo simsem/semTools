@@ -1,16 +1,16 @@
 # plotRMSEApower
 #Plot power of RMSEA over a range of possible sample sizes
-#input: rmea of null and alternative model, degress of freedom, lower sampel size, upper sample sample, sample size steps, alpha
+#input: rmsea of null and alternative model, degress of freedom, lower sampel size, upper sample sample, sample size steps, alpha, the number of group in calculating RMSEA
 #Output: plot of power
 #Alexander M. Schoemann, Kristopher J. Preacher, Donna Coffman
 #5/30/2012
 
-plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05){ 
+plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05, group=1){ 
 	pow1 <- 0
 	nseq <- seq(nlow,nhigh, by=steps)
 	for(i in nseq){
-		ncp0 <- (i-1)*df*rmsea0^2
-		ncpa <- (i-1)*df*rmseaA^2
+		ncp0 <- ((i-1)*df*rmsea0^2)/group
+		ncpa <- ((i-1)*df*rmseaA^2)/group
 		#Compute power
 		if(rmsea0 < rmseaA) {
 		cval <- qchisq(alpha,df,ncp=ncp0,lower.tail=FALSE)
@@ -79,16 +79,17 @@ plotOverlapDensity <- function(dat, vline = NULL, caption=NULL, ...) {
 # ptile: The percentile rank of the first specified rmsea to put the vertical line
 # caption: The description of each rmsea
 # rmseaScale: If TRUE, use RMSEA as the scale in x-axis. If FALSE, use chi-square as the scale in x-axis.
-plotRMSEAdist <- function(rmsea, n, df, ptile=NULL, caption=NULL, rmseaScale = TRUE) {
+# group: The number of group in calculating RMSEA
+plotRMSEAdist <- function(rmsea, n, df, ptile=NULL, caption=NULL, rmseaScale = TRUE, group=1) {
 	graph <- cbind(rmsea, df)
-	ncp <- apply(graph, 1, function(x, n) (n - 1) * x[2] * (x[1]^2), n=n)
+	ncp <- apply(graph, 1, function(x, n, group) ((n - 1) * x[2] * (x[1]^2))/group, n=n, group=group)
 	graph <- cbind(graph, ncp)
 	dens <- lapply(as.list(data.frame(t(graph))), function(x) findDensity("chisq", df = x[2], ncp=x[3])) 
-	if(rmseaScale) dens <- lapply(dens, function(x, df, n) { x[,1] <- (x[,1] - df)/(n-1); x[(x[,1] < 0),1] <- 0; x[,1] <- sqrt(x[,1]/df); return(x) }, df=df, n=n)
+	if(rmseaScale) dens <- lapply(dens, function(x, df, n, group) { x[,1] <- (x[,1] - df)/(n-1); x[(x[,1] < 0),1] <- 0; x[,1] <- sqrt(group) * sqrt(x[,1]/df); return(x) }, df=df, n=n, group=group)
 	cutoff <- NULL
 	if(!is.null(ptile)) { 
 		cutoff <- qchisq(ptile, df=graph[1, 2], ncp=graph[1, 3])
-		if(rmseaScale) cutoff <- sqrt((cutoff - df)/(df * (n - 1)))
+		if(rmseaScale) cutoff <- sqrt(group) * sqrt((cutoff - df)/(df * (n - 1)))
 	}
 	if(is.null(caption)) caption <- sapply(graph[,1], function(x) paste("Population RMSEA = ", format(x, digits=3), sep="")) 
 	plotOverlapDensity(dens, cutoff, caption, xlab=ifelse(rmseaScale, "RMSEA", "Chi-Square"), ylab="Density")
@@ -103,10 +104,11 @@ plotRMSEAdist <- function(rmsea, n, df, ptile=NULL, caption=NULL, rmseaScale = T
 # n: sample size
 # df: degree of freedom of the chi-square distribution
 # alpha: The alpha level
+# group: The number of group in calculating RMSEA
 # Return power
-findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha=.05) {
-	ncp0 <- (n-1)*df*rmsea0^2
-	ncpa <- (n-1)*df*rmseaA^2
+findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha=.05, group=1) {
+	ncp0 <- ((n-1)*df*rmsea0^2)/group
+	ncpa <- ((n-1)*df*rmseaA^2)/group
 	if (rmsea0<rmseaA) {
 		cval <- qchisq(alpha,df,ncp=ncp0,lower.tail=FALSE)
 		pow <- pchisq(cval,df,ncp=ncpa,lower.tail=FALSE)
@@ -124,23 +126,24 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha=.05) {
 # power: The desired statistical power
 # df: degree of freedom of the chi-square distribution
 # alpha: The alpha level
+# group: The number of group in calculating RMSEA
 # Return The estimated sample size
-findRMSEAsamplesize <- function(rmsea0, rmseaA, df, power=0.80, alpha=.05) {
+findRMSEAsamplesize <- function(rmsea0, rmseaA, df, power=0.80, alpha=.05, group=1) {
 	n <- 5:500
-	pow <- findRMSEApower(rmsea0, rmseaA, df, n, alpha)
+	pow <- findRMSEApower(rmsea0, rmseaA, df, n, alpha, group=group)
 	if(all(pow > power)) {
 		return("Sample Size <= 5")
 	} else if (all(power > pow)) {
 		repeat {
 			n <- n + 500
-			pow <- findRMSEApower(rmsea0, rmseaA, df, n, alpha)
+			pow <- findRMSEApower(rmsea0, rmseaA, df, n, alpha, group=group)
 			if(any(pow > power)) {
 				index <- which(pow > power)[1]
-				return(n[index])
+				return(n[index]/group)
 			}
 		}
 	} else {
 		index <- which(pow > power)[1]
-		return(n[index])
+		return(n[index]/group)
 	}
 }

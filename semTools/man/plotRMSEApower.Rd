@@ -7,7 +7,7 @@ Plot power curves for RMSEA
 Plots power of RMSEA over a range of sample sizes
 }
 \usage{
-plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05)
+plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05, group=1)
 }
 \arguments{
   \item{rmsea0}{Null RMSEA}
@@ -17,6 +17,7 @@ plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05)
   \item{nhigh}{Upper sample size}
   \item{steps}{Increase in sample size for each iteration. Smaller values of steps will lead to more precise plots. However, smaller step sizes means a longer run time.}
   \item{alpha}{Alpha level used in power calculations}
+  \item{group}{The number of group that is used to calculate RMSEA.}
   }
 \details{
 This function creates plot of power for RMSEA against a range of sample sizes. The plot places sample size on the horizontal axis and power on the vertical axis. The user should indicate the lower and upper values for sample size and the sample size between each estimate ("step size") We strongly urge the user to read the sources below (see References) before proceeding.  A web version of this function is available at: \url{http://quantpsy.org/rmsea/rmseaplot.htm}.

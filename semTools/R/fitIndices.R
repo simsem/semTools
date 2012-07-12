@@ -18,9 +18,12 @@ moreFitIndices <- function(object, nPrior = 1) {
 	# Calculate the minimized discrepancy function
 	f <- -2 * fit["logl"]
 	
+	# Find the number of groups
+	ngroup <- object@Data@ngroups
+	
 	# Compute fit indices
 	gfiStarValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
-	agfiStarValue <- 1 - (((p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
+	agfiStarValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
 	sicValue <- NA
 	estSpec <- as.list(object@call)$estimator
 	if(!(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf")))) try(sicValue <- sic(f, object), silent=TRUE)

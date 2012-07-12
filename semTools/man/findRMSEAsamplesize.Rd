@@ -7,7 +7,7 @@ Find the minimum sample size for a given statistical power based on population R
 Find the minimum sample size for a specified statistical power based on population RMSEA. This function can be applied for both test of close fit and test of not-close fit (MacCallum, Browne, & Suguwara, 1996)
 }
 \usage{
-findRMSEAsamplesize(rmsea0, rmseaA, df, power=0.80, alpha=.05)
+findRMSEAsamplesize(rmsea0, rmseaA, df, power=0.80, alpha=.05, group=1)
 }
 \arguments{
   \item{rmsea0}{Null RMSEA}
@@ -15,9 +15,10 @@ findRMSEAsamplesize(rmsea0, rmseaA, df, power=0.80, alpha=.05)
   \item{df}{Model degrees of freedom}
   \item{power}{Desired statistical power to reject misspecified model (test of close fit) or retain good model (test of not-close fit)}
   \item{alpha}{Alpha level used in power calculations}
+  \item{group}{The number of group that is used to calculate RMSEA.}
   }
 \details{
-This function find the minimum sample size for a specified power based on an iterative routine. The sample size keep increasing until the calculated power from \code{\link{findRMSEApower}} function is just over the specified power. 
+This function find the minimum sample size for a specified power based on an iterative routine. The sample size keep increasing until the calculated power from \code{\link{findRMSEApower}} function is just over the specified power. If \code{group} is greater than 1, the resulting sample size is the sample size per group.
 }
 \references{
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis and determination of sample size for covariance structure modeling. \emph{Psychological Methods, 1,} 130-149.

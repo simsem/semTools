@@ -29,7 +29,7 @@ This is lavaan 0.4-14
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-0
+This is semTools 0.2-1
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 
@@ -2125,7 +2125,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  13.06 0.09 13.18 NA NA 
+Time elapsed:  13.06 0.08 13.17 NA NA 
 > grDevices::dev.off()
 null device 
           1 

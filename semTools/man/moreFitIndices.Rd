@@ -31,11 +31,13 @@ Gamma Hat (gfi*; West, Taylor, & Wu, 2012) is one of the relative fit indices wh
 
 \deqn{ gfi* =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N - 1}},}
 
-where \eqn{N} is the sample size, \eqn{p} is the number of variables in the model. 
+where \eqn{N} is the sample size, \eqn{p} is the number of variables in the model. This formula assumes equal number of indicators across groups.
 
 Adjusted Gamma Hat (agfi*; West, Taylor, & Wu, 2012) is one of the relative fit indices which can be computed by
 
-\deqn{ agfi* = \left(1 - \frac{p \times (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - gfi* \right) ,}
+\deqn{ agfi* = \left(1 - \frac{K \times p \times (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - gfi* \right) ,}
+
+where \eqn{K} is the number of group (please refer to Dudgeon, 2004 for the multiple-group adjustment for agfi*).
 
 Corrected Akaike Information Criterion (AICc; Burnham & Anderson, 2003) is the corrected version of aic for small sample size:
 
@@ -77,6 +79,8 @@ Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for model
 }
 \references{
 Burnham, K., & Anderson, D. (2003). \emph{Model selection and multimodel inference: A practical-theoretic approach.} New York, NY: Springer-Verlag.
+
+Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample RMSEA adjustment to other noncentrality parameter-based statistic. \emph{Structural Equation Modeling, 11}, 305-319.
 
 Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance. \emph{Sociological Methods Research, 33,} 188-229.
 
