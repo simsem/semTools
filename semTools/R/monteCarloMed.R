@@ -25,6 +25,8 @@ monteCarloMed<-function(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE,
     require(MASS)
 	#Matrix of values, need to be converted to a list
 	dat <- mvrnorm(n=rep, mu=input, Sigma=ACM)
+	#Add parameters as the first row
+	dat <-rbind(input, dat)
 	#Convert to a list,
 	vecs<-as.list(as.data.frame(dat))
   #Give names to it works with assign
@@ -35,10 +37,11 @@ monteCarloMed<-function(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE,
   #Get the CI
   low=(1-CI/100)/2
   upp=((1-CI/100)/2)+(CI/100)
-  LL=round(quantile(indirect,low),digits=4)
-  UL=round(quantile(indirect,upp),digits=4)
-  interval<-rbind(LL,UL)
-  dimnames(interval) <- list(c("LL", "UL"),paste(CI, "% Confidence Interval", sep=""))
+  LL=round(quantile(indirect[-1],low),digits=4)
+  UL=round(quantile(indirect[-1],upp),digits=4)
+  interval<-list(indirect[1],rbind(LL,UL))
+  dimnames(interval[[2]]) <- list(c("LL", "UL"),c(" "))
+  names(interval) <- c("Point Estimate", paste(CI, "% Confidence Interval", sep=""))
   
   #Switch for outputting a plot
   if(plot) {

@@ -29,7 +29,7 @@ The asymptotic covariance matrix can be easily found in many popular SEM softwar
 	}
 }
 \value{
-A matrix with values for the upper and lower limits of the confidence interval generated from the Monte Carlo test of mediation. If \code{outputValues=TRUE}, output will be a list with a matrix with values for the upper and lower limits of the confidence interval as the first element and a vector of simulated values of the indirect effect as the second element.
+A list with two elements. The first element is the point estimate for the indirect effect. The second element is a matrix with values for the upper and lower limits of the confidence interval generated from the Monte Carlo test of mediation. If \code{outputValues=TRUE}, output will be a list with a list with  the point estimate and values for the upper and lower limits of the confidence interval as the first element and a vector of simulated values of the indirect effect as the second element.
 }
 \references{
 Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method for assessing multilevel mediation: An interactive tool for creating confidence intervals for indirect effects in 1-1-1 multilevel models [Computer software]. Available from \url{http://quantpsy.org/}.
