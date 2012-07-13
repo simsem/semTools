@@ -75,6 +75,9 @@ Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the measur
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu}); Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 }
+\seealso{
+	\code{\link{measurementinvariance}} For the measurement invariance test between groups
+}
 \examples{
 model <- ' f1t1 =~ y1t1 + y2t1 + y3t1
               f1t2 =~ y1t2 + y2t2 + y3t2

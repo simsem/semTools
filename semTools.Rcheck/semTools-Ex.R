@@ -6,6 +6,38 @@ library('semTools')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("dat2way")
+### * dat2way
+
+flush(stderr()); flush(stdout())
+
+### Name: dat2way
+### Title: Simulated Dataset to Demonstrate Two-way Latent Interaction
+### Aliases: dat2way
+
+### ** Examples
+
+head(dat2way)
+
+
+
+cleanEx()
+nameEx("dat3way")
+### * dat3way
+
+flush(stderr()); flush(stdout())
+
+### Name: dat3way
+### Title: Simulated Dataset to Demonstrate Three-way Latent Interaction
+### Aliases: dat3way
+
+### ** Examples
+
+head(dat3way)
+
+
+
+cleanEx()
 nameEx("exLong")
 ### * exLong
 
@@ -19,6 +51,72 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 head(exLong)
+
+
+
+cleanEx()
+nameEx("findRMSEApower")
+### * findRMSEApower
+
+flush(stderr()); flush(stdout())
+
+### Name: findRMSEApower
+### Title: Find the statistical power based on population RMSEA
+### Aliases: findRMSEApower
+
+### ** Examples
+
+findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
+
+
+
+cleanEx()
+nameEx("findRMSEAsamplesize")
+### * findRMSEAsamplesize
+
+flush(stderr()); flush(stdout())
+
+### Name: findRMSEAsamplesize
+### Title: Find the minimum sample size for a given statistical power based
+###   on population RMSEA
+### Aliases: findRMSEAsamplesize
+
+### ** Examples
+
+findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
+
+
+
+cleanEx()
+nameEx("indProd")
+### * indProd
+
+flush(stderr()); flush(stdout())
+
+### Name: indProd
+### Title: Make products of indicators using no centering, mean centering,
+###   double-mean centering, or residual centering
+### Aliases: indProd orthogonalize
+
+### ** Examples
+
+# Mean centering / two-way interaction / match-paired
+dat <- indProd(attitude[,-1], var1=1:3, var2=4:6)
+
+# Residual centering / two-way interaction / match-paired
+dat2 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=FALSE, residualC=TRUE, doubleMC=FALSE)
+
+# Double-mean centering / two-way interaction / match-paired
+dat3 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=TRUE, residualC=FALSE, doubleMC=TRUE)
+
+# Mean centering / three-way interaction / match-paired
+dat4 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6)
+
+# Residual centering / three-way interaction / match-paired
+dat5 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=FALSE, residualC=TRUE, doubleMC=FALSE)
+
+# Double-mean centering / three-way interaction / match-paired
+dat6 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=TRUE, residualC=TRUE, doubleMC=TRUE)
 
 
 
@@ -69,6 +167,40 @@ longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=e
 
 
 cleanEx()
+nameEx("mardiaKurtosis")
+### * mardiaKurtosis
+
+flush(stderr()); flush(stdout())
+
+### Name: mardiaKurtosis
+### Title: Finding Mardia's multivariate kurtosis
+### Aliases: mardiaKurtosis
+
+### ** Examples
+
+library(lavaan)
+mardiaKurtosis(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+
+
+
+cleanEx()
+nameEx("mardiaSkew")
+### * mardiaSkew
+
+flush(stderr()); flush(stdout())
+
+### Name: mardiaSkew
+### Title: Finding Mardia's multivariate skewness
+### Aliases: mardiaSkew
+
+### ** Examples
+
+library(lavaan)
+mardiaSkew(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+
+
+
+cleanEx()
 nameEx("measurementInvariance")
 ### * measurementInvariance
 
@@ -85,6 +217,23 @@ HW.model <- ' visual =~ x1 + x2 + x3
               speed =~ x7 + x8 + x9 '
 
 measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
+
+
+
+cleanEx()
+nameEx("miPoolChi")
+### * miPoolChi
+
+flush(stderr()); flush(stdout())
+
+### Name: miPoolChi
+### Title: Function to pool chi-square statistics from the result from
+###   multiple imputation
+### Aliases: miPoolChi
+
+### ** Examples
+
+miPoolChi(c(89.864, 81.116, 71.500, 49.022, 61.986, 64.422, 55.256, 57.890, 79.416, 63.944), 2)
 
 
 
@@ -201,65 +350,6 @@ moreFitIndices(fit)
 
 
 cleanEx()
-nameEx("orthogonalize")
-### * orthogonalize
-
-flush(stderr()); flush(stdout())
-
-### Name: orthogonalize
-### Title: Orthogonalize data for 2-way interaction in SEM
-### Aliases: orthogonalize
-
-### ** Examples
-
-
-library(MASS)
-
-n <- 500
-means <- c(0,0)
-covmat <- matrix(c(1, 0.3, 0.3, 1),nrow=2)
-
-data <- mvrnorm(n,means,covmat)
-
-x<-as.vector(data[,1])
-z<-as.vector(data[,2])
-
-y<-rnorm(n,0,1)+.4*x+.4*z+.2*x*z
-
-x1<-rnorm(n,0.2,.2)+.7*x
-x2<-rnorm(n,0.2,.2)+.7*x
-x3<-rnorm(n,0.2,.2)+.7*x
-z1<-rnorm(n,0.2,.2)+.7*z
-z2<-rnorm(n,0.2,.2)+.7*z
-z3<-rnorm(n,0.2,.2)+.7*z
-y1<-rnorm(n,0.2,.2)+.7*y
-y2<-rnorm(n,0.2,.2)+.7*y
-y3<-rnorm(n,0.2,.2)+.7*y
-
-dat<-data.frame(cbind(x1,x2,x3,z1,z2,z3,y1,y2,y3))
-
-datOrth <-orthogonalize(dat,(1:3), (4:6))
-
-#Fit model in Lavaan
-library(lavaan)
-
-syntax <- ' 
-x =~ x1 + x2 +x3
-z =~ z1 + z2 + z3
-xz =~ x1z1 + x1z2 + x1z3 + x2z1 + x2z2 + x2z3 + x3z1 + x3z2 + x3z3
-y =~ y1 + y2 + y3
-x ~~ z
-x ~~ 0*xz
-z ~~ 0*xz
-y ~ x + z +xz
-'
-
-fit <- sem(model = syntax, data=datOrth, std.lv=TRUE)
-summary(fit, fit.measures=TRUE)
-
-
-
-cleanEx()
 nameEx("parcelAllocation")
 ### * parcelAllocation
 
@@ -286,6 +376,110 @@ parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=
 
 
 cleanEx()
+nameEx("plotProbe")
+### * plotProbe
+
+flush(stderr()); flush(stdout())
+
+### Name: plotProbe
+### Title: Plot the graphs for probing latent interaction
+### Aliases: plotProbe
+
+### ** Examples
+
+library(lavaan) 
+
+dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+
+model1 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f3 =~ x7 + x8 + x9
+f3 ~ f1 + f2 + f12
+f12 ~~0*f1
+f12 ~~ 0*f2
+x1 ~ 0*1
+x4 ~ 0*1
+x1.x4 ~ 0*1
+x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f12 ~ NA*1
+f3 ~ NA*1
+"
+
+fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
+result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+plotProbe(result2wayMC, xlim=c(-2, 2))
+
+
+dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
+
+model3 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f3 =~ x7 + x8 + x9
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f13 =~ x1.x7 + x2.x8 + x3.x9
+f23 =~ x4.x7 + x5.x8 + x6.x9
+f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
+f4 =~ x10 + x11 + x12
+f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
+f1 ~~ 0*f12
+f1 ~~ 0*f13
+f1 ~~ 0*f123
+f2 ~~ 0*f12
+f2 ~~ 0*f23
+f2 ~~ 0*f123
+f3 ~~ 0*f13
+f3 ~~ 0*f23
+f3 ~~ 0*f123
+f12 ~~ 0*f123
+f13 ~~ 0*f123
+f23 ~~ 0*f123
+x1 ~ 0*1
+x4 ~ 0*1
+x7 ~ 0*1
+x10 ~ 0*1
+x1.x4 ~ 0*1
+x1.x7 ~ 0*1
+x4.x7 ~ 0*1
+x1.x4.x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f3 ~ NA*1
+f12 ~ NA*1
+f13 ~ NA*1
+f23 ~ NA*1
+f123 ~ NA*1
+f4 ~ NA*1
+" 
+
+fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
+result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+plotProbe(result3wayMC, xlim=c(-2, 2))
+
+
+
+cleanEx()
+nameEx("plotRMSEAdist")
+### * plotRMSEAdist
+
+flush(stderr()); flush(stdout())
+
+### Name: plotRMSEAdist
+### Title: Plot the sampling distributions of RMSEA
+### Aliases: plotRMSEAdist
+
+### ** Examples
+
+plotRMSEAdist(rmsea=c(.05, .08), n=200, df=20, ptile=0.95, rmseaScale = TRUE)
+plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rmseaScale = FALSE)
+
+
+
+cleanEx()
 nameEx("plotRMSEApower")
 ### * plotRMSEApower
 
@@ -298,6 +492,238 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 plotRMSEApower(.025, .075, 23, 100, 500, 10)
+
+
+
+cleanEx()
+nameEx("probe2WayMC")
+### * probe2WayMC
+
+flush(stderr()); flush(stdout())
+
+### Name: probe2WayMC
+### Title: Probing two-way interaction on the residual-centered latent
+###   interaction
+### Aliases: probe2WayMC
+
+### ** Examples
+
+library(lavaan) 
+
+dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+
+model1 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f3 =~ x7 + x8 + x9
+f3 ~ f1 + f2 + f12
+f12 ~~0*f1
+f12 ~~ 0*f2
+x1 ~ 0*1
+x4 ~ 0*1
+x1.x4 ~ 0*1
+x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f12 ~ NA*1
+f3 ~ NA*1
+"
+
+fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitMC2way)
+
+result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+result2wayMC
+
+
+
+cleanEx()
+nameEx("probe2WayRC")
+### * probe2WayRC
+
+flush(stderr()); flush(stdout())
+
+### Name: probe2WayRC
+### Title: Probing two-way interaction on the residual-centered latent
+###   interaction
+### Aliases: probe2WayRC
+
+### ** Examples
+
+library(lavaan) 
+
+dat2wayRC <- orthogonalize(dat2way, 1:3, 4:6)
+
+model1 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f3 =~ x7 + x8 + x9
+f3 ~ f1 + f2 + f12
+f12 ~~0*f1
+f12 ~~ 0*f2
+x1 ~ 0*1
+x4 ~ 0*1
+x1.x4 ~ 0*1
+x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f12 ~ NA*1
+f3 ~ NA*1
+"
+
+fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitRC2way)
+
+result2wayRC <- probe2WayRC(fitRC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+result2wayRC
+
+
+
+cleanEx()
+nameEx("probe3WayMC")
+### * probe3WayMC
+
+flush(stderr()); flush(stdout())
+
+### Name: probe3WayMC
+### Title: Probing two-way interaction on the residual-centered latent
+###   interaction
+### Aliases: probe3WayMC
+
+### ** Examples
+
+library(lavaan)
+
+dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
+
+model3 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f3 =~ x7 + x8 + x9
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f13 =~ x1.x7 + x2.x8 + x3.x9
+f23 =~ x4.x7 + x5.x8 + x6.x9
+f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
+f4 =~ x10 + x11 + x12
+f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
+f1 ~~ 0*f12
+f1 ~~ 0*f13
+f1 ~~ 0*f123
+f2 ~~ 0*f12
+f2 ~~ 0*f23
+f2 ~~ 0*f123
+f3 ~~ 0*f13
+f3 ~~ 0*f23
+f3 ~~ 0*f123
+f12 ~~ 0*f123
+f13 ~~ 0*f123
+f23 ~~ 0*f123
+x1 ~ 0*1
+x4 ~ 0*1
+x7 ~ 0*1
+x10 ~ 0*1
+x1.x4 ~ 0*1
+x1.x7 ~ 0*1
+x4.x7 ~ 0*1
+x1.x4.x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f3 ~ NA*1
+f12 ~ NA*1
+f13 ~ NA*1
+f23 ~ NA*1
+f123 ~ NA*1
+f4 ~ NA*1
+" 
+
+fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitMC3way)
+
+result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayMC
+
+
+
+cleanEx()
+nameEx("probe3WayRC")
+### * probe3WayRC
+
+flush(stderr()); flush(stdout())
+
+### Name: probe3WayRC
+### Title: Probing three-way interaction on the residual-centered latent
+###   interaction
+### Aliases: probe3WayRC
+
+### ** Examples
+
+library(lavaan)
+
+dat3wayRC <- orthogonalize(dat3way, 1:3, 4:6, 7:9)
+
+model3 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f3 =~ x7 + x8 + x9
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f13 =~ x1.x7 + x2.x8 + x3.x9
+f23 =~ x4.x7 + x5.x8 + x6.x9
+f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
+f4 =~ x10 + x11 + x12
+f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
+f1 ~~ 0*f12
+f1 ~~ 0*f13
+f1 ~~ 0*f123
+f2 ~~ 0*f12
+f2 ~~ 0*f23
+f2 ~~ 0*f123
+f3 ~~ 0*f13
+f3 ~~ 0*f23
+f3 ~~ 0*f123
+f12 ~~ 0*f123
+f13 ~~ 0*f123
+f23 ~~ 0*f123
+x1 ~ 0*1
+x4 ~ 0*1
+x7 ~ 0*1
+x10 ~ 0*1
+x1.x4 ~ 0*1
+x1.x7 ~ 0*1
+x4.x7 ~ 0*1
+x1.x4.x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f3 ~ NA*1
+f12 ~ NA*1
+f13 ~ NA*1
+f23 ~ NA*1
+f123 ~ NA*1
+f4 ~ NA*1
+" 
+
+fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitRC3way)
+
+result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayRC
+
+
+
+cleanEx()
+nameEx("residualCovariate")
+### * residualCovariate
+
+flush(stderr()); flush(stdout())
+
+### Name: residualCovariate
+### Title: Residual centered all target indicators by covariates
+### Aliases: residualCovariate
+
+### ** Examples
+
+dat <- residualCovariate(attitude, 2:7, 1)
 
 
 

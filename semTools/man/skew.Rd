@@ -18,7 +18,7 @@ skew(object, population=FALSE)
   }
 }
 \value{
-	A value of a skewness with a test statistic if the population is specified as \code{TRUE}
+	A value of a skewness with a test statistic if the population is specified as \code{FALSE}
 }
 \details{
 	The skewness computed is g1. The parameter skewness \eqn{\gamma_{2}} formula is
@@ -41,6 +41,13 @@ skew(object, population=FALSE)
 }
 \references{
 Weisstein, Eric W. (n.d.). \emph{Skewness.} Retrived from MathWorld--A Wolfram Web Resource \url{http://mathworld.wolfram.com/Skewness.html} 
+}
+\seealso{
+	\itemize{
+		\item \code{\link{kurtosis}} Find the univariate excessive kurtosis of a variable
+		\item \code{\link{mardiaSkew}} Find the Mardia's multivariate skewness of a set of variables
+		\item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate kurtosis of a set of variables
+	}
 }
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})

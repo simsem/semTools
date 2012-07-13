@@ -49,6 +49,9 @@ Saris, W. E., Satorra, A., & van der Veld, W. M. (2009). Testing structural equa
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 }
+\seealso{
+	\code{\link{moreFitIndices}} For the additional fit indices information
+}
 \examples{
 library(lavaan)
 

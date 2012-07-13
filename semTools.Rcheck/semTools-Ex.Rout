@@ -1,5 +1,5 @@
 
-R version 2.15.0 (2012-03-30)
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i386-pc-mingw32/i386 (32-bit)
@@ -29,7 +29,7 @@ This is lavaan 0.4-14
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.1-5
+This is semTools 0.2-1
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 
@@ -41,6 +41,66 @@ The following object(s) are masked from 'package:lavaan':
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("dat2way")
+> ### * dat2way
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: dat2way
+> ### Title: Simulated Dataset to Demonstrate Two-way Latent Interaction
+> ### Aliases: dat2way
+> 
+> ### ** Examples
+> 
+> head(dat2way)
+             x1         x2          x3         x4          x5          x6
+[1,] -1.8187626 -0.8562262 -1.68180435  1.1433047  0.73634431 -1.66626093
+[2,] -0.5151810  0.8567330 -0.06406867 -1.4098765  1.65212477  0.50982044
+[3,] -1.4966179  1.7452026 -0.18804763  1.0352673 -0.77030873 -1.84342363
+[4,] -1.2196720 -1.5443674 -0.49324152 -0.9803422 -0.39348424 -0.20869145
+[5,]  1.1821387 -1.3806932  0.11446183 -0.6386459  0.04413679  0.03828171
+[6,] -0.9725346 -0.4393652 -1.01947176 -0.1275244 -0.19718816 -0.79168626
+             x7         x8         x9
+[1,] -0.4793663 -1.6561633 -0.4313809
+[2,] -0.9954784  0.1258883  0.8478154
+[3,]  2.0252067  1.3671299  2.8677786
+[4,] -0.7616253  1.6029655  0.8155289
+[5,] -1.4655456  0.5215523  0.6441019
+[6,] -1.8503951  0.6594724 -1.2279043
+> 
+> 
+> 
+> cleanEx()
+> nameEx("dat3way")
+> ### * dat3way
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: dat3way
+> ### Title: Simulated Dataset to Demonstrate Three-way Latent Interaction
+> ### Aliases: dat3way
+> 
+> ### ** Examples
+> 
+> head(dat3way)
+             x1         x2         x3          x4          x5         x6
+[1,] -1.5350991  0.5853918 -2.7037129 -0.02852141  0.11372774  0.6060233
+[2,] -0.2666704  1.5121169 -0.3589631 -1.04593896  0.15343084  0.9117688
+[3,] -1.3490760 -0.5772260 -0.3833028 -0.03173043 -1.74828341 -3.1067799
+[4,] -0.2400794 -0.5623048  1.3005997  1.20582017 -0.08547333 -0.5011112
+[5,] -0.7621797  0.3373819 -0.2898214 -1.12900967  2.27976826  1.4179838
+[6,] -0.7475130 -0.6808552 -0.5687009  2.10449005  1.09482866  0.8162109
+             x7         x8         x9        x10        x11        x12
+[1,]  0.1552561 -0.4999699  0.7776045 -5.1407168 -4.6485279 -2.9206060
+[2,]  0.2464521  1.1475477 -1.1810510 -0.5888113 -0.6838049  0.3721826
+[3,] -1.0974235  1.1829523 -2.0712661 -0.1813980 -1.3643337  0.1941221
+[4,]  2.7009420  1.8972051  1.2514742 -1.3278763 -2.6836083 -1.9448700
+[5,]  1.3155577  1.9718828  0.8966157  0.2404679  1.8014037 -0.4086983
+[6,]  0.4184400  0.5211154  1.6938082  0.4257118  1.8162746  0.5516283
+> 
+> 
+> 
 > cleanEx()
 > nameEx("exLong")
 > ### * exLong
@@ -69,6 +129,74 @@ The following object(s) are masked from 'package:lavaan':
 4  1.249376 -0.5369589  2.3371304
 5  1.425101  1.8539630  2.0861627
 6 -1.201912 -2.0090700 -0.8366951
+> 
+> 
+> 
+> cleanEx()
+> nameEx("findRMSEApower")
+> ### * findRMSEApower
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: findRMSEApower
+> ### Title: Find the statistical power based on population RMSEA
+> ### Aliases: findRMSEApower
+> 
+> ### ** Examples
+> 
+> findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
+[1] 0.454368
+> 
+> 
+> 
+> cleanEx()
+> nameEx("findRMSEAsamplesize")
+> ### * findRMSEAsamplesize
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: findRMSEAsamplesize
+> ### Title: Find the minimum sample size for a given statistical power based
+> ###   on population RMSEA
+> ### Aliases: findRMSEAsamplesize
+> 
+> ### ** Examples
+> 
+> findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
+[1] 434
+> 
+> 
+> 
+> cleanEx()
+> nameEx("indProd")
+> ### * indProd
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: indProd
+> ### Title: Make products of indicators using no centering, mean centering,
+> ###   double-mean centering, or residual centering
+> ### Aliases: indProd orthogonalize
+> 
+> ### ** Examples
+> 
+> # Mean centering / two-way interaction / match-paired
+> dat <- indProd(attitude[,-1], var1=1:3, var2=4:6)
+> 
+> # Residual centering / two-way interaction / match-paired
+> dat2 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=FALSE, residualC=TRUE, doubleMC=FALSE)
+> 
+> # Double-mean centering / two-way interaction / match-paired
+> dat3 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=TRUE, residualC=FALSE, doubleMC=TRUE)
+> 
+> # Mean centering / three-way interaction / match-paired
+> dat4 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6)
+> 
+> # Residual centering / three-way interaction / match-paired
+> dat5 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=FALSE, residualC=TRUE, doubleMC=FALSE)
+> 
+> # Double-mean centering / three-way interaction / match-paired
+> dat6 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=TRUE, residualC=TRUE, doubleMC=TRUE)
 > 
 > 
 > 
@@ -209,6 +337,44 @@ The order of autocorrelation:  1
 > 
 > 
 > cleanEx()
+> nameEx("mardiaKurtosis")
+> ### * mardiaKurtosis
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mardiaKurtosis
+> ### Title: Finding Mardia's multivariate kurtosis
+> ### Aliases: mardiaKurtosis
+> 
+> ### ** Examples
+> 
+> library(lavaan)
+> mardiaKurtosis(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+         b2d            z            p 
+102.90374304   2.40658874   0.01610229 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("mardiaSkew")
+> ### * mardiaSkew
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mardiaSkew
+> ### Title: Finding Mardia's multivariate skewness
+> ### Aliases: mardiaSkew
+> 
+> ### ** Examples
+> 
+> library(lavaan)
+> mardiaSkew(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+       b1d        chi         df          p 
+  6.806892 341.479091 165.000000   1.000000 
+> 
+> 
+> 
+> cleanEx()
 > nameEx("measurementInvariance")
 > ### * measurementInvariance
 > 
@@ -263,6 +429,25 @@ Model 4: equal loadings + intercepts + means:
 [Model 3 versus model 4]
   delta.chisq      delta.df delta.p.value     delta.cfi 
        40.502         3.000         0.000         0.042 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("miPoolChi")
+> ### * miPoolChi
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: miPoolChi
+> ### Title: Function to pool chi-square statistics from the result from
+> ###   multiple imputation
+> ### Aliases: miPoolChi
+> 
+> ### ** Examples
+> 
+> miPoolChi(c(89.864, 81.116, 71.500, 49.022, 61.986, 64.422, 55.256, 57.890, 79.416, 63.944), 2)
+           F          df1          df2          p.F 
+1.981628e+01 2.000000e+00 4.616817e+01 6.122891e-07 
 > 
 > 
 > 
@@ -770,172 +955,6 @@ UL                 11.4779
 > 
 > 
 > cleanEx()
-> nameEx("orthogonalize")
-> ### * orthogonalize
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: orthogonalize
-> ### Title: Orthogonalize data for 2-way interaction in SEM
-> ### Aliases: orthogonalize
-> 
-> ### ** Examples
-> 
-> 
-> library(MASS)
-> 
-> n <- 500
-> means <- c(0,0)
-> covmat <- matrix(c(1, 0.3, 0.3, 1),nrow=2)
-> 
-> data <- mvrnorm(n,means,covmat)
-> 
-> x<-as.vector(data[,1])
-> z<-as.vector(data[,2])
-> 
-> y<-rnorm(n,0,1)+.4*x+.4*z+.2*x*z
-> 
-> x1<-rnorm(n,0.2,.2)+.7*x
-> x2<-rnorm(n,0.2,.2)+.7*x
-> x3<-rnorm(n,0.2,.2)+.7*x
-> z1<-rnorm(n,0.2,.2)+.7*z
-> z2<-rnorm(n,0.2,.2)+.7*z
-> z3<-rnorm(n,0.2,.2)+.7*z
-> y1<-rnorm(n,0.2,.2)+.7*y
-> y2<-rnorm(n,0.2,.2)+.7*y
-> y3<-rnorm(n,0.2,.2)+.7*y
-> 
-> dat<-data.frame(cbind(x1,x2,x3,z1,z2,z3,y1,y2,y3))
-> 
-> datOrth <-orthogonalize(dat,(1:3), (4:6))
-> 
-> #Fit model in Lavaan
-> library(lavaan)
-> 
-> syntax <- ' 
-+ x =~ x1 + x2 +x3
-+ z =~ z1 + z2 + z3
-+ xz =~ x1z1 + x1z2 + x1z3 + x2z1 + x2z2 + x2z3 + x3z1 + x3z2 + x3z3
-+ y =~ y1 + y2 + y3
-+ x ~~ z
-+ x ~~ 0*xz
-+ z ~~ 0*xz
-+ y ~ x + z +xz
-+ '
-> 
-> fit <- sem(model = syntax, data=datOrth, std.lv=TRUE)
-> summary(fit, fit.measures=TRUE)
-lavaan (0.4-14) converged normally after 174 iterations
-
-  Number of observations                           500
-
-  Estimator                                         ML
-  Minimum Function Chi-square                 4657.538
-  Degrees of freedom                               131
-  P-value                                        0.000
-
-Chi-square test baseline model:
-
-  Minimum Function Chi-square                19804.671
-  Degrees of freedom                               153
-  P-value                                        0.000
-
-Full model versus baseline model:
-
-  Comparative Fit Index (CFI)                    0.770
-  Tucker-Lewis Index (TLI)                       0.731
-
-Loglikelihood and Information Criteria:
-
-  Loglikelihood user model (H0)              -1838.278
-  Loglikelihood unrestricted model (H1)        490.491
-
-  Number of free parameters                         40
-  Akaike (AIC)                                3756.557
-  Bayesian (BIC)                              3925.141
-  Sample-size adjusted Bayesian (BIC)         3798.179
-
-Root Mean Square Error of Approximation:
-
-  RMSEA                                          0.263
-  90 Percent Confidence Interval          0.256  0.269
-  P-value RMSEA <= 0.05                          0.000
-
-Standardized Root Mean Square Residual:
-
-  SRMR                                           0.016
-
-Parameter estimates:
-
-  Information                                 Expected
-  Standard Errors                             Standard
-
-                   Estimate  Std.err  Z-value  P(>|z|)
-Latent variables:
-  x =~
-    x1                0.719    0.025   28.988    0.000
-    x2                0.709    0.024   29.097    0.000
-    x3                0.705    0.024   29.228    0.000
-  z =~
-    z1                0.731    0.025   29.281    0.000
-    z2                0.719    0.025   28.921    0.000
-    z3                0.733    0.025   29.624    0.000
-  xz =~
-    x1z1              0.584    0.020   29.002    0.000
-    x1z2              0.573    0.020   28.232    0.000
-    x1z3              0.586    0.020   28.893    0.000
-    x2z1              0.589    0.020   28.956    0.000
-    x2z2              0.577    0.020   28.426    0.000
-    x2z3              0.593    0.021   28.780    0.000
-    x3z1              0.556    0.019   28.905    0.000
-    x3z2              0.543    0.019   28.330    0.000
-    x3z3              0.555    0.019   28.978    0.000
-  y =~
-    y1                0.700    0.024   29.504    0.000
-    y2                0.710    0.024   29.690    0.000
-    y3                0.704    0.024   29.252    0.000
-
-Regressions:
-  y ~
-    x                 0.330    0.050    6.586    0.000
-    z                 0.464    0.052    8.875    0.000
-    xz                0.232    0.047    4.945    0.000
-
-Covariances:
-  x ~~
-    z                 0.256    0.043    5.948    0.000
-    xz                0.000
-  z ~~
-    xz                0.000
-
-Variances:
-    x1                0.046    0.004
-    x2                0.043    0.004
-    x3                0.040    0.004
-    z1                0.042    0.004
-    z2                0.048    0.004
-    z3                0.035    0.004
-    x1z1              0.032    0.002
-    x1z2              0.041    0.003
-    x1z3              0.033    0.002
-    x2z1              0.033    0.002
-    x2z2              0.039    0.003
-    x2z3              0.036    0.003
-    x3z1              0.030    0.002
-    x3z2              0.036    0.002
-    x3z3              0.029    0.002
-    y1                0.039    0.004
-    y2                0.034    0.004
-    y3                0.046    0.004
-    x                 1.000
-    z                 1.000
-    xz                1.000
-    y                 1.000
-
-> 
-> 
-> 
-> cleanEx()
 > nameEx("parcelAllocation")
 > ### * parcelAllocation
 > 
@@ -1006,6 +1025,112 @@ srmr    0.011 0.003  0.019 0.006  0.013
 > 
 > 
 > cleanEx()
+> nameEx("plotProbe")
+> ### * plotProbe
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: plotProbe
+> ### Title: Plot the graphs for probing latent interaction
+> ### Aliases: plotProbe
+> 
+> ### ** Examples
+> 
+> library(lavaan) 
+> 
+> dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+> 
+> model1 <- "
++ f1 =~ x1 + x2 + x3
++ f2 =~ x4 + x5 + x6
++ f12 =~ x1.x4 + x2.x5 + x3.x6
++ f3 =~ x7 + x8 + x9
++ f3 ~ f1 + f2 + f12
++ f12 ~~0*f1
++ f12 ~~ 0*f2
++ x1 ~ 0*1
++ x4 ~ 0*1
++ x1.x4 ~ 0*1
++ x7 ~ 0*1
++ f1 ~ NA*1
++ f2 ~ NA*1
++ f12 ~ NA*1
++ f3 ~ NA*1
++ "
+> 
+> fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
+> result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+> plotProbe(result2wayMC, xlim=c(-2, 2))
+> 
+> 
+> dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
+> 
+> model3 <- "
++ f1 =~ x1 + x2 + x3
++ f2 =~ x4 + x5 + x6
++ f3 =~ x7 + x8 + x9
++ f12 =~ x1.x4 + x2.x5 + x3.x6
++ f13 =~ x1.x7 + x2.x8 + x3.x9
++ f23 =~ x4.x7 + x5.x8 + x6.x9
++ f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
++ f4 =~ x10 + x11 + x12
++ f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
++ f1 ~~ 0*f12
++ f1 ~~ 0*f13
++ f1 ~~ 0*f123
++ f2 ~~ 0*f12
++ f2 ~~ 0*f23
++ f2 ~~ 0*f123
++ f3 ~~ 0*f13
++ f3 ~~ 0*f23
++ f3 ~~ 0*f123
++ f12 ~~ 0*f123
++ f13 ~~ 0*f123
++ f23 ~~ 0*f123
++ x1 ~ 0*1
++ x4 ~ 0*1
++ x7 ~ 0*1
++ x10 ~ 0*1
++ x1.x4 ~ 0*1
++ x1.x7 ~ 0*1
++ x4.x7 ~ 0*1
++ x1.x4.x7 ~ 0*1
++ f1 ~ NA*1
++ f2 ~ NA*1
++ f3 ~ NA*1
++ f12 ~ NA*1
++ f13 ~ NA*1
++ f23 ~ NA*1
++ f123 ~ NA*1
++ f4 ~ NA*1
++ " 
+> 
+> fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
+> result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+> plotProbe(result3wayMC, xlim=c(-2, 2))
+> 
+> 
+> 
+> cleanEx()
+> nameEx("plotRMSEAdist")
+> ### * plotRMSEAdist
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: plotRMSEAdist
+> ### Title: Plot the sampling distributions of RMSEA
+> ### Aliases: plotRMSEAdist
+> 
+> ### ** Examples
+> 
+> plotRMSEAdist(rmsea=c(.05, .08), n=200, df=20, ptile=0.95, rmseaScale = TRUE)
+Warning in plotRMSEAdist(rmsea = c(0.05, 0.08), n = 200, df = 20, ptile = 0.95,  :
+  The density at RMSEA = 0 cannot be trusted because the plots are truncated.
+> plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rmseaScale = FALSE)
+> 
+> 
+> 
+> cleanEx()
 > nameEx("plotRMSEApower")
 > ### * plotRMSEApower
 > 
@@ -1018,6 +1143,798 @@ srmr    0.011 0.003  0.019 0.006  0.013
 > ### ** Examples
 > 
 > plotRMSEApower(.025, .075, 23, 100, 500, 10)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("probe2WayMC")
+> ### * probe2WayMC
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: probe2WayMC
+> ### Title: Probing two-way interaction on the residual-centered latent
+> ###   interaction
+> ### Aliases: probe2WayMC
+> 
+> ### ** Examples
+> 
+> library(lavaan) 
+> 
+> dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+> 
+> model1 <- "
++ f1 =~ x1 + x2 + x3
++ f2 =~ x4 + x5 + x6
++ f12 =~ x1.x4 + x2.x5 + x3.x6
++ f3 =~ x7 + x8 + x9
++ f3 ~ f1 + f2 + f12
++ f12 ~~0*f1
++ f12 ~~ 0*f2
++ x1 ~ 0*1
++ x4 ~ 0*1
++ x1.x4 ~ 0*1
++ x7 ~ 0*1
++ f1 ~ NA*1
++ f2 ~ NA*1
++ f12 ~ NA*1
++ f3 ~ NA*1
++ "
+> 
+> fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
+> summary(fitMC2way)
+lavaan (0.4-14) converged normally after 53 iterations
+
+  Number of observations                         10000
+
+  Estimator                                         ML
+  Minimum Function Chi-square                   28.376
+  Degrees of freedom                                50
+  P-value                                        0.994
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                             Standard
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  f1 =~
+    x1                1.000
+    x2                0.996    0.018   55.194    0.000
+    x3                1.008    0.018   55.393    0.000
+  f2 =~
+    x4                1.000
+    x5                0.999    0.018   54.472    0.000
+    x6                0.984    0.018   54.181    0.000
+  f12 =~
+    x1.x4             1.000
+    x2.x5             0.964    0.038   25.297    0.000
+    x3.x6             0.962    0.038   25.324    0.000
+  f3 =~
+    x7                1.000
+    x8                1.019    0.020   50.206    0.000
+    x9                1.003    0.020   49.801    0.000
+
+Regressions:
+  f3 ~
+    f1                0.418    0.014   30.638    0.000
+    f2                0.395    0.014   29.183    0.000
+    f12               0.194    0.011   17.377    0.000
+
+Covariances:
+  f1 ~~
+    f12               0.000
+  f2 ~~
+    f12               0.000
+  f1 ~~
+    f2                0.491    0.016   30.939    0.000
+
+Intercepts:
+    x1                0.000
+    x4                0.000
+    x1.x4             0.000
+    x7                0.000
+    f1               -0.000    0.014   -0.000    1.000
+    f2               -0.000    0.014   -0.000    1.000
+    f12              -0.000    0.020   -0.000    1.000
+    f3                0.100    0.013    7.790    0.000
+    x2                0.000    0.014    0.000    1.000
+    x3                0.000    0.014    0.000    1.000
+    x5                0.000    0.014    0.000    1.000
+    x6                0.000    0.014    0.000    1.000
+    x2.x5             0.000    0.024    0.000    1.000
+    x3.x6             0.000    0.024    0.000    1.000
+    x8               -0.002    0.014   -0.132    0.895
+    x9               -0.000    0.014   -0.023    0.982
+
+Variances:
+    x1                0.995    0.020
+    x2                1.004    0.020
+    x3                1.001    0.020
+    x4                1.007    0.020
+    x5                0.991    0.020
+    x6                1.002    0.020
+    x1.x4             2.875    0.065
+    x2.x5             3.002    0.063
+    x3.x6             3.138    0.065
+    x7                1.014    0.018
+    x8                0.987    0.018
+    x9                0.999    0.018
+    f1                0.988    0.028
+    f2                0.981    0.028
+    f12               1.261    0.066
+    f3                0.194    0.011
+
+> 
+> result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+> result2wayMC
+$SimpleIntcept
+     f2    Intcept         SE       Wald p
+[1,] -1 -0.2950167 0.01865339 -15.815710 0
+[2,]  0  0.0999901 0.01283510   7.790361 0
+[3,]  1  0.4949969 0.01865340  26.536555 0
+
+$SimpleSlope
+     f2     Slope         SE     Wald p
+[1,] -1 0.2238276 0.01696603 13.19269 0
+[2,]  0 0.4176235 0.01363090 30.63801 0
+[3,]  1 0.6114195 0.01823499 33.53001 0
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("probe2WayRC")
+> ### * probe2WayRC
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: probe2WayRC
+> ### Title: Probing two-way interaction on the residual-centered latent
+> ###   interaction
+> ### Aliases: probe2WayRC
+> 
+> ### ** Examples
+> 
+> library(lavaan) 
+> 
+> dat2wayRC <- orthogonalize(dat2way, 1:3, 4:6)
+> 
+> model1 <- "
++ f1 =~ x1 + x2 + x3
++ f2 =~ x4 + x5 + x6
++ f12 =~ x1.x4 + x2.x5 + x3.x6
++ f3 =~ x7 + x8 + x9
++ f3 ~ f1 + f2 + f12
++ f12 ~~0*f1
++ f12 ~~ 0*f2
++ x1 ~ 0*1
++ x4 ~ 0*1
++ x1.x4 ~ 0*1
++ x7 ~ 0*1
++ f1 ~ NA*1
++ f2 ~ NA*1
++ f12 ~ NA*1
++ f3 ~ NA*1
++ "
+> 
+> fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
+> summary(fitRC2way)
+lavaan (0.4-14) converged normally after 53 iterations
+
+  Number of observations                         10000
+
+  Estimator                                         ML
+  Minimum Function Chi-square                   11.737
+  Degrees of freedom                                50
+  P-value                                        1.000
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                             Standard
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  f1 =~
+    x1                1.000
+    x2                0.994    0.018   55.226    0.000
+    x3                1.006    0.018   55.396    0.000
+  f2 =~
+    x4                1.000
+    x5                0.998    0.018   54.486    0.000
+    x6                0.983    0.018   54.193    0.000
+  f12 =~
+    x1.x4             1.000
+    x2.x5             0.964    0.038   25.295    0.000
+    x3.x6             0.962    0.038   25.322    0.000
+  f3 =~
+    x7                1.000
+    x8                1.019    0.020   50.213    0.000
+    x9                1.003    0.020   49.808    0.000
+
+Regressions:
+  f3 ~
+    f1                0.417    0.014   30.632    0.000
+    f2                0.395    0.014   29.206    0.000
+    f12               0.194    0.011   17.384    0.000
+
+Covariances:
+  f1 ~~
+    f12               0.000
+  f2 ~~
+    f12               0.000
+  f1 ~~
+    f2                0.492    0.016   30.957    0.000
+
+Intercepts:
+    x1                0.000
+    x4                0.000
+    x1.x4             0.000
+    x7                0.000
+    f1               -0.000    0.014   -0.000    1.000
+    f2               -0.000    0.014   -0.000    1.000
+    f12              -0.000    0.020   -0.000    1.000
+    f3                0.100    0.013    7.794    0.000
+    x2                0.000    0.014    0.000    1.000
+    x3                0.000    0.014    0.000    1.000
+    x5                0.000    0.014    0.000    1.000
+    x6                0.000    0.014    0.000    1.000
+    x2.x5             0.000    0.024    0.000    1.000
+    x3.x6             0.000    0.024    0.000    1.000
+    x8               -0.002    0.014   -0.132    0.895
+    x9               -0.000    0.014   -0.023    0.982
+
+Variances:
+    x1                0.992    0.020
+    x2                1.004    0.020
+    x3                1.003    0.020
+    x4                1.006    0.020
+    x5                0.991    0.020
+    x6                1.003    0.020
+    x1.x4             2.872    0.065
+    x2.x5             3.001    0.063
+    x3.x6             3.138    0.065
+    x7                1.014    0.018
+    x8                0.987    0.018
+    x9                0.999    0.018
+    f1                0.991    0.028
+    f2                0.982    0.028
+    f12               1.260    0.066
+    f3                0.194    0.011
+
+> 
+> result2wayRC <- probe2WayRC(fitRC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+> result2wayRC
+$SimpleIntcept
+     f2      Intcept         SE        Wald        p
+[1,] -1 -0.390416328 0.01958671 -19.9327171 0.000000
+[2,]  0  0.004669488 0.01410860   0.3309676 0.740669
+[3,]  1  0.399755304 0.01958671  20.4095183 0.000000
+
+$SimpleSlope
+     f2     Slope         SE     Wald p
+[1,] -1 0.2229033 0.01713558 13.00822 0
+[2,]  0 0.4168256 0.01366659 30.49961 0
+[3,]  1 0.6107478 0.01844686 33.10849 0
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("probe3WayMC")
+> ### * probe3WayMC
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: probe3WayMC
+> ### Title: Probing two-way interaction on the residual-centered latent
+> ###   interaction
+> ### Aliases: probe3WayMC
+> 
+> ### ** Examples
+> 
+> library(lavaan)
+> 
+> dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
+> 
+> model3 <- "
++ f1 =~ x1 + x2 + x3
++ f2 =~ x4 + x5 + x6
++ f3 =~ x7 + x8 + x9
++ f12 =~ x1.x4 + x2.x5 + x3.x6
++ f13 =~ x1.x7 + x2.x8 + x3.x9
++ f23 =~ x4.x7 + x5.x8 + x6.x9
++ f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
++ f4 =~ x10 + x11 + x12
++ f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
++ f1 ~~ 0*f12
++ f1 ~~ 0*f13
++ f1 ~~ 0*f123
++ f2 ~~ 0*f12
++ f2 ~~ 0*f23
++ f2 ~~ 0*f123
++ f3 ~~ 0*f13
++ f3 ~~ 0*f23
++ f3 ~~ 0*f123
++ f12 ~~ 0*f123
++ f13 ~~ 0*f123
++ f23 ~~ 0*f123
++ x1 ~ 0*1
++ x4 ~ 0*1
++ x7 ~ 0*1
++ x10 ~ 0*1
++ x1.x4 ~ 0*1
++ x1.x7 ~ 0*1
++ x4.x7 ~ 0*1
++ x1.x4.x7 ~ 0*1
++ f1 ~ NA*1
++ f2 ~ NA*1
++ f3 ~ NA*1
++ f12 ~ NA*1
++ f13 ~ NA*1
++ f23 ~ NA*1
++ f123 ~ NA*1
++ f4 ~ NA*1
++ " 
+> 
+> fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
+> summary(fitMC3way)
+lavaan (0.4-14) converged normally after 104 iterations
+
+  Number of observations                          1000
+
+  Estimator                                         ML
+  Minimum Function Chi-square                  394.539
+  Degrees of freedom                               236
+  P-value                                        0.000
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                             Standard
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  f1 =~
+    x1                1.000
+    x2                1.073    0.065   16.552    0.000
+    x3                1.118    0.067   16.584    0.000
+  f2 =~
+    x4                1.000
+    x5                0.991    0.061   16.368    0.000
+    x6                0.950    0.058   16.297    0.000
+  f3 =~
+    x7                1.000
+    x8                0.980    0.059   16.511    0.000
+    x9                0.997    0.060   16.524    0.000
+  f12 =~
+    x1.x4             1.000
+    x2.x5             1.315    0.156    8.416    0.000
+    x3.x6             1.246    0.147    8.484    0.000
+  f13 =~
+    x1.x7             1.000
+    x2.x8             0.856    0.118    7.248    0.000
+    x3.x9             0.920    0.127    7.232    0.000
+  f23 =~
+    x4.x7             1.000
+    x5.x8             1.077    0.160    6.720    0.000
+    x6.x9             1.105    0.165    6.698    0.000
+  f123 =~
+    x1.x4.x7          1.000
+    x2.x5.x8          1.504    0.291    5.166    0.000
+    x3.x6.x9          1.151    0.213    5.393    0.000
+  f4 =~
+    x10               1.000
+    x11               1.030    0.036   28.809    0.000
+    x12               0.959    0.034   28.404    0.000
+
+Regressions:
+  f4 ~
+    f1                0.353    0.059    5.988    0.000
+    f2                0.386    0.055    6.969    0.000
+    f3                0.376    0.057    6.644    0.000
+    f12               0.065    0.075    0.868    0.386
+    f13               0.033    0.063    0.530    0.596
+    f23               0.137    0.076    1.815    0.070
+    f123              0.376    0.081    4.627    0.000
+
+Covariances:
+  f1 ~~
+    f12               0.000
+    f13               0.000
+    f123              0.000
+  f2 ~~
+    f12               0.000
+    f23               0.000
+    f123              0.000
+  f3 ~~
+    f13               0.000
+    f23               0.000
+    f123              0.000
+  f12 ~~
+    f123              0.000
+  f13 ~~
+    f123              0.000
+  f23 ~~
+    f123              0.000
+  f1 ~~
+    f2                0.110    0.042    2.632    0.008
+    f3                0.122    0.042    2.924    0.003
+    f23               0.057    0.048    1.201    0.230
+  f2 ~~
+    f3                0.101    0.044    2.280    0.023
+    f13               0.019    0.058    0.325    0.745
+  f3 ~~
+    f12               0.054    0.047    1.149    0.251
+  f12 ~~
+    f13               0.275    0.071    3.889    0.000
+    f23               0.192    0.061    3.169    0.002
+  f13 ~~
+    f23               0.225    0.074    3.048    0.002
+
+Intercepts:
+    x1                0.000
+    x4                0.000
+    x7                0.000
+    x10               0.000
+    x1.x4             0.000
+    x1.x7             0.000
+    x4.x7             0.000
+    x1.x4.x7          0.000
+    f1                0.000    0.044    0.000    1.000
+    f2                0.000    0.045    0.000    1.000
+    f3                0.000    0.046    0.000    1.000
+    f12              -0.000    0.063   -0.000    1.000
+    f13               0.000    0.064    0.000    1.000
+    f23               0.000    0.066    0.000    1.000
+    f123             -0.000    0.094   -0.000    1.000
+    f4                0.026    0.064    0.403    0.687
+    x2               -0.000    0.047   -0.000    1.000
+    x3               -0.000    0.047   -0.000    1.000
+    x5               -0.000    0.044   -0.000    1.000
+    x6               -0.000    0.044   -0.000    1.000
+    x8               -0.000    0.044   -0.000    1.000
+    x9               -0.000    0.045   -0.000    1.000
+    x2.x5             0.000    0.091    0.000    1.000
+    x3.x6             0.000    0.087    0.000    1.000
+    x2.x8             0.000    0.072    0.000    1.000
+    x3.x9            -0.000    0.075   -0.000    1.000
+    x5.x8            -0.000    0.084   -0.000    1.000
+    x6.x9            -0.000    0.086   -0.000    1.000
+    x2.x5.x8          0.000    0.156    0.000    1.000
+    x3.x6.x9          0.000    0.136    0.000    1.000
+    x11              -0.001    0.046   -0.017    0.986
+    x12               0.001    0.044    0.024    0.981
+
+Variances:
+    x1                1.008    0.065
+    x2                1.007    0.070
+    x3                0.974    0.073
+    x4                0.984    0.070
+    x5                0.995    0.070
+    x6                1.016    0.067
+    x7                1.029    0.071
+    x8                0.978    0.067
+    x9                0.989    0.069
+    x1.x4             3.039    0.178
+    x2.x5             2.979    0.234
+    x3.x6             2.931    0.217
+    x1.x7             2.807    0.223
+    x2.x8             3.136    0.197
+    x3.x9             3.305    0.217
+    x4.x7             3.418    0.214
+    x5.x8             3.151    0.222
+    x6.x9             3.182    0.229
+    x1.x4.x7          7.504    0.429
+    x2.x5.x8          7.266    0.646
+    x3.x6.x9          8.579    0.517
+    x10               1.002    0.069
+    x11               1.008    0.071
+    x12               0.978    0.065
+    f1                0.922    0.087
+    f2                1.053    0.097
+    f3                1.045    0.097
+    f12               0.940    0.162
+    f13               1.316    0.228
+    f23               0.941    0.193
+    f123              1.255    0.335
+    f4                1.558    0.124
+
+> 
+> result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+> result3wayMC
+$SimpleIntcept
+  f1 f2      Intcept         SE        Wald            p
+1 -1 -1 -0.648032141 0.12271606 -5.28074433 1.286601e-07
+2  0 -1 -0.359974566 0.08477225 -4.24637253 2.172593e-05
+3  1 -1 -0.071916991 0.12801981 -0.56176455 5.742765e-01
+4 -1  0 -0.327070339 0.08714558 -3.75314883 1.746271e-04
+5  0  0  0.025872146 0.06419107  0.40304901 6.869122e-01
+6  1  0  0.378814632 0.08714559  4.34691686 1.380645e-05
+7 -1  1 -0.006108538 0.13152025 -0.04644561 9.629551e-01
+8  0  1  0.411718858 0.08477224  4.85676509 1.193190e-06
+9  1  1  0.829546255 0.12752120  6.50516366 7.760881e-11
+
+$SimpleSlope
+  f1 f2      Slope         SE       Wald        p
+1 -1 -1  0.5813420 0.13165474  4.4156558 0.000010
+2  0 -1  0.2383870 0.09219633  2.5856451 0.009720
+3  1 -1 -0.1045680 0.14433264 -0.7244933 0.468763
+4 -1  0  0.3423548 0.08550667  4.0038372 0.000062
+5  0  0  0.3757295 0.05655258  6.6438965 0.000000
+6  1  0  0.4091042 0.08371615  4.8868010 0.000001
+7 -1  1  0.1033676 0.14799601  0.6984485 0.484897
+8  0  1  0.5130720 0.09668345  5.3067195 0.000000
+9  1  1  0.9227764 0.13394362  6.8892894 0.000000
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("probe3WayRC")
+> ### * probe3WayRC
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: probe3WayRC
+> ### Title: Probing three-way interaction on the residual-centered latent
+> ###   interaction
+> ### Aliases: probe3WayRC
+> 
+> ### ** Examples
+> 
+> library(lavaan)
+> 
+> dat3wayRC <- orthogonalize(dat3way, 1:3, 4:6, 7:9)
+> 
+> model3 <- "
++ f1 =~ x1 + x2 + x3
++ f2 =~ x4 + x5 + x6
++ f3 =~ x7 + x8 + x9
++ f12 =~ x1.x4 + x2.x5 + x3.x6
++ f13 =~ x1.x7 + x2.x8 + x3.x9
++ f23 =~ x4.x7 + x5.x8 + x6.x9
++ f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
++ f4 =~ x10 + x11 + x12
++ f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
++ f1 ~~ 0*f12
++ f1 ~~ 0*f13
++ f1 ~~ 0*f123
++ f2 ~~ 0*f12
++ f2 ~~ 0*f23
++ f2 ~~ 0*f123
++ f3 ~~ 0*f13
++ f3 ~~ 0*f23
++ f3 ~~ 0*f123
++ f12 ~~ 0*f123
++ f13 ~~ 0*f123
++ f23 ~~ 0*f123
++ x1 ~ 0*1
++ x4 ~ 0*1
++ x7 ~ 0*1
++ x10 ~ 0*1
++ x1.x4 ~ 0*1
++ x1.x7 ~ 0*1
++ x4.x7 ~ 0*1
++ x1.x4.x7 ~ 0*1
++ f1 ~ NA*1
++ f2 ~ NA*1
++ f3 ~ NA*1
++ f12 ~ NA*1
++ f13 ~ NA*1
++ f23 ~ NA*1
++ f123 ~ NA*1
++ f4 ~ NA*1
++ " 
+> 
+> fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
+> summary(fitRC3way)
+lavaan (0.4-14) converged normally after 107 iterations
+
+  Number of observations                          1000
+
+  Estimator                                         ML
+  Minimum Function Chi-square                  108.492
+  Degrees of freedom                               236
+  P-value                                        1.000
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                             Standard
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  f1 =~
+    x1                1.000
+    x2                1.070    0.065   16.584    0.000
+    x3                1.118    0.067   16.627    0.000
+  f2 =~
+    x4                1.000
+    x5                0.992    0.060   16.411    0.000
+    x6                0.954    0.058   16.342    0.000
+  f3 =~
+    x7                1.000
+    x8                0.979    0.059   16.543    0.000
+    x9                0.993    0.060   16.552    0.000
+  f12 =~
+    x1.x4             1.000
+    x2.x5             1.288    0.152    8.467    0.000
+    x3.x6             1.239    0.146    8.502    0.000
+  f13 =~
+    x1.x7             1.000
+    x2.x8             0.837    0.116    7.228    0.000
+    x3.x9             0.900    0.125    7.215    0.000
+  f23 =~
+    x4.x7             1.000
+    x5.x8             1.075    0.159    6.771    0.000
+    x6.x9             1.108    0.165    6.735    0.000
+  f123 =~
+    x1.x4.x7          1.000
+    x2.x5.x8          1.686    0.343    4.912    0.000
+    x3.x6.x9          1.211    0.229    5.292    0.000
+  f4 =~
+    x10               1.000
+    x11               1.031    0.035   29.385    0.000
+    x12               0.960    0.033   28.960    0.000
+
+Regressions:
+  f4 ~
+    f1                0.392    0.059    6.618    0.000
+    f2                0.411    0.056    7.355    0.000
+    f3                0.403    0.057    7.094    0.000
+    f12               0.066    0.075    0.881    0.378
+    f13               0.017    0.063    0.266    0.790
+    f23               0.198    0.078    2.544    0.011
+    f123              0.394    0.090    4.392    0.000
+
+Covariances:
+  f1 ~~
+    f12               0.000
+    f13               0.000
+    f123              0.000
+  f2 ~~
+    f12               0.000
+    f23               0.000
+    f123              0.000
+  f3 ~~
+    f13               0.000
+    f23               0.000
+    f123              0.000
+  f12 ~~
+    f123              0.000
+  f13 ~~
+    f123              0.000
+  f23 ~~
+    f123              0.000
+  f1 ~~
+    f2                0.112    0.042    2.680    0.007
+    f3                0.119    0.042    2.858    0.004
+    f23              -0.000    0.047   -0.000    1.000
+  f2 ~~
+    f3                0.101    0.044    2.281    0.023
+    f13               0.000    0.058    0.000    1.000
+  f3 ~~
+    f12               0.000    0.047    0.000    1.000
+  f12 ~~
+    f13               0.284    0.072    3.960    0.000
+    f23               0.189    0.060    3.133    0.002
+  f13 ~~
+    f23               0.228    0.074    3.071    0.002
+
+Intercepts:
+    x1                0.000
+    x4                0.000
+    x7                0.000
+    x10               0.000
+    x1.x4             0.000
+    x1.x7             0.000
+    x4.x7             0.000
+    x1.x4.x7          0.000
+    f1                0.000    0.044    0.000    1.000
+    f2               -0.000    0.045   -0.000    1.000
+    f3               -0.000    0.046   -0.000    1.000
+    f12               0.000    0.063    0.000    1.000
+    f13              -0.000    0.064   -0.000    1.000
+    f23              -0.000    0.066   -0.000    1.000
+    f123             -0.000    0.090   -0.000    1.000
+    f4                0.026    0.065    0.395    0.693
+    x2               -0.000    0.047   -0.000    1.000
+    x3               -0.000    0.047   -0.000    1.000
+    x5                0.000    0.044    0.000    1.000
+    x6                0.000    0.044    0.000    1.000
+    x8                0.000    0.044    0.000    1.000
+    x9                0.000    0.045    0.000    1.000
+    x2.x5            -0.000    0.089   -0.000    1.000
+    x3.x6            -0.000    0.086   -0.000    1.000
+    x2.x8             0.000    0.071    0.000    1.000
+    x3.x9             0.000    0.074    0.000    1.000
+    x5.x8             0.000    0.084    0.000    1.000
+    x6.x9             0.000    0.085    0.000    1.000
+    x2.x5.x8          0.000    0.163    0.000    1.000
+    x3.x6.x9          0.000    0.134    0.000    1.000
+    x11              -0.001    0.046   -0.017    0.986
+    x12               0.001    0.044    0.024    0.981
+
+Variances:
+    x1                1.006    0.065
+    x2                1.012    0.070
+    x3                0.971    0.072
+    x4                0.988    0.070
+    x5                0.995    0.070
+    x6                1.012    0.067
+    x7                1.026    0.070
+    x8                0.978    0.067
+    x9                0.993    0.069
+    x1.x4             2.990    0.176
+    x2.x5             2.968    0.228
+    x3.x6             2.882    0.215
+    x1.x7             2.763    0.225
+    x2.x8             3.110    0.194
+    x3.x9             3.274    0.213
+    x4.x7             3.394    0.212
+    x5.x8             3.138    0.218
+    x6.x9             3.110    0.225
+    x1.x4.x7          7.052    0.387
+    x2.x5.x8          6.361    0.642
+    x3.x6.x9          7.568    0.461
+    x10               1.003    0.069
+    x11               1.008    0.071
+    x12               0.977    0.065
+    f1                0.924    0.087
+    f2                1.050    0.096
+    f3                1.048    0.097
+    f12               0.949    0.163
+    f13               1.341    0.232
+    f23               0.933    0.190
+    f123              0.995    0.283
+    f4                1.551    0.124
+
+> 
+> result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+> result3wayRC
+$SimpleIntcept
+  f1 f2      Intcept         SE        Wald            p
+1 -1 -1 -0.653179183 0.12016625 -5.43562919 5.460341e-08
+2  0 -1 -0.367764804 0.08662818 -4.24532527 2.182766e-05
+3  1 -1 -0.082350425 0.13051481 -0.63096612 5.280627e-01
+4 -1  0 -0.355317033 0.08869645 -4.00598942 6.175841e-05
+5  0  0 -0.003585556 0.06611886 -0.05422895 9.567528e-01
+6  1  0  0.348145920 0.08869643  3.92514018 8.667925e-05
+7 -1  1 -0.057454884 0.13251248 -0.43358092 6.645928e-01
+8  0  1  0.360593691 0.08662821  4.16254326 3.147225e-05
+9  1  1  0.778642266 0.12202764  6.38086777 1.760874e-10
+
+$SimpleSlope
+  f1 f2      Slope         SE       Wald        p
+1 -1 -1  0.5385402 0.13687961  3.9344077 0.000083
+2  0 -1  0.1609775 0.08905040  1.8077124 0.070651
+3  1 -1 -0.2165852 0.14823729 -1.4610706 0.143996
+4 -1  0  0.3422144 0.09276383  3.6890933 0.000225
+5  0  0  0.3589868 0.05684065  6.3156696 0.000000
+6  1  0  0.3757591 0.08775603  4.2818606 0.000019
+7 -1  1  0.1458887 0.15177586  0.9612114 0.336446
+8  0  1  0.5569960 0.09044931  6.1581013 0.000000
+9  1  1  0.9681034 0.13480901  7.1812958 0.000000
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("residualCovariate")
+> ### * residualCovariate
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: residualCovariate
+> ### Title: Residual centered all target indicators by covariates
+> ### Aliases: residualCovariate
+> 
+> ### ** Examples
+> 
+> dat <- residualCovariate(attitude, 2:7, 1)
 > 
 > 
 > 
@@ -1047,7 +1964,6 @@ srmr    0.011 0.003  0.019 0.006  0.013
 > 
 > out <- runMI(HSMiss, HS.model, m = 3)
 Loading required package: Amelia
-Warning: package 'Amelia' was built under R version 2.15.1
 Loading required package: foreign
 ## 
 ## Amelia II: Multiple Imputation
@@ -1209,7 +2125,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  6.78 0.07 6.9 NA NA 
+Time elapsed:  13.06 0.08 13.17 NA NA 
 > grDevices::dev.off()
 null device 
           1 
