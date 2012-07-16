@@ -274,3 +274,44 @@ result3wayMC
 
 plotProbe(result3wayRC, xlim=c(-2, 2))
 plotProbe(result3wayMC, xlim=c(-2, 2))
+
+################################# outClipboard #############################
+
+library(lavaan)
+HW.model <- ' visual  =~ x1 + c1*x2 + x3
+              textual =~ x4 + c1*x5 + x6
+               speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
+
+copy(fit)
+copy(fit, "mifit")
+copy(fit, "coef")
+copy(fit, "se")
+copy(fit, "samp")
+copy(fit, "fit")
+
+################################ rmseaNested ##############################
+
+# plotPower
+# plotDist
+# findPower
+# findDist
+# equiPower
+
+
+################################# group allocation power #################
+
+
+
+################################### Transcribe code ###################
+
+library(lavaan)
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+parTable(fit)
+
+

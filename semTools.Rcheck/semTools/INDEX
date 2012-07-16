@@ -1,3 +1,5 @@
+copy                    Copy the result of 'lavaan' object into the
+                        clipboard
 dat2way                 Simulated Dataset to Demonstrate Two-way Latent
                         Interaction
 dat3way                 Simulated Dataset to Demonstrate Three-way

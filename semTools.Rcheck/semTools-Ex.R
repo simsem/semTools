@@ -6,6 +6,45 @@ library('semTools')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("copy")
+### * copy
+
+flush(stderr()); flush(stdout())
+
+### Name: copy
+### Title: Copy the result of 'lavaan' object into the clipboard
+### Aliases: copy
+
+### ** Examples
+
+library(lavaan)
+HW.model <- ' visual  =~ x1 + c1*x2 + x3
+              textual =~ x4 + c1*x5 + x6
+               speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
+
+# Copy the summary of the lavaan object
+copy(fit)
+
+# Copy the modification indices and the model fit from the miPowerFit function
+copy(fit, "mifit")
+
+# Copy the parameter estimates
+copy(fit, "coef")
+
+# Copy the standard errors
+copy(fit, "se")
+
+# Copy the sample statistics
+copy(fit, "samp")
+
+# Copy the fit measures
+copy(fit, "fit")
+
+
+
+cleanEx()
 nameEx("dat2way")
 ### * dat2way
 
