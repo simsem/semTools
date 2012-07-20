@@ -4,9 +4,8 @@
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'semTools' version '0.2-2'
-* checking CRAN incoming feasibility ... NOTE
-Days since last update: 6
+* this is package 'semTools' version '0.2-3'
+* checking CRAN incoming feasibility ... OK
 * checking package namespace information ... OK
 * checking package dependencies ... OK
 * checking if this is a source package ... OK
@@ -45,7 +44,3 @@ Days since last update: 6
 * checking data for ASCII and uncompressed saves ... OK
 * checking examples ... OK
 * checking PDF version of manual ... OK
-NOTE: There was 1 note.
-See
-  'C:/Users/Sunthud/Desktop/My Dropbox/semTools/semTools.Rcheck/00check.log'
-for details.

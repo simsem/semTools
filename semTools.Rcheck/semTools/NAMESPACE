@@ -1,5 +1,5 @@
 importFrom("lavaan", summary)
 
 export(
-measurementInvariance, moreFitIndices, skew, kurtosis, orthogonalize, runMI, plotRMSEApower, miPowerFit, parcelAllocation, monteCarloMed, longInvariance, splitSample, mardiaSkew, mardiaKurtosis, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, miPoolChi, indProd, residualCovariate, probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC, plotProbe, copy
+measurementInvariance, moreFitIndices, skew, kurtosis, orthogonalize, runMI, plotRMSEApower, miPowerFit, parcelAllocation, monteCarloMed, longInvariance, splitSample, mardiaSkew, mardiaKurtosis, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, miPoolChi, indProd, residualCovariate, probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC, plotProbe, clipboard, saveFile
 )

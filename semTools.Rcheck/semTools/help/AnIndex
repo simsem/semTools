@@ -1,4 +1,4 @@
-copy	copy
+clipboard	clipboard
 dat2way	dat2way
 dat3way	dat3way
 exLong	exLong
@@ -26,6 +26,7 @@ probe3WayMC	probe3WayMC
 probe3WayRC	probe3WayRC
 residualCovariate	residualCovariate
 runMI	runMI
+saveFile	clipboard
 simParcel	simParcel
 skew	skew
 splitSample	splitSample

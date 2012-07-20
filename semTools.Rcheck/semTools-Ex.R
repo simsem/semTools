@@ -6,14 +6,15 @@ library('semTools')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
 cleanEx()
-nameEx("copy")
-### * copy
+nameEx("clipboard")
+### * clipboard
 
 flush(stderr()); flush(stdout())
 
-### Name: copy
-### Title: Copy the result of 'lavaan' object into the clipboard
-### Aliases: copy
+### Name: clipboard_saveFile
+### Title: Copy or save the result of 'lavaan' object into a clipboard or a
+###   file
+### Aliases: clipboard saveFile
 
 ### ** Examples
 
@@ -25,22 +26,42 @@ HW.model <- ' visual  =~ x1 + c1*x2 + x3
 fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
 
 # Copy the summary of the lavaan object
-copy(fit)
+clipboard(fit)
 
 # Copy the modification indices and the model fit from the miPowerFit function
-copy(fit, "mifit")
+clipboard(fit, "mifit")
 
 # Copy the parameter estimates
-copy(fit, "coef")
+clipboard(fit, "coef")
 
 # Copy the standard errors
-copy(fit, "se")
+clipboard(fit, "se")
 
 # Copy the sample statistics
-copy(fit, "samp")
+clipboard(fit, "samp")
 
 # Copy the fit measures
-copy(fit, "fit")
+clipboard(fit, "fit")
+
+## Not run: 
+##D # Save the summary of the lavaan object
+##D saveFile(fit, "out.txt")
+##D 
+##D # Save the modification indices and the model fit from the miPowerFit function
+##D saveFile(fit, "out.txt", "mifit")
+##D 
+##D # Save the parameter estimates
+##D saveFile(fit, "out.txt", "coef")
+##D 
+##D # Save the standard errors
+##D saveFile(fit, "out.txt", "se")
+##D 
+##D # Save the sample statistics
+##D saveFile(fit, "out.txt", "samp")
+##D 
+##D # Save the fit measures
+##D saveFile(fit, "out.txt", "fit")
+## End(Not run)
 
 
 
