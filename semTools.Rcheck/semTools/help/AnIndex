@@ -1,3 +1,4 @@
+auxiliary	auxiliary
 clipboard	clipboard
 dat2way	dat2way
 dat3way	dat3way
@@ -5,7 +6,9 @@ exLong	exLong
 findRMSEApower	findRMSEApower
 findRMSEAsamplesize	findRMSEAsamplesize
 indProd	indProd
+inspect,lavaanStar-method	lavaanStar-class
 kurtosis	kurtosis
+lavaanStar-class	lavaanStar-class
 longInvariance	longInvariance
 mardiaKurtosis	mardiaKurtosis
 mardiaSkew	mardiaSkew
@@ -30,3 +33,4 @@ saveFile	clipboard
 simParcel	simParcel
 skew	skew
 splitSample	splitSample
+summary,lavaanStar-method	lavaanStar-class

@@ -329,14 +329,8 @@ dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 
 fit <- cfa(HS.model, data=dat) #, group="sex", meanstructure=TRUE)
 fitaux <- auxiliary(fit, aux="z", data=dat)
 
-fitNull <- lavaan(nullAuxiliary("z", paste0("x", 1:9), meanstructure=FALSE, ngroups=1), data=dat)
-
-
-
 fitgroup <- cfa(HS.model, data=dat, group="school")
 fitgroupaux <- auxiliary(fitgroup, aux="z", data=dat, group="school")
-
-fitNull <- lavaan(nullAuxiliary("z", paste0("x", 1:9), meanstructure=FALSE, ngroups=2), data=dat, group="school")
 
 mod <- ' x5 ~ x4
 x4 ~ x3
@@ -344,8 +338,6 @@ x3 ~ x1 + x2'
 
 fitpath <- sem(mod, data=dat)
 fitpathaux <- auxiliary(fitpath, aux="z", data=dat)
-
-fitNull <- lavaan(nullAuxiliary("z", paste0("x", 3:5), paste0("x", 1:2), meanstructure=FALSE, ngroups=1), data=dat)
 
 dat2 <- data.frame(PoliticalDemocracy, z=rnorm(nrow(PoliticalDemocracy), 0, 1))
 model <- ' 
@@ -368,4 +360,47 @@ model <- '
 fitsem <- sem(model, data=dat2, meanstructure=TRUE)
 fitsemaux <- auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
 
-fitNull <- lavaan(nullAuxiliary("z", c(paste0("x", 1:3), paste0("y", 1:8)), meanstructure=TRUE, ngroups=1), data=dat2)
+
+# HS.model.cov <- ' visual  =~ x1 + x2 + x3
+              # textual =~ x4 + x5 + x6
+              # speed   =~ x7 + x8 + x9 
+			  # visual ~ sex
+			  # textual ~ sex
+			  # speed ~ sex'
+	  
+# fitcov <- sem(HS.model.cov, data=dat) #, group="sex", meanstructure=TRUE)
+# as.data.frame(fitcov@ParTable)
+# fitcovaux <- auxiliary(fitcov, aux="z", data=dat)
+
+# HS.model.covxx <- ' visual  =~ x1 + x2 + x3
+              # textual =~ x4 + x5 + x6
+              # speed   =~ x7 + x8 + x9 
+			  # visual ~ sex
+			  # textual ~ sex
+			  # speed ~ sex
+			  # z ~~ z
+			  # z ~~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9
+			  # z ~ sex'
+	  
+# fitcovxx <- sem(HS.model.covxx, data=dat) #, group="sex", meanstructure=TRUE)
+# as.data.frame(fitcovxx@ParTable)
+# fitcovaux <- auxiliary(fitcov, aux="z", data=dat)
+
+
+# HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
+              # textual =~ x4 + x5 + x6
+              # x7 ~ visual + textual'
+	  
+# fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE) #, group="sex", meanstructure=TRUE)
+# as.data.frame(fitcov2@ParTable)
+# fitcov2aux <- auxiliary(fitcov2, aux="z", data=dat)
+
+
+
+# HS.model.covyy <- ' visual  =~ x1 + x2 + x3
+              # textual =~ x4 + x5 + x6
+              # x7 ~ visual + textual
+			  # z ~~ x1 + x2 + x3 + x4 + x5 + x6 + x7'
+# fitcovyy <- sem(HS.model.covyy, data=dat) #, group="sex", meanstructure=TRUE)
+		  
+			  

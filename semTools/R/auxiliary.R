@@ -36,13 +36,12 @@ auxiliary <- function(object, aux, ...) {
 	covName <- NULL
 	if("=~" %in% object$op) {
 		facName <- unique(object$lhs[object$op == "=~"])
-		indName <- unique(object$rhs[object$op == "=~"])
+		indName <- union(unique(object$rhs[object$op == "=~"]), setdiff(unique(object$lhs[object$op == "~"]), facName))
 		covName <- setdiff(unique(object$rhs), c(facName, indName, ""))
 	} else {
 		indName <- unique(object$lhs[object$op == "~"])
 		covName <- setdiff(unique(object$rhs), c(indName, ""))
 	}
-	
 	code <- auxiliaryCode(object, aux, correlate=indName, extradv=covName)
 	result <- lavaan(code, ...)
 	codeNull <- nullAuxiliary(aux, indName, covName, any(object$op == "~1"), max(object$group))

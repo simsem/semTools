@@ -6,6 +6,111 @@ library('semTools')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("auxiliary")
+### * auxiliary
+
+flush(stderr()); flush(stdout())
+
+### Name: auxiliary
+### Title: Analyzing data with full-information maximum likelihood with
+###   auxiliary variables
+### Aliases: auxiliary
+
+### ** Examples
+
+# Example of confirmatory factor analysis
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+			  
+dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
+			  
+fit <- cfa(HS.model, data=dat) #, group="sex", meanstructure=TRUE)
+fitaux <- auxiliary(fit, aux="z", data=dat)
+
+# Example of multiple groups confirmatory factor analysis
+
+fitgroup <- cfa(HS.model, data=dat, group="school")
+fitgroupaux <- auxiliary(fitgroup, aux="z", data=dat, group="school")
+
+# Example of path analysis
+
+mod <- ' x5 ~ x4
+x4 ~ x3
+x3 ~ x1 + x2'
+
+fitpath <- sem(mod, data=dat)
+fitpathaux <- auxiliary(fitpath, aux="z", data=dat)
+
+# Example of full structural equation modeling
+
+dat2 <- data.frame(PoliticalDemocracy, z=rnorm(nrow(PoliticalDemocracy), 0, 1))
+model <- ' 
+     ind60 =~ x1 + x2 + x3
+     dem60 =~ y1 + a*y2 + b*y3 + c*y4
+     dem65 =~ y5 + a*y6 + b*y7 + c*y8
+
+    dem60 ~ ind60
+    dem65 ~ ind60 + dem60
+
+    y1 ~~ y5
+    y2 ~~ y4 + y6
+    y3 ~~ y7
+    y4 ~~ y8
+    y6 ~~ y8
+'
+fitsem <- sem(model, data=dat2, meanstructure=TRUE)
+fitsemaux <- auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
+
+#########################################################
+## These following codes show the models that do not work with the current function
+
+##### 1. covariate at the factor level
+## HS.model.cov <- ' visual  =~ x1 + x2 + x3
+##              textual =~ x4 + x5 + x6
+##             speed   =~ x7 + x8 + x9 
+##			  visual ~ sex
+##			  textual ~ sex
+##			  speed ~ sex'
+	  
+## fitcov <- cfa(HS.model.cov, data=dat) 
+## fitcovaux <- auxiliary(fitcov, aux="z", data=dat)
+
+### The auxiliary code does not work when specifying manually.
+## HS.model.covxx <- ' visual  =~ x1 + x2 + x3
+##              textual =~ x4 + x5 + x6
+##              speed   =~ x7 + x8 + x9 
+##			  visual ~ sex
+##			  textual ~ sex
+##			  speed ~ sex
+##			  z ~~ z
+##			  z ~~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9
+##			  z ~ sex'
+	  
+## fitcovxx <- cfa(HS.model.covxx, data=dat) 
+## fitcovaux <- auxiliary(fitcov, aux="z", data=dat)
+
+##### 2. Endogenous variable with single indicator 
+## HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
+##               textual =~ x4 + x5 + x6
+##               x7 ~ visual + textual'
+## 	  
+## fitcov2 <- sem (HS.model.cov2, data=dat, fixed.x=FALSE) #, group="sex", meanstructure=TRUE)
+## fitcov2aux <- auxiliary(fitcov2, aux="z", data=dat)
+
+
+### The auxiliary code does not work when specifying manually.
+## HS.model.covyy <- ' visual  =~ x1 + x2 + x3
+##               textual =~ x4 + x5 + x6
+##               x7 ~ visual + textual
+## 			  z ~~ x1 + x2 + x3 + x4 + x5 + x6 + x7'
+## fitcovyy <- sem(HS.model.covyy, data=dat) #, group="sex", meanstructure=TRUE)
+		  
+
+
+
+cleanEx()
 nameEx("clipboard")
 ### * clipboard
 
@@ -18,32 +123,32 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-library(lavaan)
-HW.model <- ' visual  =~ x1 + c1*x2 + x3
-              textual =~ x4 + c1*x5 + x6
-               speed   =~ x7 + x8 + x9 '
-
-fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
-
-# Copy the summary of the lavaan object
-clipboard(fit)
-
-# Copy the modification indices and the model fit from the miPowerFit function
-clipboard(fit, "mifit")
-
-# Copy the parameter estimates
-clipboard(fit, "coef")
-
-# Copy the standard errors
-clipboard(fit, "se")
-
-# Copy the sample statistics
-clipboard(fit, "samp")
-
-# Copy the fit measures
-clipboard(fit, "fit")
-
 ## Not run: 
+##D library(lavaan)
+##D HW.model <- ' visual  =~ x1 + c1*x2 + x3
+##D               textual =~ x4 + c1*x5 + x6
+##D                speed   =~ x7 + x8 + x9 '
+##D 
+##D fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
+##D 
+##D # Copy the summary of the lavaan object
+##D clipboard(fit)
+##D 
+##D # Copy the modification indices and the model fit from the miPowerFit function
+##D clipboard(fit, "mifit")
+##D 
+##D # Copy the parameter estimates
+##D clipboard(fit, "coef")
+##D 
+##D # Copy the standard errors
+##D clipboard(fit, "se")
+##D 
+##D # Copy the sample statistics
+##D clipboard(fit, "samp")
+##D 
+##D # Copy the fit measures
+##D clipboard(fit, "fit")
+##D 
 ##D # Save the summary of the lavaan object
 ##D saveFile(fit, "out.txt")
 ##D 
@@ -193,6 +298,31 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 kurtosis(1:5)
+
+
+
+cleanEx()
+nameEx("lavaanStar-class")
+### * lavaanStar-class
+
+flush(stderr()); flush(stdout())
+
+### Name: lavaanStar-class
+### Title: Class For Representing A (Fitted) Latent Variable Model with
+###   Additional Elements
+### Aliases: lavaanStar-class inspect,lavaanStar-method
+###   summary,lavaanStar-method
+
+### ** Examples
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+			  
+dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
+			  
+fit <- cfa(HS.model, data=dat) #, group="sex", meanstructure=TRUE)
+fitaux <- auxiliary(fit, aux="z", data=dat)
 
 
 
@@ -406,6 +536,9 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
 moreFitIndices(fit)
+
+fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="mlr")
+moreFitIndices(fit2)
 
 
 
