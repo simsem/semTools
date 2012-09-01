@@ -315,3 +315,57 @@ fit <- cfa(HS.model, data=HolzingerSwineford1939)
 parTable(fit)
 
 
+
+########### Auxiliary
+
+library(lavaan)
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+			  
+dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
+			  
+fit <- cfa(HS.model, data=dat) #, group="sex", meanstructure=TRUE)
+fitaux <- auxiliary(fit, aux="z", data=dat)
+
+fitNull <- lavaan(nullAuxiliary("z", paste0("x", 1:9), meanstructure=FALSE, ngroups=1), data=dat)
+
+
+
+fitgroup <- cfa(HS.model, data=dat, group="school")
+fitgroupaux <- auxiliary(fitgroup, aux="z", data=dat, group="school")
+
+fitNull <- lavaan(nullAuxiliary("z", paste0("x", 1:9), meanstructure=FALSE, ngroups=2), data=dat, group="school")
+
+mod <- ' x5 ~ x4
+x4 ~ x3
+x3 ~ x1 + x2'
+
+fitpath <- sem(mod, data=dat)
+fitpathaux <- auxiliary(fit3, aux="z", data=dat)
+
+fitNull <- lavaan(nullAuxiliary("z", paste0("x", 3:5), paste0("x", 1:2), meanstructure=FALSE, ngroups=1), data=dat)
+
+dat2 <- data.frame(PoliticalDemocracy, z=rnorm(nrow(PoliticalDemocracy), 0, 1))
+model <- ' 
+  # latent variable definitions
+     ind60 =~ x1 + x2 + x3
+     dem60 =~ y1 + a*y2 + b*y3 + c*y4
+     dem65 =~ y5 + a*y6 + b*y7 + c*y8
+
+  # regressions
+    dem60 ~ ind60
+    dem65 ~ ind60 + dem60
+
+  # residual correlations
+    y1 ~~ y5
+    y2 ~~ y4 + y6
+    y3 ~~ y7
+    y4 ~~ y8
+    y6 ~~ y8
+'
+fitsem <- sem(model, data=dat2, meanstructure=TRUE)
+fitsemaux <- auxiliary(fit5, aux="z", data=dat2, meanstructure=TRUE)
+
+fitNull <- lavaan(nullAuxiliary("z", c(paste0("x", 1:3), paste0("y", 1:8)), meanstructure=TRUE, ngroups=1), data=dat2)
