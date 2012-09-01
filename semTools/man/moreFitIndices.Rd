@@ -49,7 +49,7 @@ Expected Value of Cross-Validation Index (ECVI; West, Taylor, & Wu, 2012) is the
 
 \deqn{ ecvi = f + \frac{2 \times k}{N},}
 
-Stochastic information criterion (sic; Preacher, 2006) is similar to aic or bic. This index will account for model complexity in the model's function form, in addition to the number of free parameters. sic can be computed by
+Stochastic information criterion (sic; Preacher, 2006) is similar to aic or bic. This index will account for model complexity in the model's function form, in addition to the number of free parameters. This index will be provided only the chi-square value is not scaled. sic can be computed by
 
 \deqn{ sic = \frac{1}{2}\left(f - \log{\det{I(\hat{\theta})}}\right),}
 
@@ -62,6 +62,8 @@ Corrected Bayesian Information Criterion (BIC*; Kuha, 2004) is similar to bic bu
 Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for model selection similar to aic or bic.
 
 \deqn{ hqc = f + 2k\log{(\log{N})},}
+
+Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit indices using the scaled chi-square values are also provided. 
 }
 
 \value{
@@ -75,6 +77,10 @@ Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for model
   \item{sic} Stochastic Information Criterion
   \item{bic*} Bayesian Information Criterion with specifying the prior sample size
   \item{hqc} Hannan-Quinn Information Criterion
+  \item{nfi.scaled} Normed Fit Index using Scaled Chi-square
+  \item{ifi.scaled} Incremental Fit Index using Scaled Chi-square
+  \item{gfi*.scaled} Gamma Hat using Scaled Chi-square
+  \item{agfi*.scaled} Adjusted Gamma Hat using Scaled Chi-square
 }
 }
 \references{
@@ -102,4 +108,7 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
 moreFitIndices(fit)
+
+fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="mlr")
+moreFitIndices(fit2)
 }

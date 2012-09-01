@@ -10,16 +10,20 @@ function(object, what="free") {
               what == "fitmeasures" ||
               what == "fit.measures" ||
               what == "fit.indices") {
-		cat("Yeah\n")
+		fitMeasuresLavaanStar(object)
 	} else {
 		getMethod("inspect", "lavaan")(object, what=what)
 	}
 })
 
 setMethod("summary", "lavaanStar",
-function(object, ...) {
-	getMethod("summary", "lavaan")(object, ...)
-	cat("Yeah\n")
+function(object, fit.measures=FALSE, ...) {
+	getMethod("summary", "lavaan")(object, fit.measures=FALSE, ...)
+	if(fit.measures) {
+		cat("Because the original method to find the baseline model does not work, \n
+		    please do not use any fit measures relying on baseline model, including CFI and TLI. \n
+			To find the correct one, please use the inspect function: inspect(object, what='fit').\n")
+	}
 })
 	
 # auxiliary: Automatically accounts for auxiliary variable in full information maximum likelihood
@@ -125,6 +129,56 @@ nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
 }
 
 
+fitMeasuresLavaanStar <- function(object) {
+	result <- getMethod("inspect", "lavaan")(object, what="fit")
+	result[c("baseline.chisq", "baseline.df", "baseline.pvalue")] <- object@nullfit[c("chisq", "df", "pvalue")]
+		
+    if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
+        scaled <- TRUE
+    } else {
+        scaled <- FALSE
+    }
+    
+	if(scaled) {
+		result[c("baseline.chisq.scaled", "baseline.df.scaled", "baseline.pvalue.scaled", "baseline.chisq.scaling.factor")] <- object@nullfit[c("chisq.scaled", "df.scaled", "pvalue.scaled", "chisq.scaling.factor")]
+	}
+	
+	
+	X2.null <- object@nullfit["chisq"]
+	df.null <- object@nullfit["df"]
+	X2 <- result["chisq"]
+	df <- result["df"]
+	result["cfi"] <- ( 1 - max(c(X2 - df,0)) / 
+                                    max( c(X2-df, X2.null-df.null, 0) ) 
+                              )
+	if(df > 0) {
+		result["tli"] <- (X2.null/df.null - X2/df)/(X2.null/df.null - 1)
+	} else {
+		result["tli"] <- 1
+	}
+	if(scaled) {
+		X2.scaled <- result["chisq.scaled"]
+		df.scaled <- result["df.scaled"]
+		X2.null.scaled <- object@nullfit["chisq.scaled"]
+		df.null.scaled <- object@nullfit["df.scaled"]
+		result["cfi.scaled"] <- 
+			( 1 - max( c(X2.scaled - df.scaled,0)) / 
+				  max( c(X2.scaled - df.scaled, 
+						 X2.null.scaled - df.null.scaled, 0) ) 
+			)
+		if(df > 0) {
+			result["tli.scaled"] <- (X2.null.scaled/df.null.scaled - 
+					X2.scaled/df.scaled) / 
+				   (X2.null.scaled/df.null.scaled - 1)
+		} else {
+			result["tli.scaled"] <- 1
+		}
+	} 
+	return(result)
+		
+}
+
+# In case we will need it later.
 # reorderPT <- function(pt, aux, indName, facName) {
 	# pt1 <- lapply(pt, function(x, select) x[select], select=(pt$op == "=~"))
 	# pt2 <- lapply(pt, function(x, select) x[select], select=(pt$op == "~"))

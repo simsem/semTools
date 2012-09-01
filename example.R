@@ -343,7 +343,7 @@ x4 ~ x3
 x3 ~ x1 + x2'
 
 fitpath <- sem(mod, data=dat)
-fitpathaux <- auxiliary(fit3, aux="z", data=dat)
+fitpathaux <- auxiliary(fitpath, aux="z", data=dat)
 
 fitNull <- lavaan(nullAuxiliary("z", paste0("x", 3:5), paste0("x", 1:2), meanstructure=FALSE, ngroups=1), data=dat)
 
@@ -366,6 +366,6 @@ model <- '
     y6 ~~ y8
 '
 fitsem <- sem(model, data=dat2, meanstructure=TRUE)
-fitsemaux <- auxiliary(fit5, aux="z", data=dat2, meanstructure=TRUE)
+fitsemaux <- auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
 
 fitNull <- lavaan(nullAuxiliary("z", c(paste0("x", 1:3), paste0("y", 1:8)), meanstructure=TRUE, ngroups=1), data=dat2)
