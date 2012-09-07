@@ -35,6 +35,7 @@ saveFile(object, file, what="summary", tableFormat=FALSE, ...)
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 }
 \examples{
+\dontrun{
 library(lavaan)
 HW.model <- ' visual  =~ x1 + c1*x2 + x3
               textual =~ x4 + c1*x5 + x6
@@ -60,7 +61,6 @@ clipboard(fit, "samp")
 # Copy the fit measures
 clipboard(fit, "fit")
 
-\dontrun{
 # Save the summary of the lavaan object
 saveFile(fit, "out.txt")
 

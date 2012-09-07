@@ -1,3 +1,5 @@
+auxiliary               Analyzing data with full-information maximum
+                        likelihood with auxiliary variables
 clipboard               Copy or save the result of 'lavaan' object into
                         a clipboard or a file
 dat2way                 Simulated Dataset to Demonstrate Two-way Latent
@@ -14,6 +16,8 @@ indProd                 Make products of indicators using no centering,
                         mean centering, double-mean centering, or
                         residual centering
 kurtosis                Finding excessive kurtosis
+lavaanStar-class        Class For Representing A (Fitted) Latent
+                        Variable Model with Additional Elements
 longInvariance          Measurement Invariance Tests Within Person
 mardiaKurtosis          Finding Mardia's multivariate kurtosis
 mardiaSkew              Finding Mardia's multivariate skewness

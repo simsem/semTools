@@ -24,9 +24,6 @@ moreFitIndices <- function(object, nPrior = 1) {
 	# Compute fit indices
 	gfiStarValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
 	agfiStarValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
-	sicValue <- NA
-	estSpec <- as.list(object@call)$estimator
-	if(!(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf")))) try(sicValue <- sic(f, object), silent=TRUE)
 	nfiValue <- (fit["baseline.chisq"] - fit["chisq"])/fit["baseline.chisq"]
 	ifiValue <- (fit["baseline.chisq"] - fit["chisq"])/(fit["baseline.chisq"] - fit["df"])
 	ciacValue <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
@@ -35,8 +32,21 @@ moreFitIndices <- function(object, nPrior = 1) {
 	hqcValue <- f + 2 * log(log(n)) * nParam
 	
 	# Vector of result
-	result <- c(nfiValue, ifiValue, gfiStarValue, agfiStarValue, ciacValue, ecviValue, sicValue, bicStarValue, hqcValue)
-	names(result) <- c("nfi", "ifi", "gfi*", "agfi*", "ciac", "ecvi", "sic", "bic*", "hqc")
+	result <- c(nfiValue, ifiValue, gfiStarValue, agfiStarValue, ciacValue, ecviValue, bicStarValue, hqcValue)
+	names(result) <- c("nfi", "ifi", "gfi*", "agfi*", "ciac", "ecvi", "bic*", "hqc")
+	if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
+		gfiStarScaledValue <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
+		agfiStarScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gfiStarValue)
+		nfiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/fit["baseline.chisq.scaled"]
+		ifiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/(fit["baseline.chisq.scaled"] - fit["df.scaled"])
+		resultScaled <- c(gfiStarScaledValue, agfiStarScaledValue, nfiScaledValue, ifiScaledValue)
+		names(resultScaled) <- c("nfi.scaled", "ifi.scaled", "gfi*.scaled", "agfi*.scaled")
+		result <- c(result, resultScaled)
+    } else {
+		sicValue <- sic(f, object)
+		result <- c(result, "sic" = sicValue)
+	}
+	
 	return(result)
 }
 

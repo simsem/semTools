@@ -6,13 +6,16 @@
 clipboard <- function(object, what="summary", ...) {
 	if(.Platform$OS.type == "windows") {
 		saveFile(object, file="clipboard-128", what=what, tableFormat=TRUE, ...)
+		cat("File saved in the clipboard; please paste it in any program you wish.\n")
 	} else {
 		if(system("pbcopy", ignore.stderr = TRUE) == 0) {
 			saveFile(object, file=pipe("pbcopy", "w"), what=what, tableFormat=TRUE, ...)
-		} else if (system("xclip", ignore.stderr = TRUE) == 0) {
+			cat("File saved in the clipboard; please paste it in any program you wish. If you cannot paste it, it is okay because this function works for some computers, which I still have no explanation currently. Please consider using the 'saveFile' function instead.\n")
+		} else if (system("xclip -version", ignore.stderr = TRUE) == 0) {
 			saveFile(object, file=pipe("xclip -i", "w") , what=what, tableFormat=TRUE, ...)
+			cat("File saved in the xclip; please paste it in any program you wish. If you cannot paste it, it is okay because this function works for some computers, which I still have no explanation currently. Please consider using the 'saveFile' function instead.\n")
 		} else {
-			stop("For Mac users, the 'pbcopy' command in the shell file does not work. For linux users, this function depends on the 'xclip' application. Please install and run the xclip application before using this function in R. Alternatively, use the 'saveFile' function to write the output into a file.")
+			stop("For Mac users, the 'pbcopy' command in the shell file does not work. For linux users, this function depends on the 'xclip' application. Please install and run the xclip application before using this function in R (it does not guarantee to work though). Alternatively, use the 'saveFile' function to write the output into a file.")
 		}
 	}
 }
