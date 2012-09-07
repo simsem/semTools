@@ -7,7 +7,7 @@ Multiply impute and analyze data using lavaan
 This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules.
 }
 \usage{
-runMI(data.mat,data.model, m, miPackage="Amelia", digits=3, seed=12345, 
+runMI(data.mat,data.model, m, miPackage="Amelia", chi="all", digits=3, seed=12345, 
     std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...)
 }
 \arguments{
@@ -22,6 +22,9 @@ Number of imputations wanted.
 }
  \item{miPackage}{
 Package to be used for imputation. Currently runMI only uses Amelia or mice for imputation. 
+}
+ \item{chi}{
+The method to combine the chi-square. Can be one of the following: "MR" for the method proposed for Meng & Rubin (1992), "Mplus" for the method used in Mplus (Asparouhov & Muthen, 2010), "LMRR" for the method proposed by Li, Meng, Raghunathan, & Rubin (1991), and "all" to show the three methods in the output. The default is "all". 
 }
  \item{digits}{
 	Number of digits to print in the results.
@@ -47,11 +50,16 @@ Package to be used for imputation. Currently runMI only uses Amelia or mice for 
 }
 \value{
 runMI returns a list with pooled fit indices, estimates, standard errors and fraction missing information.
-\item{fit}{Pooled fit information. The first set of fit information are simply averaged across imputations and are not trustworthy. The second set of fit information, is a pooled Chi-square statistic based on Li, Meng, Raghunathan, & Rubin (1991) }
+\item{fit}{Pooled fit information. Simply averaged across imputations and are not trustworthy. }
+\item{Pooled Chi-square statistic}{Is the Pooled Chi-square statistic according to the method specified in chi}
 \item{parameters}{Pooled parameter estimates and standard errors. Wald statistics and p values are computed from the pooled estimates and standard errors. Also contains two estimates of Fraction of Missing Information (FMI). The first estimate of FMI (FMI.1) is asymptotic FMI and the second estimate of FMI (FMI.2) is corrected for small numbers of imputation}
 }
 \references{
+Asparouhov T. & Muthen B. (2010).\emph{Chi-Square Statistics with Multiple Imputation}. Technical Report. www.statmodel.com. 
+
 Li, K.H., Meng, X.-L., Raghunathan, T.E. and Rubin, D.B. (1991). Significance Levels From Repeated p-values with Multiply-Imputed Data. \emph{Statistica Sinica, 1}, 65-92.
+
+Meng, X.L. & Rubin, D.B. (1992). Performing likelihood ratio tests with multiply-imputed data sets. \emph{Biometrika, 79}, 103 - 111.
 
 Rubin, D.B. (1987) \emph{Multiple Imputation for Nonresponse in Surveys.} J. Wiley & Sons, New York.
 }
@@ -76,11 +84,13 @@ randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
 randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
 HSMiss[randomMiss] <- NA
 
-out <- runMI(HSMiss, HS.model, m = 3)
+out <- runMI(HSMiss, HS.model, m = 3, chi="all")
 
+##Multiple group example
 HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-out2 <- runMI(HSMiss2, HS.model, m = 3, group="school", noms="school")
+out2 <- runMI(HSMiss2, HS.model, m = 3, chi="MR", group="school", noms="school")
 
+##Example using previously imputed data with runMI
 library(Amelia)
 
 modsim <- '
@@ -100,6 +110,6 @@ randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
 datsim[randomMiss2] <- NA
 datsimMI <- amelia(datsim,m=3, noms="group")
 
-out3 <- runMI(datsimMI$imputations, mod, group="group")
+out3 <- runMI(datsimMI$imputations, mod, chi="LMRR", group="group")
 
 }

@@ -6,7 +6,7 @@
 
 ##Currently outputs a list of parameter estimates, standard errors, fit indices and fraction missing information
 
-runMI <- function(data.mat,data.model, m, miPackage="Amelia", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) 
+runMI <- function(data.mat,data.model, m, chi="all", miPackage="Amelia", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) 
 {
 
 set.seed(seed)
@@ -85,18 +85,60 @@ if (!imputed.data){
   comb.fit <- data.frame(comb.fit)
   comb.fit <- round(comb.fit, digits=digits)
   colnames(comb.fit) <- ""
-  comb.chi <- miPoolChi(fit[,1], fit[1,2])
-  comb.chi <- data.frame(comb.chi)
-  comb.chi <- round(comb.chi, digits=digits)
-  colnames(comb.chi) <- "" 
+
+############# here we start the 3 chi square combination methods
+
+if(chi=="LMRR" | chi=="all"){ ## here is the code that get the LMRR chi square combination
+  comb.chi.lmrr <- data.frame(t(miPoolChi(fit[,1], fit[1,2])))
+  comb.chi.lmrr <- round(comb.chi.lmrr, digits=digits)
+  colnames(comb.chi.lmrr) <- c("F","df1","df2","pvalue")
+  rownames(comb.chi.lmrr)<-""
+}
+#### here we do the mplus and mr methods
+if(chi == "Mplus" | chi == "MR" | chi == "all"){
+  fit.alt <- cfa(data.model, data=imputed.l[[1]], std.lv = std.lv, meanstructure=T,
+                 estimator = estimator, group = group, group.equal = group.equal)
+    
+  mrplus <- mrplusCHI(fit.alt, imputed.l, imputed.results.l, comb.results, estimator = estimator, std.lv = std.lv, group = group, group.equal = group.equal)
+
+  if(chi == "Mplus" | chi == "all"){
+    comb.chi.mplus <- mplusCHI(mrplus[1], mrplus[3], mrplus[4], digits = digits)
+    }
   
-  fit.results <- list(comb.fit, comb.chi)
-  names(fit.results) <- c('Average fit statistics. These may not be trustworthy!', 'Pooled Chi-square statistic')
-  
-  results <- list(fit.results, comb.results)
-  names(results) <- c('fit', 'parameters')
-  
-  return(results)
+if(chi == "MR" | chi == "all"){  
+  comb.chi.mr <- mrCHI(mrplus[1], mrplus[2], mrplus[3], mrplus[4], digits = digits)
+  }
+}
+### here we put all the results together depending on the method to combine the chi square
+if(chi == "LMRR") {
+  results <- list(comb.fit, comb.chi.lmrr, comb.results)
+  names(results) <- c('Average fit statistics. These may not be trustworthy!', 
+                      'Pooled Chi-square statistic LMRR', 
+                      'parameters')
+}
+if(chi == "Mplus") {
+  results <- list(comb.fit, comb.chi.mplus, comb.results)
+  names(results) <- c('Average fit statistics. These may not be trustworthy!', 
+                      'Pooled Chi-square statistic Mplus',
+                      'parameters')
+}
+if(chi == "MR") {
+  results <- list(comb.fit, comb.chi.mr, comb.results)
+  names(results) <- c('Average fit statistics. These may not be trustworthy!', 
+                      'Pooled Chi-square statistic MR', 
+                      'parameters')
+}
+if(chi == "all"){
+  results <- list(comb.fit, comb.chi.mr, comb.chi.mplus,
+                  comb.chi.lmrr, comb.results)
+  names(results) <- c('Average fit statistics. These may not be trustworthy!', 
+                      'Pooled Chi-square statistic MR',   
+                      'Pooled Chi-square statistic Mplus',
+                      'Pooled Chi-square statistic LMRR', 
+                      'parameters')
+}
+
+return(results)
 }
   
 #Conveniance function to run lavaan models and get results out. For easy use with lapply
@@ -262,3 +304,129 @@ miPoolChi <- function(chis, df) {
 #miPoolChi(c(89.864, 81.116,71.500,49.022,61.986,64.422,55.256,57.890,79.416,63.944), 2)
 
 
+## function that builds a lavaan parameter table of the saturate model
+## using the information in a lavaan object from the cfa function
+satPartable <- function(fit.alt){
+  
+  par.alt<-partable(fit.alt) #get the parameter table form the original model
+  ngroups <- fit.alt@Data@ngroups # get the number of groups 
+  # gets the parameter table from the null model
+  par.null <- partable(lavaan:::independence.model.fit(fit.alt))
+  lhs.diag <- par.null$lhs
+  op.diag <- par.null$op
+  rhs.diag <- par.null$rhs
+  gnull <- par.null$group
+  #combine the variable names to set al the covariances
+  pairs <- t(combn(lavaanNames(fit.alt, type="ov"), 2))
+  lhs.up <- rep(pairs[, 1],times=ngroups)
+  op.up <- rep("~~", length(lhs.up))
+  rhs.up <- rep(pairs[, 2],times=ngroups)
+  galt <- sort(rep(1:ngroups,times=length(lhs.up)/ngroups))
+  #put together the null table and the covariances
+  lhs.all <- c(lhs.up, lhs.diag)
+  id <- seq(1:length(lhs.all))
+  op.all <- c(op.up, op.diag)
+  rhs.all <- c(rhs.up, rhs.diag)
+  user <- rep(1,length(lhs.all))
+  group <- as.integer(c(galt,gnull))
+  free <- as.integer(id)
+  ustart <- rep(NA, length(lhs.all))
+  exo <- rep(0, length(lhs.all))
+  label <- rep("", length(lhs.all))
+  eq.id <- exo
+  unco <- id
+  par.sat <- list(id, lhs.all, op.all, rhs.all, user, group,
+                  free, ustart, exo, label, eq.id, unco)
+  names(par.sat)<-colnames(par.alt)
+  return(par.sat)
+}
+
+##### function that does the part of the MR and Mplus combination methods are equal 
+mrplusCHI<-function(fit.alt, imputed.l, imputed.results.l, comb.results, estimator = estimator, std.lv = std.lv, group = group, group.equal = group.equal){
+  
+  par.sat <- satPartable(fit.alt)
+  
+  par.alt<-partable(fit.alt)
+  
+  comb.sat <- lapply(imputed.l, runlavaanMI, par.sat, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal)
+  
+  coefs.sat1 <- matrix(NA, nrow = length(imputed.l), ncol = length(comb.sat[[1]][[1]]$est))
+  fit.alt1 <- matrix(NA, nrow = length(imputed.l), ncol = length(imputed.results.l[[1]][[2]]["chisq"]))
+  
+  for(i in 1:length(comb.sat)){
+    coefs.sat1[i,] <- comb.sat[[i]][[1]]$est
+    fit.alt1[i,] <- imputed.results.l[[i]][[2]]["chisq"]
+  }
+  
+  fit.altcc <- colMeans(fit.alt1)
+  est.sat1 <- colMeans(coefs.sat1)
+  est.alt1 <- comb.results$coef
+  
+  par.sat2 <- par.sat
+  par.sat2$free <- as.integer(rep(0, length(par.sat2$free)))
+  par.sat2$ustart <- est.sat1
+  
+  par.alt2 <- par.alt
+  par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
+  par.alt2$ustart <- est.alt1
+  
+  comb.sat2 <- lapply(imputed.l, runlavaanMI, par.sat2, std.lv = std.lv, 
+                      estimator = estimator, group = group, group.equal = group.equal)
+  
+  comb.alt2 <- lapply(imputed.l, runlavaanMI, par.alt2, std.lv = std.lv, 
+                      estimator = estimator, group = group, group.equal = group.equal)
+  
+  
+  fit.sat2 <- matrix(NA, nrow = length(imputed.l), ncol = length(comb.sat2[[1]][[2]]["logl"]))
+  fit.alt2 <- matrix(NA, nrow = length(imputed.l), ncol = length(comb.alt2[[1]][[2]]["logl"]))
+  
+  for(i in 1:length(comb.alt2)){
+    fit.alt2[i,] <- comb.alt2[[i]][[2]]["logl"]
+    fit.sat2[i,] <- comb.sat2[[i]][[2]]["logl"]
+  }
+  chinew <- matrix(NA,ncol=3,nrow=length(imputed.l))
+  chinew[,1] <- fit.sat2
+  chinew[,2] <- fit.alt2
+  chinew[,3] <- (chinew[,1]-chinew[,2])*2
+  chimean <- mean(chinew[,3])
+  
+  m <- length(imputed.l)
+  k <- fitMeasures(fit.alt)["df"]
+  ariv <- ((m+1)/((m-1)*k))*(fit.altcc-chimean)
+  resmrCHI <- c(chimean, m, k, ariv)
+  return(resmrCHI)
+}
+
+##### function that does the calculations for the Mplus chi combination
+mplusCHI <- function(chimean, k, ariv, digits = digits){
+  comb.chi.mplus <- matrix(NA, nrow=1, ncol=3)
+  comb.chi.mplus[1] <- chimean/(1+ariv)
+  comb.chi.mplus[2] <- k
+  comb.chi.mplus[3] <- 1-pchisq(comb.chi.mplus[1], comb.chi.mplus[2])
+  colnames(comb.chi.mplus) <- c("chisq", "df", "pvalue")
+  comb.chi.mplus <- as.data.frame(round(comb.chi.mplus, digits=digits))
+  rownames(comb.chi.mplus) <- ""
+  return(comb.chi.mplus)
+}
+
+##### function that does the calculations for the MR chi combination
+mrCHI <-function(chimean, m, k, ariv, digits = digits){
+  km <- m*k
+  kmtest <- km-k
+  
+  if(kmtest<=4){
+    v4 <- 4+(km-k-4)*(1+(1-(2/kmtest))*(1/ariv))^2
+  }
+  else{
+    v4 <- (kmtest*(1+k^-1)*(1+(1/ariv))^2)/2          
+  }       
+  comb.chi.mr <- matrix(NA, nrow=1, ncol=4)
+  comb.chi.mr[1] <- chimean/((1+ariv)*k)
+  comb.chi.mr[2] <- k
+  comb.chi.mr[3] <- v4
+  comb.chi.mr[4] <- 1-pf(comb.chi.mr[1], comb.chi.mr[2], comb.chi.mr[3])
+  colnames(comb.chi.mr) <- c("F", "df1", "df2", "pvalue")
+  comb.chi.mr <- as.data.frame(round(comb.chi.mr, digits=digits))
+  rownames(comb.chi.mr) <- ""
+  return(comb.chi.mr)
+}
