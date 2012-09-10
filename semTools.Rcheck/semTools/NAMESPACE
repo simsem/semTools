@@ -1,5 +1,5 @@
 importFrom("lavaan", summary, inspect)
 exportClasses(lavaanStar)
 export(
-measurementInvariance, moreFitIndices, skew, kurtosis, orthogonalize, runMI, plotRMSEApower, miPowerFit, parcelAllocation, monteCarloMed, longInvariance, splitSample, mardiaSkew, mardiaKurtosis, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, indProd, residualCovariate, probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC, plotProbe, clipboard, saveFile, auxiliary, loadingFromAlpha
+measurementInvariance, moreFitIndices, skew, kurtosis, orthogonalize, runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi, plotRMSEApower, miPowerFit, parcelAllocation, monteCarloMed, longInvariance, splitSample, mardiaSkew, mardiaKurtosis, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, indProd, residualCovariate, probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC, plotProbe, clipboard, saveFile, auxiliary, loadingFromAlpha
 )

@@ -2,15 +2,24 @@
 ## Author: Sunthud Pornprasertmanit
 # Description: Automatically accounts for auxiliary variable in full information maximum likelihood
 
-setClass("lavaanStar", contains = "lavaan", representation(nullfit = "vector"), prototype(nullfit=c(chi=0,df=0)))
+setClass("lavaanStar", contains = "lavaan", representation(nullfit = "vector", imputed="list"), prototype(nullfit=c(chi=0,df=0), imputed=list()))
 
 setMethod("inspect", "lavaanStar",
 function(object, what="free") {
+	what <- tolower(what)
 	if(what == "fit" ||
               what == "fitmeasures" ||
               what == "fit.measures" ||
               what == "fit.indices") {
 		fitMeasuresLavaanStar(object)
+	} else if(what == "imputed" ||
+              what == "impute") {
+		result <- object@imputed
+		if(length(result) > 0) {
+			return(result)
+		} else {
+			stop("This method did not made by multiple imputation.")
+		}
 	} else {
 		getMethod("inspect", "lavaan")(object, what=what)
 	}
@@ -20,9 +29,7 @@ setMethod("summary", "lavaanStar",
 function(object, fit.measures=FALSE, ...) {
 	getMethod("summary", "lavaan")(object, fit.measures=FALSE, ...)
 	if(fit.measures) {
-		cat("Because the original method to find the baseline model does not work, \n
-		    please do not use any fit measures relying on baseline model, including CFI and TLI. \n
-			To find the correct one, please use the inspect function: inspect(object, what='fit').\n")
+		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: inspect(object, what='fit').\n")
 	}
 })
 	

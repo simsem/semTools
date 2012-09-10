@@ -460,3 +460,28 @@ test[log.mat1] <- NA
 
 runMI(test,HS.model,3, idvars='id')
 
+
+
+
+
+
+test <- HolzingerSwineford1939[-301,-5]
+data.model <- ' visual  =~ NA*x1 + x2 + x3
+		   textual =~ NA*x4 + x5 + x6
+		   speed   =~ NA*x7 + x8 + x9 
+		   visual ~~1*visual
+		   textual ~~ 1*textual
+		   speed ~~ 1*speed
+		   visual ~ speed'
+
+Impose missing data to test
+log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
+log.mat1[,9] <- test$x6>3
+test[log.mat1] <- NA
+data.mat <- test
+m <- 20
+miArgs=list(); chi="all"; miPackage="Amelia"; digits=3; seed=12345; std.lv = FALSE; estimator = "ML"; group = "grade"; group.equal = ""
+fun <- "sem"
+	
+y <- runMI(data=test,model=data.model, m=10, fun="sem", meanstructure=TRUE) 
+x <- sem.mi(data=test,model=data.model, m=10, meanstructure=TRUE)

@@ -1,73 +1,84 @@
 ##  Functon to impute missing data, run Lavaan on each one 
-##  input: data frames of raw data with missing data, model specification (lavaan script), number of imputations wanted, number of digits to print in output.)
-##  Output: list of results with:  fit parameter estimates, standard errors fit indices, and two types of fraction of missing information
+##  input: data frames of raw data with missing data, model specification (lavaan script), number of imputations wanted.)
+##  Output: lavaanStar object which filled with the appropriate information 
 ##  Alexander Schoemann, Patrick Miller, Mijke Rhemtulla, Sunthud Pornprasertmanit, Alexander Robitzsch, Mauricio Garnier Villarreal
 ##  Last modified 5/25/2012
 
 ##Currently outputs a list of parameter estimates, standard errors, fit indices and fraction missing information
 
-cfa.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) {
-	runMI(data.mat=data, data.model=model, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, digits=digits, seed=seed, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal, fun="cfa", ...)
+cfa.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="cfa", ...)
 }
 
-sem.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) {
-	runMI(data.mat=data, data.model=model, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, digits=digits, seed=seed, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal, fun="sem", ...)
+sem.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="sem", ...)
 }
 
-growth.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) {
-	runMI(data.mat=data, data.model=model, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, digits=digits, seed=seed, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal, fun="growth", ...)
+growth.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="growth", ...)
 }
 
-lavaan.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...) {
-	runMI(data.mat=data, data.model=model, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, digits=digits, seed=seed, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal, fun="lavaan", ...)
+lavaan.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="lavaan", ...)
 }
 
 
-runMI <- function(data.mat,data.model, m, miArgs=list(), chi="all", miPackage="Amelia", digits=3, seed=12345, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", fun, ...) 
+runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", seed=12345, fun, ...) 
 {
-	test <- HolzingerSwineford1939[-301,-5]
-	data.model <- ' visual  =~ NA*x1 + x2 + x3
-               textual =~ NA*x4 + x5 + x6
-               speed   =~ NA*x7 + x8 + x9 
-			   visual ~~1*visual
-			   textual ~~ 1*textual
-			   speed ~~ 1*speed
-			   visual ~ speed'
-
-	##Impose missing data to test
-	log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
-	log.mat1[,9] <- test$x6>3
-	test[log.mat1] <- NA
-	data.mat <- test
-	m <- 20
-	miArgs=list(); chi="all"; miPackage="Amelia"; digits=3; seed=12345; std.lv = FALSE; estimator = "ML"; group = "grade"; group.equal = ""
-	fun <- "sem"
-	
 	set.seed(seed)
-	imputed.data <- is.list(data.mat) & (!is.data.frame(data.mat))
+	imputed.data <- is.list(data) & (!is.data.frame(data))
 	imputed.l <- NULL
 	if (!imputed.data){		
 		if( ( miPackage!="Amelia" )  &  ( miPackage !="mice")  ) { 
 			stop("Currently runMI only supports imputation by Amelia or mice") 
 		}
 		if(miPackage=="Amelia"){
-			imputed.l<-imputeMissingAmelia(data.mat,m, miArgs)
+			imputed.l<-imputeMissingAmelia(data,m, miArgs)
 		} else if(miPackage=="mice"){
-			imputed.l<-imputeMissingMice(data.mat,m, miArgs)
+			imputed.l<-imputeMissingMice(data,m, miArgs)
 		}
 	} else { 
-		imputed.l <- data.mat 
-		m <- length( data.mat )
+		imputed.l <- data 
+		m <- length( data )
+		data <- data[[1]]
 	}
-	out <- list(model=data.model, data=data.mat, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal, meanstructure = TRUE, se="none", do.fit=FALSE)
+	out <- list(model=model, data=data, se="none", do.fit=FALSE)
 	out <- c(out, list(...))
 	template <- do.call(fun, out)
 
-    imputed.results.l <- lapply(imputed.l, runlavaanMI, syntax=data.model, std.lv = std.lv, 
-	estimator = estimator, group = group, group.equal = group.equal, fun=fun)
+    imputed.results.l <- lapply(imputed.l, runlavaanMI, syntax=model, fun=fun, ...)
     
+	converged.l <- sapply(imputed.results.l, function(x) x@Fit@converged)
+	seAll <- sapply(imputed.results.l, function(x) x@Fit@se)
+	converged.l <- converged.l & apply(seAll, 2, function(x) all(x >= 0))
+	
+	mOriginal <- m
+	m <- sum(converged.l)
+	convergenceRate <- m/mOriginal
+	imputed.results.l <- imputed.results.l[converged.l]
+	
 	coefs <- sapply(imputed.results.l, function(x) x@Fit@est)
 	se <- sapply(imputed.results.l, function(x) x@Fit@se)
+	
+	Sigma.hat <- lapply(imputed.results.l, function(object) object@Fit@Sigma.hat)
+    Mu.hat <- lapply(imputed.results.l, function(object) object@Fit@Mu.hat)
+	
+	meanSigmaHat <- list()
+	meanMuHat <- list()
+	for(g in seq_len(template@SampleStats@ngroups)) {
+		tempSigma <- lapply(Sigma.hat, "[[", g)
+		meanSigmaHat[[g]] <- Reduce("+", tempSigma)/m
+		tempMu <- lapply(Mu.hat, "[[", g)
+		meanMuHat[[g]] <- Reduce("+", tempMu)/m		
+	}
+	template@Fit@Sigma.hat <- meanSigmaHat
+	template@Fit@Mu.hat <- meanMuHat
+	
+	
+	
+	#x <- sum(unlist(lapply(inspect(fit, "se"), sum)))
+
+
 	
 	comb.results <- miPoolVector(t(coefs),t(se), m)
 	template@Fit@est <- comb.results$coef
@@ -75,54 +86,73 @@ runMI <- function(data.mat,data.model, m, miArgs=list(), chi="all", miPackage="A
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
 	# Do not need to change imputed.results.l@Model@GLIST because the methods from the lavaan object does not use that information
 	
-	fmi.results <- cbind(parameterEstimates(template)[,1:3], group=length(template@ParTable$group), fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
+	fmi.results <- cbind(parameterEstimates(template)[,1:3], group=template@ParTable$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
 
 	fit <- imputed.results.l[[1]]@Fit@test
 	df <- fit[[1]]$df
 	chi1 <- sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat)
-	fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
 
+	if(template@SampleStats@ngroups == 1) {
+		fit[[1]]$stat.group <- mean(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
+	} else {
+		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
+	}
 	nullModel <- partable(lavaan:::independence.model.fit(template))
-    null.results <- lapply(imputed.l, runlavaanMI, syntax=nullModel, std.lv = std.lv, 
-	estimator = estimator, group = group, group.equal = group.equal, fun=fun)
+    null.results <- lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...)
+	
+	convergedNull.l <- sapply(null.results, function(x) x@Fit@converged)
+	seNullAll <- sapply(null.results, function(x) x@Fit@se)
+	convergedNull.l <- convergedNull.l & apply(seNullAll, 2, function(x) all(x >= 0))
+	
+	mNull <- sum(convergedNull.l)
+	convergenceNullRate <- mNull/mOriginal
+	null.results <- null.results[convergedNull.l]
+	
 	chiNull <- sapply(null.results, function(x) x@Fit@test[[1]]$stat)
 	dfNull <- null.results[[1]]@Fit@test[[1]]$df
 	
-	outNull <- list(model=nullModel, data=data.mat, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal, meanstructure = TRUE, se="none", do.fit=FALSE)
+	outNull <- list(model=nullModel, data=data, se="none", do.fit=FALSE)
 	outNull <- c(outNull, list(...))
 	templateNull <- do.call(fun, outNull)
 	
 	coefsNull <- sapply(null.results, function(x) x@Fit@est)
 	seNull <- sapply(null.results, function(x) x@Fit@se)
 	
-	comb.results.null <- miPoolVector(t(coefsNull),t(seNull), m)
+	comb.results.null <- miPoolVector(t(coefsNull),t(seNull), mNull)
 	fitNull <- null.results[[1]]@Fit@test
+
+	
+	lmrr <- NULL
+	lmrrNull <- NULL
+	mr <- NULL
+	mrNull <- NULL
+	mplus <- NULL
+	mplusNull <- NULL
 	
 	if(chi %in% c("LMRR", "all")){
 		lmrr <- lmrrPooledChi(chi1, df)
 		lmrrNull <- lmrrPooledChi(chiNull, df)
-		fit[[1]]$stat <- lmrr[1] * lmrr[2]
-		fit[[1]]$pvalue <- lmrr[4]
-		fitNull[[1]]$stat <- lmrrNull[1] * lmrrNull[2]
-		fitNull[[1]]$pvalue <- lmrrNull[4]
+		fit[[1]]$stat <- as.numeric(lmrr[1] * lmrr[2])
+		fit[[1]]$pvalue <- as.numeric(lmrr[4])
+		fitNull[[1]]$stat <- as.numeric(lmrrNull[1] * lmrrNull[2])
+		fitNull[[1]]$pvalue <- as.numeric(lmrrNull[4])
 	}
 	
 	if(chi %in% c("Mplus", "MR", "all")){
-		mrplus <- mrplusPooledChi(template, chi1, df, coef=comb.results$coef, estimator = estimator, std.lv = std.lv, 
-		group = group, group.equal = group.equal, fun)
-		mrplusNull <- mrplusPooledChi(templateNull, chiNull, dfNull, coef=comb.results.null$coef, estimator = estimator, std.lv = std.lv, group = group, group.equal = group.equal, fun, par.sat=satPartable(template))
+		mrplus <- mrplusPooledChi(template, imputed.l, chi1, df, coef=comb.results$coef, m=m, fun=fun, ...)
+		mrplusNull <- mrplusPooledChi(templateNull, imputed.l, chiNull, dfNull, coef=comb.results.null$coef, m=mNull, fun=fun, par.sat=satPartable(template), ...)
 		
 		if(chi %in% c("MR", "all")){
-			mr <- mrPooledChi(mrplus[1], mrplus[2], mrplus[3], mrplus[4], digits = digits)
-			mrNull <- mrPooledChi(mrplusNull[1], mrplusNull[2], mrplusNull[3], mrplusNull[4], digits = digits)
-			fit[[1]]$stat <- mr[1] * mr[2]
-			fit[[1]]$pvalue <- mr[4]
-			fitNull[[1]]$stat <- mrNull[1] * mrNull[2]
-			fitNull[[1]]$pvalue <- mrNull[4]
+			mr <- mrPooledChi(mrplus[1], mrplus[2], mrplus[3], mrplus[4])
+			mrNull <- mrPooledChi(mrplusNull[1], mrplusNull[2], mrplusNull[3], mrplusNull[4])
+			fit[[1]]$stat <- as.numeric(mr[1] * mr[2])
+			fit[[1]]$pvalue <- as.numeric(mr[4])
+			fitNull[[1]]$stat <- as.numeric(mrNull[1] * mrNull[2])
+			fitNull[[1]]$pvalue <- as.numeric(mrNull[4])
 		}
 		if(chi %in% c("Mplus", "all")){
-			mplus <- mplusPooledChi(mrplus[1], mrplus[3], mrplus[4], digits = digits)
-			mplusNull <- mplusPooledChi(mrplusNull[1], mrplusNull[3], mrplusNull[4], digits = digits)
+			mplus <- mplusPooledChi(mrplus[1], mrplus[3], mrplus[4])
+			mplusNull <- mplusPooledChi(mrplusNull[1], mrplusNull[3], mrplusNull[4])
 			fit[[1]]$stat <- as.numeric(mplus[1])
 			fit[[1]]$pvalue <- as.numeric(mplus[3])
 			fitNull[[1]]$stat <- as.numeric(mplusNull[1])
@@ -138,15 +168,23 @@ runMI <- function(data.mat,data.model, m, miArgs=list(), chi="all", miPackage="A
 	names(fitVec) <- name
 	result@nullfit <- fitVec
 	
-	# Fix the SRMR by average the model implied stats
-	# Fix the shown warning sign
+	result@Fit@iterations <- as.integer(m)
+	result@Fit@converged <- TRUE
 	
+	summaryImputed <- list()
+	summaryImputed[[1]] <- c("target model" = convergenceRate, "null model" = convergenceNullRate)
+	summaryImputed[[2]] <- fmi.results
+	summaryImputed[[3]] <- list(lmrr = lmrr, mr = mr, mplus = mplus)
+	summaryImputed[[4]] <- list(lmrr = lmrrNull, mr = mrNull, mplus = mplusNull)
+	names(summaryImputed) <- c("convergenceRate", "fractionMissing", "targetFit", "nullFit")
+	result@imputed <- summaryImputed
+
 	return(result)
 }
   
 #Convenient function to run lavaan models and get results out. For easy use with lapply
-runlavaanMI <- function(MIdata, syntax, std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", fun, ...) {
-	out <- list(model=syntax, data=MIdata, std.lv = std.lv, estimator = estimator, group = group, group.equal = group.equal, meanstructure = TRUE)
+runlavaanMI <- function(MIdata, syntax, fun, ...) {
+	out <- list(model=syntax, data=MIdata)
 	out <- c(out, list(...))
 	fit <- NULL
 	try(fit <- do.call(fun, out), silent=TRUE)
@@ -188,19 +226,19 @@ runMI(test,HS.model,3, idvars='id')
 
 
 #Conveniance function to run impuations on data and only return list of data
-imputeMissingAmelia <- function(data.mat,m, miArgs){
+imputeMissingAmelia <- function(data,m, miArgs){
   # pull out only the imputations
   require(Amelia)
-  out <- c(list(amelia, x = data.mat, m = m, p2s=0), miArgs)
+  out <- c(list(amelia, x = data, m = m, p2s=0), miArgs)
   temp.am <- eval(as.call(out))
   return(temp.am$imputations)
 
 } # end imputeMissingAmelia
 
-imputeMissingMice <- function(data.mat,m, miArgs){
+imputeMissingMice <- function(data,m, miArgs){
   # pull out only the imputations
   require(mice)
-  out <- c(list(mice, data=data.mat, m = m, diagnostics=FALSE, printFlag=FALSE), miArgs)
+  out <- c(list(mice, data=data, m = m, diagnostics=FALSE, printFlag=FALSE), miArgs)
   temp.mice <- eval(as.call(out))
   temp.mice.imp <- NULL
   for(i in 1:m) {
@@ -354,57 +392,48 @@ satPartable <- function(fit.alt){
 }
 
 ##### function that does the part of the MR and Mplus combination methods are equal 
-mrplusPooledChi <- function(template, chi1, df, coef, estimator, std.lv, group, group.equal, fun, par.sat=NULL) {
+mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat=NULL, ...) {
 	if(is.null(par.sat)) par.sat <- satPartable(template)
-	par.alt<-partable(template)
-	comb.sat <- lapply(imputed.l, runlavaanMI, syntax=par.sat, std.lv = std.lv, 
-	estimator = estimator, group = group, group.equal = group.equal, fun=fun)
-
+	comb.sat <- lapply(imputed.l, runlavaanMI, syntax=par.sat, fun=fun, ...)
 	coefs.sat1 <- sapply(comb.sat, function(x) x@Fit@est)
-	
-	fit.altcc <- mean(chi1)
 	est.sat1 <- rowMeans(coefs.sat1)
-	est.alt1 <- coef
-
 	par.sat2 <- par.sat
 	par.sat2$free <- as.integer(rep(0, length(par.sat2$free)))
 	par.sat2$ustart <- est.sat1
-
+	comb.sat2 <- lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...)
+	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
+	
+	par.alt <- partable(template)
+	est.alt1 <- coef
 	par.alt2 <- par.alt
 	par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
 	par.alt2$ustart <- est.alt1
-
-	comb.sat2 <- lapply(imputed.l, runlavaanMI, syntax=par.sat2, std.lv = std.lv, 
-	estimator = estimator, group = group, group.equal = group.equal, fun=fun)
-
-	comb.alt2 <- lapply(imputed.l, runlavaanMI, syntax=par.alt2, std.lv = std.lv, 
-	estimator = estimator, group = group, group.equal = group.equal, fun=fun)
-					  
-	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
+	comb.alt2 <- lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...)				  
 	fit.alt2 <- sapply(comb.alt2, function(x) inspect(x, "fit")["logl"])
   
 	chinew <- cbind(fit.sat2, fit.alt2, (fit.sat2-fit.alt2)*2)
 	chimean <- mean(chinew[,3])
 	
+	fit.altcc <- mean(chi1)
 	ariv <- ((m+1)/((m-1)*df))*(fit.altcc-chimean)
 	resmrCHI <- c(chimean, m, df, ariv)
 	return(resmrCHI)
 }
 
 ##### function that does the calculations for the Mplus chi combination
-mplusPooledChi <- function(chimean, k, ariv, digits = digits){
+mplusPooledChi <- function(chimean, k, ariv){
   comb.chi.mplus <- matrix(NA, nrow=1, ncol=3)
   comb.chi.mplus[1] <- chimean/(1+ariv)
   comb.chi.mplus[2] <- k
   comb.chi.mplus[3] <- 1-pchisq(comb.chi.mplus[1], comb.chi.mplus[2])
   colnames(comb.chi.mplus) <- c("chisq", "df", "pvalue")
-  comb.chi.mplus <- as.data.frame(round(comb.chi.mplus, digits=digits))
+  comb.chi.mplus <- as.data.frame(comb.chi.mplus)
   rownames(comb.chi.mplus) <- ""
   return(comb.chi.mplus)
 }
 
 ##### function that does the calculations for the MR chi combination
-mrPooledChi <-function(chimean, m, k, ariv, digits = digits){
+mrPooledChi <-function(chimean, m, k, ariv){
   km <- m*k
   kmtest <- km-k
   
@@ -420,7 +449,7 @@ mrPooledChi <-function(chimean, m, k, ariv, digits = digits){
   comb.chi.mr[3] <- v4
   comb.chi.mr[4] <- 1-pf(comb.chi.mr[1], comb.chi.mr[2], comb.chi.mr[3])
   colnames(comb.chi.mr) <- c("F", "df1", "df2", "pvalue")
-  comb.chi.mr <- as.data.frame(round(comb.chi.mr, digits=digits))
+  comb.chi.mr <- as.data.frame(comb.chi.mr)
   rownames(comb.chi.mr) <- ""
   return(comb.chi.mr)
 }

@@ -1,13 +1,16 @@
 auxiliary	auxiliary
+cfa.mi	runMI
 clipboard	clipboard
 dat2way	dat2way
 dat3way	dat3way
 exLong	exLong
 findRMSEApower	findRMSEApower
 findRMSEAsamplesize	findRMSEAsamplesize
+growth.mi	runMI
 indProd	indProd
 inspect,lavaanStar-method	lavaanStar-class
 kurtosis	kurtosis
+lavaan.mi	runMI
 lavaanStar-class	lavaanStar-class
 loadingFromAlpha	loadingFromAlpha
 longInvariance	longInvariance
@@ -30,6 +33,7 @@ probe3WayRC	probe3WayRC
 residualCovariate	residualCovariate
 runMI	runMI
 saveFile	clipboard
+sem.mi	runMI
 simParcel	simParcel
 skew	skew
 splitSample	splitSample

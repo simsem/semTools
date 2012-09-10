@@ -1,58 +1,58 @@
 \name{runMI}
 \alias{runMI}
+\alias{cfa.mi}
+\alias{sem.mi}
+\alias{growth.mi}
+\alias{lavaan.mi}
 \title{
 Multiply impute and analyze data using lavaan
 }
 \description{
-This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules.
+This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules. Note that parmeter estimates and standard errors are pooled by the Rubin's (1987) rule. The chi-square statistics and the related fit indices are pooled by the method described in \code{"chi"} argument. SRMR is calculated based on the average model-implied means and covariance matrices across imputations.
 }
 \usage{
-runMI(data.mat,data.model, m, chi="all", miPackage="Amelia", digits=3, seed=12345, 
-    std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...)
+runMI(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
+	seed=12345, fun, ...) 
+cfa.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
+	seed=12345, ...)
+sem.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all",  
+	seed=12345, ...)
+growth.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
+	seed=12345, ...)
+lavaan.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
+	seed=12345, ...)
 }
 \arguments{
-  \item{data.mat}{
-Data frame with missing observations or a list of data frames where each data frame is one imputed data set (for imputed data generated outside of the function). If a list of data frames is supplied, then other options can be left at the default.
-}
-  \item{data.model}{
+  \item{model}{
 lavaan syntax for the the model to be analyzed. 
+}
+  \item{data}{
+Data frame with missing observations or a list of data frames where each data frame is one imputed data set (for imputed data generated outside of the function). If a list of data frames is supplied, then other options can be left at the default.
 }
   \item{m}{
 Number of imputations wanted.
 }
+  \item{miArgs}{
+Addition arguments for the multiple-imputation function. The arguments should be put in a list (see example below).
+}
  \item{miPackage}{
-Package to be used for imputation. Currently runMI only uses Amelia or mice for imputation. 
+Package to be used for imputation. Currently these functions only support \code{"Amelia"} or \code{"mice"} for imputation. 
 }
  \item{chi}{
-The method to combine the chi-square. Can be one of the following: "MR" for the method proposed for Meng & Rubin (1992), "Mplus" for the method used in Mplus (Asparouhov & Muthen, 2010), "LMRR" for the method proposed by Li, Meng, Raghunathan, & Rubin (1991), and "all" to show the three methods in the output. The default is "all". 
-}
- \item{digits}{
-	Number of digits to print in the results.
+The method to combine the chi-square. Can be one of the following: \code{"MR"} for the method proposed for Meng & Rubin (1992), \code{"Mplus"} for the method used in Mplus (Asparouhov & Muthen, 2010), \code{"LMRR"} for the method proposed by Li, Meng, Raghunathan, & Rubin (1991), and \code{"all"} to show the three methods in the output. The default is \code{"all"}. 
 }
  \item{seed}{
 	Random number seed to be used in imputations.
 }
- \item{std.lv}{
-	lavaan option. If TRUE, the metric of each latent variable is determined by fixing their variances to 1.0. If FALSE, the metric of each latent variable is determined by fixing the factor loading of the first indicator to 1.0.
-}
- \item{estimator}{
-	lavaan option. The estimator to be used. Can be one of the following: "ML" for maximum likelihood, "GLS" for generalized least squares, "WLS" for weighted least squares (sometimes called ADF estimation), "MLM" for maximum likelihood estimation with robust standard errors and a Satorra-Bentler scaled test statistic, "MLF" for maximum likelihood estimation with standard errors based on first-order derivatives and a conventional test statistic, "MLR" for maximum likelihood estimation with robust 'Huber-White' standard errors and a scaled test statistic which is asymptotically equivalent to the Yuan-Bentler T2-star test statistic. Note that the "MLM", "MLF" and "MLR" choices only affect the standard errors and the test statistic. 
-}
- \item{group}{
-	lavaan option. A variable name in the data frame defining the groups in a multiple group analysis.
-}
- \item{group.equal}{
-	lavaan option. A vector of character strings. Only used in a multiple group analysis. Can be one or more of the following: "loadings", "intercepts", "means", "regressions", "residuals", "residual.covariances", "lv.variances" or "lv.covariances", specifying the pattern of equality constraints across multiple groups.
+ \item{fun}{
+	The character of the function name used in running lavaan model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}). 
 }
  \item{...}{
-	Other arguments to be passed to the imputation package
+	Other arguments to be passed to the specified lavaan function (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}).
 }
 }
 \value{
-runMI returns a list with pooled fit indices, estimates, standard errors and fraction missing information.
-\item{fit}{Pooled fit information. Simply averaged across imputations and are not trustworthy. }
-\item{Pooled Chi-square statistic}{Is the Pooled Chi-square statistic according to the method specified in chi}
-\item{parameters}{Pooled parameter estimates and standard errors. Wald statistics and p values are computed from the pooled estimates and standard errors. Also contains two estimates of Fraction of Missing Information (FMI). The first estimate of FMI (FMI.1) is asymptotic FMI and the second estimate of FMI (FMI.2) is corrected for small numbers of imputation}
+	The \code{\linkS4class{lavaanStar}} object which contains the original \code{lavaan} object (where the appropriate parameter estimates, appropriate standard errors, and chi-squares are filled), the additional fit-index values of the null model, which need to be adjusted to multiple datasets, and the information from pooling multiple results.
 }
 \references{
 Asparouhov T. & Muthen B. (2010).\emph{Chi-Square Statistics with Multiple Imputation}. Technical Report. www.statmodel.com. 
@@ -72,7 +72,6 @@ Craig Enders (Arizona State University; \email{Craig.Enders@asu.edu})
 Mauricio Garnier Villarreal (University of Kansas; \email{mgv@ku.edu})
 }
 \examples{
-
 library(lavaan)
 
 HS.model <- ' visual  =~ x1 + x2 + x3
@@ -84,11 +83,17 @@ randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
 randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
 HSMiss[randomMiss] <- NA
 
-out <- runMI(HSMiss, HS.model, m = 3, chi="all")
+out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
+summary(out)
+inspect(out, "fit")
+inspect(out, "impute")
 
 ##Multiple group example
 HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-out2 <- runMI(HSMiss2, HS.model, m = 3, chi="MR", group="school", noms="school")
+out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
+summary(out2)
+inspect(out2, "fit")
+inspect(out2, "impute")
 
 ##Example using previously imputed data with runMI
 library(Amelia)
@@ -110,6 +115,8 @@ randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
 datsim[randomMiss2] <- NA
 datsimMI <- amelia(datsim,m=3, noms="group")
 
-out3 <- runMI(datsimMI$imputations, mod, chi="LMRR", group="group")
-
+out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
+summary(out3)
+inspect(out3, "fit")
+inspect(out3, "impute")
 }

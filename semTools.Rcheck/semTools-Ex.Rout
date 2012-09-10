@@ -29,7 +29,7 @@ This is lavaan 0.4-14
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-5
+This is semTools 0.2-6
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 
@@ -2156,10 +2156,9 @@ $SimpleSlope
 > 
 > ### Name: runMI
 > ### Title: Multiply impute and analyze data using lavaan
-> ### Aliases: runMI
+> ### Aliases: runMI cfa.mi sem.mi growth.mi lavaan.mi
 > 
 > ### ** Examples
-> 
 > 
 > library(lavaan)
 > 
@@ -2172,7 +2171,7 @@ $SimpleSlope
 > randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
 > HSMiss[randomMiss] <- NA
 > 
-> out <- runMI(HSMiss, HS.model, m = 3, chi="all")
+> out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
 Loading required package: Amelia
 Loading required package: foreign
 ## 
@@ -2181,10 +2180,366 @@ Loading required package: foreign
 ## Copyright (C) 2005-2012 James Honaker, Gary King and Matthew Blackwell
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
+> summary(out)
+lavaan (0.4-14) converged normally after 3 iterations
+
+                                                  Used       Total
+  Number of observations                           108         301
+
+  Estimator                                         ML
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                                 None
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  visual =~
+    x1                1.000
+    x2                0.494    0.100    4.915    0.000
+    x3                0.669    0.110    6.051    0.000
+  textual =~
+    x4                1.000
+    x5                1.146    0.074   15.396    0.000
+    x6                0.966    0.064   15.182    0.000
+  speed =~
+    x7                1.000
+    x8                1.124    0.156    7.184    0.000
+    x9                1.122    0.228    4.925    0.000
+
+Covariances:
+  visual ~~
+    textual           0.421    0.078    5.400    0.000
+    speed             0.259    0.057    4.573    0.000
+  textual ~~
+    speed             0.176    0.051    3.461    0.001
+
+Variances:
+    x1                0.493    0.126
+    x2                1.122    0.113
+    x3                0.900    0.103
+    x4                0.412    0.050
+    x5                0.496    0.081
+    x6                0.327    0.049
+    x7                0.831    0.087
+    x8                0.519    0.102
+    x9                0.469    0.095
+    visual            0.821    0.160
+    textual           0.956    0.114
+    speed             0.397    0.107
+
+> inspect(out, "fit")
+            chisq                df            pvalue    baseline.chisq 
+           54.107            24.000             0.000           639.485 
+      baseline.df   baseline.pvalue               cfi               tli 
+           36.000             0.000             0.950             0.925 
+             logl unrestricted.logl              npar               aic 
+        -1496.590         -1307.153            21.000          3035.180 
+              bic            ntotal              bic2             rmsea 
+         3091.505           108.000          3025.151             0.108 
+   rmsea.ci.lower    rmsea.ci.upper      rmsea.pvalue              srmr 
+            0.069             0.146             0.009             0.109 
+> inspect(out, "impute")
+$convergenceRate
+target model   null model 
+           1            1 
+
+$fractionMissing
+       lhs op     rhs group       fmi1       fmi2
+1   visual =~      x1     1        NaN 0.00000000
+2   visual =~      x2     1 0.05748372 0.06058278
+3   visual =~      x3     1 0.03887513 0.04032436
+4  textual =~      x4     1        NaN 0.00000000
+5  textual =~      x5     1 0.12746500 0.14130408
+6  textual =~      x6     1 0.16527077 0.18717352
+7    speed =~      x7     1        NaN 0.00000000
+8    speed =~      x8     1 0.03343008 0.03450848
+9    speed =~      x9     1 0.53203873 0.62502185
+10      x1 ~~      x1     1 0.08262903 0.08882894
+11      x2 ~~      x2     1 0.23702604 0.27655938
+12      x3 ~~      x3     1 0.20753441 0.23959503
+13      x4 ~~      x4     1 0.02018464 0.02058359
+14      x5 ~~      x5     1 0.40149062 0.47918201
+15      x6 ~~      x6     1 0.22987263 0.26757860
+16      x7 ~~      x7     1 0.08731125 0.09419024
+17      x8 ~~      x8     1 0.51802960 0.61024782
+18      x9 ~~      x9     1 0.48674986 0.57646734
+19  visual ~~  visual     1 0.11139257 0.12221721
+20 textual ~~ textual     1 0.02762112 0.02836212
+21   speed ~~   speed     1 0.32055922 0.38105300
+22  visual ~~ textual     1 0.11941246 0.13170611
+23  visual ~~   speed     1 0.01406309 0.01425803
+24 textual ~~   speed     1 0.05514437 0.05800453
+
+$targetFit
+$targetFit$lmrr
+         F        df1        df2        p.F 
+ 1.5894565 24.0000000  0.6310259  0.6340669 
+
+$targetFit$mr
+       F df1      df2      pvalue
+ 2.25444  24 223.5226 0.001127729
+
+$targetFit$mplus
+    chisq df       pvalue
+ 54.10655 24 0.0004125164
+
+
+$nullFit
+$nullFit$lmrr
+          F         df1         df2         p.F 
+29.60308013 24.00000000  1.87481293  0.03955364 
+
+$nullFit$mr
+        F df1     df2 pvalue
+ 17.76346  36 428.458      0
+
+$nullFit$mplus
+    chisq df pvalue
+ 639.4845 36      0
+
+
 > 
 > ##Multiple group example
 > HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-> out2 <- runMI(HSMiss2, HS.model, m = 3, chi="MR", group="school", noms="school")
+> out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
+> summary(out2)
+lavaan (0.4-14) converged normally after 3 iterations
+
+                                                  Used       Total
+  Number of observations per group         
+  Pasteur                                           54         156
+  Grant-White                                       54         145
+
+  Estimator                                         ML
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                                 None
+
+Group 1 [Pasteur]:
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  visual =~
+    x1                1.000
+    x2                0.454    0.123    3.680    0.000
+    x3                0.579    0.126    4.595    0.000
+  textual =~
+    x4                1.000
+    x5                1.178    0.140    8.402    0.000
+    x6                0.900    0.099    9.082    0.000
+  speed =~
+    x7                1.000
+    x8                1.156    0.331    3.496    0.000
+    x9                0.981    0.253    3.881    0.000
+
+Covariances:
+  visual ~~
+    textual           0.536    0.108    4.953    0.000
+    speed             0.203    0.077    2.644    0.008
+  textual ~~
+    speed             0.181    0.073    2.469    0.014
+
+Intercepts:
+    x1                4.956    0.095   52.085    0.000
+    x2                5.942    0.102   58.212    0.000
+    x3                2.502    0.091   27.348    0.000
+    x4                2.812    0.099   28.445    0.000
+    x5                3.958    0.107   37.042    0.000
+    x6                1.935    0.081   23.846    0.000
+    x7                4.461    0.098   45.458    0.000
+    x8                5.540    0.078   70.896    0.000
+    x9                5.452    0.077   70.803    0.000
+    visual            0.000
+    textual           0.000
+    speed             0.000
+
+Variances:
+    x1                0.309    0.204
+    x2                1.231    0.148
+    x3                0.942    0.127
+    x4                0.441    0.078
+    x5                0.499    0.091
+    x6                0.274    0.068
+    x7                0.842    0.135
+    x8                0.487    0.116
+    x9                0.592    0.118
+    visual            1.058    0.250
+    textual           0.914    0.182
+    speed             0.332    0.135
+
+
+
+Group 2 [Grant-White]:
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  visual =~
+    x1                1.000
+    x2                0.812    0.273    2.975    0.003
+    x3                0.989    0.252    3.922    0.000
+  textual =~
+    x4                1.000
+    x5                0.990    0.110    8.975    0.000
+    x6                0.954    0.087   10.993    0.000
+  speed =~
+    x7                1.000
+    x8                1.165    0.186    6.259    0.000
+    x9                1.105    0.279    3.963    0.000
+
+Covariances:
+  visual ~~
+    textual           0.344    0.129    2.669    0.008
+    speed             0.212    0.097    2.194    0.028
+  textual ~~
+    speed             0.260    0.082    3.165    0.002
+
+Intercepts:
+    x1                4.857    0.103   47.239    0.000
+    x2                6.208    0.098   63.166    0.000
+    x3                1.977    0.086   23.019    0.000
+    x4                3.310    0.095   34.868    0.000
+    x5                4.713    0.097   48.552    0.000
+    x6                2.465    0.095   25.966    0.000
+    x7                3.924    0.094   41.648    0.000
+    x8                5.505    0.089   62.152    0.000
+    x9                5.314    0.086   62.113    0.000
+    visual            0.000
+    textual           0.000
+    speed             0.000
+
+Variances:
+    x1                0.775    0.171
+    x2                0.879    0.154
+    x3                0.593    0.142
+    x4                0.309    0.069
+    x5                0.451    0.090
+    x6                0.422    0.074
+    x7                0.651    0.164
+    x8                0.465    0.177
+    x9                0.446    0.165
+    visual            0.473    0.207
+    textual           0.928    0.152
+    speed             0.480    0.144
+
+> inspect(out2, "fit")
+            chisq                df            pvalue    baseline.chisq 
+           83.030            48.000             0.002           689.776 
+      baseline.df   baseline.pvalue               cfi               tli 
+           72.000             0.000             0.943             0.915 
+             logl unrestricted.logl              npar               aic 
+        -1453.628         -1261.182            60.000          3027.257 
+              bic            ntotal              bic2             rmsea 
+         3188.185           108.000          2998.603             0.116 
+   rmsea.ci.lower    rmsea.ci.upper      rmsea.pvalue              srmr 
+            0.072             0.158             0.011             0.156 
+> inspect(out2, "impute")
+$convergenceRate
+target model   null model 
+           1            1 
+
+$fractionMissing
+       lhs op     rhs group         fmi1         fmi2
+1   visual =~      x1     1          NaN 0.0000000000
+2   visual =~      x2     1 0.0756334514 0.0808762290
+3   visual =~      x3     1 0.0152622145 0.0154915145
+4  textual =~      x4     1          NaN 0.0000000000
+5  textual =~      x5     1 0.4646724800 0.5519826031
+6  textual =~      x6     1 0.3836578524 0.4579715857
+7    speed =~      x7     1          NaN 0.0000000000
+8    speed =~      x8     1 0.2813528968 0.3322027395
+9    speed =~      x9     1 0.1545847428 0.1740880698
+10      x1 ~~      x1     1 0.1571273711 0.1771939274
+11      x2 ~~      x2     1 0.0065911304 0.0066342842
+12      x3 ~~      x3     1 0.0344186438 0.0355604840
+13      x4 ~~      x4     1 0.1728222786 0.1964686537
+14      x5 ~~      x5     1 0.0427495864 0.0444942050
+15      x6 ~~      x6     1 0.4425395388 0.5269242721
+16      x7 ~~      x7     1 0.1778648948 0.2026955834
+17      x8 ~~      x8     1 0.1100141457 0.1205936765
+18      x9 ~~      x9     1 0.3214414985 0.3821450506
+19  visual ~~  visual     1 0.0962419822 0.1044983461
+20 textual ~~ textual     1 0.2894623437 0.3423501150
+21   speed ~~   speed     1 0.2101201966 0.2428277035
+22  visual ~~ textual     1 0.0004331293 0.0004333168
+23  visual ~~   speed     1 0.0173025792 0.0175966464
+24 textual ~~   speed     1 0.1353038563 0.1507108765
+25      x1 ~1             1 0.0328605863 0.0339032322
+26      x2 ~1             1 0.1083831275 0.1186755084
+27      x3 ~1             1 0.0069525327 0.0070005308
+28      x4 ~1             1 0.1106116467 0.1212971519
+29      x5 ~1             1 0.0113878850 0.0115160672
+30      x6 ~1             1 0.0160550193 0.0163085465
+31      x7 ~1             1 0.2187127461 0.2535837347
+32      x8 ~1             1 0.0297188285 0.0305746555
+33      x9 ~1             1 0.0174898752 0.0177902831
+34  visual ~1             1          NaN 0.0000000000
+35 textual ~1             1          NaN 0.0000000000
+36   speed ~1             1          NaN 0.0000000000
+37  visual =~      x1     2          NaN 0.0000000000
+38  visual =~      x2     2 0.4504814826 0.5359734502
+39  visual =~      x3     2 0.2314427717 0.2695493126
+40 textual =~      x4     2          NaN 0.0000000000
+41 textual =~      x5     2 0.3397540760 0.4047194306
+42 textual =~      x6     2 0.0072391689 0.0072911910
+43   speed =~      x7     2          NaN 0.0000000000
+44   speed =~      x8     2 0.0678139555 0.0720714612
+45   speed =~      x9     2 0.6019568884 0.6953997947
+46      x1 ~~      x1     2 0.4198382441 0.5007161503
+47      x2 ~~      x2     2 0.3373804079 0.4018038849
+48      x3 ~~      x3     2 0.3807950385 0.4545422186
+49      x4 ~~      x4     2 0.0880937172 0.0950891367
+50      x5 ~~      x5     2 0.2810983688 0.3318839751
+51      x6 ~~      x6     2 0.0882044797 0.0952164464
+52      x7 ~~      x7     2 0.6464758002 0.7372920960
+53      x8 ~~      x8     2 0.7061705973 0.7899947684
+54      x9 ~~      x9     2 0.7148225884 0.7973139721
+55  visual ~~  visual     2 0.4946683764 0.5851211517
+56 textual ~~ textual     2 0.0163075230 0.0165690173
+57   speed ~~   speed     2 0.2653280852 0.3121083254
+58  visual ~~ textual     2 0.4988774615 0.5896930842
+59  visual ~~   speed     2 0.4941795728 0.5845889468
+60 textual ~~   speed     2 0.1197748298 0.1321365370
+61      x1 ~1             2 0.1857791542 0.2124978376
+62      x2 ~1             2 0.1582782812 0.1786014030
+63      x3 ~1             2 0.0227785387 0.0232851873
+64      x4 ~1             2 0.0535512791 0.0562538222
+65      x5 ~1             2 0.0032852827 0.0032960402
+66      x6 ~1             2 0.0312828607 0.0322294746
+67      x7 ~1             2 0.1214330428 0.1341080195
+68      x8 ~1             2 0.0140910013 0.0142867015
+69      x9 ~1             2 0.0333568287 0.0344305992
+70  visual ~1             2          NaN 0.0000000000
+71 textual ~1             2          NaN 0.0000000000
+72   speed ~1             2          NaN 0.0000000000
+
+$targetFit
+$targetFit$lmrr
+NULL
+
+$targetFit$mr
+        F df1      df2      pvalue
+ 1.729786  48 828.0758 0.001901171
+
+$targetFit$mplus
+NULL
+
+
+$nullFit
+$nullFit$lmrr
+NULL
+
+$nullFit$mr
+        F df1     df2 pvalue
+ 9.580222  72 1017.55      0
+
+$nullFit$mplus
+NULL
+
+
 > 
 > ##Example using previously imputed data with runMI
 > library(Amelia)
@@ -2218,8 +2573,242 @@ Loading required package: foreign
  1  2  3  4  5  6  7  8 
 
 > 
-> out3 <- runMI(datsimMI$imputations, mod, chi="LMRR", group="group")
-> 
+> out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
+> summary(out3)
+lavaan (0.4-14) converged normally after 3 iterations
+
+  Number of observations per group         
+  1                                                203
+  2                                                197
+
+  Estimator                                         ML
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                                 None
+
+Group 1 [1]:
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  f1 =~
+    y1                1.000
+    y2                0.657    0.232    2.831    0.005
+    y3                1.077    0.358    3.007    0.003
+  f2 =~
+    y4                1.000
+    y5                0.955    0.251    3.800    0.000
+    y6                1.586    0.480    3.301    0.001
+  f3 =~
+    y7                1.000
+    y8                1.125    0.305    3.692    0.000
+    y9                1.044    0.303    3.448    0.001
+
+Covariances:
+  f1 ~~
+    f2               -0.024    0.056   -0.427    0.670
+    f3                0.016    0.068    0.237    0.813
+  f2 ~~
+    f3               -0.053    0.049   -1.074    0.283
+
+Intercepts:
+    y1                0.020    0.095    0.212    0.832
+    y2                0.007    0.096    0.072    0.943
+    y3               -0.104    0.094   -1.113    0.266
+    y4               -0.085    0.090   -0.939    0.348
+    y5               -0.114    0.089   -1.277    0.202
+    y6               -0.044    0.098   -0.454    0.650
+    y7               -0.029    0.093   -0.312    0.755
+    y8                0.132    0.097    1.362    0.173
+    y9                0.092    0.094    0.983    0.326
+    f1                0.000
+    f2                0.000
+    f3                0.000
+
+Variances:
+    y1                0.929    0.258
+    y2                1.279    0.173
+    y3                0.797    0.225
+    y4                0.969    0.205
+    y5                1.047    0.135
+    y6                0.679    0.249
+    y7                1.143    0.172
+    y8                0.972    0.235
+    y9                0.940    0.200
+    f1                0.636    0.265
+    f2                0.367    0.156
+    f3                0.480    0.166
+
+
+
+Group 2 [2]:
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  f1 =~
+    y1                1.000
+    y2                0.546    0.131    4.183    0.000
+    y3                0.804    0.230    3.489    0.000
+  f2 =~
+    y4                1.000
+    y5                1.207    0.338    3.572    0.000
+    y6                1.026    0.282    3.644    0.000
+  f3 =~
+    y7                1.000
+    y8                1.077    0.329    3.271    0.001
+    y9                1.255    0.333    3.773    0.000
+
+Covariances:
+  f1 ~~
+    f2                0.003    0.075    0.040    0.968
+    f3               -0.033    0.074   -0.448    0.654
+  f2 ~~
+    f3                0.033    0.055    0.588    0.557
+
+Intercepts:
+    y1                0.023    0.099    0.234    0.815
+    y2               -0.045    0.100   -0.449    0.654
+    y3                0.198    0.093    2.137    0.033
+    y4               -0.072    0.091   -0.786    0.432
+    y5               -0.060    0.094   -0.644    0.520
+    y6               -0.157    0.100   -1.564    0.118
+    y7                0.044    0.094    0.473    0.636
+    y8                0.016    0.088    0.182    0.855
+    y9               -0.011    0.091   -0.118    0.906
+    f1                0.000
+    f2                0.000
+    f3                0.000
+
+Variances:
+    y1                0.707    0.270
+    y2                1.029    0.122
+    y3                0.803    0.165
+    y4                1.158    0.217
+    y5                0.717    0.173
+    y6                0.989    0.166
+    y7                0.915    0.144
+    y8                0.899    0.209
+    y9                0.832    0.182
+    f1                0.956    0.304
+    f2                0.424    0.182
+    f3                0.471    0.174
+
+> inspect(out3, "fit")
+            chisq                df            pvalue    baseline.chisq 
+           55.767            48.000             0.208           405.751 
+      baseline.df   baseline.pvalue               cfi               tli 
+           72.000             0.107             0.977             0.965 
+             logl unrestricted.logl              npar               aic 
+        -6095.417         -5545.644            60.000         12310.834 
+              bic            ntotal              bic2             rmsea 
+        12550.322           400.000         12359.938             0.028 
+   rmsea.ci.lower    rmsea.ci.upper      rmsea.pvalue              srmr 
+            0.000             0.056             0.886             0.050 
+> inspect(out3, "impute")
+$convergenceRate
+target model   null model 
+           1            1 
+
+$fractionMissing
+   lhs op rhs group       fmi1       fmi2
+1   f1 =~  y1     1        NaN 0.00000000
+2   f1 =~  y2     1 0.46492320 0.55226357
+3   f1 =~  y3     1 0.30612961 0.36314156
+4   f2 =~  y4     1        NaN 0.00000000
+5   f2 =~  y5     1 0.25259488 0.29611709
+6   f2 =~  y6     1 0.22064709 0.25600769
+7   f3 =~  y7     1        NaN 0.00000000
+8   f3 =~  y8     1 0.22175819 0.25740040
+9   f3 =~  y9     1 0.33138070 0.39442007
+10  y1 ~~  y1     1 0.41831252 0.49893713
+11  y2 ~~  y2     1 0.29181729 0.34529341
+12  y3 ~~  y3     1 0.16098243 0.18191225
+13  y4 ~~  y4     1 0.57907880 0.67299005
+14  y5 ~~  y5     1 0.04047766 0.04204592
+15  y6 ~~  y6     1 0.11804777 0.13008638
+16  y7 ~~  y7     1 0.14032158 0.15676317
+17  y8 ~~  y8     1 0.43794599 0.52166154
+18  y9 ~~  y9     1 0.38622197 0.46103757
+19  f1 ~~  f1     1 0.35157712 0.41919026
+20  f2 ~~  f2     1 0.32385170 0.38512636
+21  f3 ~~  f3     1 0.07059370 0.07519100
+22  f1 ~~  f2     1 0.14917605 0.16749825
+23  f1 ~~  f3     1 0.20044344 0.23074172
+24  f2 ~~  f3     1 0.04550129 0.04747134
+25  y1 ~1         1 0.14134723 0.15800313
+26  y2 ~1         1 0.17079421 0.19396867
+27  y3 ~1         1 0.14988214 0.16835719
+28  y4 ~1         1 0.19214120 0.22040097
+29  y5 ~1         1 0.15121688 0.16998197
+30  y6 ~1         1 0.18763235 0.21479791
+31  y7 ~1         1 0.07920072 0.08492283
+32  y8 ~1         1 0.17611542 0.20053351
+33  y9 ~1         1 0.18522960 0.21181610
+34  f1 ~1         1        NaN 0.00000000
+35  f2 ~1         1        NaN 0.00000000
+36  f3 ~1         1        NaN 0.00000000
+37  f1 =~  y1     2        NaN 0.00000000
+38  f1 =~  y2     2 0.08717945 0.09403892
+39  f1 =~  y3     2 0.36442136 0.43480695
+40  f2 =~  y4     2        NaN 0.00000000
+41  f2 =~  y5     2 0.10458317 0.11421883
+42  f2 =~  y6     2 0.19974744 0.22987373
+43  f3 =~  y7     2        NaN 0.00000000
+44  f3 =~  y8     2 0.55921595 0.65304524
+45  f3 =~  y9     2 0.36522025 0.43577447
+46  y1 ~~  y1     2 0.38380995 0.45815360
+47  y2 ~~  y2     2 0.04772447 0.04988602
+48  y3 ~~  y3     2 0.13904948 0.15522657
+49  y4 ~~  y4     2 0.47560794 0.56417557
+50  y5 ~~  y5     2 0.04651016 0.04856607
+51  y6 ~~  y6     2 0.19134026 0.21940496
+52  y7 ~~  y7     2 0.15772131 0.17792014
+53  y8 ~~  y8     2 0.54985169 0.64348495
+54  y9 ~~  y9     2 0.14800898 0.16607945
+55  f1 ~~  f1     2 0.32178682 0.38257238
+56  f2 ~~  f2     2 0.32001981 0.38038514
+57  f3 ~~  f3     2 0.34121396 0.40651093
+58  f1 ~~  f2     2 0.17924254 0.20439939
+59  f1 ~~  f3     2 0.11836552 0.13046332
+60  f2 ~~  f3     2 0.18004243 0.20538915
+61  y1 ~1         2 0.13332091 0.14832561
+62  y2 ~1         2 0.33026120 0.39304009
+63  y3 ~1         2 0.16706074 0.18937339
+64  y4 ~1         2 0.03637884 0.03765159
+65  y5 ~1         2 0.23403097 0.27279849
+66  y6 ~1         2 0.27631782 0.32589422
+67  y7 ~1         2 0.20304426 0.23398683
+68  y8 ~1         2 0.05306332 0.05571841
+69  y9 ~1         2 0.05241599 0.05500873
+70  f1 ~1         2        NaN 0.00000000
+71  f2 ~1         2        NaN 0.00000000
+72  f3 ~1         2        NaN 0.00000000
+
+$targetFit
+$targetFit$lmrr
+           F          df1          df2          p.F 
+   1.1618182   48.0000000 3803.8448807    0.2077338 
+
+$targetFit$mr
+NULL
+
+$targetFit$mplus
+NULL
+
+
+$nullFit
+$nullFit$lmrr
+         F        df1        df2        p.F 
+ 8.4531419 48.0000000  2.0472668  0.1071154 
+
+$nullFit$mr
+NULL
+
+$nullFit$mplus
+NULL
+
+
 > 
 > 
 > 
@@ -2337,7 +2926,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  17.89 0.16 18.16 NA NA 
+Time elapsed:  17.64 0.09 17.79 NA NA 
 > grDevices::dev.off()
 null device 
           1 

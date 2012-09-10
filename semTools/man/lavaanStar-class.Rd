@@ -7,7 +7,7 @@
 \title{Class For Representing A (Fitted) Latent Variable Model with Additional Elements}
 \description{This is the \code{lavaan} class that contains additional information about the fit values from the null model. Some functions are adjusted according to the change.}
 \section{Objects from the Class}{
-Objects can be created via the \code{\link{auxiliary}} function.
+Objects can be created via the \code{\link{auxiliary}} function or \code{\link{runMI}}.
 }
 \section{Slots}{
   \describe{
@@ -26,29 +26,13 @@ about the data.}
     \item{\code{Fit}:}{Object of internal class \code{"Fit"}: the 
       results of fitting the model}
 	\item{\code{nullfit}:}{The fit-indices information from the null model}
+	\item{\code{imputed}:}{The list of information from running multiple imputation. The first element is the convergence rate of the target and null models. The second element is the fraction missing information. The first estimate of FMI (FMI.1) is asymptotic FMI and the second estimate of FMI (FMI.2) is corrected for small numbers of imputation. The third element is the fit values of the target model by the specified chi-squared methods. The fourth element is the fit values of the null model by the specified chi-square methods.}
   }
 }
-% \section{Methods}{
-  % \describe{
-    % \item{summary}{\code{signature(object = "lavaan", type = "free")}: Returns 
-      % the estimates of the parameters in the model as a named numeric vector.
-      % If \code{type="free"}, only the free parameters are returned. If
-      % \code{type="unco"}, both free and constrained parameters (simple
-      % equality constraints only) are returned.
-      % If \code{type="user"}, all parameters listed in the parameter table
-      % are returned, including constrained and fixed parameters.}
-    % \item{inspect}{\code{signature(object = "lavaan")}: Returns the 
-      % implied moments of the model as a list with two elements (per group): 
-      % \code{cov} for the implied covariance matrix, 
-      % and \code{mean} for the implied mean 
-      % vector. If only the covariance matrix was analyzed, the implied mean 
-      % vector will be zero.}
-  % }
-% }
 \references{
 see \code{linkS4class{lavaan}}}
 \seealso{
-\code{\link{auxiliary}}
+\code{\link{auxiliary}}; \code{\link{runMI}}
 }
 \examples{
 HS.model <- ' visual  =~ x1 + x2 + x3

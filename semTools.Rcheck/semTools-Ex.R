@@ -927,10 +927,9 @@ flush(stderr()); flush(stdout())
 
 ### Name: runMI
 ### Title: Multiply impute and analyze data using lavaan
-### Aliases: runMI
+### Aliases: runMI cfa.mi sem.mi growth.mi lavaan.mi
 
 ### ** Examples
-
 
 library(lavaan)
 
@@ -943,11 +942,17 @@ randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
 randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
 HSMiss[randomMiss] <- NA
 
-out <- runMI(HSMiss, HS.model, m = 3, chi="all")
+out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
+summary(out)
+inspect(out, "fit")
+inspect(out, "impute")
 
 ##Multiple group example
 HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-out2 <- runMI(HSMiss2, HS.model, m = 3, chi="MR", group="school", noms="school")
+out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
+summary(out2)
+inspect(out2, "fit")
+inspect(out2, "impute")
 
 ##Example using previously imputed data with runMI
 library(Amelia)
@@ -969,8 +974,10 @@ randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
 datsim[randomMiss2] <- NA
 datsimMI <- amelia(datsim,m=3, noms="group")
 
-out3 <- runMI(datsimMI$imputations, mod, chi="LMRR", group="group")
-
+out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
+summary(out3)
+inspect(out3, "fit")
+inspect(out3, "impute")
 
 
 
