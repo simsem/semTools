@@ -26,6 +26,8 @@ sourceDirData <- function(path, trace = TRUE) {
 #assign
 #dir <- "C:/Users/Sunthud/Desktop/My Dropbox/simsem/simsem/R/"
 #dir <- "C:/Users/Sunthud/simsem_backup/simsem/R/"
+library(lavaan)
+
 dir <- "C:/Users/student/Dropbox/semTools/semTools/R/"
 sourceDir(dir)
 
@@ -403,4 +405,58 @@ fitsemaux <- auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
 			  # z ~~ x1 + x2 + x3 + x4 + x5 + x6 + x7'
 # fitcovyy <- sem(HS.model.covyy, data=dat) #, group="sex", meanstructure=TRUE)
 		  
-			  
+		  
+#################################### runMI function ###########################################
+
+test<-HolzingerSwineford1939[,-5]
+HS.model <- ' visual  =~ NA*x1 + x2 + x3
+               textual =~ NA*x4 + x5 + x6
+               speed   =~ NA*x7 + x8 + x9 
+			   visual ~~1*visual
+			   textual ~~ 1*textual
+			   speed ~~ 1*speed
+			   visual ~ speed'
+summary(cfa(HS.model,data=test), fit.measures=TRUE)
+
+test[(test$x6>3 && test$x6<4)]
+##Impose missing data to test
+log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
+log.mat1[,9] <- test$x6>3
+test[log.mat1] <- NA
+
+runMI(test,HS.model,3, idvars='id')
+
+
+
+test<-HolzingerSwineford1939[,-5]
+HS.model <- ' x1 ~ x4
+			  x4 ~ x5 + x6'
+summary(cfa(HS.model,data=test), fit.measures=TRUE)
+
+test[(test$x6>3 && test$x6<4)]
+##Impose missing data to test
+log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
+log.mat1[,9] <- test$x6>3
+test[log.mat1] <- NA
+
+runMI(test,HS.model,10, idvars='id')
+
+
+test<-HolzingerSwineford1939[,-5]
+HS.model <- ' visual  =~ NA*x1 + x2 + x3
+               textual =~ NA*x4 + x5 + x6
+               speed   =~ NA*x7 + x8 + x9 
+			   visual ~~1*visual
+			   textual ~~ 1*textual
+			   speed ~~ 1*speed
+			   visual ~ speed + textual'
+summary(cfa(HS.model,data=test), fit.measures=TRUE)
+
+test[(test$x6>3 && test$x6<4)]
+##Impose missing data to test
+log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
+log.mat1[,9] <- test$x6>3
+test[log.mat1] <- NA
+
+runMI(test,HS.model,3, idvars='id')
+

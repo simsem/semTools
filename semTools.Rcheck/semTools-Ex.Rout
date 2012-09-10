@@ -29,7 +29,7 @@ This is lavaan 0.4-14
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-4
+This is semTools 0.2-5
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 
@@ -409,6 +409,23 @@ Excess Kur (g2)              se               z               p
 > 
 > 
 > cleanEx()
+> nameEx("loadingFromAlpha")
+> ### * loadingFromAlpha
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: loadingFromAlpha
+> ### Title: Find standardized factor loading from coefficient alpha
+> ### Aliases: loadingFromAlpha
+> 
+> ### ** Examples
+> 
+>     loadingFromAlpha(0.8, 4)
+[1] 0.7071068
+> 
+> 
+> 
+> cleanEx()
 > nameEx("longInvariance")
 > ### * longInvariance
 > 
@@ -619,25 +636,6 @@ Model 4: equal loadings + intercepts + means:
 [Model 3 versus model 4]
   delta.chisq      delta.df delta.p.value     delta.cfi 
        40.502         3.000         0.000         0.042 
-> 
-> 
-> 
-> cleanEx()
-> nameEx("miPoolChi")
-> ### * miPoolChi
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: miPoolChi
-> ### Title: Function to pool chi-square statistics from the result from
-> ###   multiple imputation
-> ### Aliases: miPoolChi
-> 
-> ### ** Examples
-> 
-> miPoolChi(c(89.864, 81.116, 71.500, 49.022, 61.986, 64.422, 55.256, 57.890, 79.416, 63.944), 2)
-           F          df1          df2          p.F 
-1.981628e+01 2.000000e+00 4.616817e+01 6.122891e-07 
 > 
 > 
 > 
@@ -1092,8 +1090,8 @@ $`Point Estimate`
 
 $`95% Confidence Interval`
          
-LL 1.5356
-UL 2.4993
+LL 1.5326
+UL 2.5028
 
 > 
 > #Use a matrix of parameter estimates as input
@@ -1104,8 +1102,8 @@ $`Point Estimate`
 
 $`95% Confidence Interval`
          
-LL 1.5344
-UL 2.5030
+LL 1.5383
+UL 2.4950
 
 > 
 > 
@@ -1128,8 +1126,8 @@ $`Point Estimate`
 
 $`95% Confidence Interval`
           
-LL -2.8919
-UL 11.4779
+LL -3.1105
+UL 11.4472
 
 > 
 > 
@@ -2174,7 +2172,7 @@ $SimpleSlope
 > randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
 > HSMiss[randomMiss] <- NA
 > 
-> out <- runMI(HSMiss, HS.model, m = 3)
+> out <- runMI(HSMiss, HS.model, m = 3, chi="all")
 Loading required package: Amelia
 Loading required package: foreign
 ## 
@@ -2184,9 +2182,11 @@ Loading required package: foreign
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
 > 
+> ##Multiple group example
 > HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-> out2 <- runMI(HSMiss2, HS.model, m = 3, group="school", noms="school")
+> out2 <- runMI(HSMiss2, HS.model, m = 3, chi="MR", group="school", noms="school")
 > 
+> ##Example using previously imputed data with runMI
 > library(Amelia)
 > 
 > modsim <- '
@@ -2218,7 +2218,7 @@ Loading required package: foreign
  1  2  3  4  5  6  7  8 
 
 > 
-> out3 <- runMI(datsimMI$imputations, mod, group="group")
+> out3 <- runMI(datsimMI$imputations, mod, chi="LMRR", group="group")
 > 
 > 
 > 
@@ -2337,7 +2337,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  14.75 0.14 15.02 NA NA 
+Time elapsed:  17.89 0.16 18.16 NA NA 
 > grDevices::dev.off()
 null device 
           1 

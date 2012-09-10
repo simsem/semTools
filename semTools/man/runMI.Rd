@@ -7,7 +7,7 @@ Multiply impute and analyze data using lavaan
 This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules.
 }
 \usage{
-runMI(data.mat,data.model, m, miPackage="Amelia", chi="all", digits=3, seed=12345, 
+runMI(data.mat,data.model, m, chi="all", miPackage="Amelia", digits=3, seed=12345, 
     std.lv = FALSE, estimator = "ML", group = NULL, group.equal = "", ...)
 }
 \arguments{

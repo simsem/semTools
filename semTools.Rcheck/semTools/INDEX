@@ -18,12 +18,12 @@ indProd                 Make products of indicators using no centering,
 kurtosis                Finding excessive kurtosis
 lavaanStar-class        Class For Representing A (Fitted) Latent
                         Variable Model with Additional Elements
+loadingFromAlpha        Find standardized factor loading from
+                        coefficient alpha
 longInvariance          Measurement Invariance Tests Within Person
 mardiaKurtosis          Finding Mardia's multivariate kurtosis
 mardiaSkew              Finding Mardia's multivariate skewness
 measurementInvariance   Measurement Invariance Tests
-miPoolChi               Function to pool chi-square statistics from the
-                        result from multiple imputation
 miPowerFit              Modification indices and their power approach
                         for model fit evaluation
 monteCarloMed           Monte Carlo Confidence Intervals to Test

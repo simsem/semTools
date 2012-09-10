@@ -327,6 +327,22 @@ fitaux <- auxiliary(fit, aux="z", data=dat)
 
 
 cleanEx()
+nameEx("loadingFromAlpha")
+### * loadingFromAlpha
+
+flush(stderr()); flush(stdout())
+
+### Name: loadingFromAlpha
+### Title: Find standardized factor loading from coefficient alpha
+### Aliases: loadingFromAlpha
+
+### ** Examples
+
+    loadingFromAlpha(0.8, 4)
+
+
+
+cleanEx()
 nameEx("longInvariance")
 ### * longInvariance
 
@@ -407,23 +423,6 @@ HW.model <- ' visual =~ x1 + x2 + x3
               speed =~ x7 + x8 + x9 '
 
 measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
-
-
-
-cleanEx()
-nameEx("miPoolChi")
-### * miPoolChi
-
-flush(stderr()); flush(stdout())
-
-### Name: miPoolChi
-### Title: Function to pool chi-square statistics from the result from
-###   multiple imputation
-### Aliases: miPoolChi
-
-### ** Examples
-
-miPoolChi(c(89.864, 81.116, 71.500, 49.022, 61.986, 64.422, 55.256, 57.890, 79.416, 63.944), 2)
 
 
 
@@ -944,11 +943,13 @@ randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
 randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
 HSMiss[randomMiss] <- NA
 
-out <- runMI(HSMiss, HS.model, m = 3)
+out <- runMI(HSMiss, HS.model, m = 3, chi="all")
 
+##Multiple group example
 HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-out2 <- runMI(HSMiss2, HS.model, m = 3, group="school", noms="school")
+out2 <- runMI(HSMiss2, HS.model, m = 3, chi="MR", group="school", noms="school")
 
+##Example using previously imputed data with runMI
 library(Amelia)
 
 modsim <- '
@@ -968,7 +969,7 @@ randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
 datsim[randomMiss2] <- NA
 datsimMI <- amelia(datsim,m=3, noms="group")
 
-out3 <- runMI(datsimMI$imputations, mod, group="group")
+out3 <- runMI(datsimMI$imputations, mod, chi="LMRR", group="group")
 
 
 

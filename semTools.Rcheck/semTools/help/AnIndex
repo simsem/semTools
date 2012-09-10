@@ -9,12 +9,12 @@ indProd	indProd
 inspect,lavaanStar-method	lavaanStar-class
 kurtosis	kurtosis
 lavaanStar-class	lavaanStar-class
+loadingFromAlpha	loadingFromAlpha
 longInvariance	longInvariance
 mardiaKurtosis	mardiaKurtosis
 mardiaSkew	mardiaSkew
 measurementInvariance	measurementInvariance
 measurementinvariance	measurementInvariance
-miPoolChi	miPoolChi
 miPowerFit	miPowerFit
 monteCarloMed	monteCarloMed
 moreFitIndices	moreFitIndices

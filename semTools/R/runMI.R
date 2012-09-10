@@ -89,7 +89,7 @@ if (!imputed.data){
 ############# here we start the 3 chi square combination methods
 
 if(chi=="LMRR" | chi=="all"){ ## here is the code that get the LMRR chi square combination
-  comb.chi.lmrr <- data.frame(t(miPoolChi(fit[,1], fit[1,2])))
+  comb.chi.lmrr <- data.frame(t(lmrrPooledChi(fit[,1], fit[1,2])))
   comb.chi.lmrr <- round(comb.chi.lmrr, digits=digits)
   colnames(comb.chi.lmrr) <- c("F","df1","df2","pvalue")
   rownames(comb.chi.lmrr)<-""
@@ -99,14 +99,14 @@ if(chi == "Mplus" | chi == "MR" | chi == "all"){
   fit.alt <- cfa(data.model, data=imputed.l[[1]], std.lv = std.lv, meanstructure=T,
                  estimator = estimator, group = group, group.equal = group.equal)
     
-  mrplus <- mrplusCHI(fit.alt, imputed.l, imputed.results.l, comb.results, estimator = estimator, std.lv = std.lv, group = group, group.equal = group.equal)
+  mrplus <- mrplusPooledChi(fit.alt, imputed.l, imputed.results.l, comb.results, estimator = estimator, std.lv = std.lv, group = group, group.equal = group.equal)
 
   if(chi == "Mplus" | chi == "all"){
-    comb.chi.mplus <- mplusCHI(mrplus[1], mrplus[3], mrplus[4], digits = digits)
+    comb.chi.mplus <- mplusPooledChi(mrplus[1], mrplus[3], mrplus[4], digits = digits)
     }
   
 if(chi == "MR" | chi == "all"){  
-  comb.chi.mr <- mrCHI(mrplus[1], mrplus[2], mrplus[3], mrplus[4], digits = digits)
+  comb.chi.mr <- mrPooledChi(mrplus[1], mrplus[2], mrplus[3], mrplus[4], digits = digits)
   }
 }
 ### here we put all the results together depending on the method to combine the chi square
@@ -269,7 +269,7 @@ names(MI.res)<-c('coef','se','FMI.1','FMI.2')
 #nimps <- 4
 #miPoolVector(param, SE, nimps)
 
-# miPoolChi
+# lmrrPooledChi
 # Function -- simsem package
 # Pool Chi-square statistic based on Li, Meng, Raghunathan, & Rubin (1991) adapted from http://psychology.clas.asu.edu/files/CombiningLikelihoodRatioChi-SquareStatisticsFromaMIAnalysis.sas
 # Argument:
@@ -279,7 +279,7 @@ names(MI.res)<-c('coef','se','FMI.1','FMI.2')
 #			Sunthud Pornprasertmanit (University of Kansas; psunthud@ku.edu)
 # Date Modified: March 31, 2012
 
-miPoolChi <- function(chis, df) {
+lmrrPooledChi <- function(chis, df) {
 	# From Li, Meng, Raghunathan, & Rubin (1991)
 	if(is.matrix(chis)) {
 		ifelse(ncol(chis) == 1 | nrow(chis) == 1, chis <- as.vector(chis), stop("Please put a vector of chi-square values"))
@@ -301,7 +301,7 @@ miPoolChi <- function(chis, df) {
 	return(result)
 }
 #Examples:
-#miPoolChi(c(89.864, 81.116,71.500,49.022,61.986,64.422,55.256,57.890,79.416,63.944), 2)
+#lmrrPooledChi(c(89.864, 81.116,71.500,49.022,61.986,64.422,55.256,57.890,79.416,63.944), 2)
 
 
 ## function that builds a lavaan parameter table of the saturate model
@@ -342,7 +342,7 @@ satPartable <- function(fit.alt){
 }
 
 ##### function that does the part of the MR and Mplus combination methods are equal 
-mrplusCHI<-function(fit.alt, imputed.l, imputed.results.l, comb.results, estimator = estimator, std.lv = std.lv, group = group, group.equal = group.equal){
+mrplusPooledChi<-function(fit.alt, imputed.l, imputed.results.l, comb.results, estimator = estimator, std.lv = std.lv, group = group, group.equal = group.equal){
   
   par.sat <- satPartable(fit.alt)
   
@@ -398,7 +398,7 @@ mrplusCHI<-function(fit.alt, imputed.l, imputed.results.l, comb.results, estimat
 }
 
 ##### function that does the calculations for the Mplus chi combination
-mplusCHI <- function(chimean, k, ariv, digits = digits){
+mplusPooledChi <- function(chimean, k, ariv, digits = digits){
   comb.chi.mplus <- matrix(NA, nrow=1, ncol=3)
   comb.chi.mplus[1] <- chimean/(1+ariv)
   comb.chi.mplus[2] <- k
@@ -410,7 +410,7 @@ mplusCHI <- function(chimean, k, ariv, digits = digits){
 }
 
 ##### function that does the calculations for the MR chi combination
-mrCHI <-function(chimean, m, k, ariv, digits = digits){
+mrPooledChi <-function(chimean, m, k, ariv, digits = digits){
   km <- m*k
   kmtest <- km-k
   
