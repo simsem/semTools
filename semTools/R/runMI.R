@@ -42,7 +42,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		m <- length( data )
 		data <- data[[1]]
 	}
-	out <- list(model=model, data=data, se="none", do.fit=FALSE)
+	out <- list(model=model, data=imputed.l[[1]], se="none", do.fit=FALSE)
 	out <- c(out, list(...))
 	template <- do.call(fun, out)
 
@@ -111,7 +111,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	chiNull <- sapply(null.results, function(x) x@Fit@test[[1]]$stat)
 	dfNull <- null.results[[1]]@Fit@test[[1]]$df
 	
-	outNull <- list(model=nullModel, data=data, se="none", do.fit=FALSE)
+	outNull <- list(model=nullModel, data=imputed.l[[1]], se="none", do.fit=FALSE)
 	outNull <- c(outNull, list(...))
 	templateNull <- do.call(fun, outNull)
 	
@@ -139,8 +139,8 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	}
 	
 	if(chi %in% c("Mplus", "MR", "all")){
-		mrplus <- mrplusPooledChi(template, imputed.l, chi1, df, coef=comb.results$coef, m=m, fun=fun, ...)
-		mrplusNull <- mrplusPooledChi(templateNull, imputed.l, chiNull, dfNull, coef=comb.results.null$coef, m=mNull, fun=fun, par.sat=satPartable(template), ...)
+		mrplus <- mrplusPooledChi(template, imputed.l[converged.l], chi1, df, coef=comb.results$coef, m=m, fun=fun, ...)
+		mrplusNull <- mrplusPooledChi(templateNull, imputed.l[convergedNull.l], chiNull, dfNull, coef=comb.results.null$coef, m=mNull, fun=fun, par.sat=satPartable(template), ...)
 		
 		if(chi %in% c("MR", "all")){
 			mr <- mrPooledChi(mrplus[1], mrplus[2], mrplus[3], mrplus[4])
@@ -402,13 +402,11 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat
 	par.sat2$ustart <- est.sat1
 	comb.sat2 <- lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...)
 	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
-	
-	par.alt <- partable(template)
-	est.alt1 <- coef
-	par.alt2 <- par.alt
+
+	par.alt2 <- partable(template)
 	par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
-	par.alt2$ustart <- est.alt1
-	comb.alt2 <- lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...)				  
+	par.alt2$ustart <- coef
+	comb.alt2 <- lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...)	
 	fit.alt2 <- sapply(comb.alt2, function(x) inspect(x, "fit")["logl"])
   
 	chinew <- cbind(fit.sat2, fit.alt2, (fit.sat2-fit.alt2)*2)
