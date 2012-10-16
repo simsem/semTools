@@ -42,7 +42,7 @@ Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for assessing m
 \author{
     Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
 	Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
-	James P. Selig (University of New Mexico; \email{selig@unm.edu}
+	James P. Selig (University of New Mexico; \email{selig@unm.edu})
 }
 \examples{
 #Simple two path mediation

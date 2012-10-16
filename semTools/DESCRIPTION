@@ -1,12 +1,22 @@
 Package: semTools
 Type: Package
 Title: Useful tools for structural equation modeling.
-Version: 0.2-6
-Date: 2012-09-10
+Version: 0.2-7
+Date: 2012-10-15
 Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@ku.edu"), 
 		person("Patrick", "Miller", role = "aut", email="patr1ckm@ku.edu"), 
 		person("Alexander", "Schoemann", role = "aut", email="schoemann@ku.edu"),
-		person("Yves", "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be") )
+		person("Yves", "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be"),
+		person("Corbin", "Quick", role = "ctb", email="corbinq@ku.edu"),
+		person("Mauricio", "Villarreal", role = "ctb", email="mgv@ku.edu"), 
+		person("James", "Selig", role = "ctb", email="selig@unm.edu"),
+		person("Aaron", "Boulton", role = "ctb", email="aboulton@ku.edu"),
+		person("Kristopher", "Preacher", role = "ctb", email="kris.preacher@vanderbilt.edu"), 
+		person("Donna", "Coffman", role = "ctb", email="dlc30@psu.edu"), 
+		person("Mijke", "Rhemtulla", role = "ctb", email="mijke@ku.edu"), 
+		person("Alexander", "Robitzsch", role = "ctb", email="a.robitzsch@bifie.at"), 
+		person("Craig", "Enders", role = "ctb", email="Craig.Enders@asu.edu")
+		)
 Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Patrick Miller
         <patr1ckm@ku.edu>, Alex Schoemann <schoemann@ku.edu>, Yves Rosseel <Yves.Rosseel@UGent.be>
 Maintainer: Sunthud Pornprasertmanit <psunthud@ku.edu>

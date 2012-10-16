@@ -280,9 +280,14 @@ plotProbe(result3wayMC, xlim=c(-2, 2))
 ################################# outClipboard #############################
 
 library(lavaan)
-HW.model <- ' visual  =~ x1 + c1*x2 + x3
-              textual =~ x4 + c1*x5 + x6
-               speed   =~ x7 + x8 + x9 '
+HW.model <- ' visual  =~ c("c1", "c1")*x1 + NA*x1 + c("c2", "c2")*x2 + c("c3", "c3")*x3
+              textual =~ c("c4", "c4")*x4 + NA*x4 + c("c5", "c5")*x5 + c("c6", "c6")*x6
+               speed   =~ c("c7", "c7")*x7 + NA*x7 + c("c8", "c8")*x8 + c("c9", "c9")*x9 
+			   visual ~~ c(1, NA)*visual
+			   textual ~~ c(1, NA)*textual
+			   speed ~~ c(1, NA)*speed
+			   
+			   '
 
 fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
 
