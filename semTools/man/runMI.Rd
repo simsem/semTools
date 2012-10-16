@@ -88,6 +88,7 @@ summary(out)
 inspect(out, "fit")
 inspect(out, "impute")
 
+\dontrun{
 ##Multiple group example
 HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
 out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
@@ -119,4 +120,5 @@ out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cf
 summary(out3)
 inspect(out3, "fit")
 inspect(out3, "impute")
+}
 }

@@ -947,37 +947,39 @@ summary(out)
 inspect(out, "fit")
 inspect(out, "impute")
 
-##Multiple group example
-HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
-summary(out2)
-inspect(out2, "fit")
-inspect(out2, "impute")
-
-##Example using previously imputed data with runMI
-library(Amelia)
-
-modsim <- '
-f1 =~ 0.7*y1+0.7*y2+0.7*y3
-f2 =~ 0.7*y4+0.7*y5+0.7*y6
-f3 =~ 0.7*y7+0.7*y8+0.7*y9'
-
-mod <- '
-f1 =~ y1+y2+y3
-f2 =~ y4+y5+y6
-f3 =~ y7+y8+y9'
-
-datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
-	std.lv=TRUE, sample.nobs=c(200,200))
-randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
-randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
-datsim[randomMiss2] <- NA
-datsimMI <- amelia(datsim,m=3, noms="group")
-
-out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
-summary(out3)
-inspect(out3, "fit")
-inspect(out3, "impute")
+## Not run: 
+##D ##Multiple group example
+##D HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
+##D out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
+##D summary(out2)
+##D inspect(out2, "fit")
+##D inspect(out2, "impute")
+##D 
+##D ##Example using previously imputed data with runMI
+##D library(Amelia)
+##D 
+##D modsim <- '
+##D f1 =~ 0.7*y1+0.7*y2+0.7*y3
+##D f2 =~ 0.7*y4+0.7*y5+0.7*y6
+##D f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+##D 
+##D mod <- '
+##D f1 =~ y1+y2+y3
+##D f2 =~ y4+y5+y6
+##D f3 =~ y7+y8+y9'
+##D 
+##D datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
+##D 	std.lv=TRUE, sample.nobs=c(200,200))
+##D randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+##D randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+##D datsim[randomMiss2] <- NA
+##D datsimMI <- amelia(datsim,m=3, noms="group")
+##D 
+##D out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
+##D summary(out3)
+##D inspect(out3, "fit")
+##D inspect(out3, "impute")
+## End(Not run)
 
 
 
