@@ -1,6 +1,6 @@
-library(tools)
-dirMan <- "C:/Users/student/Dropbox/semTools/semTools/man/runMI.Rd"
-showNonASCIIfile(dirMan)
+# library(tools)
+# dirMan <- "C:/Users/student/Dropbox/semTools/semTools/man/runMI.Rd"
+# showNonASCIIfile(dirMan)
 
 sourceDir <- function(path, trace = TRUE, ...) {
      for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
@@ -86,46 +86,6 @@ y3<-rnorm(n,0.2,.2)+.7*y
 dat<-data.frame(cbind(x1,x2,x3,z1,z2,z3,y1,y2,y3))
 
 datOrth <-orthogonalize(dat,(1:3), (4:6))
-
-########### Better have the runMI example
-
-library(lavaan)
-
-HS.model <- ' visual  =~ x1 + x2 + x3
-              textual =~ x4 + x5 + x6
-              speed   =~ x7 + x8 + x9 '
-
-HSMiss <- HolzingerSwineford1939[,paste("x", 1:9, sep="")]
-randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
-randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
-HSMiss[randomMiss] <- NA
-
-out <- runMI(HSMiss, HS.model, m = 3)
-
-HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-out2 <- runMI(HSMiss2, HS.model, m = 3, group="school", noms="school")
-
-library(Amelia)
-
-modsim <- '
-f1 =~ 0.7*y1+0.7*y2+0.7*y3
-f2 =~ 0.7*y4+0.7*y5+0.7*y6
-f3 =~ 0.7*y7+0.7*y8+0.7*y9'
-
-mod <- '
-f1 =~ y1+y2+y3
-f2 =~ y4+y5+y6
-f3 =~ y7+y8+y9'
-
-datsim <- simulateData(modsim,model.type="cfa",meanstructure=T,std.lv=T,
-                     sample.nobs=c(200,200))
-randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
-randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
-datsim[randomMiss2] <- NA
-datsimMI <- amelia(datsim,m=3, noms="group")
-datsim3 <- datsim3$imputations
-
-out3 <- runMI(datsimMI$imputations, mod, group="group")
 
 ########### Saris, Satorra, and van der Veld (2009)
 
@@ -413,80 +373,49 @@ fitsemaux <- auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
 		  
 #################################### runMI function ###########################################
 
-test<-HolzingerSwineford1939[,-5]
-HS.model <- ' visual  =~ NA*x1 + x2 + x3
-               textual =~ NA*x4 + x5 + x6
-               speed   =~ NA*x7 + x8 + x9 
-			   visual ~~1*visual
-			   textual ~~ 1*textual
-			   speed ~~ 1*speed
-			   visual ~ speed'
-summary(cfa(HS.model,data=test), fit.measures=TRUE)
 
-test[(test$x6>3 && test$x6<4)]
-##Impose missing data to test
-log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
-log.mat1[,9] <- test$x6>3
-test[log.mat1] <- NA
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
 
-runMI(test,HS.model,3, idvars='id')
+HSMiss <- HolzingerSwineford1939[,paste("x", 1:9, sep="")]
+randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
+randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
+HSMiss[randomMiss] <- NA
 
+out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
+summary(out)
+inspect(out, "fit")
+inspect(out, "impute")
 
+##Multiple group example
+HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
+out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
+summary(out2)
+inspect(out2, "fit")
+inspect(out2, "impute")
 
-test<-HolzingerSwineford1939[,-5]
-HS.model <- ' x1 ~ x4
-			  x4 ~ x5 + x6'
-summary(cfa(HS.model,data=test), fit.measures=TRUE)
+##Example using previously imputed data with runMI
+library(Amelia)
 
-test[(test$x6>3 && test$x6<4)]
-##Impose missing data to test
-log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
-log.mat1[,9] <- test$x6>3
-test[log.mat1] <- NA
+modsim <- '
+f1 =~ 0.7*y1+0.7*y2+0.7*y3
+f2 =~ 0.7*y4+0.7*y5+0.7*y6
+f3 =~ 0.7*y7+0.7*y8+0.7*y9'
 
-runMI(test,HS.model,10, idvars='id')
+mod <- '
+f1 =~ y1+y2+y3
+f2 =~ y4+y5+y6
+f3 =~ y7+y8+y9'
 
+datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
+	std.lv=TRUE, sample.nobs=c(200,200))
+randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+datsim[randomMiss2] <- NA
+datsimMI <- amelia(datsim,m=3, noms="group")
 
-test<-HolzingerSwineford1939[,-5]
-HS.model <- ' visual  =~ NA*x1 + x2 + x3
-               textual =~ NA*x4 + x5 + x6
-               speed   =~ NA*x7 + x8 + x9 
-			   visual ~~1*visual
-			   textual ~~ 1*textual
-			   speed ~~ 1*speed
-			   visual ~ speed + textual'
-summary(cfa(HS.model,data=test), fit.measures=TRUE)
-
-test[(test$x6>3 && test$x6<4)]
-##Impose missing data to test
-log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
-log.mat1[,9] <- test$x6>3
-test[log.mat1] <- NA
-
-runMI(test,HS.model,3, idvars='id')
-
-
-
-
-
-
-test <- HolzingerSwineford1939[-301,-5]
-data.model <- ' visual  =~ NA*x1 + x2 + x3
-		   textual =~ NA*x4 + x5 + x6
-		   speed   =~ NA*x7 + x8 + x9 
-		   visual ~~1*visual
-		   textual ~~ 1*textual
-		   speed ~~ 1*speed
-		   visual ~ speed'
-
-Impose missing data to test
-log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
-log.mat1[,9] <- test$x6>3
-test[log.mat1] <- NA
-data.mat <- test
-m <- 20
-miArgs=list(); chi="all"; miPackage="Amelia"; digits=3; seed=12345; std.lv = FALSE; estimator = "ML"; group = "grade"; group.equal = ""
-fun <- "sem"
-	
-y <- runMI(data=test,model=data.model, m=10, fun="sem", meanstructure=TRUE) 
-x <- sem.mi(data=test,model=data.model, m=10, meanstructure=TRUE)
+out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
+summary(out3)
+inspect(out3, "fit")
+inspect(out3, "impute")

@@ -59,7 +59,6 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	
 	coefs <- sapply(imputed.results.l, function(x) x@Fit@est)
 	se <- sapply(imputed.results.l, function(x) x@Fit@se)
-	
 	Sigma.hat <- lapply(imputed.results.l, function(object) object@Fit@Sigma.hat)
     Mu.hat <- lapply(imputed.results.l, function(object) object@Fit@Mu.hat)
 	
@@ -162,6 +161,9 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template@Fit@test <- fit
 	templateNull@Fit@test <- fitNull
 	result <- as(template, "lavaanStar")
+    ## HACK! YR
+    templateNull@Fit@converged <- TRUE ### ! to trick fitMeasures
+    ## 
 	fitVec <- fitMeasures(templateNull)
 	name <- names(fitVec)
 	fitVec <- as.vector(fitVec)
@@ -401,12 +403,14 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat
 	par.sat2$free <- as.integer(rep(0, length(par.sat2$free)))
 	par.sat2$ustart <- est.sat1
 	comb.sat2 <- lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...)
+    comb.sat2 <- lapply(comb.sat2, forceTest)
 	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
 
 	par.alt2 <- partable(template)
 	par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
 	par.alt2$ustart <- coef
 	comb.alt2 <- lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...)	
+    comb.alt2 <- lapply(comb.alt2, forceTest)
 	fit.alt2 <- sapply(comb.alt2, function(x) inspect(x, "fit")["logl"])
   
 	chinew <- cbind(fit.sat2, fit.alt2, (fit.sat2-fit.alt2)*2)
@@ -451,3 +455,44 @@ mrPooledChi <-function(chimean, m, k, ariv){
   rownames(comb.chi.mr) <- ""
   return(comb.chi.mr)
 }
+
+forceTest <- function(object) {
+    # dirty hack to get a test statistic and fit measures from an
+    # unfitted model - YR 26 okt 2012
+
+    # create dummy x
+    x <- numeric(0L)
+    attr(x, "iterations") <- 0L;
+    attr(x, "converged") <- TRUE # forced!
+    attr(x, "control") <- object@Fit@control
+    attr(x, "fx") <- lavaan:::computeObjective(object@Model,
+                                   samplestats=object@SampleStats,
+                                   estimator=object@Options$estimator)
+    # get test statistic
+    TEST <- lavaan:::computeTestStatistic(object@Model,
+                                          partable=object@ParTable,
+                                          x=x,
+                                          options=object@Options,
+                                          samplestats=object@SampleStats,
+                                          data=object@Data)
+
+    lavaanFit <- lavaan:::Fit(partable = object@ParTable,
+                     start    = object@Fit@start,
+                     model    = object@Model,
+                     x        = x,
+                     VCOV     = NULL,
+                     TEST     = TEST)
+
+    lav <- new("lavaan",
+               call         = object@call,
+               timing       = object@timing,
+               Options      = object@Options,
+               ParTable     = object@ParTable,
+               Data         = object@Data,
+               SampleStats  = object@SampleStats,
+               Model        = object@Model,
+               Fit          = lavaanFit
+              )
+    lav
+}
+

@@ -26,13 +26,13 @@ Type 'q()' to quit R.
 Loading required package: MASS
 Loading required package: lavaan
 Loading required package: boot
-Loading required package: mvtnorm
+Loading required package: mnormt
 Loading required package: quadprog
-This is lavaan 0.5-9
+This is lavaan 0.5-11
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-7
+This is semTools 0.2-8
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -1389,7 +1389,7 @@ Warning in plotRMSEAdist(rmsea = c(0.05, 0.08), n = 200, df = 20, ptile = 0.95, 
 > 
 > fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC2way)
-lavaan (0.5-9) converged normally after  53 iterations
+lavaan (0.5-11) converged normally after  53 iterations
 
   Number of observations                         10000
 
@@ -1527,7 +1527,7 @@ $SimpleSlope
 > 
 > fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC2way)
-lavaan (0.5-9) converged normally after  53 iterations
+lavaan (0.5-11) converged normally after  53 iterations
 
   Number of observations                         10000
 
@@ -1687,7 +1687,7 @@ $SimpleSlope
 > 
 > fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC3way)
-lavaan (0.5-9) converged normally after 104 iterations
+lavaan (0.5-11) converged normally after 104 iterations
 
   Number of observations                          1000
 
@@ -1937,7 +1937,7 @@ $SimpleSlope
 > 
 > fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC3way)
-lavaan (0.5-9) converged normally after 107 iterations
+lavaan (0.5-11) converged normally after 107 iterations
 
   Number of observations                          1000
 
@@ -2177,7 +2177,7 @@ Loading required package: foreign
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
 > summary(out)
-lavaan (0.5-9) converged normally after   3 iterations
+lavaan (0.5-11) converged normally after   3 iterations
 
   Number of observations                           301
 
@@ -2448,7 +2448,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  14.96 0.19 15.2 NA NA 
+Time elapsed:  15.72 0.18 15.96 NA NA 
 > grDevices::dev.off()
 null device 
           1 
