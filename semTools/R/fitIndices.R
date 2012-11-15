@@ -1,5 +1,5 @@
 ## Title: Compute more fit indices
-## Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Aaron Boulton <aboulton@ku.edu>
+## Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Aaron Boulton <aboulton@ku.edu>, Ruben Arslan <rubenarslan@gmail.com>
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------##
 
@@ -13,11 +13,10 @@ moreFitIndices <- function(object, nPrior = 1) {
 	nParam <- fit["baseline.df"] - fit["df"]
 	
 	# Get number of observations
-	n <- fit["ntotal"]
+	n <- object@SampleStats@ntotal
 	
 	# Calculate the minimized discrepancy function
 	f <- -2 * fit["logl"]
-	
 	# Find the number of groups
 	ngroup <- object@Data@ngroups
 	
@@ -26,25 +25,35 @@ moreFitIndices <- function(object, nPrior = 1) {
 	agfiStarValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
 	nfiValue <- (fit["baseline.chisq"] - fit["chisq"])/fit["baseline.chisq"]
 	ifiValue <- (fit["baseline.chisq"] - fit["chisq"])/(fit["baseline.chisq"] - fit["df"])
-	ciacValue <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
-	ecviValue <- f + (2 * nParam / n)
-	bicStarValue <- f + log(1 + n/nPrior) * nParam
-	hqcValue <- f + 2 * log(log(n)) * nParam
+	nullRmseaValue <- nullRmsea(object, silent=TRUE)
+	result <- c(nfiValue, ifiValue, gfiStarValue, agfiStarValue, nullRmseaValue)
+	names(result) <- c("nfi", "ifi", "gfi*", "agfi*", "baseline.rmsea")
+
+	if(!is.na(f)) {
+		ciacValue <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
+		ecviValue <- f + (2 * nParam / n)
+		bicStarValue <- f + log(1 + n/nPrior) * nParam
+		hqcValue <- f + 2 * log(log(n)) * nParam
+		temp <- c(ciacValue, ecviValue, bicStarValue, hqcValue)
+		names(temp) <- c("ciac", "ecvi", "bic*", "hqc")
+		result <- c(result, temp)
+	}
 	
 	# Vector of result
-	result <- c(nfiValue, ifiValue, gfiStarValue, agfiStarValue, ciacValue, ecviValue, bicStarValue, hqcValue)
-	names(result) <- c("nfi", "ifi", "gfi*", "agfi*", "ciac", "ecvi", "bic*", "hqc")
 	if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
 		gfiStarScaledValue <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
 		agfiStarScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gfiStarValue)
 		nfiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/fit["baseline.chisq.scaled"]
 		ifiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/(fit["baseline.chisq.scaled"] - fit["df.scaled"])
-		resultScaled <- c(gfiStarScaledValue, agfiStarScaledValue, nfiScaledValue, ifiScaledValue)
-		names(resultScaled) <- c("nfi.scaled", "ifi.scaled", "gfi*.scaled", "agfi*.scaled")
+		nullRmseaScaledValue <- nullRmsea(object, scaled=TRUE, silent=TRUE)
+		resultScaled <- c(gfiStarScaledValue, agfiStarScaledValue, nfiScaledValue, ifiScaledValue, nullRmseaScaledValue)
+		names(resultScaled) <- c("nfi.scaled", "ifi.scaled", "gfi*.scaled", "agfi*.scaled", "baseline.rmsea.scaled")
 		result <- c(result, resultScaled)
     } else {
-		sicValue <- sic(f, object)
-		result <- c(result, "sic" = sicValue)
+		if(!is.na(f)) {
+			sicValue <- sic(f, object)
+			result <- c(result, "sic" = sicValue)
+		}
 	}
 	
 	return(result)
@@ -62,3 +71,55 @@ sic <- function(f, lresults = NULL) {
 	sic <- as.numeric(f + log(det(lresults@SampleStats@ntotal * (expinf))))/2
 	return(sic)
 }
+
+
+nullRmsea <- function (object, scaled = FALSE, silent=FALSE) { 
+	# return RMSEA of the null model, warn if it is lower than 0.158, because it makes the TLI/CLI hard to interpret
+	test <- object@Options$test 
+	
+	fits <- fitMeasures(object)
+	N <- object@SampleStats@ntotal # sample size
+	
+	X2 <- as.numeric ( fits['baseline.chisq'] ) # get baseline chisq
+	df <- as.numeric ( fits['baseline.df'] ) # get baseline df 
+	G <- object@Data@ngroups # number of groups
+	
+	### a simple rip from fit.measures.R in lavaan's codebase.
+	N.RMSEA <- max(N, X2*4) # Check with lavaan
+        # RMSEA
+	if(df > 0) {
+		if(scaled) {
+			d <- sum(object@Fit@test[[2]]$trace.UGamma)
+		} 
+		if(object@Options$mimic %in% c("Mplus", "lavaan")) {
+			GG <- 0
+			RMSEA <- sqrt( max( c((X2/N)/df - 1/(N-GG), 0) ) ) * sqrt(G)
+			if(scaled && test != "scaled.shifted") {
+				RMSEA.scaled <- 
+					 sqrt( max( c((X2/N)/d - 1/(N-GG), 0) ) ) * sqrt(G)
+			} else if(test == "scaled.shifted") {
+				RMSEA.scaled <-
+					 sqrt( max(c((as.numeric(fits["baseline.chisq.scaled"])/N)/df - 1/(N-GG), 0))) * sqrt(G)
+			}
+		} else {
+			RMSEA <- sqrt( max( c((X2/N)/df - 1/N, 0) ) )
+			if(scaled) {
+				RMSEA.scaled <- sqrt( max( c((X2/N)/d - 1/N, 0) ) )
+			}
+		}
+	} else {
+		RMSEA <- RMSEA.scaled <- 0
+	}
+	if(scaled) {
+		RMSEA <- RMSEA.scaled
+	}
+	if(!silent) {
+		if(RMSEA < 0.158 ) { 
+			cat(paste0("TLI and other incremental fit indices may not be that informative, because the RMSEA of the baseline model is lower than 0.158 (Kenny, Kaniskan, & McCoach, 2011). The baseline RMSEA is ",round(RMSEA,3), "\n"))
+		} else {
+			cat(paste0("Baseline RMSEA: ",round(RMSEA,3), "\n"))
+		}
+	}
+	invisible(RMSEA)
+}
+

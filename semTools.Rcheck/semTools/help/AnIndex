@@ -21,6 +21,7 @@ measurementinvariance	measurementInvariance
 miPowerFit	miPowerFit
 monteCarloMed	monteCarloMed
 moreFitIndices	moreFitIndices
+nullRmsea	nullRmsea
 orthogonalize	indProd
 parcelAllocation	parcelAllocation
 plotProbe	plotProbe

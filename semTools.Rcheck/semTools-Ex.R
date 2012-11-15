@@ -525,7 +525,7 @@ flush(stderr()); flush(stdout())
 
 ### Name: moreFitIndices
 ### Title: Calculate more fit indices
-### Aliases: moreFitIndices moreFitIndices
+### Aliases: moreFitIndices
 
 ### ** Examples
 
@@ -538,6 +538,27 @@ moreFitIndices(fit)
 
 fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="mlr")
 moreFitIndices(fit2)
+
+
+
+cleanEx()
+nameEx("nullRmsea")
+### * nullRmsea
+
+flush(stderr()); flush(stdout())
+
+### Name: nullRmsea
+### Title: Calculate the RMSEA of the null model
+### Aliases: nullRmsea
+
+### ** Examples
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+nullRmsea(fit)
 
 
 

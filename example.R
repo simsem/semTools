@@ -58,6 +58,24 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
 moreFitIndices(fit)
 
+fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="MLR")
+moreFitIndices(fit2)
+
+library(psych)
+dat <- iqitems
+for(i in 1:ncol(iqitems)) {
+	dat[,i] <- ordered(iqitems[,i])
+}
+iq.model <- '
+reason =~ reason.4 + reason.16 + reason.17 + reason.19
+letter =~ letter.7 + letter.33 + letter.34 + letter.58
+matrix =~ matrix.45 + matrix.46 + matrix.47 + matrix.55
+rotate =~ rotate.3 + rotate.4 + rotate.6 + rotate.8
+'
+fit3 <- cfa(iq.model, data=dat)
+moreFitIndices(fit3)
+
+
 ######### orthogonalize
 
 library(MASS)
@@ -419,3 +437,47 @@ out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cf
 summary(out3)
 inspect(out3, "fit")
 inspect(out3, "impute")
+
+
+model.syntax <- '
+  # intercept and slope with fixed coefficients
+    i =~ 1*t1 + 1*t2 + 1*t3 + 1*t4
+    s =~ 0*t1 + 1*t2 + 2*t3 + 3*t4
+
+  # regressions
+    i ~ x1 + x2
+    s ~ x1 + x2
+'
+
+library(simsem)
+temp <- Demo.growth
+temp[,paste0("t", 1:4)] <- imposeMissing(temp[,paste0("t", 1:4)], pmMCAR=0.2)
+
+
+imp <- mice(temp,m=5,print=F)
+
+imputedData <- NULL
+for(i in 1:5) {
+imputedData[[i]] <- complete(x=imp, action=i, include=FALSE) 
+}
+  
+out <- runMI(model.syntax, data=imputedData, fun="growth")
+
+########### Raykov's reliability
+
+library(lavaan)
+
+HS.model <- ' 
+visual  =~ load1*x1 + load2*x2 + load3*x3
+textual =~ x4 + x5 + x6
+speed   =~ x7 + x8 + x9 
+x1 ~~ e1*x1
+x2 ~~ e2*x2
+x3 ~~ e3*x3
+totalload := (load1 + load2 + load3)^2
+totalerror := e1 + e2 + e3
+relia := totalload / (totalload + totalerror)
+'
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939, std.lv=TRUE)
+summary(fit)

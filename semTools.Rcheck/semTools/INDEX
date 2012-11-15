@@ -29,6 +29,7 @@ miPowerFit              Modification indices and their power approach
 monteCarloMed           Monte Carlo Confidence Intervals to Test
                         Complex Indirect Effects
 moreFitIndices          Calculate more fit indices
+nullRmsea               Calculate the RMSEA of the null model
 parcelAllocation        Random Allocation of Items to Parcels in a
                         Structural Equation Model
 plotProbe               Plot the graphs for probing latent interaction

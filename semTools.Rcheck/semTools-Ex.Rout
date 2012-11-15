@@ -32,7 +32,7 @@ This is lavaan 0.5-11
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-8
+This is semTools 0.2-9
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -1136,7 +1136,7 @@ UL 11.4472
 > 
 > ### Name: moreFitIndices
 > ### Title: Calculate more fit indices
-> ### Aliases: moreFitIndices moreFitIndices
+> ### Aliases: moreFitIndices
 > 
 > ### ** Examples
 > 
@@ -1146,17 +1146,45 @@ UL 11.4472
 > 
 > fit <- cfa(HS.model, data=HolzingerSwineford1939)
 > moreFitIndices(fit)
-         nfi          ifi         gfi*        agfi*         ciac         ecvi 
-   0.9071607    0.9314908    0.9565611    0.9185521 7476.5731866 7475.5695875 
-        bic*          hqc          sic 
-7544.0149775 7517.2909607 3794.0917612 
+           nfi            ifi           gfi*          agfi* baseline.rmsea 
+     0.9071607      0.9314908      0.9565611      0.9185521      0.2854364 
+          ciac           ecvi           bic*            hqc            sic 
+  7476.5731866   7475.5695875   7544.0149775   7517.2909607   3794.0917612 
 > 
 > fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="mlr")
 > moreFitIndices(fit2)
-         nfi          ifi         gfi*        agfi*         ciac         ecvi 
-   0.9071607    0.9314908    0.9565611    0.9185521 7476.5731866 7475.5695875 
-        bic*          hqc   nfi.scaled   ifi.scaled  gfi*.scaled agfi*.scaled 
-7544.0149775 7517.2909607    0.9553250    0.9185521    0.9009960    0.9262552 
+                  nfi                   ifi                  gfi* 
+            0.9071607             0.9314908             0.9565611 
+                agfi*        baseline.rmsea                  ciac 
+            0.9185521             0.2854364          7476.5731866 
+                 ecvi                  bic*                   hqc 
+         7475.5695875          7544.0149775          7517.2909607 
+           nfi.scaled            ifi.scaled           gfi*.scaled 
+            0.9553250             0.9185521             0.9009960 
+         agfi*.scaled baseline.rmsea.scaled 
+            0.9262552             0.3558017 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("nullRmsea")
+> ### * nullRmsea
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: nullRmsea
+> ### Title: Calculate the RMSEA of the null model
+> ### Aliases: nullRmsea
+> 
+> ### ** Examples
+> 
+> HS.model <- ' visual  =~ x1 + x2 + x3
++               textual =~ x4 + x5 + x6
++               speed   =~ x7 + x8 + x9 '
+> 
+> fit <- cfa(HS.model, data=HolzingerSwineford1939)
+> nullRmsea(fit)
+Baseline RMSEA: 0.285
 > 
 > 
 > 
@@ -2448,7 +2476,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.72 0.22 15.98 NA NA 
+Time elapsed:  16.27 0.23 16.63 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -1,6 +1,5 @@
 \name{moreFitIndices}
 \alias{moreFitIndices}
-\alias{moreFitIndices}
 \title{
 Calculate more fit indices
 }
@@ -11,7 +10,7 @@ Calculate more fit indices that are not already provided in lavaan.
 moreFitIndices(object, nPrior = 1)
 }
 \arguments{
-  \item{object}{The lavaan model object provided after running the \code{cfa} or the \code{sem} functions.}
+  \item{object}{The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.}
   \item{nPrior}{The sample size on which prior is based. This argument is used to compute BIC*.}
 }
 \details{
@@ -64,6 +63,8 @@ Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for model
 \deqn{ hqc = f + 2k\log{(\log{N})},}
 
 Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit indices using the scaled chi-square values are also provided. 
+
+See \code{\link{nullRmsea}} for the further details of the computation of RMSEA of the null model.
 }
 
 \value{
@@ -72,6 +73,7 @@ Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit indices u
   \item{ifi} Incremental Fit Index
   \item{gfi*} Gamma Hat
   \item{agfi*} Adjusted Gamma Hat
+  \item{baseline.rmsea} RMSEA of the Baseline (Null) Model
   \item{aicc} Corrected Akaike Information Criterion
   \item{ecvi} Expected Value of Cross-Validation Index 
   \item{sic} Stochastic Information Criterion
@@ -81,6 +83,7 @@ Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit indices u
   \item{ifi.scaled} Incremental Fit Index using Scaled Chi-square
   \item{gfi*.scaled} Gamma Hat using Scaled Chi-square
   \item{agfi*.scaled} Adjusted Gamma Hat using Scaled Chi-square
+  \item{baseline.rmsea.scaled} RMSEA of the Baseline (Null) Model using Scaled Chi-square
 }
 }
 \references{
@@ -97,9 +100,13 @@ West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection in st
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 	Aaron Boulton (University of Kansas; \email{aboulton@ku.edu})
+	Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
 }
 \seealso{
-	\code{\link{miPowerFit}} For the modification indices and their power approach for model fit evaluation
+	\itemize{
+		\item \code{\link{miPowerFit}} For the modification indices and their power approach for model fit evaluation
+		\item \code{\link{nullRmsea}} For RMSEA of the null model
+	}
 }
 \examples{
 HS.model <- ' visual  =~ x1 + x2 + x3
