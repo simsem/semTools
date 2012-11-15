@@ -64,7 +64,7 @@ Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for model
 
 Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit indices using the scaled chi-square values are also provided. 
 
-See \code{\link{nullRmsea}} for the further details of the computation of RMSEA of the null model.
+See \code{\link{nullRMSEA}} for the further details of the computation of RMSEA of the null model.
 }
 
 \value{
@@ -105,7 +105,7 @@ West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection in st
 \seealso{
 	\itemize{
 		\item \code{\link{miPowerFit}} For the modification indices and their power approach for model fit evaluation
-		\item \code{\link{nullRmsea}} For RMSEA of the null model
+		\item \code{\link{nullRMSEA}} For RMSEA of the null model
 	}
 }
 \examples{

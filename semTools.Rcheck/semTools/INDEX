@@ -29,7 +29,7 @@ miPowerFit              Modification indices and their power approach
 monteCarloMed           Monte Carlo Confidence Intervals to Test
                         Complex Indirect Effects
 moreFitIndices          Calculate more fit indices
-nullRmsea               Calculate the RMSEA of the null model
+nullRMSEA               Calculate the RMSEA of the null model
 parcelAllocation        Random Allocation of Items to Parcels in a
                         Structural Equation Model
 plotProbe               Plot the graphs for probing latent interaction
@@ -43,6 +43,7 @@ probe3WayMC             Probing two-way interaction on the
                         residual-centered latent interaction
 probe3WayRC             Probing three-way interaction on the
                         residual-centered latent interaction
+reliability             Calculate reliability values of factors
 residualCovariate       Residual centered all target indicators by
                         covariates
 runMI                   Multiply impute and analyze data using lavaan

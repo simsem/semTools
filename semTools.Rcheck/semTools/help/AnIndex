@@ -21,7 +21,7 @@ measurementinvariance	measurementInvariance
 miPowerFit	miPowerFit
 monteCarloMed	monteCarloMed
 moreFitIndices	moreFitIndices
-nullRmsea	nullRmsea
+nullRMSEA	nullRMSEA
 orthogonalize	indProd
 parcelAllocation	parcelAllocation
 plotProbe	plotProbe
@@ -31,6 +31,7 @@ probe2WayMC	probe2WayMC
 probe2WayRC	probe2WayRC
 probe3WayMC	probe3WayMC
 probe3WayRC	probe3WayRC
+reliability	reliability
 residualCovariate	residualCovariate
 runMI	runMI
 saveFile	clipboard

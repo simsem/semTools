@@ -465,19 +465,37 @@ out <- runMI(model.syntax, data=imputedData, fun="growth")
 
 ########### Raykov's reliability
 
-library(lavaan)
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
 
-HS.model <- ' 
-visual  =~ load1*x1 + load2*x2 + load3*x3
-textual =~ x4 + x5 + x6
-speed   =~ x7 + x8 + x9 
-x1 ~~ e1*x1
-x2 ~~ e2*x2
-x3 ~~ e3*x3
-totalload := (load1 + load2 + load3)^2
-totalerror := e1 + e2 + e3
-relia := totalload / (totalload + totalerror)
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+omegaReliability(fit)
+
+fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="MLR")
+omegaReliability(fit2)
+
+fit3 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="MLR", group="school", group.equal="loadings")
+omegaReliability(fit3)
+
+library(psych)
+dat <- iqitems
+for(i in 1:ncol(iqitems)) {
+	dat[,i] <- ordered(iqitems[,i])
+}
+iq.model <- '
+reason =~ reason.4 + reason.16 + reason.17 + reason.19
+letter =~ letter.7 + letter.33 + letter.34 + letter.58
+matrix =~ matrix.45 + matrix.46 + matrix.47 + matrix.55
+rotate =~ rotate.3 + rotate.4 + rotate.6 + rotate.8
 '
+fit4 <- cfa(iq.model, data=dat)
+omegaReliability(fit4)
 
-fit <- cfa(HS.model, data=HolzingerSwineford1939, std.lv=TRUE)
-summary(fit)
+HS.model2 <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 
+			  visual ~ textual + speed'
+
+fit5 <- cfa(HS.model2, data=HolzingerSwineford1939)
+omegaReliability(fit5) # Should provide a warning

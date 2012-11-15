@@ -25,7 +25,7 @@ moreFitIndices <- function(object, nPrior = 1) {
 	agfiStarValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
 	nfiValue <- (fit["baseline.chisq"] - fit["chisq"])/fit["baseline.chisq"]
 	ifiValue <- (fit["baseline.chisq"] - fit["chisq"])/(fit["baseline.chisq"] - fit["df"])
-	nullRmseaValue <- nullRmsea(object, silent=TRUE)
+	nullRmseaValue <- nullRMSEA(object, silent=TRUE)
 	result <- c(nfiValue, ifiValue, gfiStarValue, agfiStarValue, nullRmseaValue)
 	names(result) <- c("nfi", "ifi", "gfi*", "agfi*", "baseline.rmsea")
 
@@ -45,7 +45,7 @@ moreFitIndices <- function(object, nPrior = 1) {
 		agfiStarScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gfiStarValue)
 		nfiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/fit["baseline.chisq.scaled"]
 		ifiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/(fit["baseline.chisq.scaled"] - fit["df.scaled"])
-		nullRmseaScaledValue <- nullRmsea(object, scaled=TRUE, silent=TRUE)
+		nullRmseaScaledValue <- nullRMSEA(object, scaled=TRUE, silent=TRUE)
 		resultScaled <- c(gfiStarScaledValue, agfiStarScaledValue, nfiScaledValue, ifiScaledValue, nullRmseaScaledValue)
 		names(resultScaled) <- c("nfi.scaled", "ifi.scaled", "gfi*.scaled", "agfi*.scaled", "baseline.rmsea.scaled")
 		result <- c(result, resultScaled)
@@ -73,7 +73,7 @@ sic <- function(f, lresults = NULL) {
 }
 
 
-nullRmsea <- function (object, scaled = FALSE, silent=FALSE) { 
+nullRMSEA <- function (object, scaled = FALSE, silent=FALSE) { 
 	# return RMSEA of the null model, warn if it is lower than 0.158, because it makes the TLI/CLI hard to interpret
 	test <- object@Options$test 
 	

@@ -1,5 +1,5 @@
-\name{nullRmsea}
-\alias{nullRmsea}
+\name{nullRMSEA}
+\alias{nullRMSEA}
 \title{
 Calculate the RMSEA of the null model
 }
@@ -7,7 +7,7 @@ Calculate the RMSEA of the null model
 Calculate the RMSEA of the null (baseline) model
 }
 \usage{
-nullRmsea(object, scaled = FALSE, silent=FALSE)
+nullRMSEA(object, scaled = FALSE, silent=FALSE)
 }
 \arguments{
   \item{object}{The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.}
@@ -46,5 +46,5 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               speed   =~ x7 + x8 + x9 '
 
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
-nullRmsea(fit)
+nullRMSEA(fit)
 }

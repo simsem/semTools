@@ -542,14 +542,14 @@ moreFitIndices(fit2)
 
 
 cleanEx()
-nameEx("nullRmsea")
-### * nullRmsea
+nameEx("nullRMSEA")
+### * nullRMSEA
 
 flush(stderr()); flush(stdout())
 
-### Name: nullRmsea
+### Name: nullRMSEA
 ### Title: Calculate the RMSEA of the null model
-### Aliases: nullRmsea
+### Aliases: nullRMSEA
 
 ### ** Examples
 
@@ -558,7 +558,7 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               speed   =~ x7 + x8 + x9 '
 
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
-nullRmsea(fit)
+nullRMSEA(fit)
 
 
 
@@ -921,6 +921,27 @@ summary(fitRC3way)
 
 result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 result3wayRC
+
+
+
+cleanEx()
+nameEx("reliability")
+### * reliability
+
+flush(stderr()); flush(stdout())
+
+### Name: reliability
+### Title: Calculate reliability values of factors
+### Aliases: reliability
+
+### ** Examples
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+reliability(fit)
 
 
 
