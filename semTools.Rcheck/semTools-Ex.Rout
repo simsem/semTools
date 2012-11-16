@@ -32,7 +32,7 @@ This is lavaan 0.5-11
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-9
+This is semTools 0.2-10
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -325,6 +325,55 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 > 
 > findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
 [1] 434
+> 
+> 
+> 
+> cleanEx()
+> nameEx("impliedFactorStat")
+> ### * impliedFactorStat
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: impliedFactorStat
+> ### Title: Calculate the model-implied factor means and covariance matrix.
+> ### Aliases: impliedFactorMean impliedFactorCov impliedFactorStat
+> 
+> ### ** Examples
+> 
+> HS.model <- ' visual  =~ x1 + x2 + x3
++               textual =~ x4 + x5 + x6
++               speed   =~ x7 + x8 + x9 '
+> 
+> fit <- cfa(HS.model, data=HolzingerSwineford1939, group="school")
+> impliedFactorStat(fit)
+$mean
+$mean$Pasteur
+        intrcp
+visual       0
+textual      0
+speed        0
+
+$mean$`Grant-White`
+        intrcp
+visual       0
+textual      0
+speed        0
+
+
+$cov
+$cov$Pasteur
+        visual textul speed
+visual  1.097              
+textual 0.479  0.894       
+speed   0.185  0.182  0.350
+
+$cov$`Grant-White`
+        visual textul speed
+visual  0.604              
+textual 0.408  0.942       
+speed   0.276  0.222  0.461
+
+
 > 
 > 
 > 
@@ -2174,8 +2223,41 @@ $SimpleSlope
 > 
 > fit <- cfa(HS.model, data=HolzingerSwineford1939)
 > reliability(fit)
-   visual   textual     speed 
-0.6253180 0.8851755 0.6877602 
+          visual   textual     speed
+alpha  0.6261171 0.8827069 0.6884550
+omega  0.6253180 0.8851755 0.6877602
+omega2 0.6253180 0.8851755 0.6877602
+omega3 0.6120055 0.8850615 0.6858421
+> 
+> 
+> 
+> cleanEx()
+> nameEx("reliabilityL2")
+> ### * reliabilityL2
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: reliabilityL2
+> ### Title: Calculate the reliability values of a second-order factor
+> ### Aliases: reliabilityL2
+> 
+> ### ** Examples
+> 
+> HS.model3 <- ' visual  =~ x1 + x2 + x3
++               textual =~ x4 + x5 + x6
++               speed   =~ x7 + x8 + x9 
++ 			  higher =~ visual + textual + speed'
+> 
+> fit6 <- cfa(HS.model3, data=HolzingerSwineford1939)
+> reliability(fit6) # Should provide a warning for the endogenous variable
+          visual   textual     speed
+alpha  0.6261171 0.8827069 0.6884550
+omega  0.6253178 0.8851754 0.6877600
+omega2 0.6253178 0.8851754 0.6877600
+omega3 0.6120051 0.8850612 0.6858419
+> reliabilityL2(fit6, "higher")
+       omegaL1        omegaL2 partialOmegaL1 
+     0.5542949      0.6958905      0.7818424 
 > 
 > 
 > 
@@ -2499,7 +2581,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  16.32 0.14 16.63 NA NA 
+Time elapsed:  18.08 0.17 18.33 NA NA 
 > grDevices::dev.off()
 null device 
           1 

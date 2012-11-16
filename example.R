@@ -470,13 +470,13 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               speed   =~ x7 + x8 + x9 '
 
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
-omegaReliability(fit)
+reliability(fit)
 
 fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="MLR")
-omegaReliability(fit2)
+reliability(fit2)
 
 fit3 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="MLR", group="school", group.equal="loadings")
-omegaReliability(fit3)
+reliability(fit3)
 
 library(psych)
 dat <- iqitems
@@ -490,7 +490,7 @@ matrix =~ matrix.45 + matrix.46 + matrix.47 + matrix.55
 rotate =~ rotate.3 + rotate.4 + rotate.6 + rotate.8
 '
 fit4 <- cfa(iq.model, data=dat)
-omegaReliability(fit4)
+reliability(fit4) # Should provide a warning for coefficient alpha
 
 HS.model2 <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
@@ -498,4 +498,48 @@ HS.model2 <- ' visual  =~ x1 + x2 + x3
 			  visual ~ textual + speed'
 
 fit5 <- cfa(HS.model2, data=HolzingerSwineford1939)
-omegaReliability(fit5) # Should provide a warning
+reliability(fit5) # Should provide a warning for the endogenous variable
+
+
+HS.model3 <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 
+			  higher =~ visual + textual + speed'
+
+fit6 <- cfa(HS.model3, data=HolzingerSwineford1939)
+reliability(fit6) # Should provide a warning for the endogenous variable
+reliabilityL2(fit6, "higher")
+
+HS.model4 <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+			  higher =~ visual + textual + x7 + x8 + x9'
+
+fit7 <- cfa(HS.model4, data=HolzingerSwineford1939)
+reliability(fit7) # Should provide a warning for the endogenous variable
+reliabilityL2(fit7, "higher")
+
+HS.model5 <- ' visual  =~ x1 + x2 + x3 + x4
+              textual =~ x4 + x5 + x6 + x7
+			  speed   =~ x7 + x8 + x9 '
+
+fit8 <- cfa(HS.model5, data=HolzingerSwineford1939)
+reliability(fit8) 
+
+########### Implied factor means and covariances
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 
+			  visual ~ agemo
+			  textual ~ agemo
+			  speed ~ agemo'
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939, fixed.x = FALSE, meanstructure=TRUE)
+impliedFactorStat(fit)
+impliedFactorMean(fit)
+impliedFactorCov(fit)
+
+fit2 <- cfa(HS.model, data=HolzingerSwineford1939, group="school")
+impliedFactorStat(fit2)
+impliedFactorMean(fit2)
+impliedFactorCov(fit2)

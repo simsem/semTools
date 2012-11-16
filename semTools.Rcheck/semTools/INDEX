@@ -12,6 +12,8 @@ findRMSEApower          Find the statistical power based on population
                         RMSEA
 findRMSEAsamplesize     Find the minimum sample size for a given
                         statistical power based on population RMSEA
+impliedFactorStat       Calculate the model-implied factor means and
+                        covariance matrix.
 indProd                 Make products of indicators using no centering,
                         mean centering, double-mean centering, or
                         residual centering
@@ -44,6 +46,8 @@ probe3WayMC             Probing two-way interaction on the
 probe3WayRC             Probing three-way interaction on the
                         residual-centered latent interaction
 reliability             Calculate reliability values of factors
+reliabilityL2           Calculate the reliability values of a
+                        second-order factor
 residualCovariate       Residual centered all target indicators by
                         covariates
 runMI                   Multiply impute and analyze data using lavaan

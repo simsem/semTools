@@ -253,6 +253,27 @@ findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
 
 
 cleanEx()
+nameEx("impliedFactorStat")
+### * impliedFactorStat
+
+flush(stderr()); flush(stdout())
+
+### Name: impliedFactorStat
+### Title: Calculate the model-implied factor means and covariance matrix.
+### Aliases: impliedFactorMean impliedFactorCov impliedFactorStat
+
+### ** Examples
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939, group="school")
+impliedFactorStat(fit)
+
+
+
+cleanEx()
 nameEx("indProd")
 ### * indProd
 
@@ -942,6 +963,29 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
 reliability(fit)
+
+
+
+cleanEx()
+nameEx("reliabilityL2")
+### * reliabilityL2
+
+flush(stderr()); flush(stdout())
+
+### Name: reliabilityL2
+### Title: Calculate the reliability values of a second-order factor
+### Aliases: reliabilityL2
+
+### ** Examples
+
+HS.model3 <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 
+			  higher =~ visual + textual + speed'
+
+fit6 <- cfa(HS.model3, data=HolzingerSwineford1939)
+reliability(fit6) # Should provide a warning for the endogenous variable
+reliabilityL2(fit6, "higher")
 
 
 

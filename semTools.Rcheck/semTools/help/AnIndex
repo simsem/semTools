@@ -7,6 +7,9 @@ exLong	exLong
 findRMSEApower	findRMSEApower
 findRMSEAsamplesize	findRMSEAsamplesize
 growth.mi	runMI
+impliedFactorCov	impliedFactorStat
+impliedFactorMean	impliedFactorStat
+impliedFactorStat	impliedFactorStat
 indProd	indProd
 inspect,lavaanStar-method	lavaanStar-class
 kurtosis	kurtosis
@@ -32,6 +35,7 @@ probe2WayRC	probe2WayRC
 probe3WayMC	probe3WayMC
 probe3WayRC	probe3WayRC
 reliability	reliability
+reliabilityL2	reliabilityL2
 residualCovariate	residualCovariate
 runMI	runMI
 saveFile	clipboard
