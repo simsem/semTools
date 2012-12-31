@@ -438,7 +438,7 @@ summary(out3)
 inspect(out3, "fit")
 inspect(out3, "impute")
 
-
+library(mice)
 model.syntax <- '
   # intercept and slope with fixed coefficients
     i =~ 1*t1 + 1*t2 + 1*t3 + 1*t4

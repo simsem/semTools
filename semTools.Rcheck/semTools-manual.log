@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9) (preloaded format=pdflatex 2011.7.1)  15 NOV 2012 18:45
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.12.18)  31 DEC 2012 15:16
 entering extended mode
-**C:/Users/Sunthud/AppData/Local/Temp/Rtmpa0hMMU/Rd2pdf1be42e716fe0/Rd2.tex
-(C:/Users/Sunthud/AppData/Local/Temp/Rtmpa0hMMU/Rd2pdf1be42e716fe0/Rd2.tex
-LaTeX2e <2009/09/24>
-Babel <v3.8l> and hyphenation patterns for english, afrikaans, ancientgreek, ar
+**C:/Users/sunthud/AppData/Local/Temp/Rtmp0YFuxl/Rd2pdf197c5ba136e5/Rd2.tex
+(C:/Users/sunthud/AppData/Local/Temp/Rtmp0YFuxl/Rd2pdf197c5ba136e5/Rd2.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
 croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
 lician, german, german-x-2009-06-19, greek, gujarati, hindi, hungarian, iceland
@@ -32,7 +32,7 @@ File: bk10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 )
-(c:/PROGRA~1/R/R-215~1.1/share/texmf/tex/latex\Rd.sty
+(C:/PROGRA~1/R/R-215~1.2/share/texmf/tex/latex\Rd.sty
 Package: Rd 
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ifthen.sty"
@@ -143,22 +143,36 @@ Package textcomp Info: Setting pxtt sub-encoding to TS1/0 on input line 307.
 Package textcomp Info: Setting txr sub-encoding to TS1/0 on input line 308.
 Package textcomp Info: Setting txss sub-encoding to TS1/0 on input line 309.
 Package textcomp Info: Setting txtt sub-encoding to TS1/0 on input line 310.
-Package textcomp Info: Setting futs sub-encoding to TS1/4 on input line 311.
-Package textcomp Info: Setting futx sub-encoding to TS1/4 on input line 312.
-Package textcomp Info: Setting futj sub-encoding to TS1/4 on input line 313.
-Package textcomp Info: Setting hlh sub-encoding to TS1/3 on input line 314.
-Package textcomp Info: Setting hls sub-encoding to TS1/3 on input line 315.
-Package textcomp Info: Setting hlst sub-encoding to TS1/3 on input line 316.
-Package textcomp Info: Setting hlct sub-encoding to TS1/5 on input line 317.
-Package textcomp Info: Setting hlx sub-encoding to TS1/5 on input line 318.
-Package textcomp Info: Setting hlce sub-encoding to TS1/5 on input line 319.
-Package textcomp Info: Setting hlcn sub-encoding to TS1/5 on input line 320.
-Package textcomp Info: Setting hlcw sub-encoding to TS1/5 on input line 321.
-Package textcomp Info: Setting hlcf sub-encoding to TS1/5 on input line 322.
-Package textcomp Info: Setting pplx sub-encoding to TS1/3 on input line 323.
-Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 324.
-Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 325.
-Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 326.
+Package textcomp Info: Setting lmr sub-encoding to TS1/0 on input line 311.
+Package textcomp Info: Setting lmdh sub-encoding to TS1/0 on input line 312.
+Package textcomp Info: Setting lmss sub-encoding to TS1/0 on input line 313.
+Package textcomp Info: Setting lmssq sub-encoding to TS1/0 on input line 314.
+Package textcomp Info: Setting lmvtt sub-encoding to TS1/0 on input line 315.
+Package textcomp Info: Setting qhv sub-encoding to TS1/0 on input line 316.
+Package textcomp Info: Setting qag sub-encoding to TS1/0 on input line 317.
+Package textcomp Info: Setting qbk sub-encoding to TS1/0 on input line 318.
+Package textcomp Info: Setting qcr sub-encoding to TS1/0 on input line 319.
+Package textcomp Info: Setting qcs sub-encoding to TS1/0 on input line 320.
+Package textcomp Info: Setting qpl sub-encoding to TS1/0 on input line 321.
+Package textcomp Info: Setting qtm sub-encoding to TS1/0 on input line 322.
+Package textcomp Info: Setting qzc sub-encoding to TS1/0 on input line 323.
+Package textcomp Info: Setting qhvc sub-encoding to TS1/0 on input line 324.
+Package textcomp Info: Setting futs sub-encoding to TS1/4 on input line 325.
+Package textcomp Info: Setting futx sub-encoding to TS1/4 on input line 326.
+Package textcomp Info: Setting futj sub-encoding to TS1/4 on input line 327.
+Package textcomp Info: Setting hlh sub-encoding to TS1/3 on input line 328.
+Package textcomp Info: Setting hls sub-encoding to TS1/3 on input line 329.
+Package textcomp Info: Setting hlst sub-encoding to TS1/3 on input line 330.
+Package textcomp Info: Setting hlct sub-encoding to TS1/5 on input line 331.
+Package textcomp Info: Setting hlx sub-encoding to TS1/5 on input line 332.
+Package textcomp Info: Setting hlce sub-encoding to TS1/5 on input line 333.
+Package textcomp Info: Setting hlcn sub-encoding to TS1/5 on input line 334.
+Package textcomp Info: Setting hlcw sub-encoding to TS1/5 on input line 335.
+Package textcomp Info: Setting hlcf sub-encoding to TS1/5 on input line 336.
+Package textcomp Info: Setting pplx sub-encoding to TS1/3 on input line 337.
+Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 338.
+Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 339.
+Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 340.
 )
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
 Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
@@ -173,101 +187,104 @@ File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 Package color Info: Driver file: pdftex.def on input line 130.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\pdftex-def\pdftex.def"
-File: pdftex.def 2011/04/25 v0.06b Graphics/color for pdfTeX
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\infwarerr.sty"
-Package: infwarerr 2010/04/08 v1.3 Providing info/warning/message (HO)
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
 )
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ltxcmds.sty"
-Package: ltxcmds 2011/04/18 v1.20 LaTeX kernel commands for general use (HO)
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 )
 \Gread@gobject=\count93
 ))
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyperref\hyperref.sty"
-Package: hyperref 2011/04/17 v6.82g Hypertext links for LaTeX
+Package: hyperref 2012/05/13 v6.82q Hypertext links for LaTeX
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\hobsub-hyperref.sty"
-Package: hobsub-hyperref 2011/04/23 v1.4 Bundle oberdiek, subset hyperref (HO)
+Package: hobsub-hyperref 2012/04/25 v1.12 Bundle oberdiek, subset hyperref (HO)
+
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\hobsub-generic.sty"
-Package: hobsub-generic 2011/04/23 v1.4 Bundle oberdiek, subset generic (HO)
-Package: hobsub 2011/04/23 v1.4 Subsetting bundle oberdiek (HO)
+Package: hobsub-generic 2012/04/25 v1.12 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2012/04/25 v1.12 Construct package bundles (HO)
 Package hobsub Info: Skipping package `infwarerr' (already loaded).
 Package hobsub Info: Skipping package `ltxcmds' (already loaded).
 Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
-Package: ifvtex 2010/03/01 v1.5 Switches for detecting VTeX and its modes (HO)
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
 Package ifvtex Info: VTeX not detected.
-Package: intcalc 2007/09/27 v1.1 Expandable integer calculations (HO)
+Package: intcalc 2007/09/27 v1.1 Expandable calculations with integers (HO)
 Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
 Package ifpdf Info: pdfTeX in PDF mode is detected.
-Package: etexcmds 2011/02/16 v1.5 Prefix for e-TeX command names (HO)
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
 Package etexcmds Info: Could not find \expanded.
 (etexcmds)             That can mean that you are not using pdfTeX 1.50 or
 (etexcmds)             that some package has redefined \expanded.
 (etexcmds)             In the latter case, load this package earlier.
-Package: kvsetkeys 2011/04/07 v1.13 Key value parser (HO)
-Package: kvdefinekeys 2011/04/07 v1.3 Defining keys (HO)
-Package: pdftexcmds 2011/04/22 v0.16 Utilities of pdfTeX for LuaTeX (HO)
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
 Package pdftexcmds Info: LuaTeX not detected.
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
-Package: pdfescape 2011/04/04 v1.12 Provides string conversions (HO)
-Package: bigintcalc 2011/01/30 v1.2 Expandable big integer calculations (HO)
-Package: bitset 2011/01/30 v1.1 Data type bit set (HO)
-Package: uniquecounter 2011/01/30 v1.2 Provides unlimited unique counter (HO)
+Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
+)
+Package: bitset 2011/01/30 v1.1 Handle bit-vector datatype (HO)
+Package: uniquecounter 2011/01/30 v1.2 Provide unlimited unique counter (HO)
 )
 Package hobsub Info: Skipping package `hobsub' (already loaded).
 Package: letltxmacro 2010/09/02 v1.4 Let assignment for LaTeX macros (HO)
-Package: hopatch 2011/01/30 v1.0 Wrapper for package hooks (HO)
+Package: hopatch 2011/06/24 v1.1 Wrapper for package hooks (HO)
 Package: xcolor-patch 2011/01/30 xcolor patch
-Package: atveryend 2011/04/23 v1.7 Hooks at very end of document (HO)
-Package atveryend Info: \enddocument detected (standard).
-Package: atbegshi 2011/01/30 v1.15 At begin shipout hook (HO)
-Package: refcount 2010/12/01 v3.2 Data extraction from references (HO)
-Package: hycolor 2011/01/30 v1.7 Color options of hyperref/bookmark (HO)
+Package: atveryend 2011/06/30 v1.8 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
+Package: refcount 2011/10/16 v3.4 Data extraction from label references (HO)
+Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
 )
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\ifxetex\ifxetex.sty"
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\oberdiek\kvoptions.sty"
-Package: kvoptions 2010/12/23 v3.10 Keyval support for LaTeX options (HO)
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
 )
 \@linkdim=\dimen104
 \Hy@linkcounter=\count94
 \Hy@pagecounter=\count95
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyperref\pd1enc.def"
-File: pd1enc.def 2011/04/17 v6.82g Hyperref: PDFDocEncoding definition (HO)
+File: pd1enc.def 2012/05/13 v6.82q Hyperref: PDFDocEncoding definition (HO)
 )
 \Hy@SavedSpaceFactor=\count96
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\hyperref.cfg"
 File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
 )
-Package hyperref Info: Hyper figures OFF on input line 4026.
-Package hyperref Info: Link nesting OFF on input line 4031.
-Package hyperref Info: Hyper index ON on input line 4034.
-Package hyperref Info: Plain pages OFF on input line 4041.
-Package hyperref Info: Backreferencing OFF on input line 4046.
+Package hyperref Info: Hyper figures OFF on input line 4062.
+Package hyperref Info: Link nesting OFF on input line 4067.
+Package hyperref Info: Hyper index ON on input line 4070.
+Package hyperref Info: Plain pages OFF on input line 4077.
+Package hyperref Info: Backreferencing OFF on input line 4082.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
-Package hyperref Info: Bookmarks ON on input line 4264.
-LaTeX Info: Redefining \href on input line 4528.
+Package hyperref Info: Bookmarks ON on input line 4300.
+LaTeX Info: Redefining \href on input line 4564.
 \c@Hy@tempcnt=\count97
-LaTeX Info: Redefining \url on input line 4617.
+LaTeX Info: Redefining \url on input line 4653.
 \Fld@menulength=\count98
 \Field@Width=\dimen105
 \Fld@charsize=\dimen106
-Package hyperref Info: Hyper figures OFF on input line 5701.
-Package hyperref Info: Link nesting OFF on input line 5706.
-Package hyperref Info: Hyper index ON on input line 5709.
-Package hyperref Info: backreferencing OFF on input line 5716.
-Package hyperref Info: Link coloring OFF on input line 5721.
-Package hyperref Info: Link coloring with OCG OFF on input line 5726.
-Package hyperref Info: PDF/A mode OFF on input line 5731.
-LaTeX Info: Redefining \ref on input line 5771.
-LaTeX Info: Redefining \pageref on input line 5775.
+Package hyperref Info: Hyper figures OFF on input line 5773.
+Package hyperref Info: Link nesting OFF on input line 5778.
+Package hyperref Info: Hyper index ON on input line 5781.
+Package hyperref Info: backreferencing OFF on input line 5788.
+Package hyperref Info: Link coloring OFF on input line 5793.
+Package hyperref Info: Link coloring with OCG OFF on input line 5798.
+Package hyperref Info: PDF/A mode OFF on input line 5803.
+LaTeX Info: Redefining \ref on input line 5843.
+LaTeX Info: Redefining \pageref on input line 5847.
 \Hy@abspage=\count99
 \c@Item=\count100
 \c@Hfootnote=\count101
@@ -276,7 +293,7 @@ LaTeX Info: Redefining \pageref on input line 5775.
 Package hyperref Message: Driver (autodetected): hpdftex.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyperref\hpdftex.def"
-File: hpdftex.def 2011/04/17 v6.82g Hyperref driver for pdfTeX
+File: hpdftex.def 2012/05/13 v6.82q Hyperref driver for pdfTeX
 \Fld@listcount=\count102
 \c@bookmark@seq@number=\count103
 
@@ -601,7 +618,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmpa0hMMU\Rd2pdf1be42e716fe0\Rd2.aux)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp0YFuxl\Rd2pdf197c5ba136e5\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -656,8 +673,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmpa0hMMU\Rd2pdf1be42e716fe0\Rd2.out)
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmpa0hMMU\Rd2pdf1be42e716fe0\Rd2.out)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp0YFuxl\Rd2pdf197c5ba136e5\Rd2.out)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp0YFuxl\Rd2pdf197c5ba136e5\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -677,7 +694,7 @@ LaTeX Font Info:    Try loading font information for T1+phv on input line 30.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmpa0hMMU\Rd2pdf1be42e716fe0\Rd2.toc
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp0YFuxl\Rd2pdf197c5ba136e5\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -870,18 +887,23 @@ ale = TRUE, group=1)[]
 
 [35] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [36]
-[37] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+)
+Overfull \hbox (9.78088pt too wide) in paragraph at lines 1796--1796
+ []\T1/fi4/m/n/10 plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alph
+a=.05, group=1, ...)[] 
+ []
+
+[36] [37] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [38]
-[39] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+)
+[38] [39] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [40]
-[41] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+)
+[40] [41] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [42]
-[43]
-Overfull \hbox (391.42891pt too wide) detected at line 2136
+)
+[42] [43]
+Overfull \hbox (391.42891pt too wide) detected at line 2137
 \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/
 10 + \OML/cmm/m/it/10 Z[]Var [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 W[]Var [] \O
 T1/cmr/m/n/10 + \OML/cmm/m/it/10 Z[]W[]Var [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/
@@ -892,7 +914,7 @@ cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/
  []
 
 
-Overfull \hbox (374.94273pt too wide) detected at line 2142
+Overfull \hbox (374.94273pt too wide) detected at line 2143
 \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/
 10 + \OML/cmm/m/it/10 Z[]Var [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 W[]Var [] \O
 T1/cmr/m/n/10 + \OML/cmm/m/it/10 Z[]W[]Var [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/
@@ -903,7 +925,7 @@ cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/
  []
 
 [44] [45]
-Overfull \hbox (212.28088pt too wide) in paragraph at lines 2231--2231
+Overfull \hbox (212.28088pt too wide) in paragraph at lines 2232--2232
  []\T1/fi4/m/n/9 result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f1
 2", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))[] 
  []
@@ -911,7 +933,7 @@ Overfull \hbox (212.28088pt too wide) in paragraph at lines 2231--2231
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [46] [47]
-Overfull \hbox (212.28088pt too wide) in paragraph at lines 2356--2356
+Overfull \hbox (212.28088pt too wide) in paragraph at lines 2357--2357
  []\T1/fi4/m/n/9 result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f1
 2", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))[] 
  []
@@ -928,21 +950,21 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [53]
-Overfull \hbox (24.38837pt too wide) in paragraph at lines 2622--2630
+Overfull \hbox (24.38837pt too wide) in paragraph at lines 2623--2631
 \T1/ptm/m/n/10 of Kansas; \T1/fi4/m/n/10 <patr1ckm@ku.edu>\T1/ptm/m/n/10 ) Sun-
 thud Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/fi4/m/n/10 <psunthud@ku.ed
 u>\T1/ptm/m/n/10 )
  []
 
 
-Overfull \hbox (27.48857pt too wide) in paragraph at lines 2622--2630
+Overfull \hbox (27.48857pt too wide) in paragraph at lines 2623--2631
 \T1/ptm/m/n/10 Aus-tria; \T1/fi4/m/n/10 <a.robitzsch@bifie.at>\T1/ptm/m/n/10 ) 
 Craig En-ders (Ari-zona State Uni-ver-sity; \T1/fi4/m/n/10 <Craig.Enders@asu.ed
 u>\T1/ptm/m/n/10 )
  []
 
 [54]
-Overfull \hbox (50.28088pt too wide) in paragraph at lines 2663--2663
+Overfull \hbox (50.28088pt too wide) in paragraph at lines 2664--2664
  []\T1/fi4/m/n/9 out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms
 ="school"), chi="MR", group="school")[] 
  []
@@ -956,7 +978,7 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [57] [58]
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmpa0hMMU\Rd2pdf1be42e716fe0\Rd2.ind
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp0YFuxl\Rd2pdf197c5ba136e5\Rd2.ind
 [59]
 
 LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
@@ -965,12 +987,12 @@ LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
 [60
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2881.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 2881.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2882.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2882.
 
-(C:\Users\Sunthud\AppData\Local\Temp\Rtmpa0hMMU\Rd2pdf1be42e716fe0\Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2881.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2881.
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp0YFuxl\Rd2pdf197c5ba136e5\Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2882.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2882.
 
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
 (rerunfilecheck)             Checksum: AD3D14C23C7B4EC8816622D7CE748F65;2064.
@@ -978,13 +1000,13 @@ Package rerunfilecheck Info: File `Rd2.out' has not changed.
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2881.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2882.
  ) 
 Here is how much of TeX's memory you used:
- 6720 strings out of 494053
- 98595 string characters out of 3146180
- 170277 words of memory out of 3000000
- 9368 multiletter control sequences out of 15000+200000
+ 6768 strings out of 494045
+ 99149 string characters out of 3145962
+ 171756 words of memory out of 3000000
+ 9420 multiletter control sequences out of 15000+200000
  38195 words of font info for 48 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
  38i,6n,27p,1136b,588s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1023,7 +1045,7 @@ pe1/urw/helvetic/uhvr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/
 times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8
 a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/P
 rogram Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (60 pages, 458533 bytes).
+Output written on Rd2.pdf (60 pages, 457832 bytes).
 PDF statistics:
  1242 PDF objects out of 1440 (max. 8388607)
  478 named destinations out of 1000 (max. 500000)

@@ -5,7 +5,7 @@
 #Alexander M. Schoemann, Kristopher J. Preacher, Donna Coffman
 #5/30/2012
 
-plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05, group=1){ 
+plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05, group=1, ...) { 
 	pow1 <- 0
 	nseq <- seq(nlow,nhigh, by=steps)
 	for(i in nseq){
@@ -24,7 +24,7 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05, 
 	}
 	pow1 <- pow1[-1]
 
-	plot(nseq,pow1,xlab="Sample Size",ylab="Power",main="Compute Power for RMSEA",type="l")
+	plot(nseq,pow1,xlab="Sample Size",ylab="Power",main="Compute Power for RMSEA",type="l", ...)
 }
 
 #Example Code

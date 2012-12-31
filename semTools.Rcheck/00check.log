@@ -1,22 +1,25 @@
-* using log directory 'C:/Users/Sunthud/Desktop/My Dropbox/semTools/semTools.Rcheck'
-* using R version 2.15.1 (2012-06-22)
-* using platform: i386-pc-mingw32 (32-bit)
+* using log directory 'C:/Users/sunthud/Dropbox/semTools/semTools.Rcheck'
+* using R version 2.15.2 (2012-10-26)
+* using platform: i386-w64-mingw32 (32-bit)
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'semTools' version '0.2-10'
+* this is package 'semTools' version '0.2-11'
 * checking CRAN incoming feasibility ... OK
+Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking package namespace information ... OK
 * checking package dependencies ... OK
 * checking if this is a source package ... OK
 * checking if there is a namespace ... OK
 * checking for executable files ... OK
+* checking for hidden files and directories ... OK
 * checking whether package 'semTools' can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
 * checking for portable file names ... OK
 * checking DESCRIPTION meta-information ... OK
 * checking top-level files ... OK
+* checking for left-over files ... OK
 * checking index information ... OK
 * checking package subdirectories ... OK
 * checking R files for non-ASCII characters ... OK

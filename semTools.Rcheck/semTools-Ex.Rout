@@ -1,8 +1,8 @@
 
-R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: i386-pc-mingw32/i386 (32-bit)
+Platform: i386-w64-mingw32/i386 (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -28,11 +28,11 @@ Loading required package: lavaan
 Loading required package: boot
 Loading required package: mnormt
 Loading required package: quadprog
-This is lavaan 0.5-11
+This is lavaan 0.5-10
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-10
+This is semTools 0.2-11
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -1466,7 +1466,7 @@ Warning in plotRMSEAdist(rmsea = c(0.05, 0.08), n = 200, df = 20, ptile = 0.95, 
 > 
 > fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC2way)
-lavaan (0.5-11) converged normally after  53 iterations
+lavaan (0.5-10) converged normally after  53 iterations
 
   Number of observations                         10000
 
@@ -1604,7 +1604,7 @@ $SimpleSlope
 > 
 > fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC2way)
-lavaan (0.5-11) converged normally after  53 iterations
+lavaan (0.5-10) converged normally after  53 iterations
 
   Number of observations                         10000
 
@@ -1764,7 +1764,7 @@ $SimpleSlope
 > 
 > fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC3way)
-lavaan (0.5-11) converged normally after 104 iterations
+lavaan (0.5-10) converged normally after 104 iterations
 
   Number of observations                          1000
 
@@ -2014,7 +2014,7 @@ $SimpleSlope
 > 
 > fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC3way)
-lavaan (0.5-11) converged normally after 107 iterations
+lavaan (0.5-10) converged normally after 107 iterations
 
   Number of observations                          1000
 
@@ -2310,7 +2310,7 @@ Loading required package: foreign
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
 > summary(out)
-lavaan (0.5-11) converged normally after   3 iterations
+lavaan (0.5-10) converged normally after   3 iterations
 
   Number of observations                           301
 
@@ -2581,7 +2581,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  18.08 0.17 18.33 NA NA 
+Time elapsed:  17.24 0.16 17.57 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -84,6 +84,12 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template@Fit@se <- comb.results$se
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
 	# Do not need to change imputed.results.l@Model@GLIST because the methods from the lavaan object does not use that information
+	# It is used in standardize calculation.
+	#GLIST <- object@GLIST
+	template@Model <- imposeGLIST(template@Model, comb.results$coef, template@ParTable)
+    #ngroups        <- object@ngroups
+    #nmat           <- object@nmat
+    #representation <- object@representation
 	
 	fmi.results <- cbind(parameterEstimates(template)[,1:3], group=template@ParTable$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
 
@@ -496,3 +502,36 @@ forceTest <- function(object) {
     lav
 }
 
+imposeGLIST <- function(object, coef, partable) {
+	GLIST <- object@GLIST
+	for(i in 1:length(GLIST)) {
+		if(!is.matrix(GLIST[[i]])) GLIST[[i]] <- as.matrix(GLIST[[i]])
+		dimnames(GLIST[[i]]) <- object@dimNames[[i]]
+	}
+	for(i in 1:length(coef)) {
+		group <- partable$group[i]
+		lhs <- partable$lhs[i]
+		rhs <- partable$rhs[i]
+		if(partable$op[i] == "=~") {
+			GLIST[names(GLIST) == "lambda"][[group]][rhs, lhs] <- coef[i]
+		} else if (partable$op[i] == "~~") {
+			if(lhs %in% rownames(GLIST[names(GLIST) == "psi"][[group]])) {
+				GLIST[names(GLIST) == "psi"][[group]][rhs, lhs] <- coef[i]
+				GLIST[names(GLIST) == "psi"][[group]][lhs, rhs] <- coef[i]
+			} else {
+				GLIST[names(GLIST) == "theta"][[group]][rhs, lhs] <- coef[i]
+				GLIST[names(GLIST) == "theta"][[group]][lhs, rhs] <- coef[i]
+			}
+		} else if (partable$op[i] == "~") {
+			GLIST[names(GLIST) == "beta"][[group]][lhs, rhs] <- coef[i]
+		} else if (partable$op[i] == "~1") {
+			if(lhs %in% rownames(GLIST[names(GLIST) == "alpha"][[group]])) {
+				GLIST[names(GLIST) == "alpha"][[group]][lhs, 1] <- coef[i]
+			} else {
+				GLIST[names(GLIST) == "nu"][[group]][lhs, 1] <- coef[i]
+			}		
+		}
+	}
+	object@GLIST <- GLIST
+	object
+}
