@@ -32,7 +32,7 @@ This is lavaan 0.5-10
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-11
+This is semTools 0.2-12
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -2306,7 +2306,7 @@ Loading required package: foreign
 ## 
 ## Amelia II: Multiple Imputation
 ## (Version 1.6.3, built: 2012-06-21)
-## Copyright (C) 2005-2012 James Honaker, Gary King and Matthew Blackwell
+## Copyright (C) 2005-2013 James Honaker, Gary King and Matthew Blackwell
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
 > summary(out)
@@ -2581,7 +2581,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  17.24 0.16 17.57 NA NA 
+Time elapsed:  19.98 0.17 21.37 NA NA 
 > grDevices::dev.off()
 null device 
           1 
