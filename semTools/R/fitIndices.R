@@ -1,5 +1,5 @@
 ## Title: Compute more fit indices
-## Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Aaron Boulton <aboulton@ku.edu>, Ruben Arslan <rubenarslan@gmail.com>
+## Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Aaron Boulton <aboulton@ku.edu>, Ruben Arslan <rubenarslan@gmail.com>, Terrence Jorgensen <tdj@ku.edu>
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------##
 
@@ -21,21 +21,23 @@ moreFitIndices <- function(object, nPrior = 1) {
 	ngroup <- object@Data@ngroups
 	
 	# Compute fit indices
-	gfiStarValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
-	agfiStarValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
 	nfiValue <- (fit["baseline.chisq"] - fit["chisq"])/fit["baseline.chisq"]
 	ifiValue <- (fit["baseline.chisq"] - fit["chisq"])/(fit["baseline.chisq"] - fit["df"])
+	rniValue <- ((fit["baseline.chisq"] - fit["baseline.df"]) - (fit["chisq"] - fit["df"])) / (fit["baseline.chisq"] - fit["baseline.df"])
+  McValue <- exp(-0.5 * ((fit["chisq"] - fit["df"]) / fit["ntotal"]))
+	gfiStarValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
+	agfiStarValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
 	nullRmseaValue <- nullRMSEA(object, silent=TRUE)
-	result <- c(nfiValue, ifiValue, gfiStarValue, agfiStarValue, nullRmseaValue)
-	names(result) <- c("nfi", "ifi", "gfi*", "agfi*", "baseline.rmsea")
+	result <- c(nfiValue, ifiValue, rniValue, McValue, gfiStarValue, agfiStarValue, nullRmseaValue)
+	names(result) <- c("nfi", "ifi", "rni", "Mc", "gfiStar", "agfiStar", "baseline.rmsea")
 
 	if(!is.na(f)) {
-		ciacValue <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
+		aiccValue <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
 		ecviValue <- f + (2 * nParam / n)
 		bicStarValue <- f + log(1 + n/nPrior) * nParam
 		hqcValue <- f + 2 * log(log(n)) * nParam
-		temp <- c(ciacValue, ecviValue, bicStarValue, hqcValue)
-		names(temp) <- c("ciac", "ecvi", "bic*", "hqc")
+		temp <- c(aiccValue, ecviValue, bicStarValue, hqcValue)
+		names(temp) <- c("aicc", "ecvi", "bicStar", "hqc")
 		result <- c(result, temp)
 	}
 	
@@ -47,7 +49,7 @@ moreFitIndices <- function(object, nPrior = 1) {
 		ifiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/(fit["baseline.chisq.scaled"] - fit["df.scaled"])
 		nullRmseaScaledValue <- nullRMSEA(object, scaled=TRUE, silent=TRUE)
 		resultScaled <- c(gfiStarScaledValue, agfiStarScaledValue, nfiScaledValue, ifiScaledValue, nullRmseaScaledValue)
-		names(resultScaled) <- c("nfi.scaled", "ifi.scaled", "gfi*.scaled", "agfi*.scaled", "baseline.rmsea.scaled")
+		names(resultScaled) <- c("nfi.scaled", "ifi.scaled", "gfiStar.scaled", "agfiStar.scaled", "baseline.rmsea.scaled")
 		result <- c(result, resultScaled)
     } else {
 		if(!is.na(f)) {
