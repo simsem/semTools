@@ -21,35 +21,28 @@ moreFitIndices <- function(object, nPrior = 1) {
 	ngroup <- object@Data@ngroups
 	
 	# Compute fit indices
-	nfiValue <- (fit["baseline.chisq"] - fit["chisq"])/fit["baseline.chisq"]
-	ifiValue <- (fit["baseline.chisq"] - fit["chisq"])/(fit["baseline.chisq"] - fit["df"])
-	rniValue <- ((fit["baseline.chisq"] - fit["baseline.df"]) - (fit["chisq"] - fit["df"])) / (fit["baseline.chisq"] - fit["baseline.df"])
-  McValue <- exp(-0.5 * ((fit["chisq"] - fit["df"]) / fit["ntotal"]))
-	gfiStarValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
-	agfiStarValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gfiStarValue)
-	nullRmseaValue <- nullRMSEA(object, silent=TRUE)
-	result <- c(nfiValue, ifiValue, rniValue, McValue, gfiStarValue, agfiStarValue, nullRmseaValue)
-	names(result) <- c("nfi", "ifi", "rni", "Mc", "gfiStar", "agfiStar", "baseline.rmsea")
+	gammaHatValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
+	adjGammaHatValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHatValue)
+	nullRmseaValue <- nullRMSEA(object, silent = TRUE)
+	result <- c(gammaHatValue, adjGammaHatValue, nullRmseaValue)
+	names(result) <- c("gammaHat", "adjGammaHat", "baseline.rmsea")
 
 	if(!is.na(f)) {
 		aiccValue <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
-		ecviValue <- f + (2 * nParam / n)
 		bicStarValue <- f + log(1 + n/nPrior) * nParam
 		hqcValue <- f + 2 * log(log(n)) * nParam
-		temp <- c(aiccValue, ecviValue, bicStarValue, hqcValue)
-		names(temp) <- c("aicc", "ecvi", "bicStar", "hqc")
+		temp <- c(aiccValue, bicStarValue, hqcValue)
+		names(temp) <- c("aic.smallN", "bic.priorN", "hqc")
 		result <- c(result, temp)
 	}
 	
 	# Vector of result
 	if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
-		gfiStarScaledValue <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
-		agfiStarScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gfiStarValue)
-		nfiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/fit["baseline.chisq.scaled"]
-		ifiScaledValue <- (fit["baseline.chisq.scaled"] - fit["chisq.scaled"])/(fit["baseline.chisq.scaled"] - fit["df.scaled"])
-		nullRmseaScaledValue <- nullRMSEA(object, scaled=TRUE, silent=TRUE)
-		resultScaled <- c(gfiStarScaledValue, agfiStarScaledValue, nfiScaledValue, ifiScaledValue, nullRmseaScaledValue)
-		names(resultScaled) <- c("nfi.scaled", "ifi.scaled", "gfiStar.scaled", "agfiStar.scaled", "baseline.rmsea.scaled")
+		gammaHatScaledValue <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
+		adjGammaHatScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaledValue)
+		nullRmseaScaledValue <- nullRMSEA(object, scaled = TRUE, silent = TRUE)
+		resultScaled <- c(gammaHatScaledValue, adjGammaHatScaledValue, nullRmseaScaledValue)
+		names(resultScaled) <- c("gammaHat.scaled", "adjGammaHat.scaled", "baseline.rmsea.scaled")
 		result <- c(result, resultScaled)
     } else {
 		if(!is.na(f)) {
@@ -68,14 +61,14 @@ moreFitIndices <- function(object, nPrior = 1) {
 sic <- function(f, lresults = NULL) {
 	expinf <- NA
 	v <- NA
-	try(v <- vcov(lresults), silent=TRUE)
-	ifelse(is.na(v), return(NA), try(expinf <- solve(v) / lresults@SampleStats@ntotal, silent=TRUE))
+	try(v <- vcov(lresults), silent = TRUE)
+	ifelse(is.na(v), return(NA), try(expinf <- solve(v) / lresults@SampleStats@ntotal, silent = TRUE))
 	sic <- as.numeric(f + log(det(lresults@SampleStats@ntotal * (expinf))))/2
 	return(sic)
 }
 
 
-nullRMSEA <- function (object, scaled = FALSE, silent=FALSE) { 
+nullRMSEA <- function (object, scaled = FALSE, silent = FALSE) { 
 	# return RMSEA of the null model, warn if it is lower than 0.158, because it makes the TLI/CLI hard to interpret
 	test <- object@Options$test 
 	
