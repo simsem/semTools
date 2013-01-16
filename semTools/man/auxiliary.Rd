@@ -7,7 +7,7 @@
 	Analyzing data with full-information maximum likelihood with auxiliary variables. The techniques used to account for auxiliary variables are both extra-dependent-variables and saturated-correlates approaches (Enders, 2008). The extra-dependent-variables approach is used for exogenous varibles in the model (see \code{fixed.x} attribute when fitting the \code{\link[lavaan]{lavaan}} model). For other variables, the saturated-correlates approach is used. WARNINGS: this function does not work for all models. See the examples below.
 }
 \usage{
-auxiliary(object, aux, ...)
+auxiliary(model, aux, fun, ...)
 }
 \arguments{
   \item{object}{

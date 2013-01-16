@@ -32,7 +32,7 @@ This is lavaan 0.5-10
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.2-12
+This is semTools 0.2-13
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -1195,23 +1195,27 @@ UL 11.4472
 > 
 > fit <- cfa(HS.model, data=HolzingerSwineford1939)
 > moreFitIndices(fit)
-           nfi            ifi           gfi*          agfi* baseline.rmsea 
-     0.9071607      0.9314908      0.9565611      0.9185521      0.2854364 
-          ciac           ecvi           bic*            hqc            sic 
-  7476.5731866   7475.5695875   7544.0149775   7517.2909607   3794.0917612 
+           nfi            ifi            rni             Mc        gfiStar 
+     0.9071607      0.9314908      0.9305597      0.9031773      0.9565611 
+      agfiStar baseline.rmsea           aicc           ecvi        bicStar 
+     0.9185521      0.2854364   7476.5731866   7475.5695875   7544.0149775 
+           hqc            sic 
+  7517.2909607   3794.0917612 
 > 
 > fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="mlr")
 > moreFitIndices(fit2)
-                  nfi                   ifi                  gfi* 
-            0.9071607             0.9314908             0.9565611 
-                agfi*        baseline.rmsea                  ciac 
-            0.9185521             0.2854364          7476.5731866 
-                 ecvi                  bic*                   hqc 
-         7475.5695875          7544.0149775          7517.2909607 
-           nfi.scaled            ifi.scaled           gfi*.scaled 
-            0.9553250             0.9185521             0.9009960 
-         agfi*.scaled baseline.rmsea.scaled 
-            0.9262552             0.3558017 
+                  nfi                   ifi                   rni 
+            0.9071607             0.9314908             0.9305597 
+                   Mc               gfiStar              agfiStar 
+            0.9031773             0.9565611             0.9185521 
+       baseline.rmsea                  aicc                  ecvi 
+            0.2854364          7476.5731866          7475.5695875 
+              bicStar                   hqc            nfi.scaled 
+         7544.0149775          7517.2909607             0.9553250 
+           ifi.scaled        gfiStar.scaled       agfiStar.scaled 
+            0.9185521             0.9009960             0.9262552 
+baseline.rmsea.scaled 
+            0.3558017 
 > 
 > 
 > 
@@ -2581,7 +2585,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  19.98 0.17 21.37 NA NA 
+Time elapsed:  17.25 0.15 17.68 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -34,24 +34,74 @@ function(object, fit.measures=FALSE, ...) {
 })
 	
 # auxiliary: Automatically accounts for auxiliary variable in full information maximum likelihood
-auxiliary <- function(object, aux, ...) {
-	if(is(object, "lavaan")) {
-		object <- object@ParTable
+
+cfa.auxiliary <- function(model, aux, ...) {
+	auxiliary(model = model, aux = aux, fun = "cfa", ...)
+}
+
+sem.auxiliary <- function(model, aux, ...) {
+	auxiliary(model = model, aux = aux, fun = "sem", ...)
+}
+
+growth.auxiliary <- function(model, aux, ...) {
+	auxiliary(model = model, aux = aux, fun = "growth", ...)
+}
+
+lavaan.auxiliary <- function(model, aux, ...) {
+	auxiliary(model = model, aux = aux, fun = "lavaan", ...)
+}
+
+auxiliary <- function(model, aux, fun, ...) {
+	args <- list(...)
+	args$fixed.x <- FALSE
+	
+	if(is(model, "lavaan")) {
+		model <- model@ParTable
 	}
+	
+	# Check whether the model is a parameter table
+	if(!(is.list(model) && ("lhs" %in% names(model)))) {
+		fit <- do.call(fun, c(list(model=model, do.fit=FALSE), args))
+		model <- fit@ParTable
+	}
+	
+	if(any(model$exo == 1)) {
+		stop("All exogenous variables (covariates) must be treated as endogenous variables by the 'auxiliary' function (fixed.x = FALSE).")
+	}
+	
 	facName <- NULL
 	indName <- NULL
-	covName <- NULL
-	if("=~" %in% object$op) {
-		facName <- unique(object$lhs[object$op == "=~"])
-		indName <- union(unique(object$rhs[object$op == "=~"]), setdiff(unique(object$lhs[object$op == "~"]), facName))
-		covName <- setdiff(unique(object$rhs), c(facName, indName, ""))
-	} else {
-		indName <- unique(object$lhs[object$op == "~"])
-		covName <- setdiff(unique(object$rhs), c(indName, ""))
+	singleIndicator <- NULL
+	facName <- unique(model$lhs[model$op == "=~"])
+	indName <- setdiff(unique(model$rhs[model$op == "=~"]), facName)
+	singleIndicator <- setdiff(unique(c(model$lhs, model$rhs)), c(facName, indName, ""))
+	facSingleIndicator <- paste0("f", singleIndicator)
+	for(i in seq_along(singleIndicator)) {
+		model$lhs <- gsub(singleIndicator[i], facSingleIndicator[i], model$lhs)
+		model$rhs <- gsub(singleIndicator[i], facSingleIndicator[i], model$rhs)
 	}
-	code <- auxiliaryCode(object, aux, correlate=indName, extradv=covName)
-	result <- lavaan(code, ...)
-	codeNull <- nullAuxiliary(aux, indName, covName, any(object$op == "~1"), max(object$group))
+		
+	ngroups <- max(model$group)
+		if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, facSingleIndicator, "=~", singleIndicator, ngroups, fixed = TRUE, ustart = 1, expand = FALSE)
+		if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, singleIndicator, "~~", singleIndicator, ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
+	if(is.null(indName) || length(indName) == 0) {
+		faux <- paste0("f", aux)
+		model <- attachPT(model, faux, "=~", aux, ngroups, fixed = TRUE, ustart = 1, expand = FALSE)
+		model <- attachPT(model, aux, "~~", aux, ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
+		model <- attachPT(model, facSingleIndicator, "~~", faux, ngroups)
+		model <- attachPT(model, faux, "~~", faux, ngroups, symmetric=TRUE)
+		if(any(model$op == "~1")) model <- attachPT(model, faux, "~1", "", ngroups)
+	} else {
+		if(!is.null(indName) && length(indName) != 0) model <- attachPT(model, indName, "~~", aux, ngroups)
+		model <- attachPT(model, aux, "~~", aux, ngroups, symmetric=TRUE, useUpper=TRUE)
+		if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, facSingleIndicator, "=~", aux, ngroups)
+		if(any(model$op == "~1")) model <- attachPT(model, aux, "~1", "", ngroups)
+	}
+	args$model <- model
+	browser()
+	result <- do.call(fun, args)
+	
+	codeNull <- nullAuxiliary(aux, union(indName, singleIndicator), NULL, any(model$op == "~1"), max(model$group))
 	resultNull <- lavaan(codeNull, ...)
 	result <- as(result, "lavaanStar")
 	fit <- fitMeasures(resultNull)
@@ -62,22 +112,17 @@ auxiliary <- function(object, aux, ...) {
 	return(result)
 }
 
-auxiliaryCode <- function(object, aux, correlate=NULL, extradv=NULL) {
-	ngroups <- max(object$group)
-	object <- attachPT(object, aux, "~~", aux, ngroups, symmetric=TRUE)
-	if(!is.null(correlate) && length(correlate) != 0) object <- attachPT(object, correlate, "~~", aux, ngroups)
-	if(!is.null(extradv) && length(extradv) != 0) object <- attachPT(object, aux, "~", extradv, ngroups)
-	if(any(object$op == "~1")) object <- attachPT(object, aux, "~1", "", ngroups)
-	return(object)
-}
-
-attachPT <- function(pt, lhs, op, rhs, ngroups, symmetric=FALSE, exo=FALSE, fixed=FALSE, useUpper=FALSE) {
-	element <- expand.grid(lhs, rhs, stringsAsFactors = FALSE)
+attachPT <- function(pt, lhs, op, rhs, ngroups, symmetric=FALSE, exo=FALSE, fixed=FALSE, useUpper=FALSE, ustart = NA, expand = TRUE, diag = TRUE) {
+	if(expand) {
+		element <- expand.grid(lhs, rhs, stringsAsFactors = FALSE)
+	} else {
+		element <- cbind(lhs, rhs)
+	}
 	if(symmetric) { 
 		if(useUpper) {
-			element <- element[as.vector(upper.tri(diag(length(lhs)), diag=TRUE)),]
+			element <- element[as.vector(upper.tri(diag(length(lhs)), diag=diag)),]
 		} else {
-			element <- element[as.vector(lower.tri(diag(length(lhs)), diag=TRUE)),]
+			element <- element[as.vector(lower.tri(diag(length(lhs)), diag=diag)),]
 		}
 	}
 	num <- nrow(element) * ngroups
@@ -88,14 +133,14 @@ attachPT <- function(pt, lhs, op, rhs, ngroups, symmetric=FALSE, exo=FALSE, fixe
 	pt$user <- c(pt$user, rep(1, num))
 	pt$group <- c(pt$group, rep(1:ngroups, each=nrow(element)))
 	free <- (max(pt$free)+1):(max(pt$free)+num)
-	if(fixed) free <- rep(0, num)
+	if(fixed) free <- rep(0L, num)
 	pt$free <- c(pt$free, free)
-	pt$ustart <- c(pt$ustart, rep(NA, num))
+	pt$ustart <- c(pt$ustart, rep(ustart, num))
 	pt$exo <- c(pt$exo, rep(as.numeric(exo), num))
 	pt$label <- c(pt$label, rep("", num))
-	pt$eq.id <- c(pt$eq.id, rep(0, num))
+	pt$eq.id <- c(pt$eq.id, rep(0L, num))
 	unco <- (max(pt$unco)+1):(max(pt$unco)+num)
-	if(fixed) unco <- rep(0, num)
+	if(fixed) unco <- rep(0L, num)
 	pt$unco <- c(pt$unco, unco)
 	return(pt)
 }
@@ -183,21 +228,3 @@ fitMeasuresLavaanStar <- function(object) {
 	return(result)
 		
 }
-
-# In case we will need it later.
-# reorderPT <- function(pt, aux, indName, facName) {
-	# pt1 <- lapply(pt, function(x, select) x[select], select=(pt$op == "=~"))
-	# pt2 <- lapply(pt, function(x, select) x[select], select=(pt$op == "~"))
-	# pt31 <- lapply(pt, function(x, select) x[select], select=((pt$op == "~~") & (pt$lhs %in% aux)))
-	# pt32 <- lapply(pt, function(x, select) x[select], select=((pt$op == "~~") & (pt$lhs %in% indName)))
-	# pt33 <- lapply(pt, function(x, select) x[select], select=((pt$op == "~~") & (pt$lhs %in% facName)))
-	# pt4 <- lapply(pt, function(x, select) x[select], select=(pt$op == "~1"))
-	# pt <- mapply(pt1, pt2, pt31, pt32, pt33, pt4, FUN=c, SIMPLIFY=FALSE)
-	# pt$id <- 1:max(pt$id)
-	# pt$free <- sort(unique(pt$free))[sapply(as.list(pt$free), function(x, new) which(x == new), new=unique(pt$free))]
-	# pt$eq.id <- sort(unique(pt$eq.id))[sapply(as.list(pt$eq.id), function(x, new) which(x == new), new=unique(pt$eq.id))]
-	# pt$unco <- sort(unique(pt$unco))[sapply(as.list(pt$unco), function(x, new) which(x == new), new=unique(pt$unco))]
-	
-	
-	# return(pt)
-# }

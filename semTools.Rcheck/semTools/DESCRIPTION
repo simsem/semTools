@@ -1,7 +1,7 @@
 Package: semTools
 Type: Package
 Title: Useful tools for structural equation modeling.
-Version: 0.2-12
+Version: 0.2-13
 Date: 2013-01-01
 Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut",
         "cre"), email = "psunthud@ku.edu"), person("Patrick", "Miller",
@@ -30,4 +30,4 @@ License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
 URL: https://github.com/simsem/semTools/wiki
-Built: R 2.15.2; ; 2013-01-01 20:11:28 UTC; windows
+Built: R 2.15.2; ; 2013-01-13 20:08:20 UTC; windows

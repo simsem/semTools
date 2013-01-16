@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.12.18)  1 JAN 2013 14:12
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.12.18)  13 JAN 2013 14:09
 entering extended mode
-**C:/Users/sunthud/AppData/Local/Temp/RtmpGE0y2y/Rd2pdfd5432b61924/Rd2.tex
-(C:/Users/sunthud/AppData/Local/Temp/RtmpGE0y2y/Rd2pdfd5432b61924/Rd2.tex
+**C:/Users/sunthud/AppData/Local/Temp/Rtmpo3GWFp/Rd2pdf15704dd75203/Rd2.tex
+(C:/Users/sunthud/AppData/Local/Temp/Rtmpo3GWFp/Rd2pdf15704dd75203/Rd2.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -618,7 +618,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\sunthud\AppData\Local\Temp\RtmpGE0y2y\Rd2pdfd5432b61924\Rd2.aux)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmpo3GWFp\Rd2pdf15704dd75203\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -673,8 +673,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\sunthud\AppData\Local\Temp\RtmpGE0y2y\Rd2pdfd5432b61924\Rd2.out)
-(C:\Users\sunthud\AppData\Local\Temp\RtmpGE0y2y\Rd2pdfd5432b61924\Rd2.out)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmpo3GWFp\Rd2pdf15704dd75203\Rd2.out)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmpo3GWFp\Rd2pdf15704dd75203\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -694,7 +694,7 @@ LaTeX Font Info:    Try loading font information for T1+phv on input line 30.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\sunthud\AppData\Local\Temp\RtmpGE0y2y\Rd2pdfd5432b61924\Rd2.toc
+(C:\Users\sunthud\AppData\Local\Temp\Rtmpo3GWFp\Rd2pdf15704dd75203\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -830,39 +830,39 @@ Overfull \hbox (12.97842pt too wide) in paragraph at lines 1250--1251
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [26]
 [27] [28]
-Overfull \hbox (44.58864pt too wide) in paragraph at lines 1426--1429
+Overfull \hbox (44.58864pt too wide) in paragraph at lines 1440--1444
 \T1/ptm/m/n/10 of Kansas; \T1/fi4/m/n/10 <aboulton@ku.edu>\T1/ptm/m/n/10 ) Rube
 n Ar-slan (Humboldt-University of Berlin, \T1/fi4/m/n/10 <rubenarslan@gmail.com
->\T1/ptm/m/n/10 ) 
+>\T1/ptm/m/n/10 )
  []
 
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+[29] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [29] [30]
+) [30]
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (84.78088pt too wide) in paragraph at lines 1540--1540
+Overfull \hbox (84.78088pt too wide) in paragraph at lines 1561--1561
  []\T1/fi4/m/n/10 parcelAllocation(nPerPar, facPlc, nAlloc=100, syntax, dataset
 , names='default', leaveout=0, ...)[] 
  []
 
-[31]
-Overfull \hbox (81.78088pt too wide) in paragraph at lines 1591--1591
+[31] [32]
+Overfull \hbox (81.78088pt too wide) in paragraph at lines 1612--1612
  []\T1/fi4/m/n/9 parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), 
 nAlloc=20, syntax=syntax, dataset=simParcel)[] 
  []
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
-) [32]
-Overfull \hbox (19.78088pt too wide) in paragraph at lines 1603--1603
+)
+Overfull \hbox (19.78088pt too wide) in paragraph at lines 1624--1624
  []\T1/fi4/m/n/10 plotProbe(object, xlim, xlab="Indepedent Variable", ylab="Dep
 endent Variable", ...)[] 
  []
 
 
-Overfull \hbox (10.22878pt too wide) in paragraph at lines 1610--1611
+Overfull \hbox (10.22878pt too wide) in paragraph at lines 1631--1632
 []\T1/ptm/m/n/10 The re-sult of prob-ing la-tent in-ter-ac-tion ob-tained from 
 [][]\T1/fi4/m/n/10 probe2WayMC[][][]\T1/ptm/m/n/10 , [][]\T1/fi4/m/n/10 probe2W
 ayRC[][][]\T1/ptm/m/n/10 ,
@@ -872,7 +872,7 @@ ayRC[][][]\T1/ptm/m/n/10 ,
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [34]
-Overfull \hbox (212.28088pt too wide) in paragraph at lines 1720--1720
+Overfull \hbox (212.28088pt too wide) in paragraph at lines 1741--1741
  []\T1/fi4/m/n/9 result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f1
 2", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))[] 
  []
@@ -880,7 +880,7 @@ Overfull \hbox (212.28088pt too wide) in paragraph at lines 1720--1720
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (9.78088pt too wide) in paragraph at lines 1733--1733
+Overfull \hbox (9.78088pt too wide) in paragraph at lines 1754--1754
  []\T1/fi4/m/n/10 plotRMSEAdist(rmsea, n, df, ptile=NULL, caption=NULL, rmseaSc
 ale = TRUE, group=1)[] 
  []
@@ -888,7 +888,7 @@ ale = TRUE, group=1)[]
 [35] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (9.78088pt too wide) in paragraph at lines 1796--1796
+Overfull \hbox (9.78088pt too wide) in paragraph at lines 1817--1817
  []\T1/fi4/m/n/10 plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alph
 a=.05, group=1, ...)[] 
  []
@@ -903,7 +903,7 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
 [42] [43]
-Overfull \hbox (391.42891pt too wide) detected at line 2137
+Overfull \hbox (391.42891pt too wide) detected at line 2158
 \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/
 10 + \OML/cmm/m/it/10 Z[]Var [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 W[]Var [] \O
 T1/cmr/m/n/10 + \OML/cmm/m/it/10 Z[]W[]Var [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/
@@ -914,7 +914,7 @@ cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/
  []
 
 
-Overfull \hbox (374.94273pt too wide) detected at line 2143
+Overfull \hbox (374.94273pt too wide) detected at line 2164
 \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/
 10 + \OML/cmm/m/it/10 Z[]Var [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 W[]Var [] \O
 T1/cmr/m/n/10 + \OML/cmm/m/it/10 Z[]W[]Var [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/
@@ -925,7 +925,7 @@ cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/
  []
 
 [44] [45]
-Overfull \hbox (212.28088pt too wide) in paragraph at lines 2232--2232
+Overfull \hbox (212.28088pt too wide) in paragraph at lines 2253--2253
  []\T1/fi4/m/n/9 result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f1
 2", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))[] 
  []
@@ -933,7 +933,7 @@ Overfull \hbox (212.28088pt too wide) in paragraph at lines 2232--2232
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [46] [47]
-Overfull \hbox (212.28088pt too wide) in paragraph at lines 2357--2357
+Overfull \hbox (212.28088pt too wide) in paragraph at lines 2378--2378
  []\T1/fi4/m/n/9 result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f1
 2", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))[] 
  []
@@ -950,21 +950,21 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [53]
-Overfull \hbox (24.38837pt too wide) in paragraph at lines 2623--2631
+Overfull \hbox (24.38837pt too wide) in paragraph at lines 2644--2652
 \T1/ptm/m/n/10 of Kansas; \T1/fi4/m/n/10 <patr1ckm@ku.edu>\T1/ptm/m/n/10 ) Sun-
 thud Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/fi4/m/n/10 <psunthud@ku.ed
 u>\T1/ptm/m/n/10 )
  []
 
 
-Overfull \hbox (27.48857pt too wide) in paragraph at lines 2623--2631
+Overfull \hbox (27.48857pt too wide) in paragraph at lines 2644--2652
 \T1/ptm/m/n/10 Aus-tria; \T1/fi4/m/n/10 <a.robitzsch@bifie.at>\T1/ptm/m/n/10 ) 
 Craig En-ders (Ari-zona State Uni-ver-sity; \T1/fi4/m/n/10 <Craig.Enders@asu.ed
 u>\T1/ptm/m/n/10 )
  []
 
 [54]
-Overfull \hbox (50.28088pt too wide) in paragraph at lines 2664--2664
+Overfull \hbox (50.28088pt too wide) in paragraph at lines 2685--2685
  []\T1/fi4/m/n/9 out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms
 ="school"), chi="MR", group="school")[] 
  []
@@ -978,7 +978,7 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [57] [58]
-(C:\Users\sunthud\AppData\Local\Temp\RtmpGE0y2y\Rd2pdfd5432b61924\Rd2.ind
+(C:\Users\sunthud\AppData\Local\Temp\Rtmpo3GWFp\Rd2pdf15704dd75203\Rd2.ind
 [59]
 
 LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
@@ -987,11 +987,12 @@ LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
 [60
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2882.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 2882.
- (C:\Users\sunthud\AppData\Local\Temp\RtmpGE0y2y\Rd2pdfd5432b61924\Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2882.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2882.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2903.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2903.
+
+(C:\Users\sunthud\AppData\Local\Temp\Rtmpo3GWFp\Rd2pdf15704dd75203\Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2903.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2903.
 
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
 (rerunfilecheck)             Checksum: AD3D14C23C7B4EC8816622D7CE748F65;2064.
@@ -999,16 +1000,16 @@ Package rerunfilecheck Info: File `Rd2.out' has not changed.
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2882.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2903.
  ) 
 Here is how much of TeX's memory you used:
- 6768 strings out of 494045
- 99134 string characters out of 3145962
+ 6770 strings out of 494045
+ 99163 string characters out of 3145962
  171756 words of memory out of 3000000
  9420 multiletter control sequences out of 15000+200000
  38195 words of font info for 48 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 38i,6n,27p,1135b,588s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,6n,27p,1136b,588s stack positions out of 5000i,500n,10000p,200000b,50000s
 pdfTeX warning (dest): name{Rfn.plot} has been referenced but does not exist,
  replaced by a fixed one
 
@@ -1044,9 +1045,9 @@ pe1/urw/helvetic/uhvr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/
 times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8
 a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/P
 rogram Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (60 pages, 457829 bytes).
+Output written on Rd2.pdf (60 pages, 459852 bytes).
 PDF statistics:
- 1242 PDF objects out of 1440 (max. 8388607)
- 478 named destinations out of 1000 (max. 500000)
+ 1244 PDF objects out of 1440 (max. 8388607)
+ 480 named destinations out of 1000 (max. 500000)
  289 words of extra memory for PDF output out of 10000 (max. 10000000)
 
