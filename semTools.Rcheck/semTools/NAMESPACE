@@ -15,7 +15,7 @@ export(
 	probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC, 
 	plotProbe, 
 	clipboard, saveFile, 
-	auxiliary, 
+	auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary, lavaan.auxiliary, 
 	loadingFromAlpha, 
 	reliability, reliabilityL2, 
 	impliedFactorMean, impliedFactorCov, impliedFactorStat
