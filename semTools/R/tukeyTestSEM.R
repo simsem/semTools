@@ -25,4 +25,4 @@ res
 
 ##Example from Schoemann (2013)
 ##Bio vs. policial science on evo misconceptions
-tukeySEM(3.91, 3.96,.46, .62, 246, 425,3)
+#tukeySEM(3.91, 3.96,.46, .62, 246, 425,3)
