@@ -14,7 +14,8 @@ flush(stderr()); flush(stdout())
 ### Name: auxiliary
 ### Title: Analyzing data with full-information maximum likelihood with
 ###   auxiliary variables
-### Aliases: auxiliary
+### Aliases: auxiliary cfa.auxiliary sem.auxiliary growth.auxiliary
+###   lavaan.auxiliary
 
 ### ** Examples
 
@@ -26,13 +27,14 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 			  
 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 			  
-fit <- cfa(HS.model, data=dat) #, group="sex", meanstructure=TRUE)
-fitaux <- auxiliary(fit, aux="z", data=dat)
+fit <- cfa(HS.model, data=dat) 
+fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # Use lavaan script
+fitaux <- cfa.auxiliary(fit, aux="z", data=dat) # Use lavaan output
 
 # Example of multiple groups confirmatory factor analysis
 
 fitgroup <- cfa(HS.model, data=dat, group="school")
-fitgroupaux <- auxiliary(fitgroup, aux="z", data=dat, group="school")
+fitgroupaux <- cfa.auxiliary(fitgroup, aux="z", data=dat, group="school")
 
 # Example of path analysis
 
@@ -40,8 +42,8 @@ mod <- ' x5 ~ x4
 x4 ~ x3
 x3 ~ x1 + x2'
 
-fitpath <- sem(mod, data=dat)
-fitpathaux <- auxiliary(fitpath, aux="z", data=dat)
+fitpath <- sem(mod, data=dat, fixed.x=FALSE) # fixed.x must be FALSE
+fitpathaux <- sem.auxiliary(fitpath, aux="z", data=dat)
 
 # Example of full structural equation modeling
 
@@ -61,52 +63,33 @@ model <- '
     y6 ~~ y8
 '
 fitsem <- sem(model, data=dat2, meanstructure=TRUE)
-fitsemaux <- auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
+fitsemaux <- sem.auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
 
-#########################################################
-## These following codes show the models that do not work with the current function
+# Example of covariate at the factor level
 
-##### 1. covariate at the factor level
-## HS.model.cov <- ' visual  =~ x1 + x2 + x3
-##              textual =~ x4 + x5 + x6
-##             speed   =~ x7 + x8 + x9 
-##			  visual ~ sex
-##			  textual ~ sex
-##			  speed ~ sex'
+HS.model.cov <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+             speed   =~ x7 + x8 + x9 
+			  visual ~ sex
+			  textual ~ sex
+			  speed ~ sex'
 	  
-## fitcov <- cfa(HS.model.cov, data=dat) 
-## fitcovaux <- auxiliary(fitcov, aux="z", data=dat)
+fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE) 
+fitcovaux <- cfa.auxiliary(fitcov, aux="z", data=dat)
 
-### The auxiliary code does not work when specifying manually.
-## HS.model.covxx <- ' visual  =~ x1 + x2 + x3
-##              textual =~ x4 + x5 + x6
-##              speed   =~ x7 + x8 + x9 
-##			  visual ~ sex
-##			  textual ~ sex
-##			  speed ~ sex
-##			  z ~~ z
-##			  z ~~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9
-##			  z ~ sex'
-	  
-## fitcovxx <- cfa(HS.model.covxx, data=dat) 
-## fitcovaux <- auxiliary(fitcov, aux="z", data=dat)
+# Example of  Endogenous variable with single indicator 
+HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              x7 ~ visual + textual'
+ 	  
+fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE) 
+fitcov2aux <- sem.auxiliary(fitcov2, aux="z", data=dat)
 
-##### 2. Endogenous variable with single indicator 
-## HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
-##               textual =~ x4 + x5 + x6
-##               x7 ~ visual + textual'
-## 	  
-## fitcov2 <- sem (HS.model.cov2, data=dat, fixed.x=FALSE) #, group="sex", meanstructure=TRUE)
-## fitcov2aux <- auxiliary(fitcov2, aux="z", data=dat)
-
-
-### The auxiliary code does not work when specifying manually.
-## HS.model.covyy <- ' visual  =~ x1 + x2 + x3
-##               textual =~ x4 + x5 + x6
-##               x7 ~ visual + textual
-## 			  z ~~ x1 + x2 + x3 + x4 + x5 + x6 + x7'
-## fitcovyy <- sem(HS.model.covyy, data=dat) #, group="sex", meanstructure=TRUE)
-		  
+# Multiple auxiliary variables
+HS.model2 <- ' visual  =~ x1 + x2 + x3
+              speed   =~ x7 + x8 + x9'
+fit <- cfa(HS.model2, data=HolzingerSwineford1939)
+fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5")) 
 
 
 
@@ -343,7 +326,7 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 			  
 fit <- cfa(HS.model, data=dat) #, group="sex", meanstructure=TRUE)
-fitaux <- auxiliary(fit, aux="z", data=dat)
+fitaux <- auxiliary(fit, aux="z", data=dat, fun="cfa")
 
 
 

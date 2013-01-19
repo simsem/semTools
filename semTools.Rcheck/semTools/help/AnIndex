@@ -1,4 +1,5 @@
 auxiliary	auxiliary
+cfa.auxiliary	auxiliary
 cfa.mi	runMI
 clipboard	clipboard
 dat2way	dat2way
@@ -6,6 +7,7 @@ dat3way	dat3way
 exLong	exLong
 findRMSEApower	findRMSEApower
 findRMSEAsamplesize	findRMSEAsamplesize
+growth.auxiliary	auxiliary
 growth.mi	runMI
 impliedFactorCov	impliedFactorStat
 impliedFactorMean	impliedFactorStat
@@ -13,6 +15,7 @@ impliedFactorStat	impliedFactorStat
 indProd	indProd
 inspect,lavaanStar-method	lavaanStar-class
 kurtosis	kurtosis
+lavaan.auxiliary	auxiliary
 lavaan.mi	runMI
 lavaanStar-class	lavaanStar-class
 loadingFromAlpha	loadingFromAlpha
@@ -39,6 +42,7 @@ reliabilityL2	reliabilityL2
 residualCovariate	residualCovariate
 runMI	runMI
 saveFile	clipboard
+sem.auxiliary	auxiliary
 sem.mi	runMI
 simParcel	simParcel
 skew	skew

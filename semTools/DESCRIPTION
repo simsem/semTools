@@ -1,8 +1,8 @@
 Package: semTools
 Type: Package
 Title: Useful tools for structural equation modeling.
-Version: 0.2-10
-Date: 2012-11-15
+Version: 0.2-13
+Date: 2013-01-01
 Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@ku.edu"), 
 		person("Patrick", "Miller", role = "aut", email="patr1ckm@ku.edu"), 
 		person("Alexander", "Schoemann", role = "aut", email="schoemann@ku.edu"),
@@ -20,7 +20,7 @@ Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut", "cre"), email
 		)
 Author: Sunthud Pornprasertmanit [aut, cre], Patrick Miller [aut], Alex Schoemann [aut], Yves Rosseel [aut], Corbin Quick [ctb], Mauricio Garnier-Villarreal [ctb], James Selig [ctb], Aaron Boulton [ctb], Kristopher Preacher [ctb], Donna Coffman [ctb], Mijke Rhemtulla [ctb], Alexander Robitzsch [ctb], Craig Enders [ctb], Ruber Arslan [ctb]
 Maintainer: Sunthud Pornprasertmanit <psunthud@ku.edu>
-Depends: R(>= 2.14), MASS, lavaan, methods
+Depends: R(>= 2.15), MASS, lavaan, methods
 Suggests: parallel, Amelia, mice, foreign
 Description: This package provide useful tools for structural equation modeling analysis. 
 License: GPL (>= 2)

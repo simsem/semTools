@@ -4,7 +4,7 @@
 Calculate more fit indices
 }
 \description{
-Calculate more fit indices that are not already provided in lavaan. 
+Calculate more fit indices that are not already provided in lavaan.
 }
 \usage{
 moreFitIndices(object, nPrior = 1)
@@ -14,49 +14,33 @@ moreFitIndices(object, nPrior = 1)
   \item{nPrior}{The sample size on which prior is based. This argument is used to compute BIC*.}
 }
 \details{
-Normed Fit Index (nfi; West, Taylor, & Wu, 2012) is one of the relative fit indices which can be computed by
+Gamma Hat (gammaHat; West, Taylor, & Wu, 2012) is a global fit index which can be computed by
 
-\deqn{ nfi =\frac{\chi^{2}_{0} - \chi^{2}_{k}}{\chi^{2}_{0}},}
+\deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N - 1}},}
 
-where \eqn{\chi^{2}_{k}} is the chi-square test statistic value of the target model, \eqn{\chi^{2}_{0}} is the chi-square test statistic value of the null model.  
+where \eqn{p} is the number of variables in the model, \eqn{\chi^{2}_{k}} is the chi-square test statistic value of the target model, \eqn{df_{k}} is the degree of freedom when fitting the target model, and \eqn{N} is the sample size. This formula assumes equal number of indicators across groups.
 
-Incremental Fit Index (ifi; West, Taylor, & Wu, 2012) is one of the relative fit indices which can be computed by
+Adjusted Gamma Hat (adjGammaHat; West, Taylor, & Wu, 2012) is a global fit index which can be computed by
 
-\deqn{ ifi =\frac{\chi^{2}_{0} - \chi^{2}_{k}}{\chi^{2}_{0} - df_{k}},}
+\deqn{ adjGammaHat = \left(1 - \frac{K \times p \times (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - gammaHat \right) ,}
 
-where \eqn{df_{k}} is the degree of freedom when fitting the target model  
+where \eqn{K} is the number of groups (please refer to Dudgeon, 2004 for the multiple-group adjustment for agfi*).
 
-Gamma Hat (gfi*; West, Taylor, & Wu, 2012) is one of the relative fit indices which can be computed by
+Corrected Akaike Information Criterion (aic.smallN; Burnham & Anderson, 2003) is the corrected version of aic for small sample size:
 
-\deqn{ gfi* =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N - 1}},}
-
-where \eqn{N} is the sample size, \eqn{p} is the number of variables in the model. This formula assumes equal number of indicators across groups.
-
-Adjusted Gamma Hat (agfi*; West, Taylor, & Wu, 2012) is one of the relative fit indices which can be computed by
-
-\deqn{ agfi* = \left(1 - \frac{K \times p \times (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - gfi* \right) ,}
-
-where \eqn{K} is the number of group (please refer to Dudgeon, 2004 for the multiple-group adjustment for agfi*).
-
-Corrected Akaike Information Criterion (AICc; Burnham & Anderson, 2003) is the corrected version of aic for small sample size:
-
-\deqn{ aicc = f + \frac{2k(k + 1)}{N - k - 1},}
+\deqn{ aic.smallN = f + \frac{2k(k + 1)}{N - k - 1},}
 
 where \eqn{f} is the minimized discrepancy function, which is the product of the log likelihood and -2, and \eqn{k} is the number of parameters in the target model.
 
-Expected Value of Cross-Validation Index (ECVI; West, Taylor, & Wu, 2012) is the average discrepancy in the fitted covariance matrices between two samples of equal sample size across all possible combinations of two samples from the same population:
+Corrected Bayesian Information Criterion (bic.priorN; Kuha, 2004) is similar to bic but explicitly specifying the sample size on which the prior is based (\eqn{N_{prior}}).
 
-\deqn{ ecvi = f + \frac{2 \times k}{N},}
+\deqn{ bic.priorN = f + k\log{(1 + N/N_{prior})},}
 
-Stochastic information criterion (sic; Preacher, 2006) is similar to aic or bic. This index will account for model complexity in the model's function form, in addition to the number of free parameters. This index will be provided only the chi-square value is not scaled. sic can be computed by
+Stochastic information criterion (sic; Preacher, 2006) is similar to aic or bic. This index will account for model complexity in the model's function form, in addition to the number of free parameters. This index will be provided only when the chi-squared value is not scaled. sic can be computed by
 
 \deqn{ sic = \frac{1}{2}\left(f - \log{\det{I(\hat{\theta})}}\right),}
 
 where \eqn{I(\hat{\theta})} is the information matrix of the parameters.
-
-Corrected Bayesian Information Criterion (BIC*; Kuha, 2004) is similar to bic but explicitly specifying the sample size on which the prior is based (\eqn{N_{prior}}).
-
-\deqn{ bicc = f + k\log{(1 + N/N_{prior})},}
 
 Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for model selection similar to aic or bic.
 
@@ -69,20 +53,15 @@ See \code{\link{nullRMSEA}} for the further details of the computation of RMSEA 
 
 \value{
 \enumerate{
-  \item{nfi} Normed Fit Index
-  \item{ifi} Incremental Fit Index
-  \item{gfi*} Gamma Hat
-  \item{agfi*} Adjusted Gamma Hat
+  \item{gammaHat} Gamma Hat
+  \item{adjGammaHat} Adjusted Gamma Hat
   \item{baseline.rmsea} RMSEA of the Baseline (Null) Model
-  \item{aicc} Corrected Akaike Information Criterion
-  \item{ecvi} Expected Value of Cross-Validation Index 
+  \item{aic.smallN} Corrected (for small sample size) Akaike Information Criterion
+  \item{bic.priorN} Bayesian Information Criterion with specifying the prior sample size
   \item{sic} Stochastic Information Criterion
-  \item{bic*} Bayesian Information Criterion with specifying the prior sample size
   \item{hqc} Hannan-Quinn Information Criterion
-  \item{nfi.scaled} Normed Fit Index using Scaled Chi-square
-  \item{ifi.scaled} Incremental Fit Index using Scaled Chi-square
-  \item{gfi*.scaled} Gamma Hat using Scaled Chi-square
-  \item{agfi*.scaled} Adjusted Gamma Hat using Scaled Chi-square
+  \item{gammaHat.scaled} Gamma Hat using Scaled Chi-square
+  \item{adjGammaHat.scaled} Adjusted Gamma Hat using Scaled Chi-square
   \item{baseline.rmsea.scaled} RMSEA of the Baseline (Null) Model using Scaled Chi-square
 }
 }
@@ -91,9 +70,9 @@ Burnham, K., & Anderson, D. (2003). \emph{Model selection and multimodel inferen
 
 Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample RMSEA adjustment to other noncentrality parameter-based statistic. \emph{Structural Equation Modeling, 11}, 305-319.
 
-Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance. \emph{Sociological Methods Research, 33,} 188-229.
+Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance. \emph{Sociological Methods Research, 33}, 188-229.
 
-Preacher, K. J. (2006). Quantifying parsimony in structural equation modeling. \emph{Multivariate Behavioral Research, 43,} 227-259.
+Preacher, K. J. (2006). Quantifying parsimony in structural equation modeling. \emph{Multivariate Behavioral Research, 43}, 227-259.
 
 West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of Structural Equation Modeling.} New York: Guilford.
 }
@@ -101,6 +80,7 @@ West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection in st
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 	Aaron Boulton (University of Kansas; \email{aboulton@ku.edu})
 	Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
+  Terrence Jorgensen (University of Kansas; \email{tdj@ku.edu})
 }
 \seealso{
 	\itemize{
