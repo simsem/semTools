@@ -61,16 +61,13 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 > 			  
 > fit <- cfa(HS.model, data=dat) 
 > fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # Use lavaan script
-Called from: auxiliary(HS.model, aux = "z", data = dat, fun = "cfa")
-Browse[1]> fitaux <- cfa.auxiliary(fit, aux="z", data=dat) # Use lavaan output
-Called from: auxiliary(model = model, aux = aux, fun = "cfa", ...)
-Browse[2]> 
-Browse[1]> # Example of multiple groups confirmatory factor analysis
-Browse[1]> 
+> fitaux <- cfa.auxiliary(fit, aux="z", data=dat) # Use lavaan output
+> 
+> # Example of multiple groups confirmatory factor analysis
+> 
 > fitgroup <- cfa(HS.model, data=dat, group="school")
 > fitgroupaux <- cfa.auxiliary(fitgroup, aux="z", data=dat, group="school")
-Called from: auxiliary(model = model, aux = aux, fun = "cfa", ...)
-Browse[1]> 
+> 
 > # Example of path analysis
 > 
 > mod <- ' x5 ~ x4
@@ -79,8 +76,7 @@ Browse[1]>
 > 
 > fitpath <- sem(mod, data=dat, fixed.x=FALSE) # fixed.x must be FALSE
 > fitpathaux <- sem.auxiliary(fitpath, aux="z", data=dat)
-Called from: auxiliary(model = model, aux = aux, fun = "sem", ...)
-Browse[1]> 
+> 
 > # Example of full structural equation modeling
 > 
 > dat2 <- data.frame(PoliticalDemocracy, z=rnorm(nrow(PoliticalDemocracy), 0, 1))
@@ -100,8 +96,7 @@ Browse[1]>
 + '
 > fitsem <- sem(model, data=dat2, meanstructure=TRUE)
 > fitsemaux <- sem.auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
-Called from: auxiliary(model = model, aux = aux, fun = "sem", ...)
-Browse[1]> 
+> 
 > # Example of covariate at the factor level
 > 
 > HS.model.cov <- ' visual  =~ x1 + x2 + x3
@@ -113,8 +108,7 @@ Browse[1]>
 > 	  
 > fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE) 
 > fitcovaux <- cfa.auxiliary(fitcov, aux="z", data=dat)
-Called from: auxiliary(model = model, aux = aux, fun = "cfa", ...)
-Browse[1]> 
+> 
 > # Example of  Endogenous variable with single indicator 
 > HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
 +               textual =~ x4 + x5 + x6
@@ -122,20 +116,18 @@ Browse[1]>
 >  	  
 > fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE) 
 > fitcov2aux <- sem.auxiliary(fitcov2, aux="z", data=dat)
-Called from: auxiliary(model = model, aux = aux, fun = "sem", ...)
-Browse[1]> 
+> 
 > # Multiple auxiliary variables
 > HS.model2 <- ' visual  =~ x1 + x2 + x3
 +               speed   =~ x7 + x8 + x9'
 > fit <- cfa(HS.model2, data=HolzingerSwineford1939)
 > fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5")) 
-Called from: auxiliary(model = model, aux = aux, fun = "cfa", ...)
-Browse[1]> 
 Error in solve.default(E) : 
   Lapack routine dgesv: system is exactly singular: U[8,8] = 0
 Warning in estimateVCOV(lavaanModel, samplestats = lavaanSampleStats, options = lavaanOptions,  :
   lavaan WARNING: could not compute standard errors!
 
+> 
 > 
 > 
 > cleanEx()
@@ -444,10 +436,9 @@ Excess Kur (g2)              se               z               p
 > 			  
 > dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 > 			  
-> fit <- cfa(HS.model, data=dat) #, group="sex", meanstructure=TRUE)
+> fit <- cfa(HS.model, data=dat) 
 > fitaux <- auxiliary(fit, aux="z", data=dat, fun="cfa")
-Called from: auxiliary(fit, aux = "z", data = dat, fun = "cfa")
-Browse[1]> 
+> 
 > 
 > 
 > cleanEx()
@@ -2574,7 +2565,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  17.69 0.19 17.93 NA NA 
+Time elapsed:  16.68 0.17 16.93 NA NA 
 > grDevices::dev.off()
 null device 
           1 

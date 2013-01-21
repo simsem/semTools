@@ -98,7 +98,6 @@ auxiliary <- function(model, aux, fun, ...) {
 		if(any(model$op == "~1")) model <- attachPT(model, aux, "~1", "", ngroups)
 	}
 	args$model <- model
-	browser()
 	result <- do.call(fun, args)
 	
 	codeNull <- nullAuxiliary(aux, union(indName, singleIndicator), NULL, any(model$op == "~1"), max(model$group))

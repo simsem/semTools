@@ -378,7 +378,26 @@ HS.model2 <- ' visual  =~ x1 + x2 + x3
               speed   =~ x7 + x8 + x9'
 fit <- cfa(HS.model2, data=HolzingerSwineford1939)
 fitaux <- auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5"), fun="cfa")
-			  
+
+n <- 1000
+x <- rnorm(n)
+y <- rnorm(n)
+z1 <- rnorm(n)
+z2 <- rnorm(n)  
+
+x[sample(n,n/50)] = NA
+
+df <- data.frame(x, y, z1, z2)
+
+# Works with numeric DV ...
+s1 <- sem("z1 ~ x+y
+x ~~ 0*z2", data=df, fixed.x=F,missing="FIML")
+summary(s1)
+s2 <- sem("z1 ~ x+y", data=df, fixed.x=F,missing="FIML")
+summary(s2)
+s3 <- sem.auxiliary("z1 ~ x+y", data=df,aux="z2")
+summary(s3)
+
 #################################### runMI function ###########################################
 
 
