@@ -219,6 +219,23 @@ findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
 
 
 cleanEx()
+nameEx("findRMSEApowernested")
+### * findRMSEApowernested
+
+flush(stderr()); flush(stdout())
+
+### Name: findRMSEApowernested
+### Title: Find power given a sample size in nested model comparison
+### Aliases: findRMSEApowernested
+
+### ** Examples
+
+findRMSEApowernested(rmsea0A = 0.06, rmsea0B = 0.05, rmsea1A = 0.08, 
+rmsea1B = 0.05, dfA = 22, dfB = 20, n = 200, alpha = 0.05, group = 1)
+
+
+
+cleanEx()
 nameEx("findRMSEAsamplesize")
 ### * findRMSEAsamplesize
 
@@ -232,6 +249,23 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
+
+
+
+cleanEx()
+nameEx("findRMSEAsamplesizenested")
+### * findRMSEAsamplesizenested
+
+flush(stderr()); flush(stdout())
+
+### Name: findRMSEAsamplesizenested
+### Title: Find sample size given a power in nested model comparison
+### Aliases: findRMSEAsamplesizenested
+
+### ** Examples
+
+findRMSEAsamplesizenested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, 
+rmsea1B = 0.05, dfA = 22, dfB = 20, power=0.80, alpha=.05, group=1) 
 
 
 
@@ -713,6 +747,23 @@ plotRMSEApower(.025, .075, 23, 100, 500, 10)
 
 
 cleanEx()
+nameEx("plotRMSEApowernested")
+### * plotRMSEApowernested
+
+flush(stderr()); flush(stdout())
+
+### Name: plotRMSEApowernested
+### Title: Plot power of nested model RMSEA
+### Aliases: plotRMSEApowernested
+
+### ** Examples
+
+plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, rmsea1B = 0.05, 
+dfA=22, dfB=20, nlow=50, nhigh=500, steps=1, alpha=.05, group=1)  
+
+
+
+cleanEx()
 nameEx("probe2WayMC")
 ### * probe2WayMC
 
@@ -1118,6 +1169,35 @@ summary(splitMyData[[2]])
 #splitSample(myData, path = "C:/Users/Default/Desktop/", name = "splitdata")
 #### Output saved to "C:/Users/Default/Desktop/" in .dat format
 #### Names are "splitdata_s1.dat" and "splitdata_s2.dat"
+
+
+
+cleanEx()
+nameEx("tukeySEM")
+### * tukeySEM
+
+flush(stderr()); flush(stdout())
+
+### Name: tukeySEM
+### Title: Tukey's WSD post-hoc test of means for unequal variance and
+###   sample size
+### Aliases: tukeySEM
+
+### ** Examples
+
+##For a case where three groups have been compared:
+##Group 1: mean = 3.91, var = 0.46, n = 246
+##Group 2: mean = 3.96, var = 0.62, n = 465
+##Group 3: mean = 2.94, var = 1.07, n = 64
+
+#compare group 1 and group 2
+tukeySEM(3.91, 3.96, 0.46, 0.62, 246, 425, 3)
+
+#compare group 1 and group 3
+tukeySEM(3.91, 2.94, 0.46, 1.07, 246, 64, 3)
+
+#compare group 2 and group 3
+tukeySEM(3.96, 2.94, 0.62, 1.07, 465, 64, 3)
 
 
 

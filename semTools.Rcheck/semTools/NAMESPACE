@@ -6,7 +6,8 @@ export(
 	skew, kurtosis, mardiaSkew, mardiaKurtosis, 
 	orthogonalize, 
 	runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi, 
-	plotRMSEApower, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, 
+	plotRMSEApower, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize,
+	findRMSEApowernested, findRMSEAsamplesizenested, plotRMSEApowernested,
 	parcelAllocation, 
 	monteCarloMed, 
 	splitSample, 
@@ -18,5 +19,6 @@ export(
 	auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary, lavaan.auxiliary, 
 	loadingFromAlpha, 
 	reliability, reliabilityL2, 
-	impliedFactorMean, impliedFactorCov, impliedFactorStat
+	impliedFactorMean, impliedFactorCov, impliedFactorStat,
+	tukeySEM
 )

@@ -1,0 +1,40 @@
+\name{plotRMSEApowernested}
+\alias{plotRMSEApowernested}
+\title{Plot power of nested model RMSEA}
+\description{
+Plot power of nested model RMSEA over a range of possible sample sizes.
+}
+\usage{
+plotRMSEApowernested(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1B = NULL, 
+dfA, dfB, nlow, nhigh, steps=1, alpha=.05, group=1, ...)
+}
+\arguments{
+  \item{rmsea0A}{The H0 baseline RMSEA.}
+  \item{rmsea0B}{The H0 alternative RMSEA (trivial misfit).}
+  \item{rmsea1A}{The H1 baseline RMSEA.}
+  \item{rmsea1B}{The H1 alternative RMSEA (target misfit to be rejected).}
+  \item{dfA}{degree of freedom of the more-restricted model.}
+  \item{dfB}{degree of freedom of the less-restricted model.}
+  \item{nlow}{Lower bound of sample size.}
+  \item{nhigh}{Upper bound of sample size.}
+  \item{steps}{Step size.}
+  \item{alpha}{The alpha level.}
+  \item{group}{The number of group in calculating RMSEA.}
+  \item{\dots}{The additional arguments for the plot function.}
+}
+\references{
+MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing differences between nested covariance structure models: Power analysis and null hypotheses. \emph{Psychological Methods, 11}, 19-35.
+}
+\author{
+	Bell Clinton (University of Kansas; \email{clintonbell@ku.edu}); Pavel Panko (University of Kansas; \email{pavel@ku.edu}); Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+}
+\seealso{
+	\itemize{
+		\item \code{\link{findRMSEApowernested}} to find the power for a given sample size in nested model comparison based on population RMSEA
+		\item \code{\link{findRMSEAsamplesizenested}} to find the minium sample size for a given statistical power in nested model comparison based on population RMSEA
+	}
+}
+\examples{
+plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, rmsea1B = 0.05, 
+dfA=22, dfB=20, nlow=50, nhigh=500, steps=1, alpha=.05, group=1)  
+}

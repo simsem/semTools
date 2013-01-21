@@ -299,6 +299,24 @@ Warning in estimateVCOV(lavaanModel, samplestats = lavaanSampleStats, options = 
 > 
 > 
 > cleanEx()
+> nameEx("findRMSEApowernested")
+> ### * findRMSEApowernested
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: findRMSEApowernested
+> ### Title: Find power given a sample size in nested model comparison
+> ### Aliases: findRMSEApowernested
+> 
+> ### ** Examples
+> 
+> findRMSEApowernested(rmsea0A = 0.06, rmsea0B = 0.05, rmsea1A = 0.08, 
++ rmsea1B = 0.05, dfA = 22, dfB = 20, n = 200, alpha = 0.05, group = 1)
+[1] 0.5624986
+> 
+> 
+> 
+> cleanEx()
 > nameEx("findRMSEAsamplesize")
 > ### * findRMSEAsamplesize
 > 
@@ -313,6 +331,24 @@ Warning in estimateVCOV(lavaanModel, samplestats = lavaanSampleStats, options = 
 > 
 > findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
 [1] 434
+> 
+> 
+> 
+> cleanEx()
+> nameEx("findRMSEAsamplesizenested")
+> ### * findRMSEAsamplesizenested
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: findRMSEAsamplesizenested
+> ### Title: Find sample size given a power in nested model comparison
+> ### Aliases: findRMSEAsamplesizenested
+> 
+> ### ** Examples
+> 
+> findRMSEAsamplesizenested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, 
++ rmsea1B = 0.05, dfA = 22, dfB = 20, power=0.80, alpha=.05, group=1) 
+[1] 331
 > 
 > 
 > 
@@ -1410,6 +1446,23 @@ Warning in plotRMSEAdist(rmsea = c(0.05, 0.08), n = 200, df = 20, ptile = 0.95, 
 > ### ** Examples
 > 
 > plotRMSEApower(.025, .075, 23, 100, 500, 10)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("plotRMSEApowernested")
+> ### * plotRMSEApowernested
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: plotRMSEApowernested
+> ### Title: Plot power of nested model RMSEA
+> ### Aliases: plotRMSEApowernested
+> 
+> ### ** Examples
+> 
+> plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, rmsea1B = 0.05, 
++ dfA=22, dfB=20, nlow=50, nhigh=500, steps=1, alpha=.05, group=1)  
 > 
 > 
 > 
@@ -2562,10 +2615,45 @@ skew (g1)        se         z         p
 > 
 > 
 > 
+> cleanEx()
+> nameEx("tukeySEM")
+> ### * tukeySEM
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: tukeySEM
+> ### Title: Tukey's WSD post-hoc test of means for unequal variance and
+> ###   sample size
+> ### Aliases: tukeySEM
+> 
+> ### ** Examples
+> 
+> ##For a case where three groups have been compared:
+> ##Group 1: mean = 3.91, var = 0.46, n = 246
+> ##Group 2: mean = 3.96, var = 0.62, n = 465
+> ##Group 3: mean = 2.94, var = 1.07, n = 64
+> 
+> #compare group 1 and group 2
+> tukeySEM(3.91, 3.96, 0.46, 0.62, 246, 425, 3)
+          q          df           p 
+  1.2255892 574.0328450   0.6615848 
+> 
+> #compare group 1 and group 3
+> tukeySEM(3.91, 2.94, 0.46, 1.07, 246, 64, 3)
+           q           df            p 
+1.006150e+01 7.640258e+01 1.474966e-09 
+> 
+> #compare group 2 and group 3
+> tukeySEM(3.96, 2.94, 0.62, 1.07, 465, 64, 3)
+           q           df            p 
+1.073622e+01 7.222205e+01 1.743093e-10 
+> 
+> 
+> 
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  16.68 0.17 16.93 NA NA 
+Time elapsed:  17.68 0.18 18.05 NA NA 
 > grDevices::dev.off()
 null device 
           1 

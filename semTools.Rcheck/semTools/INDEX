@@ -10,8 +10,13 @@ exLong                  Simulated Data set to Demonstrate Longitudinal
                         Measurement Invariance
 findRMSEApower          Find the statistical power based on population
                         RMSEA
+findRMSEApowernested    Find power given a sample size in nested model
+                        comparison
 findRMSEAsamplesize     Find the minimum sample size for a given
                         statistical power based on population RMSEA
+findRMSEAsamplesizenested
+                        Find sample size given a power in nested model
+                        comparison
 impliedFactorStat       Calculate the model-implied factor means and
                         covariance matrix.
 indProd                 Make products of indicators using no centering,
@@ -37,6 +42,7 @@ parcelAllocation        Random Allocation of Items to Parcels in a
 plotProbe               Plot the graphs for probing latent interaction
 plotRMSEAdist           Plot the sampling distributions of RMSEA
 plotRMSEApower          Plot power curves for RMSEA
+plotRMSEApowernested    Plot power of nested model RMSEA
 probe2WayMC             Probing two-way interaction on the
                         residual-centered latent interaction
 probe2WayRC             Probing two-way interaction on the
@@ -55,3 +61,5 @@ simParcel               Simulated Data set to Demonstrate Random
                         Allocations of Parcels
 skew                    Finding skewness
 splitSample             Randomly Split a Data Set into Halves
+tukeySEM                Tukey's WSD post-hoc test of means for unequal
+                        variance and sample size

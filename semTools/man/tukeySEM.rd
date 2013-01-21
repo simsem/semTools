@@ -1,6 +1,5 @@
-\name{tukeyTestSEM}
-\alias{tukeyTestSEM}
-\alias{tukeyTestSEM}
+\name{tukeySEM}
+\alias{tukeySEM}
 \title{
 Tukey's WSD post-hoc test of means for unequal variance and sample size
 }
@@ -8,7 +7,7 @@ Tukey's WSD post-hoc test of means for unequal variance and sample size
 This function computes Tukey's WSD post-hoc test of means when variances and sample sizes are not equal across groups. It can be used as a post-hoc test when comparing latent means in multiple group SEM.
 }
 \usage{
-tukeyTestSEM(m1, m2, var1, var2, n1, n2, ng)
+tukeySEM(m1, m2, var1, var2, n1, n2, ng)
 }
 \arguments{
   \item{m1}{Mean of group 1.}
@@ -16,6 +15,7 @@ tukeyTestSEM(m1, m2, var1, var2, n1, n2, ng)
   \item{var1}{Variance of group 1.}
   \item{var2}{Variance of group 2.}
   \item{n1}{Sample size of group 1.}
+  \item{n2}{Sample size of group 2.}
   \item{ng}{Total number of groups to be compared (i.e., the number of groups compared in the omnibus test).}
 }
 \details{
