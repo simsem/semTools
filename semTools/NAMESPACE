@@ -20,5 +20,7 @@ export(
 	loadingFromAlpha, 
 	reliability, reliabilityL2, 
 	impliedFactorMean, impliedFactorCov, impliedFactorStat,
-	tukeySEM
+	tukeySEM,
+	nullMx, saturateMx, fitMeasuresMx,
+	lisrel2lavaan
 )
