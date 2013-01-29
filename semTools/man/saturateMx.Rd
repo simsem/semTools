@@ -21,7 +21,7 @@ saturateMx(data, groupLab = NULL)
 	The \code{MxModel} object which contains the analysis result of the saturate model.
 }
 \seealso{
-	\code{\link{analyzeNullOpenMx}}, \code{\link{fitMeasuresMx}}
+	\code{\link{nullMx}}, \code{\link{fitMeasuresMx}}, \code{\link{standardizeMx}}
 }
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})

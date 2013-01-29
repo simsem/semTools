@@ -270,6 +270,43 @@ rmsea1B = 0.05, dfA = 22, dfB = 20, power=0.80, alpha=.05, group=1)
 
 
 cleanEx()
+nameEx("fitMeasuresMx")
+### * fitMeasuresMx
+
+flush(stderr()); flush(stdout())
+
+### Name: fitMeasuresMx
+### Title: Find fit measures from an MxModel result
+### Aliases: fitMeasuresMx
+
+### ** Examples
+
+## Not run: 
+##D library(OpenMx)
+##D data(demoOneFactor)
+##D manifests <- names(demoOneFactor)
+##D latents <- c("G")
+##D factorModel <- mxModel("One Factor", 
+##D     type="RAM",
+##D     manifestVars=manifests, 
+##D     latentVars=latents,
+##D     mxPath(from=latents, to=manifests),
+##D     mxPath(from=manifests, arrows=2),
+##D     mxPath(from=latents, arrows=2, free=FALSE, values=1.0),
+##D     mxData(observed=cov(demoOneFactor), type="cov", numObs=500)
+##D )
+##D factorFit <- mxRun(factorModel)
+##D round(fitMeasuresMx(factorFit), 3)
+##D 
+##D # Compare with lavaan
+##D library(lavaan)
+##D script <- "f1 =~ x1 + x2 + x3 + x4 + x5"
+##D fitMeasures(cfa(script, sample.cov = cov(demoOneFactor), sample.nobs = 500, std.lv = TRUE))
+## End(Not run)
+
+
+
+cleanEx()
 nameEx("impliedFactorStat")
 ### * impliedFactorStat
 
@@ -361,6 +398,38 @@ dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 
 			  
 fit <- cfa(HS.model, data=dat) 
 fitaux <- auxiliary(fit, aux="z", data=dat, fun="cfa")
+
+
+
+cleanEx()
+nameEx("lisrel2lavaan")
+### * lisrel2lavaan
+
+flush(stderr()); flush(stdout())
+
+### Name: lisrel2lavaan
+### Title: Latent variable modeling in 'lavaan' using LISREL syntax
+### Aliases: lisrel2lavaan
+
+### ** Examples
+
+## Not run: 
+##D ## calling lisrel2lavaan without specifying the filename argument will open
+##D ## a file browser window with which a LISREL syntax file can be selected. 
+##D 
+##D ## any additional arguments to be passed to lavaan for data analysis can be
+##D ## specified normally. 
+##D 
+##D lisrel2lavaan(se="standard")
+##D ## lavaan output summary printed to screen
+##D ## lavaan fit object returned silently
+##D 
+##D ## manual file specification 
+##D 
+##D lisrel2lavaan(filename="myFile.LS8", se="standard")
+##D ## lavaan output summary printed to screen
+##D ## lavaan fit object returned silently
+## End(Not run)
 
 
 
@@ -576,6 +645,26 @@ moreFitIndices(fit)
 
 fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="mlr")
 moreFitIndices(fit2)
+
+
+
+cleanEx()
+nameEx("nullMx")
+### * nullMx
+
+flush(stderr()); flush(stdout())
+
+### Name: nullMx
+### Title: Analyzing data using a null model
+### Aliases: nullMx
+
+### ** Examples
+
+## Not run: 
+##D library(OpenMx)
+##D data(demoOneFactor)
+##D nullModel <- nullMx(demoOneFactor)
+## End(Not run)
 
 
 
@@ -1104,6 +1193,26 @@ inspect(out, "impute")
 
 
 cleanEx()
+nameEx("saturateMx")
+### * saturateMx
+
+flush(stderr()); flush(stdout())
+
+### Name: saturateMx
+### Title: Analyzing data using a saturate model
+### Aliases: saturateMx
+
+### ** Examples
+
+## Not run: 
+##D library(OpenMx)
+##D data(demoOneFactor)
+##D satModel <- saturateMx(demoOneFactor)
+## End(Not run)
+
+
+
+cleanEx()
 nameEx("simParcel")
 ### * simParcel
 
@@ -1169,6 +1278,79 @@ summary(splitMyData[[2]])
 #splitSample(myData, path = "C:/Users/Default/Desktop/", name = "splitdata")
 #### Output saved to "C:/Users/Default/Desktop/" in .dat format
 #### Names are "splitdata_s1.dat" and "splitdata_s2.dat"
+
+
+
+cleanEx()
+nameEx("standardizeMx")
+### * standardizeMx
+
+flush(stderr()); flush(stdout())
+
+### Name: standardizeMx
+### Title: Find standardized estimates for OpenMx output
+### Aliases: standardizeMx
+
+### ** Examples
+
+## Not run: 
+##D library(OpenMx)
+##D data(myFADataRaw)
+##D myFADataRaw <- myFADataRaw[,c("x1","x2","x3","x4","x5","x6")]
+##D oneFactorModel <- mxModel("Common Factor Model Path Specification", 
+##D 	type="RAM",
+##D 	mxData(
+##D 		observed=myFADataRaw, 
+##D 		type="raw"
+##D 	),
+##D 	manifestVars=c("x1","x2","x3","x4","x5","x6"),
+##D 	latentVars="F1",
+##D 	mxPath(from=c("x1","x2","x3","x4","x5","x6"),
+##D 		arrows=2,
+##D 		free=TRUE,
+##D 		values=c(1,1,1,1,1,1),
+##D 		labels=c("e1","e2","e3","e4","e5","e6")
+##D 	), 
+##D 	# residual variances
+##D 	# -------------------------------------
+##D 	mxPath(from="F1",
+##D 		arrows=2,
+##D 		free=TRUE,
+##D 		values=1,
+##D 		labels ="varF1"
+##D 	), 
+##D 	# latent variance
+##D 	# -------------------------------------
+##D 	mxPath(from="F1",
+##D 		to=c("x1","x2","x3","x4","x5","x6"),
+##D 		arrows=1,
+##D 		free=c(FALSE,TRUE,TRUE,TRUE,TRUE,TRUE),
+##D 		values=c(1,1,1,1,1,1),
+##D 		labels =c("l1","l2","l3","l4","l5","l6")
+##D 	), 
+##D 	# factor loadings
+##D 	# -------------------------------------
+##D 	mxPath(from="one",
+##D 		to=c("x1","x2","x3","x4","x5","x6","F1"),
+##D 		arrows=1,
+##D 		free=c(TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE),
+##D 		values=c(1,1,1,1,1,1,0),
+##D 		labels =c("meanx1","meanx2","meanx3","meanx4","meanx5","meanx6",NA)
+##D 	) 
+##D 	# means
+##D 	# -------------------------------------
+##D ) # close model
+##D # Create an MxModel object
+##D # -----------------------------------------------------------------------------
+##D oneFactorFit <- mxRun(oneFactorModel)      
+##D standardizeMx(oneFactorFit)
+##D 
+##D # Compare with lavaan
+##D library(lavaan)
+##D script <- "f1 =~ x1 + x2 + x3 + x4 + x5 + x6"
+##D fit <- cfa(script, data=myFADataRaw, meanstructure=TRUE)
+##D standardize(fit)
+## End(Not run)
 
 
 

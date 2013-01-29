@@ -21,7 +21,7 @@ fitMeasuresMx(object, fit.measures="all")
 	A vector of fit measures
 }
 \seealso{
-	\code{\link{nullMx}}, \code{\link{saturateMx}}
+	\code{\link{nullMx}}, \code{\link{saturateMx}}, \code{\link{standardizeMx}}
 }
 \author{
     The original function is the \code{fitMeasures} function written by Yves Rosseel in the \code{lavaan} package. The function is adjusted for an \code{MxModel} object by Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})

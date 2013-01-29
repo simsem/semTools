@@ -9,6 +9,7 @@ findRMSEApower	findRMSEApower
 findRMSEApowernested	findRMSEApowernested
 findRMSEAsamplesize	findRMSEAsamplesize
 findRMSEAsamplesizenested	findRMSEAsamplesizenested
+fitMeasuresMx	fitMeasuresMx
 growth.auxiliary	auxiliary
 growth.mi	runMI
 impliedFactorCov	impliedFactorStat
@@ -20,6 +21,7 @@ kurtosis	kurtosis
 lavaan.auxiliary	auxiliary
 lavaan.mi	runMI
 lavaanStar-class	lavaanStar-class
+lisrel2lavaan	lisrel2lavaan
 loadingFromAlpha	loadingFromAlpha
 longInvariance	longInvariance
 mardiaKurtosis	mardiaKurtosis
@@ -29,6 +31,7 @@ measurementinvariance	measurementInvariance
 miPowerFit	miPowerFit
 monteCarloMed	monteCarloMed
 moreFitIndices	moreFitIndices
+nullMx	nullMx
 nullRMSEA	nullRMSEA
 orthogonalize	indProd
 parcelAllocation	parcelAllocation
@@ -44,11 +47,13 @@ reliability	reliability
 reliabilityL2	reliabilityL2
 residualCovariate	residualCovariate
 runMI	runMI
+saturateMx	saturateMx
 saveFile	clipboard
 sem.auxiliary	auxiliary
 sem.mi	runMI
 simParcel	simParcel
 skew	skew
 splitSample	splitSample
+standardizeMx	standardizeMx
 summary,lavaanStar-method	lavaanStar-class
 tukeySEM	tukeySEM

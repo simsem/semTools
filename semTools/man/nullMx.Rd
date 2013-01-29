@@ -21,7 +21,7 @@ nullMx(data, groupLab = NULL)
 	The \code{MxModel} object which contains the analysis result of the null model.
 }
 \seealso{
-	\code{\link{saturateMx}}, \code{\link{fitMeasuresMx}}
+	\code{\link{saturateMx}}, \code{\link{fitMeasuresMx}}, \code{\link{standardizeMx}}
 }
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})

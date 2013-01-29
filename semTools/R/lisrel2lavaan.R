@@ -3,7 +3,7 @@
 ##01/08/13
 ##file path/name of LS8 LISREL syntax file
 
-lisrel2lavaan <- function(filename=NULL, analyze=T, ...){
+lisrel2lavaan <- function(filename=NULL, analyze=TRUE, ...){
 
   require(lavaan)
   

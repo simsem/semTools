@@ -40,7 +40,7 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 	}
 	p <- ncol(data@observed)
 	if(data@type == "raw") {
-		categorical <- sapply(data@observed, function(x) class(x)[1]) == "ordered"
+		categorical <- apply(data@observed, 2, function(x) class(x)[1]) == "ordered"
 		startMeans <- apply(data@observed, 2, function(x) mean(as.numeric(x), na.rm=TRUE))
 		startVar <- apply(data@observed, 2, var, na.rm=TRUE)
 	} else {
@@ -237,7 +237,7 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 	}
 	p <- ncol(data@observed)
 	if(data@type == "raw") {
-		categorical <- sapply(data@observed, function(x) class(x)[1]) == "ordered"
+		categorical <- apply(data@observed, 2, function(x) class(x)[1]) == "ordered"
 		startMeans <- apply(data@observed, 2, function(x) mean(as.numeric(x), na.rm=TRUE))
 		startVar <- apply(data@observed, 2, var, na.rm=TRUE)
 	} else {
@@ -379,9 +379,24 @@ fitMeasuresMx <- function(object, fit.measures="all") {
 	library(OpenMx)
 	
 	if(length(object@submodels) > 1) {
+		varnames <- lapply(object@submodels, function(x) {
+			out <- x@objective@dims
+			if(any(is.na(out))) out <- x@manifestVars
+			out
+		})
 		dat <- lapply(object@submodels, slot, "data")
+		FUN <- function(x, var) {
+			if(x@type == "raw") {
+				x@observed <- x@observed[,intersect(var, colnames(x@observed))]	
+			} 
+			x
+		}
+		dat <- mapply(FUN, x=dat, var=varnames)
 	} else {
+		varnames <- object@objective@dims
+		if(any(is.na(varnames))) varnames <- object@manifestVars
 		dat <- object@data
+		dat@observed <- dat@observed[,intersect(varnames, colnames(dat@observed))]
 	}
 
 	if(length(object@output) == 0) {
@@ -480,10 +495,10 @@ fitMeasuresMx <- function(object, fit.measures="all") {
         if(fit.measures == "default") {
 			fit.measures <- c(fit.chisq, fit.baseline, 
 							  fit.cfi.tli, fit.logl, 
-							  fit.rmsea, fit.srmr)
+							  fit.rmsea, fit.srmr, "saturate.status", "null.status")
         } else if(fit.measures == "all") {
 			fit.measures <- c(fit.chisq, fit.baseline, fit.incremental, 
-							  fit.logl, fit.rmsea, fit.srmr2, fit.other)
+							  fit.logl, fit.rmsea, fit.srmr2, fit.other, "saturate.status", "null.status")
         }
     }
     
@@ -523,14 +538,14 @@ fitMeasuresMx <- function(object, fit.measures="all") {
 			indices["bic2"] <- BIC2
 		}
 	}
-
 	if(multigroup) {
-		defVars <- sapply(object@submodels, function(x) findDefVars(x@matrices))	
+		defVars <- lapply(object@submodels, findDefVars)
+		defVars <- do.call(c, defVars)
 	} else {
 		defVars <- findDefVars(object)	
 	}
 	if(length(defVars) > 0) {
-		out <- unlist(indices[fit.measures])
+		out <- unlist(indices[intersect(fit.measures, names(indices))])
         return(out)
 	}
 	
@@ -572,7 +587,12 @@ fitMeasuresMx <- function(object, fit.measures="all") {
 	X2 <- object@output$Minus2LogLikelihood - objectSat@output$Minus2LogLikelihood
 	df <- length(objectSat@output$estimate) - length(object@output$estimate)
 
-
+	indices["saturate.status"] <- objectSat@output$status[[1]]
+	indices["null.status"] <- objectNull@output$status[[1]]
+	
+	if(objectSat@output$status[[2]] != 0) indices["saturate.status"] <- -1
+	if(objectNull@output$status[[2]] != 0) indices["null.status"] <- -1
+	
     # Chi-square value estimated model (H0)
     if(any("chisq" %in% fit.measures)) {
 	indices["chisq"] <- X2
@@ -1003,4 +1023,64 @@ getImpliedStatRAM <- function(object) {
 		impliedMean <- rep(0, nrow(impliedCov))
 	}
 	list(impliedMean, impliedCov)
+}
+
+standardizeMx <- function(object, free = TRUE) {
+	objectOrig <- object
+	multigroup <- length(object@submodels) > 0
+	if(multigroup) {
+		object@submodels <- lapply(object@submodels, standardizeMxSingleGroup)
+	} else {
+		object <- standardizeMxSingleGroup(object)	
+	}
+	vectorizeMx(object, free=free)
+}
+
+standardizeMxSingleGroup <- function(object) {
+	if(!is(object@objective, "MxRAMObjective")) stop("The standardizeMx function is available for the MxRAMObjective only.")
+	A <- object@matrices$A@values
+	I <- diag(nrow(A))
+	S <- object@matrices$S@values
+	F <- object@matrices$F@values
+	Z <- solve(I - A)
+	impliedCov <- Z %*% S %*% t(Z)
+	ImpliedSd <- diag(sqrt(diag(impliedCov)))
+	ImpliedInvSd <- solve(ImpliedSd)
+	object@matrices$S@values <- ImpliedInvSd %*% S %*% ImpliedInvSd
+	object@matrices$A@values <- ImpliedInvSd %*% A %*% ImpliedSd
+	if(!is.null(object@matrices$M)) {
+		M <- object@matrices$M@values
+		object@matrices$M@values <- M %*% ImpliedInvSd
+	} 
+	return(object)
+}
+
+
+vectorizeMx <- function(object, free = TRUE) {
+	multigroup <- length(object@submodels) > 0
+	if(multigroup) {
+		object <- object@submodels
+	} else {
+		object <- list(object)	
+	}
+	result <- NULL
+	for(i in seq_along(object)) {
+		name <- ""
+		if(multigroup) name <- paste0(object[[i]]@name, ".")
+		mat <- object[[i]]@matrices
+		for(j in seq_along(mat)) {
+			tempname <- paste0(name, mat[[j]]@name)
+			lab <- mat[[j]]@labels
+			tempfree <- as.vector(mat[[j]]@free)
+			madeLab <- paste0(tempname, "[", row(lab), ",", col(lab), "]")
+			lab <- as.vector(lab)
+			madeLab[!is.na(lab)] <- lab[!is.na(lab)]
+			if(!free) tempfree <- rep(TRUE, length(tempfree))
+			temp <- mat[[j]]@values[tempfree]
+			names(temp) <- madeLab[tempfree]
+			result <- c(result, temp)
+		}
+	}
+	
+	result[!duplicated(names(result))]
 }

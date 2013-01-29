@@ -17,6 +17,7 @@ findRMSEAsamplesize     Find the minimum sample size for a given
 findRMSEAsamplesizenested
                         Find sample size given a power in nested model
                         comparison
+fitMeasuresMx           Find fit measures from an MxModel result
 impliedFactorStat       Calculate the model-implied factor means and
                         covariance matrix.
 indProd                 Make products of indicators using no centering,
@@ -25,6 +26,8 @@ indProd                 Make products of indicators using no centering,
 kurtosis                Finding excessive kurtosis
 lavaanStar-class        Class For Representing A (Fitted) Latent
                         Variable Model with Additional Elements
+lisrel2lavaan           Latent variable modeling in 'lavaan' using
+                        LISREL syntax
 loadingFromAlpha        Find standardized factor loading from
                         coefficient alpha
 longInvariance          Measurement Invariance Tests Within Person
@@ -36,6 +39,7 @@ miPowerFit              Modification indices and their power approach
 monteCarloMed           Monte Carlo Confidence Intervals to Test
                         Complex Indirect Effects
 moreFitIndices          Calculate more fit indices
+nullMx                  Analyzing data using a null model
 nullRMSEA               Calculate the RMSEA of the null model
 parcelAllocation        Random Allocation of Items to Parcels in a
                         Structural Equation Model
@@ -57,9 +61,11 @@ reliabilityL2           Calculate the reliability values of a
 residualCovariate       Residual centered all target indicators by
                         covariates
 runMI                   Multiply impute and analyze data using lavaan
+saturateMx              Analyzing data using a saturate model
 simParcel               Simulated Data set to Demonstrate Random
                         Allocations of Parcels
 skew                    Finding skewness
 splitSample             Randomly Split a Data Set into Halves
+standardizeMx           Find standardized estimates for OpenMx output
 tukeySEM                Tukey's WSD post-hoc test of means for unequal
                         variance and sample size

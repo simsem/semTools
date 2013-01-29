@@ -21,6 +21,6 @@ export(
 	reliability, reliabilityL2, 
 	impliedFactorMean, impliedFactorCov, impliedFactorStat,
 	tukeySEM,
-	nullMx, saturateMx, fitMeasuresMx,
+	nullMx, saturateMx, fitMeasuresMx, standardizeMx,
 	lisrel2lavaan
 )
