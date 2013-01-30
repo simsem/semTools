@@ -2,7 +2,7 @@ Package: semTools
 Type: Package
 Title: Useful tools for structural equation modeling.
 Version: 0.2-13
-Date: 2013-01-28
+Date: 2013-01-29
 Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@ku.edu"), 
 		person("Patrick", "Miller", role = "aut", email="patr1ckm@ku.edu"), 
 		person("Alexander", "Schoemann", role = "aut", email="schoemann@ku.edu"),
@@ -16,9 +16,11 @@ Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut", "cre"), email
 		person("Mijke", "Rhemtulla", role = "ctb", email="mijke@ku.edu"), 
 		person("Alexander", "Robitzsch", role = "ctb", email="a.robitzsch@bifie.at"), 
 		person("Craig", "Enders", role = "ctb", email="Craig.Enders@asu.edu"),
-		person("Ruber", "Arslan", role = "ctb", email="rubenarslan@gmail.com")
+		person("Ruber", "Arslan", role = "ctb", email="rubenarslan@gmail.com"),
+		person("Bell", "Clinton", role = "ctb", email="clintonbell@ku.edu"), 
+		person("Pavel", "Panko", role = "ctb", email="pavel@ku.edu")
 		)
-Author: Sunthud Pornprasertmanit [aut, cre], Patrick Miller [aut], Alex Schoemann [aut], Yves Rosseel [aut], Corbin Quick [ctb], Mauricio Garnier-Villarreal [ctb], James Selig [ctb], Aaron Boulton [ctb], Kristopher Preacher [ctb], Donna Coffman [ctb], Mijke Rhemtulla [ctb], Alexander Robitzsch [ctb], Craig Enders [ctb], Ruber Arslan [ctb]
+Author: Sunthud Pornprasertmanit [aut, cre], Patrick Miller [aut], Alex Schoemann [aut], Yves Rosseel [aut], Corbin Quick [ctb], Mauricio Garnier-Villarreal [ctb], James Selig [ctb], Aaron Boulton [ctb], Kristopher Preacher [ctb], Donna Coffman [ctb], Mijke Rhemtulla [ctb], Alexander Robitzsch [ctb], Craig Enders [ctb], Ruber Arslan [ctb], Bell Clinton [ctb], Pavel Panko [ctb]
 Maintainer: Sunthud Pornprasertmanit <psunthud@ku.edu>
 Depends: R(>= 2.15), MASS, lavaan, methods
 Suggests: parallel, Amelia, mice, foreign, OpenMx

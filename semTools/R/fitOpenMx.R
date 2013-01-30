@@ -40,7 +40,10 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 	}
 	p <- ncol(data@observed)
 	if(data@type == "raw") {
-		categorical <- apply(data@observed, 2, function(x) class(x)[1]) == "ordered"
+		categorical <- rep(FALSE, p)
+		for(i in seq_len(p)) {
+			categorical[i] <- "ordered" %in% class(data@observed[,i])
+		}
 		startMeans <- apply(data@observed, 2, function(x) mean(as.numeric(x), na.rm=TRUE))
 		startVar <- apply(data@observed, 2, var, na.rm=TRUE)
 	} else {
@@ -237,7 +240,10 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 	}
 	p <- ncol(data@observed)
 	if(data@type == "raw") {
-		categorical <- apply(data@observed, 2, function(x) class(x)[1]) == "ordered"
+		categorical <- rep(FALSE, p)
+		for(i in seq_len(p)) {
+			categorical[i] <- "ordered" %in% class(data@observed[,i])
+		}
 		startMeans <- apply(data@observed, 2, function(x) mean(as.numeric(x), na.rm=TRUE))
 		startVar <- apply(data@observed, 2, var, na.rm=TRUE)
 	} else {
@@ -583,7 +589,6 @@ fitMeasuresMx <- function(object, fit.measures="all") {
 	if(!checkConvergence(objectNull)) {
         warning("The null model may be not convergent.")
     }
-	
 	X2 <- object@output$Minus2LogLikelihood - objectSat@output$Minus2LogLikelihood
 	df <- length(objectSat@output$estimate) - length(object@output$estimate)
 
