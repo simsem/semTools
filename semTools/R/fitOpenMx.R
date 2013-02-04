@@ -384,7 +384,12 @@ checkConvergence <- function(object) {
 fitMeasuresMx <- function(object, fit.measures="all") {
 	library(OpenMx)
 	
+	mxMixture <- FALSE
 	if(length(object@submodels) > 1) {
+		if(is.null(object@submodels[[1]]@data)) mxMixture <- TRUE
+	}
+	
+	if(length(object@submodels) > 1 & !mxMixture) {
 		varnames <- lapply(object@submodels, function(x) {
 			out <- x@objective@dims
 			if(any(is.na(out))) out <- x@manifestVars
@@ -399,10 +404,12 @@ fitMeasuresMx <- function(object, fit.measures="all") {
 		}
 		dat <- mapply(FUN, x=dat, var=varnames)
 	} else {
-		varnames <- object@objective@dims
-		if(any(is.na(varnames))) varnames <- object@manifestVars
 		dat <- object@data
-		dat@observed <- dat@observed[,intersect(varnames, colnames(dat@observed))]
+		if(!mxMixture) {
+			varnames <- object@objective@dims
+			if(any(is.na(varnames))) varnames <- object@manifestVars
+			dat@observed <- dat@observed[,intersect(varnames, colnames(dat@observed))]
+		}
 	}
 
 	if(length(object@output) == 0) {
@@ -422,7 +429,7 @@ fitMeasuresMx <- function(object, fit.measures="all") {
     # reference: Muthen technical Appendix 5
 
     # collect info from the lavaan slots
-	if(length(object@submodels) > 1) {
+	if(length(object@submodels) > 1 & !mxMixture) {
 		N <- sum(sapply(dat, slot, "numObs"))
 	} else {
 		N <- dat@numObs
@@ -544,13 +551,15 @@ fitMeasuresMx <- function(object, fit.measures="all") {
 			indices["bic2"] <- BIC2
 		}
 	}
-	if(multigroup) {
-		defVars <- lapply(object@submodels, findDefVars)
-		defVars <- do.call(c, defVars)
-	} else {
-		defVars <- findDefVars(object)	
+	if(!mxMixture) {
+		if(multigroup) {
+			defVars <- lapply(object@submodels, findDefVars)
+			defVars <- do.call(c, defVars)
+		} else {
+			defVars <- findDefVars(object)	
+		}
 	}
-	if(length(defVars) > 0) {
+	if(mxMixture || length(defVars) > 0) {
 		out <- unlist(indices[intersect(fit.measures, names(indices))])
         return(out)
 	}
@@ -826,6 +835,13 @@ fitMeasuresMx <- function(object, fit.measures="all") {
         rmr_nomean.group <- numeric(G)
         srmr.group <- numeric(G)
         srmr_nomean.group <- numeric(G)
+		upperLevelMatrices <- NULL
+		if(G > 1) {
+			upperLevelMatrices <- getInnerObjects(object)
+			if(length(upperLevelMatrices) > 0) {
+				names(upperLevelMatrices) <- paste0(object@name, ".", names(upperLevelMatrices))
+			}
+		}
         for(g in 1:G) {
 			if(G > 1) {
 				if(is(objectSat@submodels[[g]]@objective, "MxRAMObjective")) {
@@ -850,7 +866,7 @@ fitMeasuresMx <- function(object, fit.measures="all") {
 				if(is(object@submodels[[g]]@objective, "MxRAMObjective")) {
 					implied <- getImpliedStatRAM(object@submodels[[g]])
 				} else {
-					implied <- getImpliedStatML(object@submodels[[g]])
+					implied <- getImpliedStatML(object@submodels[[g]], xxxextraxxx = upperLevelMatrices)
 				}
 			} else {
 				if(is(object@objective, "MxRAMObjective")) {
@@ -968,7 +984,13 @@ findDefVars <- function(object) {
 	Reduce("c", defvars)
 }
 
-getImpliedStatML <- function(xxxobjectxxx, xxxcovdatatxxx = NULL) {
+getImpliedStatML <- function(xxxobjectxxx, xxxcovdatatxxx = NULL, xxxextraxxx = NULL) {
+	if(!is.null(xxxextraxxx)) {
+		xxxmatnamexxx2 <- names(xxxextraxxx)
+		for(i in seq_along(xxxmatnamexxx2)) {
+			assign(xxxmatnamexxx2[i], xxxextraxxx[[i]])
+		}
+	}
 	xxxmatxxx <- xxxobjectxxx@matrices
 	xxxmatnamexxx <- names(xxxmatxxx)
 	xxxmatvalxxx <- lapply(xxxmatxxx, slot, "values")
@@ -1034,6 +1056,13 @@ standardizeMx <- function(object, free = TRUE) {
 	objectOrig <- object
 	multigroup <- length(object@submodels) > 0
 	if(multigroup) {
+		defVars <- lapply(object@submodels, findDefVars)
+		defVars <- do.call(c, defVars)
+	} else {
+		defVars <- findDefVars(object)	
+	}
+	if(length(defVars) > 0) stop("The standardizeMx is not available for the model with definition variable.")
+	if(multigroup) {
 		object@submodels <- lapply(object@submodels, standardizeMxSingleGroup)
 	} else {
 		object <- standardizeMxSingleGroup(object)	
@@ -1049,7 +1078,12 @@ standardizeMxSingleGroup <- function(object) {
 	F <- object@matrices$F@values
 	Z <- solve(I - A)
 	impliedCov <- Z %*% S %*% t(Z)
-	ImpliedSd <- diag(sqrt(diag(impliedCov)))
+	temp <- sqrt(diag(impliedCov))
+	if(length(temp) == 1) {
+		ImpliedSd <- as.matrix(temp)
+	} else {
+		ImpliedSd <- diag(temp)
+	}
 	ImpliedInvSd <- solve(ImpliedSd)
 	object@matrices$S@values <- ImpliedInvSd %*% S %*% ImpliedInvSd
 	object@matrices$A@values <- ImpliedInvSd %*% A %*% ImpliedSd
@@ -1088,4 +1122,33 @@ vectorizeMx <- function(object, free = TRUE) {
 	}
 	
 	result[!duplicated(names(result))]
+}
+
+
+getInnerObjects <- function(xxxobjectxxx) {
+	xxxmatxxx <- xxxobjectxxx@matrices
+	xxxmatnamexxx <- names(xxxmatxxx)
+	xxxmatvalxxx <- lapply(xxxmatxxx, slot, "values")
+	for(i in seq_along(xxxmatnamexxx)) {
+		assign(xxxmatnamexxx[i], xxxmatvalxxx[[i]])
+	}
+	xxxalgebraxxx <- xxxobjectxxx@algebras
+	xxxalgebranamexxx <- names(xxxalgebraxxx)
+	xxxalgebraformulaxxx <- lapply(xxxalgebraxxx, slot, "formula")
+	xxxalgebraassignedxxx <- NULL
+	for(i in seq_along(xxxalgebranamexxx)) {
+		temp <- NULL
+		try(temp <- eval(xxxalgebraformulaxxx[[i]]), silent = TRUE)
+		if(!is.null(temp)) {
+			assign(xxxalgebranamexxx[i], temp)
+			xxxalgebraassignedxxx <- c(xxxalgebraassignedxxx, xxxalgebranamexxx[i])
+		}
+	}
+	xxxusednamexxx <- c(xxxmatnamexxx, xxxalgebraassignedxxx)
+	xxxresultxxx <- list()
+	for(i in seq_along(xxxusednamexxx)) {
+		xxxresultxxx[[i]] <- get(xxxusednamexxx[i])
+	}
+	names(xxxresultxxx) <- xxxusednamexxx
+	xxxresultxxx	
 }
