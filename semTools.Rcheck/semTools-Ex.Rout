@@ -27,8 +27,9 @@ Loading required package: MASS
 Loading required package: lavaan
 Loading required package: boot
 Loading required package: mnormt
+Loading required package: pbivnorm
 Loading required package: quadprog
-This is lavaan 0.5-10
+This is lavaan 0.5-11
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
@@ -1406,12 +1407,12 @@ $SE
 15  La ~~  Lb  0.019 0.001 0.020 0.017 0.003
 
 $Fit
-      Avg Ind  S.D.    MAX   MIN  Range
-chisq   6.906 3.652 14.543 1.456 13.087
-cfi     0.999 0.001  1.000 0.997  0.003
-tli     1.001 0.003  1.006 0.994  0.012
-rmsea   0.007 0.011  0.032 0.000  0.032
-srmr    0.011 0.003  0.019 0.006  0.013
+        Avg Ind   S.D.       MAX       MIN   Range
+chisq     0.004  0.002     0.009     0.001   0.008
+cfi       0.000  0.000     0.000     0.000   0.000
+tli       0.999  0.001     1.000     0.997   0.003
+rmsea -4443.032 48.400 -4356.266 -4510.456 154.190
+srmr   8972.964 96.800  9107.811  8799.432 308.379
 
 > 
 > 
@@ -1592,14 +1593,14 @@ Warning in plotRMSEAdist(rmsea = c(0.05, 0.08), n = 200, df = 20, ptile = 0.95, 
 > 
 > fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC2way)
-lavaan (0.5-10) converged normally after  53 iterations
+lavaan (0.5-11) converged normally after  53 iterations
 
   Number of observations                         10000
 
   Estimator                                         ML
-  Minimum Function Chi-square                   28.376
+  Minimum Function Test Statistic               28.376
   Degrees of freedom                                50
-  P-value                                        0.994
+  P-value (Chi-square)                           0.994
 
 Parameter estimates:
 
@@ -1730,14 +1731,14 @@ $SimpleSlope
 > 
 > fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC2way)
-lavaan (0.5-10) converged normally after  53 iterations
+lavaan (0.5-11) converged normally after  53 iterations
 
   Number of observations                         10000
 
   Estimator                                         ML
-  Minimum Function Chi-square                   11.737
+  Minimum Function Test Statistic               11.737
   Degrees of freedom                                50
-  P-value                                        1.000
+  P-value (Chi-square)                           1.000
 
 Parameter estimates:
 
@@ -1890,14 +1891,14 @@ $SimpleSlope
 > 
 > fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC3way)
-lavaan (0.5-10) converged normally after 104 iterations
+lavaan (0.5-11) converged normally after 104 iterations
 
   Number of observations                          1000
 
   Estimator                                         ML
-  Minimum Function Chi-square                  394.539
+  Minimum Function Test Statistic              394.539
   Degrees of freedom                               236
-  P-value                                        0.000
+  P-value (Chi-square)                           0.000
 
 Parameter estimates:
 
@@ -2140,14 +2141,14 @@ $SimpleSlope
 > 
 > fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC3way)
-lavaan (0.5-10) converged normally after 107 iterations
+lavaan (0.5-11) converged normally after 107 iterations
 
   Number of observations                          1000
 
   Estimator                                         ML
-  Minimum Function Chi-square                  108.492
+  Minimum Function Test Statistic              108.492
   Degrees of freedom                               236
-  P-value                                        1.000
+  P-value (Chi-square)                           1.000
 
 Parameter estimates:
 
@@ -2431,12 +2432,15 @@ Loading required package: Amelia
 Loading required package: foreign
 ## 
 ## Amelia II: Multiple Imputation
-## (Version 1.6.3, built: 2012-06-21)
+## (Version 1.6.4, built: 2012-12-17)
 ## Copyright (C) 2005-2013 James Honaker, Gary King and Matthew Blackwell
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
+lavaan WARNING: some requested fit measure(s) are not available for this model:
+[1] "baseline.chisq"  "baseline.df"     "baseline.pvalue"
+
 > summary(out)
-lavaan (0.5-10) converged normally after   3 iterations
+lavaan (0.5-11) converged normally after   3 iterations
 
   Number of observations                           301
 
@@ -2484,18 +2488,29 @@ Variances:
     speed             0.397    0.107
 
 > inspect(out, "fit")
-            chisq                df            pvalue    baseline.chisq 
-           54.107            24.000             0.000           639.485 
-      baseline.df   baseline.pvalue               cfi               tli 
-           36.000             0.000             0.950             0.925 
+lavaan WARNING: some requested fit measure(s) are not available for this model:
+[1] "baseline.chisq"  "baseline.df"     "baseline.pvalue"
+
+             fmin             chisq                df            pvalue 
+            2.005            54.107            24.000             0.000 
+              cfi               tli              nnfi               rfi 
+            0.950             0.925                NA                NA 
+              nfi              pnfi               ifi               rni 
+               NA                NA                NA                NA 
              logl unrestricted.logl              npar               aic 
         -4295.177         -3691.630            21.000          8632.355 
               bic            ntotal              bic2             rmsea 
          8710.204           301.000          8643.604             0.065 
-   rmsea.ci.lower    rmsea.ci.upper      rmsea.pvalue              srmr 
-            0.042             0.088             0.137             0.063 
-      srmr_nomean 
-            0.063 
+   rmsea.ci.lower    rmsea.ci.upper      rmsea.pvalue               rmr 
+            0.042             0.088             0.137             0.081 
+       rmr_nomean              srmr       srmr_nomean             cn_05 
+            0.081             0.063             0.063           203.580 
+            cn_01               gfi              agfi              pgfi 
+          240.101             0.944             0.894             0.503 
+              mfi              ecvi    baseline.chisq       baseline.df 
+            0.951             0.319           639.485            36.000 
+  baseline.pvalue 
+            0.000 
 > inspect(out, "impute")
 $convergenceRate
 target model   null model 
@@ -2835,7 +2850,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  18.06 0.08 18.42 NA NA 
+Time elapsed:  16.07 0.22 16.35 NA NA 
 > grDevices::dev.off()
 null device 
           1 

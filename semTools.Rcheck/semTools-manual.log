@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.12.18)  29 JAN 2013 22:41
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.12.18)  4 FEB 2013 00:41
 entering extended mode
-**C:/Users/sunthud/AppData/Local/Temp/RtmpMz4Shx/Rd2pdfe046d8737f7/Rd2.tex
-(C:/Users/sunthud/AppData/Local/Temp/RtmpMz4Shx/Rd2pdfe046d8737f7/Rd2.tex
+**C:/Users/sunthud/AppData/Local/Temp/Rtmp08nLCI/Rd2pdf1b88325e3afd/Rd2.tex
+(C:/Users/sunthud/AppData/Local/Temp/Rtmp08nLCI/Rd2pdf1b88325e3afd/Rd2.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -618,7 +618,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\sunthud\AppData\Local\Temp\RtmpMz4Shx\Rd2pdfe046d8737f7\Rd2.aux)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp08nLCI\Rd2pdf1b88325e3afd\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -673,8 +673,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\sunthud\AppData\Local\Temp\RtmpMz4Shx\Rd2pdfe046d8737f7\Rd2.out)
-(C:\Users\sunthud\AppData\Local\Temp\RtmpMz4Shx\Rd2pdfe046d8737f7\Rd2.out)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp08nLCI\Rd2pdf1b88325e3afd\Rd2.out)
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp08nLCI\Rd2pdf1b88325e3afd\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -694,7 +694,7 @@ LaTeX Font Info:    Try loading font information for T1+phv on input line 30.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\sunthud\AppData\Local\Temp\RtmpMz4Shx\Rd2pdfe046d8737f7\Rd2.toc
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp08nLCI\Rd2pdf1b88325e3afd\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -1011,7 +1011,7 @@ tion is ap-pli-ca-ble for the \T1/fi4/m/n/10 MxRAMObjective
 [63] [64] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-[65] (C:\Users\sunthud\AppData\Local\Temp\RtmpMz4Shx\Rd2pdfe046d8737f7\Rd2.ind
+[65] (C:\Users\sunthud\AppData\Local\Temp\Rtmp08nLCI\Rd2pdf1b88325e3afd\Rd2.ind
 [66]
 
 LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
@@ -1022,7 +1022,8 @@ LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
 ])
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3393.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 3393.
- (C:\Users\sunthud\AppData\Local\Temp\RtmpMz4Shx\Rd2pdfe046d8737f7\Rd2.aux)
+
+(C:\Users\sunthud\AppData\Local\Temp\Rtmp08nLCI\Rd2pdf1b88325e3afd\Rd2.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 3393.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 3393.
 
@@ -1036,12 +1037,12 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 3393.
  ) 
 Here is how much of TeX's memory you used:
  6885 strings out of 494045
- 101571 string characters out of 3145962
+ 101586 string characters out of 3145962
  172756 words of memory out of 3000000
  9429 multiletter control sequences out of 15000+200000
  38195 words of font info for 48 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 38i,6n,34p,1135b,588s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,6n,34p,1136b,588s stack positions out of 5000i,500n,10000p,200000b,50000s
 pdfTeX warning (dest): name{Rfn.plot} has been referenced but does not exist,
  replaced by a fixed one
 
@@ -1077,7 +1078,7 @@ pe1/urw/helvetic/uhvr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/
 times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8
 a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/P
 rogram Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (67 pages, 500706 bytes).
+Output written on Rd2.pdf (67 pages, 500707 bytes).
 PDF statistics:
  1464 PDF objects out of 1728 (max. 8388607)
  568 named destinations out of 1000 (max. 500000)

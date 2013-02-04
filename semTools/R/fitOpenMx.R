@@ -408,7 +408,7 @@ fitMeasuresMx <- function(object, fit.measures="all") {
 		if(!mxMixture) {
 			varnames <- object@objective@dims
 			if(any(is.na(varnames))) varnames <- object@manifestVars
-			dat@observed <- dat@observed[,intersect(varnames, colnames(dat@observed))]
+			dat@observed <- dat@observed[,intersect(varnames, colnames(dat@observed)), drop=FALSE]
 		}
 	}
 
