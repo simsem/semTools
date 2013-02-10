@@ -60,13 +60,13 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 > 			  
 > dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 > 			  
-> fit <- cfa(HS.model, data=dat) 
+> fit <- cfa(HS.model, data=dat, meanstructure=TRUE) 
 > fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # Use lavaan script
 > fitaux <- cfa.auxiliary(fit, aux="z", data=dat) # Use lavaan output
 > 
 > # Example of multiple groups confirmatory factor analysis
 > 
-> fitgroup <- cfa(HS.model, data=dat, group="school")
+> fitgroup <- cfa(HS.model, data=dat, group="school", meanstructure=TRUE)
 > fitgroupaux <- cfa.auxiliary(fitgroup, aux="z", data=dat, group="school")
 > 
 > # Example of path analysis
@@ -75,7 +75,7 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 + x4 ~ x3
 + x3 ~ x1 + x2'
 > 
-> fitpath <- sem(mod, data=dat, fixed.x=FALSE) # fixed.x must be FALSE
+> fitpath <- sem(mod, data=dat, fixed.x=FALSE, meanstructure=TRUE) # fixed.x must be FALSE
 > fitpathaux <- sem.auxiliary(fitpath, aux="z", data=dat)
 > 
 > # Example of full structural equation modeling
@@ -107,7 +107,7 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 + 			  textual ~ sex
 + 			  speed ~ sex'
 > 	  
-> fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE) 
+> fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
 > fitcovaux <- cfa.auxiliary(fitcov, aux="z", data=dat)
 > 
 > # Example of  Endogenous variable with single indicator 
@@ -115,7 +115,7 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 +               textual =~ x4 + x5 + x6
 +               x7 ~ visual + textual'
 >  	  
-> fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE) 
+> fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
 > fitcov2aux <- sem.auxiliary(fitcov2, aux="z", data=dat)
 > 
 > # Multiple auxiliary variables
@@ -124,7 +124,7 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 > fit <- cfa(HS.model2, data=HolzingerSwineford1939)
 > fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5")) 
 Error in solve.default(E) : 
-  Lapack routine dgesv: system is exactly singular: U[8,8] = 0
+  Lapack routine dgesv: system is exactly singular: U[14,14] = 0
 Warning in estimateVCOV(lavaanModel, samplestats = lavaanSampleStats, options = lavaanOptions,  :
   lavaan WARNING: could not compute standard errors!
 
@@ -391,6 +391,178 @@ Warning in estimateVCOV(lavaanModel, samplestats = lavaanSampleStats, options = 
 > 
 > 
 > cleanEx()
+> nameEx("fmi")
+> ### * fmi
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fmi
+> ### Title: Fraction of Missing Information.
+> ### Aliases: fmi
+> 
+> ### ** Examples
+> 
+> library(Amelia)
+Loading required package: foreign
+## 
+## Amelia II: Multiple Imputation
+## (Version 1.6.4, built: 2012-12-17)
+## Copyright (C) 2005-2013 James Honaker, Gary King and Matthew Blackwell
+## Refer to http://gking.harvard.edu/amelia/ for more information
+## 
+> library(lavaan)
+> 
+> modsim <- '
++ f1 =~ 0.7*y1+0.7*y2+0.7*y3
++ f2 =~ 0.7*y4+0.7*y5+0.7*y6
++ f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+> 
+> datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
++                        std.lv=TRUE, sample.nobs=c(200,200))
+> randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+> randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+> randomMiss2[,10] <- FALSE
+> datsim[randomMiss2] <- NA
+> datsimMI <- amelia(datsim,m=3,idvars="group")
+-- Imputation 1 --
+
+ 1  2  3  4  5  6  7  8 
+
+-- Imputation 2 --
+
+ 1  2  3  4  5  6  7  8 
+
+-- Imputation 3 --
+
+ 1  2  3  4  5  6  7  8 
+
+> 
+> out1 <- fmi(datsimMI$imputations, exclude="group")
+> out1
+$Variances
+  var group  coef fmi.1 fmi.2
+1  y1     1 1.461 0.165 0.187
+2  y2     1 1.615 0.140 0.156
+3  y3     1 1.541 0.126 0.140
+4  y4     1 1.525 0.060 0.063
+5  y5     1 1.792 0.015 0.015
+6  y6     1 1.667 0.081 0.086
+7  y7     1 1.569 0.155 0.174
+8  y8     1 1.529 0.136 0.152
+9  y9     1 1.741 0.155 0.174
+
+$Means
+  var group   coef fmi.1 fmi.2
+1  y1     1 -0.089 0.041 0.042
+2  y2     1  0.039 0.065 0.069
+3  y3     1 -0.012 0.160 0.180
+4  y4     1 -0.013 0.021 0.021
+5  y5     1 -0.035 0.107 0.116
+6  y6     1  0.067 0.032 0.033
+7  y7     1  0.042 0.026 0.027
+8  y8     1 -0.042 0.077 0.083
+9  y9     1  0.034 0.105 0.115
+
+>                        
+> out2 <- fmi(datsimMI$imputations, exclude="group", method="null")
+> out2
+$Variances
+  var group  coef fmi.1 fmi.2
+1  y1     1 1.461 0.165 0.187
+2  y2     1 1.615 0.140 0.156
+3  y3     1 1.541 0.126 0.140
+4  y4     1 1.525 0.060 0.063
+5  y5     1 1.792 0.015 0.015
+6  y6     1 1.667 0.081 0.087
+7  y7     1 1.569 0.155 0.174
+8  y8     1 1.529 0.136 0.152
+9  y9     1 1.741 0.155 0.174
+
+$Means
+  var group   coef fmi.1 fmi.2
+1  y1     1 -0.089 0.041 0.042
+2  y2     1  0.039 0.065 0.069
+3  y3     1 -0.012 0.160 0.180
+4  y4     1 -0.013 0.021 0.021
+5  y5     1 -0.035 0.107 0.116
+6  y6     1  0.067 0.032 0.033
+7  y7     1  0.042 0.026 0.027
+8  y8     1 -0.042 0.077 0.083
+9  y9     1  0.034 0.105 0.115
+
+$Message
+[1] "These estimates used the null model, they may not be as precise as the saturated model estimates"
+
+>                        
+> out3 <- fmi(datsimMI$imputations, varnames=c("y1","y2","y3","y4"))
+> out3
+$Variances
+  var group  coef fmi.1 fmi.2
+1  y1     1 1.461 0.165 0.187
+2  y2     1 1.615 0.140 0.156
+3  y3     1 1.541 0.126 0.140
+4  y4     1 1.525 0.060 0.063
+
+$Means
+  var group   coef fmi.1 fmi.2
+1  y1     1 -0.089 0.041 0.042
+2  y2     1  0.039 0.065 0.069
+3  y3     1 -0.012 0.160 0.180
+4  y4     1 -0.013 0.021 0.021
+
+> 
+> out4 <- fmi(datsimMI$imputations, group="group")
+> out4
+$Variances
+   var group  coef fmi.1 fmi.2
+1   y1     1 1.428 0.152 0.171
+2   y2     1 1.518 0.170 0.193
+3   y3     1 1.627 0.124 0.138
+4   y4     1 1.605 0.006 0.006
+5   y5     1 1.793 0.115 0.126
+6   y6     1 1.580 0.016 0.017
+7   y7     1 1.555 0.018 0.018
+8   y8     1 1.523 0.026 0.027
+9   y9     1 1.726 0.085 0.091
+10  y1     2 1.493 0.309 0.366
+11  y2     2 1.709 0.106 0.116
+12  y3     2 1.452 0.068 0.072
+13  y4     2 1.444 0.078 0.084
+14  y5     2 1.776 0.141 0.158
+15  y6     2 1.746 0.055 0.058
+16  y7     2 1.576 0.320 0.380
+17  y8     2 1.533 0.147 0.164
+18  y9     2 1.748 0.167 0.189
+
+$Means
+   var group   coef fmi.1 fmi.2
+1   y1     1 -0.097 0.079 0.084
+2   y2     1  0.075 0.038 0.040
+3   y3     1 -0.045 0.113 0.124
+4   y4     1 -0.009 0.097 0.106
+5   y5     1  0.046 0.169 0.191
+6   y6     1  0.125 0.105 0.114
+7   y7     1 -0.015 0.074 0.079
+8   y8     1 -0.065 0.085 0.092
+9   y9     1 -0.027 0.107 0.117
+10  y1     2 -0.082 0.032 0.033
+11  y2     2  0.003 0.075 0.080
+12  y3     2  0.021 0.201 0.231
+13  y4     2 -0.017 0.055 0.058
+14  y5     2 -0.116 0.038 0.040
+15  y6     2  0.008 0.151 0.170
+16  y7     2  0.098 0.206 0.238
+17  y8     2 -0.019 0.041 0.043
+18  y9     2  0.094 0.138 0.154
+
+> 
+> 
+> 
+> 
+> cleanEx()
+
+detaching 'package:Amelia', 'package:foreign'
+
 > nameEx("impliedFactorStat")
 > ### * impliedFactorStat
 > 
@@ -511,7 +683,7 @@ Excess Kur (g2)              se               z               p
 > dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 > 			  
 > fit <- cfa(HS.model, data=dat) 
-> fitaux <- auxiliary(fit, aux="z", data=dat, fun="cfa")
+> fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa")
 > 
 > 
 > 
@@ -528,21 +700,21 @@ Excess Kur (g2)              se               z               p
 > ### ** Examples
 > 
 > ## Not run: 
-> ##D ## calling lisrel2lavaan without specifying the filename argument will open
-> ##D ## a file browser window with which a LISREL syntax file can be selected. 
-> ##D 
-> ##D ## any additional arguments to be passed to lavaan for data analysis can be
-> ##D ## specified normally. 
-> ##D 
-> ##D lisrel2lavaan(se="standard")
-> ##D ## lavaan output summary printed to screen
-> ##D ## lavaan fit object returned silently
-> ##D 
-> ##D ## manual file specification 
-> ##D 
-> ##D lisrel2lavaan(filename="myFile.LS8", se="standard")
-> ##D ## lavaan output summary printed to screen
-> ##D ## lavaan fit object returned silently
+> ##D 	## calling lisrel2lavaan without specifying the filename argument will  
+> ##D 	## open a file browser window with which LISREL syntax can be selected. 
+> ##D 	
+> ##D 	## any additional arguments to be passed to lavaan for data analysis can
+> ##D 	## be specified normally. 
+> ##D 	
+> ##D 	lisrel2lavaan(se="standard")
+> ##D 	## lavaan output summary printed to screen
+> ##D 	## lavaan fit object returned silently
+> ##D 	
+> ##D 	## manual file specification 
+> ##D 	
+> ##D 	lisrel2lavaan(filename="myFile.LS8", se="standard")
+> ##D 	## lavaan output summary printed to screen
+> ##D 	## lavaan fit object returned silently
 > ## End(Not run)
 > 
 > 
@@ -2436,20 +2608,20 @@ Loading required package: foreign
 ## Copyright (C) 2005-2013 James Honaker, Gary King and Matthew Blackwell
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
-lavaan WARNING: some requested fit measure(s) are not available for this model:
-[1] "baseline.chisq"  "baseline.df"     "baseline.pvalue"
-
 > summary(out)
 lavaan (0.5-11) converged normally after   3 iterations
 
   Number of observations                           301
 
   Estimator                                         ML
+  Minimum Function Test Statistic               54.107
+  Degrees of freedom                                24
+  P-value (Chi-square)                           0.000
 
 Parameter estimates:
 
   Information                                 Expected
-  Standard Errors                                 None
+  Standard Errors                             Standard
 
                    Estimate  Std.err  Z-value  P(>|z|)
 Latent variables:
@@ -2488,29 +2660,26 @@ Variances:
     speed             0.397    0.107
 
 > inspect(out, "fit")
-lavaan WARNING: some requested fit measure(s) are not available for this model:
-[1] "baseline.chisq"  "baseline.df"     "baseline.pvalue"
-
              fmin             chisq                df            pvalue 
             2.005            54.107            24.000             0.000 
-              cfi               tli              nnfi               rfi 
-            0.950             0.925                NA                NA 
-              nfi              pnfi               ifi               rni 
-               NA                NA                NA                NA 
-             logl unrestricted.logl              npar               aic 
-        -4295.177         -3691.630            21.000          8632.355 
-              bic            ntotal              bic2             rmsea 
-         8710.204           301.000          8643.604             0.065 
-   rmsea.ci.lower    rmsea.ci.upper      rmsea.pvalue               rmr 
-            0.042             0.088             0.137             0.081 
-       rmr_nomean              srmr       srmr_nomean             cn_05 
-            0.081             0.063             0.063           203.580 
-            cn_01               gfi              agfi              pgfi 
-          240.101             0.944             0.894             0.503 
-              mfi              ecvi    baseline.chisq       baseline.df 
-            0.951             0.319           639.485            36.000 
-  baseline.pvalue 
-            0.000 
+   baseline.chisq       baseline.df   baseline.pvalue               cfi 
+          639.485            36.000             0.000             0.950 
+              tli              nnfi               rfi               nfi 
+            0.925             0.925             0.873             0.915 
+             pnfi               ifi               rni              logl 
+            0.610             0.951             0.950         -4295.177 
+unrestricted.logl              npar               aic               bic 
+        -3691.630            21.000          8632.355          8710.204 
+           ntotal              bic2             rmsea    rmsea.ci.lower 
+          301.000          8643.604             0.065             0.042 
+   rmsea.ci.upper      rmsea.pvalue               rmr        rmr_nomean 
+            0.088             0.137             0.081             0.081 
+             srmr       srmr_nomean             cn_05             cn_01 
+            0.063             0.063           203.580           240.101 
+              gfi              agfi              pgfi               mfi 
+            0.944             0.894             0.503             0.951 
+             ecvi 
+            0.319 
 > inspect(out, "impute")
 $convergenceRate
 target model   null model 
@@ -2559,8 +2728,8 @@ $targetFit$mplus
 
 $nullFit
 $nullFit$lmrr
-          F         df1         df2         p.F 
-29.60308013 24.00000000  1.87481293  0.03955364 
+         F        df1        df2        p.F 
+19.5948341 36.0000000  1.2498753  0.1270609 
 
 $nullFit$mr
         F df1     df2 pvalue
@@ -2604,6 +2773,16 @@ $nullFit$mplus
 > ##D summary(out3)
 > ##D inspect(out3, "fit")
 > ##D inspect(out3, "impute")
+> ##D 
+> ##D # Categorical variables
+> ##D dat <- simulateData(popModel, sample.nobs  = 200L)
+> ##D miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
+> ##D dat[miss.pat] <- NA
+> ##D out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, miArgs=list(ords = c("y1", "y2", "y3", "y4")))
+> ##D summary(out5)
+> ##D inspect(out5, "fit")
+> ##D inspect(out5, "impute")
+> ##D 
 > ## End(Not run)
 > 
 > 
@@ -2850,7 +3029,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  16.07 0.22 16.35 NA NA 
+Time elapsed:  24.23 0.26 25.24 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -10,6 +10,7 @@ findRMSEApowernested	findRMSEApowernested
 findRMSEAsamplesize	findRMSEAsamplesize
 findRMSEAsamplesizenested	findRMSEAsamplesizenested
 fitMeasuresMx	fitMeasuresMx
+fmi	fmi
 growth.auxiliary	auxiliary
 growth.mi	runMI
 impliedFactorCov	impliedFactorStat

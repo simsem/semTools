@@ -27,13 +27,13 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 			  
 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 			  
-fit <- cfa(HS.model, data=dat) 
+fit <- cfa(HS.model, data=dat, meanstructure=TRUE) 
 fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # Use lavaan script
 fitaux <- cfa.auxiliary(fit, aux="z", data=dat) # Use lavaan output
 
 # Example of multiple groups confirmatory factor analysis
 
-fitgroup <- cfa(HS.model, data=dat, group="school")
+fitgroup <- cfa(HS.model, data=dat, group="school", meanstructure=TRUE)
 fitgroupaux <- cfa.auxiliary(fitgroup, aux="z", data=dat, group="school")
 
 # Example of path analysis
@@ -42,7 +42,7 @@ mod <- ' x5 ~ x4
 x4 ~ x3
 x3 ~ x1 + x2'
 
-fitpath <- sem(mod, data=dat, fixed.x=FALSE) # fixed.x must be FALSE
+fitpath <- sem(mod, data=dat, fixed.x=FALSE, meanstructure=TRUE) # fixed.x must be FALSE
 fitpathaux <- sem.auxiliary(fitpath, aux="z", data=dat)
 
 # Example of full structural equation modeling
@@ -74,7 +74,7 @@ HS.model.cov <- ' visual  =~ x1 + x2 + x3
 			  textual ~ sex
 			  speed ~ sex'
 	  
-fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE) 
+fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
 fitcovaux <- cfa.auxiliary(fitcov, aux="z", data=dat)
 
 # Example of  Endogenous variable with single indicator 
@@ -82,7 +82,7 @@ HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               x7 ~ visual + textual'
  	  
-fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE) 
+fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
 fitcov2aux <- sem.auxiliary(fitcov2, aux="z", data=dat)
 
 # Multiple auxiliary variables
@@ -307,6 +307,49 @@ flush(stderr()); flush(stdout())
 
 
 cleanEx()
+nameEx("fmi")
+### * fmi
+
+flush(stderr()); flush(stdout())
+
+### Name: fmi
+### Title: Fraction of Missing Information.
+### Aliases: fmi
+
+### ** Examples
+
+library(Amelia)
+library(lavaan)
+
+modsim <- '
+f1 =~ 0.7*y1+0.7*y2+0.7*y3
+f2 =~ 0.7*y4+0.7*y5+0.7*y6
+f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+
+datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
+                       std.lv=TRUE, sample.nobs=c(200,200))
+randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+randomMiss2[,10] <- FALSE
+datsim[randomMiss2] <- NA
+datsimMI <- amelia(datsim,m=3,idvars="group")
+
+out1 <- fmi(datsimMI$imputations, exclude="group")
+out1
+                       
+out2 <- fmi(datsimMI$imputations, exclude="group", method="null")
+out2
+                       
+out3 <- fmi(datsimMI$imputations, varnames=c("y1","y2","y3","y4"))
+out3
+
+out4 <- fmi(datsimMI$imputations, group="group")
+out4
+
+
+
+
+cleanEx()
 nameEx("impliedFactorStat")
 ### * impliedFactorStat
 
@@ -397,7 +440,7 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 			  
 fit <- cfa(HS.model, data=dat) 
-fitaux <- auxiliary(fit, aux="z", data=dat, fun="cfa")
+fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa")
 
 
 
@@ -414,21 +457,21 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 ## Not run: 
-##D ## calling lisrel2lavaan without specifying the filename argument will open
-##D ## a file browser window with which a LISREL syntax file can be selected. 
-##D 
-##D ## any additional arguments to be passed to lavaan for data analysis can be
-##D ## specified normally. 
-##D 
-##D lisrel2lavaan(se="standard")
-##D ## lavaan output summary printed to screen
-##D ## lavaan fit object returned silently
-##D 
-##D ## manual file specification 
-##D 
-##D lisrel2lavaan(filename="myFile.LS8", se="standard")
-##D ## lavaan output summary printed to screen
-##D ## lavaan fit object returned silently
+##D 	## calling lisrel2lavaan without specifying the filename argument will  
+##D 	## open a file browser window with which LISREL syntax can be selected. 
+##D 	
+##D 	## any additional arguments to be passed to lavaan for data analysis can
+##D 	## be specified normally. 
+##D 	
+##D 	lisrel2lavaan(se="standard")
+##D 	## lavaan output summary printed to screen
+##D 	## lavaan fit object returned silently
+##D 	
+##D 	## manual file specification 
+##D 	
+##D 	lisrel2lavaan(filename="myFile.LS8", se="standard")
+##D 	## lavaan output summary printed to screen
+##D 	## lavaan fit object returned silently
 ## End(Not run)
 
 
@@ -1188,6 +1231,16 @@ inspect(out, "impute")
 ##D summary(out3)
 ##D inspect(out3, "fit")
 ##D inspect(out3, "impute")
+##D 
+##D # Categorical variables
+##D dat <- simulateData(popModel, sample.nobs  = 200L)
+##D miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
+##D dat[miss.pat] <- NA
+##D out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, miArgs=list(ords = c("y1", "y2", "y3", "y4")))
+##D summary(out5)
+##D inspect(out5, "fit")
+##D inspect(out5, "impute")
+##D 
 ## End(Not run)
 
 

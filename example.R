@@ -14,12 +14,10 @@ sourceDir <- function(path, trace = TRUE, ...) {
 
 sourceDirData <- function(path, trace = TRUE) {
      for (nm in list.files(path, pattern = "\\.[Rr]da$")) {
-		if(nm != "AllClass.R" & nm != "AllGenerics.R") {
         if(trace) cat(nm,":") 
-        load(file.path(path, nm))
+        load(paste0(path, nm), envir = .GlobalEnv)
         if(trace) cat("\n")
-		}
-     }
+	}
 }
 
 #get
@@ -269,12 +267,12 @@ HW.model <- ' visual  =~ c("c1", "c1")*x1 + NA*x1 + c("c2", "c2")*x2 + c("c3", "
 
 fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
 
-copy(fit)
-copy(fit, "mifit")
-copy(fit, "coef")
-copy(fit, "se")
-copy(fit, "samp")
-copy(fit, "fit")
+clipboard(fit)
+clipboard(fit, "mifit")
+clipboard(fit, "coef")
+clipboard(fit, "se")
+clipboard(fit, "samp")
+clipboard(fit, "fit")
 
 ################################ rmseaNested ##############################
 
@@ -311,9 +309,9 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 			  
 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 			  
-fit <- cfa(HS.model, data=dat) #, group="sex", meanstructure=TRUE)
-fitaux <- auxiliary(fit, data=dat, aux="z", fun="cfa")
-
+fit <- cfa(HS.model, data=dat, meanstructure=TRUE) #, group="sex", meanstructure=TRUE)
+fitaux <- auxiliary(fit, data=dat, aux="z", fun="cfa", missing="ml")
+	
 fitgroup <- cfa(HS.model, data=dat, group="school")
 fitgroupaux <- auxiliary(HS.model, data=dat, aux="z", group="school", fun="cfa")
 
@@ -354,7 +352,7 @@ HS.model.cov <- ' visual  =~ x1 + x2 + x3
 			  textual ~ sex
 			  speed ~ sex'
 	  
-fitcov <- sem(HS.model.cov, data=dat, fixed.x=FALSE) 
+fitcov <- sem(HS.model.cov, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
 as.data.frame(fitcov@ParTable)
 fitcovaux <- auxiliary(fitcov, aux="z", data=dat, fun="sem")
 
@@ -362,7 +360,7 @@ HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               x7 ~ visual + textual'
 	  
-fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE) 
+fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
 as.data.frame(fitcov2@ParTable)
 fitcov2aux <- auxiliary(fitcov2, aux="z", data=dat, fun="sem")
 
@@ -370,33 +368,73 @@ HS.model2 <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9'
 			  
-fit <- cfa(HS.model2, data=dat)
+fit <- cfa(HS.model2, data=dat, meanstructure=TRUE)
 fitaux <- auxiliary(fit, data=dat, aux="z", fun="cfa")
 cfa.auxiliary(HS.model2, data=dat, aux="z")
 
 HS.model2 <- ' visual  =~ x1 + x2 + x3
               speed   =~ x7 + x8 + x9'
-fit <- cfa(HS.model2, data=HolzingerSwineford1939)
+fit <- cfa(HS.model2, data=HolzingerSwineford1939, meanstructure=TRUE)
 fitaux <- auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5"), fun="cfa")
 
-n <- 1000
-x <- rnorm(n)
-y <- rnorm(n)
-z1 <- rnorm(n)
-z2 <- rnorm(n)  
+library(lavaan)
+library(semTools)
 
-x[sample(n,n/50)] = NA
+# model for generating data
+pop.model <- '
+f =~ 1*x1 + 1*x2 + 1*x3 + 1*x4
+f ~~ 1*f
+x1 ~~ 0.2*x1
+x2 ~~ 0.2*x2
+x3 ~~ 0.2*x3
+x4 ~~ 0.2*x4
 
-df <- data.frame(x, y, z1, z2)
+# auxiliary variable is correlated with uniqueness
+x1 + x2 + x3 + x4 ~~ 0.5*a
+a ~~ 1*a
+'
 
-# Works with numeric DV ...
-s1 <- sem("z1 ~ x+y
-x ~~ 0*z2", data=df, fixed.x=F,missing="FIML")
-summary(s1)
-s2 <- sem("z1 ~ x+y", data=df, fixed.x=F,missing="FIML")
-summary(s2)
-s3 <- sem.auxiliary("z1 ~ x+y", data=df,aux="z2")
-summary(s3)
+# analysis model for using auxiliary function in semTools
+model1 <- '
+f =~ x1 + x2 + x3 + x4
+'
+
+# analysis model for incorporating auxiliary variables using saturated correlates
+model2 <- '
+f =~ x1 + x2 + x3 + x4
+x1 + x2 + x3 + x4 ~~ a
+'
+
+# generate data
+set.seed(13243546)
+
+my.df <- simulateData(pop.model, sample.nobs=500)
+
+# 4 missing data patterns with no missing data for auxiliary variables
+miss.pat <- list( c(1,1,1,1,1),
+                  c(NA,1,1,1,1),
+                  c(1,NA,1,1,1),
+                  c(1,1,NA,1,1),
+                  c(1,1,1,NA,1) )
+
+# create a selection matrix for missing data
+selection <- do.call( rbind,
+                      sample( miss.pat, size=500, replace=TRUE, prob=c(0.6,
+                                                                       0.1,
+                                                                       0.1,
+                                                                       0.1,
+                                                                       0.1) ) )                     
+
+# generate missing data by multiplying data with selection matrix
+my.df <- my.df*selection
+
+# using auxiliary( ) from semTools
+fit1 <- cfa(model1, data=my.df, std.lv=TRUE, missing='fiml', meanstructure=TRUE)
+fit.aux <- cfa.auxiliary(fit1, aux='a', data=my.df, missing='fiml')
+fit.aux2 <- cfa.auxiliary(model1, aux='a', data=my.df, missing='fiml')
+
+# running saturated correlates model directly
+fit2 <- cfa(model2, data=my.df, std.lv=TRUE, missing='fiml')
 
 #################################### runMI function ###########################################
 
@@ -414,6 +452,12 @@ out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
 summary(out)
 inspect(out, "fit")
 inspect(out, "impute")
+standardizedSolution(out)
+
+outscaled <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all", estimator="mlm")
+summary(outscaled)
+inspect(outscaled, "fit")
+inspect(outscaled, "impute")
 
 ##Multiple group example
 HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
@@ -470,7 +514,61 @@ for(i in 1:5) {
 imputedData[[i]] <- complete(x=imp, action=i, include=FALSE) 
 }
   
-out <- runMI(model.syntax, data=imputedData, fun="growth")
+out4 <- runMI(model.syntax, data=imputedData, fun="growth")
+summary(out4)
+inspect(out4, "fit")
+inspect(out4, "impute")
+
+popModel <- "
+f1 =~ 0.7*y1 + 0.7*y2 + 0.7*y3 + 0.7*y4
+f1 ~~ 1*f1
+y1 | 0.5*t1
+y2 | 0.25*t1
+y3 | 0*t1
+y4 | -0.5*t1
+"
+
+analyzeModel <- "
+f1 =~ y1 + y2 + y3 + y4
+"
+
+dat <- simulateData(popModel, sample.nobs  = 200L)
+miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
+dat[miss.pat] <- NA
+out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, miArgs=list(ords = c("y1", "y2", "y3", "y4")))
+summary(out5)
+inspect(out5, "fit")
+inspect(out5, "impute")
+
+############### FMI function
+
+library(Amelia)
+library(lavaan)
+
+modsim <- '
+f1 =~ 0.7*y1+0.7*y2+0.7*y3
+f2 =~ 0.7*y4+0.7*y5+0.7*y6
+f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+
+datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
+                       std.lv=TRUE, sample.nobs=c(200,200))
+randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+randomMiss2[,10] <- FALSE
+datsim[randomMiss2] <- NA
+datsimMI <- amelia(datsim,m=3,idvars="group")
+
+out1 <- fmi(datsimMI$imputations, exclude="group")
+out1
+                       
+out2 <- fmi(datsimMI$imputations, exclude="group", method="null")
+out2
+                       
+out3 <- fmi(datsimMI$imputations, varnames=c("y1","y2","y3","y4"))
+out3
+
+out4 <- fmi(datsimMI$imputations, group="group")
+out4
 
 ########### Raykov's reliability
 

@@ -5,7 +5,7 @@ export(
 	moreFitIndices, miPowerFit, nullRMSEA, 
 	skew, kurtosis, mardiaSkew, mardiaKurtosis, 
 	orthogonalize, 
-	runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi, 
+	runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi, fmi,
 	plotRMSEApower, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize,
 	findRMSEApowernested, findRMSEAsamplesizenested, plotRMSEApowernested,
 	parcelAllocation, 

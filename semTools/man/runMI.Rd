@@ -39,7 +39,7 @@ Addition arguments for the multiple-imputation function. The arguments should be
 Package to be used for imputation. Currently these functions only support \code{"Amelia"} or \code{"mice"} for imputation. 
 }
  \item{chi}{
-The method to combine the chi-square. Can be one of the following: \code{"MR"} for the method proposed for Meng & Rubin (1992), \code{"Mplus"} for the method used in Mplus (Asparouhov & Muthen, 2010), \code{"LMRR"} for the method proposed by Li, Meng, Raghunathan, & Rubin (1991), and \code{"all"} to show the three methods in the output. The default is \code{"all"}. 
+The method to combine the chi-square. Can be one of the following: \code{"mr"} for the method proposed for Meng & Rubin (1992), \code{"mplus"} for the method used in Mplus (Asparouhov & Muthen, 2010), \code{"lmrr"} for the method proposed by Li, Meng, Raghunathan, & Rubin (1991),  \code{"all"} to show the three methods in the output, and \code{"none"} to not pool any chi-square values. The default is \code{"all"}. 
 }
  \item{seed}{
 	Random number seed to be used in imputations.
@@ -121,5 +121,15 @@ out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cf
 summary(out3)
 inspect(out3, "fit")
 inspect(out3, "impute")
+
+# Categorical variables
+dat <- simulateData(popModel, sample.nobs  = 200L)
+miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
+dat[miss.pat] <- NA
+out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, miArgs=list(ords = c("y1", "y2", "y3", "y4")))
+summary(out5)
+inspect(out5, "fit")
+inspect(out5, "impute")
+
 }
 }

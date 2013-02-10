@@ -26,6 +26,11 @@ lavaan.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="al
 runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", seed=12345, fun, ...) 
 {
 	set.seed(seed)
+	chi <- tolower(chi)
+	if(!(chi %in% c("none", "mplus", "mr", "lmrr", "all"))) {
+		stop("The chi argument should be one of the followings only: 'none, 'mr', 'lmrr', 'mplus', or 'all'.")
+	}
+	
 	imputed.data <- is.list(data) & (!is.data.frame(data))
 	imputed.l <- NULL
 	if (!imputed.data){		
@@ -46,7 +51,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	out <- c(out, list(...))
 	template <- do.call(fun, out)
 
-    imputed.results.l <- lapply(imputed.l, runlavaanMI, syntax=model, fun=fun, ...)
+    imputed.results.l <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=model, fun=fun, ...))
     
 	converged.l <- sapply(imputed.results.l, function(x) x@Fit@converged)
 	seAll <- sapply(imputed.results.l, function(x) x@Fit@se)
@@ -74,22 +79,11 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template@Fit@Mu.hat <- meanMuHat
 	
 	
-	
-	#x <- sum(unlist(lapply(inspect(fit, "se"), sum)))
-
-
-	
 	comb.results <- miPoolVector(t(coefs),t(se), m)
 	template@Fit@est <- comb.results$coef
 	template@Fit@se <- comb.results$se
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
-	# Do not need to change imputed.results.l@Model@GLIST because the methods from the lavaan object does not use that information
-	# It is used in standardize calculation.
-	#GLIST <- object@GLIST
 	template@Model <- imposeGLIST(template@Model, comb.results$coef, template@ParTable)
-    #ngroups        <- object@ngroups
-    #nmat           <- object@nmat
-    #representation <- object@representation
 	
 	fmi.results <- cbind(parameterEstimates(template)[,1:3], group=template@ParTable$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
 
@@ -97,14 +91,28 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	df <- fit[[1]]$df
 	chi1 <- sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat)
 
+	if(any(template@Data@ov$type == "ordered") | (length(fit) > 1)) {
+		if(chi=="all") chi <- "lmrr"
+		if(chi %in% c("mplus", "mr")) {
+			stop("The 'mplus' or 'mr' method for pooling chi-square values is not available with categorical variables.")
+		}
+	}
+	
+	chiScaled1 <- NULL
+	dfScaled <- NULL
+	if(length(fit) > 1) {
+		chiScaled1 <- sapply(imputed.results.l, function(x) x@Fit@test[[2]]$stat)
+		dfScaled <- fit[[2]]$df
+	}
+	
 	if(template@SampleStats@ngroups == 1) {
 		fit[[1]]$stat.group <- mean(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
 	} else {
 		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
 	}
 	nullModel <- partable(lavaan:::independence.model.fit(template))
-    null.results <- lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...)
-	
+    null.results <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...))
+
 	convergedNull.l <- sapply(null.results, function(x) x@Fit@converged)
 	seNullAll <- sapply(null.results, function(x) x@Fit@se)
 	convergedNull.l <- convergedNull.l & apply(seNullAll, 2, function(x) all(x >= 0))
@@ -115,6 +123,13 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	
 	chiNull <- sapply(null.results, function(x) x@Fit@test[[1]]$stat)
 	dfNull <- null.results[[1]]@Fit@test[[1]]$df
+	
+	chiNullScaled1 <- NULL
+	dfNullScaled <- NULL
+	if(length(fit) > 1) {
+		chiNullScaled1 <- sapply(null.results, function(x) x@Fit@test[[2]]$stat)
+		dfNullScaled <- null.results[[1]]@Fit@test[[2]]$df
+	}
 	
 	outNull <- list(model=nullModel, data=imputed.l[[1]], se="none", do.fit=FALSE)
 	outNull <- c(outNull, list(...))
@@ -133,29 +148,47 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	mrNull <- NULL
 	mplus <- NULL
 	mplusNull <- NULL
+	lmrrScaled <- NULL
+	lmrrScaledNull <- NULL
 	
-	if(chi %in% c("LMRR", "all")){
+	if(chi %in% c("lmrr", "all")){
 		lmrr <- lmrrPooledChi(chi1, df)
-		lmrrNull <- lmrrPooledChi(chiNull, df)
+		lmrrNull <- lmrrPooledChi(chiNull, dfNull)
 		fit[[1]]$stat <- as.numeric(lmrr[1] * lmrr[2])
 		fit[[1]]$pvalue <- as.numeric(lmrr[4])
 		fitNull[[1]]$stat <- as.numeric(lmrrNull[1] * lmrrNull[2])
 		fitNull[[1]]$pvalue <- as.numeric(lmrrNull[4])
+		
+		if(!is.null(chiScaled1)) {
+			lmrrScaled <- lmrrPooledChi(chiScaled1, dfScaled)
+			lmrrScaledNull <- lmrrPooledChi(chiNullScaled1, dfNullScaled)
+			fit[[2]] <- imputed.results.l[[1]]@Fit@test[[2]]
+			fit[[2]]$stat <- as.numeric(lmrrScaled[1] * lmrrScaled[2])
+			fit[[2]]$pvalue <- as.numeric(lmrrScaled[4])
+			fitNull[[2]] <- null.results[[1]]@Fit@test[[2]]
+			fitNull[[2]]$stat <- as.numeric(lmrrScaledNull[1] * lmrrScaledNull[2])
+			fitNull[[2]]$pvalue <- as.numeric(lmrrScaledNull[4])
+			template@Options$estimator <- imputed.results.l[[1]]@Options$estimator 
+			template@Options$test <- imputed.results.l[[1]]@Options$test 
+			templateNull@Options$estimator <- null.results[[1]]@Options$estimator 
+			templateNull@Options$test <- null.results[[1]]@Options$test 
+		}
 	}
 	
-	if(chi %in% c("Mplus", "MR", "all")){
+	if(chi %in% c("mplus", "mr", "all")){
 		mrplus <- mrplusPooledChi(template, imputed.l[converged.l], chi1, df, coef=comb.results$coef, m=m, fun=fun, ...)
 		mrplusNull <- mrplusPooledChi(templateNull, imputed.l[convergedNull.l], chiNull, dfNull, coef=comb.results.null$coef, m=mNull, fun=fun, par.sat=satPartable(template), ...)
 		
-		if(chi %in% c("MR", "all")){
+		if(chi %in% c("mr", "all")){
 			mr <- mrPooledChi(mrplus[1], mrplus[2], mrplus[3], mrplus[4])
 			mrNull <- mrPooledChi(mrplusNull[1], mrplusNull[2], mrplusNull[3], mrplusNull[4])
+			
 			fit[[1]]$stat <- as.numeric(mr[1] * mr[2])
 			fit[[1]]$pvalue <- as.numeric(mr[4])
 			fitNull[[1]]$stat <- as.numeric(mrNull[1] * mrNull[2])
 			fitNull[[1]]$pvalue <- as.numeric(mrNull[4])
 		}
-		if(chi %in% c("Mplus", "all")){
+		if(chi %in% c("mplus", "all")){
 			mplus <- mplusPooledChi(mrplus[1], mrplus[3], mrplus[4])
 			mplusNull <- mplusPooledChi(mrplusNull[1], mrplusNull[3], mrplusNull[4])
 			fit[[1]]$stat <- as.numeric(mplus[1])
@@ -165,12 +198,14 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		}
 	}
 	template@Fit@test <- fit
+	template@Fit@npar <- imputed.results.l[[1]]@Fit@npar
+	template@Options <- imputed.results.l[[1]]@Options
 	templateNull@Fit@test <- fitNull
 	result <- as(template, "lavaanStar")
     ## HACK! YR
     templateNull@Fit@converged <- TRUE ### ! to trick fitMeasures
     ## 
-	fitVec <- fitMeasures(templateNull)
+	notused <- capture.output(fitVec <- suppressWarnings(fitMeasures(templateNull)))
 	name <- names(fitVec)
 	fitVec <- as.vector(fitVec)
 	names(fitVec) <- name
@@ -184,7 +219,13 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	summaryImputed[[2]] <- fmi.results
 	summaryImputed[[3]] <- list(lmrr = lmrr, mr = mr, mplus = mplus)
 	summaryImputed[[4]] <- list(lmrr = lmrrNull, mr = mrNull, mplus = mplusNull)
-	names(summaryImputed) <- c("convergenceRate", "fractionMissing", "targetFit", "nullFit")
+	if(!is.null(lmrrScaled)) {
+		summaryImputed[[5]] <- list(lmrr = lmrrScaled)
+		summaryImputed[[6]] <- list(lmrr = lmrrScaledNull)
+		names(summaryImputed) <- c("convergenceRate", "fractionMissing", "targetFit", "nullFit", "targetFit.scaled", "nullFit.scaled")
+	} else {
+		names(summaryImputed) <- c("convergenceRate", "fractionMissing", "targetFit", "nullFit")
+	}
 	result@imputed <- summaryImputed
 
 	return(result)
@@ -418,7 +459,7 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat
 	comb.alt2 <- lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...)	
     comb.alt2 <- lapply(comb.alt2, forceTest)
 	fit.alt2 <- sapply(comb.alt2, function(x) inspect(x, "fit")["logl"])
-  
+  	
 	chinew <- cbind(fit.sat2, fit.alt2, (fit.sat2-fit.alt2)*2)
 	chimean <- mean(chinew[,3])
 	

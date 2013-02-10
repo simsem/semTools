@@ -3,7 +3,7 @@
 ##01/08/13
 ##file path/name of LS8 LISREL syntax file
 
-lisrel2lavaan <- function(filename=NULL, analyze=TRUE, ...){
+lisrel2lavaan <- function(filename=NULL, analyze=TRUE, silent=FALSE, ...){
 
   require(lavaan)
   
@@ -1594,8 +1594,12 @@ if(ng>1){
         macs <- F
       }
       fit <- lavaan(model=parTable,data=data$ra,sample.cov=data$cm,sample.mean=data$me,estimator=estimator,sample.nobs=n,...)
-      summary(fit, standardized=TRUE, fit.measures=TRUE)
-      invisible(fit)
+	  if(silent==F){
+		summary(fit, standardized=TRUE, fit.measures=TRUE)
+		invisible(fit)
+	  }else{
+		return(fit)
+	  }
     }
   }else{
     invisible(parTable)

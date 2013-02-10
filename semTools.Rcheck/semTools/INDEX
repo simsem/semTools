@@ -18,6 +18,7 @@ findRMSEAsamplesizenested
                         Find sample size given a power in nested model
                         comparison
 fitMeasuresMx           Find fit measures from an MxModel result
+fmi                     Fraction of Missing Information.
 impliedFactorStat       Calculate the model-implied factor means and
                         covariance matrix.
 indProd                 Make products of indicators using no centering,

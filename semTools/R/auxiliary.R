@@ -54,13 +54,12 @@ lavaan.auxiliary <- function(model, aux, ...) {
 auxiliary <- function(model, aux, fun, ...) {
 	args <- list(...)
 	args$fixed.x <- FALSE
+	args$missing <- "fiml"
 	
 	if(is(model, "lavaan")) {
+		if(!fit@Options$meanstructure) stop("The lavaan fitted model must evaluate the meanstructure. Please re-fit the lavaan object again with 'meanstructure=TRUE'")
 		model <- model@ParTable
-	}
-	
-	# Check whether the model is a parameter table
-	if(!(is.list(model) && ("lhs" %in% names(model)))) {
+	} else if(!(is.list(model) && ("lhs" %in% names(model)))) {
 		fit <- do.call(fun, c(list(model=model, do.fit=FALSE), args))
 		model <- fit@ParTable
 	}
@@ -180,10 +179,11 @@ nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
 
 
 fitMeasuresLavaanStar <- function(object) {
-	result <- getMethod("inspect", "lavaan")(object, what="fit")
+	notused <- capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit")))
 	result[c("baseline.chisq", "baseline.df", "baseline.pvalue")] <- object@nullfit[c("chisq", "df", "pvalue")]
 		
-    if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
+    if(object@Options$test %in% c("satorra.bentler", "yuan.bentler", 
+                   "mean.var.adjusted", "scaled.shifted")) {
         scaled <- TRUE
     } else {
         scaled <- FALSE
@@ -198,32 +198,176 @@ fitMeasuresLavaanStar <- function(object) {
 	df.null <- object@nullfit["df"]
 	X2 <- result["chisq"]
 	df <- result["df"]
-	result["cfi"] <- ( 1 - max(c(X2 - df,0)) / 
-                                    max( c(X2-df, X2.null-df.null, 0) ) 
-                              )
-	if(df > 0) {
-		result["tli"] <- (X2.null/df.null - X2/df)/(X2.null/df.null - 1)
-	} else {
-		result["tli"] <- 1
+	
+	# CFI
+	if("cfi" %in% names(result)) {
+		t1 <- max( c(X2 - df, 0) )
+		t2 <- max( c(X2 - df, X2.null - df.null, 0) )
+		if(t1 == 0 && t2 == 0) {
+			result["cfi"] <- 1
+		} else {
+			result["cfi"] <- 1 - t1/t2
+		}
 	}
+	
+	# TLI
+	if("tli" %in% names(result)) {
+		if(df > 0) {
+			t1 <- X2.null/df.null - X2/df
+			t2 <- X2.null/df.null - 1
+			# note: TLI original formula was in terms of fx/df, not X2/df
+			# then, t1 <- fx_0/df.null - fx/df
+			# t2 <- fx_0/df.null - 1/N (or N-1 for wishart)
+			if(t1 < 0 && t2 < 0) {
+				TLI <- 1
+			} else {
+				TLI <- t1/t2
+			}
+		} else {
+		   TLI <- 1
+		}
+		result["tli"] <- result["nnfi"] <- TLI
+	}
+
+	# RFI
+	if("rfi" %in% names(result)) {
+		if(df > 0) {
+			t1 <- X2.null/df.null - X2/df
+			t2 <- X2.null/df.null
+			if(t1 < 0 || t2 < 0) {
+				RLI <- 1
+			} else {
+				RLI <- t1/t2
+			}
+		} else {
+		   RLI <- 1
+		}
+		result["rfi"] <- RLI
+	}
+	
+	# NFI
+	if("nfi" %in% names(result)) {
+		t1 <- X2.null - X2
+		t2 <- X2.null
+		NFI <- t1/t2
+		result["nfi"] <- NFI
+	}
+	
+	# PNFI
+	if("pnfi" %in% names(result)) {
+		t1 <- X2.null - X2
+		t2 <- X2.null
+		PNFI <- (df/df.null) * t1/t2
+		result["pnfi"] <- PNFI
+	}
+	
+	# IFI
+	if("ifi" %in% names(result)) {
+		t1 <- X2.null - X2
+		t2 <- X2.null - df
+		if(t2 < 0) {
+			IFI <- 1
+		} else {
+			IFI <- t1/t2
+		}
+		result["ifi"] <- IFI
+	}
+	
+	# RNI
+	if("rni" %in% names(result)) {
+		t1 <- X2 - df
+		t2 <- X2.null - df.null
+		if(t1 < 0 || t2 < 0) {
+			RNI <- 1
+		} else {
+			RNI <- 1 - t1/t2
+		}
+		result["rni"] <- RNI
+	}
+	
 	if(scaled) {
 		X2.scaled <- result["chisq.scaled"]
 		df.scaled <- result["df.scaled"]
 		X2.null.scaled <- object@nullfit["chisq.scaled"]
 		df.null.scaled <- object@nullfit["df.scaled"]
-		result["cfi.scaled"] <- 
-			( 1 - max( c(X2.scaled - df.scaled,0)) / 
-				  max( c(X2.scaled - df.scaled, 
-						 X2.null.scaled - df.null.scaled, 0) ) 
-			)
-		if(df > 0) {
-			result["tli.scaled"] <- (X2.null.scaled/df.null.scaled - 
-					X2.scaled/df.scaled) / 
-				   (X2.null.scaled/df.null.scaled - 1)
-		} else {
-			result["tli.scaled"] <- 1
+		
+		if("cfi.scaled" %in% names(result)) {
+			t1 <- max( c(X2.scaled - df.scaled, 0) )
+			t2 <- max( c(X2.scaled - df.scaled,
+						 X2.null.scaled - df.null.scaled, 0) )
+			if(t1 == 0 && t2 == 0) {
+				result["cfi.scaled"] <- 1
+			} else {
+				result["cfi.scaled"] <- 1 - t1/t2
+			}
+		}
+		
+		if("tli.scaled" %in% names(result)) {
+			if(df > 0) {
+				t1 <- X2.null.scaled/df.null.scaled - X2.scaled/df.scaled
+				t2 <- X2.null.scaled/df.null.scaled - 1
+				if(t1 < 0 && t2 < 0) {
+					TLI <- 1
+				} else {
+					TLI <- t1/t2
+				}
+			} else {
+				TLI <- 1
+			}
+			result["tli.scaled"] <- result["nnfi.scaled"] <- TLI
+		}
+		
+		if("rfi.scaled" %in% names(result)) {
+			if(df > 0) {
+				t1 <- X2.null.scaled/df.null.scaled - X2.scaled/df.scaled
+				t2 <- X2.null.scaled/df.null.scaled
+				if(t1 < 0 || t2 < 0) {
+					RLI <- 1
+				} else {
+					RLI <- t1/t2
+				}
+			} else {
+			   RLI <- 1
+			}
+			result["rfi.scaled"] <- RLI
+		}
+		
+		if("nfi.scaled" %in% names(result)) {
+			t1 <- X2.null.scaled - X2.scaled
+			t2 <- X2.null.scaled
+			NFI <- t1/t2
+			result["nfi.scaled"] <- NFI
+		}
+		
+		if("pnfi.scaled" %in% names(result)) {
+			t1 <- X2.null.scaled - X2.scaled
+			t2 <- X2.null.scaled
+			PNFI <- (df/df.null) * t1/t2
+			result["pnfi.scaled"] <- PNFI
+		}
+		
+		if("ifi.scaled" %in% names(result)) {
+			t1 <- X2.null.scaled - X2.scaled
+			t2 <- X2.null.scaled
+			if(t2 < 0) {
+				IFI <- 1
+			} else {
+				IFI <- t1/t2
+			}
+			result["ifi.scaled"] <- IFI
+		}
+		
+		if("rni.scaled" %in% names(result)) {
+			t1 <- X2.scaled - df.scaled
+			t2 <- X2.null.scaled - df.null.scaled
+			t2 <- X2.null - df.null
+			if(t1 < 0 || t2 < 0) {
+				RNI <- 1
+			} else {
+				RNI <- 1 - t1/t2
+			}
+			result["rni.scaled"] <- RNI
 		}
 	} 
-	return(result)
-		
+	result	
 }

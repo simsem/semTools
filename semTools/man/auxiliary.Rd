@@ -8,7 +8,7 @@
 	Analyzing data with full-information maximum likelihood with auxiliary variables
 }
 \description{
-	Analyzing data with full-information maximum likelihood with auxiliary variables. The techniques used to account for auxiliary variables are both extra-dependent-variables and saturated-correlates approaches (Enders, 2008). The extra-dependent-variables approach is used for all single variables in the model (such as covariates or single-indicator dependent varaible) For variables that are belong to a multiple-indicator factor, the saturated-correlates approach is used. Note that all covariates are treated as endogenous varaibles in this model (fixed.x = FALSE) so multivariate normality is assumed for the covariates.
+	Analyzing data with full-information maximum likelihood with auxiliary variables. The techniques used to account for auxiliary variables are both extra-dependent-variables and saturated-correlates approaches (Enders, 2008). The extra-dependent-variables approach is used for all single variables in the model (such as covariates or single-indicator dependent varaible) For variables that are belong to a multiple-indicator factor, the saturated-correlates approach is used. Note that all covariates are treated as endogenous varaibles in this model (fixed.x = FALSE) so multivariate normality is assumed for the covariates. CAUTION: 1. this function will automatically change the missing data handling method to full-information maximum likelihood 2. this function is still not applicable for categorical variables.
 }
 \usage{
 auxiliary(model, aux, fun, ...)
@@ -19,7 +19,7 @@ lavaan.auxiliary(model, aux, ...)
 }
 \arguments{
   \item{model}{
-	The \code{lavaan} object, the parameter table, or lavaan script. 
+	The \code{lavaan} object, the parameter table, or lavaan script. If the \code{lavaan} object is provided, the \code{lavaan} object must be evaluated with mean structure.
 }
   \item{aux}{
 	The list of auxiliary variable
@@ -52,13 +52,13 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 			  
 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 			  
-fit <- cfa(HS.model, data=dat) 
+fit <- cfa(HS.model, data=dat, meanstructure=TRUE) 
 fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # Use lavaan script
 fitaux <- cfa.auxiliary(fit, aux="z", data=dat) # Use lavaan output
 
 # Example of multiple groups confirmatory factor analysis
 
-fitgroup <- cfa(HS.model, data=dat, group="school")
+fitgroup <- cfa(HS.model, data=dat, group="school", meanstructure=TRUE)
 fitgroupaux <- cfa.auxiliary(fitgroup, aux="z", data=dat, group="school")
 
 # Example of path analysis
@@ -67,7 +67,7 @@ mod <- ' x5 ~ x4
 x4 ~ x3
 x3 ~ x1 + x2'
 
-fitpath <- sem(mod, data=dat, fixed.x=FALSE) # fixed.x must be FALSE
+fitpath <- sem(mod, data=dat, fixed.x=FALSE, meanstructure=TRUE) # fixed.x must be FALSE
 fitpathaux <- sem.auxiliary(fitpath, aux="z", data=dat)
 
 # Example of full structural equation modeling
@@ -99,7 +99,7 @@ HS.model.cov <- ' visual  =~ x1 + x2 + x3
 			  textual ~ sex
 			  speed ~ sex'
 	  
-fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE) 
+fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
 fitcovaux <- cfa.auxiliary(fitcov, aux="z", data=dat)
 
 # Example of  Endogenous variable with single indicator 
@@ -107,7 +107,7 @@ HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               x7 ~ visual + textual'
  	  
-fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE) 
+fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
 fitcov2aux <- sem.auxiliary(fitcov2, aux="z", data=dat)
 
 # Multiple auxiliary variables

@@ -42,5 +42,5 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
 			  
 fit <- cfa(HS.model, data=dat) 
-fitaux <- auxiliary(fit, aux="z", data=dat, fun="cfa")
+fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa")
 }
