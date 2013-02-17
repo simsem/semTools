@@ -1,6 +1,6 @@
 ##lisrel2lavaan
 ##Corbin Quick
-##01/08/13
+##02/12/13
 ##file path/name of LS8 LISREL syntax file
 
 lisrel2lavaan <- function(filename=NULL, analyze=TRUE, silent=FALSE, ...){
@@ -1157,8 +1157,15 @@ doc<-lapply(doc,fixLazilyWrittenSyntax)
           x
         }
       }
+      
+      
 
       ob <- lapply(ob, correctPosition)
+      
+      if(any(name==c("al","ka","tx","ty"))){
+	ROW <- COL
+	COL <- rep("", length(ROW))
+      }
 
       for(i in 1:ncol(ob$start)){
         non <- 1:nrow(ob$start)
@@ -1187,7 +1194,10 @@ doc<-lapply(doc,fixLazilyWrittenSyntax)
         ustart<-as.character(as.numeric.s(ustart)-99)
         ustart[is.na(ustart)]<-"NA"
       }
-      
+      if(any(name==c("al","ka","tx","ty"))){
+	lhs <- rhs
+	rhs <- rep("", length(lhs))
+      }
       data.frame(lhs,op,rhs,user,group,free,ustart,exo,label,eq.id,unco)
       
     }else{
@@ -1593,7 +1603,8 @@ if(ng>1){
       } else {
         macs <- F
       }
-      fit <- lavaan(model=parTable,data=data$ra,sample.cov=data$cm,sample.mean=data$me,estimator=estimator,sample.nobs=n,...)
+#      return(parTable)
+	fit <- lavaan(model=parTable,data=data$ra,sample.cov=data$cm,sample.mean=data$me,estimator=estimator,sample.nobs=n,...)
 	  if(silent==F){
 		summary(fit, standardized=TRUE, fit.measures=TRUE)
 		invisible(fit)

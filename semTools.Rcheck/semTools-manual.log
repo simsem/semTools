@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.12.18)  10 FEB 2013 11:54
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.12.18)  17 FEB 2013 00:44
 entering extended mode
-**C:/Users/sunthud/AppData/Local/Temp/RtmpwhMB9C/Rd2pdf25185f4b432f/Rd2.tex
-(C:/Users/sunthud/AppData/Local/Temp/RtmpwhMB9C/Rd2pdf25185f4b432f/Rd2.tex
+**C:/Users/sunthud/AppData/Local/Temp/RtmpqsaIVz/Rd2pdf262c36d23d9f/Rd2.tex
+(C:/Users/sunthud/AppData/Local/Temp/RtmpqsaIVz/Rd2pdf262c36d23d9f/Rd2.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -618,7 +618,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\sunthud\AppData\Local\Temp\RtmpwhMB9C\Rd2pdf25185f4b432f\Rd2.aux)
+(C:\Users\sunthud\AppData\Local\Temp\RtmpqsaIVz\Rd2pdf262c36d23d9f\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -673,8 +673,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\sunthud\AppData\Local\Temp\RtmpwhMB9C\Rd2pdf25185f4b432f\Rd2.out)
-(C:\Users\sunthud\AppData\Local\Temp\RtmpwhMB9C\Rd2pdf25185f4b432f\Rd2.out)
+(C:\Users\sunthud\AppData\Local\Temp\RtmpqsaIVz\Rd2pdf262c36d23d9f\Rd2.out)
+(C:\Users\sunthud\AppData\Local\Temp\RtmpqsaIVz\Rd2pdf262c36d23d9f\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -694,7 +694,7 @@ LaTeX Font Info:    Try loading font information for T1+phv on input line 30.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\sunthud\AppData\Local\Temp\RtmpwhMB9C\Rd2pdf25185f4b432f\Rd2.toc
+(C:\Users\sunthud\AppData\Local\Temp\RtmpqsaIVz\Rd2pdf262c36d23d9f\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -1038,7 +1038,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [69]
-(C:\Users\sunthud\AppData\Local\Temp\RtmpwhMB9C\Rd2pdf25185f4b432f\Rd2.ind
+(C:\Users\sunthud\AppData\Local\Temp\RtmpqsaIVz\Rd2pdf262c36d23d9f\Rd2.ind
 [70]
 
 LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
@@ -1050,7 +1050,7 @@ LaTeX Font Warning: Font shape `T1/fi4/m/it' undefined
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3541.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 3541.
 
-(C:\Users\sunthud\AppData\Local\Temp\RtmpwhMB9C\Rd2pdf25185f4b432f\Rd2.aux)
+(C:\Users\sunthud\AppData\Local\Temp\RtmpqsaIVz\Rd2pdf262c36d23d9f\Rd2.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 3541.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 3541.
 

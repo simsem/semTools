@@ -33,7 +33,7 @@ This is lavaan 0.5-11
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.3-0
+This is semTools 0.3-1
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -404,9 +404,11 @@ Warning in estimateVCOV(lavaanModel, samplestats = lavaanSampleStats, options = 
 > 
 > library(Amelia)
 Loading required package: foreign
+Loading required package: Rcpp
+Loading required package: RcppArmadillo
 ## 
 ## Amelia II: Multiple Imputation
-## (Version 1.6.4, built: 2012-12-17)
+## (Version 1.7, built: 2013-02-10)
 ## Copyright (C) 2005-2013 James Honaker, Gary King and Matthew Blackwell
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
@@ -426,15 +428,15 @@ Loading required package: foreign
 > datsimMI <- amelia(datsim,m=3,idvars="group")
 -- Imputation 1 --
 
- 1  2  3  4  5  6  7  8 
+  1  2  3  4  5  6  7  8
 
 -- Imputation 2 --
 
- 1  2  3  4  5  6  7  8 
+  1  2  3  4  5  6  7  8
 
 -- Imputation 3 --
 
- 1  2  3  4  5  6  7  8 
+  1  2  3  4  5  6  7  8
 
 > 
 > out1 <- fmi(datsimMI$imputations, exclude="group")
@@ -561,7 +563,8 @@ $Means
 > 
 > cleanEx()
 
-detaching 'package:Amelia', 'package:foreign'
+detaching 'package:Amelia', 'package:RcppArmadillo', 'package:Rcpp',
+  'package:foreign'
 
 > nameEx("impliedFactorStat")
 > ### * impliedFactorStat
@@ -2602,9 +2605,11 @@ omega3 0.6120051 0.8850612 0.6858419
 > out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
 Loading required package: Amelia
 Loading required package: foreign
+Loading required package: Rcpp
+Loading required package: RcppArmadillo
 ## 
 ## Amelia II: Multiple Imputation
-## (Version 1.6.4, built: 2012-12-17)
+## (Version 1.7, built: 2013-02-10)
 ## Copyright (C) 2005-2013 James Honaker, Gary King and Matthew Blackwell
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
@@ -2789,7 +2794,8 @@ $nullFit$mplus
 > 
 > cleanEx()
 
-detaching 'package:Amelia', 'package:foreign'
+detaching 'package:Amelia', 'package:RcppArmadillo', 'package:Rcpp',
+  'package:foreign'
 
 > nameEx("saturateMx")
 > ### * saturateMx
@@ -3029,7 +3035,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  24.23 0.26 25.24 NA NA 
+Time elapsed:  22.32 0.2 23.01 NA NA 
 > grDevices::dev.off()
 null device 
           1 
