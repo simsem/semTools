@@ -58,3 +58,4 @@ splitSample	splitSample
 standardizeMx	standardizeMx
 summary,lavaanStar-method	lavaanStar-class
 tukeySEM	tukeySEM
+wald	wald

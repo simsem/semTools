@@ -22,5 +22,6 @@ export(
 	impliedFactorMean, impliedFactorCov, impliedFactorStat,
 	tukeySEM,
 	nullMx, saturateMx, fitMeasuresMx, standardizeMx,
-	lisrel2lavaan
+	lisrel2lavaan,
+	wald
 )

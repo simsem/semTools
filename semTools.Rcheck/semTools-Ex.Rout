@@ -1,6 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
+R version 2.15.3 (2013-03-01) -- "Security Blanket"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i386-w64-mingw32/i386 (32-bit)
 
@@ -29,11 +29,11 @@ Loading required package: boot
 Loading required package: mnormt
 Loading required package: pbivnorm
 Loading required package: quadprog
-This is lavaan 0.5-11
+This is lavaan 0.5-12
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.3-1
+This is semTools 0.3-2
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -123,11 +123,6 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 +               speed   =~ x7 + x8 + x9'
 > fit <- cfa(HS.model2, data=HolzingerSwineford1939)
 > fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5")) 
-Error in solve.default(E) : 
-  Lapack routine dgesv: system is exactly singular: U[14,14] = 0
-Warning in estimateVCOV(lavaanModel, samplestats = lavaanSampleStats, options = lavaanOptions,  :
-  lavaan WARNING: could not compute standard errors!
-
 > 
 > 
 > 
@@ -1768,7 +1763,7 @@ Warning in plotRMSEAdist(rmsea = c(0.05, 0.08), n = 200, df = 20, ptile = 0.95, 
 > 
 > fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC2way)
-lavaan (0.5-11) converged normally after  53 iterations
+lavaan (0.5-12) converged normally after  53 iterations
 
   Number of observations                         10000
 
@@ -1906,7 +1901,7 @@ $SimpleSlope
 > 
 > fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC2way)
-lavaan (0.5-11) converged normally after  53 iterations
+lavaan (0.5-12) converged normally after  53 iterations
 
   Number of observations                         10000
 
@@ -2066,7 +2061,7 @@ $SimpleSlope
 > 
 > fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC3way)
-lavaan (0.5-11) converged normally after 104 iterations
+lavaan (0.5-12) converged normally after 104 iterations
 
   Number of observations                          1000
 
@@ -2316,7 +2311,7 @@ $SimpleSlope
 > 
 > fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC3way)
-lavaan (0.5-11) converged normally after 107 iterations
+lavaan (0.5-12) converged normally after 107 iterations
 
   Number of observations                          1000
 
@@ -2614,7 +2609,7 @@ Loading required package: RcppArmadillo
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
 > summary(out)
-lavaan (0.5-11) converged normally after   3 iterations
+lavaan (0.5-12) converged normally after   3 iterations
 
   Number of observations                           301
 
@@ -3032,10 +3027,65 @@ skew (g1)        se         z         p
 > 
 > 
 > 
+> cleanEx()
+> nameEx("wald")
+> ### * wald
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: wald
+> ### Title: Calculate multivariate Wald statistics
+> ### Aliases: wald
+> 
+> ### ** Examples
+> 
+> # Test the difference in factor loadings
+> HS.model <- ' visual  =~ x1 + con1*x2 + con1*x3
++               textual =~ x4 + x5 + x6
++               speed   =~ x7 + con2*x8 + con2*x9 '
+> 
+> fit <- cfa(HS.model, data=HolzingerSwineford1939)
+> wald(fit, "con2 - con1")
+   chisq       df        p 
+8.949581 1.000000 0.002775 
+> 
+> # Simultaneously test the difference in the influences 
+> # of x1 and x2 on intercept and slope
+> model.syntax <- '
++     i =~ 1*t1 + 1*t2 + 1*t3 + 1*t4
++     s =~ 0*t1 + 1*t2 + 2*t3 + 3*t4
++     i ~ x1 + x2
++     s ~ x1 + x2
++     t1 ~ c1
++     t2 ~ c2
++     t3 ~ c3
++     t4 ~ c4
++ '
+> 
+> fit2 <- growth(model.syntax, data=Demo.growth)
+> wald.syntax <- '
++ 	i~x1 - i~x2
++ 	1/2*s~x1 - 1/2*s~x2
++ '
+> wald(fit2, wald.syntax)
+   chisq       df        p 
+34.01621  2.00000  0.00000 
+> 
+> # Mplus example of MODEL TEST
+> model3 <- ' f1  =~ x1 + p2*x2 + p3*x3 + p4*x4 + p5*x5 + p6*x6
++ 			p4 == 2*p2'
+> 
+> fit3 <- cfa(model3, data=HolzingerSwineford1939)
+> wald(fit3, "p3; p6 - 0.5*p5")
+   chisq       df        p 
+34.05549  2.00000  0.00000 
+> 
+> 
+> 
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  22.32 0.2 23.01 NA NA 
+Time elapsed:  22.82 0.2 24.22 NA NA 
 > grDevices::dev.off()
 null device 
           1 

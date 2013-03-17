@@ -274,31 +274,6 @@ clipboard(fit, "se")
 clipboard(fit, "samp")
 clipboard(fit, "fit")
 
-################################ rmseaNested ##############################
-
-# plotPower
-# plotDist
-# findPower
-# findDist
-# equiPower
-
-
-################################# group allocation power #################
-
-
-
-################################### Transcribe code ###################
-
-library(lavaan)
-HS.model <- ' visual  =~ x1 + x2 + x3
-              textual =~ x4 + x5 + x6
-              speed   =~ x7 + x8 + x9 '
-
-fit <- cfa(HS.model, data=HolzingerSwineford1939)
-parTable(fit)
-
-
-
 ########### Auxiliary
 
 library(lavaan)
@@ -650,3 +625,41 @@ fit2 <- cfa(HS.model, data=HolzingerSwineford1939, group="school")
 impliedFactorStat(fit2)
 impliedFactorMean(fit2)
 impliedFactorCov(fit2)
+
+############# Multivariate Wald Test
+
+HS.model <- ' visual  =~ x1 + con1*x2 + con1*x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + con2*x8 + con2*x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+wald(fit, "con2 - con1")
+
+model.syntax <- '
+  # intercept and slope with fixed coefficients
+    i =~ 1*t1 + 1*t2 + 1*t3 + 1*t4
+    s =~ 0*t1 + 1*t2 + 2*t3 + 3*t4
+
+  # regressions
+    i ~ x1 + x2
+    s ~ x1 + x2
+
+  # time-varying covariates
+    t1 ~ c1
+    t2 ~ c2
+    t3 ~ c3
+    t4 ~ c4
+'
+
+fit2 <- growth(model.syntax, data=Demo.growth)
+wald.syntax <- '
+i~x1 - i~x2
+1/2*s~x1 - 1/2*s~x2
+'
+wald(fit2, wald.syntax)
+
+model3 <- ' f1  =~ x1 + p2*x2 + p3*x3 + p4*x4 + p5*x5 + p6*x6
+			  p4 == 2*p2'
+
+fit3 <- cfa(model3, data=HolzingerSwineford1939)
+wald(fit3, "p3; p6 - 0.5*p5")

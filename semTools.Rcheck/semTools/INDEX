@@ -70,3 +70,4 @@ splitSample             Randomly Split a Data Set into Halves
 standardizeMx           Find standardized estimates for OpenMx output
 tukeySEM                Tukey's WSD post-hoc test of means for unequal
                         variance and sample size
+wald                    Calculate multivariate Wald statistics

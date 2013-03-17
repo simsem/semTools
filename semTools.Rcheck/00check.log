@@ -1,10 +1,10 @@
 * using log directory 'C:/Users/sunthud/Dropbox/semTools/semTools.Rcheck'
-* using R version 2.15.2 (2012-10-26)
+* using R version 2.15.3 (2013-03-01)
 * using platform: i386-w64-mingw32 (32-bit)
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'semTools' version '0.3-1'
+* this is package 'semTools' version '0.3-2'
 * checking CRAN incoming feasibility ... OK
 Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking package namespace information ... OK
@@ -29,6 +29,7 @@ Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking whether the package can be unloaded cleanly ... OK
 * checking whether the namespace can be loaded with stated dependencies ... OK
 * checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
 * checking for unstated dependencies in R code ... OK
 * checking S3 generic/method consistency ... OK
 * checking replacement functions ... OK

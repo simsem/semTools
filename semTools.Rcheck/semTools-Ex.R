@@ -1436,6 +1436,55 @@ tukeySEM(3.96, 2.94, 0.62, 1.07, 465, 64, 3)
 
 
 
+cleanEx()
+nameEx("wald")
+### * wald
+
+flush(stderr()); flush(stdout())
+
+### Name: wald
+### Title: Calculate multivariate Wald statistics
+### Aliases: wald
+
+### ** Examples
+
+# Test the difference in factor loadings
+HS.model <- ' visual  =~ x1 + con1*x2 + con1*x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + con2*x8 + con2*x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+wald(fit, "con2 - con1")
+
+# Simultaneously test the difference in the influences 
+# of x1 and x2 on intercept and slope
+model.syntax <- '
+    i =~ 1*t1 + 1*t2 + 1*t3 + 1*t4
+    s =~ 0*t1 + 1*t2 + 2*t3 + 3*t4
+    i ~ x1 + x2
+    s ~ x1 + x2
+    t1 ~ c1
+    t2 ~ c2
+    t3 ~ c3
+    t4 ~ c4
+'
+
+fit2 <- growth(model.syntax, data=Demo.growth)
+wald.syntax <- '
+	i~x1 - i~x2
+	1/2*s~x1 - 1/2*s~x2
+'
+wald(fit2, wald.syntax)
+
+# Mplus example of MODEL TEST
+model3 <- ' f1  =~ x1 + p2*x2 + p3*x3 + p4*x4 + p5*x5 + p6*x6
+			p4 == 2*p2'
+
+fit3 <- cfa(model3, data=HolzingerSwineford1939)
+wald(fit3, "p3; p6 - 0.5*p5")
+
+
+
 ### * <FOOTER>
 ###
 cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
