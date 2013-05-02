@@ -1,0 +1,21 @@
+imposeStart <- function(out, expr, silent = TRUE) {
+	if(!is(out, "lavaan")) stop("The first argument of the function must be a lavaan output.")
+	template2 <- template <- substitute(expr)
+	template2$do.fit <- FALSE
+	model <- eval(expr = template2, enclos = parent.frame())
+	ptmodel <- parTable(model)
+	coefmodel <- coef(model)
+	coefout <- coef(out)
+	start <- coefout[match(names(coefmodel), names(coefout))]
+	ptmodel$ustart[ptmodel$free != 0] <- start[ptmodel$free[ptmodel$free != 0]]
+	if(!silent) {
+		cat("########## Model with imposed starting values #########\n")
+		print(ptmodel)
+	}
+	if("model" %in% names(template)) {
+		template$model <- ptmodel
+	} else {
+		template[[2]] <- ptmodel
+	}
+	eval(expr = template, enclos = parent.frame())
+}

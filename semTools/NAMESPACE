@@ -23,5 +23,5 @@ export(
 	tukeySEM,
 	nullMx, saturateMx, fitMeasuresMx, standardizeMx,
 	lisrel2lavaan,
-	wald
+	wald, imposeStart
 )
