@@ -2,6 +2,7 @@ auxiliary	auxiliary
 cfa.auxiliary	auxiliary
 cfa.mi	runMI
 clipboard	clipboard
+compareFit	compareFit
 dat2way	dat2way
 dat3way	dat3way
 exLong	exLong
@@ -9,6 +10,7 @@ findRMSEApower	findRMSEApower
 findRMSEApowernested	findRMSEApowernested
 findRMSEAsamplesize	findRMSEAsamplesize
 findRMSEAsamplesizenested	findRMSEAsamplesizenested
+FitDiff-class	FitDiff-class
 fitMeasuresMx	fitMeasuresMx
 fmi	fmi
 growth.auxiliary	auxiliary
@@ -53,10 +55,12 @@ saturateMx	saturateMx
 saveFile	clipboard
 sem.auxiliary	auxiliary
 sem.mi	runMI
+show,FitDiff-method	FitDiff-class
 simParcel	simParcel
 skew	skew
 splitSample	splitSample
 standardizeMx	standardizeMx
+summary,FitDiff-method	FitDiff-class
 summary,lavaanStar-method	lavaanStar-class
 tukeySEM	tukeySEM
 wald	wald

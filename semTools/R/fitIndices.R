@@ -62,7 +62,7 @@ sic <- function(f, lresults = NULL) {
 	expinf <- NA
 	v <- NA
 	try(v <- vcov(lresults), silent = TRUE)
-	ifelse(is.na(v), return(NA), try(expinf <- solve(v) / lresults@SampleStats@ntotal, silent = TRUE))
+	ifelse(is.na(v) || det(v) == 0, return(NA), try(expinf <- solve(v) / lresults@SampleStats@ntotal, silent = TRUE))
 	sic <- as.numeric(f + log(det(lresults@SampleStats@ntotal * (expinf))))/2
 	return(sic)
 }

@@ -2,10 +2,10 @@
 \alias{clipboard}
 \alias{saveFile}
 \title{
-	Copy or save the result of \code{lavaan} object into a clipboard or a file
+	Copy or save the result of \code{lavaan} or \code{FitDiff} objects into a clipboard or a file
 }
 \description{
-Copy or save the result of \code{lavaan} object into a clipboard or a file. From the clipboard, users may paste the result into the Microsoft Excel or spreadsheet application to create a table of the output.
+Copy or save the result of \code{lavaan} or \code{\linkS4class{FitDiff}} object into a clipboard or a file. From the clipboard, users may paste the result into the Microsoft Excel or spreadsheet application to create a table of the output.
 }
 \usage{
 clipboard(object, what="summary", ...)
@@ -13,10 +13,10 @@ saveFile(object, file, what="summary", tableFormat=FALSE, ...)
 }
 \arguments{
   \item{object}{
-	The \code{lavaan} object
+	The \code{lavaan} or \code{\linkS4class{FitDiff}} object
 }
   \item{what}{
-	The attributes of the \code{lavaan} object to be copied in the clipboard. \code{"summary"} is to copy the screen provided from the \code{summary} function. \code{"mifit"} is to copy the result from the \code{\link{miPowerFit}} function. Other attributes listed in the \code{inspect} method in the \link[lavaan]{lavaan-class} could also be used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and so on.
+	The attributes of the \code{lavaan} object to be copied in the clipboard. \code{"summary"} is to copy the screen provided from the \code{summary} function. \code{"mifit"} is to copy the result from the \code{\link{miPowerFit}} function. Other attributes listed in the \code{inspect} method in the \link[lavaan]{lavaan-class} could also be used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and so on. For the The \code{\linkS4class{FitDiff}} object, this argument is not active yet.
 }
   \item{file}{
 	A file name used for saving the result
@@ -25,7 +25,7 @@ saveFile(object, file, what="summary", tableFormat=FALSE, ...)
 	If \code{TRUE}, save the result in the table format using tabs for seperation. Otherwise, save the result as the output screen printed in the R console.
 }
   \item{\dots}{
-	Additional argument listed in the \code{\link{miPowerFit}} function.
+	Additional argument listed in the \code{\link{miPowerFit}} function (for \code{lavaan} object only).
 }
 }
 \value{

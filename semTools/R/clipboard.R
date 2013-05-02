@@ -23,8 +23,16 @@ clipboard <- function(object, what="summary", ...) {
 # saveFile: save each aspect of the lavaan object into a file; this function will be compatible with the inspect function in lavaan
 saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 	# Check whether the object is in the lavaan class
-	if(!is(object, "lavaan")) stop("The object must be in the lavaan output.")
-	
+	if(is(object, "lavaan")) {
+		saveFileLavaan(object, file, what=what, tableFormat=tableFormat, ...)
+	} else if(is(object, "FitDiff")) {
+		saveFileFitDiff(object, file, what=what, tableFormat=tableFormat)
+	} else {
+		stop("The object must be in the `lavaan' output or the output from the compareFit function.")
+	}
+}
+
+saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 	if(length(what) > 1) {
         stop("`what' arguments contains multiple arguments; only one is allowed")
     } 
@@ -66,6 +74,7 @@ saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 		}
 	}
 }
+
 
 # copySummary: copy the summary of the lavaan object into the clipboard and potentially be useful if users paste it into the excel application
 # object = lavaan object input

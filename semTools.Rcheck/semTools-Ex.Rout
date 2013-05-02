@@ -39,6 +39,99 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
 > cleanEx()
+> nameEx("FitDiff-class")
+> ### * FitDiff-class
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: FitDiff-class
+> ### Title: Class For Representing A Template of Model Fit Comparisons
+> ### Aliases: FitDiff-class show,FitDiff-method summary,FitDiff-method
+> 
+> ### ** Examples
+> 
+> HW.model <- ' visual =~ x1 + x2 + x3
++               textual =~ x4 + x5 + x6
++               speed =~ x7 + x8 + x9 '
+> 
+> out <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", quiet=TRUE)
+> modelDiff <- compareFit(out)
+> summary(modelDiff)
+################### Nested Model Comparison #########################
+                                chi df      p delta.cfi
+fit.configural - fit.loadings  8.19  6   .224    0.0025
+fit.loadings - fit.intercepts 40.06  6  <.001    0.0385
+fit.intercepts - fit.means    40.50  3  <.001    0.0423
+
+#################### Fit Indices Summaries ##########################
+                 chisq df pvalue   cfi   tli       aic       bic rmsea  srmr
+fit.configural 115.851 48  .000  .923† .885  7484.395  7706.822  .097  .068†
+fit.loadings   124.044 54  .000† .921  .895† 7480.587† 7680.771† .093† .072 
+fit.intercepts 164.103 60  .000  .882  .859  7508.647  7686.588  .107  .082 
+fit.means      204.605 63  .000  .840  .817  7543.149  7709.969  .122  .109 
+> summary(modelDiff, fit.measures="all")
+################### Nested Model Comparison #########################
+                                chi df      p delta.cfi
+fit.configural - fit.loadings  8.19  6   .224    0.0025
+fit.loadings - fit.intercepts 40.06  6  <.001    0.0385
+fit.intercepts - fit.means    40.50  3  <.001    0.0423
+
+#################### Fit Indices Summaries ##########################
+               fmin   chisq df pvalue baseline.chisq baseline.df
+fit.configural .192 115.851 48  .000         957.769          72
+fit.loadings   .206 124.044 54  .000†        957.769          72
+fit.intercepts .273 164.103 60  .000         957.769          72
+fit.means      .340 204.605 63  .000         957.769          72
+               baseline.pvalue   cfi   tli  nnfi   rfi   nfi  pnfi   ifi   rni
+fit.configural            .000 .923† .885  .885  .819  .879† .586  .925† .923†
+fit.loadings              .000 .921  .895† .895† .827† .870  .653  .922  .921 
+fit.intercepts            .000 .882  .859  .859  .794  .829  .691† .884  .882 
+fit.means                 .000 .840  .817  .817  .756  .786  .688  .842  .840 
+                    logl unrestricted.logl   npar       aic       bic  ntotal
+fit.configural -3682.198         -3624.272 60.000 7484.395  7706.822  301.000
+fit.loadings   -3686.294         -3624.272 54.000 7480.587† 7680.771† 301.000
+fit.intercepts -3706.323         -3624.272 48.000 7508.647  7686.588  301.000
+fit.means      -3726.574         -3624.272 45.000 7543.149  7709.969  301.000
+                    bic2 rmsea rmsea.ci.lower rmsea.ci.upper rmsea.pvalue   rmr
+fit.configural 7516.536  .097            .075           .120         .001 .083†
+fit.loadings   7509.514† .093†           .071           .114         .001 .089 
+fit.intercepts 7534.359  .107            .088           .127         .000 .100 
+fit.means      7567.255  .122            .104           .141         .000 .129 
+               rmr_nomean  srmr srmr_nomean    cn_05    cn_01   gfi  agfi  pgfi
+fit.configural      .091† .068†       .074† 170.324  192.439  .995† .989  .442 
+fit.loadings        .098  .072        .078  176.085† 197.719† .995  .989† .497 
+fit.intercepts      .099  .082        .080  146.053  163.107  .993  .987  .552 
+fit.means           .104  .109        .084  122.410  136.358  .991  .985  .578†
+                 mfi
+fit.configural .893†
+fit.loadings   .890 
+fit.intercepts .841 
+fit.means      .790 
+> summary(modelDiff, fit.measures=c("aic", "bic"))
+################### Nested Model Comparison #########################
+                                chi df      p delta.cfi
+fit.configural - fit.loadings  8.19  6   .224    0.0025
+fit.loadings - fit.intercepts 40.06  6  <.001    0.0385
+fit.intercepts - fit.means    40.50  3  <.001    0.0423
+
+#################### Fit Indices Summaries ##########################
+                     aic       bic
+fit.configural 7484.395  7706.822 
+fit.loadings   7480.587† 7680.771†
+fit.intercepts 7508.647  7686.588 
+fit.means      7543.149  7709.969 
+> 
+> ## Not run: 
+> ##D # Save results to a file 
+> ##D saveFile(modelDiff, file="modelDiff.txt")
+> ##D 
+> ##D # Copy to a clipboard
+> ##D clipboard(modelDiff)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
 > nameEx("auxiliary")
 > ### * auxiliary
 > 
@@ -133,8 +226,8 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: clipboard_saveFile
-> ### Title: Copy or save the result of 'lavaan' object into a clipboard or a
-> ###   file
+> ### Title: Copy or save the result of 'lavaan' or 'FitDiff' objects into a
+> ###   clipboard or a file
 > ### Aliases: clipboard saveFile
 > 
 > ### ** Examples
@@ -183,6 +276,54 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 > ##D # Save the fit measures
 > ##D saveFile(fit, "out.txt", "fit")
 > ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("compareFit")
+> ### * compareFit
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: compareFit
+> ### Title: Build an object summarizing fit indices across multiple models
+> ### Aliases: compareFit
+> 
+> ### ** Examples
+> 
+> m1 <- ' visual  =~ x1 + x2 + x3
++         textual =~ x4 + x5 + x6
++         speed   =~ x7 + x8 + x9 '
+> 
+> fit1 <- cfa(m1, data=HolzingerSwineford1939)
+> 
+> m2 <- ' f1  =~ x1 + x2 + x3 + x4 
++         f2 =~ x5 + x6 + x7 + x8 + x9 '
+> fit2 <- cfa(m2, data=HolzingerSwineford1939)
+> compareFit(fit1, fit2, nested=FALSE)
+#################### Fit Indices Summaries ##########################
+       chisq df pvalue   cfi   tli       aic       bic rmsea  srmr
+fit1  85.306 24  .000† .931† .896† 7517.490† 7595.339† .092† .065†
+fit2 311.509 26  .000  .677  .552  7739.694  7810.129  .191  .143 
+> 
+> HW.model <- ' visual =~ x1 + x2 + x3
++               textual =~ x4 + x5 + x6
++               speed =~ x7 + x8 + x9 '
+> 
+> out <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", quiet=TRUE)
+> compareFit(out)
+################### Nested Model Comparison #########################
+                                chi df      p delta.cfi
+fit.configural - fit.loadings  8.19  6   .224    0.0025
+fit.loadings - fit.intercepts 40.06  6  <.001    0.0385
+fit.intercepts - fit.means    40.50  3  <.001    0.0423
+
+#################### Fit Indices Summaries ##########################
+                 chisq df pvalue   cfi   tli       aic       bic rmsea  srmr
+fit.configural 115.851 48  .000  .923† .885  7484.395  7706.822  .097  .068†
+fit.loadings   124.044 54  .000† .921  .895† 7480.587† 7680.771† .093† .072 
+fit.intercepts 164.103 60  .000  .882  .859  7508.647  7686.588  .107  .082 
+fit.means      204.605 63  .000  .840  .817  7543.149  7709.969  .122  .109 
 > 
 > 
 > 
@@ -3304,7 +3445,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  27.95 0.19 31.16 NA NA 
+Time elapsed:  29.86 0.34 31.4 NA NA 
 > grDevices::dev.off()
 null device 
           1 

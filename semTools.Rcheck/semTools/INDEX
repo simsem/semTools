@@ -1,7 +1,11 @@
+FitDiff-class           Class For Representing A Template of Model Fit
+                        Comparisons
 auxiliary               Analyzing data with full-information maximum
                         likelihood with auxiliary variables
-clipboard               Copy or save the result of 'lavaan' object into
-                        a clipboard or a file
+clipboard               Copy or save the result of 'lavaan' or
+                        'FitDiff' objects into a clipboard or a file
+compareFit              Build an object summarizing fit indices across
+                        multiple models
 dat2way                 Simulated Dataset to Demonstrate Two-way Latent
                         Interaction
 dat3way                 Simulated Dataset to Demonstrate Three-way

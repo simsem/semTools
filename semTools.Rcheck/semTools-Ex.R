@@ -6,6 +6,38 @@ library('semTools')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("FitDiff-class")
+### * FitDiff-class
+
+flush(stderr()); flush(stdout())
+
+### Name: FitDiff-class
+### Title: Class For Representing A Template of Model Fit Comparisons
+### Aliases: FitDiff-class show,FitDiff-method summary,FitDiff-method
+
+### ** Examples
+
+HW.model <- ' visual =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed =~ x7 + x8 + x9 '
+
+out <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", quiet=TRUE)
+modelDiff <- compareFit(out)
+summary(modelDiff)
+summary(modelDiff, fit.measures="all")
+summary(modelDiff, fit.measures=c("aic", "bic"))
+
+## Not run: 
+##D # Save results to a file 
+##D saveFile(modelDiff, file="modelDiff.txt")
+##D 
+##D # Copy to a clipboard
+##D clipboard(modelDiff)
+## End(Not run)
+
+
+
+cleanEx()
 nameEx("auxiliary")
 ### * auxiliary
 
@@ -100,8 +132,8 @@ nameEx("clipboard")
 flush(stderr()); flush(stdout())
 
 ### Name: clipboard_saveFile
-### Title: Copy or save the result of 'lavaan' object into a clipboard or a
-###   file
+### Title: Copy or save the result of 'lavaan' or 'FitDiff' objects into a
+###   clipboard or a file
 ### Aliases: clipboard saveFile
 
 ### ** Examples
@@ -150,6 +182,38 @@ flush(stderr()); flush(stdout())
 ##D # Save the fit measures
 ##D saveFile(fit, "out.txt", "fit")
 ## End(Not run)
+
+
+
+cleanEx()
+nameEx("compareFit")
+### * compareFit
+
+flush(stderr()); flush(stdout())
+
+### Name: compareFit
+### Title: Build an object summarizing fit indices across multiple models
+### Aliases: compareFit
+
+### ** Examples
+
+m1 <- ' visual  =~ x1 + x2 + x3
+        textual =~ x4 + x5 + x6
+        speed   =~ x7 + x8 + x9 '
+
+fit1 <- cfa(m1, data=HolzingerSwineford1939)
+
+m2 <- ' f1  =~ x1 + x2 + x3 + x4 
+        f2 =~ x5 + x6 + x7 + x8 + x9 '
+fit2 <- cfa(m2, data=HolzingerSwineford1939)
+compareFit(fit1, fit2, nested=FALSE)
+
+HW.model <- ' visual =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed =~ x7 + x8 + x9 '
+
+out <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", quiet=TRUE)
+compareFit(out)
 
 
 
