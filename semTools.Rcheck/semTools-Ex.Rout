@@ -33,7 +33,7 @@ This is lavaan 0.5-12
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.3-2
+This is semTools 0.3-3
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -605,6 +605,224 @@ visual  0.604
 textual 0.408  0.942       
 speed   0.276  0.222  0.461
 
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("imposeStart")
+> ### * imposeStart
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: imposeStart
+> ### Title: Specify starting values from a lavaan output
+> ### Aliases: imposeStart
+> 
+> ### ** Examples
+> 
+> # The following example show that the longitudinal weak invariance model
+> # using effect coding was not convergent with three time points but convergent
+> # with two time points. Thus, the parameter estimates from the model with
+> # two time points are used as starting values of the three time points.
+> # The model with new starting values is convergent properly.
+> 
+> weak2time <- ' 
++ 	# Loadings
++ 	f1t1 =~ LOAD1*y1t1 + LOAD2*y2t1 + LOAD3*y3t1
++     f1t2 =~ LOAD1*y1t2 + LOAD2*y2t2 + LOAD3*y3t2
++ 	
++ 	# Factor Variances
++ 	f1t1 ~~ f1t1
++ 	f1t2 ~~ f1t2
++ 	
++ 	# Factor Covariances
++ 	f1t1 ~~ f1t2 
++ 	
++ 	# Error Variances
++ 	y1t1 ~~ y1t1
++ 	y2t1 ~~ y2t1
++ 	y3t1 ~~ y3t1
++ 	y1t2 ~~ y1t2
++ 	y2t2 ~~ y2t2
++ 	y3t2 ~~ y3t2
++ 	
++ 	# Error Covariances
++ 	y1t1 ~~ y1t2 
++ 	y2t1 ~~ y2t2 
++ 	y3t1 ~~ y3t2
++ 	
++ 	# Factor Means
++ 	f1t1 ~ NA*1
++ 	f1t2 ~ NA*1
++ 	
++ 	# Measurement Intercepts
++ 	y1t1 ~ INT1*1
++ 	y2t1 ~ INT2*1
++ 	y3t1 ~ INT3*1
++ 	y1t2 ~ INT4*1
++ 	y2t2 ~ INT5*1
++ 	y3t2 ~ INT6*1
++ 	
++ 	# Constraints for Effect-coding Identification
++ 	LOAD1 == 3 - LOAD2 - LOAD3
++ 	INT1 == 0 - INT2 - INT3
++ 	INT4 == 0 - INT5 - INT6
++ '
+> model2time <- lavaan(weak2time, data = exLong)
+> 
+> weak3time <- ' 
++ 	# Loadings
++ 	f1t1 =~ LOAD1*y1t1 + LOAD2*y2t1 + LOAD3*y3t1
++     f1t2 =~ LOAD1*y1t2 + LOAD2*y2t2 + LOAD3*y3t2
++     f1t3 =~ LOAD1*y1t3 + LOAD2*y2t3 + LOAD3*y3t3
++ 	
++ 	# Factor Variances
++ 	f1t1 ~~ f1t1
++ 	f1t2 ~~ f1t2
++ 	f1t3 ~~ f1t3
++ 	
++ 	# Factor Covariances
++ 	f1t1 ~~ f1t2 + f1t3
++ 	f1t2 ~~ f1t3 
++ 	
++ 	# Error Variances
++ 	y1t1 ~~ y1t1
++ 	y2t1 ~~ y2t1
++ 	y3t1 ~~ y3t1
++ 	y1t2 ~~ y1t2
++ 	y2t2 ~~ y2t2
++ 	y3t2 ~~ y3t2
++ 	y1t3 ~~ y1t3
++ 	y2t3 ~~ y2t3
++ 	y3t3 ~~ y3t3
++ 	
++ 	# Error Covariances
++ 	y1t1 ~~ y1t2 
++ 	y2t1 ~~ y2t2 
++ 	y3t1 ~~ y3t2
++ 	y1t1 ~~ y1t3 
++ 	y2t1 ~~ y2t3 
++ 	y3t1 ~~ y3t3
++ 	y1t2 ~~ y1t3
++ 	y2t2 ~~ y2t3 
++ 	y3t2 ~~ y3t3
++ 	
++ 	# Factor Means
++ 	f1t1 ~ NA*1
++ 	f1t2 ~ NA*1
++ 	f1t3 ~ NA*1
++ 	
++ 	# Measurement Intercepts
++ 	y1t1 ~ INT1*1
++ 	y2t1 ~ INT2*1
++ 	y3t1 ~ INT3*1
++ 	y1t2 ~ INT4*1
++ 	y2t2 ~ INT5*1
++ 	y3t2 ~ INT6*1
++ 	y1t3 ~ INT7*1
++ 	y2t3 ~ INT8*1
++ 	y3t3 ~ INT9*1
++ 	
++ 	# Constraints for Effect-coding Identification
++ 	LOAD1 == 3 - LOAD2 - LOAD3
++ 	INT1 == 0 - INT2 - INT3
++ 	INT4 == 0 - INT5 - INT6
++ 	INT7 == 0 - INT8 - INT9
++ '
+> ### The following command does not provide convergent result
+> # model3time <- lavaan(weak3time, data = exLong)
+> 
+> ### Use starting values from the model with two time points
+> model3time <- imposeStart(model2time, lavaan(weak3time, data = exLong))
+> summary(model3time)
+lavaan (0.5-12) converged normally after 124 iterations
+
+  Number of observations                           200
+
+  Estimator                                         ML
+  Minimum Function Test Statistic               19.812
+  Degrees of freedom                                19
+  P-value (Chi-square)                           0.406
+
+Parameter estimates:
+
+  Information                                 Expected
+  Standard Errors                             Standard
+
+                   Estimate  Std.err  Z-value  P(>|z|)
+Latent variables:
+  f1t1 =~
+    y1t1  (LOAD1)     1.210    0.034   36.028    0.000
+    y2t1  (LOAD2)     0.740    0.029   25.535    0.000
+    y3t1  (LOAD3)     1.050    0.032   33.051    0.000
+  f1t2 =~
+    y1t2  (LOAD1)     1.210    0.034   36.028    0.000
+    y2t2  (LOAD2)     0.740    0.029   25.535    0.000
+    y3t2  (LOAD3)     1.050    0.032   33.051    0.000
+  f1t3 =~
+    y1t3  (LOAD1)     1.210    0.034   36.028    0.000
+    y2t3  (LOAD2)     0.740    0.029   25.535    0.000
+    y3t3  (LOAD3)     1.050    0.032   33.051    0.000
+
+Covariances:
+  f1t1 ~~
+    f1t2              0.562    0.077    7.319    0.000
+    f1t3              0.400    0.074    5.419    0.000
+  f1t2 ~~
+    f1t3              0.599    0.086    6.942    0.000
+  y1t1 ~~
+    y1t2              0.070    0.050    1.395    0.163
+  y2t1 ~~
+    y2t2              0.117    0.034    3.446    0.001
+  y3t1 ~~
+    y3t2              0.130    0.047    2.798    0.005
+  y1t1 ~~
+    y1t3              0.084    0.045    1.851    0.064
+  y2t1 ~~
+    y2t3             -0.013    0.034   -0.391    0.696
+  y3t1 ~~
+    y3t3              0.019    0.041    0.467    0.640
+  y1t2 ~~
+    y1t3              0.166    0.055    3.029    0.002
+  y2t2 ~~
+    y2t3              0.111    0.036    3.071    0.002
+  y3t2 ~~
+    y3t3              0.089    0.046    1.924    0.054
+
+Intercepts:
+    f1t1              0.075    0.065    1.161    0.246
+    f1t2              0.470    0.070    6.698    0.000
+    f1t3              0.951    0.074   12.836    0.000
+    y1t1   (INT1)    -0.111    0.034   -3.241    0.001
+    y2t1   (INT2)    -0.333    0.036   -9.194    0.000
+    y3t1   (INT3)     0.444    0.036   12.355    0.000
+    y1t2   (INT4)    -0.011    0.041   -0.278    0.781
+    y2t2   (INT5)    -0.267    0.040   -6.717    0.000
+    y3t2   (INT6)     0.278    0.041    6.746    0.000
+    y1t3   (INT7)    -0.126    0.048   -2.611    0.009
+    y2t3   (INT8)    -0.293    0.047   -6.211    0.000
+    y3t3   (INT9)     0.419    0.047    8.975    0.000
+
+Variances:
+    f1t1              0.724    0.084
+    f1t2              0.841    0.098
+    f1t3              0.967    0.109
+    y1t1              0.292    0.063
+    y2t1              0.384    0.045
+    y3t1              0.411    0.060
+    y1t2              0.418    0.077
+    y2t2              0.396    0.048
+    y3t2              0.464    0.068
+    y1t3              0.361    0.074
+    y2t3              0.440    0.052
+    y3t3              0.368    0.062
+
+Constraints:                               Slack (>=0)
+    LOAD1 - (3-LOAD2-LOAD3)                      0.000
+    INT1 - (0-INT2-INT3)                         0.000
+    INT4 - (0-INT5-INT6)                         0.000
+    INT7 - (0-INT8-INT9)                         0.000
 
 > 
 > 
@@ -1577,12 +1795,13 @@ $SE
 15  La ~~  Lb  0.019 0.001 0.020 0.017 0.003
 
 $Fit
-        Avg Ind   S.D.       MAX       MIN   Range
-chisq     0.004  0.002     0.009     0.001   0.008
-cfi       0.000  0.000     0.000     0.000   0.000
-tli       0.999  0.001     1.000     0.997   0.003
-rmsea -4443.032 48.400 -4356.266 -4510.456 154.190
-srmr   8972.964 96.800  9107.811  8799.432 308.379
+      Avg Ind  S.D.    MAX   MIN  Range
+chisq   6.906 3.652 14.543 1.456 13.087
+df      8.000 0.000  8.000 8.000  0.000
+cfi     0.999 0.001  1.000 0.997  0.003
+tli     1.001 0.003  1.006 0.994  0.012
+rmsea   0.007 0.011  0.032 0.000  0.032
+srmr    0.011 0.003  0.019 0.006  0.013
 
 > 
 > 
@@ -3085,7 +3304,7 @@ skew (g1)        se         z         p
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  22.82 0.2 24.22 NA NA 
+Time elapsed:  27.95 0.19 31.16 NA NA 
 > grDevices::dev.off()
 null device 
           1 

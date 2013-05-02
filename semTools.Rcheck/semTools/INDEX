@@ -21,6 +21,7 @@ fitMeasuresMx           Find fit measures from an MxModel result
 fmi                     Fraction of Missing Information.
 impliedFactorStat       Calculate the model-implied factor means and
                         covariance matrix.
+imposeStart             Specify starting values from a lavaan output
 indProd                 Make products of indicators using no centering,
                         mean centering, double-mean centering, or
                         residual centering

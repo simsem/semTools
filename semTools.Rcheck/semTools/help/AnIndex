@@ -16,6 +16,7 @@ growth.mi	runMI
 impliedFactorCov	impliedFactorStat
 impliedFactorMean	impliedFactorStat
 impliedFactorStat	impliedFactorStat
+imposeStart	imposeStart
 indProd	indProd
 inspect,lavaanStar-method	lavaanStar-class
 kurtosis	kurtosis
