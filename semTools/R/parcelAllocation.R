@@ -239,7 +239,7 @@ if(is.list(nPerPar)){
     ## estimate model in lavaan
     Param[[i]] <- parameterEstimates(fit)
     ## assign allocation parameter estimates to list
-    Fitind[[i]] <- fitMeasures(fit)
+    Fitind[[i]] <- fitMeasures(fit,  c("chisq", "df", "cfi", "tli", "rmsea", "srmr"))
     ## assign allocation parameter estimates to list
   }
   
@@ -255,7 +255,7 @@ if(is.list(nPerPar)){
   Fitmn <- Fitind[[1]]
   ## assign first fit indices to mean dataframe
   
-  Fitsd <- matrix(NA, 5, nAlloc)
+  Fitsd <- matrix(NA, length(Fitmn), nAlloc)
   ## assign fit indices for S.D. calculation
   
   Sigp <- matrix(NA, nrow(Parmn), nAlloc)
@@ -274,7 +274,7 @@ if(is.list(nPerPar)){
     ## assign p-values to calculate percentage significant
     
     
-    Fitsd[1:5,i] <- c(rbind(Fitind[[i]][1],Fitind[[i]][7],Fitind[[i]][8],Fitind[[i]][16],Fitind[[i]][20]))
+    Fitsd[,i] <- Fitind[[i]]
     ## assign fit indices for S.D. estimation
     
     if(i>1){Parmn[,4:ncol(Parmn)] <- Parmn[,4:ncol(Parmn)] + Param[[i]][,4:ncol(Parmn)]}
@@ -299,7 +299,7 @@ if(is.list(nPerPar)){
   colnames(ParSEfn) <- c("lhs", "op", "rhs", "Avg SE","S.D.","MAX","MIN","Range")
   
   Fitsum <- cbind(apply(Fitsd,1,sd),apply(Fitsd,1,max),apply(Fitsd,1,min),apply(Fitsd,1,max)-apply(Fitsd,1,min))
-  rownames(Fitsum) <- c("chisq","cfi","tli","rmsea","srmr")
+  rownames(Fitsum) <- c("chisq", "df", "cfi", "tli", "rmsea", "srmr")
   ## calculate fit S.D., minimum, maximum, range
   
   Parmn[,4:ncol(Parmn)] <- Parmn[,4:ncol(Parmn)] / nAlloc
@@ -311,7 +311,7 @@ if(is.list(nPerPar)){
   Fitmn <- Fitmn / nAlloc
   ## divide totalled fit indices by number allocations
   
-  Fitsum <- cbind(rbind(Fitmn[1],Fitmn[7],Fitmn[8],Fitmn[16],Fitmn[20]),Fitsum)
+  Fitsum <- cbind(Fitmn,Fitsum)
   colnames(Fitsum) <- c("Avg Ind","S.D.","MAX","MIN","Range")
   ## bind to fit averages
   
@@ -326,3 +326,5 @@ if(is.list(nPerPar)){
   return(Output)
   
 }}
+
+#parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, dataset=simParcel)
