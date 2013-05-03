@@ -5,6 +5,8 @@ clipboard	clipboard
 compareFit	compareFit
 dat2way	dat2way
 dat3way	dat3way
+EFA-class	EFA-class
+efaUnrotate	efaUnrotate
 exLong	exLong
 findRMSEApower	findRMSEApower
 findRMSEApowernested	findRMSEApowernested
@@ -13,6 +15,7 @@ findRMSEAsamplesizenested	findRMSEAsamplesizenested
 FitDiff-class	FitDiff-class
 fitMeasuresMx	fitMeasuresMx
 fmi	fmi
+funRotate	rotate
 growth.auxiliary	auxiliary
 growth.mi	runMI
 impliedFactorCov	impliedFactorStat
@@ -37,7 +40,9 @@ monteCarloMed	monteCarloMed
 moreFitIndices	moreFitIndices
 nullMx	nullMx
 nullRMSEA	nullRMSEA
+oblqRotate	rotate
 orthogonalize	indProd
+orthRotate	rotate
 parcelAllocation	parcelAllocation
 plotProbe	plotProbe
 plotRMSEAdist	plotRMSEAdist
@@ -55,11 +60,13 @@ saturateMx	saturateMx
 saveFile	clipboard
 sem.auxiliary	auxiliary
 sem.mi	runMI
+show,EFA-method	EFA-class
 show,FitDiff-method	FitDiff-class
 simParcel	simParcel
 skew	skew
 splitSample	splitSample
 standardizeMx	standardizeMx
+summary,EFA-method	EFA-class
 summary,FitDiff-method	FitDiff-class
 summary,lavaanStar-method	lavaanStar-class
 tukeySEM	tukeySEM

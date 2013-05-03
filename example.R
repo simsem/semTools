@@ -663,3 +663,32 @@ model3 <- ' f1  =~ x1 + p2*x2 + p3*x3 + p4*x4 + p5*x5 + p6*x6
 
 fit3 <- cfa(model3, data=HolzingerSwineford1939)
 wald(fit3, "p3; p6 - 0.5*p5")
+
+############################## EFA
+
+unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
+orthRotate(unrotated)
+
+unrotated2 <- efaUnrotated(iqitems, nf=4, ordered=colnames(iqitems))
+orthRotate(unrotated2)
+
+# Orthogonal varimax
+out.varimax <- orthRotate(unrotated, method="varimax")
+summary(out.varimax, sort=FALSE, suppress=0.3)
+
+# Orthogonal Quartimin
+orthRotate(unrotated, method="quartimin")
+
+# Oblique Quartimin
+oblqRotate(unrotated, method="quartimin")
+
+# Geomin
+oblqRotate(unrotated, method="geomin")
+
+# Target rotation
+target <- matrix(0, 9, 3)
+target[1:3, 1] <- NA
+target[4:6, 2] <- NA
+target[7:9, 3] <- NA
+colnames(target) <- c("factor1", "factor2", "factor3")
+funRotate(unrotated, fun="TargetQ", Target=list(target))

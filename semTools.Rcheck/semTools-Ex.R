@@ -6,6 +6,28 @@ library('semTools')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("EFA-class")
+### * EFA-class
+
+flush(stderr()); flush(stdout())
+
+### Name: EFA-class
+### Title: Class For Rotated Results from EFA
+### Aliases: EFA-class show,EFA-method summary,EFA-method
+
+### ** Examples
+
+unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
+summary(unrotated, std=TRUE)
+inspect(unrotated, "standardized")
+
+# Rotated by Quartimin
+rotated <- oblqRotate(unrotated, method="quartimin")
+summary(rotated)
+
+
+
+cleanEx()
 nameEx("FitDiff-class")
 ### * FitDiff-class
 
@@ -246,6 +268,24 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 head(dat3way)
+
+
+
+cleanEx()
+nameEx("efaUnrotate")
+### * efaUnrotate
+
+flush(stderr()); flush(stdout())
+
+### Name: efaUnrotate
+### Title: Analyze Unrotated Exploratory Factor Analysis Model
+### Aliases: efaUnrotate
+
+### ** Examples
+
+unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
+summary(unrotated, std=TRUE)
+inspect(unrotated, "standardized")
 
 
 
@@ -1362,6 +1402,47 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 dat <- residualCovariate(attitude, 2:7, 1)
+
+
+
+cleanEx()
+nameEx("rotate")
+### * rotate
+
+flush(stderr()); flush(stdout())
+
+### Name: rotate
+### Title: Implement orthogonal or oblique rotation
+### Aliases: orthRotate oblqRotate funRotate
+
+### ** Examples
+
+unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
+
+# Orthogonal varimax
+out.varimax <- orthRotate(unrotated, method="varimax")
+summary(out.varimax, sort=FALSE, suppress=0.3)
+
+# Orthogonal Quartimin
+orthRotate(unrotated, method="quartimin")
+
+# Oblique Quartimin
+oblqRotate(unrotated, method="quartimin")
+
+# Geomin
+oblqRotate(unrotated, method="geomin")
+
+## Not run: 
+##D # Target rotation
+##D library(GPArotation)
+##D target <- matrix(0, 9, 3)
+##D target[1:3, 1] <- NA
+##D target[4:6, 2] <- NA
+##D target[7:9, 3] <- NA
+##D colnames(target) <- c("factor1", "factor2", "factor3")
+##D # This function works with GPArotation version 2012.3-1
+##D funRotate(unrotated, fun="targetQ", Target=target) 
+## End(Not run)
 
 
 

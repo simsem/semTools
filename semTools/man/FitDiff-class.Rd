@@ -22,8 +22,11 @@
 }
 \section{methods}{
   \itemize{
-	\item \code{summary} The summary function to provide nested model comparison results and the summary of the fit indices across models. This function has one argument: \code{fit.measures}. If \code{"default"}, chi-square values, degree of freedom, \emph{p} value, CFI, TLI, RMSEA, SRMR, AIC, and BIC are provided. If \code{"all"}, all information given in the \code{\link[lavaan]{fitMeasures}} function is provided. Users may specify a vector of the name of fit indices that they wish. 
+	\item \code{summary} The summary function is used to provide the nested model comparison results and the summary of the fit indices across models. This function has one argument: \code{fit.measures}. If \code{"default"} is specified, chi-square values, degree of freedom, \emph{p} value, CFI, TLI, RMSEA, SRMR, AIC, and BIC are provided. If \code{"all"} is specified, all information given in the \code{\link[lavaan]{fitMeasures}} function is provided. Users may specify a vector of the name of fit indices that they wish. 
   }
+}
+\author{
+    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 }
 \seealso{
 \code{\link{compareFit}}; \code{\link{clipboard}}

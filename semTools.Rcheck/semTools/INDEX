@@ -1,3 +1,4 @@
+EFA-class               Class For Rotated Results from EFA
 FitDiff-class           Class For Representing A Template of Model Fit
                         Comparisons
 auxiliary               Analyzing data with full-information maximum
@@ -10,6 +11,8 @@ dat2way                 Simulated Dataset to Demonstrate Two-way Latent
                         Interaction
 dat3way                 Simulated Dataset to Demonstrate Three-way
                         Latent Interaction
+efaUnrotate             Analyze Unrotated Exploratory Factor Analysis
+                        Model
 exLong                  Simulated Data set to Demonstrate Longitudinal
                         Measurement Invariance
 findRMSEApower          Find the statistical power based on population
@@ -47,6 +50,7 @@ monteCarloMed           Monte Carlo Confidence Intervals to Test
 moreFitIndices          Calculate more fit indices
 nullMx                  Analyzing data using a null model
 nullRMSEA               Calculate the RMSEA of the null model
+orthRotate              Implement orthogonal or oblique rotation
 parcelAllocation        Random Allocation of Items to Parcels in a
                         Structural Equation Model
 plotProbe               Plot the graphs for probing latent interaction
