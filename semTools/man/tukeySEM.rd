@@ -34,7 +34,7 @@ Maxwell, S. E., & Delaney, H. D. (2004). \emph{Designing experiments and analyzi
 
 }
 \author{
-    Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
+    Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 }
 
 \examples{

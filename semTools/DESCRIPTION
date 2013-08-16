@@ -5,7 +5,7 @@ Version: 0.4-0
 Date: 2013-05-03
 Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@ku.edu"), 
 		person("Patrick", "Miller", role = "aut", email="patr1ckm@ku.edu"), 
-		person("Alexander", "Schoemann", role = "aut", email="schoemann@ku.edu"),
+		person("Alexander", "Schoemann", role = "aut", email="schoemanna@ecu.edu"),
 		person("Yves", "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be"),
 		person("Corbin", "Quick", role = "ctb", email="corbinq@ku.edu"),
 		person("Mauricio", "Villarreal", role = "ctb", email="mgv@ku.edu"), 

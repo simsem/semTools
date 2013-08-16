@@ -34,7 +34,7 @@ Sterba, S.K. & MacCallum, R.C. (2010). Variability in parameter estimates and mo
 }
 \author{
     Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
-	Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
+	Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 }
 \examples{
 #Fit 3 factor CFA to simulated data.
