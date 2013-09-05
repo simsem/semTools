@@ -4,7 +4,7 @@
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'semTools' version '0.4-0'
+* this is package 'semTools' version '0.4-2'
 * checking CRAN incoming feasibility ... OK
 Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking package namespace information ... OK

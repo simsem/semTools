@@ -38,6 +38,7 @@ A data frame with these variables:
   \item{high.power} Represents whether the power is enough to detect the target expected parameter change
   \item{decision} The decision whether the parameter is misspecified or not: \code{"M"} represents the parameter is misspecified, \code{"NM"} represents the parameter is not misspecified, \code{"EPC:M"} represents the parameter is misspecified decided by checking the expected parameter change value, \code{"EPC:NM"} represents the parameter is not misspecified decided by checking the expected parameter change value, and \code{"I"} represents the decision is inconclusive.
 }
+The row numbers matches with the results obtained from the \code{inspect(object, "mi")} function.
 }
 \references{
 Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences} (2nd ed.). Hillsdale, NJ: Erlbaum.

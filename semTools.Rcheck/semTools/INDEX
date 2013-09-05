@@ -32,6 +32,8 @@ imposeStart             Specify starting values from a lavaan output
 indProd                 Make products of indicators using no centering,
                         mean centering, double-mean centering, or
                         residual centering
+kd                      Generate data via the Kaiser-Dickman (1962)
+                        algorithm.
 kurtosis                Finding excessive kurtosis
 lavaanStar-class        Class For Representing A (Fitted) Latent
                         Variable Model with Additional Elements

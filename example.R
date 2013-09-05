@@ -20,14 +20,19 @@ sourceDirData <- function(path, trace = TRUE) {
 	}
 }
 
+# Model diagnosis for local misfits
+
 #get
 #assign
-#dir <- "C:/Users/Sunthud/Desktop/My Dropbox/simsem/simsem/R/"
+#dir <- "C:/Users/sunthud/Dropbox/semTools/semTools/R"
 #dir <- "C:/Users/Sunthud/simsem_backup/simsem/R/"
 library(lavaan)
 
 dir <- "C:/Users/student/Dropbox/semTools/semTools/R/"
 sourceDir(dir)
+
+dir2 <- "C:/Users/sunthud/Desktop/multcomp/R"
+sourceDir(dir2)
 
 dirData <- "C:/Users/student/Dropbox/semTools/semTools/data/"
 sourceDirData(dirData)
@@ -286,7 +291,18 @@ dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 
 			  
 fit <- cfa(HS.model, data=dat, meanstructure=TRUE) #, group="sex", meanstructure=TRUE)
 fitaux <- auxiliary(fit, data=dat, aux="z", fun="cfa", missing="ml")
-	
+
+HS.model2 <- ' visual  =~ x1 + a*x2 + x3
+              textual =~ x4 + b*x5 + x6
+              speed   =~ x7 + x8 + x9
+			 
+			 ab := a*b
+			 a > 0
+			 '
+			 
+dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
+fitaux <- auxiliary(HS.model2, aux="z", data=dat, fun="cfa")
+
 fitgroup <- cfa(HS.model, data=dat, group="school")
 fitgroupaux <- auxiliary(HS.model, data=dat, aux="z", group="school", fun="cfa")
 
@@ -666,29 +682,66 @@ wald(fit3, "p3; p6 - 0.5*p5")
 
 ############################## EFA
 
-unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
-orthRotate(unrotated)
+#install.packages("semTools", repos="http://rweb.quant.ku.edu/kran")
 
-unrotated2 <- efaUnrotated(iqitems, nf=4, ordered=colnames(iqitems))
-orthRotate(unrotated2)
+unrotated2 <- efaUnrotate(HolzingerSwineford1939, nf=2, varList=paste0("x", 1:9))
+unrotated3 <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9))
+anova(unrotated2, unrotated3)
+
+orthRotate(unrotated3, method="varimax")
+
+library(psych)
+unrotatedCat <- efaUnrotate(iqitems, nf=4, ordered=colnames(iqitems))
 
 # Orthogonal varimax
-out.varimax <- orthRotate(unrotated, method="varimax")
+out.varimax <- orthRotate(unrotatedCat, method="varimax")
 summary(out.varimax, sort=FALSE, suppress=0.3)
 
 # Orthogonal Quartimin
-orthRotate(unrotated, method="quartimin")
+orthRotate(unrotatedCat, method="quartimin")
 
 # Oblique Quartimin
-oblqRotate(unrotated, method="quartimin")
+oblqRotate(unrotatedCat, method="quartimin")
 
 # Geomin
-oblqRotate(unrotated, method="geomin")
+oblqRotate(unrotatedCat, method="geomin")
 
 # Target rotation
-target <- matrix(0, 9, 3)
-target[1:3, 1] <- NA
-target[4:6, 2] <- NA
-target[7:9, 3] <- NA
-colnames(target) <- c("factor1", "factor2", "factor3")
-funRotate(unrotated, fun="TargetQ", Target=list(target))
+target <- matrix(0, 16, 4)
+target[1:4, 1] <- NA
+target[5:8, 2] <- NA
+target[9:12, 3] <- NA
+target[13:16, 4] <- NA
+colnames(target) <- c("factor1", "factor2", "factor3", "factor4")
+funRotate(unrotatedCat, fun="targetQ", Target=target)
+
+dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
+unrotated4 <- efaUnrotate(dat, nf=2, varList=paste0("x", 1:9), aux="z")
+orthRotate(unrotated4, method="varimax")
+
+################################ Multiple Comparison
+
+lmod <- lm(Fertility ~ ., data = swiss)
+
+### test of H_0: all regression coefficients are zero 
+### (ignore intercept)
+
+### define coefficients of linear function directly
+K <- diag(length(coef(lmod)))[-1,]
+rownames(K) <- names(coef(lmod))[-1]
+K
+
+### set up general linear hypothesis
+x1 <- glht(lmod, linfct = K)
+
+example(cfa)
+x2 <- glht(fit)
+
+## The famous Holzinger and Swineford (1939) example
+HS.model <- ' visual  =~ x1 + a*x2 + b*x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 
+			  c := a - b'
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+

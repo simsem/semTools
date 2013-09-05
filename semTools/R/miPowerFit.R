@@ -85,6 +85,7 @@ unstandardizeEpc <- function(mi, delta, totalVar) {
 	lhsVar <- mapply(getVar, pos=lhsPos, group=group)
 	rhsVar <- mapply(getVar, pos=rhsPos, group=group)
 	FUN <- function(op, lhsVar, rhsVar, delta) {
+		if(op == "|") return(NA)
 		lhsSD <- sqrt(lhsVar)
 		rhsSD <- sqrt(rhsVar)
 		if(!is.numeric(delta)) delta <- as.numeric(delta)

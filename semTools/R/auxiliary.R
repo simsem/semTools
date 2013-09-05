@@ -2,7 +2,7 @@
 ## Author: Sunthud Pornprasertmanit
 # Description: Automatically accounts for auxiliary variable in full information maximum likelihood
 
-setClass("lavaanStar", contains = "lavaan", representation(nullfit = "vector", imputed="list"), prototype(nullfit=c(chi=0,df=0), imputed=list()))
+setClass("lavaanStar", contains = "lavaan", representation(nullfit = "vector", imputed="list", auxNames="vector"), prototype(nullfit=c(chi=0,df=0), imputed=list(), auxNames = ""))
 
 setMethod("inspect", "lavaanStar",
 function(object, what="free") {
@@ -20,6 +20,9 @@ function(object, what="free") {
 		} else {
 			stop("This method did not made by multiple imputation.")
 		}
+	} else if(what == "aux" ||
+              what == "auxiliary") {
+		print(object@auxNames)
 	} else {
 		getMethod("inspect", "lavaan")(object, what=what)
 	}
@@ -67,6 +70,47 @@ auxiliary <- function(model, aux, fun, ...) {
 	if(any(model$exo == 1)) {
 		stop("All exogenous variables (covariates) must be treated as endogenous variables by the 'auxiliary' function (fixed.x = FALSE).")
 	}
+
+	auxResult <- craftAuxParTable(model = model, aux = aux, ...)
+	
+	if(checkOrdered(args$data, auxResult$indName, ...)) {
+		stop("The analysis model or the analysis data have ordered categorical variables. The auxiliary variable feature is not available for the models for categorical variables with the weighted least square approach.")
+	}
+	
+	args$model <- auxResult$model
+	result <- do.call(fun, args)
+	
+	codeNull <- nullAuxiliary(aux, auxResult$indName, NULL, any(model$op == "~1"), max(model$group))
+	resultNull <- lavaan(codeNull, ...)
+	result <- as(result, "lavaanStar")
+	fit <- fitMeasures(resultNull)
+	name <- names(fit)
+	fit <- as.vector(fit)
+	names(fit) <- name
+	result@nullfit <- fit
+	result@auxNames <- aux
+	return(result)
+}
+
+checkOrdered <- function(dat, varnames, ...) {
+	ord <- list(...)$ordered
+	if(is.null(ord)) { 
+		ord <- FALSE
+	} else {
+		ord <- TRUE
+	}
+	if(is.null(dat)) {
+		orderedVar <- FALSE
+	} else {
+		orderedVar <- sapply(dat[,varnames], function(x) "ordered" %in% is(x))
+	}
+	any(c(ord, orderedVar))
+}
+
+craftAuxParTable <- function(model, aux, ...) {
+	constraintLine <- model$op %in% c("==", ":=", ">", "<")
+	modelConstraint <- lapply(model, "[", constraintLine)
+	model <- lapply(model, "[", !constraintLine)
 	
 	facName <- NULL
 	indName <- NULL
@@ -96,18 +140,25 @@ auxiliary <- function(model, aux, fun, ...) {
 		if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, facSingleIndicator, "=~", aux, ngroups)
 		if(any(model$op == "~1")) model <- attachPT(model, aux, "~1", "", ngroups)
 	}
-	args$model <- model
-	result <- do.call(fun, args)
-	
-	codeNull <- nullAuxiliary(aux, union(indName, singleIndicator), NULL, any(model$op == "~1"), max(model$group))
-	resultNull <- lavaan(codeNull, ...)
-	result <- as(result, "lavaanStar")
-	fit <- fitMeasures(resultNull)
-	name <- names(fit)
-	fit <- as.vector(fit)
-	names(fit) <- name
-	result@nullfit <- fit
-	return(result)
+	model <- attachConstraint(model, modelConstraint)
+	list(model = model, indName = union(indName, singleIndicator))
+}
+
+attachConstraint <- function(pt, con) {
+	len <- length(con$id)
+	pt$id <- c(pt$id, (max(pt$id)+1):(max(pt$id)+len))
+	pt$lhs <- c(pt$lhs, con$lhs)
+	pt$op <- c(pt$op, con$op)
+	pt$rhs <- c(pt$rhs, con$rhs)
+	pt$user <- c(pt$user, con$user)
+	pt$group <- c(pt$group, con$group)
+	pt$free <- c(pt$free, con$free)
+	pt$ustart <- c(pt$ustart, con$ustart)
+	pt$exo <- c(pt$exo, con$exo)
+	pt$label <- c(pt$label, con$label)
+	pt$eq.id <- c(pt$eq.id, con$eq.id)
+	pt$unco <- c(pt$unco, con$unco)
+	pt
 }
 
 attachPT <- function(pt, lhs, op, rhs, ngroups, symmetric=FALSE, exo=FALSE, fixed=FALSE, useUpper=FALSE, ustart = NA, expand = TRUE, diag = TRUE) {

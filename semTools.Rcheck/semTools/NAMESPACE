@@ -25,5 +25,6 @@ export(
 	lisrel2lavaan,
 	wald, imposeStart,
 	compareFit,
-	efaUnrotate, orthRotate, oblqRotate, funRotate
+	efaUnrotate, orthRotate, oblqRotate, funRotate,
+	kd
 )

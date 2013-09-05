@@ -24,6 +24,7 @@ impliedFactorStat	impliedFactorStat
 imposeStart	imposeStart
 indProd	indProd
 inspect,lavaanStar-method	lavaanStar-class
+kd	kd
 kurtosis	kurtosis
 lavaan.auxiliary	auxiliary
 lavaan.mi	runMI

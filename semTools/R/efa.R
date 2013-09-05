@@ -53,7 +53,7 @@ setMethod("summary", signature(object = "EFA"), function(object, suppress = 0.1,
 	print(testLoadings(object))
 }) 
 
-efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, ...) {
+efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 	if(is.null(varList)) varList <- colnames(data)
 	nvar <- length(varList)
 	facnames <- paste0("factor", 1:nf)
@@ -65,6 +65,12 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, ...) {
 		syntax <- paste(syntax, factorsyntax)
 	}
 	syntax <- paste(syntax, paste(paste0(facnames, " ~~ 1*", facnames), collapse="\n"), "\n")
+
+	isOrdered <- checkOrdered(data, varList, ...)
+	if(!isOrdered) {
+		syntax <- paste(syntax, paste(paste0(varList, " ~ 1"), collapse="\n"), "\n")
+	}
+	
 	if(nf > 1) {
 		covsyntax <- outer(facnames, facnames, function(x, y) paste0(x, " ~~ 0*", y, "\n"))[lower.tri(diag(nf), diag=FALSE)]
 		syntax <- paste(syntax, paste(covsyntax, collapse = " "))	
@@ -83,15 +89,41 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, ...) {
 		partemp <- parTable(outtemp)
 		startval <- sqrt(diag(diag(covtemp))) %*% factanal(factors=nf, covmat=covtemp)$loadings[] 
 		partemp$ustart[match(as.vector(loading), partemp$label)] <- as.vector(startval)
-		return(cfa(partemp, data, ...))
+		syntax <- partemp
+	} 
+	args <- list(...)
+	args$model <- syntax
+	args$data <- data
+	if(!is.null(aux)) {
+		if(isOrdered) {
+			stop("The analysis model or the analysis data have ordered categorical variables. The auxiliary variable feature is not available for the models for categorical variables with the weighted least square approach.")
+		}
+		auxResult <- craftAuxParTable(syntax, aux = aux)
+		args$model <- auxResult$model
+		args$fixed.x <- FALSE
+		args$missing <- "fiml"		
+		result <- do.call("cfa", args)
+		codeNull <- nullAuxiliary(aux, auxResult$indName, NULL, any(syntax$op == "~1"), max(syntax$group))
+		resultNull <- lavaan(codeNull, data=data, ...)
+		result <- as(result, "lavaanStar")
+		fit <- fitMeasures(resultNull)
+		name <- names(fit)
+		fit <- as.vector(fit)
+		names(fit) <- name
+		result@nullfit <- fit
+		result@auxNames <- aux
+		return(result)
 	} else {
-		return(cfa(model=syntax, data=data, ...))
+		return(do.call("cfa", args))
 	}
 }
 
 stdLoad <- function(object) {
 	out <- solve(sqrt(diag(diag(fitted.values(object)$cov)))) %*% inspect(object, "coef")$lambda
 	rownames(out) <- lavaan:::vnames(object@ParTable, "ov", group = 1)
+	if(is(object, "lavaanStar")) {
+		out <- out[!(rownames(out) %in% object@auxNames),]
+	}
 	class(out) <- c("loadings", out)
 	out
 }
@@ -140,6 +172,7 @@ funRotate <- function(object, fun, ...) {
 	library(GPArotation)
 	initL <- stdLoad(object)
 	rotated <- do.call(fun, c(list(L = initL), list(...)))
+	browser()
 	rotateMat <- t(solve(rotated$Th))
 	LIST <- seStdLoadings(rotateMat, object)
 	orthogonal <- rotated$orthogonal
@@ -149,16 +182,16 @@ funRotate <- function(object, fun, ...) {
 	convergence <- rotated$convergence
 	method <- rotated$method
 	phi <- rotated$Phi
-	if(!is.null(phi)) phi <- diag(ncol(loading))
+	if(is.null(phi)) phi <- diag(ncol(loading))
 	lv.names <- colnames(loading)
 	dimnames(phi) <- list(lv.names, lv.names)
 	new("EFA", loading=loading, rotate=rotate, gradRotate=gradRotate, convergence=convergence, phi=phi, se=LIST, method=method, call=mc) 
 }
 
-rotateStdLoadings <- function(est, object, rotate=NULL) {
+rotateStdLoadings <- function(est, object, rotate=NULL, aux=NULL) {
 	ov.names <- lavaan:::vnames(object@ParTable, "ov", group = 1)
     lv.names <- lavaan:::vnames(object@ParTable, "lv", group = 1)
-	OV <- sqrt(lavaan:::computeVY(object@Model, samplestats = object@SampleStats)[[1]])
+	OV <- sqrt(lavaan:::computeVY(object@Model, samplestats = object@SampleStats)[[1]])[!(ov.names %in% aux)]
 	partable <- object@ParTable
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	loading <- (solve(diag(OV)) %*% matrix(est[idx], ncol=length(lv.names))) %*% rotate
@@ -183,7 +216,11 @@ rotateStdLoadings <- function(est, object, rotate=NULL) {
 
 seStdLoadings <- function(rotate, object) {
 	est <- object@Fit@est
-	JAC <- lavaan:::lavJacobianD(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate)
+	aux <- ""
+	if(is(object, "lavaanStar")) {
+		aux <- object@auxNames
+	}
+	JAC <- lavaan:::lavJacobianD(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate, aux=aux)
 	LIST <- inspect(object, "list")
 	unco.idx <- which(LIST$unco > 0L)
 	LIST <- LIST[,c("lhs", "op", "rhs", "group")]

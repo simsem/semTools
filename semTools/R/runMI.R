@@ -442,21 +442,25 @@ satPartable <- function(fit.alt){
 
 ##### function that does the part of the MR and Mplus combination methods are equal 
 mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat=NULL, ...) {
+	
 	if(is.null(par.sat)) par.sat <- satPartable(template)
-	comb.sat <- lapply(imputed.l, runlavaanMI, syntax=par.sat, fun=fun, ...)
+	comb.sat <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat, fun=fun, ...))
+	converged.sat1 <- sapply(comb.sat, function(x) x@Fit@converged)
+	
 	coefs.sat1 <- sapply(comb.sat, function(x) x@Fit@est)
-	est.sat1 <- rowMeans(coefs.sat1)
+	est.sat1 <- rowMeans(coefs.sat1[,converged.sat1])
 	par.sat2 <- par.sat
 	par.sat2$free <- as.integer(rep(0, length(par.sat2$free)))
 	par.sat2$ustart <- est.sat1
-	comb.sat2 <- lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...)
+	comb.sat2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...))
+	
     comb.sat2 <- lapply(comb.sat2, forceTest)
 	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
-
+	
 	par.alt2 <- partable(template)
 	par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
 	par.alt2$ustart <- coef
-	comb.alt2 <- lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...)	
+	comb.alt2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...))
     comb.alt2 <- lapply(comb.alt2, forceTest)
 	fit.alt2 <- sapply(comb.alt2, function(x) inspect(x, "fit")["logl"])
   	
