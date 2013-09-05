@@ -43,7 +43,7 @@ Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit ind
 Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests for the number of factors.} Paper presented at the annual meeting of the Psychometric Society, Iowa City, IA.
 }
 \author{
-    Alexander M. Schoemann (University of Kansas; \email{schoemann@ku.edu})
+    Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 	Kristopher J. Preacher (Vanderbilt University; \email{kris.preacher@vanderbilt.edu})
 	Donna L. Coffman (Pennsylvania State University; \email{dlc30@psu.edu.})
 }

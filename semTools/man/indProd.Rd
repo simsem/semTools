@@ -53,7 +53,7 @@ orthogonalize(data, var1, var2, var3=NULL, match=TRUE, namesProd=NULL)
 }
 \author{
     Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
-	Alex Schoemann (University of Kansas; \email{schoemann@ku.edu})
+	Alexander Schoemann (East Carolina University; \email{schoemanna@ecu.edu)
 }
 \seealso{
 	\itemize{

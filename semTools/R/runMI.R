@@ -89,6 +89,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 
 	fit <- imputed.results.l[[1]]@Fit@test
 	df <- fit[[1]]$df
+  if (df == 0) chi <- "none" # for saturated models, no model fit available
 	chi1 <- sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat)
 
 	if(any(template@Data@ov$type == "ordered") | (length(fit) > 1)) {
@@ -478,7 +479,7 @@ mplusPooledChi <- function(chimean, k, ariv){
   comb.chi.mplus <- matrix(NA, nrow=1, ncol=3)
   comb.chi.mplus[1] <- chimean/(1+ariv)
   comb.chi.mplus[2] <- k
-  comb.chi.mplus[3] <- 1-pchisq(comb.chi.mplus[1], comb.chi.mplus[2])
+  comb.chi.mplus[3] <- 1 - pchisq(comb.chi.mplus[1], comb.chi.mplus[2])
   colnames(comb.chi.mplus) <- c("chisq", "df", "pvalue")
   comb.chi.mplus <- as.data.frame(comb.chi.mplus)
   rownames(comb.chi.mplus) <- ""
@@ -500,7 +501,7 @@ mrPooledChi <-function(chimean, m, k, ariv){
   comb.chi.mr[1] <- chimean/((1+ariv)*k)
   comb.chi.mr[2] <- k
   comb.chi.mr[3] <- v4
-  comb.chi.mr[4] <- 1-pf(comb.chi.mr[1], comb.chi.mr[2], comb.chi.mr[3])
+  comb.chi.mr[4] <- 1 - pf(comb.chi.mr[1], comb.chi.mr[2], comb.chi.mr[3])
   colnames(comb.chi.mr) <- c("F", "df1", "df2", "pvalue")
   comb.chi.mr <- as.data.frame(comb.chi.mr)
   rownames(comb.chi.mr) <- ""
