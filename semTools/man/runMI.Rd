@@ -126,7 +126,8 @@ inspect(out3, "impute")
 dat <- simulateData(popModel, sample.nobs  = 200L)
 miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
 dat[miss.pat] <- NA
-out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, miArgs=list(ords = c("y1", "y2", "y3", "y4")))
+out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, 
+	miArgs=list(ords = c("y1", "y2", "y3", "y4")))
 summary(out5)
 inspect(out5, "fit")
 inspect(out5, "impute")

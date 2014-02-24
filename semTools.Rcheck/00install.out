@@ -1,7 +1,7 @@
 * installing *source* package 'semTools' ...
 ** R
 ** data
-**  moving datasets to lazyload DB
+*** moving datasets to lazyload DB
 ** preparing package for lazy loading
 ** help
 *** installing help indices
@@ -9,5 +9,4 @@
 ** testing if installed package can be loaded
 *** arch - i386
 *** arch - x64
-
 * DONE (semTools)

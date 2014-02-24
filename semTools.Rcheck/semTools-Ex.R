@@ -2,15 +2,28 @@ pkgname <- "semTools"
 source(file.path(R.home("share"), "R", "examples-header.R"))
 options(warn = 1)
 options(pager = "console")
+base::assign(".ExTimings", "semTools-Ex.timings", pos = 'CheckExEnv')
+base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+base::assign(".format_ptime",
+function(x) {
+  if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
+  if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
+  options(OutDec = '.')
+  format(x[1L:3L], digits = 7L)
+},
+pos = 'CheckExEnv')
+
+### * </HEADER>
 library('semTools')
 
-assign(".oldSearch", search(), pos = 'CheckExEnv')
+base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 cleanEx()
 nameEx("EFA-class")
 ### * EFA-class
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: EFA-class
 ### Title: Class For Rotated Results from EFA
 ### Aliases: EFA-class show,EFA-method summary,EFA-method
@@ -27,12 +40,15 @@ summary(rotated)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("EFA-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("FitDiff-class")
 ### * FitDiff-class
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: FitDiff-class
 ### Title: Class For Representing A Template of Model Fit Comparisons
 ### Aliases: FitDiff-class show,FitDiff-method summary,FitDiff-method
@@ -59,12 +75,15 @@ summary(modelDiff, fit.measures=c("aic", "bic"))
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("FitDiff-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("auxiliary")
 ### * auxiliary
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: auxiliary
 ### Title: Analyzing data with full-information maximum likelihood with
 ###   auxiliary variables
@@ -147,12 +166,15 @@ fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5"
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("auxiliary", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("clipboard")
 ### * clipboard
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: clipboard_saveFile
 ### Title: Copy or save the result of 'lavaan' or 'FitDiff' objects into a
 ###   clipboard or a file
@@ -207,12 +229,15 @@ flush(stderr()); flush(stdout())
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("clipboard", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("compareFit")
 ### * compareFit
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: compareFit
 ### Title: Build an object summarizing fit indices across multiple models
 ### Aliases: compareFit
@@ -239,12 +264,15 @@ compareFit(out)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("compareFit", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("dat2way")
 ### * dat2way
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: dat2way
 ### Title: Simulated Dataset to Demonstrate Two-way Latent Interaction
 ### Aliases: dat2way
@@ -255,12 +283,15 @@ head(dat2way)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("dat2way", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("dat3way")
 ### * dat3way
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: dat3way
 ### Title: Simulated Dataset to Demonstrate Three-way Latent Interaction
 ### Aliases: dat3way
@@ -271,12 +302,15 @@ head(dat3way)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("dat3way", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("efaUnrotate")
 ### * efaUnrotate
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: efaUnrotate
 ### Title: Analyze Unrotated Exploratory Factor Analysis Model
 ### Aliases: efaUnrotate
@@ -292,12 +326,15 @@ unrotated2 <- efaUnrotate(dat, nf=2, varList=paste0("x", 1:9), aux="z")
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("efaUnrotate", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("exLong")
 ### * exLong
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: exLong
 ### Title: Simulated Data set to Demonstrate Longitudinal Measurement
 ###   Invariance
@@ -309,12 +346,15 @@ head(exLong)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("exLong", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("findRMSEApower")
 ### * findRMSEApower
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: findRMSEApower
 ### Title: Find the statistical power based on population RMSEA
 ### Aliases: findRMSEApower
@@ -325,12 +365,15 @@ findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("findRMSEApower", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("findRMSEApowernested")
 ### * findRMSEApowernested
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: findRMSEApowernested
 ### Title: Find power given a sample size in nested model comparison
 ### Aliases: findRMSEApowernested
@@ -342,12 +385,15 @@ rmsea1B = 0.05, dfA = 22, dfB = 20, n = 200, alpha = 0.05, group = 1)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("findRMSEApowernested", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("findRMSEAsamplesize")
 ### * findRMSEAsamplesize
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: findRMSEAsamplesize
 ### Title: Find the minimum sample size for a given statistical power based
 ###   on population RMSEA
@@ -359,12 +405,15 @@ findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("findRMSEAsamplesize", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("findRMSEAsamplesizenested")
 ### * findRMSEAsamplesizenested
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: findRMSEAsamplesizenested
 ### Title: Find sample size given a power in nested model comparison
 ### Aliases: findRMSEAsamplesizenested
@@ -376,12 +425,15 @@ rmsea1B = 0.05, dfA = 22, dfB = 20, power=0.80, alpha=.05, group=1)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("findRMSEAsamplesizenested", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("fitMeasuresMx")
 ### * fitMeasuresMx
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: fitMeasuresMx
 ### Title: Find fit measures from an MxModel result
 ### Aliases: fitMeasuresMx
@@ -413,12 +465,15 @@ flush(stderr()); flush(stdout())
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("fitMeasuresMx", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("fmi")
 ### * fmi
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: fmi
 ### Title: Fraction of Missing Information.
 ### Aliases: fmi
@@ -456,12 +511,15 @@ out4
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("fmi", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("impliedFactorStat")
 ### * impliedFactorStat
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: impliedFactorStat
 ### Title: Calculate the model-implied factor means and covariance matrix.
 ### Aliases: impliedFactorMean impliedFactorCov impliedFactorStat
@@ -477,12 +535,15 @@ impliedFactorStat(fit)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("impliedFactorStat", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("imposeStart")
 ### * imposeStart
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: imposeStart
 ### Title: Specify starting values from a lavaan output
 ### Aliases: imposeStart
@@ -607,12 +668,15 @@ summary(model3time)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("imposeStart", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("indProd")
 ### * indProd
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: indProd
 ### Title: Make products of indicators using no centering, mean centering,
 ###   double-mean centering, or residual centering
@@ -624,28 +688,35 @@ flush(stderr()); flush(stdout())
 dat <- indProd(attitude[,-1], var1=1:3, var2=4:6)
 
 # Residual centering / two-way interaction / match-paired
-dat2 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=FALSE, residualC=TRUE, doubleMC=FALSE)
+dat2 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=FALSE, 
+	residualC=TRUE, doubleMC=FALSE)
 
 # Double-mean centering / two-way interaction / match-paired
-dat3 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=TRUE, residualC=FALSE, doubleMC=TRUE)
+dat3 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=TRUE, 
+	residualC=FALSE, doubleMC=TRUE)
 
 # Mean centering / three-way interaction / match-paired
 dat4 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6)
 
 # Residual centering / three-way interaction / match-paired
-dat5 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=FALSE, residualC=TRUE, doubleMC=FALSE)
+dat5 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=FALSE, 
+	residualC=TRUE, doubleMC=FALSE)
 
 # Double-mean centering / three-way interaction / match-paired
-dat6 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=TRUE, residualC=TRUE, doubleMC=TRUE)
+dat6 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=TRUE, 
+	residualC=TRUE, doubleMC=TRUE)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("indProd", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("kd")
 ### * kd
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: kd
 ### Title: Generate data via the Kaiser-Dickman (1962) algorithm.
 ### Aliases: kd
@@ -689,12 +760,15 @@ rawdat2 <- kd(covmat, 300)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("kd", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("kurtosis")
 ### * kurtosis
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: kurtosis
 ### Title: Finding excessive kurtosis
 ### Aliases: kurtosis
@@ -705,12 +779,15 @@ kurtosis(1:5)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("kurtosis", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("lavaanStar-class")
 ### * lavaanStar-class
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: lavaanStar-class
 ### Title: Class For Representing A (Fitted) Latent Variable Model with
 ###   Additional Elements
@@ -730,12 +807,15 @@ fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa")
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("lavaanStar-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("lisrel2lavaan")
 ### * lisrel2lavaan
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: lisrel2lavaan
 ### Title: Latent variable modeling in 'lavaan' using LISREL syntax
 ### Aliases: lisrel2lavaan
@@ -762,12 +842,15 @@ flush(stderr()); flush(stdout())
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("lisrel2lavaan", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("loadingFromAlpha")
 ### * loadingFromAlpha
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: loadingFromAlpha
 ### Title: Find standardized factor loading from coefficient alpha
 ### Aliases: loadingFromAlpha
@@ -778,12 +861,15 @@ flush(stderr()); flush(stdout())
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("loadingFromAlpha", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("longInvariance")
 ### * longInvariance
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: longInvariance
 ### Title: Measurement Invariance Tests Within Person
 ### Aliases: longInvariance longInvariance
@@ -804,16 +890,20 @@ constrainedVar <- list(var1, var2, var3)
 longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong)
 
 # Invariance of the same factor across timepoints and groups
-longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong, group="sex", group.equal=c("loadings", "intercepts"))
+longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong, group="sex", 
+	group.equal=c("loadings", "intercepts"))
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("longInvariance", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("mardiaKurtosis")
 ### * mardiaKurtosis
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: mardiaKurtosis
 ### Title: Finding Mardia's multivariate kurtosis
 ### Aliases: mardiaKurtosis
@@ -825,12 +915,15 @@ mardiaKurtosis(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("mardiaKurtosis", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("mardiaSkew")
 ### * mardiaSkew
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: mardiaSkew
 ### Title: Finding Mardia's multivariate skewness
 ### Aliases: mardiaSkew
@@ -842,12 +935,15 @@ mardiaSkew(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("mardiaSkew", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("measurementInvariance")
 ### * measurementInvariance
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: measurementInvariance
 ### Title: Measurement Invariance Tests
 ### Aliases: measurementInvariance measurementinvariance
@@ -862,12 +958,15 @@ measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("measurementInvariance", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("miPowerFit")
 ### * miPowerFit
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: miPowerFit
 ### Title: Modification indices and their power approach for model fit
 ###   evaluation
@@ -906,12 +1005,15 @@ miPowerFit(fit2, stdLoad=0.3, cor=0.2, stdBeta=0.2, intcept=0.5)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("miPowerFit", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("monteCarloMed")
 ### * monteCarloMed
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: monteCarloMed
 ### Title: Monte Carlo Confidence Intervals to Test Complex Indirect
 ###   Effects
@@ -953,12 +1055,15 @@ monteCarloMed(med, coef1=aparam, coef2=b1param, coef3=b2param, ACM=AC)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("monteCarloMed", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("moreFitIndices")
 ### * moreFitIndices
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: moreFitIndices
 ### Title: Calculate more fit indices
 ### Aliases: moreFitIndices
@@ -977,12 +1082,15 @@ moreFitIndices(fit2)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("moreFitIndices", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("nullMx")
 ### * nullMx
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: nullMx
 ### Title: Analyzing data using a null model
 ### Aliases: nullMx
@@ -997,12 +1105,15 @@ flush(stderr()); flush(stdout())
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nullMx", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("nullRMSEA")
 ### * nullRMSEA
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: nullRMSEA
 ### Title: Calculate the RMSEA of the null model
 ### Aliases: nullRMSEA
@@ -1018,12 +1129,15 @@ nullRMSEA(fit)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nullRMSEA", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("parcelAllocation")
 ### * parcelAllocation
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: parcelAllocation
 ### Title: Random Allocation of Items to Parcels in a Structural Equation
 ###   Model
@@ -1040,16 +1154,20 @@ syntax <- 'La =~ V1 + V2 + V3
 #Parcel and fit data 20 times. The actual parcel number should be higher than 20 times.
 name1 <- colnames(simParcel)[1:9]
 name2 <- colnames(simParcel)[10:18]
-parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, dataset=simParcel)
+parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, 
+	dataset=simParcel)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("parcelAllocation", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("plotProbe")
 ### * plotProbe
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: plotProbe
 ### Title: Plot the graphs for probing latent interaction
 ### Aliases: plotProbe
@@ -1126,17 +1244,21 @@ f4 ~ NA*1
 " 
 
 fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
-result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+	"f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 plotProbe(result3wayMC, xlim=c(-2, 2))
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("plotProbe", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("plotRMSEAdist")
 ### * plotRMSEAdist
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: plotRMSEAdist
 ### Title: Plot the sampling distributions of RMSEA
 ### Aliases: plotRMSEAdist
@@ -1148,12 +1270,15 @@ plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rmseaScale = FALSE)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("plotRMSEAdist", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("plotRMSEApower")
 ### * plotRMSEApower
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: plotRMSEApower
 ### Title: Plot power curves for RMSEA
 ### Aliases: plotRMSEApower
@@ -1164,12 +1289,15 @@ plotRMSEApower(.025, .075, 23, 100, 500, 10)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("plotRMSEApower", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("plotRMSEApowernested")
 ### * plotRMSEApowernested
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: plotRMSEApowernested
 ### Title: Plot power of nested model RMSEA
 ### Aliases: plotRMSEApowernested
@@ -1181,12 +1309,15 @@ dfA=22, dfB=20, nlow=50, nhigh=500, steps=1, alpha=.05, group=1)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("plotRMSEApowernested", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("probe2WayMC")
 ### * probe2WayMC
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: probe2WayMC
 ### Title: Probing two-way interaction on the residual-centered latent
 ###   interaction
@@ -1224,12 +1355,15 @@ result2wayMC
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("probe2WayMC", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("probe2WayRC")
 ### * probe2WayRC
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: probe2WayRC
 ### Title: Probing two-way interaction on the residual-centered latent
 ###   interaction
@@ -1267,12 +1401,15 @@ result2wayRC
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("probe2WayRC", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("probe3WayMC")
 ### * probe3WayMC
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: probe3WayMC
 ### Title: Probing two-way interaction on the residual-centered latent
 ###   interaction
@@ -1327,17 +1464,21 @@ f4 ~ NA*1
 fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
 summary(fitMC3way)
 
-result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+	"f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 result3wayMC
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("probe3WayMC", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("probe3WayRC")
 ### * probe3WayRC
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: probe3WayRC
 ### Title: Probing three-way interaction on the residual-centered latent
 ###   interaction
@@ -1392,17 +1533,21 @@ f4 ~ NA*1
 fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
 summary(fitRC3way)
 
-result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+	"f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 result3wayRC
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("probe3WayRC", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("reliability")
 ### * reliability
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: reliability
 ### Title: Calculate reliability values of factors
 ### Aliases: reliability
@@ -1418,12 +1563,15 @@ reliability(fit)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("reliability", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("reliabilityL2")
 ### * reliabilityL2
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: reliabilityL2
 ### Title: Calculate the reliability values of a second-order factor
 ### Aliases: reliabilityL2
@@ -1441,12 +1589,15 @@ reliabilityL2(fit6, "higher")
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("reliabilityL2", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("residualCovariate")
 ### * residualCovariate
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: residualCovariate
 ### Title: Residual centered all target indicators by covariates
 ### Aliases: residualCovariate
@@ -1457,12 +1608,15 @@ dat <- residualCovariate(attitude, 2:7, 1)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("residualCovariate", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("rotate")
 ### * rotate
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: rotate
 ### Title: Implement orthogonal or oblique rotation
 ### Aliases: orthRotate oblqRotate funRotate
@@ -1498,12 +1652,15 @@ oblqRotate(unrotated, method="geomin")
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("rotate", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("runMI")
 ### * runMI
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: runMI
 ### Title: Multiply impute and analyze data using lavaan
 ### Aliases: runMI cfa.mi sem.mi growth.mi lavaan.mi
@@ -1563,7 +1720,8 @@ inspect(out, "impute")
 ##D dat <- simulateData(popModel, sample.nobs  = 200L)
 ##D miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
 ##D dat[miss.pat] <- NA
-##D out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, miArgs=list(ords = c("y1", "y2", "y3", "y4")))
+##D out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, 
+##D 	miArgs=list(ords = c("y1", "y2", "y3", "y4")))
 ##D summary(out5)
 ##D inspect(out5, "fit")
 ##D inspect(out5, "impute")
@@ -1572,12 +1730,15 @@ inspect(out, "impute")
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("runMI", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("saturateMx")
 ### * saturateMx
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: saturateMx
 ### Title: Analyzing data using a saturate model
 ### Aliases: saturateMx
@@ -1592,12 +1753,15 @@ flush(stderr()); flush(stdout())
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("saturateMx", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("simParcel")
 ### * simParcel
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: simParcel
 ### Title: Simulated Data set to Demonstrate Random Allocations of Parcels
 ### Aliases: simParcel
@@ -1608,12 +1772,15 @@ head(simParcel)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("simParcel", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("skew")
 ### * skew
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: skew
 ### Title: Finding skewness
 ### Aliases: skew
@@ -1624,12 +1791,15 @@ skew(1:5)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("skew", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("splitSample")
 ### * splitSample
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: splitSample
 ### Title: Randomly Split a Data Set into Halves
 ### Aliases: splitSample
@@ -1661,12 +1831,15 @@ summary(splitMyData[[2]])
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("splitSample", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("standardizeMx")
 ### * standardizeMx
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: standardizeMx
 ### Title: Find standardized estimates for OpenMx output
 ### Aliases: standardizeMx
@@ -1734,12 +1907,15 @@ flush(stderr()); flush(stdout())
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("standardizeMx", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("tukeySEM")
 ### * tukeySEM
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: tukeySEM
 ### Title: Tukey's WSD post-hoc test of means for unequal variance and
 ###   sample size
@@ -1763,12 +1939,15 @@ tukeySEM(3.96, 2.94, 0.62, 1.07, 465, 64, 3)
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("tukeySEM", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("wald")
 ### * wald
 
 flush(stderr()); flush(stdout())
 
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: wald
 ### Title: Calculate multivariate Wald statistics
 ### Aliases: wald
@@ -1812,9 +1991,12 @@ wald(fit3, "p3; p6 - 0.5*p5")
 
 
 
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("wald", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 ### * <FOOTER>
 ###
-cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
+options(digits = 7L)
+base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
 grDevices::dev.off()
 ###
 ### Local variables: ***

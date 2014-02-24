@@ -1,3 +1,4 @@
+importFrom("methods", show)
 importFrom("lavaan", summary, inspect)
 exportClasses(lavaanStar, FitDiff, EFA)
 export(

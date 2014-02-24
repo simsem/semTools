@@ -52,10 +52,22 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template <- do.call(fun, out)
 
     imputed.results.l <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=model, fun=fun, ...))
-    
 	converged.l <- sapply(imputed.results.l, function(x) x@Fit@converged)
+	
+	coefAll <- sapply(imputed.results.l, function(x) x@Fit@est)
 	seAll <- sapply(imputed.results.l, function(x) x@Fit@se)
-	converged.l <- converged.l & apply(seAll, 2, function(x) all(x >= 0))
+	partableImp <- partable(imputed.results.l[[1]])
+	posVar <- (partableImp$op == "~~") & (partableImp$lhs == partableImp$rhs)
+	convergedtemp <- converged.l
+	properSE <- apply(seAll, 2, function(x) all(x >= 0) & !(all(x == 0)))
+	properVariance <- apply(coefAll[posVar, ,drop=FALSE], 2, function(x) all(x >= 0))
+	converged.l <- converged.l & properSE & properVariance
+	if(sum(converged.l) < 2) {
+		tab <- cbind(convergedtemp, properSE, properVariance, converged.l)
+		colnames(tab) <- c("1. Convergence", "2. Proper SE", "3. Proper Variance Estimate", "Used for pooling")
+		print(tab)
+		stop("Please increase the number of imputations. The number of convergent replications is less than or equal to 1. See the details above.")
+	}
 	
 	mOriginal <- m
 	m <- sum(converged.l)
@@ -66,7 +78,6 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	se <- sapply(imputed.results.l, function(x) x@Fit@se)
 	Sigma.hat <- lapply(imputed.results.l, function(object) object@Fit@Sigma.hat)
     Mu.hat <- lapply(imputed.results.l, function(object) object@Fit@Mu.hat)
-	
 	meanSigmaHat <- list()
 	meanMuHat <- list()
 	for(g in seq_len(template@SampleStats@ngroups)) {
@@ -77,8 +88,6 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	}
 	template@Fit@Sigma.hat <- meanSigmaHat
 	template@Fit@Mu.hat <- meanMuHat
-	
-	
 	comb.results <- miPoolVector(t(coefs),t(se), m)
 	template@Fit@est <- comb.results$coef
 	template@Fit@se <- comb.results$se
@@ -559,7 +568,9 @@ imposeGLIST <- function(object, coef, partable) {
 		lhs <- partable$lhs[i]
 		rhs <- partable$rhs[i]
 		if(partable$op[i] == "=~") {
-			GLIST[names(GLIST) == "lambda"][[group]][rhs, lhs] <- coef[i]
+			targetName <- "lambda"
+			if(!(rhs %in% rownames(GLIST[names(GLIST) == "lambda"][[group]]))) targetName <- "beta"
+			GLIST[names(GLIST) == targetName][[group]][rhs, lhs] <- coef[i]
 		} else if (partable$op[i] == "~~") {
 			if(lhs %in% rownames(GLIST[names(GLIST) == "psi"][[group]])) {
 				GLIST[names(GLIST) == "psi"][[group]][rhs, lhs] <- coef[i]

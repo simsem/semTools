@@ -93,5 +93,6 @@ constrainedVar <- list(var1, var2, var3)
 longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong)
 
 # Invariance of the same factor across timepoints and groups
-longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong, group="sex", group.equal=c("loadings", "intercepts"))
+longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong, group="sex", 
+	group.equal=c("loadings", "intercepts"))
 }

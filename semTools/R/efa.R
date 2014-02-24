@@ -172,7 +172,6 @@ funRotate <- function(object, fun, ...) {
 	library(GPArotation)
 	initL <- stdLoad(object)
 	rotated <- do.call(fun, c(list(L = initL), list(...)))
-	browser()
 	rotateMat <- t(solve(rotated$Th))
 	LIST <- seStdLoadings(rotateMat, object)
 	orthogonal <- rotated$orthogonal

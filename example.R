@@ -369,7 +369,7 @@ fit <- cfa(HS.model2, data=HolzingerSwineford1939, meanstructure=TRUE)
 fitaux <- auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5"), fun="cfa")
 
 library(lavaan)
-library(semTools)
+#library(semTools)
 
 # model for generating data
 pop.model <- '
@@ -463,7 +463,11 @@ library(Amelia)
 modsim <- '
 f1 =~ 0.7*y1+0.7*y2+0.7*y3
 f2 =~ 0.7*y4+0.7*y5+0.7*y6
-f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+f3 =~ 0.7*y7+0.7*y8+0.7*y9
+f1 ~~ 0.7*f2
+f1 ~~ 0.7*f3
+f2 ~~ 0.7*f3
+'
 
 mod <- '
 f1 =~ y1+y2+y3
@@ -475,12 +479,27 @@ datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE,
 randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
 randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
 datsim[randomMiss2] <- NA
-datsimMI <- amelia(datsim,m=3, noms="group")
+datsimMI <- amelia(datsim,m=5, noms="group")
 
 out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
 summary(out3)
 inspect(out3, "fit")
 inspect(out3, "impute")
+
+# Second-order
+
+modx <- '
+f1 =~ y1+y2+y3
+f2 =~ y4+y5+y6
+f3 =~ y7+y8+y9
+f =~ f1+f2+f3'
+
+out3x <- runMI(modx, data=datsimMI$imputations, group="group", fun="cfa")
+summary(out3x)
+inspect(out3x, "fit")
+inspect(out3x, "impute")
+
+# 
 
 library(mice)
 model.syntax <- '
@@ -720,6 +739,8 @@ unrotated4 <- efaUnrotate(dat, nf=2, varList=paste0("x", 1:9), aux="z")
 orthRotate(unrotated4, method="varimax")
 
 ################################ Multiple Comparison
+
+library(multcomp)
 
 lmod <- lm(Fertility ~ ., data = swiss)
 

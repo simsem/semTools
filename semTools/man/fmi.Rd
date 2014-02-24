@@ -7,7 +7,8 @@ Fraction of Missing Information.
 	This function takes a list of imputed data sets and estimates the Fraction of Missing Information of the Variances and Means for each variable.
 }
 \usage{
-	fmi(dat.imp, method="saturated", varnames=NULL, group=NULL, exclude=NULL, digits=3)
+fmi(dat.imp, method="saturated", varnames=NULL, group=NULL, exclude=NULL, 
+digits=3)
 }
 \arguments{
   \item{dat.imp}{

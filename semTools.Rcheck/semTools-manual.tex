@@ -1,0 +1,4183 @@
+\nonstopmode{}
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[utf8,latin1]{inputenc}
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `semTools'}}
+\par\bigskip{\large \today}
+\end{center}
+\begin{description}
+\raggedright{}
+\item[Type]\AsIs{Package}
+\item[Title]\AsIs{Useful tools for structural equation modeling.}
+\item[Version]\AsIs{0.4-2}
+\item[Date]\AsIs{2013-11-11}
+\item[Author]\AsIs{Sunthud Pornprasertmanit [aut, cre], Patrick Miller [aut], Alex Schoemann [aut], Yves Rosseel [aut], Corbin Quick [ctb], Mauricio Garnier-Villarreal [ctb], James Selig [ctb], Aaron Boulton [ctb], Kristopher Preacher [ctb], Donna Coffman [ctb], Mijke Rhemtulla [ctb], Alexander Robitzsch [ctb], Craig Enders [ctb], Ruber Arslan [ctb], Bell Clinton [ctb], Pavel Panko [ctb], Ed Merkle [ctb]}
+\item[Maintainer]\AsIs{Sunthud Pornprasertmanit }\email{psunthud@ku.edu}\AsIs{}
+\item[Depends]\AsIs{R(>= 3.0), lavaan, methods}
+\item[Suggests]\AsIs{MASS, parallel, Amelia, mice, foreign, OpenMx, GPArotation}
+\item[Description]\AsIs{This package provide useful tools for structural equation modeling analysis.}
+\item[License]\AsIs{GPL (>= 2)}
+\item[LazyLoad]\AsIs{yes}
+\item[LazyData]\AsIs{yes}
+\item[URL]\AsIs{https://github.com/simsem/semTools/wiki}
+\end{description}
+\Rdcontents{\R{} topics documented:}
+\inputencoding{utf8}
+\HeaderA{auxiliary}{Analyzing data with full-information maximum likelihood with auxiliary variables}{auxiliary}
+\aliasA{cfa.auxiliary}{auxiliary}{cfa.auxiliary}
+\aliasA{growth.auxiliary}{auxiliary}{growth.auxiliary}
+\aliasA{lavaan.auxiliary}{auxiliary}{lavaan.auxiliary}
+\aliasA{sem.auxiliary}{auxiliary}{sem.auxiliary}
+%
+\begin{Description}\relax
+Analyzing data with full-information maximum likelihood with auxiliary variables. The techniques used to account for auxiliary variables are both extra-dependent-variables and saturated-correlates approaches (Enders, 2008). The extra-dependent-variables approach is used for all single variables in the model (such as covariates or single-indicator dependent varaible) For variables that are belong to a multiple-indicator factor, the saturated-correlates approach is used. Note that all covariates are treated as endogenous varaibles in this model (fixed.x = FALSE) so multivariate normality is assumed for the covariates. CAUTION: (1) this function will automatically change the missing data handling method to full-information maximum likelihood and (2) this function is still not applicable for categorical variables (because the maximum likelhood method is not available in lavaan for estimating models with categorical variables currently).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+auxiliary(model, aux, fun, ...)
+cfa.auxiliary(model, aux, ...)
+sem.auxiliary(model, aux, ...)
+growth.auxiliary(model, aux, ...)
+lavaan.auxiliary(model, aux, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{model}] 
+The \code{lavaan} object, the parameter table, or lavaan script. If the \code{lavaan} object is provided, the \code{lavaan} object must be evaluated with mean structure.
+
+\item[\code{aux}] 
+The list of auxiliary variable
+
+\item[\code{fun}] 
+The character of the function name used in running lavaan model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}). 
+
+\item[\code{...}] 
+The additional arguments in the \code{\LinkA{lavaan}{lavaan}} function.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The \code{\LinkA{lavaanStar}{lavaanStar.Rdash.class}} object which contains the original \code{lavaan} object and the additional values of the null model, which need to be adjusted to account for auxiliary variables.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Enders, C. K. (2008). A note of the use of missing auxiliary variables in full information maximum likelihood-based structural equation models. \emph{Structural Equation Modeling, 15}, 434-448.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{lavaanStar}{lavaanStar.Rdash.class}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+# Example of confirmatory factor analysis
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+			  
+dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
+			  
+fit <- cfa(HS.model, data=dat, meanstructure=TRUE) 
+fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # Use lavaan script
+fitaux <- cfa.auxiliary(fit, aux="z", data=dat) # Use lavaan output
+
+# Example of multiple groups confirmatory factor analysis
+
+fitgroup <- cfa(HS.model, data=dat, group="school", meanstructure=TRUE)
+fitgroupaux <- cfa.auxiliary(fitgroup, aux="z", data=dat, group="school")
+
+# Example of path analysis
+
+mod <- ' x5 ~ x4
+x4 ~ x3
+x3 ~ x1 + x2'
+
+fitpath <- sem(mod, data=dat, fixed.x=FALSE, meanstructure=TRUE) # fixed.x must be FALSE
+fitpathaux <- sem.auxiliary(fitpath, aux="z", data=dat)
+
+# Example of full structural equation modeling
+
+dat2 <- data.frame(PoliticalDemocracy, z=rnorm(nrow(PoliticalDemocracy), 0, 1))
+model <- ' 
+     ind60 =~ x1 + x2 + x3
+     dem60 =~ y1 + a*y2 + b*y3 + c*y4
+     dem65 =~ y5 + a*y6 + b*y7 + c*y8
+
+    dem60 ~ ind60
+    dem65 ~ ind60 + dem60
+
+    y1 ~~ y5
+    y2 ~~ y4 + y6
+    y3 ~~ y7
+    y4 ~~ y8
+    y6 ~~ y8
+'
+fitsem <- sem(model, data=dat2, meanstructure=TRUE)
+fitsemaux <- sem.auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
+
+# Example of covariate at the factor level
+
+HS.model.cov <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+             speed   =~ x7 + x8 + x9 
+			  visual ~ sex
+			  textual ~ sex
+			  speed ~ sex'
+	  
+fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
+fitcovaux <- cfa.auxiliary(fitcov, aux="z", data=dat)
+
+# Example of  Endogenous variable with single indicator 
+HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              x7 ~ visual + textual'
+ 	  
+fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
+fitcov2aux <- sem.auxiliary(fitcov2, aux="z", data=dat)
+
+# Multiple auxiliary variables
+HS.model2 <- ' visual  =~ x1 + x2 + x3
+              speed   =~ x7 + x8 + x9'
+fit <- cfa(HS.model2, data=HolzingerSwineford1939)
+fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5")) 
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{clipboard\_saveFile}{Copy or save the result of \code{lavaan} or \code{FitDiff} objects into a clipboard or a file}{clipboard.Rul.saveFile}
+\aliasA{clipboard}{clipboard\_saveFile}{clipboard}
+\aliasA{saveFile}{clipboard\_saveFile}{saveFile}
+%
+\begin{Description}\relax
+Copy or save the result of \code{lavaan} or \code{\LinkA{FitDiff}{FitDiff.Rdash.class}} object into a clipboard or a file. From the clipboard, users may paste the result into the Microsoft Excel or spreadsheet application to create a table of the output.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+clipboard(object, what="summary", ...)
+saveFile(object, file, what="summary", tableFormat=FALSE, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] 
+The \code{lavaan} or \code{\LinkA{FitDiff}{FitDiff.Rdash.class}} object
+
+\item[\code{what}] 
+The attributes of the \code{lavaan} object to be copied in the clipboard. \code{"summary"} is to copy the screen provided from the \code{summary} function. \code{"mifit"} is to copy the result from the \code{\LinkA{miPowerFit}{miPowerFit}} function. Other attributes listed in the \code{inspect} method in the \LinkA{lavaan-class}{lavaan.Rdash.class} could also be used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and so on. For the The \code{\LinkA{FitDiff}{FitDiff.Rdash.class}} object, this argument is not active yet.
+
+\item[\code{file}] 
+A file name used for saving the result
+
+\item[\code{tableFormat}] 
+If \code{TRUE}, save the result in the table format using tabs for seperation. Otherwise, save the result as the output screen printed in the R console.
+
+\item[\code{...}] 
+Additional argument listed in the \code{\LinkA{miPowerFit}{miPowerFit}} function (for \code{lavaan} object only).
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The resulting output will be saved into a clipboard or a file. If using the \code{clipboard} function, users may paste it in the other applications.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+library(lavaan)
+HW.model <- ' visual  =~ x1 + c1*x2 + x3
+              textual =~ x4 + c1*x5 + x6
+               speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
+
+# Copy the summary of the lavaan object
+clipboard(fit)
+
+# Copy the modification indices and the model fit from the miPowerFit function
+clipboard(fit, "mifit")
+
+# Copy the parameter estimates
+clipboard(fit, "coef")
+
+# Copy the standard errors
+clipboard(fit, "se")
+
+# Copy the sample statistics
+clipboard(fit, "samp")
+
+# Copy the fit measures
+clipboard(fit, "fit")
+
+# Save the summary of the lavaan object
+saveFile(fit, "out.txt")
+
+# Save the modification indices and the model fit from the miPowerFit function
+saveFile(fit, "out.txt", "mifit")
+
+# Save the parameter estimates
+saveFile(fit, "out.txt", "coef")
+
+# Save the standard errors
+saveFile(fit, "out.txt", "se")
+
+# Save the sample statistics
+saveFile(fit, "out.txt", "samp")
+
+# Save the fit measures
+saveFile(fit, "out.txt", "fit")
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{compareFit}{Build an object summarizing fit indices across multiple models}{compareFit}
+%
+\begin{Description}\relax
+This function will create the template that compare fit indices across multiple lavaan outputs. The results can be exported to a clipboard or a file later. 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+compareFit(..., nested = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{...}] 
+\code{lavaan} outputs or lists of \code{lavaan} outputs
+
+\item[\code{nested}] 
+Logical whether the specified models are nested
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A \code{\LinkA{FitDiff}{FitDiff.Rdash.class}} object that saves model fit comparisons across multiple models. If the output is not assigned as an object, the output is printed in two parts: 1) nested model comparison (if models are nested) and 2) fit indices summaries. In the fit indices summaries, daggers are tagged to the model with the best fit for each fit index.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{FitDiff}{FitDiff.Rdash.class}}, \code{\LinkA{clipboard}{clipboard}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+m1 <- ' visual  =~ x1 + x2 + x3
+        textual =~ x4 + x5 + x6
+        speed   =~ x7 + x8 + x9 '
+
+fit1 <- cfa(m1, data=HolzingerSwineford1939)
+
+m2 <- ' f1  =~ x1 + x2 + x3 + x4 
+        f2 =~ x5 + x6 + x7 + x8 + x9 '
+fit2 <- cfa(m2, data=HolzingerSwineford1939)
+compareFit(fit1, fit2, nested=FALSE)
+
+HW.model <- ' visual =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed =~ x7 + x8 + x9 '
+
+out <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", quiet=TRUE)
+compareFit(out)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{dat2way}{Simulated Dataset to Demonstrate Two-way Latent Interaction}{dat2way}
+%
+\begin{Description}\relax
+A simulated data set with 2 independent factors and 1 dependent factor where each factor has three indicators 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(dat2way)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 500 observations of 9 variables.
+\begin{description}
+
+\item[x1] The first indicator of the first independent factor
+\item[x2] The second indicator of the first independent factor
+\item[x3] The third indicator of the first independent factor
+\item[x4] The first indicator of the second independent factor
+\item[x5] The second indicator of the second independent factor
+\item[x6] The third indicator of the second independent factor
+\item[x7] The first indicator of the dependent factor
+\item[x8] The second indicator of the dependent factor
+\item[x9] The third indicator of the dependent factor
+
+\end{description}
+
+\end{Format}
+%
+\begin{Source}\relax
+Data was generated by the \LinkA{mvrnorm}{mvrnorm} function in the \code{MASS} package.
+\end{Source}
+%
+\begin{Examples}
+\begin{ExampleCode}
+head(dat2way)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{dat3way}{Simulated Dataset to Demonstrate Three-way Latent Interaction}{dat3way}
+%
+\begin{Description}\relax
+A simulated data set with 3 independent factors and 1 dependent factor where each factor has three indicators 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(dat3way)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 500 observations of 12 variables.
+\begin{description}
+
+\item[x1] The first indicator of the first independent factor
+\item[x2] The second indicator of the first independent factor
+\item[x3] The third indicator of the first independent factor
+\item[x4] The first indicator of the second independent factor
+\item[x5] The second indicator of the second independent factor
+\item[x6] The third indicator of the second independent factor
+\item[x7] The first indicator of the third independent factor
+\item[x8] The second indicator of the third independent factor
+\item[x9] The third indicator of the third independent factor
+\item[x10] The first indicator of the dependent factor
+\item[x11] The second indicator of the dependent factor
+\item[x12] The third indicator of the dependent factor
+
+\end{description}
+
+\end{Format}
+%
+\begin{Source}\relax
+Data was generated by the \LinkA{mvrnorm}{mvrnorm} function in the \code{MASS} package.
+\end{Source}
+%
+\begin{Examples}
+\begin{ExampleCode}
+head(dat3way)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{EFA-class}{Class For Rotated Results from EFA}{EFA.Rdash.class}
+\aliasA{show,EFA-method}{EFA-class}{show,EFA.Rdash.method}
+\aliasA{summary,EFA-method}{EFA-class}{summary,EFA.Rdash.method}
+%
+\begin{Description}\relax
+This class contains the results of rotated exploratory factor analysis 
+\end{Description}
+%
+\begin{Section}{Objects from the Class}
+Objects can be created via the \code{\LinkA{orthRotate}{orthRotate}} or \code{\LinkA{oblqRotate}{oblqRotate}} function.
+\end{Section}
+%
+\begin{Section}{Slots}
+\begin{description}
+
+\item[\code{loading}:] Rotated standardized factor loading matrix
+\item[\code{rotate}:] Rotation matrix
+\item[\code{gradRotate}:] The gradient of the objective function at the rotated loadings
+\item[\code{convergence}:] Convergence status
+\item[\code{phi}:] Factor correlation. Will be an identity matrix if orthogonal rotation is used.
+\item[\code{se}:] Standard errors of the rotated standardized factor loading matrix
+\item[\code{method}:] Method of rotation
+\item[\code{call}:] The command used to generate this object
+
+\end{description}
+
+\end{Section}
+%
+\begin{Section}{methods}
+\begin{itemize}
+
+\item \code{summary} The \code{summary} function shows the detailed results of the rotated solution. This function has two arguments: \code{suppress} and \code{sort}. The \code{suppress} argument is used to not show the standardized loading values that less than the specified value. The default is 0.1. The \code{sort} is used to sort the factor loadings by the sizes of factor loadings in each factor. The default is \code{TRUE}.  
+
+\end{itemize}
+
+\end{Section}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{efaUnrotate}{efaUnrotate}}; \code{\LinkA{orthRotate}{orthRotate}}; \code{\LinkA{oblqRotate}{oblqRotate}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
+summary(unrotated, std=TRUE)
+inspect(unrotated, "standardized")
+
+# Rotated by Quartimin
+rotated <- oblqRotate(unrotated, method="quartimin")
+summary(rotated)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{efaUnrotate}{Analyze Unrotated Exploratory Factor Analysis Model}{efaUnrotate}
+%
+\begin{Description}\relax
+This function will analyze unrotated exploratory factor analysis model. The unrotated solution can be rotated by the \code{\LinkA{orthRotate}{orthRotate}} and \code{\LinkA{oblqRotate}{oblqRotate}} functions.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+efaUnrotate(data, nf, varList=NULL, start=TRUE, aux=NULL, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{data}] 
+A target data frame. 
+
+\item[\code{nf}] 
+The desired number of factors
+
+\item[\code{varList}] 
+Target observed variables. If not specified, all variables in the target data frame will be used.
+
+\item[\code{start}] 
+Use starting values in the analysis from the \code{\LinkA{factanal}{factanal}} function. If \code{FALSE}, the starting values from the \code{lavaan} package will be used.
+
+\item[\code{aux}] 
+The list of auxiliary variables. These variables will be included in the model by the saturated-correlates approach to account for missing information.
+
+\item[\code{...}] 
+Other arguments in the \code{\LinkA{cfa}{cfa}} function in the \code{lavaan} package, such as \code{ordered}, \code{se}, or \code{estimator}
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function will generate a lavaan script for unrotated exploratory factor analysis model such that 1) all factor loadings are estimated, 2) factor variances are fixed to 1, 3) factor covariances are fixed to 0, and 4) the dot products of any pairs of columns in the factor loading matrix are fixed to zero (Johnson and Wichern, 2002). The reason for creating this function in addition to the \code{\LinkA{factanal}{factanal}} function is that users can enjoy some advanced features from the \code{lavaan} package such as scaled chi-square, diagonal weighted least square for ordinal indicators, or full-information maximum likelihood.
+\end{Details}
+%
+\begin{Value}
+A \code{lavaan} output of unrotated exploratory factor analysis solution.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
+summary(unrotated, std=TRUE)
+inspect(unrotated, "standardized")
+
+dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
+unrotated2 <- efaUnrotate(dat, nf=2, varList=paste0("x", 1:9), aux="z")
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{exLong}{Simulated Data set to Demonstrate Longitudinal Measurement Invariance}{exLong}
+%
+\begin{Description}\relax
+A simulated data set with 1 factors with 3 indicators in three timepoints
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(exLong)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 200 observations of 10 variables.
+\begin{description}
+
+\item[sex] Sex of respondents
+\item[y1t1] Indicator 1 in Time 1
+\item[y2t1] Indicator 2 in Time 1
+\item[y3t1] Indicator 3 in Time 1
+\item[y1t2] Indicator 1 in Time 2
+\item[y2t2] Indicator 2 in Time 2
+\item[y3t2] Indicator 3 in Time 2
+\item[y1t3] Indicator 1 in Time 3
+\item[y2t3] Indicator 2 in Time 3
+\item[y3t3] Indicator 3 in Time 3
+
+\end{description}
+
+\end{Format}
+%
+\begin{Source}\relax
+Data was generated using the \code{simsem} package.
+\end{Source}
+%
+\begin{Examples}
+\begin{ExampleCode}
+head(exLong)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{findRMSEApower}{Find the statistical power based on population RMSEA}{findRMSEApower}
+%
+\begin{Description}\relax
+Find the proportion of the samples from the sampling distribution of RMSEA in the alternative hypothesis rejected by the cutoff dervied from the sampling distribution of RMSEA in the null hypothesis. This function can be applied for both test of close fit and test of not-close fit (MacCallum, Browne, \& Suguwara, 1996)
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+findRMSEApower(rmsea0, rmseaA, df, n, alpha=.05, group=1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{rmsea0}] Null RMSEA
+\item[\code{rmseaA}] Alternative RMSEA
+\item[\code{df}] Model degrees of freedom
+\item[\code{n}] Sample size of a dataset
+\item[\code{alpha}] Alpha level used in power calculations
+\item[\code{group}] The number of group that is used to calculate RMSEA.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function find the proportion of sampling distribution derived from the alternative RMSEA that is in the critical region derived from the sampling distribution of the null RMSEA. If \code{rmseaA} is greater than \code{rmsea0}, the test of close fit is used and the critical region is in the right hand side of the null sampling distribution. On the other hand, if \code{rmseaA} is less than \code{rmsea0}, the test of not-close fit is used and the critical region is in the left hand side of the null sampling distribution (MacCallum, Browne, \& Suguwara, 1996). 
+\end{Details}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+MacCallum, R. C., Browne, M. W., \& Sugawara, H. M. (1996). Power analysis and determination of sample size for covariance structure modeling. \emph{Psychological Methods, 1,} 130-149.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{plotRMSEApower}{plotRMSEApower}} to plot the statistical power based on population RMSEA given the sample size
+\item \code{\LinkA{plotRMSEAdist}{plotRMSEAdist}} to visualize the RMSEA distributions
+\item \code{\LinkA{findRMSEAsamplesize}{findRMSEAsamplesize}} to find the minium sample size for a given statistical power based on population RMSEA
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+findRMSEApower(rmsea0=.05, rmseaA=.08, df=20, n=200)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{findRMSEApowernested}{Find power given a sample size in nested model comparison}{findRMSEApowernested}
+%
+\begin{Description}\relax
+Find the sample size that the power in rejection the samples from the alternative pair of RMSEA is just over the specified power.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+findRMSEApowernested(rmsea0A = NULL, rmsea0B = NULL, 
+	rmsea1A, rmsea1B = NULL, dfA, dfB, n, alpha=.05, 
+	group=1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{rmsea0A}] The H0 baseline RMSEA.
+\item[\code{rmsea0B}] The H0 alternative RMSEA (trivial misfit).
+\item[\code{rmsea1A}] The H1 baseline RMSEA.
+\item[\code{rmsea1B}] The H1 alternative RMSEA (target misfit to be rejected).
+\item[\code{dfA}] degree of freedom of the more-restricted model.
+\item[\code{dfB}] degree of freedom of the less-restricted model.
+\item[\code{n}] Sample size.
+\item[\code{alpha}] The alpha level.
+\item[\code{group}] The number of group in calculating RMSEA.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Author}\relax
+Bell Clinton (University of Kansas; \email{clintonbell@ku.edu}); Pavel Panko (University of Kansas; \email{pavel@ku.edu}); Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+MacCallum, R. C., Browne, M. W., \& Cai, L. (2006). Testing differences between nested covariance structure models: Power analysis and null hypotheses. \emph{Psychological Methods, 11}, 19-35.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{plotRMSEApowernested}{plotRMSEApowernested}} to plot the statistical power for nested model comparison based on population RMSEA given the sample size
+\item \code{\LinkA{findRMSEAsamplesizenested}{findRMSEAsamplesizenested}} to find the minium sample size for a given statistical power in nested model comparison based on population RMSEA
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+findRMSEApowernested(rmsea0A = 0.06, rmsea0B = 0.05, rmsea1A = 0.08, 
+rmsea1B = 0.05, dfA = 22, dfB = 20, n = 200, alpha = 0.05, group = 1)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{findRMSEAsamplesize}{Find the minimum sample size for a given statistical power based on population RMSEA}{findRMSEAsamplesize}
+%
+\begin{Description}\relax
+Find the minimum sample size for a specified statistical power based on population RMSEA. This function can be applied for both test of close fit and test of not-close fit (MacCallum, Browne, \& Suguwara, 1996)
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+findRMSEAsamplesize(rmsea0, rmseaA, df, power=0.80, alpha=.05, group=1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{rmsea0}] Null RMSEA
+\item[\code{rmseaA}] Alternative RMSEA
+\item[\code{df}] Model degrees of freedom
+\item[\code{power}] Desired statistical power to reject misspecified model (test of close fit) or retain good model (test of not-close fit)
+\item[\code{alpha}] Alpha level used in power calculations
+\item[\code{group}] The number of group that is used to calculate RMSEA.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function find the minimum sample size for a specified power based on an iterative routine. The sample size keep increasing until the calculated power from \code{\LinkA{findRMSEApower}{findRMSEApower}} function is just over the specified power. If \code{group} is greater than 1, the resulting sample size is the sample size per group.
+\end{Details}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+MacCallum, R. C., Browne, M. W., \& Sugawara, H. M. (1996). Power analysis and determination of sample size for covariance structure modeling. \emph{Psychological Methods, 1,} 130-149.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{plotRMSEApower}{plotRMSEApower}} to plot the statistical power based on population RMSEA given the sample size
+\item \code{\LinkA{plotRMSEAdist}{plotRMSEAdist}} to visualize the RMSEA distributions
+\item \code{\LinkA{findRMSEApower}{findRMSEApower}} to find the statistical power based on population RMSEA given a sample size
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+findRMSEAsamplesize(rmsea0=.05, rmseaA=.08, df=20, power=0.80)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{findRMSEAsamplesizenested}{Find sample size given a power in nested model comparison}{findRMSEAsamplesizenested}
+%
+\begin{Description}\relax
+Find the sample size that the power in rejection the samples from the alternative pair of RMSEA is just over the specified power.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+findRMSEAsamplesizenested(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, 
+rmsea1B = NULL, dfA, dfB, power=0.80, alpha=.05, group=1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{rmsea0A}] The H0 baseline RMSEA.
+\item[\code{rmsea0B}] The H0 alternative RMSEA (trivial misfit).
+\item[\code{rmsea1A}] The H1 baseline RMSEA.
+\item[\code{rmsea1B}] The H1 alternative RMSEA (target misfit to be rejected).
+\item[\code{dfA}] degree of freedom of the more-restricted model.
+\item[\code{dfB}] degree of freedom of the less-restricted model.
+\item[\code{power}] The desired statistical power.
+\item[\code{alpha}] The alpha level.
+\item[\code{group}] The number of group in calculating RMSEA.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Author}\relax
+Bell Clinton (University of Kansas; \email{clintonbell@ku.edu}); Pavel Panko (University of Kansas; \email{pavel@ku.edu}); Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+MacCallum, R. C., Browne, M. W., \& Cai, L. (2006). Testing differences between nested covariance structure models: Power analysis and null hypotheses. \emph{Psychological Methods, 11}, 19-35.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{plotRMSEApowernested}{plotRMSEApowernested}} to plot the statistical power for nested model comparison based on population RMSEA given the sample size
+\item \code{\LinkA{findRMSEApowernested}{findRMSEApowernested}} to find the power for a given sample size in nested model comparison based on population RMSEA
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+findRMSEAsamplesizenested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, 
+rmsea1B = 0.05, dfA = 22, dfB = 20, power=0.80, alpha=.05, group=1) 
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{FitDiff-class}{Class For Representing A Template of Model Fit Comparisons}{FitDiff.Rdash.class}
+\aliasA{show,FitDiff-method}{FitDiff-class}{show,FitDiff.Rdash.method}
+\aliasA{summary,FitDiff-method}{FitDiff-class}{summary,FitDiff.Rdash.method}
+%
+\begin{Description}\relax
+This class contains model fit measures and model fit comparisons among multiple models
+\end{Description}
+%
+\begin{Section}{Objects from the Class}
+Objects can be created via the \code{\LinkA{compareFit}{compareFit}} function.
+\end{Section}
+%
+\begin{Section}{Slots}
+\begin{description}
+
+\item[\code{name}:] The name of each model
+\item[\code{nested}:] Model fit comparisons between adjacent nested models that are ordered based on their degrees of freedom
+\item[\code{ordernested}:] The order of nested models regarding to their degrees of freedom
+\item[\code{fit}:] Fit measures of all models specified in the \code{name} slot
+
+\end{description}
+
+\end{Section}
+%
+\begin{Section}{methods}
+\begin{itemize}
+
+\item \code{summary} The summary function is used to provide the nested model comparison results and the summary of the fit indices across models. This function has one argument: \code{fit.measures}. If \code{"default"} is specified, chi-square values, degree of freedom, \emph{p} value, CFI, TLI, RMSEA, SRMR, AIC, and BIC are provided. If \code{"all"} is specified, all information given in the \code{\LinkA{fitMeasures}{fitMeasures}} function is provided. Users may specify a vector of the name of fit indices that they wish. 
+
+\end{itemize}
+
+\end{Section}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{compareFit}{compareFit}}; \code{\LinkA{clipboard}{clipboard}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+HW.model <- ' visual =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed =~ x7 + x8 + x9 '
+
+out <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", quiet=TRUE)
+modelDiff <- compareFit(out)
+summary(modelDiff)
+summary(modelDiff, fit.measures="all")
+summary(modelDiff, fit.measures=c("aic", "bic"))
+
+## Not run: 
+# Save results to a file 
+saveFile(modelDiff, file="modelDiff.txt")
+
+# Copy to a clipboard
+clipboard(modelDiff)
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{fitMeasuresMx}{Find fit measures from an MxModel result}{fitMeasuresMx}
+%
+\begin{Description}\relax
+Find fit measures from MxModel result. The saturate and null models are analyzed in the function and fit measures are calculated based on the comparison with the null and saturate models. The function is adjusted from the \code{fitMeasures} function in the lavaan package.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+fitMeasuresMx(object, fit.measures="all")
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] 
+The target \code{MxModel} object
+
+\item[\code{fit.measures}] 
+Target fit measures
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A vector of fit measures
+\end{Value}
+%
+\begin{Author}\relax
+The original function is the \code{fitMeasures} function written by Yves Rosseel in the \code{lavaan} package. The function is adjusted for an \code{MxModel} object by Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{nullMx}{nullMx}}, \code{\LinkA{saturateMx}{saturateMx}}, \code{\LinkA{standardizeMx}{standardizeMx}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+library(OpenMx)
+data(demoOneFactor)
+manifests <- names(demoOneFactor)
+latents <- c("G")
+factorModel <- mxModel("One Factor", 
+    type="RAM",
+    manifestVars=manifests, 
+    latentVars=latents,
+    mxPath(from=latents, to=manifests),
+    mxPath(from=manifests, arrows=2),
+    mxPath(from=latents, arrows=2, free=FALSE, values=1.0),
+    mxData(observed=cov(demoOneFactor), type="cov", numObs=500)
+)
+factorFit <- mxRun(factorModel)
+round(fitMeasuresMx(factorFit), 3)
+
+# Compare with lavaan
+library(lavaan)
+script <- "f1 =~ x1 + x2 + x3 + x4 + x5"
+fitMeasures(cfa(script, sample.cov = cov(demoOneFactor), sample.nobs = 500, std.lv = TRUE))
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{fmi}{Fraction of Missing Information.}{fmi}
+%
+\begin{Description}\relax
+This function takes a list of imputed data sets and estimates the Fraction of Missing Information of the Variances and Means for each variable.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+fmi(dat.imp, method="saturated", varnames=NULL, group=NULL, exclude=NULL, 
+digits=3)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{dat.imp}] 
+List of imputed data sets, the function only accept a list of data frames.
+
+\item[\code{method}] 
+Specified the model used to estimated the variances and means. Can be one of the following: \code{"saturated"} (\code{"sat"}) or \code{"null"}, the default is \code{"saturated"}. See Details for more information.
+
+\item[\code{varnames}] 
+A vector of variables names. This argument allow the user to get the fmi of a subset of variables. The function by default will estimate the fmi for all the variables.
+
+\item[\code{group}] 
+A variable name defining the groups. This will give the fmi for each group. 
+
+\item[\code{exclude}] 
+A vector of variables names. These variables will be excluded from the analysis.
+
+\item[\code{digits}] 
+Number of decimals to print in the results.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The function estimates a variance/covariance model for each data set using lavaan. If method = \code{"saturated"} the function will estimate all the variances and covariances, 
+if method = \code{"null"} the function will only estimate the variances. The saturated model gives more reliable estimates. 
+With big data sets using the saturated model could take a lot of time.
+In the case of having problems with big data sets it is helpful to select a subset of variables with \code{varnames} and/or use the \code{"null"} model.
+The function does not accept character variables.
+\end{Details}
+%
+\begin{Value}
+fmi returns a list with the Fraction of Missing Information of the Variances and Means for each variable in the data set.
+\begin{ldescription}
+\item[\code{Variances}] The estimated variance for each variable, and the respective standard error.
+Two estimates Fraction of Missing Information of the Variances. The first estimate of fmi (fmi.1) is asymptotic fmi and the second estimate of fmi (fmi.2) is corrected for small numbers of imputations
+\item[\code{Means}] The estimated mean for each variable, and the respective standard error.
+Two estimates Fraction of Missing Information of the Means. The first estimate of fmi (fmi.1) is asymptotic fmi and the second estimate of fmi (fmi.2) is corrected for small numbers of imputations
+\end{ldescription}
+\end{Value}
+%
+\begin{Author}\relax
+Mauricio Garnier Villarreal (University of Kansas; \email{mgv@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Rubin, D.B. (1987) \emph{Multiple Imputation for Nonresponse in Surveys.} J. Wiley \& Sons, New York.
+
+Savalei, V. \& Rhemtulla, M. (2012) On Obtaining Estimates of the Fraction
+of Missing Information From Full Information Maximum Likelihood, \emph{Structural Equation Modeling: A Multidisciplinary Journal, 19:3}, 477-494.
+
+Wagner, J. (2010) The Fraction of Missing Information as a Tool for Monitoring the Quality of Survey Data, \emph{Public Opinion Quarterly, 74:2}, 223-243.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(Amelia)
+library(lavaan)
+
+modsim <- '
+f1 =~ 0.7*y1+0.7*y2+0.7*y3
+f2 =~ 0.7*y4+0.7*y5+0.7*y6
+f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+
+datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
+                       std.lv=TRUE, sample.nobs=c(200,200))
+randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+randomMiss2[,10] <- FALSE
+datsim[randomMiss2] <- NA
+datsimMI <- amelia(datsim,m=3,idvars="group")
+
+out1 <- fmi(datsimMI$imputations, exclude="group")
+out1
+                       
+out2 <- fmi(datsimMI$imputations, exclude="group", method="null")
+out2
+                       
+out3 <- fmi(datsimMI$imputations, varnames=c("y1","y2","y3","y4"))
+out3
+
+out4 <- fmi(datsimMI$imputations, group="group")
+out4
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{impliedFactorStat}{Calculate the model-implied factor means and covariance matrix. }{impliedFactorStat}
+\aliasA{impliedFactorCov}{impliedFactorStat}{impliedFactorCov}
+\aliasA{impliedFactorMean}{impliedFactorStat}{impliedFactorMean}
+%
+\begin{Description}\relax
+Calculate reliability values of factors by coefficient omega
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+impliedFactorStat(object)
+impliedFactorMean(object)
+impliedFactorCov(object)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The \code{impliedFactorMean} function is used to calculated model-implied factor means:
+
+\deqn{ 
+	\mu = \left( \bold{I} - \bold{B} \right)^{-1} \alpha ,
+}{}
+
+where \eqn{\mu}{} is the model-implied factor mean, \eqn{\bold{I}}{} is an identity matrix, \eqn{\bold{B}}{} is an regression coefficient matrix, and \eqn{\alpha}{} is a vector of factor intercepts.
+
+The \code{impliedFactorCov} function is used to calculated model-implied covariance matrix:
+
+\deqn{ \Phi = \left( \bold{I} - \bold{B} \right)^{-1} \Psi \left(\bold{I} - \bold{B} \right)^{-1\prime} ,}{}
+
+where \eqn{\Phi}{} is the model-implied factor covariance matrix, \eqn{\Psi}{} is the residual factor covariance matrix.
+
+The \code{impliedFactorStat} function is used to provide both model-implied means (if the mean structure is estimated) and covariance matrix.
+\end{Details}
+%
+\begin{Value}
+Model-implied factor means or model-implied factor covariance matrix, or both
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939, group="school")
+impliedFactorStat(fit)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{imposeStart}{Specify starting values from a lavaan output}{imposeStart}
+%
+\begin{Description}\relax
+This function will save the parameter estimates of a lavaan output and impose those parameter estimates as starting values for another analysis model. The free parameters with the same names or the same labels across two models will be imposed the new starting values. This function may help to increase the chance of convergence in a complex model (e.g., multitrait-multimethod model or complex longitudinal invariance model).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+imposeStart(out, expr, silent = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{out}] 
+The \code{lavaan} output that users wish to use the parameter estimates as staring values for an analysis model
+
+\item[\code{expr}] 
+The original code that users use to run a lavaan model
+
+\item[\code{silent}] 
+Logical to print the parameter table with new starting values
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A fitted lavaan model
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+# The following example show that the longitudinal weak invariance model
+# using effect coding was not convergent with three time points but convergent
+# with two time points. Thus, the parameter estimates from the model with
+# two time points are used as starting values of the three time points.
+# The model with new starting values is convergent properly.
+
+weak2time <- ' 
+	# Loadings
+	f1t1 =~ LOAD1*y1t1 + LOAD2*y2t1 + LOAD3*y3t1
+    f1t2 =~ LOAD1*y1t2 + LOAD2*y2t2 + LOAD3*y3t2
+	
+	# Factor Variances
+	f1t1 ~~ f1t1
+	f1t2 ~~ f1t2
+	
+	# Factor Covariances
+	f1t1 ~~ f1t2 
+	
+	# Error Variances
+	y1t1 ~~ y1t1
+	y2t1 ~~ y2t1
+	y3t1 ~~ y3t1
+	y1t2 ~~ y1t2
+	y2t2 ~~ y2t2
+	y3t2 ~~ y3t2
+	
+	# Error Covariances
+	y1t1 ~~ y1t2 
+	y2t1 ~~ y2t2 
+	y3t1 ~~ y3t2
+	
+	# Factor Means
+	f1t1 ~ NA*1
+	f1t2 ~ NA*1
+	
+	# Measurement Intercepts
+	y1t1 ~ INT1*1
+	y2t1 ~ INT2*1
+	y3t1 ~ INT3*1
+	y1t2 ~ INT4*1
+	y2t2 ~ INT5*1
+	y3t2 ~ INT6*1
+	
+	# Constraints for Effect-coding Identification
+	LOAD1 == 3 - LOAD2 - LOAD3
+	INT1 == 0 - INT2 - INT3
+	INT4 == 0 - INT5 - INT6
+'
+model2time <- lavaan(weak2time, data = exLong)
+
+weak3time <- ' 
+	# Loadings
+	f1t1 =~ LOAD1*y1t1 + LOAD2*y2t1 + LOAD3*y3t1
+    f1t2 =~ LOAD1*y1t2 + LOAD2*y2t2 + LOAD3*y3t2
+    f1t3 =~ LOAD1*y1t3 + LOAD2*y2t3 + LOAD3*y3t3
+	
+	# Factor Variances
+	f1t1 ~~ f1t1
+	f1t2 ~~ f1t2
+	f1t3 ~~ f1t3
+	
+	# Factor Covariances
+	f1t1 ~~ f1t2 + f1t3
+	f1t2 ~~ f1t3 
+	
+	# Error Variances
+	y1t1 ~~ y1t1
+	y2t1 ~~ y2t1
+	y3t1 ~~ y3t1
+	y1t2 ~~ y1t2
+	y2t2 ~~ y2t2
+	y3t2 ~~ y3t2
+	y1t3 ~~ y1t3
+	y2t3 ~~ y2t3
+	y3t3 ~~ y3t3
+	
+	# Error Covariances
+	y1t1 ~~ y1t2 
+	y2t1 ~~ y2t2 
+	y3t1 ~~ y3t2
+	y1t1 ~~ y1t3 
+	y2t1 ~~ y2t3 
+	y3t1 ~~ y3t3
+	y1t2 ~~ y1t3
+	y2t2 ~~ y2t3 
+	y3t2 ~~ y3t3
+	
+	# Factor Means
+	f1t1 ~ NA*1
+	f1t2 ~ NA*1
+	f1t3 ~ NA*1
+	
+	# Measurement Intercepts
+	y1t1 ~ INT1*1
+	y2t1 ~ INT2*1
+	y3t1 ~ INT3*1
+	y1t2 ~ INT4*1
+	y2t2 ~ INT5*1
+	y3t2 ~ INT6*1
+	y1t3 ~ INT7*1
+	y2t3 ~ INT8*1
+	y3t3 ~ INT9*1
+	
+	# Constraints for Effect-coding Identification
+	LOAD1 == 3 - LOAD2 - LOAD3
+	INT1 == 0 - INT2 - INT3
+	INT4 == 0 - INT5 - INT6
+	INT7 == 0 - INT8 - INT9
+'
+### The following command does not provide convergent result
+# model3time <- lavaan(weak3time, data = exLong)
+
+### Use starting values from the model with two time points
+model3time <- imposeStart(model2time, lavaan(weak3time, data = exLong))
+summary(model3time)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{indProd}{Make products of indicators using no centering, mean centering, double-mean centering, or residual centering}{indProd}
+\aliasA{orthogonalize}{indProd}{orthogonalize}
+%
+\begin{Description}\relax
+The \code{indProd} function will make products of indicators using no centering, mean centering, double-mean centering, or residual centering. The \code{orthogonalize} function is the shortcut of the \code{indProd} function to make the residual-centered indicators products.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+indProd(data, var1, var2, var3=NULL, match = TRUE, meanC = TRUE, 
+	residualC = FALSE, doubleMC = TRUE, namesProd = NULL)
+orthogonalize(data, var1, var2, var3=NULL, match=TRUE, namesProd=NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{data}] 
+The desired data to be transformed.
+
+\item[\code{var1}] 
+Names or indices of the variables loaded on the first factor
+
+\item[\code{var2}] 
+Names or indices of the variables loaded on the second factor
+
+\item[\code{var3}] 
+Names or indices of the variables loaded on the third factor (for three-way interaction)
+
+\item[\code{match}] 
+Specify \code{TRUE} to use match-paired approach (Marsh, Wen, \& Hau, 2004). If \code{FALSE}, the resulting products are all possible products.
+
+\item[\code{meanC}] 
+Specify \code{TRUE} for mean centering the main effect indicator before making the products
+
+\item[\code{residualC}] 
+Specify \code{TRUE} for residual centering the products by the main effect indicators (Little, Bovaird, \& Widaman, 2006).
+
+\item[\code{doubleMC}] 
+Specify \code{TRUE} for centering the resulting products (Lin et. al., 2010)
+
+\item[\code{namesProd}] 
+The names of resulting products
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The original data attached with the products.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+Alexander Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
+\end{Author}
+%
+\begin{References}\relax
+Marsh, H. W., Wen, Z. \& Hau, K. T. (2004). Structural equation models of latent interactions: Evaluation of alternative estimation strategies and indicator construction. \emph{Psychological Methods, 9,} 275-300.
+
+Lin, G. C., Wen, Z., Marsh, H. W., \& Lin, H. S. (2010). Structural equation models of latent interactions: Clarification of orthogonalizing and double-mean-centering strategies. \emph{Structural Equation Modeling, 17}, 374-391.
+
+Little, T. D., Bovaird, J. A., \& Widaman, K. F. (2006). On the merits of orthogonalizing powered and product terms: Implications for modeling interactions among latent variables. \emph{Structural Equation Modeling, 13}, 497-519.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{probe2WayMC}{probe2WayMC}} For probing the two-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe3WayMC}{probe3WayMC}} For probing the three-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe2WayRC}{probe2WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{probe3WayRC}{probe3WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{plotProbe}{plotProbe}} Plot the simple intercepts and slopes of the latent interaction.
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+# Mean centering / two-way interaction / match-paired
+dat <- indProd(attitude[,-1], var1=1:3, var2=4:6)
+
+# Residual centering / two-way interaction / match-paired
+dat2 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=FALSE, 
+	residualC=TRUE, doubleMC=FALSE)
+
+# Double-mean centering / two-way interaction / match-paired
+dat3 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE, meanC=TRUE, 
+	residualC=FALSE, doubleMC=TRUE)
+
+# Mean centering / three-way interaction / match-paired
+dat4 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6)
+
+# Residual centering / three-way interaction / match-paired
+dat5 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=FALSE, 
+	residualC=TRUE, doubleMC=FALSE)
+
+# Double-mean centering / three-way interaction / match-paired
+dat6 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, match=FALSE, meanC=TRUE, 
+	residualC=TRUE, doubleMC=TRUE)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{kd}{Generate data via the Kaiser-Dickman (1962) algorithm.}{kd}
+%
+\begin{Description}\relax
+Given a covariance matrix and sample size, generate raw data that
+correspond to the covariance matrix.  Data can be generated to match the
+covariance matrix exactly, or to be a sample from the population
+covariance matrix.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+kd(covmat, n, type = c("exact", "sample"))
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{covmat}] a symmetric, positive definite covariance matrix
+\item[\code{n}] the sample size for the data that will be generated
+\item[\code{type}] type of data generation. \code{exact} generates data that
+exactly correspond to \code{covmat}.  \code{sample} treats
+\code{covmat} as a poulation covariance matrix, generating a sample
+of size \code{n}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+By default, R's \code{cov()} function divides by \code{n}-1.  The data
+generated by this algorithm result in a covariance matrix that matches
+\code{covmat}, but you must divide by \code{n} instead of \code{n}-1.
+\end{Details}
+%
+\begin{Value}
+\code{kd} returns a data matrix of dimension \code{n} by \code{nrow(covmat)}.
+\end{Value}
+%
+\begin{Author}\relax
+Ed Merkle (University of Missouri; \email{merklee@missouri.edu})
+\end{Author}
+%
+\begin{References}\relax
+Kaiser, H. F. and Dickman, K. (1962).  Sample and population score
+matrices and sample correlation matrices from an arbitrary population
+correlation matrix.  \emph{Psychometrika, 27}, 179-182.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+#### First Example
+
+## Get data
+dat <- HolzingerSwineford1939[,7:15]
+hs.n <- nrow(dat)
+
+## Covariance matrix divided by n
+hscov <- ((hs.n-1)/hs.n) * cov(dat)
+
+## Generate new, raw data corresponding to hscov
+newdat <- kd(hscov, hs.n)
+
+## Difference between new covariance matrix and hscov is minimal
+newcov <- (hs.n-1)/hs.n * cov(newdat)
+summary(as.numeric(hscov - newcov))
+
+## Generate sample data, treating hscov as population matrix
+newdat2 <- kd(hscov, hs.n, type="sample")
+
+#### Another example
+
+## Define a covariance matrix
+covmat <- matrix(0, 3, 3); diag(covmat) <- 1.5; covmat[2:3,1] <- c(1.3, 1.7); covmat[3,2] <- 2.1
+covmat <- covmat + t(covmat)
+
+## Generate data of size 300 that have this covariance matrix
+rawdat <- kd(covmat, 300)
+
+## Covariances are exact if we compute sample covariance matrix by
+## dividing by n (vs by n-1)
+summary(as.numeric((299/300)*cov(rawdat) - covmat))
+
+## Generate data of size 300 where covmat is the population covariance matrix
+rawdat2 <- kd(covmat, 300)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{kurtosis}{Finding excessive kurtosis}{kurtosis}
+%
+\begin{Description}\relax
+Finding excessive kurtosis (g2) of an object
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+kurtosis(object, population=FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] 
+A vector used to find a excessive kurtosis
+
+\item[\code{population}] 
+\code{TRUE} to compute the parameter formula. \code{FALSE} to compute the sample statistic formula.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The excessive kurtosis computed is g2. The parameter excessive kurtosis \eqn{\gamma_{2}}{} formula is
+
+\deqn{\gamma_{2} = \frac{\mu_{4}}{\mu^{2}_{2}} - 3,}{}
+
+where \eqn{\mu_{i}}{} denotes the \eqn{i}{} order central moment.
+
+The excessive kurtosis formula for sample statistic \eqn{g_{2}}{} is
+
+\deqn{g_{2} = \frac{k_{4}}{k^{2}_{2}},}{}
+
+where \eqn{k_{i}}{} are the \eqn{i}{} order \emph{k}-statistic.
+
+The standard error of the excessive kurtosis is 
+
+\deqn{Var(\hat{g}_2) = \frac{24}{N}}{}
+
+where \eqn{N}{} is the sample size.
+\end{Details}
+%
+\begin{Value}
+A value of an excessive kurtosis with a test statistic if the population is specified as \code{FALSE}
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Weisstein, Eric W. (n.d.). \emph{Kurtosis.} Retrived from MathWorld--A Wolfram Web Resource \url{http://mathworld.wolfram.com/Kurtosis.html} 
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{skew}{skew}} Find the univariate skewness of a variable
+\item \code{\LinkA{mardiaSkew}{mardiaSkew}} Find the Mardia's multivariate skewness of a set of variables
+\item \code{\LinkA{mardiaKurtosis}{mardiaKurtosis}} Find the Mardia's multivariate kurtosis of a set of variables
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+kurtosis(1:5)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{lavaanStar-class}{Class For Representing A (Fitted) Latent Variable Model with Additional Elements}{lavaanStar.Rdash.class}
+\aliasA{inspect,lavaanStar-method}{lavaanStar-class}{inspect,lavaanStar.Rdash.method}
+\aliasA{summary,lavaanStar-method}{lavaanStar-class}{summary,lavaanStar.Rdash.method}
+%
+\begin{Description}\relax
+This is the \code{lavaan} class that contains additional information about the fit values from the null model. Some functions are adjusted according to the change.
+\end{Description}
+%
+\begin{Section}{Objects from the Class}
+Objects can be created via the \code{\LinkA{auxiliary}{auxiliary}} function or \code{\LinkA{runMI}{runMI}}.
+\end{Section}
+%
+\begin{Section}{Slots}
+\begin{description}
+
+\item[\code{call}:] The function call as returned by \code{match.called()}.
+\item[\code{timing}:] The elapsed time (user+system) for various parts of 
+the program as a list, including the total time.
+\item[\code{Options}:] Named list of options that were provided by
+the user, or filled-in automatically.
+\item[\code{ParTable}:] Named list describing the model parameters. Can be coerced to a data.frame. In the documentation, this is called the `parameter table'.
+\item[\code{Data}:] Object of internal class \code{"Data"}: information
+about the data.
+\item[\code{SampleStats}:] Object of internal class \code{"SampleStats"}: sample 
+statistics
+\item[\code{Model}:] Object of internal class \code{"Model"}: the 
+internal (matrix) representation of the model
+\item[\code{Fit}:] Object of internal class \code{"Fit"}: the 
+results of fitting the model
+\item[\code{nullfit}:] The fit-indices information from the null model
+\item[\code{imputed}:] The list of information from running multiple imputation. The first element is the convergence rate of the target and null models. The second element is the fraction missing information. The first estimate of FMI (FMI.1) is asymptotic FMI and the second estimate of FMI (FMI.2) is corrected for small numbers of imputation. The third element is the fit values of the target model by the specified chi-squared methods. The fourth element is the fit values of the null model by the specified chi-square methods.
+\item[\code{auxNames}:] The list of auxiliary variables in the analysis.
+
+\end{description}
+
+\end{Section}
+%
+\begin{References}\relax
+see \code{\LinkA{lavaan}{lavaan.Rdash.class}}
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{auxiliary}{auxiliary}}; \code{\LinkA{runMI}{runMI}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+			  
+dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
+			  
+fit <- cfa(HS.model, data=dat) 
+fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa")
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{lisrel2lavaan}{Latent variable modeling in \code{\LinkA{lavaan}{lavaan.Rdash.class}} using LISREL syntax}{lisrel2lavaan}
+%
+\begin{Description}\relax
+This function can be used to estimate a structural equation model in \code{\LinkA{lavaan}{lavaan.Rdash.class}} using LISREL syntax. Data are automatically imported from the LISREL syntax file, or, if data files names are provided within LISREL syntax, from the same directory as the syntax itself, as per standard LISREL data importation. 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+lisrel2lavaan(filename = NULL, analyze = TRUE, silent = FALSE, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{filename}] 
+Filename of the LISREL syntax file. If the \code{filename} arguement is not specified, the user will be prompted with a file browser with which LISREL syntax file can be selected (recommended). 
+
+\item[\code{analyze}] 
+Logical. If \code{analyze==TRUE} (default), data will be automatically imported and analyzed; \code{\LinkA{lavaan}{lavaan.Rdash.class}} summary output displayed and fit object will be returned silently. If \code{analyze==FALSE}, data will not be imported or analyzed; instead, a \code{\LinkA{lavaan}{lavaan.Rdash.class}} parameter table containing the model specifications will be returned. 
+
+\item[\code{silent}] 
+Logical. If false (default) the data will be analyzed and output displayed. If true, a fit object will be returned and summary output will not be displayed. 
+
+\item[\code{...}]  
+Additional arguments to be passed to \code{\LinkA{lavaan}{lavaan}}.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Output summary is printed to screen and \code{\LinkA{lavaan}{lavaan.Rdash.class}} fit object is returned.
+\end{Value}
+%
+\begin{Note}\relax
+\code{lisrel2lavaan} is still in development, and not all LISREL commands are currently functional. A number of known limitations are outlined below. If an error is encountered that is not listed, please contact \email{corbinq@ku.edu}.
+\begin{enumerate}
+
+\item data importation
+\code{lisrel2lavaan} currently supports .csv, .dat, and most other delimited data formats. However, formats that are specific to LISREL or PRELIS (e.g., the .PSF file format) cannot be imported. \code{lisrel2lavaan} supports raw data, covariance matrices, and correlation matrices (accompanied by a variance vector). Symmetric matrices can either contain lower triangle or full matrix. For MACS structure models, either raw data or summary statistics (that include a mean vector) are supported.
+
+\item variable labels
+Certain variable labels that are permitted in LISREL cannot be supported in \code{lisrel2lavaan}. 
+duplicate labels
+Most importantly, no two variables of any kind (including phantom variables) should be given the same label when using \code{lisrel2lavaan}. If multiple variables are given the same label, \code{\LinkA{lavaan}{lavaan}} will estimate an incorrect model. 
+
+numeric character labels
+All variable labels are recommended to include non-numeric characters. In addition, the first character in each variable label is recommended to be non-numeric. 
+
+labels not specified
+If variable labels are not provided by the user, names will be generated reflecting variable assignment (e.g. 'eta1', 'ksi1'); manifest variables will be in lower case and latent variables in upper case. 
+
+
+\item OU paragraph
+Not all commands in the OU paragraph are presently supported in \code{lisrel2lavaan}. The ME command can be used to specify estimation method; however, not all estimations available in LISREL are currently supported by \code{\LinkA{lavaan}{lavaan}}. If the specified ME is unsupported, \code{lisrel2lavaan} will revert to default estimation. The AD, EP, IT, ND and NP keywords will be ignored. Requests for text files containing starting values (e.g., \code{OU BE}) will also be ignored. 
+
+\item starting values
+Certain functionalities related to starting values in LISREL are not yet operational in \code{lisrel2lavaan}. Note that due to differences in estimation, starting values are not as important in \code{\LinkA{lavaan}{lavaan}} model estimation as in LISREL. 
+text file output
+Requests for text files containing starting values for individual matrices in the in the \code{OU} command (e.g., \code{OU BE}) are not currently supported. These requests will be ignored.
+
+MA paragraph
+Specification of matrix starting values using the MA command is permitted by providing starting values within syntax directly. However, \code{lisrel2lavaan} has sometimes encountered problems with importation when files are specified following the MA paragraph. 
+
+
+
+\end{enumerate}
+
+\end{Note}
+%
+\begin{Author}\relax
+Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+	## calling lisrel2lavaan without specifying the filename argument will  
+	## open a file browser window with which LISREL syntax can be selected. 
+	
+	## any additional arguments to be passed to lavaan for data analysis can
+	## be specified normally. 
+	
+	lisrel2lavaan(se="standard")
+	## lavaan output summary printed to screen
+	## lavaan fit object returned silently
+	
+	## manual file specification 
+	
+	lisrel2lavaan(filename="myFile.LS8", se="standard")
+	## lavaan output summary printed to screen
+	## lavaan fit object returned silently
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{loadingFromAlpha}{Find standardized factor loading from coefficient alpha}{loadingFromAlpha}
+%
+\begin{Description}\relax
+Find standardized factor loading from coefficient alpha assuming that all items have equal loadings.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+loadingFromAlpha(alpha, ni)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{alpha}] A desired coefficient alpha value.
+\item[\code{ni}] A desired number of items.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+\begin{ldescription}
+\item[\code{result}] The standardized factor loadings that make desired coefficient alpha with specified number of items.
+\end{ldescription}
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+    loadingFromAlpha(0.8, 4)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{longInvariance}{Measurement Invariance Tests Within Person}{longInvariance}
+%
+\begin{Description}\relax
+Testing measurement invariance across timepoints (longitudinal) or any context involving the use of the same scale in one case (e.g., a dyad case with husband and wife answering the same scale). The measurement invariance uses a typical sequence of model comparison tests. This function currently works with only one scale.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+longInvariance(model, varList, auto = "all", constrainAuto = FALSE, 
+fixed.x = TRUE, std.lv = FALSE, group=NULL, group.equal="", 
+group.partial="", warn=TRUE, debug=FALSE, strict = FALSE, quiet = FALSE, 
+...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{model}] lavaan syntax or parameter table
+\item[\code{varList}] A list containing indicator names of factors used in the invariance testing, such as the list that the first element is the vector of indicator names in the first timepoint and the second element is the vector of indicator names in the second timepoint. The order of indicator names should be the same (but measured in different times or different units).
+\item[\code{auto}] The order of autocorrelation on the measurement errors on the similar items across factor (e.g., Item 1 in Time 1 and Time 2). If 0 is specified, the autocorrelation will be not imposed. If 1 is specified, the autocorrelation will imposed for the adjacent factor listed in \code{varList}. The maximum number can be specified is the number of factors specified minus 1. If \code{"all"} is specified, the maximum number of order will be used.
+\item[\code{constrainAuto}] If \code{TRUE}, the function will equate the auto-\emph{covariance} to be equal within the same item across factors. For example, the covariance of item 1 in time 1 and time 2 is equal to the covariance of item 1 in time 2 and time 3.
+\item[\code{fixed.x}] See \code{\LinkA{lavaan}{lavaan}.}
+\item[\code{std.lv}] See \code{\LinkA{lavaan}{lavaan}.}
+\item[\code{group}] See \code{\LinkA{lavaan}{lavaan}.}
+\item[\code{group.equal}] See \code{\LinkA{lavaan}{lavaan}.}
+\item[\code{group.partial}] See \code{\LinkA{lavaan}{lavaan}.}
+\item[\code{warn}] See \code{\LinkA{lavaan}{lavaan}.}
+\item[\code{debug}] See \code{\LinkA{lavaan}{lavaan}.}
+\item[\code{strict}] If \code{TRUE}, the sequence requires `strict' invariance. See details for more information.
+\item[\code{quiet}] If \code{TRUE}, a summary is printed out containing an overview of the different models that are fitted, together with some model comparison tests.
+\item[\code{...}] Additional arguments in the \code{\LinkA{lavaan}{lavaan}} function.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+If \code{strict = FALSE}, the following four models are tested in order:
+\begin{enumerate}
+
+\item Model 1: configural invariance. The same factor structure is imposed
+on all units.
+\item Model 2: weak invariance. The factor loadings are constrained to be
+equal across units.
+\item Model 3: strong invariance. The factor loadings and intercepts are
+constrained to be equal across units.
+\item Model 4: The factor loadings, intercepts and means are constrained to
+be equal across units.
+
+\end{enumerate}
+
+Each time a more restricted model is fitted, a chi-square difference test
+is reported, comparing the current model with the previous one, and comparing
+the current model to the baseline model (Model 1). In addition, the difference
+in cfi is also reported (delta.cfi).
+
+If \code{strict = TRUE}, the following five models are tested in order:
+\begin{enumerate}
+
+\item Model 1: configural invariance. The same factor structure is imposed
+on all units.
+\item Model 2: weak invariance. The factor loadings are constrained to be
+equal across units.
+\item Model 3: strong invariance. The factor loadings and intercepts are
+constrained to be equal across units.
+\item Model 4: strict invariance. The factor loadings, intercepts and
+residual variances are constrained to be equal across units.
+\item Model 5: The factor loadings, intercepts, residual variances and means
+are constrained to be equal across units.
+
+\end{enumerate}
+
+
+Note that if the chi-square test statistic is scaled (eg. a
+Satorra-Bentler or Yuan-Bentler test statistic), a special version of the
+chi-square difference test is used as described in
+\url{http://www.statmodel.com/chidiff.shtml}
+\end{Details}
+%
+\begin{Value}
+Invisibly, all model fits in the sequence are returned as a list.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu}); Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+\end{Author}
+%
+\begin{References}\relax
+Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the measurement invariance literature: Suggestions, practices, and recommendations for organizational research. \emph{Organizational Research Methods, 3,} 4-70.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{measurementinvariance}{measurementinvariance}} For the measurement invariance test between groups
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+model <- ' f1t1 =~ y1t1 + y2t1 + y3t1
+              f1t2 =~ y1t2 + y2t2 + y3t2
+			  f1t3 =~ y1t3 + y2t3 + y3t3'
+
+# Create list of variables
+var1 <- c("y1t1", "y2t1", "y3t1")
+var2 <- c("y1t2", "y2t2", "y3t2")
+var3 <- c("y1t3", "y2t3", "y3t3")
+constrainedVar <- list(var1, var2, var3)
+
+# Invariance of the same factor across timepoints
+longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong)
+
+# Invariance of the same factor across timepoints and groups
+longInvariance(model, auto=1, constrainAuto=TRUE, varList=constrainedVar, data=exLong, group="sex", 
+	group.equal=c("loadings", "intercepts"))
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{mardiaKurtosis}{Finding Mardia's multivariate kurtosis}{mardiaKurtosis}
+%
+\begin{Description}\relax
+Finding Mardia's multivariate kurtosis of multiple variables
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+mardiaKurtosis(dat)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{dat}] 
+The target matrix or data frame with multiple variables
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The Mardia's multivariate kurtosis formula (Mardia, 1970) is
+\deqn{
+		b_{2, d} = \frac{1}{n}\sum^n_{i=1}\left[ \left(\bold{X}_i - \bold{\bar{X}} \right)^{'} \bold{S}^{-1} \left(\bold{X}_i - \bold{\bar{X}} \right) \right]^2,
+	}{}
+where \eqn{d}{} is the number of variables, \eqn{X}{} is the target dataset with multiple variables, \eqn{n}{} is the sample size, \eqn{\bold{S}}{} is the sample covariance matrix of the target dataset, and \eqn{\bold{\bar{X}}}{} is the mean vectors of the target dataset binded in \eqn{n}{} rows. When the population multivariate kurtosis is normal, the \eqn{b_{2,d}}{} is asymptotically distributed as normal distribution with the mean of \eqn{d(d + 2)}{} and variance of \eqn{8d(d + 2)/n}{}.
+\end{Details}
+%
+\begin{Value}
+A value of a Mardia's multivariate kurtosis with a test statistic 
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Mardia, K. V. (1970). Measures of multivariate skewness and kurtosis with applications. \emph{Biometrika, 57}, 519-530.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{skew}{skew}} Find the univariate skewness of a variable
+\item \code{\LinkA{kurtosis}{kurtosis}} Find the univariate excessive kurtosis of a variable
+\item \code{\LinkA{mardiaSkew}{mardiaSkew}} Find the Mardia's multivariate skewness of a set of variables
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan)
+mardiaKurtosis(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{mardiaSkew}{Finding Mardia's multivariate skewness}{mardiaSkew}
+%
+\begin{Description}\relax
+Finding Mardia's multivariate skewness of multiple variables
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+mardiaSkew(dat)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{dat}] 
+The target matrix or data frame with multiple variables
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The Mardia's multivariate skewness formula (Mardia, 1970) is
+\deqn{
+		b_{1, d} = \frac{1}{n^2}\sum^n_{i=1}\sum^n_{j=1}\left[ \left(\bold{X}_i - \bold{\bar{X}} \right)^{'} \bold{S}^{-1} \left(\bold{X}_j - \bold{\bar{X}} \right) \right]^3,
+	}{}
+where \eqn{d}{} is the number of variables, \eqn{X}{} is the target dataset with multiple variables, \eqn{n}{} is the sample size, \eqn{\bold{S}}{} is the sample covariance matrix of the target dataset, and \eqn{\bold{\bar{X}}}{} is the mean vectors of the target dataset binded in \eqn{n}{} rows. When the population multivariate skewness is normal, the \eqn{\frac{n}{6}b_{1,d}}{} is asymptotically distributed as chi-square distribution with \eqn{d(d + 1)(d + 2)/6}{} degrees of freedom.
+\end{Details}
+%
+\begin{Value}
+A value of a Mardia's multivariate skewness with a test statistic 
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Mardia, K. V. (1970). Measures of multivariate skewness and kurtosis with applications. \emph{Biometrika, 57}, 519-530.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{skew}{skew}} Find the univariate skewness of a variable
+\item \code{\LinkA{kurtosis}{kurtosis}} Find the univariate excessive kurtosis of a variable
+\item \code{\LinkA{mardiaKurtosis}{mardiaKurtosis}} Find the Mardia's multivariate kurtosis of a set of variables
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan)
+mardiaSkew(HolzingerSwineford1939[,paste("x", 1:9, sep="")])
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{measurementInvariance}{Measurement Invariance Tests}{measurementInvariance}
+\aliasA{measurementinvariance}{measurementInvariance}{measurementinvariance}
+%
+\begin{Description}\relax
+Testing measurement invariance across groups using a typical sequence of
+model comparison tests.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+measurementInvariance(..., strict = FALSE, quiet = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{...}] The same arguments as for any lavaan model.
+See \code{\LinkA{cfa}{cfa}} for more information.
+\item[\code{strict}] If \code{TRUE}, the sequence requires `strict' invariance.
+See details for more information.
+\item[\code{quiet}] If \code{TRUE}, a summary is printed out containing an
+overview of the different models that are fitted, together with some
+model comparison tests.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+If \code{strict = FALSE}, the following four models are tested in order:
+\begin{enumerate}
+
+\item Model 1: configural invariance. The same factor structure is imposed
+on all groups.
+\item Model 2: weak invariance. The factor loadings are constrained to be
+equal across groups.
+\item Model 3: strong invariance. The factor loadings and intercepts are
+constrained to be equal across groups.
+\item Model 4: The factor loadings, intercepts and means are constrained to
+be equal across groups.
+
+\end{enumerate}
+
+Each time a more restricted model is fitted, a chi-square difference test
+is reported, comparing the current model with the previous one, and comparing
+the current model to the baseline model (Model 1). In addition, the difference
+in cfi is also reported (delta.cfi).
+
+If \code{strict = TRUE}, the following five models are tested in order:
+\begin{enumerate}
+
+\item Model 1: configural invariance. The same factor structure is imposed
+on all groups.
+\item Model 2: weak invariance. The factor loadings are constrained to be
+equal across groups.
+\item Model 3: strong invariance. The factor loadings and intercepts are
+constrained to be equal across groups.
+\item Model 4: strict invariance. The factor loadings, intercepts and
+residual variances are constrained to be equal across groups.
+\item Model 5: The factor loadings, intercepts, residual variances and means
+are constrained to be equal across groups.
+
+\end{enumerate}
+
+
+Note that if the chi-square test statistic is scaled (eg. a
+Satorra-Bentler or Yuan-Bentler test statistic), a special version of the
+chi-square difference test is used as described in
+\url{http://www.statmodel.com/chidiff.shtml}
+\end{Details}
+%
+\begin{Value}
+Invisibly, all model fits in the sequence are returned as a list.
+\end{Value}
+%
+\begin{Author}\relax
+Yves Rosseel <Yves.Rosseel@UGent.be>
+\end{Author}
+%
+\begin{References}\relax
+Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the measurement invariance literature: Suggestions, practices, and recommendations for organizational research. \emph{Organizational Research Methods, 3,} 4-70.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{longInvariance}{longInvariance}} For the measurement invariance test within person
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+HW.model <- ' visual =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed =~ x7 + x8 + x9 '
+
+measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{miPowerFit}{Modification indices and their power approach for model fit evaluation}{miPowerFit}
+%
+\begin{Description}\relax
+The model fit evaluation approach using modification indices and their power proposed by Saris, Satorra, and van der Veld (2009, pp. 570-573).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, 
+	delta=NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{lavaanObj}] The lavaan model object used to evaluate model fit
+\item[\code{stdLoad}] The amount of standardized factor loading that one would like to be detected (rejected). The default value is 0.4, which is suggested by Saris and colleagues (2009, p. 571).
+\item[\code{cor}] The amount of factor or error correlations that one would like to be detected (rejected). The default value is 0.1, which is suggested by Saris and colleagues (2009, p. 571).
+\item[\code{stdBeta}] The amount of standardized regression coefficients that one would like to be detected (rejected). The default value is 0.1, which is suggested by Saris and colleagues (2009, p. 571).
+\item[\code{intcept}] The amount of standardized intercept (similar to Cohen's \emph{d} that one would like to be detected (rejected). The default value is 0.2, which is equivalent to a low effect size proposed by Cohen (1988, 1992).
+\item[\code{stdDelta}] The vector of the standardized parameters that one would like to be detected (rejected). If this argument is specified, the value here will overwrite the other arguments above. The order of the vector must be the same as the row order from modification indices from the \code{lavaan} object. If a single value is specified, the value will be applied to all parameters.
+\item[\code{delta}] The vector of the unstandardized parameters that one would like to be detected (rejected). If this argument is specified, the value here will overwrite the other arguments above. The order of the vector must be the same as the row order from modification indices from the \code{lavaan} object. If a single value is specified, the value will be applied to all parameters.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+In the lavaan object, one can inspect the modification indices and expected parameter changes. Those values can be used to evaluate model fit by the method proposed by Saris and colleagues (2009). First, one should evaluate whether the modification index of each parameter is significant. Second, one should evaluate whether the power to detect a target expected parameter change is high enough. If the modification index is not significant and the power is high, there is no misspecification. If the modification index is significant and the power is low, the fixed parameter is misspecified. If the modification index is significant and the power is high, the expected parameter change is investigated. If the expected parameter change is large (greater than the the target expected parameter change), the parameter is misspecified. If the expected parameter change is low (lower than the target expected parameter change), the parameter is not misspecificied. If the modification index is not significant and the power is low, the decision is inconclusive.
+\end{Details}
+%
+\begin{Value}
+A data frame with these variables:
+\begin{enumerate}
+
+\item lhs The left-hand side variable (with respect to the lavaan operator)
+\item op The lavaan syntax operator: "\textasciitilde{}\textasciitilde{}" represents covariance, "=\textasciitilde{}" represents factor loading, "\textasciitilde{}" represents regression, and "\textasciitilde{}1" represents intercept. 
+\item rhs The right-hand side variable (with respect to the lavaan operator)
+\item group The group of the parameter
+\item mi The modification index of the fixed parameter
+\item epc The expected parameter change if the parameter is freely estimated
+\item target.epc The target expected parameter change that represents the minimum size of misspecification that one would like to be detected by the test with a high power
+\item std.epc The standardized expected parameter change if the parameter is freely estimated
+\item std.target.epc The standardized target expected parameter change
+\item significant.mi Represents whether the modification index value is significant
+\item high.power Represents whether the power is enough to detect the target expected parameter change
+\item decision The decision whether the parameter is misspecified or not: \code{"M"} represents the parameter is misspecified, \code{"NM"} represents the parameter is not misspecified, \code{"EPC:M"} represents the parameter is misspecified decided by checking the expected parameter change value, \code{"EPC:NM"} represents the parameter is not misspecified decided by checking the expected parameter change value, and \code{"I"} represents the decision is inconclusive.
+
+\end{enumerate}
+
+The row numbers matches with the results obtained from the \code{inspect(object, "mi")} function.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences} (2nd ed.). Hillsdale, NJ: Erlbaum.
+
+Cohen, J. (1992). A power primer. \emph{Psychological Bulletin, 112}, 155-159.
+
+Saris, W. E., Satorra, A., \& van der Veld, W. M. (2009). Testing structural equation models or detection of misspecifications? \emph{Structural Equation Modeling, 16}, 561-582.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{moreFitIndices}{moreFitIndices}} For the additional fit indices information
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan)
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939, group="sex", meanstructure=TRUE)
+miPowerFit(fit)
+
+model <- ' 
+  # latent variable definitions
+     ind60 =~ x1 + x2 + x3
+     dem60 =~ y1 + a*y2 + b*y3 + c*y4
+     dem65 =~ y5 + a*y6 + b*y7 + c*y8
+
+  # regressions
+    dem60 ~ ind60
+    dem65 ~ ind60 + dem60
+
+  # residual correlations
+    y1 ~~ y5
+    y2 ~~ y4 + y6
+    y3 ~~ y7
+    y4 ~~ y8
+    y6 ~~ y8
+'
+fit2 <- sem(model, data=PoliticalDemocracy, meanstructure=TRUE)
+miPowerFit(fit2, stdLoad=0.3, cor=0.2, stdBeta=0.2, intcept=0.5)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{monteCarloMed}{Monte Carlo Confidence Intervals to Test Complex Indirect Effects}{monteCarloMed}
+%
+\begin{Description}\relax
+This function takes an expression for an indirect effect, the parameters and standard errors associated with the expression and returns a confidence interval based on a Monte Carlo test of mediation (MacKinnon, Lockwood, \& Williams, 2004).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE, outputValues=FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{expression}] A character scalar representing the computation of an indirect effect. Different parameters in the expression should have different alphanumeric values. Expressions can use either addition (+) or multiplication (*) operators.
+\item[\code{...}] Parameter estimates for all parameters named in \code{expression}. The order of parameters should follow from \code{expression} (the first parameter named in \code{expression} should be the first parameter listed in \dots). Alternatively \dots can be a vector of parameter estimates.
+\item[\code{ACM}] A matrix representing the asymptotic covariance matrix of the parameters described in \code{expression}. This matrix should be a symetric matrix with dimensions equal to the number of parameters names in \code{expression}. Information on finding the ACOV is popular SEM software is described below.)
+\item[\code{rep}] The number of replications to compute. Many thousand are reccomended.	
+\item[\code{CI}] Width of the confidence interval computed.
+\item[\code{plot}] Should the function output a plot of simulated values of the indirect effect?
+\item[\code{outputValues}] Should the function output all simulated values of the indirect effect?
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function implements the Monte Carlo test of mediation first described in MacKinnon, Lockwood, \& Williams (2004) and extends it to complex cases where the indirect effect is more than a function of two parameters. The function takes an expression for the indirect effect, randomly simulated values of the indirect effect based on the values of the parameters (and the associated standard errors) comprising the indirect effect, and outputs a confidence interval of the indirect effect based on the simulated values. For further information on the Monte Carlo test of mediation see MacKinnon, Lockwood, \& Williams (2004), Preacher \& Selig (in press), and Selig \& Preacher (2008). For a Monte Carlo test of mediation with a random effects model see Selig \& Preacher (2010).
+
+The asymptotic covariance matrix can be easily found in many popular SEM software applications.
+\begin{itemize}
+
+\item LISRELIncluding the EC option on the OU line will print the ACM to a seperate file. The file contains the lower triangular elements of the ACM in free format and scientific notation
+\item MplusInclude the command TECH3; in the OUTPUT section. The ACM will be printed in the output.
+\item lavaan Use the command \code{vcov} on the fitted lavaan object to print the ACM to the screen
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Value}
+A list with two elements. The first element is the point estimate for the indirect effect. The second element is a matrix with values for the upper and lower limits of the confidence interval generated from the Monte Carlo test of mediation. If \code{outputValues=TRUE}, output will be a list with a list with  the point estimate and values for the upper and lower limits of the confidence interval as the first element and a vector of simulated values of the indirect effect as the second element.
+\end{Value}
+%
+\begin{Author}\relax
+Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
+Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
+James P. Selig (University of New Mexico; \email{selig@unm.edu})
+\end{Author}
+%
+\begin{References}\relax
+Preacher, K. J., \& Selig, J. P. (2010, July). Monte Carlo method for assessing multilevel mediation: An interactive tool for creating confidence intervals for indirect effects in 1-1-1 multilevel models [Computer software]. Available from \url{http://quantpsy.org/}.
+
+Preacher, K. J., \& Selig, J. P. (in press). Advantages of Monte Carlo confidence intervals for indirect effects. \emph{Communication Methods and Measures}.
+
+Selig, J. P., \& Preacher, K. J. (2008, June). Monte Carlo method for assessing mediation: An interactive tool for creating confidence intervals for indirect effects [Computer software]. Available from \url{http://quantpsy.org/}.
+
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+#Simple two path mediation
+#Write expression of indirect effect
+med <- 'a*b'
+#Paramter values from analyses
+aparam <- 1
+bparam<-2
+#Asymptotic covariance matrix from analyses
+AC <- matrix(c(.01,.00002,
+               .00002,.02), nrow=2, byrow=TRUE)
+#Compute CI, include a plot
+monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FALSE, plot=TRUE, ACM=AC)
+
+#Use a matrix of parameter estimates as input
+aparam<-c(1,2)
+monteCarloMed(med, coef1=aparam, outputValues=FALSE, plot=TRUE, ACM=AC)
+
+
+
+#complex mediation with two paths for the indirect effect
+#Write expression of indirect effect
+med <- 'a1*b1 + a1*b2'
+#Paramter values and standard errors from analyses
+aparam <- 1
+b1param<-2
+b2param<-1
+#Asymptotic covariance matrix from analyses
+AC <- matrix(c(1,.00002, .00003,
+                    .00002,1, .00002,
+					.00003, .00002, 1), nrow=3, byrow=TRUE)
+#Compute CI do not include a plot
+monteCarloMed(med, coef1=aparam, coef2=b1param, coef3=b2param, ACM=AC)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{moreFitIndices}{Calculate more fit indices}{moreFitIndices}
+%
+\begin{Description}\relax
+Calculate more fit indices that are not already provided in lavaan.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+moreFitIndices(object, nPrior = 1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
+\item[\code{nPrior}] The sample size on which prior is based. This argument is used to compute BIC*.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Gamma Hat (gammaHat; West, Taylor, \& Wu, 2012) is a global fit index which can be computed by
+
+\deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N - 1}},}{}
+
+where \eqn{p}{} is the number of variables in the model, \eqn{\chi^{2}_{k}}{} is the chi-square test statistic value of the target model, \eqn{df_{k}}{} is the degree of freedom when fitting the target model, and \eqn{N}{} is the sample size. This formula assumes equal number of indicators across groups.
+
+Adjusted Gamma Hat (adjGammaHat; West, Taylor, \& Wu, 2012) is a global fit index which can be computed by
+
+\deqn{ adjGammaHat = \left(1 - \frac{K \times p \times (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - gammaHat \right) ,}{}
+
+where \eqn{K}{} is the number of groups (please refer to Dudgeon, 2004 for the multiple-group adjustment for agfi*).
+
+Corrected Akaike Information Criterion (aic.smallN; Burnham \& Anderson, 2003) is the corrected version of aic for small sample size:
+
+\deqn{ aic.smallN = f + \frac{2k(k + 1)}{N - k - 1},}{}
+
+where \eqn{f}{} is the minimized discrepancy function, which is the product of the log likelihood and -2, and \eqn{k}{} is the number of parameters in the target model.
+
+Corrected Bayesian Information Criterion (bic.priorN; Kuha, 2004) is similar to bic but explicitly specifying the sample size on which the prior is based (\eqn{N_{prior}}{}).
+
+\deqn{ bic.priorN = f + k\log{(1 + N/N_{prior})},}{}
+
+Stochastic information criterion (sic; Preacher, 2006) is similar to aic or bic. This index will account for model complexity in the model's function form, in addition to the number of free parameters. This index will be provided only when the chi-squared value is not scaled. sic can be computed by
+
+\deqn{ sic = \frac{1}{2}\left(f - \log{\det{I(\hat{\theta})}}\right),}{}
+
+where \eqn{I(\hat{\theta})}{} is the information matrix of the parameters.
+
+Hannan-Quinn Information Criterion (hqc; Hannan \& Quinn, 1979) is used for model selection similar to aic or bic.
+
+\deqn{ hqc = f + 2k\log{(\log{N})},}{}
+
+Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit indices using the scaled chi-square values are also provided. 
+
+See \code{\LinkA{nullRMSEA}{nullRMSEA}} for the further details of the computation of RMSEA of the null model.
+\end{Details}
+%
+\begin{Value}
+\begin{enumerate}
+
+\item gammaHat Gamma Hat
+\item adjGammaHat Adjusted Gamma Hat
+\item baseline.rmsea RMSEA of the Baseline (Null) Model
+\item aic.smallN Corrected (for small sample size) Akaike Information Criterion
+\item bic.priorN Bayesian Information Criterion with specifying the prior sample size
+\item sic Stochastic Information Criterion
+\item hqc Hannan-Quinn Information Criterion
+\item gammaHat.scaled Gamma Hat using Scaled Chi-square
+\item adjGammaHat.scaled Adjusted Gamma Hat using Scaled Chi-square
+\item baseline.rmsea.scaled RMSEA of the Baseline (Null) Model using Scaled Chi-square
+
+\end{enumerate}
+
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+Aaron Boulton (University of Kansas; \email{aboulton@ku.edu})
+Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
+Terrence Jorgensen (University of Kansas; \email{tdj@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Burnham, K., \& Anderson, D. (2003). \emph{Model selection and multimodel inference: A practical-theoretic approach.} New York, NY: Springer-Verlag.
+
+Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample RMSEA adjustment to other noncentrality parameter-based statistic. \emph{Structural Equation Modeling, 11}, 305-319.
+
+Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance. \emph{Sociological Methods Research, 33}, 188-229.
+
+Preacher, K. J. (2006). Quantifying parsimony in structural equation modeling. \emph{Multivariate Behavioral Research, 43}, 227-259.
+
+West, S. G., Taylor, A. B., \& Wu, W. (2012). Model fit and model selection in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of Structural Equation Modeling.} New York: Guilford.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{miPowerFit}{miPowerFit}} For the modification indices and their power approach for model fit evaluation
+\item \code{\LinkA{nullRMSEA}{nullRMSEA}} For RMSEA of the null model
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+moreFitIndices(fit)
+
+fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="mlr")
+moreFitIndices(fit2)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{nullMx}{Analyzing data using a null model}{nullMx}
+%
+\begin{Description}\relax
+Analyzing data using a null model by full-information maximum likelihood. In the null model, all means and covariances are free if items are continuous. All covariances are fixed to 0. For ordinal variables, their means are fixed as 0 and their variances are fixed as 1 where their thresholds are estimated. In multiple-group model, all means are variances are separately estimated. 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+nullMx(data, groupLab = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{data}] 
+The target data frame
+
+\item[\code{groupLab}] 
+The name of grouping variable
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The \code{MxModel} object which contains the analysis result of the null model.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{saturateMx}{saturateMx}}, \code{\LinkA{fitMeasuresMx}{fitMeasuresMx}}, \code{\LinkA{standardizeMx}{standardizeMx}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+library(OpenMx)
+data(demoOneFactor)
+nullModel <- nullMx(demoOneFactor)
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{nullRMSEA}{Calculate the RMSEA of the null model}{nullRMSEA}
+%
+\begin{Description}\relax
+Calculate the RMSEA of the null (baseline) model
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+nullRMSEA(object, scaled = FALSE, silent=FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
+\item[\code{scaled}] If \code{TRUE}, calculate the null model from the scaled test.
+\item[\code{silent}] If \code{TRUE}, do not print anything on the screen.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+RMSEA of the null model is calculated similar to the formula provided in the \code{lavaan} package. The standard formula of RMSEA is 
+
+\deqn{ RMSEA =\sqrt{\frac{\chi^{2}}{N \times df} - \frac{1}{N}} \times \sqrt{G} }{}
+
+where \eqn{\chi^{2}}{} is the chi-square test statistic value of the target model, \eqn{N}{} is the total sample size, \eqn{df}{} is the degree of freedom of the hypothesized model, \eqn{G}{} is the number of groups. Kenny proposed in his website that 
+
+"A reasonable rule of thumb is to examine the RMSEA for the null model and make sure that is no smaller than 0.158. An RMSEA for the model of 0.05 and a TLI of .90, implies that the RMSEA of the null model is 0.158.  If the RMSEA for the null model is less than 0.158, an incremental measure of fit may not be that informative."
+
+See \url{http://davidakenny.net/cm/fit.htm}. 
+\end{Details}
+%
+\begin{Value}
+A value of RMSEA of the null model. This value is hidden. Users may be assigned the output of this function to any object for further usage.
+\end{Value}
+%
+\begin{Author}\relax
+Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
+\end{Author}
+%
+\begin{References}\relax
+Kenny, D. A., Kaniskan, B.,  \& McCoach, D. B. (2011).  \emph{The performance of RMSEA in models with small degrees of freedom.} Unpublished paper, University of Connecticut.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{miPowerFit}{miPowerFit}} For the modification indices and their power approach for model fit evaluation
+\item \code{\LinkA{moreFitIndices}{moreFitIndices}} For other fit indices 
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+nullRMSEA(fit)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{parcelAllocation}{Random Allocation of Items to Parcels in a Structural Equation Model}{parcelAllocation}
+%
+\begin{Description}\relax
+This function generates a given number of randomly generated item-to-parcel allocations, fits a model to each allocation, and provides averaged results over all allocations. 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+parcelAllocation(nPerPar, facPlc, nAlloc=100, syntax, dataset, names='default', 
+	leaveout=0, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{nPerPar}] A list in which each element is a vector corresponding to each factor indicating sizes of parcels. If variables are left out of parceling, they should not be accounted for here (there should NOT be parcels of size "1").
+\item[\code{facPlc}] A list of vectors, each corresponding to a factor, specifying the variables in that factor (whether included in parceling or not). Either variable names or column numbers. Variables not listed will not be modeled or included in output datasets. 
+\item[\code{nAlloc}] The number of random allocations of items to parcels to generate.	
+\item[\code{syntax}] \LinkA{lavaan}{lavaan} syntax. If substituted with a file name, parcelAllocation will print output data sets to a specified folder rather than analyzing using lavaan (note for Windows users: file path must be specified using forward slashes).
+\item[\code{dataset}] Data set. Can be file path or R object (matrix or dataframe). If the data has missing values multiple imputation before parceling is recommended.
+\item[\code{names}] (Optional) A character vector containing the names of parceled variables.
+\item[\code{leaveout}] A vector of variables to be left out of randomized parceling. Either variable names or column numbers are allowed.
+\item[\code{...}] Additional arguments to be passed to \LinkA{lavaan}{lavaan}
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function implements the random item to parcel allocation procedure described in Sterba (2011) and Sterba and MccCallum (2010). The function takes a single data set with item level data, randomly assigns items to parcels, fits a structural equation model to the parceled data (using \LinkA{lavaan}{lavaan}), and repeats this process for a user specified number of random allocations. Results from all fitted models are summarized and output. For further details on the benefits of the random allocation of itesm to parcels see Sterba (2011) and Sterba and MccCallum (2010). 
+\end{Details}
+%
+\begin{Value}
+\begin{ldescription}
+\item[\code{Estimates}] A data frame containing results related to parameter estimates with columns corresponding to parameter names, average parameter estimates across allocations, the standard deviation of parameter estimates across allocations, the minimum parameter estimate across allocations, the maximum parameter estimate across allocations, the range of parameter estimates across allocations, and the proportions of allocations in which the parameter estimate is significant.
+\item[\code{SE}] A data frame containing results related to standard errors with columns corresponding to parameter names, average standard errors across allocations, the standard deviation of standard errors across allocations, the minimum standard error across allocations, the maximum standard error across allocations, and the range of standard errors across allocations.
+\item[\code{Fit}] A data frame containing results related to model fit with columns corresponding to fit index names, the average of each index across allocations, the standard deviation of each fit index across allocations, the minimum of each fit index across allocations, the maximum of each fit index across allocations, and the range of each fit index across allocations.
+\end{ldescription}
+\end{Value}
+%
+\begin{Author}\relax
+Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
+Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
+\end{Author}
+%
+\begin{References}\relax
+Sterba, S.K. (2011). Implications of parcel-allocation variability for comparing fit of item-solutions and parcel-solutions. \emph{Structural Equation Modeling, 18,} 554-577.
+
+Sterba, S.K. \& MacCallum, R.C. (2010). Variability in parameter estimates and model fit across random allocations of items to parcels. \emph{Multivariate Behavioral Research, 45,} 322-358.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+#Fit 3 factor CFA to simulated data.
+#Each factor has 9 indicators that are randomly parceled into 3 parcels
+#Lavaan syntax for the model to be fit to parceled data
+syntax <- 'La =~ V1 + V2 + V3 
+           Lb =~ V4 + V5 + V6
+'
+#Parcel and fit data 20 times. The actual parcel number should be higher than 20 times.
+name1 <- colnames(simParcel)[1:9]
+name2 <- colnames(simParcel)[10:18]
+parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, 
+	dataset=simParcel)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{plotProbe}{Plot the graphs for probing latent interaction}{plotProbe}
+%
+\begin{Description}\relax
+This function will plot the line graphs representing the simple effect of the independent variable given the values of the moderator.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+plotProbe(object, xlim, xlab="Indepedent Variable", ylab="Dependent Variable", ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] 
+The result of probing latent interaction obtained from \code{\LinkA{probe2WayMC}{probe2WayMC}}, \code{\LinkA{probe2WayRC}{probe2WayRC}}, \code{\LinkA{probe3WayMC}{probe3WayMC}}, or \code{\LinkA{probe3WayRC}{probe3WayRC}} function.
+
+\item[\code{xlim}] 
+The vector of two numbers: the minimum and maximum values of the independent variable
+
+\item[\code{xlab}] 
+The label of the x-axis
+
+\item[\code{ylab}] 
+The label of the y-axis
+
+\item[\code{...}] 
+Any addition argument for the \code{\LinkA{plot}{plot}} function
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+None. This function will plot the simple main effect only.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{indProd}{indProd}} For creating the indicator products with no centering, mean centering, double-mean centering, or residual centering.
+\item \code{\LinkA{probe2WayMC}{probe2WayMC}} For probing the two-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe3WayMC}{probe3WayMC}} For probing the three-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe2WayRC}{probe2WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{probe3WayRC}{probe3WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan) 
+
+dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+
+model1 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f3 =~ x7 + x8 + x9
+f3 ~ f1 + f2 + f12
+f12 ~~0*f1
+f12 ~~ 0*f2
+x1 ~ 0*1
+x4 ~ 0*1
+x1.x4 ~ 0*1
+x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f12 ~ NA*1
+f3 ~ NA*1
+"
+
+fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
+result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+plotProbe(result2wayMC, xlim=c(-2, 2))
+
+
+dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
+
+model3 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f3 =~ x7 + x8 + x9
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f13 =~ x1.x7 + x2.x8 + x3.x9
+f23 =~ x4.x7 + x5.x8 + x6.x9
+f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
+f4 =~ x10 + x11 + x12
+f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
+f1 ~~ 0*f12
+f1 ~~ 0*f13
+f1 ~~ 0*f123
+f2 ~~ 0*f12
+f2 ~~ 0*f23
+f2 ~~ 0*f123
+f3 ~~ 0*f13
+f3 ~~ 0*f23
+f3 ~~ 0*f123
+f12 ~~ 0*f123
+f13 ~~ 0*f123
+f23 ~~ 0*f123
+x1 ~ 0*1
+x4 ~ 0*1
+x7 ~ 0*1
+x10 ~ 0*1
+x1.x4 ~ 0*1
+x1.x7 ~ 0*1
+x4.x7 ~ 0*1
+x1.x4.x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f3 ~ NA*1
+f12 ~ NA*1
+f13 ~ NA*1
+f23 ~ NA*1
+f123 ~ NA*1
+f4 ~ NA*1
+" 
+
+fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
+result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+	"f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+plotProbe(result3wayMC, xlim=c(-2, 2))
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{plotRMSEAdist}{Plot the sampling distributions of RMSEA}{plotRMSEAdist}
+%
+\begin{Description}\relax
+Plots the sampling distributions of RMSEA based on the noncentral chi-square distributions
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+plotRMSEAdist(rmsea, n, df, ptile=NULL, caption=NULL, rmseaScale = TRUE, group=1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{rmsea}] The vector of RMSEA values to be plotted
+\item[\code{n}] Sample size of a dataset
+\item[\code{df}] Model degrees of freedom
+\item[\code{ptile}] The percentile rank of the distribution of the first RMSEA that users wish to plot a vertical line in the resulting graph
+\item[\code{caption}] The name vector of each element of \code{rmsea}
+\item[\code{rmseaScale}] If \code{TRUE}, the RMSEA scale is used in the x-axis. If \code{FALSE}, the chi-square scale is used in the x-axis.
+\item[\code{group}] The number of group that is used to calculate RMSEA.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function creates overlappling plots of the sampling distribution of RMSEA based on noncentral chi-square distribution (MacCallum, Browne, \& Suguwara, 1996). First, the noncentrality parameter (\eqn{\lambda}{}) is calculated from RMSEA (Steiger, 1998; Dudgeon, 2004) by
+\deqn{\lambda = (N - 1)d\varepsilon^2 / K,}{}
+where \eqn{N}{} is sample size, \eqn{d}{} is the model degree of freedom, \eqn{K}{} is the number of groupand \eqn{\varepsilon}{} is the population RMSEA. Next, the noncentral chi-square distribution with a specified degree of freedom and noncentrality parameter is plotted. Thus, the x-axis represent the sample chi-square value. The sample chi-square value can be transformed to the sample RMSEA scale (\eqn{\hat{\varepsilon}}{}) by
+\deqn{\hat{\varepsilon} = \sqrt{K}\sqrt{\frac{\chi^2 - d}{(N - 1)d}},}{}
+where \eqn{\chi^2}{} is the chi-square value obtained from the noncentral chi-square distribution.
+\end{Details}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample RMSEA adjustment to other noncentrality parameter-based statistic. \emph{Structural Equation Modeling, 11}, 305-319.
+
+MacCallum, R. C., Browne, M. W., \& Sugawara, H. M. (1996). Power analysis and determination of sample size for covariance structure modeling. \emph{Psychological Methods, 1,} 130-149.
+
+Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit index. \emph{Structural Equation Modeling, 5}, 411-419.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{plotRMSEApower}{plotRMSEApower}} to plot the statistical power based on population RMSEA given the sample size
+\item \code{\LinkA{findRMSEApower}{findRMSEApower}} to find the statistical power based on population RMSEA given a sample size
+\item \code{\LinkA{findRMSEAsamplesize}{findRMSEAsamplesize}} to find the minium sample size for a given statistical power based on population RMSEA
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+plotRMSEAdist(rmsea=c(.05, .08), n=200, df=20, ptile=0.95, rmseaScale = TRUE)
+plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rmseaScale = FALSE)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{plotRMSEApower}{Plot power curves for RMSEA}{plotRMSEApower}
+%
+\begin{Description}\relax
+Plots power of RMSEA over a range of sample sizes
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alpha=.05, group=1, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{rmsea0}] Null RMSEA
+\item[\code{rmseaA}] Alternative RMSEA
+\item[\code{df}] Model degrees of freedom
+\item[\code{nlow}] Lower sample size
+\item[\code{nhigh}] Upper sample size
+\item[\code{steps}] Increase in sample size for each iteration. Smaller values of steps will lead to more precise plots. However, smaller step sizes means a longer run time.
+\item[\code{alpha}] Alpha level used in power calculations
+\item[\code{group}] The number of group that is used to calculate RMSEA.
+\item[\code{...}] The additional arguments for the plot function.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function creates plot of power for RMSEA against a range of sample sizes. The plot places sample size on the horizontal axis and power on the vertical axis. The user should indicate the lower and upper values for sample size and the sample size between each estimate ("step size") We strongly urge the user to read the sources below (see References) before proceeding.  A web version of this function is available at: \url{http://quantpsy.org/rmsea/rmseaplot.htm}.
+\end{Details}
+%
+\begin{Value}
+\begin{enumerate}
+
+\item plot Plot of power for RMSEA against a range of sample sizes
+
+\end{enumerate}
+
+\end{Value}
+%
+\begin{Author}\relax
+Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
+Kristopher J. Preacher (Vanderbilt University; \email{kris.preacher@vanderbilt.edu})
+Donna L. Coffman (Pennsylvania State University; \email{dlc30@psu.edu.})
+\end{Author}
+%
+\begin{References}\relax
+MacCallum, R. C., Browne, M. W., \& Cai, L. (2006). Testing differences between nested covariance structure models: Power analysis and null hypotheses. \emph{Psychological Methods, 11,} 19-35.
+
+MacCallum, R. C., Browne, M. W., \& Sugawara, H. M. (1996). Power analysis and determination of sample size for covariance structure modeling. \emph{Psychological Methods, 1,} 130-149.
+
+MacCallum, R. C., Lee, T., \& Browne, M. W. (2010). The issue of isopower in power analysis for tests of structural equation models. \emph{Structural Equation Modeling, 17,} 23-41.
+
+Preacher, K. J., Cai, L., \& MacCallum, R. C. (2007). Alternatives to traditional model comparison strategies for covariance structure models. In T. D. Little, J. A. Bovaird, \& N. A. Card (Eds.), \emph{Modeling contextual effects in longitudinal studies} (pp. 33-62). Mahwah, NJ: Lawrence Erlbaum Associates.
+
+Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit index. \emph{Structural Equation Modeling, 5,} 411-419.
+
+Steiger, J. H., \& Lind, J. C. (1980, June). \emph{Statistically based tests for the number of factors.} Paper presented at the annual meeting of the Psychometric Society, Iowa City, IA.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{plotRMSEAdist}{plotRMSEAdist}} to visualize the RMSEA distributions
+\item \code{\LinkA{findRMSEApower}{findRMSEApower}} to find the statistical power based on population RMSEA given a sample size
+\item \code{\LinkA{findRMSEAsamplesize}{findRMSEAsamplesize}} to find the minium sample size for a given statistical power based on population RMSEA
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+plotRMSEApower(.025, .075, 23, 100, 500, 10)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{plotRMSEApowernested}{Plot power of nested model RMSEA}{plotRMSEApowernested}
+%
+\begin{Description}\relax
+Plot power of nested model RMSEA over a range of possible sample sizes.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+plotRMSEApowernested(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1B = NULL, 
+dfA, dfB, nlow, nhigh, steps=1, alpha=.05, group=1, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{rmsea0A}] The H0 baseline RMSEA.
+\item[\code{rmsea0B}] The H0 alternative RMSEA (trivial misfit).
+\item[\code{rmsea1A}] The H1 baseline RMSEA.
+\item[\code{rmsea1B}] The H1 alternative RMSEA (target misfit to be rejected).
+\item[\code{dfA}] degree of freedom of the more-restricted model.
+\item[\code{dfB}] degree of freedom of the less-restricted model.
+\item[\code{nlow}] Lower bound of sample size.
+\item[\code{nhigh}] Upper bound of sample size.
+\item[\code{steps}] Step size.
+\item[\code{alpha}] The alpha level.
+\item[\code{group}] The number of group in calculating RMSEA.
+\item[\code{...}] The additional arguments for the plot function.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Author}\relax
+Bell Clinton (University of Kansas; \email{clintonbell@ku.edu}); Pavel Panko (University of Kansas; \email{pavel@ku.edu}); Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+MacCallum, R. C., Browne, M. W., \& Cai, L. (2006). Testing differences between nested covariance structure models: Power analysis and null hypotheses. \emph{Psychological Methods, 11}, 19-35.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{findRMSEApowernested}{findRMSEApowernested}} to find the power for a given sample size in nested model comparison based on population RMSEA
+\item \code{\LinkA{findRMSEAsamplesizenested}{findRMSEAsamplesizenested}} to find the minium sample size for a given statistical power in nested model comparison based on population RMSEA
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, rmsea1B = 0.05, 
+dfA=22, dfB=20, nlow=50, nhigh=500, steps=1, alpha=.05, group=1)  
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{probe2WayMC}{Probing two-way interaction on the residual-centered latent interaction}{probe2WayMC}
+%
+\begin{Description}\relax
+Probing interaction for simple intercept and simple slope for the no-centered or mean-centered latent two-way interaction
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+probe2WayMC(fit, nameX, nameY, modVar, valProbe)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{fit}] The lavaan model object used to evaluate model fit
+\item[\code{nameX}] The vector of the factor names used as the predictors. The first-order factor will be listed first. The last name must be the name representing the interaction term.
+\item[\code{nameY}] The name of factor that is used as the dependent variable.
+\item[\code{modVar}] The name of factor that is used as a moderator. The effect of the other independent factor on each moderator variable value will be probed.
+\item[\code{valProbe}] The values of the moderator that will be used to probe the effect of the other independent factor.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Before using this function, researchers need to make the products of the indicators between the first-order factors using mean centering (Marsh, Wen, \& Hau, 2004). Note that the double-mean centering may not be appropriate for probing interaction if researchers are interested in simple intercepts. The mean or double-mean centering can be done by the \code{\LinkA{indProd}{indProd}} function. The indicator products can be made for all possible combination or matched-pair approach (Marsh et al., 2004). Next, the hypothesized model with the regression with latent interaction will be used to fit all original indicators and the product terms. See the example for how to fit the product term below. Once the lavaan result is obtained, this function will be used to probe the interaction.
+
+Let that the latent interaction model regressing the dependent variable (\eqn{Y}{}) on the independent varaible (\eqn{X}{}) and the moderator (\eqn{Z}{}) be
+\deqn{
+	Y = b_0 + b_1X + b_2Z + b_3XZ + r,
+}{}
+where \eqn{b_0}{} is the estimated intercept or the expected value of \eqn{Y}{} when both \eqn{X}{} and \eqn{Z}{} are 0, \eqn{b_1}{} is the effect of \eqn{X}{} when \eqn{Z}{} is 0, \eqn{b_2}{} is the effect of \eqn{Z}{} when \eqn{X}{} is 0, \eqn{b_3}{} is the interaction effect between \eqn{X}{} and \eqn{Z}{}, and \eqn{r}{} is the residual term.
+
+For probing two-way interaction, the simple intercept of the independent variable at each value of the moderator (Aiken \& West, 1991; Cohen, Cohen, West, \& Aiken, 2003; Preacher, Curran, \& Bauer, 2006) can be obtained by
+\deqn{
+	b_{0|X = 0, Z} = b_0 + b_2Z.
+}{}
+
+The simple slope of the independent varaible at each value of the moderator can be obtained by
+\deqn{
+	b_{X|Z} = b_1 + b_3Z.
+}{}
+
+The variance of the simple intercept formula is
+\deqn{
+	Var\left(b_{0|X = 0, Z}\right) = Var\left(b_0\right) + 2ZCov\left(b_0, b_2\right) + Z^2Var\left(b_2\right)
+}{}
+where \eqn{Var}{} denotes the variance of a parameter estimate and \eqn{Cov}{} denotes the covariance of two parameter estimates.
+
+The variance of the simple slope formula is 
+\deqn{
+	Var\left(b_{X|Z}\right) = Var\left(b_1\right) + 2ZCov\left(b_1, b_3\right) + Z^2Var\left(b_3\right)
+}{}
+
+Wald statistic is used for test statistic.
+\end{Details}
+%
+\begin{Value}
+A list with two elements:
+\begin{enumerate}
+
+\item SimpleIntercept The intercepts given each value of the moderator. This element will be shown only if the factor intercept is estimated (e.g., not fixed as 0).
+\item SimpleSlope The slopes given each value of the moderator. 
+
+\end{enumerate}
+
+In each element, the first column represents the values of the moderators specified in the \code{valProbe} argument. The second column is the simple intercept or simple slope. The third column is the standard error of the simple intercept or simple slope. The fourth column is the Wald (\emph{z}) statistic. The fifth column is the \emph{p}-value testing whether the simple intercepts or slopes are different from 0.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Aiken, L. S., \& West, S. G. (1991). Multiple regression: Testing and interpreting interactions. Newbury Park, CA: Sage.
+
+Cohen, J., Cohen, P., West, S. G., \& Aiken, L. S. (2003). Applied multiple regression/correlation analysis for the behavioral sciences (3rd ed.). New York: Routledge.
+
+Marsh, H. W., Wen, Z., \& Hau, K. T. (2004). Structural equation models of latent interactions: Evaluation of alternative estimation strategies and indicator construction. \emph{Psychological Methods, 9}, 275-300.
+
+Preacher, K. J., Curran, P. J., \& Bauer, D. J. (2006). Computational tools for probing interactions in multiple linear regression, multilevel modeling, and latent curve analysis. \emph{Journal of Educational and Behavioral Statistics, 31}, 437-448.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{indProd}{indProd}} For creating the indicator products with no centering, mean centering, double-mean centering, or residual centering.
+\item \code{\LinkA{probe3WayMC}{probe3WayMC}} For probing the three-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe2WayRC}{probe2WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{probe3WayRC}{probe3WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{plotProbe}{plotProbe}} Plot the simple intercepts and slopes of the latent interaction.
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan) 
+
+dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+
+model1 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f3 =~ x7 + x8 + x9
+f3 ~ f1 + f2 + f12
+f12 ~~0*f1
+f12 ~~ 0*f2
+x1 ~ 0*1
+x4 ~ 0*1
+x1.x4 ~ 0*1
+x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f12 ~ NA*1
+f3 ~ NA*1
+"
+
+fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitMC2way)
+
+result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+result2wayMC
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{probe2WayRC}{Probing two-way interaction on the residual-centered latent interaction}{probe2WayRC}
+%
+\begin{Description}\relax
+Probing interaction for simple intercept and simple slope for the residual-centered latent two-way interaction (Pornprasertmanit, Schoemann, Geldhof, \& Little, submitted)
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+probe2WayRC(fit, nameX, nameY, modVar, valProbe)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{fit}] The lavaan model object used to evaluate model fit
+\item[\code{nameX}] The vector of the factor names used as the predictors. The first-order factor will be listed first. The last name must be the name representing the interaction term.
+\item[\code{nameY}] The name of factor that is used as the dependent variable.
+\item[\code{modVar}] The name of factor that is used as a moderator. The effect of the other independent factor on each moderator variable value will be probed.
+\item[\code{valProbe}] The values of the moderator that will be used to probe the effect of the other independent factor.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Before using this function, researchers need to make the products of the indicators between the first-order factors and residualize the products by the original indicators (Lance, 1988; Little, Bovaird, \& Widaman, 2006). The process can be automated by the \code{\LinkA{indProd}{indProd}} function. Note that the indicator products can be made for all possible combination or matched-pair approach (Marsh et al., 2004). Next, the hypothesized model with the regression with latent interaction will be used to fit all original indicators and the product terms. See the example for how to fit the product term below. Once the lavaan result is obtained, this function will be used to probe the interaction.
+
+The probing process on residual-centered latent interaction is based on transforming the residual-centered result into the no-centered result. See Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further details. Note that this approach based on a strong assumption that the first-order latent variables are normally distributed. The probing process is applied after the no-centered result (parameter estimates and their covariance matrix among parameter estimates) has been computed. See the \code{\LinkA{probe2WayMC}{probe2WayMC}} for further details.
+\end{Details}
+%
+\begin{Value}
+A list with two elements:
+\begin{enumerate}
+
+\item SimpleIntercept The intercepts given each value of the moderator. This element will be shown only if the factor intercept is estimated (e.g., not fixed as 0).
+\item SimpleSlope The slopes given each value of the moderator. 
+
+\end{enumerate}
+
+In each element, the first column represents the values of the moderators specified in the \code{valProbe} argument. The second column is the simple intercept or simple slope. The third column is the standard error of the simple intercept or simple slope. The fourth column is the Wald (\emph{z}) statistic. The fifth column is the \emph{p}-value testing whether the simple intercepts or slopes are different from 0.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+
+Lance, C. E. (1988). Residual centering, exploratory and confirmatory moderator analysis, and decomposition of effects in path models containing interactions. \emph{Applied Psychological Measurement, 12}, 163-175.
+
+Little, T. D., Bovaird, J. A., \& Widaman, K. F. (2006). On the merits of orthogonalizing powered and product terms: Implications for modeling interactions. \emph{Structural Equation Modeling, 13}, 497-519.
+
+Marsh, H. W., Wen, Z., \& Hau, K. T. (2004). Structural equation models of latent interactions: Evaluation of alternative estimation strategies and indicator construction. \emph{Psychological Methods, 9}, 275-300.
+
+Pornprasertmanit, S., Schoemann, A. M., Geldhof, G. J., \& Little, T. D. (submitted). \emph{Probing latent interaction estimated with a residual centering approach.} 
+
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{indProd}{indProd}} For creating the indicator products with no centering, mean centering, double-mean centering, or residual centering.
+\item \code{\LinkA{probe2WayMC}{probe2WayMC}} For probing the two-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe3WayMC}{probe3WayMC}} For probing the three-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe3WayRC}{probe3WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{plotProbe}{plotProbe}} Plot the simple intercepts and slopes of the latent interaction.
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan) 
+
+dat2wayRC <- orthogonalize(dat2way, 1:3, 4:6)
+
+model1 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f3 =~ x7 + x8 + x9
+f3 ~ f1 + f2 + f12
+f12 ~~0*f1
+f12 ~~ 0*f2
+x1 ~ 0*1
+x4 ~ 0*1
+x1.x4 ~ 0*1
+x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f12 ~ NA*1
+f3 ~ NA*1
+"
+
+fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitRC2way)
+
+result2wayRC <- probe2WayRC(fitRC2way, c("f1", "f2", "f12"), "f3", "f2", c(-1, 0, 1))
+result2wayRC
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{probe3WayMC}{Probing two-way interaction on the residual-centered latent interaction}{probe3WayMC}
+%
+\begin{Description}\relax
+Probing interaction for simple intercept and simple slope for the no-centered or mean-centered latent two-way interaction
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+probe3WayMC(fit, nameX, nameY, modVar, valProbe1, valProbe2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{fit}] The lavaan model object used to evaluate model fit
+\item[\code{nameX}] The vector of the factor names used as the predictors. The three first-order factors will be listed first. Then the second-order factors will be listeed. The last element of the name will represent the three-way interaction. Note that the fourth element must be the interaction between the first and the second variables. The fifth element must be the interaction between the first and the third variables. The sixth element must be the interaction between the second and the third variables.
+\item[\code{nameY}] The name of factor that is used as the dependent variable.
+\item[\code{modVar}] The name of two factors that are used as the moderators. The effect of the independent factor on each combination of the moderator variable values will be probed.
+\item[\code{valProbe1}] The values of the first moderator that will be used to probe the effect of the independent factor.
+\item[\code{valProbe2}] The values of the second moderator that will be used to probe the effect of the independent factor.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Before using this function, researchers need to make the products of the indicators between the first-order factors using mean centering (Marsh, Wen, \& Hau, 2004). Note that the double-mean centering may not be appropriate for probing interaction if researchers are interested in simple intercepts. The mean or double-mean centering can be done by the \code{\LinkA{indProd}{indProd}} function. The indicator products can be made for all possible combination or matched-pair approach (Marsh et al., 2004). Next, the hypothesized model with the regression with latent interaction will be used to fit all original indicators and the product terms. See the example for how to fit the product term below. Once the lavaan result is obtained, this function will be used to probe the interaction.
+
+Let that the latent interaction model regressing the dependent variable (\eqn{Y}{}) on the independent varaible (\eqn{X}{}) and two moderators (\eqn{Z}{} and \eqn{W}{}) be
+\deqn{
+	Y = b_0 + b_1X + b_2Z + b_3W + b_4XZ + b_5XW + b_6ZW + b_7XZW + r,
+}{}
+where \eqn{b_0}{} is the estimated intercept or the expected value of \eqn{Y}{} when \eqn{X}{}, \eqn{Z}{}, and \eqn{W}{} are 0, \eqn{b_1}{} is the effect of \eqn{X}{} when \eqn{Z}{} and \eqn{W}{} are 0, \eqn{b_2}{} is the effect of \eqn{Z}{} when \eqn{X}{} and \eqn{W}{} is 0, \eqn{b_3}{} is the effect of \eqn{W}{} when \eqn{X}{} and \eqn{Z}{} are 0, \eqn{b_4}{} is the interaction effect between \eqn{X}{} and \eqn{Z}{} when \eqn{W}{} is 0, \eqn{b_5}{} is the interaction effect between \eqn{X}{} and \eqn{W}{} when \eqn{Z}{} is 0, \eqn{b_6}{} is the interaction effect between \eqn{Z}{} and \eqn{W}{} when \eqn{X}{} is 0, \eqn{b_7}{} is the three-way interaction effect between \eqn{X}{}, \eqn{Z}{}, and \eqn{W}{}, and \eqn{r}{} is the residual term.
+
+For probing three-way interaction, the simple intercept of the independent variable at the specific values of the moderators (Aiken \& West, 1991) can be obtained by
+\deqn{
+	b_{0|X = 0, Z, W} = b_0 + b_2Z + b_3W + b_6ZW.
+}{}
+
+The simple slope of the independent varaible at the specific values of the moderators can be obtained by
+\deqn{
+	b_{X|Z, W} = b_1 + b_3Z + b_4W + b_7ZW.
+}{}
+
+The variance of the simple intercept formula is
+\deqn{
+	Var\left(b_{0|X = 0, Z, W}\right) = Var\left(b_0\right) + Z^2Var\left(b_2\right) + W^2Var\left(b_3\right) + Z^2W^2Var\left(b_6\right) + 2ZCov\left(b_0, b_2\right) + 2WCov\left(b_0, b_3\right) + 2ZWCov\left(b_0, b_6\right) + 2ZWCov\left(b_2, b_3\right) + 2Z^2WCov\left(b_2, b_6\right) + 2ZW^2Cov\left(b_3, b_6\right) 
+}{}
+where \eqn{Var}{} denotes the variance of a parameter estimate and \eqn{Cov}{} denotes the covariance of two parameter estimates.
+
+The variance of the simple slope formula is 
+\deqn{
+	Var\left(b_{X|Z, W}\right) = Var\left(b_1\right) + Z^2Var\left(b_4\right) + W^2Var\left(b_5\right) + Z^2W^2Var\left(b_7\right) + 2ZCov\left(b_1, b_4\right) + 2WCov\left(b_1, b_5\right) + 2ZWCov\left(b_1, b_7\right) + 2ZWCov\left(b_4, b_5\right) + 2Z^2WCov\left(b_4, b_7\right) + 2ZW^2Cov\left(b_5, b_7\right) 
+}{}
+
+Wald statistic is used for test statistic.
+\end{Details}
+%
+\begin{Value}
+A list with two elements:
+\begin{enumerate}
+
+\item SimpleIntercept The intercepts given each value of the moderator. This element will be shown only if the factor intercept is estimated (e.g., not fixed as 0).
+\item SimpleSlope The slopes given each value of the moderator. 
+
+\end{enumerate}
+
+In each element, the first column represents the values of the first moderator specified in the \code{valProbe1} argument. The second column represents the values of the second moderator specified in the \code{valProbe2} argument. The third column is the simple intercept or simple slope. The fourth column is the standard error of the simple intercept or simple slope. The fifth column is the Wald (\emph{z}) statistic. The sixth column is the \emph{p}-value testing whether the simple intercepts or slopes are different from 0.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Aiken, L. S., \& West, S. G. (1991). Multiple regression: Testing and interpreting interactions. Newbury Park, CA: Sage.
+
+Marsh, H. W., Wen, Z., \& Hau, K. T. (2004). Structural equation models of latent interactions: Evaluation of alternative estimation strategies and indicator construction. \emph{Psychological Methods, 9}, 275-300.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{indProd}{indProd}} For creating the indicator products with no centering, mean centering, double-mean centering, or residual centering.
+\item \code{\LinkA{probe2WayMC}{probe2WayMC}} For probing the two-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe2WayRC}{probe2WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{probe3WayRC}{probe3WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{plotProbe}{plotProbe}} Plot the simple intercepts and slopes of the latent interaction.
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan)
+
+dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
+
+model3 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f3 =~ x7 + x8 + x9
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f13 =~ x1.x7 + x2.x8 + x3.x9
+f23 =~ x4.x7 + x5.x8 + x6.x9
+f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
+f4 =~ x10 + x11 + x12
+f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
+f1 ~~ 0*f12
+f1 ~~ 0*f13
+f1 ~~ 0*f123
+f2 ~~ 0*f12
+f2 ~~ 0*f23
+f2 ~~ 0*f123
+f3 ~~ 0*f13
+f3 ~~ 0*f23
+f3 ~~ 0*f123
+f12 ~~ 0*f123
+f13 ~~ 0*f123
+f23 ~~ 0*f123
+x1 ~ 0*1
+x4 ~ 0*1
+x7 ~ 0*1
+x10 ~ 0*1
+x1.x4 ~ 0*1
+x1.x7 ~ 0*1
+x4.x7 ~ 0*1
+x1.x4.x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f3 ~ NA*1
+f12 ~ NA*1
+f13 ~ NA*1
+f23 ~ NA*1
+f123 ~ NA*1
+f4 ~ NA*1
+" 
+
+fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitMC3way)
+
+result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+	"f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayMC
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{probe3WayRC}{Probing three-way interaction on the residual-centered latent interaction}{probe3WayRC}
+%
+\begin{Description}\relax
+Probing interaction for simple intercept and simple slope for the residual-centered latent three-way interaction (Pornprasertmanit, Schoemann, Geldhof, \& Little, submitted)
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+probe3WayRC(fit, nameX, nameY, modVar, valProbe1, valProbe2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{fit}] The lavaan model object used to evaluate model fit
+\item[\code{nameX}] The vector of the factor names used as the predictors. The three first-order factors will be listed first. Then the second-order factors will be listeed. The last element of the name will represent the three-way interaction. Note that the fourth element must be the interaction between the first and the second variables. The fifth element must be the interaction between the first and the third variables. The sixth element must be the interaction between the second and the third variables.
+\item[\code{nameY}] The name of factor that is used as the dependent variable.
+\item[\code{modVar}] The name of two factors that are used as the moderators. The effect of the independent factor on each combination of the moderator variable values will be probed.
+\item[\code{valProbe1}] The values of the first moderator that will be used to probe the effect of the independent factor.
+\item[\code{valProbe2}] The values of the second moderator that will be used to probe the effect of the independent factor.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Before using this function, researchers need to make the products of the indicators between the first-order factors and residualize the products by the original indicators (Lance, 1988; Little, Bovaird, \& Widaman, 2006). The process can be automated by the \code{\LinkA{indProd}{indProd}} function. Note that the indicator products can be made for all possible combination or matched-pair approach (Marsh et al., 2004). Next, the hypothesized model with the regression with latent interaction will be used to fit all original indicators and the product terms (Geldhof, Pornprasertmanit,  Schoemann, \& Little, in press). See the example for how to fit the product term below. Once the lavaan result is obtained, this function will be used to probe the interaction.
+
+The probing process on residual-centered latent interaction is based on transforming the residual-centered result into the no-centered result. See Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further details. Note that this approach based on a strong assumption that the first-order latent variables are normally distributed. The probing process is applied after the no-centered result (parameter estimates and their covariance matrix among parameter estimates) has been computed See the \code{\LinkA{probe3WayMC}{probe3WayMC}} for further details.
+\end{Details}
+%
+\begin{Value}
+A list with two elements:
+\begin{enumerate}
+
+\item SimpleIntercept The intercepts given each value of the moderator. This element will be shown only if the factor intercept is estimated (e.g., not fixed as 0).
+\item SimpleSlope The slopes given each value of the moderator. 
+
+\end{enumerate}
+
+In each element, the first column represents the values of the first moderator specified in the \code{valProbe1} argument. The second column represents the values of the second moderator specified in the \code{valProbe2} argument. The third column is the simple intercept or simple slope. The fourth column is the standard error of the simple intercept or simple slope. The fifth column is the Wald (\emph{z}) statistic. The sixth column is the \emph{p}-value testing whether the simple intercepts or slopes are different from 0.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Geldhof, G. J., Pornprasertmanit, S., Schoemann, A., \& Little, T. D. (in press). Orthogonalizing through residual centering: Applications and caveats. \emph{Educational and Psychological Measurement.}
+
+Lance, C. E. (1988). Residual centering, exploratory and confirmatory moderator analysis, and decomposition of effects in path models containing interactions. \emph{Applied Psychological Measurement, 12}, 163-175.
+
+Little, T. D., Bovaird, J. A., \& Widaman, K. F. (2006). On the merits of orthogonalizing powered and product terms: Implications for modeling interactions. \emph{Structural Equation Modeling, 13}, 497-519.
+
+Marsh, H. W., Wen, Z., \& Hau, K. T. (2004). Structural equation models of latent interactions: Evaluation of alternative estimation strategies and indicator construction. \emph{Psychological Methods, 9}, 275-300.
+
+Pornprasertmanit, S., Schoemann, A. M., Geldhof, G. J., \& Little, T. D. (submitted). \emph{Probing latent interaction estimated with a residual centering approach.} 
+
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{indProd}{indProd}} For creating the indicator products with no centering, mean centering, double-mean centering, or residual centering.
+\item \code{\LinkA{probe2WayMC}{probe2WayMC}} For probing the two-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe3WayMC}{probe3WayMC}} For probing the three-way latent interaction when the results are obtained from mean-centering, or double-mean centering.
+\item \code{\LinkA{probe2WayRC}{probe2WayRC}} For probing the two-way latent interaction when the results are obtained from residual-centering approach.
+\item \code{\LinkA{plotProbe}{plotProbe}} Plot the simple intercepts and slopes of the latent interaction.
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan)
+
+dat3wayRC <- orthogonalize(dat3way, 1:3, 4:6, 7:9)
+
+model3 <- "
+f1 =~ x1 + x2 + x3
+f2 =~ x4 + x5 + x6
+f3 =~ x7 + x8 + x9
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f13 =~ x1.x7 + x2.x8 + x3.x9
+f23 =~ x4.x7 + x5.x8 + x6.x9
+f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
+f4 =~ x10 + x11 + x12
+f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
+f1 ~~ 0*f12
+f1 ~~ 0*f13
+f1 ~~ 0*f123
+f2 ~~ 0*f12
+f2 ~~ 0*f23
+f2 ~~ 0*f123
+f3 ~~ 0*f13
+f3 ~~ 0*f23
+f3 ~~ 0*f123
+f12 ~~ 0*f123
+f13 ~~ 0*f123
+f23 ~~ 0*f123
+x1 ~ 0*1
+x4 ~ 0*1
+x7 ~ 0*1
+x10 ~ 0*1
+x1.x4 ~ 0*1
+x1.x7 ~ 0*1
+x4.x7 ~ 0*1
+x1.x4.x7 ~ 0*1
+f1 ~ NA*1
+f2 ~ NA*1
+f3 ~ NA*1
+f12 ~ NA*1
+f13 ~ NA*1
+f23 ~ NA*1
+f123 ~ NA*1
+f4 ~ NA*1
+" 
+
+fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
+summary(fitRC3way)
+
+result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+	"f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayRC
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{reliability}{Calculate reliability values of factors}{reliability}
+%
+\begin{Description}\relax
+Calculate reliability values of factors by coefficient omega
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+reliability(object)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The coefficient alpha (Cronbach, 1951) can be calculated by 
+
+\deqn{ \alpha = \frac{k}{k - 1}\left[ 1 - \frac{\sum^{k}_{i = 1} \sigma_{ii}}{\sum^{k}_{i = 1} \sigma_{ii} + 2\sum_{i < j} \sigma_{ij}} \right],}{}
+
+where \eqn{k}{} is the number of items in a factor, \eqn{\sigma_{ii}}{} is the item \emph{i} observed variances, \eqn{\sigma_{ij}}{} is the observed covariance of items \emph{i} and \emph{j}.
+
+The coefficient omega (Raykov, 2001) can be calculated by 
+
+\deqn{ \omega =\frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2} Var\left( \psi \right)}{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2} Var\left( \psi \right) + \sum^{k}_{i = 1} \theta_{ii} + 2\sum_{i < j} \theta_{ij} }, }{}
+
+where \eqn{\lambda_i}{} is the factor loading of item \emph{i}, \eqn{\psi}{} is the factor variance, \eqn{\theta_{ii}}{} is the variance of measurement errors of item \emph{i}, and \eqn{\theta_{ij}}{} is the covariance of measurement errors from item \emph{i} and \emph{j}. 
+
+The second coefficient omega (Bentler, 1972, 2009) can be calculated by 
+
+\deqn{ \omega_2 = 1 - \frac{\bold{1}\prime \Theta \bold{1}}{\bold{1}^\prime \hat{\Sigma} \bold{1}}, }{}
+
+where \eqn{\Theta}{} is the measurement error covariance matrix, \eqn{\hat{\Sigma}}{} is the model-implied covariance matrix, and \eqn{\bold{1}}{} is the \eqn{k}{}-dimensional vector of 1. The first and the second coefficients omega will have different values if there are dual loadings (or the existence of method factors). The first coefficient omega can be viewed as the reliability controlling for the other factors. The second coefficient omega can be viewed as the unconditional reliability. 
+
+The third coefficient omega (McDonald, 1999) can be calculated by
+
+\deqn{ \omega_3 = 1 - \frac{\bold{1}\prime \Theta \bold{1}}{\bold{1}^\prime \Sigma \bold{1}}, }{}
+
+where \eqn{\Sigma}{} is the observed covariance matrix. If the model fits the data well, the third coefficient omega will be similar to the other two. Note that if there is a directional effect in the model, all coefficients omega will use the total factor variances, which is calculated by the \code{\LinkA{impliedFactorCov}{impliedFactorCov}} function.
+
+If measurement errors are not correlated, the last term in the denominator of the middle expression is dropped. For the categorical items, the reliability indices are calculated from the latent variable underlying the categorical items (i.e., using polychoric/polyserial correlations). Therefore, the coefficient alpha from this function may be not the same as the standard alpha calculation for categorical items. Researchers may check the \code{alpha} function in the \code{psych} package for the standard coefficient alpha calculation. 
+\end{Details}
+%
+\begin{Value}
+Reliability values (coefficient alpha, coefficients omega) of each factor in each group
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu}); Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+\end{Author}
+%
+\begin{References}\relax
+Bentler, P. M. (1972). A lower-bound method for the dimension-free measurement of internal consistency. \emph{Social Science Research, 1}, 343-357.
+
+Bentler, P. M. (2009). Alpha, dimension-free, and model-based internal consistency reliability. \emph{Psychometrika, 74}, 137-143.
+
+Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334. 
+
+McDonald, R. P. (1999). Test theory: A unified treatment. Mahwah, NJ: Erlbaum.
+
+Raykov, T. (2001). Estimation of congeneric scale reliability using covariance structure analysis with nonlinear constraints \emph{British Journal of Mathematical and Statistical Psychology, 54}, 315-323.
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{reliabilityL2}{reliabilityL2}} for reliability value of a desired second-order factor
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+reliability(fit)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{reliabilityL2}{Calculate the reliability values of a second-order factor}{reliabilityL2}
+%
+\begin{Description}\relax
+Calculate the reliability values (coefficient omega) of a second-order factor
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+reliabilityL2(object, secondFactor)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions that has a second-order factor
+\item[\code{secondFactor}] The name of the second-order factor
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The first formula of the coefficient omega (in the \code{\LinkA{reliability}{reliability}}) will be mainly used in the calculation. The model-implied covariance matrix of a second-order factor model can be separated into three sources: the second-order factor, the uniqueness of the first-order factor, and the measurement error of indicators: 
+
+\deqn{ \hat{\Sigma} = \Lambda \bold{B} \Phi_2 \bold{B}^{\prime} \Lambda^{\prime} + \Lambda \Psi_{u} \Lambda^{\prime} + \Theta, }{}
+
+where \eqn{\hat{\Sigma}}{} is the model-implied covariance matrix, \eqn{\Lambda}{} is the first-order factor loading, \eqn{\bold{B}}{} is the second-order factor loading, \eqn{\Phi_2}{} is the covariance matrix of the second-order factors, \eqn{\Psi_{u}}{} is the covariance matrix of the unique scores from first-order factors, and \eqn{\Theta}{} is the covariance matrix of the measurement errors from indicators. Thus, the proportion of the second-order factor explaining the total score, or the coefficient omega at Level 1, can be calculated:
+
+\deqn{ \omega_{L1} = \frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi_2 \bold{B}^{\prime} \Lambda^{\prime} \bold{1}}{\bold{1}^{\prime} \Lambda \bold{B} \Phi_2 \bold{B} ^{\prime} \Lambda^{\prime} \bold{1} + \bold{1}^{\prime} \Lambda \Psi_{u} \Lambda^{\prime} \bold{1} + \bold{1}^{\prime} \Theta \bold{1}}, }{}
+
+where \eqn{\bold{1}}{} is the \emph{k}-dimensional vector of 1 and \emph{k} is the number of observed variables. When model-implied covariance matrix among first-order factors (\eqn{\Phi_1}{}) can be calculated:
+
+\deqn{ \Phi_1 = \bold{B} \Phi_2 \bold{B}^{\prime} + \Psi_{u}, }{}
+
+Thus, the proportion of the second-order factor explaining the varaince at first-order factor level, or the coefficient omega at Level 2, can be calculated:
+
+\deqn{ \omega_{L2} = \frac{\bold{1_F}^{\prime} \bold{B} \Phi_2 \bold{B}^{\prime} \bold{1_F}}{\bold{1_F}^{\prime} \bold{B} \Phi_2 \bold{B}^{\prime} \bold{1_F} + \bold{1_F}^{\prime} \Psi_{u} \bold{1_F}}, }{}
+
+where \eqn{\bold{1_F}}{} is the \emph{F}-dimensional vector of 1 and \emph{F} is the number of first-order factors. 
+
+The partial coefficient omega at Level 1, or the proportion of observed variance explained by the second-order factor after partialling the uniqueness from the first-order factor, can be calculated:
+
+\deqn{ \omega_{L1} = \frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi_2 \bold{B}^{\prime} \Lambda^{\prime} \bold{1}}{\bold{1}^{\prime} \Lambda \bold{B} \Phi_2 \bold{B}^{\prime} \Lambda^{\prime} \bold{1} + \bold{1}^{\prime} \Theta \bold{1}}, }{}
+
+Note that if the second-order factor has a direct factor loading on some observed variables, the observed variables will be counted as first-order factors.
+\end{Details}
+%
+\begin{Value}
+Reliability values at Levels 1 and 2 of the second-order factor, as well as the partial reliability value at Level 1
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{reliability}{reliability}} for the reliability of the first-order factors.
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+HS.model3 <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 
+			  higher =~ visual + textual + speed'
+
+fit6 <- cfa(HS.model3, data=HolzingerSwineford1939)
+reliability(fit6) # Should provide a warning for the endogenous variable
+reliabilityL2(fit6, "higher")
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{residualCovariate}{Residual centered all target indicators by covariates}{residualCovariate}
+%
+\begin{Description}\relax
+This function will regress target variables on the covariate and replace the target variables by the residual of the regression analysis. This procedure is useful to control the covariate from the analysis model (Geldhof, Pornprasertmanit, Schoemann, \& Little, in press).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+residualCovariate(data, targetVar, covVar)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{data}] 
+The desired data to be transformed.
+
+\item[\code{targetVar}] 
+Varible names or the position of indicators that users wish to be residual centered (as dependent variables)
+
+\item[\code{covVar}] 
+Covariate names or the position of the covariates using for residual centering (as independent variables) onto target variables
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The data that the target variables replaced by the residuals
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., \& Little, T. D. (in press). Orthogonalizing through residual centering: Applications and caveats. \emph{Educational and Psychological Measurement.}
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{indProd}{indProd}} For creating the indicator products with no centering, mean centering, double-mean centering, or residual centering.	
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+dat <- residualCovariate(attitude, 2:7, 1)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{rotate}{Implement orthogonal or oblique rotation}{rotate}
+\aliasA{funRotate}{rotate}{funRotate}
+\aliasA{oblqRotate}{rotate}{oblqRotate}
+\aliasA{orthRotate}{rotate}{orthRotate}
+%
+\begin{Description}\relax
+These functions will implement orthogonal or oblique rotation on standardized factor loadings from a lavaan output. 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+orthRotate(object, method="varimax", ...)
+oblqRotate(object, method="quartimin", ...)
+funRotate(object, fun, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] 
+A lavaan output
+
+\item[\code{method}] 
+The method of rotations, such as \code{"varimax"}, \code{"quartimax"}, \code{"geomin"}, \code{"oblimin"}, or any gradient projection algorithms listed in the \code{\LinkA{GPA}{GPA}} function in the \code{GPArotation} package.
+
+\item[\code{fun}] 
+The name of the function that users wish to rotate the standardized solution. The functions must take the first argument as the standardized loading matrix and return the \code{GPArotation} object. Check this page for available functions: \code{\LinkA{rotations}{rotations}}.
+
+\item[\code{...}] 
+Additional arguments for the \code{\LinkA{GPForth}{GPForth}} function (for \code{orthRotate}), the \code{\LinkA{GPFoblq}{GPFoblq}} function (for \code{oblqRotate}), or the function that users provide in the \code{fun} argument.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+These functions will rotate the unrotated standardized factor loadings by orthogonal rotation using the \code{\LinkA{GPForth}{GPForth}} function or oblique rotation using the \code{\LinkA{GPFoblq}{GPFoblq}} function the \code{GPArotation} package. The resulting rotation matrix will be used to calculate standard errors of the rotated standardized factor loading by delta method by numerically computing the Jacobian matrix by the \code{lavJacobianD} function in the \code{lavaan} package. 
+\end{Details}
+%
+\begin{Value}
+An \code{linkS4class\{EFA\}} object that saves the rotated EFA solution.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
+
+# Orthogonal varimax
+out.varimax <- orthRotate(unrotated, method="varimax")
+summary(out.varimax, sort=FALSE, suppress=0.3)
+
+# Orthogonal Quartimin
+orthRotate(unrotated, method="quartimin")
+
+# Oblique Quartimin
+oblqRotate(unrotated, method="quartimin")
+
+# Geomin
+oblqRotate(unrotated, method="geomin")
+
+## Not run: 
+# Target rotation
+library(GPArotation)
+target <- matrix(0, 9, 3)
+target[1:3, 1] <- NA
+target[4:6, 2] <- NA
+target[7:9, 3] <- NA
+colnames(target) <- c("factor1", "factor2", "factor3")
+# This function works with GPArotation version 2012.3-1
+funRotate(unrotated, fun="targetQ", Target=target) 
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{runMI}{Multiply impute and analyze data using lavaan}{runMI}
+\aliasA{cfa.mi}{runMI}{cfa.mi}
+\aliasA{growth.mi}{runMI}{growth.mi}
+\aliasA{lavaan.mi}{runMI}{lavaan.mi}
+\aliasA{sem.mi}{runMI}{sem.mi}
+%
+\begin{Description}\relax
+This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules. Note that parmeter estimates and standard errors are pooled by the Rubin's (1987) rule. The chi-square statistics and the related fit indices are pooled by the method described in \code{"chi"} argument. SRMR is calculated based on the average model-implied means and covariance matrices across imputations.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+runMI(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
+	seed=12345, fun, ...) 
+cfa.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
+	seed=12345, ...)
+sem.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all",  
+	seed=12345, ...)
+growth.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
+	seed=12345, ...)
+lavaan.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
+	seed=12345, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{model}] 
+lavaan syntax for the the model to be analyzed. 
+
+\item[\code{data}] 
+Data frame with missing observations or a list of data frames where each data frame is one imputed data set (for imputed data generated outside of the function). If a list of data frames is supplied, then other options can be left at the default.
+
+\item[\code{m}] 
+Number of imputations wanted.
+
+\item[\code{miArgs}] 
+Addition arguments for the multiple-imputation function. The arguments should be put in a list (see example below).
+
+\item[\code{miPackage}] 
+Package to be used for imputation. Currently these functions only support \code{"Amelia"} or \code{"mice"} for imputation. 
+
+\item[\code{chi}] 
+The method to combine the chi-square. Can be one of the following: \code{"mr"} for the method proposed for Meng \& Rubin (1992), \code{"mplus"} for the method used in Mplus (Asparouhov \& Muthen, 2010), \code{"lmrr"} for the method proposed by Li, Meng, Raghunathan, \& Rubin (1991),  \code{"all"} to show the three methods in the output, and \code{"none"} to not pool any chi-square values. The default is \code{"all"}. 
+
+\item[\code{seed}] 
+Random number seed to be used in imputations.
+
+\item[\code{fun}] 
+The character of the function name used in running lavaan model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}). 
+
+\item[\code{...}] 
+Other arguments to be passed to the specified lavaan function (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}).
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The \code{\LinkA{lavaanStar}{lavaanStar.Rdash.class}} object which contains the original \code{lavaan} object (where the appropriate parameter estimates, appropriate standard errors, and chi-squares are filled), the additional fit-index values of the null model, which need to be adjusted to multiple datasets, and the information from pooling multiple results.
+\end{Value}
+%
+\begin{Author}\relax
+Alexander M. Schoemann (University of Kansas;  \email{schoemann@ku.edu})
+Patrick Miller (University of Kansas; \email{patr1ckm@ku.edu})
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+Mijke Rhemtulla (University of Kansas; \email{mijke@ku.edu})
+Alexander Robitzsch (Federal Institute for Education Research, Innovation, and Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
+Craig Enders (Arizona State University; \email{Craig.Enders@asu.edu})
+Mauricio Garnier Villarreal (University of Kansas; \email{mgv@ku.edu})
+Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+\end{Author}
+%
+\begin{References}\relax
+Asparouhov T. \& Muthen B. (2010).\emph{Chi-Square Statistics with Multiple Imputation}. Technical Report. www.statmodel.com. 
+
+Li, K.H., Meng, X.-L., Raghunathan, T.E. and Rubin, D.B. (1991). Significance Levels From Repeated p-values with Multiply-Imputed Data. \emph{Statistica Sinica, 1}, 65-92.
+
+Meng, X.L. \& Rubin, D.B. (1992). Performing likelihood ratio tests with multiply-imputed data sets. \emph{Biometrika, 79}, 103 - 111.
+
+Rubin, D.B. (1987) \emph{Multiple Imputation for Nonresponse in Surveys.} J. Wiley \& Sons, New York.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+library(lavaan)
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+HSMiss <- HolzingerSwineford1939[,paste("x", 1:9, sep="")]
+randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
+randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
+HSMiss[randomMiss] <- NA
+
+out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
+summary(out)
+inspect(out, "fit")
+inspect(out, "impute")
+
+## Not run: 
+##Multiple group example
+HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
+out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
+summary(out2)
+inspect(out2, "fit")
+inspect(out2, "impute")
+
+##Example using previously imputed data with runMI
+library(Amelia)
+
+modsim <- '
+f1 =~ 0.7*y1+0.7*y2+0.7*y3
+f2 =~ 0.7*y4+0.7*y5+0.7*y6
+f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+
+mod <- '
+f1 =~ y1+y2+y3
+f2 =~ y4+y5+y6
+f3 =~ y7+y8+y9'
+
+datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
+	std.lv=TRUE, sample.nobs=c(200,200))
+randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
+randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
+datsim[randomMiss2] <- NA
+datsimMI <- amelia(datsim,m=3, noms="group")
+
+out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
+summary(out3)
+inspect(out3, "fit")
+inspect(out3, "impute")
+
+# Categorical variables
+dat <- simulateData(popModel, sample.nobs  = 200L)
+miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
+dat[miss.pat] <- NA
+out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, 
+	miArgs=list(ords = c("y1", "y2", "y3", "y4")))
+summary(out5)
+inspect(out5, "fit")
+inspect(out5, "impute")
+
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{saturateMx}{Analyzing data using a saturate model}{saturateMx}
+%
+\begin{Description}\relax
+Analyzing data using a saturate model by full-information maximum likelihood. In the saturate model, all means and covariances are free if items are continuous. For ordinal variables, their means are fixed as 0 and their variances are fixed as 1--their covariances and thresholds are estimated. In multiple-group model, all means are variances are separately estimated. 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+saturateMx(data, groupLab = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{data}] 
+The target data frame
+
+\item[\code{groupLab}] 
+The name of grouping variable
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The \code{MxModel} object which contains the analysis result of the saturate model.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{nullMx}{nullMx}}, \code{\LinkA{fitMeasuresMx}{fitMeasuresMx}}, \code{\LinkA{standardizeMx}{standardizeMx}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+library(OpenMx)
+data(demoOneFactor)
+satModel <- saturateMx(demoOneFactor)
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simParcel}{Simulated Data set to Demonstrate Random Allocations of Parcels}{simParcel}
+%
+\begin{Description}\relax
+A simulated data set with 2 factors with 9 indicators for each factor
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simParcel)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 800 observations of 18 variables.
+\begin{description}
+
+\item[f1item1] Item 1 loading on factor 1
+\item[f1item2] Item 2 loading on factor 1
+\item[f1item3] Item 3 loading on factor 1
+\item[f1item4] Item 4 loading on factor 1
+\item[f1item5] Item 5 loading on factor 1
+\item[f1item6] Item 6 loading on factor 1
+\item[f1item7] Item 7 loading on factor 1
+\item[f1item8] Item 8 loading on factor 1
+\item[f1item9] Item 9 loading on factor 1
+\item[f2item1] Item 1 loading on factor 2
+\item[f2item2] Item 2 loading on factor 2
+\item[f2item3] Item 3 loading on factor 2
+\item[f2item4] Item 4 loading on factor 2
+\item[f2item5] Item 5 loading on factor 2
+\item[f2item6] Item 6 loading on factor 2
+\item[f2item7] Item 7 loading on factor 2
+\item[f2item8] Item 8 loading on factor 2
+\item[f2item9] Item 9 loading on factor 2
+
+\end{description}
+
+\end{Format}
+%
+\begin{Source}\relax
+Data was generated using the \code{simsem} package.
+\end{Source}
+%
+\begin{Examples}
+\begin{ExampleCode}
+head(simParcel)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{skew}{Finding skewness}{skew}
+%
+\begin{Description}\relax
+Finding skewness (g1) of an object
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+skew(object, population=FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] 
+A vector used to find a skewness
+
+\item[\code{population}] 
+\code{TRUE} to compute the parameter formula. \code{FALSE} to compute the sample statistic formula.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The skewness computed is g1. The parameter skewness \eqn{\gamma_{2}}{} formula is
+
+\deqn{\gamma_{2} = \frac{\mu_{3}}{\mu^{3/2}_{2}},}{}
+
+where \eqn{\mu_{i}}{} denotes the \eqn{i}{} order central moment.
+
+The excessive kurtosis formula for sample statistic \eqn{g_{2}}{} is
+
+\deqn{g_{2} = \frac{k_{3}}{k^{2}_{2}},}{}
+
+where \eqn{k_{i}}{} are the \eqn{i}{} order \emph{k}-statistic.
+
+The standard error of the skewness is 
+
+\deqn{Var(\hat{g}_2) = \frac{6}{N}}{}
+
+where \eqn{N}{} is the sample size.
+\end{Details}
+%
+\begin{Value}
+A value of a skewness with a test statistic if the population is specified as \code{FALSE}
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{References}\relax
+Weisstein, Eric W. (n.d.). \emph{Skewness.} Retrived from MathWorld--A Wolfram Web Resource \url{http://mathworld.wolfram.com/Skewness.html} 
+\end{References}
+%
+\begin{SeeAlso}\relax
+\begin{itemize}
+
+\item \code{\LinkA{kurtosis}{kurtosis}} Find the univariate excessive kurtosis of a variable
+\item \code{\LinkA{mardiaSkew}{mardiaSkew}} Find the Mardia's multivariate skewness of a set of variables
+\item \code{\LinkA{mardiaKurtosis}{mardiaKurtosis}} Find the Mardia's multivariate kurtosis of a set of variables
+
+\end{itemize}
+
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+skew(1:5)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{splitSample}{Randomly Split a Data Set into Halves}{splitSample}
+%
+\begin{Description}\relax
+This function randomly splits a data set into two halves, and saves the resulting data sets to the same folder as the original. 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+splitSample(dataset,path="default", div=2, type="default", name="splitSample")
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{dataset}] The original data set to be divided. Can be a file path to a .csv or .dat file (headers will automatically be detected) or an R object (matrix or dataframe). (Windows users: file path must be specified using FORWARD SLASHES ONLY.)
+\item[\code{path}] File path to folder for output data sets. NOT REQUIRED if dataset is a filename. Specify ONLY if dataset is an R object, or desired output folder is not that of original data set. If path is specified as "object", output data sets will be returned as a list, and not saved to hard drive. 
+\item[\code{div}] Number of output data sets. NOT REQUIRED if default, 2 halves.	
+\item[\code{type}] Output file format ("dat" or "csv"). NOT REQUIRED unless desired output formatting differs from that of input, or dataset is an R object and csv formatting is desired.	
+\item[\code{name}] Output file name. NOT REQUIRED unless desired output name differs from that of input, or input dataset is an R object. (If input is an R object and name is not specified, name will be "splitSample".)	
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function randomly orders the rows of a data set, divides the data set into two halves, and saves the halves to the same folder as the original data set, preserving the original formatting. Data set type (.csv or .dat) and formatting (headers) are automatically detected, and output data sets will preserve input type and formatting unless specified otherwise. Input can be in the form of a file path (.dat or .csv), or an R object (matrix or dataframe). If input is an R object and path is default, output data sets will be returned as a list object.  
+\end{Details}
+%
+\begin{Value}
+\begin{ldescription}
+\item[\code{dataL}] List of output data sets. ONLY IF dataset is an R object and path is default. Otherwise, output will saved to hard drive with the same formatting as input.
+\end{ldescription}
+\end{Value}
+%
+\begin{Author}\relax
+Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+#### Input is .dat file
+#splitSample("C:/Users/Default/Desktop/MYDATA.dat")
+#### Output saved to "C:/Users/Default/Desktop/" in .dat format
+#### Names are "MYDATA_s1.dat" and "MYDATA_s2.dat"
+
+#### Input is R object
+##Split C02 dataset from the datasets package
+library(datasets)
+splitMyData <- splitSample(CO2, path="object")
+summary(splitMyData[[1]])
+summary(splitMyData[[2]])
+#### Output object splitMyData becomes list of output data sets
+
+#### Input is .dat file in "C:/" folder
+#splitSample("C:/testdata.dat", path = "C:/Users/Default/Desktop/", type = "csv")
+#### Output saved to "C:/Users/Default/Desktop/" in .csv format
+#### Names are "testdata_s1.csv" and "testdata_s2.csv"
+
+#### Input is R object
+#splitSample(myData, path = "C:/Users/Default/Desktop/", name = "splitdata")
+#### Output saved to "C:/Users/Default/Desktop/" in .dat format
+#### Names are "splitdata_s1.dat" and "splitdata_s2.dat"
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{standardizeMx}{Find standardized estimates for OpenMx output}{standardizeMx}
+%
+\begin{Description}\relax
+Find standardized estimates for OpenMx output. This function is applicable for the \code{MxRAMObjective} only. 
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+standardizeMx(object, free = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] 
+Target OpenMx output using \code{MxRAMObjective}
+
+\item[\code{free}] 
+If \code{TRUE}, the function will show only standardized values of free parameters. If \code{FALSE}, the function will show the results for fixed and free parameters.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A vector of standardized estimates
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{saturateMx}{saturateMx}}, \code{\LinkA{nullMx}{nullMx}}, \code{\LinkA{fitMeasuresMx}{fitMeasuresMx}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+library(OpenMx)
+data(myFADataRaw)
+myFADataRaw <- myFADataRaw[,c("x1","x2","x3","x4","x5","x6")]
+oneFactorModel <- mxModel("Common Factor Model Path Specification", 
+	type="RAM",
+	mxData(
+		observed=myFADataRaw, 
+		type="raw"
+	),
+	manifestVars=c("x1","x2","x3","x4","x5","x6"),
+	latentVars="F1",
+	mxPath(from=c("x1","x2","x3","x4","x5","x6"),
+		arrows=2,
+		free=TRUE,
+		values=c(1,1,1,1,1,1),
+		labels=c("e1","e2","e3","e4","e5","e6")
+	), 
+	# residual variances
+	# -------------------------------------
+	mxPath(from="F1",
+		arrows=2,
+		free=TRUE,
+		values=1,
+		labels ="varF1"
+	), 
+	# latent variance
+	# -------------------------------------
+	mxPath(from="F1",
+		to=c("x1","x2","x3","x4","x5","x6"),
+		arrows=1,
+		free=c(FALSE,TRUE,TRUE,TRUE,TRUE,TRUE),
+		values=c(1,1,1,1,1,1),
+		labels =c("l1","l2","l3","l4","l5","l6")
+	), 
+	# factor loadings
+	# -------------------------------------
+	mxPath(from="one",
+		to=c("x1","x2","x3","x4","x5","x6","F1"),
+		arrows=1,
+		free=c(TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE),
+		values=c(1,1,1,1,1,1,0),
+		labels =c("meanx1","meanx2","meanx3","meanx4","meanx5","meanx6",NA)
+	) 
+	# means
+	# -------------------------------------
+) # close model
+# Create an MxModel object
+# -----------------------------------------------------------------------------
+oneFactorFit <- mxRun(oneFactorModel)      
+standardizeMx(oneFactorFit)
+
+# Compare with lavaan
+library(lavaan)
+script <- "f1 =~ x1 + x2 + x3 + x4 + x5 + x6"
+fit <- cfa(script, data=myFADataRaw, meanstructure=TRUE)
+standardize(fit)
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{tukeySEM}{Tukey's WSD post-hoc test of means for unequal variance and sample size}{tukeySEM}
+%
+\begin{Description}\relax
+This function computes Tukey's WSD post-hoc test of means when variances and sample sizes are not equal across groups. It can be used as a post-hoc test when comparing latent means in multiple group SEM.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+tukeySEM(m1, m2, var1, var2, n1, n2, ng)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{m1}] Mean of group 1.
+\item[\code{m2}] Mean of group 2.
+\item[\code{var1}] Variance of group 1.
+\item[\code{var2}] Variance of group 2.
+\item[\code{n1}] Sample size of group 1.
+\item[\code{n2}] Sample size of group 2.
+\item[\code{ng}] Total number of groups to be compared (i.e., the number of groups compared in the omnibus test).
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+After conducting an omnibus test of means across three of more groups, researchers often wish to know which sets of means differ at a particular Type I error rate. Tukey's WSD test holds the error rate stable across multiple comparisons of means. This function implements an adaptation of Tukey's WSD test from Maxwell \& Delaney (2004), that allows variances and sample sizes to differ across groups. 
+\end{Details}
+%
+\begin{Value}
+A vector with three elements:
+\begin{enumerate}
+
+\item q The q statistic
+\item df The degrees of freedom for the q statistic
+\item p A p value based on the q statistic, degrees of freedom and the total number of groups to be compared
+
+\end{enumerate}
+
+\end{Value}
+%
+\begin{Author}\relax
+Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
+\end{Author}
+%
+\begin{References}\relax
+Maxwell, S. E., \& Delaney, H. D. (2004). \emph{Designing experiments and analyzing data: A model comparison perspective} (2nd ed.). Mahwah, NJ.: Lawrence Erlbaum Associates.
+
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+##For a case where three groups have been compared:
+##Group 1: mean = 3.91, var = 0.46, n = 246
+##Group 2: mean = 3.96, var = 0.62, n = 465
+##Group 3: mean = 2.94, var = 1.07, n = 64
+
+#compare group 1 and group 2
+tukeySEM(3.91, 3.96, 0.46, 0.62, 246, 425, 3)
+
+#compare group 1 and group 3
+tukeySEM(3.91, 2.94, 0.46, 1.07, 246, 64, 3)
+
+#compare group 2 and group 3
+tukeySEM(3.96, 2.94, 0.62, 1.07, 465, 64, 3)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{wald}{Calculate multivariate Wald statistics}{wald}
+%
+\begin{Description}\relax
+Calculate multivariate Wald statistics based on linear combinations of model parameters
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+wald(object, syntax)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] An output from \code{lavaan}
+\item[\code{syntax}] Syntax that each line represents one linear constraint. A plus or minus sign is used to separate between each coefficient. An asterisk is used to separate between coefficients and parameters. The coefficient can have a forward slash to represent a division. The parameter names must be matched with the names of lavaan parameters investigated by running the \code{coef} function on a lavaan output. Lines can be separated by semi-colon. A pound sign is allowed for comments. Note that the defined parameters (created by ":=") do not work with this function.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The formula for multivariate Wald test is
+
+\deqn{ \chi^2 = \left(C\hat{b}\right)^\prime\left[C\hat{V}C^\prime\right]^{-1}\left(C\hat{b}\right),}{}
+
+where \eqn{C}{} is the contrast matrix, \eqn{\hat{b}}{} is the estimated fixed effect, \eqn{\hat{V}}{} is the asymptotic covariance matrix among fixed effects. 
+\end{Details}
+%
+\begin{Value}
+Chi-square value with \emph{p} value.
+\end{Value}
+%
+\begin{Author}\relax
+Sunthud Pornprasertmanit (\email{psunthud@ku.edu})
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+# Test the difference in factor loadings
+HS.model <- ' visual  =~ x1 + con1*x2 + con1*x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + con2*x8 + con2*x9 '
+
+fit <- cfa(HS.model, data=HolzingerSwineford1939)
+wald(fit, "con2 - con1")
+
+# Simultaneously test the difference in the influences 
+# of x1 and x2 on intercept and slope
+model.syntax <- '
+    i =~ 1*t1 + 1*t2 + 1*t3 + 1*t4
+    s =~ 0*t1 + 1*t2 + 2*t3 + 3*t4
+    i ~ x1 + x2
+    s ~ x1 + x2
+    t1 ~ c1
+    t2 ~ c2
+    t3 ~ c3
+    t4 ~ c4
+'
+
+fit2 <- growth(model.syntax, data=Demo.growth)
+wald.syntax <- '
+	i~x1 - i~x2
+	1/2*s~x1 - 1/2*s~x2
+'
+wald(fit2, wald.syntax)
+
+# Mplus example of MODEL TEST
+model3 <- ' f1  =~ x1 + p2*x2 + p3*x3 + p4*x4 + p5*x5 + p6*x6
+			p4 == 2*p2'
+
+fit3 <- cfa(model3, data=HolzingerSwineford1939)
+wald(fit3, "p3; p6 - 0.5*p5")
+\end{ExampleCode}
+\end{Examples}
+\printindex{}
+\end{document}

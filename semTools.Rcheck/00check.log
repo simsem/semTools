@@ -1,5 +1,5 @@
 * using log directory 'C:/Users/sunthud/Dropbox/semTools/semTools.Rcheck'
-* using R version 2.15.3 (2013-03-01)
+* using R version 3.0.2 (2013-09-25)
 * using platform: i386-w64-mingw32 (32-bit)
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
@@ -13,10 +13,10 @@ Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking if there is a namespace ... OK
 * checking for executable files ... OK
 * checking for hidden files and directories ... OK
+* checking for portable file names ... OK
 * checking whether package 'semTools' can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
-* checking for portable file names ... OK
 * checking DESCRIPTION meta-information ... OK
 * checking top-level files ... OK
 * checking for left-over files ... OK
@@ -30,13 +30,18 @@ Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking whether the namespace can be loaded with stated dependencies ... OK
 * checking whether the namespace can be unloaded cleanly ... OK
 * checking loading without being on the library search path ... OK
-* checking for unstated dependencies in R code ... OK
+* checking dependencies in R code ... NOTE
+'library' or 'require' call to 'lavaan' which was already attached by Depends.
+  Please remove these calls from your code.
+See the information on DESCRIPTION files in the chapter 'Creating R
+packages' of the 'Writing R Extensions' manual.
 * checking S3 generic/method consistency ... OK
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... OK
 * checking Rd files ... OK
 * checking Rd metadata ... OK
+* checking Rd line widths ... OK
 * checking Rd cross-references ... OK
 * checking for missing documentation entries ... OK
 * checking for code/documentation mismatches ... OK
@@ -47,4 +52,12 @@ Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking data for non-ASCII characters ... OK
 * checking data for ASCII and uncompressed saves ... OK
 * checking examples ... OK
-* checking PDF version of manual ... OK
+* checking PDF version of manual ... WARNING
+LaTeX errors when creating PDF version.
+This typically indicates Rd problems.
+LaTeX errors found:
+!pdfTeX error: pdflatex.EXE (file ts1-zi4r): Font ts1-zi4r at 600 not found
+ ==> Fatal error occurred, no output PDF file produced!
+* checking PDF version of manual without hyperrefs or index ... OK
+WARNING: There was 1 warning.
+NOTE: There was 1 note.

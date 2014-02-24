@@ -31,7 +31,7 @@ about the data.}
   }
 }
 \references{
-see \code{linkS4class{lavaan}}}
+see \code{\linkS4class{lavaan}}}
 \seealso{
 \code{\link{auxiliary}}; \code{\link{runMI}}
 }

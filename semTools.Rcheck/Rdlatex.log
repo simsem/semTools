@@ -1,4 +1,946 @@
 Hmm ... looks like a package
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9)
+entering extended mode
+(C:\Users\sunthud\AppData\Local\Temp\RtmpGE2yKt\Rd2pdf17dc4010764a\Rd2.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
+abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
+croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
+lician, german, german-x-2012-05-30, greek, gujarati, hindi, hungarian, iceland
+ic, indonesian, interlingua, irish, italian, kannada, kurmanji, latin, latvian,
+ lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, n
+german-x-2012-05-30, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
+ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
+an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
+ishmax, welsh, loaded.
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\book.cls"
+Document Class: book 2007/10/19 v1.4h Standard LaTeX document class
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\bk10.clo"))
+(C:/PROGRA~1/R/R-30~1.2/share/texmf/tex/latex\Rd.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ifthen.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\longtable.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\bm.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\alltt.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\verbatim.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\ltxmisc\url.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\textcomp.sty"
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ts1enc.def"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\fontenc.sty"
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\t1enc.def"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\times.sty"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\inputenc.sty"
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\t1enc.dfu")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ot1enc.dfu")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omsenc.dfu")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ts1enc.dfu"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\latin1.def"))
+No file Rd2.aux.
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ts1cmr.fd")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1ptm.fd")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1pcr.fd")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd")
+No file Rd2.toc.
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [1{C:/Users/sunth
+ud/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] [2]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\ts1pcr.fd")
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 91--91
+ []\T1/pcr/m/n/9 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(Holzing
+erSwineford1939), 0, 1))[] 
+
+Overfull \hbox (31.3804pt too wide) in paragraph at lines 94--94
+ []\T1/pcr/m/n/9 fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # 
+Use lavaan script[] 
+
+Overfull \hbox (79.98035pt too wide) in paragraph at lines 108--108
+ []\T1/pcr/m/n/9 fitpath <- sem(mod, data=dat, fixed.x=FALSE, meanstructure=TRU
+E) # fixed.x must be FALSE[] 
+
+Overfull \hbox (31.3804pt too wide) in paragraph at lines 113--113
+ []\T1/pcr/m/n/9 dat2 <- data.frame(PoliticalDemocracy, z=rnorm(nrow(PoliticalD
+emocracy), 0, 1))[] 
+
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 129--129
+ []\T1/pcr/m/n/9 fitsemaux <- sem.auxiliary(fitsem, aux="z", data=dat2, meanstr
+ucture=TRUE)[] 
+
+Underfull \vbox (badness 10000) has occurred while \output is active [3]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 148--148
+ []\T1/pcr/m/n/9 fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE, meanstr
+ucture=TRUE)[] 
+
+Overfull \hbox (47.58038pt too wide) in paragraph at lines 155--155
+ []\T1/pcr/m/n/9 fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939
+, aux=c("x4", "x5"))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [4]
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 210--210
+ []\T1/pcr/m/n/9 fit <- cfa(HW.model, data=HolzingerSwineford1939, group="schoo
+l", meanstructure=TRUE)[] 
+
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 215--215
+ []\T1/pcr/m/n/9 # Copy the modification indices and the model fit from the miP
+owerFit function[] 
+
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 233--233
+ []\T1/pcr/m/n/9 # Save the modification indices and the model fit from the miP
+owerFit function[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [5]
+Overfull \hbox (117.7803pt too wide) in paragraph at lines 304--304
+ []\T1/pcr/m/n/9 out <- measurementInvariance(HW.model, data=HolzingerSwineford
+1939, group="school", quiet=TRUE)[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [6]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [7]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\ts1ptm.fd") [8]
+Overfull \hbox (128.58029pt too wide) in paragraph at lines 439--439
+ []\T1/pcr/m/n/9 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList
+=paste0("x", 1:9), estimator="mlr")[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (2.96907pt too wide) in paragraph at lines 479--480
+[]\T1/ptm/m/n/10 Other ar-gu-ments in the \T1/pcr/m/n/10 cfa \T1/ptm/m/n/10 fun
+c-tion in the \T1/pcr/m/n/10 lavaan \T1/ptm/m/n/10 pack-age, such as \T1/pcr/m/
+n/10 ordered\T1/ptm/m/n/10 ,
+[9]
+Overfull \hbox (128.58029pt too wide) in paragraph at lines 498--498
+ []\T1/pcr/m/n/9 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList
+=paste0("x", 1:9), estimator="mlr")[] 
+
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 502--502
+ []\T1/pcr/m/n/9 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(Holzing
+erSwineford1939), 0, 1))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [10]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [11]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (33.13828pt too wide) in paragraph at lines 630--631
+\T1/ptm/m/n/10 Kansas; \T1/pcr/m/n/10 <pavel@ku.edu>\T1/ptm/m/n/10 ); Sun-thud 
+Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/pcr/m/n/10 <psunthud@ku.edu>\T1
+/ptm/m/n/10 ) 
+[12] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (30.78088pt too wide) in paragraph at lines 662--662
+ []\T1/pcr/m/n/10 findRMSEAsamplesize(rmsea0, rmseaA, df, power=0.80, alpha=.05
+, group=1)[] 
+[13] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (0.78088pt too wide) in paragraph at lines 715--715
+ []\T1/pcr/m/n/10 findRMSEAsamplesizenested(rmsea0A = NULL, rmsea0B = NULL, rms
+ea1A,[] 
+
+Overfull \hbox (33.13828pt too wide) in paragraph at lines 735--736
+\T1/ptm/m/n/10 Kansas; \T1/pcr/m/n/10 <pavel@ku.edu>\T1/ptm/m/n/10 ); Sun-thud 
+Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/pcr/m/n/10 <psunthud@ku.edu>\T1
+/ptm/m/n/10 ) 
+[14] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (10.16777pt too wide) in paragraph at lines 786--787
+\T1/ptm/m/n/10 the sum-mary of the fit in-dices across mod-els. This func-tion 
+has one ar-gu-ment: \T1/pcr/m/n/10 fit.measures\T1/ptm/m/n/10 .
+
+Overfull \hbox (117.7803pt too wide) in paragraph at lines 806--806
+ []\T1/pcr/m/n/9 out <- measurementInvariance(HW.model, data=HolzingerSwineford
+1939, group="school", quiet=TRUE)[] 
+[15] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [16]
+Overfull \hbox (96.18033pt too wide) in paragraph at lines 880--880
+ []\T1/pcr/m/n/9 fitMeasures(cfa(script, sample.cov = cov(demoOneFactor), sampl
+e.nobs = 500, std.lv = TRUE))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (42.78088pt too wide) in paragraph at lines 894--894
+ []\T1/pcr/m/n/10 fmi(dat.imp, method="saturated", varnames=NULL, group=NULL, e
+xclude=NULL,[] 
+
+Overfull \hbox (18.3595pt too wide) in paragraph at lines 905--906
+\T1/ptm/m/n/10 the fol-low-ing: \T1/pcr/m/n/10 "saturated" \T1/ptm/m/n/10 (\T1/
+pcr/m/n/10 "sat"\T1/ptm/m/n/10 ) or \T1/pcr/m/n/10 "null"\T1/ptm/m/n/10 , the d
+e-fault is \T1/pcr/m/n/10 "saturated"\T1/ptm/m/n/10 .
+[17] [18] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+[19] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 1082--1082
+ []\T1/pcr/m/n/9 # using effect coding was not convergent with three time point
+s but convergent[] 
+[20]
+Underfull \vbox (badness 10000) has occurred while \output is active [21]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [22]
+Overfull \hbox (24.78088pt too wide) in paragraph at lines 1210--1210
+ []\T1/pcr/m/n/10 orthogonalize(data, var1, var2, var3=NULL, match=TRUE, namesP
+rod=NULL)[] 
+[23]
+Overfull \hbox (15.18042pt too wide) in paragraph at lines 1282--1282
+ []\T1/pcr/m/n/9 dat2 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE
+, meanC=FALSE,[] 
+
+Overfull \hbox (9.78043pt too wide) in paragraph at lines 1286--1286
+ []\T1/pcr/m/n/9 dat3 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE
+, meanC=TRUE,[] 
+
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 1293--1293
+ []\T1/pcr/m/n/9 dat5 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, m
+atch=FALSE, meanC=FALSE,[] 
+
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 1297--1297
+ []\T1/pcr/m/n/9 dat6 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, m
+atch=FALSE, meanC=TRUE,[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (9.72853pt too wide) in paragraph at lines 1321--1325
+[]\T1/ptm/m/n/10 type of data gen-er-a-tion. \T1/pcr/m/n/10 exact \T1/ptm/m/n/1
+0 gen-er-ates data that ex-actly cor-re-spond to \T1/pcr/m/n/10 covmat\T1/ptm/m
+/n/10 .
+[24]
+Overfull \hbox (123.1803pt too wide) in paragraph at lines 1372--1372
+ []\T1/pcr/m/n/9 covmat <- matrix(0, 3, 3); diag(covmat) <- 1.5; covmat[2:3,1] 
+<- c(1.3, 1.7); covmat[3,2] <- 2.1[] 
+[25]
+Overfull \hbox (20.58041pt too wide) in paragraph at lines 1382--1382
+ []\T1/pcr/m/n/9 ## Generate data of size 300 where covmat is the population co
+variance matrix[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [26]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [27]
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 1510--1510
+ []\T1/pcr/m/n/9 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(Holzing
+erSwineford1939), 0, 1))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (6.78088pt too wide) in paragraph at lines 1525--1525
+ []\T1/pcr/m/n/10 lisrel2lavaan(filename = NULL, analyze = TRUE, silent = FALSE
+, ...)[] 
+[28]
+Overfull \hbox (25.23717pt too wide) in paragraph at lines 1569--1571
+[]\T1/ptm/m/n/10 OU para-graph Not all com-mands in the OU para-graph are prese
+ntly sup-ported in \T1/pcr/m/n/10 lisrel2lavaan\T1/ptm/m/n/10 .
+[29] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (6.78088pt too wide) in paragraph at lines 1656--1656
+ []\T1/pcr/m/n/10 longInvariance(model, varList, auto = "all", constrainAuto = 
+FALSE,[] 
+
+Overfull \hbox (36.78088pt too wide) in paragraph at lines 1658--1658
+ []\T1/pcr/m/n/10 group.partial="", warn=TRUE, debug=FALSE, strict = FALSE, qui
+et = FALSE,[] 
+[30] [31]
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 1754--1754
+ []\T1/pcr/m/n/9 longInvariance(model, auto=1, constrainAuto=TRUE, varList=cons
+trainedVar, data=exLong)[] 
+
+Overfull \hbox (139.38028pt too wide) in paragraph at lines 1757--1757
+ []\T1/pcr/m/n/9 longInvariance(model, auto=1, constrainAuto=TRUE, varList=cons
+trainedVar, data=exLong, group="sex",[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [32]
+Overfull \hbox (1.94666pt too wide) in paragraph at lines 1799--1800
+[]\T1/ptm/m/n/10 Mardia, K. V. (1970). Mea-sures of mul-ti-vari-ate skew-ness a
+nd kur-to-sis with ap-pli-ca-tions. \T1/ptm/m/it/10 Biometrika,
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [33]
+Overfull \hbox (1.94666pt too wide) in paragraph at lines 1857--1858
+[]\T1/ptm/m/n/10 Mardia, K. V. (1970). Mea-sures of mul-ti-vari-ate skew-ness a
+nd kur-to-sis with ap-pli-ca-tions. \T1/ptm/m/it/10 Biometrika,
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [34] [35]
+Overfull \hbox (15.18042pt too wide) in paragraph at lines 1969--1969
+ []\T1/pcr/m/n/9 measurementInvariance(HW.model, data=HolzingerSwineford1939, g
+roup="school")[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (108.78088pt too wide) in paragraph at lines 1981--1981
+ []\T1/pcr/m/n/10 miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intc
+ept=0.2, stdDelta=NULL,[] 
+[36] [37]
+Overfull \hbox (47.58038pt too wide) in paragraph at lines 2048--2048
+ []\T1/pcr/m/n/9 fit <- cfa(HS.model, data=HolzingerSwineford1939, group="sex",
+ meanstructure=TRUE)[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [38]
+Overfull \hbox (144.78088pt too wide) in paragraph at lines 2081--2081
+ []\T1/pcr/m/n/10 monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, pl
+ot=FALSE, outputValues=FALSE)[] 
+[39]
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 2143--2143
+ []\T1/pcr/m/n/9 monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FA
+LSE, plot=TRUE, ACM=AC)[] 
+[40] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [41]
+Overfull \hbox (113.55833pt too wide) in paragraph at lines 2243--2247
+\T1/ptm/m/n/10 ver-sity of Kansas; \T1/pcr/m/n/10 <aboulton@ku.edu>\T1/ptm/m/n/
+10 ) Ruben Ar-slan (Humboldt-University of Berlin, \T1/pcr/m/n/10 <rubenarslan@
+gmail.com>\T1/ptm/m/n/10 )
+[42] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [43]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [44]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (78.78088pt too wide) in paragraph at lines 2404--2404
+ []\T1/pcr/m/n/10 parcelAllocation(nPerPar, facPlc, nAlloc=100, syntax, dataset
+, names=\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 default\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 
+,[] 
+[45]
+Overfull \hbox (74.58035pt too wide) in paragraph at lines 2453--2453
+ []\T1/pcr/m/n/9 #Parcel and fit data 20 times. The actual parcel number should
+ be higher than 20 times.[] 
+
+Overfull \hbox (74.58035pt too wide) in paragraph at lines 2456--2456
+ []\T1/pcr/m/n/9 parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), 
+nAlloc=20, syntax=syntax,[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [46]
+Overfull \hbox (102.78088pt too wide) in paragraph at lines 2469--2469
+ []\T1/pcr/m/n/10 plotProbe(object, xlim, xlab="Indepedent Variable", ylab="Dep
+endent Variable", ...)[] 
+
+Overfull \hbox (32.22878pt too wide) in paragraph at lines 2476--2477
+[]\T1/ptm/m/n/10 The re-sult of prob-ing la-tent in-ter-ac-tion ob-tained from 
+\T1/pcr/m/n/10 probe2WayMC\T1/ptm/m/n/10 , \T1/pcr/m/n/10 probe2WayRC\T1/ptm/m/
+n/10 ,
+[47]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 2538--2538
+ []\T1/pcr/m/n/9 fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 2539--2539
+ []\T1/pcr/m/n/9 result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "
+f3", "f2", c(-1, 0, 1))[] 
+
+Underfull \vbox (badness 10000) has occurred while \output is active [48]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 2585--2585
+ []\T1/pcr/m/n/9 fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (79.98035pt too wide) in paragraph at lines 2586--2586
+ []\T1/pcr/m/n/9 result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f1
+2", "f13", "f23", "f123"),[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (90.78088pt too wide) in paragraph at lines 2600--2600
+ []\T1/pcr/m/n/10 plotRMSEAdist(rmsea, n, df, ptile=NULL, caption=NULL, rmseaSc
+ale = TRUE, group=1)[] 
+[49]
+Overfull \hbox (20.58041pt too wide) in paragraph at lines 2650--2650
+ []\T1/pcr/m/n/9 plotRMSEAdist(rmsea=c(.05, .08), n=200, df=20, ptile=0.95, rms
+eaScale = TRUE)[] 
+
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 2651--2651
+ []\T1/pcr/m/n/9 plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rms
+eaScale = FALSE)[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (90.78088pt too wide) in paragraph at lines 2663--2663
+ []\T1/pcr/m/n/10 plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alph
+a=.05, group=1, ...)[] 
+[50] [51] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (66.78088pt too wide) in paragraph at lines 2740--2740
+ []\T1/pcr/m/n/10 plotRMSEApowernested(rmsea0A = NULL, rmsea0B = NULL, rmsea1A,
+ rmsea1B = NULL,[] 
+
+Overfull \hbox (33.13828pt too wide) in paragraph at lines 2763--2764
+\T1/ptm/m/n/10 Kansas; \T1/pcr/m/n/10 <pavel@ku.edu>\T1/ptm/m/n/10 ); Sun-thud 
+Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/pcr/m/n/10 <psunthud@ku.edu>\T1
+/ptm/m/n/10 ) 
+[52]
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 2782--2782
+ []\T1/pcr/m/n/9 plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06,
+ rmsea1B = 0.05,[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [53] [54]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 2905--2905
+ []\T1/pcr/m/n/9 fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 2908--2908
+ []\T1/pcr/m/n/9 result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "
+f3", "f2", c(-1, 0, 1))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [55] [56]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 3006--3006
+ []\T1/pcr/m/n/9 fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 3009--3009
+ []\T1/pcr/m/n/9 result2wayRC <- probe2WayRC(fitRC2way, c("f1", "f2", "f12"), "
+f3", "f2", c(-1, 0, 1))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [57] [58]
+Overfull \hbox (391.42891pt too wide) detected at line 3059
+\OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/
+10 + \OML/cmm/m/it/10 Z[]Var [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 W[]Var [] \O
+T1/cmr/m/n/10 + \OML/cmm/m/it/10 Z[]W[]Var [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/
+10 ZCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 WCov [] \OT1/cmr/m/n/10 + 2\OML/
+cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/
+10 + 2\OML/cmm/m/it/10 Z[]WCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZW[]Cov [
+]
+
+Overfull \hbox (374.94273pt too wide) detected at line 3065
+\OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/
+10 + \OML/cmm/m/it/10 Z[]Var [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 W[]Var [] \O
+T1/cmr/m/n/10 + \OML/cmm/m/it/10 Z[]W[]Var [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/
+10 ZCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 WCov [] \OT1/cmr/m/n/10 + 2\OML/
+cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/
+10 + 2\OML/cmm/m/it/10 Z[]WCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZW[]Cov [
+]
+[59] [60]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 3151--3151
+ []\T1/pcr/m/n/9 fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (79.98035pt too wide) in paragraph at lines 3154--3154
+ []\T1/pcr/m/n/9 result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f1
+2", "f13", "f23", "f123"),[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [61] [62]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 3277--3277
+ []\T1/pcr/m/n/9 fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (79.98035pt too wide) in paragraph at lines 3280--3280
+ []\T1/pcr/m/n/9 result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f1
+2", "f13", "f23", "f123"),[] 
+[63] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [64]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [65] [66]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [67]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (17.77924pt too wide) in paragraph at lines 3514--3515
+[]\T1/ptm/m/n/10 Additional ar-gu-ments for the \T1/pcr/m/n/10 GPForth \T1/ptm/
+m/n/10 func-tion (for \T1/pcr/m/n/10 orthRotate\T1/ptm/m/n/10 ), the \T1/pcr/m/
+n/10 GPFoblq
+[68]
+Overfull \hbox (128.58029pt too wide) in paragraph at lines 3533--3533
+ []\T1/pcr/m/n/9 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList
+=paste0("x", 1:9), estimator="mlr")[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (6.78088pt too wide) in paragraph at lines 3575--3575
+ []\T1/pcr/m/n/10 runMI(model, data, m, miArgs=list(), chi="all", miPackage="Am
+elia",[] 
+
+Overfull \hbox (12.78088pt too wide) in paragraph at lines 3577--3577
+ []\T1/pcr/m/n/10 cfa.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi
+="all",[] 
+
+Overfull \hbox (12.78088pt too wide) in paragraph at lines 3579--3579
+ []\T1/pcr/m/n/10 sem.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi
+="all",[] 
+[69]
+Overfull \hbox (30.78088pt too wide) in paragraph at lines 3581--3581
+ []\T1/pcr/m/n/10 growth.mi(model, data, m, miArgs=list(), miPackage="Amelia", 
+chi="all",[] 
+
+Overfull \hbox (30.78088pt too wide) in paragraph at lines 3583--3583
+ []\T1/pcr/m/n/10 lavaan.mi(model, data, m, miArgs=list(), miPackage="Amelia", 
+chi="all",[] 
+
+Overfull \hbox (10.1675pt too wide) in paragraph at lines 3625--3633
+\T1/ptm/m/n/10 State Uni-ver-sity; \T1/pcr/m/n/10 <Craig.Enders@asu.edu>\T1/ptm
+/m/n/10 ) Mauri-cio Gar-nier Vil-lar-real (Uni-ver-sity of Kansas;
+[70]
+Overfull \hbox (139.38028pt too wide) in paragraph at lines 3666--3666
+ []\T1/pcr/m/n/9 out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms
+="school"), chi="MR", group="school")[] 
+
+Overfull \hbox (52.98038pt too wide) in paragraph at lines 3691--3691
+ []\T1/pcr/m/n/9 out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", grou
+p="group", fun="cfa")[] 
+[71]
+Overfull \hbox (58.38037pt too wide) in paragraph at lines 3698--3698
+ []\T1/pcr/m/n/9 miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)),
+ nrow(dat), ncol(dat))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [72]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [73] [74]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (72.78088pt too wide) in paragraph at lines 3886--3886
+ []\T1/pcr/m/n/10 splitSample(dataset,path="default", div=2, type="default", na
+me="splitSample")[] 
+[75]
+Overfull \hbox (42.18039pt too wide) in paragraph at lines 3930--3930
+ []\T1/pcr/m/n/9 #splitSample("C:/testdata.dat", path = "C:/Users/Default/Deskt
+op/", type = "csv")[] 
+
+Overfull \hbox (15.18042pt too wide) in paragraph at lines 3935--3935
+ []\T1/pcr/m/n/9 #splitSample(myData, path = "C:/Users/Default/Desktop/", name 
+= "splitdata")[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (16.70747pt too wide) in paragraph at lines 3944--3945
+[]\T1/ptm/m/n/10 Find stan-dard-ized es-ti-mates for OpenMx out-put. This func-
+tion is ap-pli-ca-ble for the \T1/pcr/m/n/10 MxRAMObjective
+[76] [77]
+Overfull \hbox (31.3804pt too wide) in paragraph at lines 4026--4026
+ []\T1/pcr/m/n/9 # ------------------------------------------------------------
+-----------------[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [78]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [79] [80]
+[81] (C:\Users\sunthud\AppData\Local\Temp\RtmpGE2yKt\Rd2pdf17dc4010764a\Rd2.aux
+) )
+(see the transcript file for additional information){C:/Program Files (x86)/MiK
+TeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x86)/MiKTeX 2.9/font
+s/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/
+type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/ty
+pe1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type
+1/public/amsfonts/cm/cmmi5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/p
+ublic/amsfonts/cm/cmmi7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publ
+ic/amsfonts/cm/cmmib10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cmextra/cmmib7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/pu
+blic/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cm/cmr5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/am
+sfonts/cm/cmr7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfon
+ts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts
+/cm/cmsy5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm
+/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pf
+b><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Pr
+ogram Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files
+ (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKT
+eX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/font
+s/type1/urw/times/utmri8a.pfb>
+Output written on Rd2.pdf (81 pages, 383986 bytes).
+Transcript written on Rd2.log.
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9)
+entering extended mode
+(C:\Users\sunthud\AppData\Local\Temp\RtmpGE2yKt\Rd2pdf17dc4010764a\Rd2.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
+abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
+croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
+lician, german, german-x-2012-05-30, greek, gujarati, hindi, hungarian, iceland
+ic, indonesian, interlingua, irish, italian, kannada, kurmanji, latin, latvian,
+ lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, n
+german-x-2012-05-30, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
+ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
+an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
+ishmax, welsh, loaded.
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\book.cls"
+Document Class: book 2007/10/19 v1.4h Standard LaTeX document class
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\bk10.clo"))
+(C:/PROGRA~1/R/R-30~1.2/share/texmf/tex/latex\Rd.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ifthen.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\longtable.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\bm.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\alltt.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\verbatim.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\ltxmisc\url.sty")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\textcomp.sty"
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ts1enc.def"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\fontenc.sty"
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\t1enc.def"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\times.sty"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\inputenc.sty"
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\t1enc.dfu")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ot1enc.dfu")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omsenc.dfu")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ts1enc.dfu"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\latin1.def"))
+(C:\Users\sunthud\AppData\Local\Temp\RtmpGE2yKt\Rd2pdf17dc4010764a\Rd2.aux)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ts1cmr.fd")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1ptm.fd")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1pcr.fd")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd")
+(C:\Users\sunthud\AppData\Local\Temp\RtmpGE2yKt\Rd2pdf17dc4010764a\Rd2.toc
+[1{C:/Users/sunthud/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}])
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [2]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\ts1pcr.fd") [3]
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 91--91
+ []\T1/pcr/m/n/9 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(Holzing
+erSwineford1939), 0, 1))[] 
+
+Overfull \hbox (31.3804pt too wide) in paragraph at lines 94--94
+ []\T1/pcr/m/n/9 fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # 
+Use lavaan script[] 
+
+Overfull \hbox (79.98035pt too wide) in paragraph at lines 108--108
+ []\T1/pcr/m/n/9 fitpath <- sem(mod, data=dat, fixed.x=FALSE, meanstructure=TRU
+E) # fixed.x must be FALSE[] 
+
+Overfull \hbox (31.3804pt too wide) in paragraph at lines 113--113
+ []\T1/pcr/m/n/9 dat2 <- data.frame(PoliticalDemocracy, z=rnorm(nrow(PoliticalD
+emocracy), 0, 1))[] 
+
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 129--129
+ []\T1/pcr/m/n/9 fitsemaux <- sem.auxiliary(fitsem, aux="z", data=dat2, meanstr
+ucture=TRUE)[] 
+
+Underfull \vbox (badness 10000) has occurred while \output is active [4]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 148--148
+ []\T1/pcr/m/n/9 fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE, meanstr
+ucture=TRUE)[] 
+
+Overfull \hbox (47.58038pt too wide) in paragraph at lines 155--155
+ []\T1/pcr/m/n/9 fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939
+, aux=c("x4", "x5"))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [5]
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 210--210
+ []\T1/pcr/m/n/9 fit <- cfa(HW.model, data=HolzingerSwineford1939, group="schoo
+l", meanstructure=TRUE)[] 
+
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 215--215
+ []\T1/pcr/m/n/9 # Copy the modification indices and the model fit from the miP
+owerFit function[] 
+
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 233--233
+ []\T1/pcr/m/n/9 # Save the modification indices and the model fit from the miP
+owerFit function[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [6]
+Overfull \hbox (117.7803pt too wide) in paragraph at lines 304--304
+ []\T1/pcr/m/n/9 out <- measurementInvariance(HW.model, data=HolzingerSwineford
+1939, group="school", quiet=TRUE)[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [7]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [8]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\ts1ptm.fd")
+Overfull \hbox (128.58029pt too wide) in paragraph at lines 439--439
+ []\T1/pcr/m/n/9 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList
+=paste0("x", 1:9), estimator="mlr")[] 
+[9] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (2.96907pt too wide) in paragraph at lines 479--480
+[]\T1/ptm/m/n/10 Other ar-gu-ments in the \T1/pcr/m/n/10 cfa \T1/ptm/m/n/10 fun
+c-tion in the \T1/pcr/m/n/10 lavaan \T1/ptm/m/n/10 pack-age, such as \T1/pcr/m/
+n/10 ordered\T1/ptm/m/n/10 ,
+[10]
+Overfull \hbox (128.58029pt too wide) in paragraph at lines 498--498
+ []\T1/pcr/m/n/9 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList
+=paste0("x", 1:9), estimator="mlr")[] 
+
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 502--502
+ []\T1/pcr/m/n/9 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(Holzing
+erSwineford1939), 0, 1))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [11]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [12]
+Overfull \hbox (33.13828pt too wide) in paragraph at lines 630--631
+\T1/ptm/m/n/10 Kansas; \T1/pcr/m/n/10 <pavel@ku.edu>\T1/ptm/m/n/10 ); Sun-thud 
+Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/pcr/m/n/10 <psunthud@ku.edu>\T1
+/ptm/m/n/10 ) 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [13]
+Overfull \hbox (30.78088pt too wide) in paragraph at lines 662--662
+ []\T1/pcr/m/n/10 findRMSEAsamplesize(rmsea0, rmseaA, df, power=0.80, alpha=.05
+, group=1)[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [14]
+Overfull \hbox (0.78088pt too wide) in paragraph at lines 715--715
+ []\T1/pcr/m/n/10 findRMSEAsamplesizenested(rmsea0A = NULL, rmsea0B = NULL, rms
+ea1A,[] 
+
+Overfull \hbox (33.13828pt too wide) in paragraph at lines 735--736
+\T1/ptm/m/n/10 Kansas; \T1/pcr/m/n/10 <pavel@ku.edu>\T1/ptm/m/n/10 ); Sun-thud 
+Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/pcr/m/n/10 <psunthud@ku.edu>\T1
+/ptm/m/n/10 ) 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [15]
+Overfull \hbox (10.16777pt too wide) in paragraph at lines 786--787
+\T1/ptm/m/n/10 the sum-mary of the fit in-dices across mod-els. This func-tion 
+has one ar-gu-ment: \T1/pcr/m/n/10 fit.measures\T1/ptm/m/n/10 .
+
+Overfull \hbox (117.7803pt too wide) in paragraph at lines 806--806
+ []\T1/pcr/m/n/9 out <- measurementInvariance(HW.model, data=HolzingerSwineford
+1939, group="school", quiet=TRUE)[] 
+[16] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [17]
+Overfull \hbox (96.18033pt too wide) in paragraph at lines 880--880
+ []\T1/pcr/m/n/9 fitMeasures(cfa(script, sample.cov = cov(demoOneFactor), sampl
+e.nobs = 500, std.lv = TRUE))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (42.78088pt too wide) in paragraph at lines 894--894
+ []\T1/pcr/m/n/10 fmi(dat.imp, method="saturated", varnames=NULL, group=NULL, e
+xclude=NULL,[] 
+
+Overfull \hbox (18.3595pt too wide) in paragraph at lines 905--906
+\T1/ptm/m/n/10 the fol-low-ing: \T1/pcr/m/n/10 "saturated" \T1/ptm/m/n/10 (\T1/
+pcr/m/n/10 "sat"\T1/ptm/m/n/10 ) or \T1/pcr/m/n/10 "null"\T1/ptm/m/n/10 , the d
+e-fault is \T1/pcr/m/n/10 "saturated"\T1/ptm/m/n/10 .
+[18] [19] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [20]
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 1082--1082
+ []\T1/pcr/m/n/9 # using effect coding was not convergent with three time point
+s but convergent[] 
+[21]
+Underfull \vbox (badness 10000) has occurred while \output is active [22]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (24.78088pt too wide) in paragraph at lines 1210--1210
+ []\T1/pcr/m/n/10 orthogonalize(data, var1, var2, var3=NULL, match=TRUE, namesP
+rod=NULL)[] 
+[23] [24]
+Overfull \hbox (15.18042pt too wide) in paragraph at lines 1282--1282
+ []\T1/pcr/m/n/9 dat2 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE
+, meanC=FALSE,[] 
+
+Overfull \hbox (9.78043pt too wide) in paragraph at lines 1286--1286
+ []\T1/pcr/m/n/9 dat3 <- indProd(attitude[,-1], var1=1:3, var2=4:6, match=FALSE
+, meanC=TRUE,[] 
+
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 1293--1293
+ []\T1/pcr/m/n/9 dat5 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, m
+atch=FALSE, meanC=FALSE,[] 
+
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 1297--1297
+ []\T1/pcr/m/n/9 dat6 <- indProd(attitude[,-1], var1=1:2, var2=3:4, var3=5:6, m
+atch=FALSE, meanC=TRUE,[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (9.72853pt too wide) in paragraph at lines 1321--1325
+[]\T1/ptm/m/n/10 type of data gen-er-a-tion. \T1/pcr/m/n/10 exact \T1/ptm/m/n/1
+0 gen-er-ates data that ex-actly cor-re-spond to \T1/pcr/m/n/10 covmat\T1/ptm/m
+/n/10 .
+[25]
+Overfull \hbox (123.1803pt too wide) in paragraph at lines 1372--1372
+ []\T1/pcr/m/n/9 covmat <- matrix(0, 3, 3); diag(covmat) <- 1.5; covmat[2:3,1] 
+<- c(1.3, 1.7); covmat[3,2] <- 2.1[] 
+
+Overfull \hbox (20.58041pt too wide) in paragraph at lines 1382--1382
+ []\T1/pcr/m/n/9 ## Generate data of size 300 where covmat is the population co
+variance matrix[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [26]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [27]
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 1510--1510
+ []\T1/pcr/m/n/9 dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(Holzing
+erSwineford1939), 0, 1))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [28]
+Overfull \hbox (6.78088pt too wide) in paragraph at lines 1525--1525
+ []\T1/pcr/m/n/10 lisrel2lavaan(filename = NULL, analyze = TRUE, silent = FALSE
+, ...)[] 
+[29]
+Overfull \hbox (25.23717pt too wide) in paragraph at lines 1569--1571
+[]\T1/ptm/m/n/10 OU para-graph Not all com-mands in the OU para-graph are prese
+ntly sup-ported in \T1/pcr/m/n/10 lisrel2lavaan\T1/ptm/m/n/10 .
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [30]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (6.78088pt too wide) in paragraph at lines 1656--1656
+ []\T1/pcr/m/n/10 longInvariance(model, varList, auto = "all", constrainAuto = 
+FALSE,[] 
+
+Overfull \hbox (36.78088pt too wide) in paragraph at lines 1658--1658
+ []\T1/pcr/m/n/10 group.partial="", warn=TRUE, debug=FALSE, strict = FALSE, qui
+et = FALSE,[] 
+[31] [32]
+Overfull \hbox (69.18036pt too wide) in paragraph at lines 1754--1754
+ []\T1/pcr/m/n/9 longInvariance(model, auto=1, constrainAuto=TRUE, varList=cons
+trainedVar, data=exLong)[] 
+
+Overfull \hbox (139.38028pt too wide) in paragraph at lines 1757--1757
+ []\T1/pcr/m/n/9 longInvariance(model, auto=1, constrainAuto=TRUE, varList=cons
+trainedVar, data=exLong, group="sex",[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [33]
+Overfull \hbox (1.94666pt too wide) in paragraph at lines 1799--1800
+[]\T1/ptm/m/n/10 Mardia, K. V. (1970). Mea-sures of mul-ti-vari-ate skew-ness a
+nd kur-to-sis with ap-pli-ca-tions. \T1/ptm/m/it/10 Biometrika,
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [34]
+Overfull \hbox (1.94666pt too wide) in paragraph at lines 1857--1858
+[]\T1/ptm/m/n/10 Mardia, K. V. (1970). Mea-sures of mul-ti-vari-ate skew-ness a
+nd kur-to-sis with ap-pli-ca-tions. \T1/ptm/m/it/10 Biometrika,
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [35] [36]
+Overfull \hbox (15.18042pt too wide) in paragraph at lines 1969--1969
+ []\T1/pcr/m/n/9 measurementInvariance(HW.model, data=HolzingerSwineford1939, g
+roup="school")[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (108.78088pt too wide) in paragraph at lines 1981--1981
+ []\T1/pcr/m/n/10 miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intc
+ept=0.2, stdDelta=NULL,[] 
+[37] [38]
+Overfull \hbox (47.58038pt too wide) in paragraph at lines 2048--2048
+ []\T1/pcr/m/n/9 fit <- cfa(HS.model, data=HolzingerSwineford1939, group="sex",
+ meanstructure=TRUE)[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [39]
+Overfull \hbox (144.78088pt too wide) in paragraph at lines 2081--2081
+ []\T1/pcr/m/n/10 monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, pl
+ot=FALSE, outputValues=FALSE)[] 
+[40]
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 2143--2143
+ []\T1/pcr/m/n/9 monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FA
+LSE, plot=TRUE, ACM=AC)[] 
+[41] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [42]
+Overfull \hbox (113.55833pt too wide) in paragraph at lines 2243--2247
+\T1/ptm/m/n/10 ver-sity of Kansas; \T1/pcr/m/n/10 <aboulton@ku.edu>\T1/ptm/m/n/
+10 ) Ruben Ar-slan (Humboldt-University of Berlin, \T1/pcr/m/n/10 <rubenarslan@
+gmail.com>\T1/ptm/m/n/10 )
+[43] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [44]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [45]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (78.78088pt too wide) in paragraph at lines 2404--2404
+ []\T1/pcr/m/n/10 parcelAllocation(nPerPar, facPlc, nAlloc=100, syntax, dataset
+, names=\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 default\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 
+,[] 
+[46]
+Overfull \hbox (74.58035pt too wide) in paragraph at lines 2453--2453
+ []\T1/pcr/m/n/9 #Parcel and fit data 20 times. The actual parcel number should
+ be higher than 20 times.[] 
+
+Overfull \hbox (74.58035pt too wide) in paragraph at lines 2456--2456
+ []\T1/pcr/m/n/9 parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), 
+nAlloc=20, syntax=syntax,[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [47]
+Overfull \hbox (102.78088pt too wide) in paragraph at lines 2469--2469
+ []\T1/pcr/m/n/10 plotProbe(object, xlim, xlab="Indepedent Variable", ylab="Dep
+endent Variable", ...)[] 
+
+Overfull \hbox (32.22878pt too wide) in paragraph at lines 2476--2477
+[]\T1/ptm/m/n/10 The re-sult of prob-ing la-tent in-ter-ac-tion ob-tained from 
+\T1/pcr/m/n/10 probe2WayMC\T1/ptm/m/n/10 , \T1/pcr/m/n/10 probe2WayRC\T1/ptm/m/
+n/10 ,
+[48]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 2538--2538
+ []\T1/pcr/m/n/9 fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 2539--2539
+ []\T1/pcr/m/n/9 result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "
+f3", "f2", c(-1, 0, 1))[] 
+
+Underfull \vbox (badness 10000) has occurred while \output is active [49]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 2585--2585
+ []\T1/pcr/m/n/9 fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (79.98035pt too wide) in paragraph at lines 2586--2586
+ []\T1/pcr/m/n/9 result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f1
+2", "f13", "f23", "f123"),[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (90.78088pt too wide) in paragraph at lines 2600--2600
+ []\T1/pcr/m/n/10 plotRMSEAdist(rmsea, n, df, ptile=NULL, caption=NULL, rmseaSc
+ale = TRUE, group=1)[] 
+[50]
+Overfull \hbox (20.58041pt too wide) in paragraph at lines 2650--2650
+ []\T1/pcr/m/n/9 plotRMSEAdist(rmsea=c(.05, .08), n=200, df=20, ptile=0.95, rms
+eaScale = TRUE)[] 
+
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 2651--2651
+ []\T1/pcr/m/n/9 plotRMSEAdist(rmsea=c(.05, .01), n=200, df=20, ptile=0.05, rms
+eaScale = FALSE)[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (90.78088pt too wide) in paragraph at lines 2663--2663
+ []\T1/pcr/m/n/10 plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps=1, alph
+a=.05, group=1, ...)[] 
+[51] [52] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (66.78088pt too wide) in paragraph at lines 2740--2740
+ []\T1/pcr/m/n/10 plotRMSEApowernested(rmsea0A = NULL, rmsea0B = NULL, rmsea1A,
+ rmsea1B = NULL,[] 
+
+Overfull \hbox (33.13828pt too wide) in paragraph at lines 2763--2764
+\T1/ptm/m/n/10 Kansas; \T1/pcr/m/n/10 <pavel@ku.edu>\T1/ptm/m/n/10 ); Sun-thud 
+Porn-prasert-manit (Uni-ver-sity of Kansas; \T1/pcr/m/n/10 <psunthud@ku.edu>\T1
+/ptm/m/n/10 ) 
+[53]
+Overfull \hbox (25.98041pt too wide) in paragraph at lines 2782--2782
+ []\T1/pcr/m/n/9 plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06,
+ rmsea1B = 0.05,[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [54] [55]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 2905--2905
+ []\T1/pcr/m/n/9 fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 2908--2908
+ []\T1/pcr/m/n/9 result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"), "
+f3", "f2", c(-1, 0, 1))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [56] [57]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 3006--3006
+ []\T1/pcr/m/n/9 fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (63.78036pt too wide) in paragraph at lines 3009--3009
+ []\T1/pcr/m/n/9 result2wayRC <- probe2WayRC(fitRC2way, c("f1", "f2", "f12"), "
+f3", "f2", c(-1, 0, 1))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [58] [59]
+Overfull \hbox (391.42891pt too wide) detected at line 3059
+\OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/
+10 + \OML/cmm/m/it/10 Z[]Var [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 W[]Var [] \O
+T1/cmr/m/n/10 + \OML/cmm/m/it/10 Z[]W[]Var [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/
+10 ZCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 WCov [] \OT1/cmr/m/n/10 + 2\OML/
+cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/
+10 + 2\OML/cmm/m/it/10 Z[]WCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZW[]Cov [
+]
+
+Overfull \hbox (374.94273pt too wide) detected at line 3065
+\OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 Var [] \OT1/cmr/m/n/
+10 + \OML/cmm/m/it/10 Z[]Var [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 W[]Var [] \O
+T1/cmr/m/n/10 + \OML/cmm/m/it/10 Z[]W[]Var [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/
+10 ZCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 WCov [] \OT1/cmr/m/n/10 + 2\OML/
+cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZWCov [] \OT1/cmr/m/n/
+10 + 2\OML/cmm/m/it/10 Z[]WCov [] \OT1/cmr/m/n/10 + 2\OML/cmm/m/it/10 ZW[]Cov [
+]
+[60] [61]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 3151--3151
+ []\T1/pcr/m/n/9 fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (79.98035pt too wide) in paragraph at lines 3154--3154
+ []\T1/pcr/m/n/9 result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f1
+2", "f13", "f23", "f123"),[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [62] [63]
+Overfull \hbox (4.38043pt too wide) in paragraph at lines 3277--3277
+ []\T1/pcr/m/n/9 fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, s
+td.lv=FALSE)[] 
+
+Overfull \hbox (79.98035pt too wide) in paragraph at lines 3280--3280
+ []\T1/pcr/m/n/9 result3wayRC <- probe3WayRC(fitRC3way, c("f1", "f2", "f3", "f1
+2", "f13", "f23", "f123"),[] 
+[64] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [65]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [66] [67]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [68]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (17.77924pt too wide) in paragraph at lines 3514--3515
+[]\T1/ptm/m/n/10 Additional ar-gu-ments for the \T1/pcr/m/n/10 GPForth \T1/ptm/
+m/n/10 func-tion (for \T1/pcr/m/n/10 orthRotate\T1/ptm/m/n/10 ), the \T1/pcr/m/
+n/10 GPFoblq
+[69]
+Overfull \hbox (128.58029pt too wide) in paragraph at lines 3533--3533
+ []\T1/pcr/m/n/9 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList
+=paste0("x", 1:9), estimator="mlr")[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (6.78088pt too wide) in paragraph at lines 3575--3575
+ []\T1/pcr/m/n/10 runMI(model, data, m, miArgs=list(), chi="all", miPackage="Am
+elia",[] 
+
+Overfull \hbox (12.78088pt too wide) in paragraph at lines 3577--3577
+ []\T1/pcr/m/n/10 cfa.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi
+="all",[] 
+
+Overfull \hbox (12.78088pt too wide) in paragraph at lines 3579--3579
+ []\T1/pcr/m/n/10 sem.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi
+="all",[] 
+[70]
+Overfull \hbox (30.78088pt too wide) in paragraph at lines 3581--3581
+ []\T1/pcr/m/n/10 growth.mi(model, data, m, miArgs=list(), miPackage="Amelia", 
+chi="all",[] 
+
+Overfull \hbox (30.78088pt too wide) in paragraph at lines 3583--3583
+ []\T1/pcr/m/n/10 lavaan.mi(model, data, m, miArgs=list(), miPackage="Amelia", 
+chi="all",[] 
+
+Overfull \hbox (10.1675pt too wide) in paragraph at lines 3625--3633
+\T1/ptm/m/n/10 State Uni-ver-sity; \T1/pcr/m/n/10 <Craig.Enders@asu.edu>\T1/ptm
+/m/n/10 ) Mauri-cio Gar-nier Vil-lar-real (Uni-ver-sity of Kansas;
+[71]
+Overfull \hbox (139.38028pt too wide) in paragraph at lines 3666--3666
+ []\T1/pcr/m/n/9 out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms
+="school"), chi="MR", group="school")[] 
+
+Overfull \hbox (52.98038pt too wide) in paragraph at lines 3691--3691
+ []\T1/pcr/m/n/9 out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", grou
+p="group", fun="cfa")[] 
+[72]
+Overfull \hbox (58.38037pt too wide) in paragraph at lines 3698--3698
+ []\T1/pcr/m/n/9 miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)),
+ nrow(dat), ncol(dat))[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [73]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [74] [75]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (72.78088pt too wide) in paragraph at lines 3886--3886
+ []\T1/pcr/m/n/10 splitSample(dataset,path="default", div=2, type="default", na
+me="splitSample")[] 
+[76]
+Overfull \hbox (42.18039pt too wide) in paragraph at lines 3930--3930
+ []\T1/pcr/m/n/9 #splitSample("C:/testdata.dat", path = "C:/Users/Default/Deskt
+op/", type = "csv")[] 
+
+Overfull \hbox (15.18042pt too wide) in paragraph at lines 3935--3935
+ []\T1/pcr/m/n/9 #splitSample(myData, path = "C:/Users/Default/Desktop/", name 
+= "splitdata")[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def")
+Overfull \hbox (16.70747pt too wide) in paragraph at lines 3944--3945
+[]\T1/ptm/m/n/10 Find stan-dard-ized es-ti-mates for OpenMx out-put. This func-
+tion is ap-pli-ca-ble for the \T1/pcr/m/n/10 MxRAMObjective
+[77] [78]
+Overfull \hbox (31.3804pt too wide) in paragraph at lines 4026--4026
+ []\T1/pcr/m/n/9 # ------------------------------------------------------------
+-----------------[] 
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [79]
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def") [80] [81]
+[82] (C:\Users\sunthud\AppData\Local\Temp\RtmpGE2yKt\Rd2pdf17dc4010764a\Rd2.aux
+) )
+(see the transcript file for additional information){C:/Program Files (x86)/MiK
+TeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x86)/MiKTeX 2.9/font
+s/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/
+type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/ty
+pe1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type
+1/public/amsfonts/cm/cmmi5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/p
+ublic/amsfonts/cm/cmmi7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publ
+ic/amsfonts/cm/cmmib10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cmextra/cmmib7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/pu
+blic/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cm/cmr5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/am
+sfonts/cm/cmr7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfon
+ts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts
+/cm/cmsy5.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm
+/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pf
+b><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Pr
+ogram Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files
+ (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKT
+eX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/font
+s/type1/urw/times/utmri8a.pfb>
+Output written on Rd2.pdf (82 pages, 385865 bytes).
+Transcript written on Rd2.log.
 Saving output to 'semTools-manual.pdf' ...
 Done
-You may want to clean up by 'rm -rf C:/Users/sunthud/AppData/Local/Temp/Rtmp2LhBe9/Rd2pdf45102f0f66a6'
+You may want to clean up by 'rm -rf C:/Users/sunthud/AppData/Local/Temp/RtmpGE2yKt/Rd2pdf17dc4010764a'

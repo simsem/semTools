@@ -8,7 +8,8 @@ Modification indices and their power approach for model fit evaluation
 The model fit evaluation approach using modification indices and their power proposed by Saris, Satorra, and van der Veld (2009, pp. 570-573).
 }
 \usage{
-miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, delta=NULL)
+miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, 
+	delta=NULL)
 }
 \arguments{
   \item{lavaanObj}{The lavaan model object used to evaluate model fit}

@@ -7,7 +7,8 @@ Random Allocation of Items to Parcels in a Structural Equation Model
 This function generates a given number of randomly generated item-to-parcel allocations, fits a model to each allocation, and provides averaged results over all allocations. 
 }
 \usage{
-parcelAllocation(nPerPar, facPlc, nAlloc=100, syntax, dataset, names='default', leaveout=0, ...)
+parcelAllocation(nPerPar, facPlc, nAlloc=100, syntax, dataset, names='default', 
+	leaveout=0, ...)
 }
 \arguments{
   \item{nPerPar}{A list in which each element is a vector corresponding to each factor indicating sizes of parcels. If variables are left out of parceling, they should not be accounted for here (there should NOT be parcels of size "1").}
@@ -46,5 +47,6 @@ syntax <- 'La =~ V1 + V2 + V3
 #Parcel and fit data 20 times. The actual parcel number should be higher than 20 times.
 name1 <- colnames(simParcel)[1:9]
 name2 <- colnames(simParcel)[10:18]
-parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, dataset=simParcel)
+parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc=20, syntax=syntax, 
+	dataset=simParcel)
 }

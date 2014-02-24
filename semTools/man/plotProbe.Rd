@@ -112,6 +112,7 @@ f4 ~ NA*1
 " 
 
 fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
-result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayMC <- probe3WayMC(fitMC3way, c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+	"f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 plotProbe(result3wayMC, xlim=c(-2, 2))
 }
