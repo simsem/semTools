@@ -1,6 +1,8 @@
 importFrom("methods", show)
 importFrom("lavaan", summary, inspect)
-exportClasses(lavaanStar, FitDiff, EFA)
+importFrom("graphics", hist)
+exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss)
+exportMethods(hist)
 export(
 	measurementInvariance, longInvariance, 
 	moreFitIndices, miPowerFit, nullRMSEA, 
@@ -27,5 +29,5 @@ export(
 	wald, imposeStart,
 	compareFit,
 	efaUnrotate, orthRotate, oblqRotate, funRotate,
-	kd
+	kd, bsBootMiss, net
 )

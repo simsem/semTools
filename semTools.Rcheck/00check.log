@@ -4,7 +4,7 @@
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'semTools' version '0.4-2'
+* this is package 'semTools' version '0.4-3'
 * checking CRAN incoming feasibility ... OK
 Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking package namespace information ... OK
@@ -30,11 +30,7 @@ Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking whether the namespace can be loaded with stated dependencies ... OK
 * checking whether the namespace can be unloaded cleanly ... OK
 * checking loading without being on the library search path ... OK
-* checking dependencies in R code ... NOTE
-'library' or 'require' call to 'lavaan' which was already attached by Depends.
-  Please remove these calls from your code.
-See the information on DESCRIPTION files in the chapter 'Creating R
-packages' of the 'Writing R Extensions' manual.
+* checking dependencies in R code ... OK
 * checking S3 generic/method consistency ... OK
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
@@ -42,7 +38,8 @@ packages' of the 'Writing R Extensions' manual.
 * checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd line widths ... OK
-* checking Rd cross-references ... OK
+* checking Rd cross-references ... WARNING
+Unknown package 'write.table' in Rd xrefs
 * checking for missing documentation entries ... OK
 * checking for code/documentation mismatches ... OK
 * checking Rd \usage sections ... OK
@@ -52,6 +49,9 @@ packages' of the 'Writing R Extensions' manual.
 * checking data for non-ASCII characters ... OK
 * checking data for ASCII and uncompressed saves ... OK
 * checking examples ... OK
+Examples with CPU or elapsed time > 5s
+           user system elapsed
+bsBootMiss 6.43      0    6.43
 * checking PDF version of manual ... WARNING
 LaTeX errors when creating PDF version.
 This typically indicates Rd problems.
@@ -59,5 +59,4 @@ LaTeX errors found:
 !pdfTeX error: pdflatex.EXE (file ts1-zi4r): Font ts1-zi4r at 600 not found
  ==> Fatal error occurred, no output PDF file produced!
 * checking PDF version of manual without hyperrefs or index ... OK
-WARNING: There was 1 warning.
-NOTE: There was 1 note.
+WARNING: There were 2 warnings.

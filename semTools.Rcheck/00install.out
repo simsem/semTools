@@ -3,6 +3,7 @@
 ** data
 *** moving datasets to lazyload DB
 ** preparing package for lazy loading
+Creating a generic function for 'hist' from package 'graphics' in package 'semTools'
 ** help
 *** installing help indices
 ** building package indices

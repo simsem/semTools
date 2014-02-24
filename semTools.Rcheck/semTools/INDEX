@@ -1,8 +1,14 @@
+BootMiss-class          Class For the Results of Bollen-Stine Bootstrap
+                        with Incomplete Data
 EFA-class               Class For Rotated Results from EFA
 FitDiff-class           Class For Representing A Template of Model Fit
                         Comparisons
+Net-class               Class For the Result of Nesting and Equivalence
+                        Testing
 auxiliary               Analyzing data with full-information maximum
                         likelihood with auxiliary variables
+bsBootMiss              Bollen-Stine Bootstrap with the Existence of
+                        Missing Data
 clipboard               Copy or save the result of 'lavaan' or
                         'FitDiff' objects into a clipboard or a file
 compareFit              Build an object summarizing fit indices across
@@ -50,6 +56,7 @@ miPowerFit              Modification indices and their power approach
 monteCarloMed           Monte Carlo Confidence Intervals to Test
                         Complex Indirect Effects
 moreFitIndices          Calculate more fit indices
+net                     Nesting and Equivalence Testing
 nullMx                  Analyzing data using a null model
 nullRMSEA               Calculate the RMSEA of the null model
 orthRotate              Implement orthogonal or oblique rotation

@@ -18,6 +18,27 @@ library('semTools')
 
 base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("BootMiss-class")
+### * BootMiss-class
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: BootMiss-class
+### Title: Class For the Results of Bollen-Stine Bootstrap with Incomplete
+###   Data
+### Aliases: BootMiss-class show,BootMiss-method summary,BootMiss-method
+###   hist,BootMiss-method
+
+### ** Examples
+
+# See the example from the bsBootMiss function
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("BootMiss-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
 nameEx("EFA-class")
 ### * EFA-class
 
@@ -77,6 +98,25 @@ summary(modelDiff, fit.measures=c("aic", "bic"))
 
 base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 base::cat("FitDiff-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("Net-class")
+### * Net-class
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: Net-class
+### Title: Class For the Result of Nesting and Equivalence Testing
+### Aliases: Net-class show,Net-method summary,Net-method
+
+### ** Examples
+
+# See the example in the net function.
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("Net-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("auxiliary")
 ### * auxiliary
@@ -168,6 +208,47 @@ fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5"
 
 base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 base::cat("auxiliary", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("bsBootMiss")
+### * bsBootMiss
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: bsBootMiss
+### Title: Bollen-Stine Bootstrap with the Existence of Missing Data
+### Aliases: bsBootMiss
+
+### ** Examples
+
+dat1 <- HolzingerSwineford1939
+dat1$x5 <- ifelse(dat1$x1 <= quantile(dat1$x1, .3), NA, dat1$x5)
+dat1$x9 <- ifelse(is.na(dat1$x5), NA, dat1$x9)
+
+targetModel <- "
+visual  =~ x1 + x2 + x3
+textual =~ x4 + x5 + x6
+speed   =~ x7 + x8 + x9
+"
+targetFit <- sem(targetModel, dat1, meanstructure = TRUE, std.lv = TRUE,
+                 missing = "fiml", group = "school")
+summary(targetFit, fit = TRUE, standardized = TRUE)
+
+# The number of bootstrap samples should be much higher.
+temp <- bsBootMiss(targetFit, transformation = 1, nBoot = 10, seed = 31415)
+
+temp
+summary(temp)
+hist(temp)
+## user can specify confidence level (default = 0.95), the location of
+## the legend ("none", "right", or "left"), and pass other arguments to hist()
+hist(temp, conf = .90, legend = "none", xlab = "something else", breaks = 25)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("bsBootMiss", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("clipboard")
 ### * clipboard
@@ -1084,6 +1165,44 @@ moreFitIndices(fit2)
 
 base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 base::cat("moreFitIndices", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("net")
+### * net
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: net
+### Title: Nesting and Equivalence Testing
+### Aliases: net
+
+### ** Examples
+
+m1 <- ' visual  =~ x1 + x2 + x3
+	textual =~ x4 + x5 + x6
+	speed   =~ x7 + x8 + x9 '
+
+	
+m2 <- ' f1  =~ x1 + x2 + x3 + x4
+	f2 =~ x5 + x6 + x7 + x8 + x9 '
+
+m3 <- ' visual  =~ x1 + x2 + x3
+	textual =~ eq*x4 + eq*x5 + eq*x6
+	speed   =~ x7 + x8 + x9 '
+	
+fit1 <- cfa(m1, data = HolzingerSwineford1939)
+fit1a <- cfa(m1, data = HolzingerSwineford1939, std.lv = TRUE) # Equivalent to fit1
+fit2 <- cfa(m2, data = HolzingerSwineford1939) # Not equivalent to or nested in fit1
+fit3 <- cfa(m3, data = HolzingerSwineford1939) # Nested in fit1 and fit1a
+
+tests <- net(fit1, fit1a, fit2, fit3)
+tests
+summary(tests)
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("net", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("nullMx")
 ### * nullMx

@@ -5,8 +5,6 @@
 
 lisrel2lavaan <- function(filename=NULL, analyze=TRUE, silent=FALSE, ...){
 
-  require(lavaan)
-  
 ## if filename == null, prompt user with file browser
   
   if(is.null(filename)){

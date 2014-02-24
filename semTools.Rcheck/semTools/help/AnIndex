@@ -1,4 +1,6 @@
 auxiliary	auxiliary
+BootMiss-class	BootMiss-class
+bsBootMiss	bsBootMiss
 cfa.auxiliary	auxiliary
 cfa.mi	runMI
 clipboard	clipboard
@@ -18,6 +20,7 @@ fmi	fmi
 funRotate	rotate
 growth.auxiliary	auxiliary
 growth.mi	runMI
+hist,BootMiss-method	BootMiss-class
 impliedFactorCov	impliedFactorStat
 impliedFactorMean	impliedFactorStat
 impliedFactorStat	impliedFactorStat
@@ -39,6 +42,8 @@ measurementinvariance	measurementInvariance
 miPowerFit	miPowerFit
 monteCarloMed	monteCarloMed
 moreFitIndices	moreFitIndices
+net	net
+Net-class	Net-class
 nullMx	nullMx
 nullRMSEA	nullRMSEA
 oblqRotate	rotate
@@ -61,14 +66,18 @@ saturateMx	saturateMx
 saveFile	clipboard
 sem.auxiliary	auxiliary
 sem.mi	runMI
+show,BootMiss-method	BootMiss-class
 show,EFA-method	EFA-class
 show,FitDiff-method	FitDiff-class
+show,Net-method	Net-class
 simParcel	simParcel
 skew	skew
 splitSample	splitSample
 standardizeMx	standardizeMx
+summary,BootMiss-method	BootMiss-class
 summary,EFA-method	EFA-class
 summary,FitDiff-method	FitDiff-class
 summary,lavaanStar-method	lavaanStar-class
+summary,Net-method	Net-class
 tukeySEM	tukeySEM
 wald	wald

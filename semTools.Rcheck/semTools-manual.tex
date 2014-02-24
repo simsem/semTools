@@ -15,8 +15,8 @@
 \raggedright{}
 \item[Type]\AsIs{Package}
 \item[Title]\AsIs{Useful tools for structural equation modeling.}
-\item[Version]\AsIs{0.4-2}
-\item[Date]\AsIs{2013-11-11}
+\item[Version]\AsIs{0.4-3}
+\item[Date]\AsIs{2014-2-24}
 \item[Author]\AsIs{Sunthud Pornprasertmanit [aut, cre], Patrick Miller [aut], Alex Schoemann [aut], Yves Rosseel [aut], Corbin Quick [ctb], Mauricio Garnier-Villarreal [ctb], James Selig [ctb], Aaron Boulton [ctb], Kristopher Preacher [ctb], Donna Coffman [ctb], Mijke Rhemtulla [ctb], Alexander Robitzsch [ctb], Craig Enders [ctb], Ruber Arslan [ctb], Bell Clinton [ctb], Pavel Panko [ctb], Ed Merkle [ctb]}
 \item[Maintainer]\AsIs{Sunthud Pornprasertmanit }\email{psunthud@ku.edu}\AsIs{}
 \item[Depends]\AsIs{R(>= 3.0), lavaan, methods}
@@ -155,6 +155,182 @@ HS.model2 <- ' visual  =~ x1 + x2 + x3
               speed   =~ x7 + x8 + x9'
 fit <- cfa(HS.model2, data=HolzingerSwineford1939)
 fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5")) 
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{BootMiss-class}{Class For the Results of Bollen-Stine Bootstrap with Incomplete Data}{BootMiss.Rdash.class}
+\aliasA{hist,BootMiss-method}{BootMiss-class}{hist,BootMiss.Rdash.method}
+\aliasA{show,BootMiss-method}{BootMiss-class}{show,BootMiss.Rdash.method}
+\aliasA{summary,BootMiss-method}{BootMiss-class}{summary,BootMiss.Rdash.method}
+%
+\begin{Description}\relax
+This class contains the results of Bollen-Stine bootstrap with missing data.
+\end{Description}
+%
+\begin{Section}{Objects from the Class}
+Objects can be created via the \code{\LinkA{bsBootMiss}{bsBootMiss}} function.
+\end{Section}
+%
+\begin{Section}{Slots}
+\begin{description}
+
+\item[\code{timeTrans}:] Time (in seconds) using for data transformation
+\item[\code{timeFit}:] Time (in seconds) using for fitting Bootstrap data sets
+\item[\code{transData}:] Transformed data
+\item[\code{bootDist}:] The vector of chi-square values from Bootstrap data sets fitted by the target model
+\item[\code{origChi}:] The chi-square value from the original data set
+\item[\code{df}:] The degree of freedom of the model
+\item[\code{bootP}:] The p-value comparing the original chi-square with the bootstrap distribution
+
+\end{description}
+
+\end{Section}
+%
+\begin{Section}{methods}
+\begin{itemize}
+
+\item \code{summary} The summary function is used to provide the detailed results of the Bollen-Stine bootstrap.  
+\item \code{hist} The hist function is used to provided the bootstrap distribution compared with the original chi-square value.
+
+\end{itemize}
+
+\end{Section}
+%
+\begin{Author}\relax
+Terrence D. Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{bsBootMiss}{bsBootMiss}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+# See the example from the bsBootMiss function
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{bsBootMiss}{Bollen-Stine Bootstrap with the Existence of Missing Data}{bsBootMiss}
+%
+\begin{Description}\relax
+Implement the Bollen and Stine's (1992) Bootstrap when missing observations exist. The implemented method is proposed by Savalei and Yuan (2009). This can be used in two ways. The first and easiest option is to fit the model to incomplete data in \code{lavaan} using the FIML estimator, then pass that \code{lavaan} object to \code{bsBootMis}. 
+
+The second is designed for users of other software packages (e.g., LISREL, EQS, Amos, or Mplus). Users can import their data, chi-squared value, and model-implied moments from another package, and they have the option of saving (or writing to a file) either the transformed data or bootstrapped samples of that data, which can be analyzed in other programs. In order to analyze the bootstrapped samples and return a p value, users of other programs must still specify their model using lavaan syntax.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+bsBootMiss(x, transformation = 2, nBoot = 500, model, rawData,
+	Sigma, Mu, group, ChiSquared, EMcov,
+	writeTransData = FALSE, transDataOnly = FALSE,
+	writeBootData = FALSE, bootSamplesOnly = FALSE,
+	writeArgs, seed = NULL, suppressWarn = TRUE, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] 
+A target \code{lavaan} object used in the Bollen-Stine bootstrap
+
+\item[\code{transformation}] 
+The transformation methods in Savalei and Yuan (2009). There are three methods in the article, but only the first two are currently implemented here.  Use transformation = 1 when there are few missing data patterns, each of which has a large size, such as in a planned-missing-data design.  Use transformation = 2 when there are more missing data patterns.  The currently unavailable transformation = 3 would be used when several missing data patterns have n = 1.
+
+\item[\code{nBoot}] 
+The number of bootstrap samples.
+
+\item[\code{model}] 
+Optional. The target model if \code{x} is not provided.
+
+\item[\code{rawData}] 
+Optional. The target raw data set if \code{x} is not provided.
+
+\item[\code{Sigma}] 
+Optional. The model-implied covariance matrix if \code{x} is not provided.
+
+\item[\code{Mu}] 
+Optional. The model-implied mean vector if \code{x} is not provided.
+
+\item[\code{group}] 
+Optional character string specifying the name of the grouping variable in \code{rawData} if \code{x} is not provided.
+
+\item[\code{ChiSquared}] 
+Optional. The model-implied mean vector if \code{x} is not provided.
+
+\item[\code{EMcov}] 
+Optional, if \code{x} is not provided. The EM (or Two-Stage ML) estimated covariance matrix used to speed up Transformation 2 algorithm.
+
+\item[\code{transDataOnly}] 
+Logical. If \code{TRUE}, the result will provide the transformed data only.
+
+\item[\code{writeTransData}] 
+Logical. If \code{TRUE}, the transformed data set is written to a text file, \code{transDataOnly} is set to \code{TRUE}, and the transformed data is returned invisibly.
+
+\item[\code{bootSamplesOnly}] 
+Logical. If \code{TRUE}, the result will provide bootstrap data sets only.
+
+\item[\code{writeBootData}] 
+Logical. If \code{TRUE}, the stacked bootstrap data sets are written to a text file, \code{bootSamplesOnly} is set to \code{TRUE}, and the list of bootstrap data sets are returned invisibly.
+
+\item[\code{writeArgs}] 
+Optional. If \code{TRUE} or \code{TRUE} are \code{TRUE}, user can pass arguments to the \code{\LinkA{write.table}{write.table}} function as a list.  Some default values are provided: \code{file} = "bootstrappedSamples.dat", \code{row.names} = \code{FALSE}, and \code{na} = "-999", but the user can override all of these by providing other values for those arguments in the \code{writeArgs} list.
+
+\item[\code{seed}] 
+The seed number used in randomly drawing bootstrap samples.
+
+\item[\code{suppressWarn}] 
+Logical. If \code{TRUE}, warnings from \code{lavaan} function will be suppressed when fitting the model to each bootstrap sample.
+
+\item[\code{...}] 
+The additional arguments in the \code{\LinkA{lavaan}{lavaan}} function.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+As a default, this function returns \code{\LinkA{BootMiss}{BootMiss.Rdash.class}} object containing the results of the bootstrap samples. Users can use \code{print}, \code{summary}, or \code{hist} functions to examine the results. The transformed data is returned instead if \code{transDataOnly} is \code{TRUE}. The bootstrap data sets are returned if \code{bootSamplesOnly} is \code{TRUE}.
+\end{Value}
+%
+\begin{Author}\relax
+Terrence D. Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+\end{Author}
+%
+\begin{References}\relax
+
+Bollen, K. A., \bsl{}\& Stine, R. A. (1992). Bootstrapping goodness-of-fit measures in structural equation models. \emph{Sociological Methods \bsl{}\& Research, 21}, 205-229. doi:10.1177/0049124192021002004 
+
+Savalei, V., \bsl{}\& Yuan, K.-H. (2009). On the model-based bootstrap with missing data: obtaining a p-value for a test of exact fit. \emph{Multivariate Behavioral Research, 44}, 741-763. doi:10.1080/00273170903333590
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{BootMiss}{BootMiss.Rdash.class}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+dat1 <- HolzingerSwineford1939
+dat1$x5 <- ifelse(dat1$x1 <= quantile(dat1$x1, .3), NA, dat1$x5)
+dat1$x9 <- ifelse(is.na(dat1$x5), NA, dat1$x9)
+
+targetModel <- "
+visual  =~ x1 + x2 + x3
+textual =~ x4 + x5 + x6
+speed   =~ x7 + x8 + x9
+"
+targetFit <- sem(targetModel, dat1, meanstructure = TRUE, std.lv = TRUE,
+                 missing = "fiml", group = "school")
+summary(targetFit, fit = TRUE, standardized = TRUE)
+
+# The number of bootstrap samples should be much higher.
+temp <- bsBootMiss(targetFit, transformation = 1, nBoot = 10, seed = 31415)
+
+temp
+summary(temp)
+hist(temp)
+## user can specify confidence level (default = 0.95), the location of
+## the legend ("none", "right", or "left"), and pass other arguments to hist()
+hist(temp, conf = .90, legend = "none", xlab = "something else", breaks = 25)
+
 \end{ExampleCode}
 \end{Examples}
 \inputencoding{utf8}
@@ -2284,6 +2460,111 @@ moreFitIndices(fit2)
 \end{ExampleCode}
 \end{Examples}
 \inputencoding{utf8}
+\HeaderA{net}{Nesting and Equivalence Testing}{net}
+%
+\begin{Description}\relax
+This test examines whether models are nested or equivalent based on Bentler and Satorra's (2010) procedure.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+net(..., crit = .0001)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{...}] 
+The \code{lavaan} objects used for test of nesting and equivalence
+
+\item[\code{crit}] 
+The upper-bound criterion for testing the equivalence of models. Models are considered nested (or equivalent) if the difference between their chi-squared fit statistics is less than this criterion.
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The \LinkA{Net}{Net.Rdash.class} object representing the outputs for nesting and equivalent testing, including a logical matrix of test results and a vector of degrees of freedom for each model.
+\end{Value}
+%
+\begin{Author}\relax
+Terrence D. Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+\end{Author}
+%
+\begin{References}\relax
+Bentler, P. M., \& Satorra, A. (2010). Testing model nesting and equivalence. \emph{Psychological Methods, 15}, 111-123. doi:10.1037/a0019625
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+m1 <- ' visual  =~ x1 + x2 + x3
+	textual =~ x4 + x5 + x6
+	speed   =~ x7 + x8 + x9 '
+
+	
+m2 <- ' f1  =~ x1 + x2 + x3 + x4
+	f2 =~ x5 + x6 + x7 + x8 + x9 '
+
+m3 <- ' visual  =~ x1 + x2 + x3
+	textual =~ eq*x4 + eq*x5 + eq*x6
+	speed   =~ x7 + x8 + x9 '
+	
+fit1 <- cfa(m1, data = HolzingerSwineford1939)
+fit1a <- cfa(m1, data = HolzingerSwineford1939, std.lv = TRUE) # Equivalent to fit1
+fit2 <- cfa(m2, data = HolzingerSwineford1939) # Not equivalent to or nested in fit1
+fit3 <- cfa(m3, data = HolzingerSwineford1939) # Nested in fit1 and fit1a
+
+tests <- net(fit1, fit1a, fit2, fit3)
+tests
+summary(tests)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{Net-class}{Class For the Result of Nesting and Equivalence Testing }{Net.Rdash.class}
+\aliasA{show,Net-method}{Net-class}{show,Net.Rdash.method}
+\aliasA{summary,Net-method}{Net-class}{summary,Net.Rdash.method}
+%
+\begin{Description}\relax
+This class contains the results of nesting and equivalence testing among multiple models
+\end{Description}
+%
+\begin{Section}{Objects from the Class}
+Objects can be created via the \code{\LinkA{net}{net}} function.
+\end{Section}
+%
+\begin{Section}{Slots}
+\begin{description}
+
+\item[\code{test}:] Logical matrix of results of nesting and equivalence testing across models
+\item[\code{df}:] The degrees of freedom of tested models
+
+\end{description}
+
+\end{Section}
+%
+\begin{Section}{methods}
+\begin{itemize}
+
+\item \code{summary} The summary function is used to provide the results in narrative.  
+
+\end{itemize}
+
+\end{Section}
+%
+\begin{Author}\relax
+Terrence D. Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+\end{Author}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{net}{net}}
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+# See the example in the net function.
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
 \HeaderA{nullMx}{Analyzing data using a null model}{nullMx}
 %
 \begin{Description}\relax
@@ -2935,7 +3216,7 @@ probe2WayRC(fit, nameX, nameY, modVar, valProbe)
 \end{Arguments}
 %
 \begin{Details}\relax
-Before using this function, researchers need to make the products of the indicators between the first-order factors and residualize the products by the original indicators (Lance, 1988; Little, Bovaird, \& Widaman, 2006). The process can be automated by the \code{\LinkA{indProd}{indProd}} function. Note that the indicator products can be made for all possible combination or matched-pair approach (Marsh et al., 2004). Next, the hypothesized model with the regression with latent interaction will be used to fit all original indicators and the product terms. See the example for how to fit the product term below. Once the lavaan result is obtained, this function will be used to probe the interaction.
+Before using this function, researchers need to make the products of the indicators between the first-order factors and residualize the products by the original indicators (Lance, 1988; Little, Bovaird, \& Widaman, 2006). The process can be automated by the \code{\LinkA{indProd}{indProd}} function. Note that the indicator products can be made for all possible combination or matched-pair approach (Marsh et al., 2004). Next, the hypothesized model with the regression with latent interaction will be used to fit all original indicators and the product terms. To use this function the model must be fit with a mean structure. See the example for how to fit the product term below. Once the lavaan result is obtained, this function will be used to probe the interaction.  
 
 The probing process on residual-centered latent interaction is based on transforming the residual-centered result into the no-centered result. See Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further details. Note that this approach based on a strong assumption that the first-order latent variables are normally distributed. The probing process is applied after the no-centered result (parameter estimates and their covariance matrix among parameter estimates) has been computed. See the \code{\LinkA{probe2WayMC}{probe2WayMC}} for further details.
 \end{Details}
@@ -3183,7 +3464,7 @@ probe3WayRC(fit, nameX, nameY, modVar, valProbe1, valProbe2)
 \end{Arguments}
 %
 \begin{Details}\relax
-Before using this function, researchers need to make the products of the indicators between the first-order factors and residualize the products by the original indicators (Lance, 1988; Little, Bovaird, \& Widaman, 2006). The process can be automated by the \code{\LinkA{indProd}{indProd}} function. Note that the indicator products can be made for all possible combination or matched-pair approach (Marsh et al., 2004). Next, the hypothesized model with the regression with latent interaction will be used to fit all original indicators and the product terms (Geldhof, Pornprasertmanit,  Schoemann, \& Little, in press). See the example for how to fit the product term below. Once the lavaan result is obtained, this function will be used to probe the interaction.
+Before using this function, researchers need to make the products of the indicators between the first-order factors and residualize the products by the original indicators (Lance, 1988; Little, Bovaird, \& Widaman, 2006). The process can be automated by the \code{\LinkA{indProd}{indProd}} function. Note that the indicator products can be made for all possible combination or matched-pair approach (Marsh et al., 2004). Next, the hypothesized model with the regression with latent interaction will be used to fit all original indicators and the product terms (Geldhof, Pornprasertmanit,  Schoemann, \& Little, in press). To use this function the model must be fit with a mean structure. See the example for how to fit the product term below. Once the lavaan result is obtained, this function will be used to probe the interaction.
 
 The probing process on residual-centered latent interaction is based on transforming the residual-centered result into the no-centered result. See Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further details. Note that this approach based on a strong assumption that the first-order latent variables are normally distributed. The probing process is applied after the no-centered result (parameter estimates and their covariance matrix among parameter estimates) has been computed See the \code{\LinkA{probe3WayMC}{probe3WayMC}} for further details.
 \end{Details}

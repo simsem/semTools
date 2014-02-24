@@ -373,15 +373,15 @@ library(lavaan)
 
 # model for generating data
 pop.model <- '
-f =~ 1*x1 + 1*x2 + 1*x3 + 1*x4
+f =~ 1*x1 + 1*x2 + 1*x3 + 1*x4 + 0*a
 f ~~ 1*f
-x1 ~~ 0.2*x1
-x2 ~~ 0.2*x2
-x3 ~~ 0.2*x3
-x4 ~~ 0.2*x4
+x1 ~~ 0.5*x1
+x2 ~~ 0.5*x2
+x3 ~~ 0.5*x3
+x4 ~~ 0.5*x4
 
 # auxiliary variable is correlated with uniqueness
-x1 + x2 + x3 + x4 ~~ 0.5*a
+x1 + x2 + x3 + x4 ~~ 0.2*a
 a ~~ 1*a
 '
 
@@ -479,7 +479,7 @@ datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE,
 randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
 randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
 datsim[randomMiss2] <- NA
-datsimMI <- amelia(datsim,m=5, noms="group")
+datsimMI <- amelia(datsim,m=20, noms="group")
 
 out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
 summary(out3)

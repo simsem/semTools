@@ -1,7 +1,6 @@
 # miPowerFit: Evaluate model fit by Satorra, Saris, & van der Weld (2009) method
 
 miPowerFit <- function(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, delta=NULL) {
-	library(lavaan)
 	mi <- inspect(lavaanObj, "mi")
 	sigma <- mi[,"epc"] / sqrt(mi[,"mi"])
 	if(is.null(delta)) {

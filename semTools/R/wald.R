@@ -1,7 +1,5 @@
 
 wald <- function(object, syntax) {
-	library(lavaan)
-	
 	model <- unlist( strsplit(syntax, "\n") )
 	
     # remove comments starting with '#' or '!'

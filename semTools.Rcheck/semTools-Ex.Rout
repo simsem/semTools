@@ -39,11 +39,32 @@ This is lavaan 0.5-15
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.4-2
+This is semTools 0.4-3
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("BootMiss-class")
+> ### * BootMiss-class
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: BootMiss-class
+> ### Title: Class For the Results of Bollen-Stine Bootstrap with Incomplete
+> ###   Data
+> ### Aliases: BootMiss-class show,BootMiss-method summary,BootMiss-method
+> ###   hist,BootMiss-method
+> 
+> ### ** Examples
+> 
+> # See the example from the bsBootMiss function
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("BootMiss-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("EFA-class")
 > ### * EFA-class
@@ -481,6 +502,25 @@ fit.means      7543.149  7709.969
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("FitDiff-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
+> nameEx("Net-class")
+> ### * Net-class
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: Net-class
+> ### Title: Class For the Result of Nesting and Equivalence Testing
+> ### Aliases: Net-class show,Net-method summary,Net-method
+> 
+> ### ** Examples
+> 
+> # See the example in the net function.
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("Net-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
 > nameEx("auxiliary")
 > ### * auxiliary
 > 
@@ -573,6 +613,270 @@ Warning in lavaan::lavaan(model = list(id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L,  :
 > 
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("auxiliary", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("bsBootMiss")
+> ### * bsBootMiss
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: bsBootMiss
+> ### Title: Bollen-Stine Bootstrap with the Existence of Missing Data
+> ### Aliases: bsBootMiss
+> 
+> ### ** Examples
+> 
+> dat1 <- HolzingerSwineford1939
+> dat1$x5 <- ifelse(dat1$x1 <= quantile(dat1$x1, .3), NA, dat1$x5)
+> dat1$x9 <- ifelse(is.na(dat1$x5), NA, dat1$x9)
+> 
+> targetModel <- "
++ visual  =~ x1 + x2 + x3
++ textual =~ x4 + x5 + x6
++ speed   =~ x7 + x8 + x9
++ "
+> targetFit <- sem(targetModel, dat1, meanstructure = TRUE, std.lv = TRUE,
++                  missing = "fiml", group = "school")
+> summary(targetFit, fit = TRUE, standardized = TRUE)
+lavaan (0.5-15) converged normally after  62 iterations
+
+  Number of observations per group         
+  Pasteur                                          156
+  Grant-White                                      145
+
+  Number of missing patterns per group     
+  Pasteur                                            2
+  Grant-White                                        2
+
+  Estimator                                         ML
+  Minimum Function Test Statistic               85.712
+  Degrees of freedom                                48
+  P-value (Chi-square)                           0.001
+
+Chi-square for each group:
+
+  Pasteur                                       38.520
+  Grant-White                                   47.192
+
+Model test baseline model:
+
+  Minimum Function Test Statistic              807.806
+  Degrees of freedom                                72
+  P-value                                        0.000
+
+User model versus baseline model:
+
+  Comparative Fit Index (CFI)                    0.949
+  Tucker-Lewis Index (TLI)                       0.923
+
+Loglikelihood and Information Criteria:
+
+  Loglikelihood user model (H0)              -3428.208
+  Loglikelihood unrestricted model (H1)      -3385.352
+
+  Number of free parameters                         60
+  Akaike (AIC)                                6976.416
+  Bayesian (BIC)                              7198.843
+  Sample-size adjusted Bayesian (BIC)         7008.557
+
+Root Mean Square Error of Approximation:
+
+  RMSEA                                          0.072
+  90 Percent Confidence Interval          0.047  0.097
+  P-value RMSEA <= 0.05                          0.073
+
+Standardized Root Mean Square Residual:
+
+  SRMR                                           0.082
+
+Parameter estimates:
+
+  Information                                 Observed
+  Standard Errors                             Standard
+
+Group 1 [Pasteur]:
+
+                   Estimate  Std.err  Z-value  P(>|z|)   Std.lv  Std.all
+Latent variables:
+  visual =~
+    x1                1.074    0.138    7.810    0.000    1.074    0.909
+    x2                0.398    0.121    3.287    0.001    0.398    0.325
+    x3                0.580    0.111    5.231    0.000    0.580    0.500
+  textual =~
+    x4                0.926    0.082   11.339    0.000    0.926    0.806
+    x5                1.079    0.100   10.773    0.000    1.079    0.854
+    x6                0.833    0.069   12.057    0.000    0.833    0.844
+  speed =~
+    x7                0.682    0.121    5.653    0.000    0.682    0.631
+    x8                0.618    0.107    5.794    0.000    0.618    0.633
+    x9                0.543    0.116    4.676    0.000    0.543    0.566
+
+Covariances:
+  visual ~~
+    textual           0.527    0.079    6.662    0.000    0.527    0.527
+    speed             0.180    0.117    1.544    0.123    0.180    0.180
+  textual ~~
+    speed             0.350    0.102    3.420    0.001    0.350    0.350
+
+Intercepts:
+    x1                4.941    0.095   52.249    0.000    4.941    4.183
+    x2                5.984    0.098   60.949    0.000    5.984    4.880
+    x3                2.487    0.093   26.778    0.000    2.487    2.144
+    x4                2.823    0.092   30.689    0.000    2.823    2.457
+    x5                3.941    0.113   34.844    0.000    3.941    3.119
+    x6                1.922    0.079   24.321    0.000    1.922    1.947
+    x7                4.432    0.087   51.181    0.000    4.432    4.098
+    x8                5.563    0.078   71.214    0.000    5.563    5.702
+    x9                5.559    0.092   60.265    0.000    5.559    5.796
+    visual            0.000                               0.000    0.000
+    textual           0.000                               0.000    0.000
+    speed             0.000                               0.000    0.000
+
+Variances:
+    x1                0.242    0.253                      0.242    0.173
+    x2                1.345    0.163                      1.345    0.895
+    x3                1.009    0.140                      1.009    0.750
+    x4                0.463    0.078                      0.463    0.351
+    x5                0.432    0.097                      0.432    0.271
+    x6                0.281    0.056                      0.281    0.288
+    x7                0.704    0.149                      0.704    0.602
+    x8                0.571    0.119                      0.571    0.599
+    x9                0.626    0.118                      0.626    0.680
+    visual            1.000                               1.000    1.000
+    textual           1.000                               1.000    1.000
+    speed             1.000                               1.000    1.000
+
+
+
+Group 2 [Grant-White]:
+
+                   Estimate  Std.err  Z-value  P(>|z|)   Std.lv  Std.all
+Latent variables:
+  visual =~
+    x1                0.747    0.106    7.010    0.000    0.747    0.650
+    x2                0.583    0.102    5.727    0.000    0.583    0.527
+    x3                0.743    0.096    7.718    0.000    0.743    0.717
+  textual =~
+    x4                0.973    0.080   12.186    0.000    0.973    0.868
+    x5                0.948    0.094   10.120    0.000    0.948    0.832
+    x6                0.937    0.082   11.431    0.000    0.937    0.828
+  speed =~
+    x7                0.689    0.088    7.790    0.000    0.689    0.669
+    x8                0.884    0.098    9.025    0.000    0.884    0.845
+    x9                0.556    0.102    5.453    0.000    0.556    0.615
+
+Covariances:
+  visual ~~
+    textual           0.537    0.087    6.197    0.000    0.537    0.537
+    speed             0.440    0.103    4.257    0.000    0.440    0.440
+  textual ~~
+    speed             0.256    0.107    2.386    0.017    0.256    0.256
+
+Intercepts:
+    x1                4.930    0.095   51.696    0.000    4.930    4.293
+    x2                6.200    0.092   67.416    0.000    6.200    5.599
+    x3                1.996    0.086   23.195    0.000    1.996    1.926
+    x4                3.317    0.093   35.625    0.000    3.317    2.959
+    x5                4.754    0.104   45.659    0.000    4.754    4.171
+    x6                2.469    0.094   26.277    0.000    2.469    2.182
+    x7                3.921    0.086   45.819    0.000    3.921    3.805
+    x8                5.488    0.087   63.174    0.000    5.488    5.246
+    x9                5.500    0.087   63.189    0.000    5.500    6.086
+    visual            0.000                               0.000    0.000
+    textual           0.000                               0.000    0.000
+    speed             0.000                               0.000    0.000
+
+Variances:
+    x1                0.761    0.131                      0.761    0.577
+    x2                0.886    0.123                      0.886    0.723
+    x3                0.522    0.110                      0.522    0.486
+    x4                0.310    0.071                      0.310    0.247
+    x5                0.400    0.082                      0.400    0.308
+    x6                0.402    0.074                      0.402    0.314
+    x7                0.587    0.094                      0.587    0.553
+    x8                0.312    0.127                      0.312    0.285
+    x9                0.507    0.095                      0.507    0.621
+    visual            1.000                               1.000    1.000
+    textual           1.000                               1.000    1.000
+    speed             1.000                               1.000    1.000
+
+> 
+> # The number of bootstrap samples should be much higher.
+> temp <- bsBootMiss(targetFit, transformation = 1, nBoot = 10, seed = 31415)
+> 
+> temp
+Chi-Squared = 85.71211
+Degrees of Freedom = 48
+Theoretical p value = 0.0006681878
+    i.e., pchisq(85.71211, df = 48, lower.tail = FALSE)
+
+Bootstrapped p value = 0
+
+> summary(temp)
+It took 0 seconds to transform the data.
+ 
+It took 5.53 seconds 
+to fit the model to 10 bootstrapped samples.
+ 
+Mean of Theoretical Distribution = DF = 48 
+Variance of Theoretical Distribution = 2*DF = 96 
+
+Mean of Bootstrap Distribution = 51.79789 
+Variance of Bootstrap Distribution = 74.00855 
+
+Chi-Squared = 85.71211
+Degrees of Freedom = 48
+Theoretical p value = 0.0006681878
+    i.e., pchisq(85.71211, df = 48, lower.tail = FALSE)
+
+Bootstrapped p value = 0
+
+> hist(temp)
+It took 0 seconds to transform the data.
+ 
+It took 5.53 seconds 
+to fit the model to 10 bootstrapped samples.
+ 
+Mean of Theoretical Distribution = DF = 48 
+Variance of Theoretical Distribution = 2*DF = 96 
+
+Mean of Bootstrap Distribution = 51.79789 
+Variance of Bootstrap Distribution = 74.00855 
+
+Chi-Squared = 85.71211
+Degrees of Freedom = 48
+Theoretical p value = 0.0006681878
+    i.e., pchisq(85.71211, df = 48, lower.tail = FALSE)
+
+Bootstrapped p value = 0
+
+> ## user can specify confidence level (default = 0.95), the location of
+> ## the legend ("none", "right", or "left"), and pass other arguments to hist()
+> hist(temp, conf = .90, legend = "none", xlab = "something else", breaks = 25)
+It took 0 seconds to transform the data.
+ 
+It took 5.53 seconds 
+to fit the model to 10 bootstrapped samples.
+ 
+Mean of Theoretical Distribution = DF = 48 
+Variance of Theoretical Distribution = 2*DF = 96 
+
+Mean of Bootstrap Distribution = 51.79789 
+Variance of Bootstrap Distribution = 74.00855 
+
+Chi-Squared = 85.71211
+Degrees of Freedom = 48
+Theoretical p value = 0.0006681878
+    i.e., pchisq(85.71211, df = 48, lower.tail = FALSE)
+
+Bootstrapped p value = 0
+
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("bsBootMiss", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("clipboard")
 > ### * clipboard
@@ -2616,6 +2920,68 @@ detaching 'package:MASS'
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("moreFitIndices", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
+> nameEx("net")
+> ### * net
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: net
+> ### Title: Nesting and Equivalence Testing
+> ### Aliases: net
+> 
+> ### ** Examples
+> 
+> m1 <- ' visual  =~ x1 + x2 + x3
++ 	textual =~ x4 + x5 + x6
++ 	speed   =~ x7 + x8 + x9 '
+> 
+> 	
+> m2 <- ' f1  =~ x1 + x2 + x3 + x4
++ 	f2 =~ x5 + x6 + x7 + x8 + x9 '
+> 
+> m3 <- ' visual  =~ x1 + x2 + x3
++ 	textual =~ eq*x4 + eq*x5 + eq*x6
++ 	speed   =~ x7 + x8 + x9 '
+> 	
+> fit1 <- cfa(m1, data = HolzingerSwineford1939)
+> fit1a <- cfa(m1, data = HolzingerSwineford1939, std.lv = TRUE) # Equivalent to fit1
+> fit2 <- cfa(m2, data = HolzingerSwineford1939) # Not equivalent to or nested in fit1
+> fit3 <- cfa(m3, data = HolzingerSwineford1939) # Nested in fit1 and fit1a
+> 
+> tests <- net(fit1, fit1a, fit2, fit3)
+> tests
+
+     If cell [R, C] is TRUE, the model in row R is nested within column C.
+     
+     If cell [R, C] is TRUE and the models have the same degrees of freedom,
+     they are equivalent models.  See Bentler & Satorra (2010) for details.
+     
+     If cell [R, C] is NA, then the model in column C did not converge when
+     fit to the implied means and covariance matrix from the model in row R.
+     
+     The hidden diagonal is TRUE because any model is equivalent to itself.
+     The upper triangle is hidden because for models with the same degrees
+     of freedom, cell [C, R] == cell [R, C].  For all models with different
+     degrees of freedom, the upper diagonal is all FALSE because models with
+     fewer degrees of freedom (i.e., more parameters) cannot be nested
+     within models with more degrees of freedom (i.e., fewer parameters).  
+     
+                fit1  fit1a fit2  fit3
+fit1 (df = 24)                        
+fit1a (df = 24) TRUE                  
+fit2 (df = 26)  FALSE FALSE           
+fit3 (df = 26)  TRUE  TRUE  FALSE     
+> summary(tests)
+Model "fit1a" is equivalent to model "fit1"
+Model "fit3" is nested within model "fit1a"
+Model "fit3" is nested within model "fit1"
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("net", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
 > nameEx("nullMx")
 > ### * nullMx
 > 
@@ -4451,7 +4817,7 @@ skew (g1)        se         z         p
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  39.17 0.4 39.9 NA NA 
+Time elapsed:  40.28 0.31 40.69 NA NA 
 > grDevices::dev.off()
 null device 
           1 
