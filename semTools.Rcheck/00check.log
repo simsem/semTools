@@ -38,8 +38,7 @@ Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd line widths ... OK
-* checking Rd cross-references ... WARNING
-Unknown package 'write.table' in Rd xrefs
+* checking Rd cross-references ... OK
 * checking for missing documentation entries ... OK
 * checking for code/documentation mismatches ... OK
 * checking Rd \usage sections ... OK
@@ -51,12 +50,12 @@ Unknown package 'write.table' in Rd xrefs
 * checking examples ... OK
 Examples with CPU or elapsed time > 5s
            user system elapsed
-bsBootMiss 6.43      0    6.43
+bsBootMiss 7.08      0    7.19
 * checking PDF version of manual ... WARNING
 LaTeX errors when creating PDF version.
 This typically indicates Rd problems.
 LaTeX errors found:
 !pdfTeX error: pdflatex.EXE (file ts1-zi4r): Font ts1-zi4r at 600 not found
  ==> Fatal error occurred, no output PDF file produced!
-* checking PDF version of manual without hyperrefs or index ... OK
-WARNING: There were 2 warnings.
+* checking PDF version of manual without hyperrefs or index ... ERROR
+Re-running with no redirection of stdout/stderr.

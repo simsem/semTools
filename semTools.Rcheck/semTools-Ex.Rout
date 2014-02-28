@@ -35,7 +35,7 @@ Type 'q()' to quit R.
 > ### * </HEADER>
 > library('semTools')
 Loading required package: lavaan
-This is lavaan 0.5-15
+This is lavaan 0.5-16
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
@@ -80,7 +80,7 @@ All users of R (or SEM) are invited to submit functions or ideas for functions.
 > 
 > unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
 > summary(unrotated, std=TRUE)
-lavaan (0.5-15) converged normally after 202 iterations
+lavaan (0.5-16) converged normally after 202 iterations
 
   Number of observations                           301
 
@@ -465,16 +465,21 @@ fit.configural 7516.536  .097            .075           .120         .001 .083†
 fit.loadings   7509.514† .093†           .071           .114         .001 .089 
 fit.intercepts 7534.359  .107            .088           .127         .000 .100 
 fit.means      7567.255  .122            .104           .141         .000 .129 
-               rmr_nomean  srmr srmr_nomean    cn_05    cn_01   gfi  agfi  pgfi
-fit.configural      .091† .068†       .074† 170.324  192.439  .995† .989  .442 
-fit.loadings        .098  .072        .078  176.085† 197.719† .995  .989† .497 
-fit.intercepts      .099  .082        .080  146.053  163.107  .993  .987  .552 
-fit.means           .104  .109        .084  122.410  136.358  .991  .985  .578†
-                 mfi
-fit.configural .893†
-fit.loadings   .890 
-fit.intercepts .841 
-fit.means      .790 
+               rmr_nomean  srmr srmr_bentler srmr_bentler_nomean srmr_bollen
+fit.configural      .091† .068†         .068                .074        .068
+fit.loadings        .098  .072          .072                .078        .074
+fit.intercepts      .099  .082          .082                .080        .085
+fit.means           .104  .109          .109                .084        .114
+               srmr_bollen_nomean srmr_mplus srmr_mplus_nomean    cn_05
+fit.configural               .074       .068              .074 170.324 
+fit.loadings                 .076       .075              .078 176.085†
+fit.intercepts               .075       .087              .078 146.053 
+fit.means                    .077       .117              .082 122.410 
+                  cn_01   gfi  agfi  pgfi   mfi
+fit.configural 192.439  .995† .989  .442  .893†
+fit.loadings   197.719† .995  .989† .497  .890 
+fit.intercepts 163.107  .993  .987  .552  .841 
+fit.means      136.358  .991  .985  .578† .790 
 > summary(modelDiff, fit.measures=c("aic", "bic"))
 ################### Nested Model Comparison #########################
                                 chi df      p delta.cfi
@@ -580,7 +585,7 @@ fit.means      7543.149  7709.969
 + '
 > fitsem <- sem(model, data=dat2, meanstructure=TRUE)
 > fitsemaux <- sem.auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
-Warning in lavaan::lavaan(model = list(id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L,  :
+Warning in lavaan::lavaan(model = list(id = 1:61, lhs = c("ind60", "ind60",  :
   lavaan WARNING: residual covariance matrix is not positive definite; use inspect(fit,"cov.ov") to investigate.
 > 
 > # Example of covariate at the factor level
@@ -638,7 +643,7 @@ Warning in lavaan::lavaan(model = list(id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L,  :
 > targetFit <- sem(targetModel, dat1, meanstructure = TRUE, std.lv = TRUE,
 +                  missing = "fiml", group = "school")
 > summary(targetFit, fit = TRUE, standardized = TRUE)
-lavaan (0.5-15) converged normally after  62 iterations
+lavaan (0.5-16) converged normally after  62 iterations
 
   Number of observations per group         
   Pasteur                                          156
@@ -815,7 +820,7 @@ Bootstrapped p value = 0
 > summary(temp)
 It took 0 seconds to transform the data.
  
-It took 5.53 seconds 
+It took 6.23 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -834,7 +839,7 @@ Bootstrapped p value = 0
 > hist(temp)
 It took 0 seconds to transform the data.
  
-It took 5.53 seconds 
+It took 6.23 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -855,7 +860,7 @@ Bootstrapped p value = 0
 > hist(temp, conf = .90, legend = "none", xlab = "something else", breaks = 25)
 It took 0 seconds to transform the data.
  
-It took 5.53 seconds 
+It took 6.23 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -1072,7 +1077,7 @@ fit.means      204.605 63  .000  .840  .817  7543.149  7709.969  .122  .109
 > 
 > unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
 > summary(unrotated, std=TRUE)
-lavaan (0.5-15) converged normally after 202 iterations
+lavaan (0.5-16) converged normally after 202 iterations
 
   Number of observations                           301
 
@@ -1859,7 +1864,7 @@ speed   0.276  0.222  0.461
 > ### Use starting values from the model with two time points
 > model3time <- imposeStart(model2time, lavaan(weak3time, data = exLong))
 > summary(model3time)
-lavaan (0.5-15) converged normally after  93 iterations
+lavaan (0.5-16) converged normally after  93 iterations
 
   Number of observations                           200
 
@@ -3294,7 +3299,7 @@ Warning in plotRMSEAdist(rmsea = c(0.05, 0.08), n = 200, df = 20, ptile = 0.95, 
 > 
 > fitMC2way <- sem(model1, data=dat2wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC2way)
-lavaan (0.5-15) converged normally after  49 iterations
+lavaan (0.5-16) converged normally after  49 iterations
 
   Number of observations                         10000
 
@@ -3435,7 +3440,7 @@ $SimpleSlope
 > 
 > fitRC2way <- sem(model1, data=dat2wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC2way)
-lavaan (0.5-15) converged normally after  51 iterations
+lavaan (0.5-16) converged normally after  51 iterations
 
   Number of observations                         10000
 
@@ -3598,7 +3603,7 @@ $SimpleSlope
 > 
 > fitMC3way <- sem(model3, data=dat3wayMC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitMC3way)
-lavaan (0.5-15) converged normally after  85 iterations
+lavaan (0.5-16) converged normally after  85 iterations
 
   Number of observations                          1000
 
@@ -3852,7 +3857,7 @@ $SimpleSlope
 > 
 > fitRC3way <- sem(model3, data=dat3wayRC, meanstructure=TRUE, std.lv=FALSE)
 > summary(fitRC3way)
-lavaan (0.5-15) converged normally after  90 iterations
+lavaan (0.5-16) converged normally after  90 iterations
 
   Number of observations                          1000
 
@@ -4316,7 +4321,7 @@ Loading required package: RcppArmadillo
 ## Refer to http://gking.harvard.edu/amelia/ for more information
 ## 
 > summary(out)
-lavaan (0.5-15) converged normally after   3 iterations
+lavaan (0.5-16) converged normally after   3 iterations
 
   Number of observations                           301
 
@@ -4367,26 +4372,28 @@ Variances:
     speed             0.397    0.107
 
 > inspect(out, "fit")
-             fmin             chisq                df            pvalue 
-            2.005            54.107            24.000             0.000 
-   baseline.chisq       baseline.df   baseline.pvalue               cfi 
-          639.485            36.000             0.000             0.950 
-              tli              nnfi               rfi               nfi 
-            0.925             0.925             0.873             0.915 
-             pnfi               ifi               rni              logl 
-            0.610             0.951             0.950         -4295.177 
-unrestricted.logl              npar               aic               bic 
-        -3691.630            21.000          8632.355          8710.204 
-           ntotal              bic2             rmsea    rmsea.ci.lower 
-          301.000          8643.604             0.065             0.042 
-   rmsea.ci.upper      rmsea.pvalue               rmr        rmr_nomean 
-            0.088             0.137             0.081             0.081 
-             srmr       srmr_nomean             cn_05             cn_01 
-            0.063             0.063           203.580           240.101 
-              gfi              agfi              pgfi               mfi 
-            0.944             0.894             0.503             0.951 
-             ecvi 
-            0.319 
+               fmin               chisq                  df              pvalue 
+              2.005              54.107              24.000               0.000 
+     baseline.chisq         baseline.df     baseline.pvalue                 cfi 
+            639.485              36.000               0.000               0.950 
+                tli                nnfi                 rfi                 nfi 
+              0.925               0.925               0.873               0.915 
+               pnfi                 ifi                 rni                logl 
+              0.610               0.951               0.950           -4295.177 
+  unrestricted.logl                npar                 aic                 bic 
+          -3691.630              21.000            8632.355            8710.204 
+             ntotal                bic2               rmsea      rmsea.ci.lower 
+            301.000            8643.604               0.065               0.042 
+     rmsea.ci.upper        rmsea.pvalue                 rmr          rmr_nomean 
+              0.088               0.137               0.081               0.081 
+               srmr        srmr_bentler srmr_bentler_nomean         srmr_bollen 
+              0.063               0.063               0.063               0.063 
+ srmr_bollen_nomean          srmr_mplus   srmr_mplus_nomean               cn_05 
+              0.063               0.063               0.063             203.580 
+              cn_01                 gfi                agfi                pgfi 
+            240.101               0.944               0.894               0.503 
+                mfi                ecvi 
+              0.951               0.319 
 > inspect(out, "impute")
 $convergenceRate
 target model   null model 
@@ -4817,7 +4824,7 @@ skew (g1)        se         z         p
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  40.28 0.31 40.69 NA NA 
+Time elapsed:  42.23 0.17 43.48 NA NA 
 > grDevices::dev.off()
 null device 
           1 

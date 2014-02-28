@@ -146,18 +146,20 @@ craftAuxParTable <- function(model, aux, ...) {
 
 attachConstraint <- function(pt, con) {
 	len <- length(con$id)
-	pt$id <- c(pt$id, (max(pt$id)+1):(max(pt$id)+len))
-	pt$lhs <- c(pt$lhs, con$lhs)
-	pt$op <- c(pt$op, con$op)
-	pt$rhs <- c(pt$rhs, con$rhs)
-	pt$user <- c(pt$user, con$user)
-	pt$group <- c(pt$group, con$group)
-	pt$free <- c(pt$free, con$free)
-	pt$ustart <- c(pt$ustart, con$ustart)
-	pt$exo <- c(pt$exo, con$exo)
-	pt$label <- c(pt$label, con$label)
-	pt$eq.id <- c(pt$eq.id, con$eq.id)
-	pt$unco <- c(pt$unco, con$unco)
+	if(len > 0) {
+		pt$id <- c(pt$id, (max(pt$id)+1):(max(pt$id)+len))
+		pt$lhs <- c(pt$lhs, con$lhs)
+		pt$op <- c(pt$op, con$op)
+		pt$rhs <- c(pt$rhs, con$rhs)
+		pt$user <- c(pt$user, con$user)
+		pt$group <- c(pt$group, con$group)
+		pt$free <- c(pt$free, con$free)
+		pt$ustart <- c(pt$ustart, con$ustart)
+		pt$exo <- c(pt$exo, con$exo)
+		pt$label <- c(pt$label, con$label)
+		pt$eq.id <- c(pt$eq.id, con$eq.id)
+		pt$unco <- c(pt$unco, con$unco)
+	}
 	pt
 }
 
