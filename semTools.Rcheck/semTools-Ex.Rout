@@ -820,7 +820,7 @@ Bootstrapped p value = 0
 > summary(temp)
 It took 0 seconds to transform the data.
  
-It took 6.23 seconds 
+It took 5.75 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -839,7 +839,7 @@ Bootstrapped p value = 0
 > hist(temp)
 It took 0 seconds to transform the data.
  
-It took 6.23 seconds 
+It took 5.75 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -860,7 +860,7 @@ Bootstrapped p value = 0
 > hist(temp, conf = .90, legend = "none", xlab = "something else", breaks = 25)
 It took 0 seconds to transform the data.
  
-It took 6.23 seconds 
+It took 5.75 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -4824,7 +4824,7 @@ skew (g1)        se         z         p
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  42.23 0.17 43.48 NA NA 
+Time elapsed:  41.24 0.36 41.93 NA NA 
 > grDevices::dev.off()
 null device 
           1 
