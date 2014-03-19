@@ -7,12 +7,13 @@ Monte Carlo Confidence Intervals to Test Complex Indirect Effects
 This function takes an expression for an indirect effect, the parameters and standard errors associated with the expression and returns a confidence interval based on a Monte Carlo test of mediation (MacKinnon, Lockwood, & Williams, 2004).
 }
 \usage{
-monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE, outputValues=FALSE)
+monteCarloMed(expression, ..., ACM=NULL, object=NULL, rep=20000, CI=95, plot=FALSE, outputValues=FALSE)
 }
 \arguments{
   \item{expression}{A character scalar representing the computation of an indirect effect. Different parameters in the expression should have different alphanumeric values. Expressions can use either addition (+) or multiplication (*) operators.}
   \item{\dots}{Parameter estimates for all parameters named in \code{expression}. The order of parameters should follow from \code{expression} (the first parameter named in \code{expression} should be the first parameter listed in \dots). Alternatively \dots can be a vector of parameter estimates.}
   \item{ACM}{A matrix representing the asymptotic covariance matrix of the parameters described in \code{expression}. This matrix should be a symetric matrix with dimensions equal to the number of parameters names in \code{expression}. Information on finding the ACOV is popular SEM software is described below.)}
+  \item{object}{A lavaan model object fitted after running the running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions. The model must have parameters labelled with the same labels used in \code{expression}. When using this option do not specify values for \dots or \code{ACM}}
   \item{rep}{The number of replications to compute. Many thousand are reccomended.}	
   \item{CI}{Width of the confidence interval computed.}
   \item{plot}{Should the function output a plot of simulated values of the indirect effect?}
@@ -57,13 +58,13 @@ AC <- matrix(c(.01,.00002,
 #Compute CI, include a plot
 monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FALSE, plot=TRUE, ACM=AC)
 
-#Use a matrix of parameter estimates as input
+#Use a vector of parameter estimates as input
 aparam<-c(1,2)
 monteCarloMed(med, coef1=aparam, outputValues=FALSE, plot=TRUE, ACM=AC)
 
 
 
-#complex mediation with two paths for the indirect effect
+#Complex mediation with two paths for the indirect effect
 #Write expression of indirect effect
 med <- 'a1*b1 + a1*b2'
 #Paramter values and standard errors from analyses

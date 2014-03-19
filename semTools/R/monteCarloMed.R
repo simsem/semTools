@@ -3,9 +3,10 @@
 ## Function that takes an expression for an indirect effect, related parameter estimates and SEs and outputs a Monte Carlo SE
 ##Output: matrix of LL and UL, optional plot of indirect effect, or values of indirect effect.
 
-monteCarloMed<-function(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE, outputValues=FALSE){
-  input<- c(...)
-
+monteCarloMed<-function(expression, ..., ACM=NULL, object = NULL, rep=20000, CI=95, plot=FALSE, outputValues=FALSE){
+     	 
+	 input<- c(...)
+	 
  #Get names and the number of unique variables in the expression
   uniquepar<-function(var){
     var<-gsub(" ","",var) 
@@ -20,6 +21,12 @@ monteCarloMed<-function(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE,
     return(var)}
 	
   paramnames<-uniquepar(expression)
+
+  #If input is a lavaan object pull out coefs and ACM
+  if(class(object)=="lavaan"){
+  input <- coef(object)[paramnames]
+  ACM <- vcov(object)[paramnames,paramnames]  
+  }
 
   vecs<-list()
     require(MASS)
