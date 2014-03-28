@@ -420,6 +420,7 @@ satPartable <- function(fit.alt){
 	par.alt<-partable(fit.alt) #get the parameter table form the original model
 	ngroups <- fit.alt@Data@ngroups # get the number of groups 
 	# gets the parameter table from the null model
+	
 	par.null <- partable(lavaan:::independence.model.fit(fit.alt))
 	lhs.diag <- par.null$lhs
 	op.diag <- par.null$op
@@ -526,20 +527,23 @@ forceTest <- function(object) {
     attr(x, "iterations") <- 0L;
     attr(x, "converged") <- TRUE # forced!
     attr(x, "control") <- object@Fit@control
-    attr(x, "fx") <- lavaan:::computeObjective(object@Model,
-                                   samplestats=object@SampleStats,
+	
+    attr(x, "fx") <- lavaan:::lav_model_objective(object@Model,
+                                   lavsamplestats=object@SampleStats,
                                    estimator=object@Options$estimator)
+								   
     # get test statistic
-    TEST <- lavaan:::computeTestStatistic(object@Model,
-                                          partable=object@ParTable,
+	
+    TEST <- lavaan:::lav_model_test(object@Model,
+                                          lavpartable=object@ParTable,
                                           x=x,
-                                          options=object@Options,
-                                          samplestats=object@SampleStats,
-                                          data=object@Data)
-
-    lavaanFit <- lavaan:::Fit(partable = object@ParTable,
+                                          lavoptions=object@Options,
+                                          lavsamplestats=object@SampleStats,
+                                          lavdata=object@Data)
+	
+    lavaanFit <- lavaan:::lav_model_fit(lavpartable = object@ParTable,
                      start    = object@Fit@start,
-                     model    = object@Model,
+                     lavmodel    = object@Model,
                      x        = x,
                      VCOV     = NULL,
                      TEST     = TEST)

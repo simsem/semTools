@@ -50,7 +50,8 @@ Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking examples ... OK
 Examples with CPU or elapsed time > 5s
            user system elapsed
-bsBootMiss 6.64      0    6.66
+bsBootMiss 8.52      0    8.54
+auxiliary  5.20      0    5.24
 * checking PDF version of manual ... WARNING
 LaTeX errors when creating PDF version.
 This typically indicates Rd problems.

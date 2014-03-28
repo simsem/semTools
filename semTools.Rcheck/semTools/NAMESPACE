@@ -1,5 +1,6 @@
 importFrom("methods", show)
 importFrom("lavaan", summary, inspect)
+
 importFrom("graphics", hist)
 exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss)
 exportMethods(hist)

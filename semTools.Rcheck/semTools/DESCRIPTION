@@ -2,32 +2,48 @@ Package: semTools
 Type: Package
 Title: Useful tools for structural equation modeling.
 Version: 0.4-3
-Date: 2014-3-2
-Authors@R: c(person("Sunthud", "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@ku.edu"), 
-		person("Patrick", "Miller", role = "aut", email="patr1ckm@ku.edu"), 
-		person("Alexander", "Schoemann", role = "aut", email="schoemanna@ecu.edu"),
-		person("Yves", "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be"),
-		person("Corbin", "Quick", role = "ctb", email="corbinq@ku.edu"),
-		person("Mauricio", "Villarreal", role = "ctb", email="mgv@ku.edu"), 
-		person("James", "Selig", role = "ctb", email="selig@unm.edu"),
-		person("Aaron", "Boulton", role = "ctb", email="aboulton@ku.edu"),
-		person("Kristopher", "Preacher", role = "ctb", email="kris.preacher@vanderbilt.edu"), 
-		person("Donna", "Coffman", role = "ctb", email="dlc30@psu.edu"), 
-		person("Mijke", "Rhemtulla", role = "ctb", email="mijke@ku.edu"), 
-		person("Alexander", "Robitzsch", role = "ctb", email="a.robitzsch@bifie.at"), 
-		person("Craig", "Enders", role = "ctb", email="Craig.Enders@asu.edu"),
-		person("Ruber", "Arslan", role = "ctb", email="rubenarslan@gmail.com"),
-		person("Bell", "Clinton", role = "ctb", email="clintonbell@ku.edu"), 
-		person("Pavel", "Panko", role = "ctb", email="pavel@ku.edu"),
-		person("Ed", "Merkle", role = "ctb", email="merklee@missouri.edu")
+Date: 2014-3-28
+Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@ku.edu"), 
+		person(given = "Patrick", family = "Miller", role = "aut", email="patr1ckm@ku.edu"), 
+		person(given = "Alexander", family = "Schoemann", role = "aut", email="schoemanna@ecu.edu"),
+		person(given = "Yves", family = "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be"),
+		person(given = "Corbin", family = "Quick", role = "ctb", email="corbinq@ku.edu"),
+		person(given = "Mauricio", family = "Garnier-Villarreal", role = "ctb", email="mgv@ku.edu"), 
+		person(given = "James", family = "Selig", role = "ctb", email="selig@unm.edu"),
+		person(given = "Aaron", family = "Boulton", role = "ctb", email="aboulton@ku.edu"),
+		person(given = "Kristopher", family = "Preacher", role = "ctb", email="kris.preacher@vanderbilt.edu"), 
+		person(given = "Donna", family = "Coffman", role = "ctb", email="dlc30@psu.edu"), 
+		person(given = "Mijke", family = "Rhemtulla", role = "ctb", email="mijke@ku.edu"), 
+		person(given = "Alexander", family = "Robitzsch", role = "ctb", email="a.robitzsch@bifie.at"), 
+		person(given = "Craig", family = "Enders", role = "ctb", email="Craig.Enders@asu.edu"),
+		person(given = "Ruber", family = "Arslan", role = "ctb", email="rubenarslan@gmail.com"),
+		person(given = "Bell", family = "Clinton", role = "ctb", email="clintonbell@ku.edu"), 
+		person(given = "Pavel", family = "Panko", role = "ctb", email="pavel@ku.edu"),
+		person(given = "Ed", family = "Merkle", role = "ctb", email="merklee@missouri.edu")
 		)
-Author: Sunthud Pornprasertmanit [aut, cre], Patrick Miller [aut], Alex Schoemann [aut], Yves Rosseel [aut], Corbin Quick [ctb], Mauricio Garnier-Villarreal [ctb], James Selig [ctb], Aaron Boulton [ctb], Kristopher Preacher [ctb], Donna Coffman [ctb], Mijke Rhemtulla [ctb], Alexander Robitzsch [ctb], Craig Enders [ctb], Ruber Arslan [ctb], Bell Clinton [ctb], Pavel Panko [ctb], Ed Merkle [ctb]
+Author: Sunthud Pornprasertmanit [aut, cre], 
+		Patrick Miller [aut], 
+		Alex Schoemann [aut], 
+		Yves Rosseel [aut], 
+		Corbin Quick [ctb], 
+		Mauricio Garnier-Villarreal [ctb], 
+		James Selig [ctb], 
+		Aaron Boulton [ctb], 
+		Kristopher Preacher [ctb], 
+		Donna Coffman [ctb], 
+		Mijke Rhemtulla [ctb], 
+		Alexander Robitzsch [ctb], 
+		Craig Enders [ctb], 
+		Ruber Arslan [ctb], 
+		Bell Clinton [ctb], 
+		Pavel Panko [ctb], 
+		Ed Merkle [ctb]
 Maintainer: Sunthud Pornprasertmanit <psunthud@ku.edu>
 Depends: R(>= 3.0), lavaan(>= 0.5-16), methods
 Suggests: MASS, parallel, Amelia, mice, foreign, OpenMx, GPArotation
-Description: This package provide useful tools for structural equation modeling analysis. 
+Description: This package provide useful tools for structural equation modeling analysis. Note that the OpenMx package can be obtained from the following URL: http://openmx.psyc.virginia.edu/
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
 URL: https://github.com/simsem/semTools/wiki
-Built: R 3.0.2; ; 2014-03-03 00:16:46 UTC; windows
+Built: R 3.0.2; ; 2014-03-28 18:27:39 UTC; windows

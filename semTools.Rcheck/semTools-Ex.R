@@ -1114,13 +1114,13 @@ AC <- matrix(c(.01,.00002,
 #Compute CI, include a plot
 monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FALSE, plot=TRUE, ACM=AC)
 
-#Use a matrix of parameter estimates as input
+#Use a vector of parameter estimates as input
 aparam<-c(1,2)
 monteCarloMed(med, coef1=aparam, outputValues=FALSE, plot=TRUE, ACM=AC)
 
 
 
-#complex mediation with two paths for the indirect effect
+#Complex mediation with two paths for the indirect effect
 #Write expression of indirect effect
 med <- 'a1*b1 + a1*b2'
 #Paramter values and standard errors from analyses

@@ -120,6 +120,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 
 stdLoad <- function(object) {
 	out <- solve(sqrt(diag(diag(fitted.values(object)$cov)))) %*% inspect(object, "coef")$lambda
+	
 	rownames(out) <- lavaan:::vnames(object@ParTable, "ov", group = 1)
 	if(is(object, "lavaanStar")) {
 		out <- out[!(rownames(out) %in% object@auxNames),]

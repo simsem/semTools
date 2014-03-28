@@ -488,13 +488,16 @@ inspect(out3, "impute")
 
 # Second-order
 
+HSMiss <- data.frame(HSMiss, school = HolzingerSwineford1939[,"school"])
+datsimMI <- amelia(HSMiss,m=20, noms="school")
+
 modx <- '
-f1 =~ y1+y2+y3
-f2 =~ y4+y5+y6
-f3 =~ y7+y8+y9
+f1 =~ x1+x2+x3
+f2 =~ x4+x5+x6
+f3 =~ x7+x8+x9
 f =~ f1+f2+f3'
 
-out3x <- runMI(modx, data=datsimMI$imputations, group="group", fun="cfa")
+out3x <- runMI(modx, data=datsimMI$imputations, group="school", fun="cfa")
 summary(out3x)
 inspect(out3x, "fit")
 inspect(out3x, "impute")

@@ -7,7 +7,8 @@ Monte Carlo Confidence Intervals to Test Complex Indirect Effects
 This function takes an expression for an indirect effect, the parameters and standard errors associated with the expression and returns a confidence interval based on a Monte Carlo test of mediation (MacKinnon, Lockwood, & Williams, 2004).
 }
 \usage{
-monteCarloMed(expression, ..., ACM=NULL, object=NULL, rep=20000, CI=95, plot=FALSE, outputValues=FALSE)
+monteCarloMed(expression, ..., ACM=NULL, object=NULL, rep=20000, CI=95, plot=FALSE, 
+  outputValues=FALSE)
 }
 \arguments{
   \item{expression}{A character scalar representing the computation of an indirect effect. Different parameters in the expression should have different alphanumeric values. Expressions can use either addition (+) or multiplication (*) operators.}

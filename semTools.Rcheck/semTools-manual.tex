@@ -16,12 +16,28 @@
 \item[Type]\AsIs{Package}
 \item[Title]\AsIs{Useful tools for structural equation modeling.}
 \item[Version]\AsIs{0.4-3}
-\item[Date]\AsIs{2014-3-2}
-\item[Author]\AsIs{Sunthud Pornprasertmanit [aut, cre], Patrick Miller [aut], Alex Schoemann [aut], Yves Rosseel [aut], Corbin Quick [ctb], Mauricio Garnier-Villarreal [ctb], James Selig [ctb], Aaron Boulton [ctb], Kristopher Preacher [ctb], Donna Coffman [ctb], Mijke Rhemtulla [ctb], Alexander Robitzsch [ctb], Craig Enders [ctb], Ruber Arslan [ctb], Bell Clinton [ctb], Pavel Panko [ctb], Ed Merkle [ctb]}
+\item[Date]\AsIs{2014-3-28}
+\item[Author]\AsIs{Sunthud Pornprasertmanit [aut, cre],
+Patrick Miller [aut],
+Alex Schoemann [aut],
+Yves Rosseel [aut],
+Corbin Quick [ctb],
+Mauricio Garnier-Villarreal [ctb],
+James Selig [ctb],
+Aaron Boulton [ctb],
+Kristopher Preacher [ctb],
+Donna Coffman [ctb],
+Mijke Rhemtulla [ctb],
+Alexander Robitzsch [ctb],
+Craig Enders [ctb],
+Ruber Arslan [ctb],
+Bell Clinton [ctb],
+Pavel Panko [ctb],
+Ed Merkle [ctb]}
 \item[Maintainer]\AsIs{Sunthud Pornprasertmanit }\email{psunthud@ku.edu}\AsIs{}
 \item[Depends]\AsIs{R(>= 3.0), lavaan(>= 0.5-16), methods}
 \item[Suggests]\AsIs{MASS, parallel, Amelia, mice, foreign, OpenMx, GPArotation}
-\item[Description]\AsIs{This package provide useful tools for structural equation modeling analysis.}
+\item[Description]\AsIs{This package provide useful tools for structural equation modeling analysis. Note that the OpenMx package can be obtained from the following URL: http://openmx.psyc.virginia.edu/}
 \item[License]\AsIs{GPL (>= 2)}
 \item[LazyLoad]\AsIs{yes}
 \item[LazyData]\AsIs{yes}
@@ -2256,7 +2272,8 @@ This function takes an expression for an indirect effect, the parameters and sta
 %
 \begin{Usage}
 \begin{verbatim}
-monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE, outputValues=FALSE)
+monteCarloMed(expression, ..., ACM=NULL, object=NULL, rep=20000, CI=95, plot=FALSE, 
+  outputValues=FALSE)
 \end{verbatim}
 \end{Usage}
 %
@@ -2265,6 +2282,7 @@ monteCarloMed(expression, ..., ACM=NULL, rep=20000, CI=95, plot=FALSE, outputVal
 \item[\code{expression}] A character scalar representing the computation of an indirect effect. Different parameters in the expression should have different alphanumeric values. Expressions can use either addition (+) or multiplication (*) operators.
 \item[\code{...}] Parameter estimates for all parameters named in \code{expression}. The order of parameters should follow from \code{expression} (the first parameter named in \code{expression} should be the first parameter listed in \dots). Alternatively \dots can be a vector of parameter estimates.
 \item[\code{ACM}] A matrix representing the asymptotic covariance matrix of the parameters described in \code{expression}. This matrix should be a symetric matrix with dimensions equal to the number of parameters names in \code{expression}. Information on finding the ACOV is popular SEM software is described below.)
+\item[\code{object}] A lavaan model object fitted after running the running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions. The model must have parameters labelled with the same labels used in \code{expression}. When using this option do not specify values for \dots or \code{ACM}
 \item[\code{rep}] The number of replications to compute. Many thousand are reccomended.	
 \item[\code{CI}] Width of the confidence interval computed.
 \item[\code{plot}] Should the function output a plot of simulated values of the indirect effect?
@@ -2320,13 +2338,13 @@ AC <- matrix(c(.01,.00002,
 #Compute CI, include a plot
 monteCarloMed(med, coef1=aparam, coef2=bparam, outputValues=FALSE, plot=TRUE, ACM=AC)
 
-#Use a matrix of parameter estimates as input
+#Use a vector of parameter estimates as input
 aparam<-c(1,2)
 monteCarloMed(med, coef1=aparam, outputValues=FALSE, plot=TRUE, ACM=AC)
 
 
 
-#complex mediation with two paths for the indirect effect
+#Complex mediation with two paths for the indirect effect
 #Write expression of indirect effect
 med <- 'a1*b1 + a1*b2'
 #Paramter values and standard errors from analyses
