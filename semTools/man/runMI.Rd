@@ -8,7 +8,7 @@
 Multiply impute and analyze data using lavaan
 }
 \description{
-This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules. Note that parmeter estimates and standard errors are pooled by the Rubin's (1987) rule. The chi-square statistics and the related fit indices are pooled by the method described in \code{"chi"} argument. SRMR is calculated based on the average model-implied means and covariance matrices across imputations.
+This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules. Note that parameter estimates and standard errors are pooled by the Rubin's (1987) rule. The chi-square statistics and the related fit indices are pooled by the method described in \code{"chi"} argument. SRMR is calculated based on the average model-implied means and covariance matrices across imputations.
 }
 \usage{
 runMI(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 

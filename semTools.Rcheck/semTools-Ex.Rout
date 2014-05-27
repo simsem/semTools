@@ -39,7 +39,7 @@ This is lavaan 0.5-16
 lavaan is BETA software! Please report any bugs.
  
 ###############################################################################
-This is semTools 0.4-3
+This is semTools 0.4-4
 All users of R (or SEM) are invited to submit functions or ideas for functions.
 ###############################################################################
 > 
@@ -820,7 +820,7 @@ Bootstrapped p value = 0
 > summary(temp)
 It took 0 seconds to transform the data.
  
-It took 7.25 seconds 
+It took 5.47 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -839,7 +839,7 @@ Bootstrapped p value = 0
 > hist(temp)
 It took 0 seconds to transform the data.
  
-It took 7.25 seconds 
+It took 5.47 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -860,7 +860,7 @@ Bootstrapped p value = 0
 > hist(temp, conf = .90, legend = "none", xlab = "something else", breaks = 25)
 It took 0 seconds to transform the data.
  
-It took 7.25 seconds 
+It took 5.47 seconds 
 to fit the model to 10 bootstrapped samples.
  
 Mean of Theoretical Distribution = DF = 48 
@@ -4824,7 +4824,7 @@ skew (g1)        se         z         p
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  55.54 0.4 56.31 NA NA 
+Time elapsed:  39.26 0.42 45.66 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -121,7 +121,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 stdLoad <- function(object) {
 	out <- solve(sqrt(diag(diag(fitted.values(object)$cov)))) %*% inspect(object, "coef")$lambda
 	
-	rownames(out) <- lavaan:::vnames(object@ParTable, "ov", group = 1)
+	rownames(out) <- lavNames(object@ParTable, "ov", group = 1)
 	if(is(object, "lavaanStar")) {
 		out <- out[!(rownames(out) %in% object@auxNames),]
 	}
@@ -189,8 +189,8 @@ funRotate <- function(object, fun, ...) {
 }
 
 rotateStdLoadings <- function(est, object, rotate=NULL, aux=NULL) {
-	ov.names <- lavaan:::vnames(object@ParTable, "ov", group = 1)
-    lv.names <- lavaan:::vnames(object@ParTable, "lv", group = 1)
+	ov.names <- lavNames(object@ParTable, "ov", group = 1)
+    lv.names <- lavNames(object@ParTable, "lv", group = 1)
 	OV <- sqrt(lavaan:::computeVY(object@Model, samplestats = object@SampleStats)[[1]])[!(ov.names %in% aux)]
 	partable <- object@ParTable
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
@@ -233,7 +233,7 @@ seStdLoadings <- function(rotate, object) {
 	LIST$se <- rep(NA, length(LIST$lhs))
 	LIST$se[unco.idx] <- sqrt(diag(COV))
 	tmp.se <- ifelse( LIST$se == 0.0, NA, LIST$se)
-    lv.names <- lavaan:::vnames(object@ParTable, "lv", group = 1)
+    lv.names <- lavNames(object@ParTable, "lv", group = 1)
 	partable <- object@ParTable
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	matrix(LIST$se[idx], ncol=length(lv.names))

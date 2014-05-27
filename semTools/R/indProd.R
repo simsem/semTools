@@ -34,25 +34,26 @@ indProd <- function(data, var1, var2, var3=NULL, match = TRUE, meanC = TRUE, res
 			# Two-way interaction
 			datProd <- dat1 * dat2
 			if (residualC) {
+				notmissing <- which(!apply(datProd, 1, function(x) any(is.na(x))))
 				colnames(datProd) <- paste("interactionProduct", 1:ncol(datProd), sep = "")
-				
 				# Write the expression for linear model and residualize the products
 				temp <- data.frame(datProd, dat1, dat2)
 				express <- paste("cbind(", paste(colnames(datProd), collapse = ", "), ") ~ ", paste(c(colnames(dat1), colnames(dat2)), collapse = " + "), 
 					sep = "")
-				datProd <- lm(express, data = temp)$residuals
+				datProd[notmissing,] <- lm(express, data = temp)$residuals
 			}
 		} else {
 			# Three-way interaction
 			datProd2way <- cbind(dat1 * dat2, dat1 * dat3, dat2 * dat3)
 			datProd3way <- dat1 * dat2 * dat3
 			if (residualC) {
+				notmissing2way <- which(!apply(datProd2way, 1, function(x) any(is.na(x))))
 				colnames(datProd2way) <- paste("interaction2Product", 1:ncol(datProd2way), sep = "")
 				
 				# Write the expression for linear model and residualize the two-way products
 				temp2 <- data.frame(datProd2way, dat1, dat2, dat3)
 				express2 <- paste("cbind(", paste(colnames(datProd2way), collapse = ", "), ") ~ ", paste(c(colnames(dat1), colnames(dat2), colnames(dat3)), collapse = " + "), sep = "")
-				datProd2way <- lm(express2, data = temp2)$residuals
+				datProd2way[notmissing2way,] <- lm(express2, data = temp2)$residuals
 				
 				# Making all possible products to residualize the 3-way interaction
 				datProd2wayFull <- matrix(0, nrow(data), 1)
@@ -62,11 +63,12 @@ indProd <- function(data, var1, var2, var3=NULL, match = TRUE, meanC = TRUE, res
 				datProd2wayFull <- datProd2wayFull[, -1]
 				colnames(datProd2wayFull) <- paste("interaction2Product", 1:ncol(datProd2wayFull), sep = "")
 				
+				notmissing3way <- which(!apply(datProd3way, 1, function(x) any(is.na(x))))
 				colnames(datProd3way) <- paste("interaction3Product", 1:ncol(datProd3way), sep = "")
 				# Write the expression for linear model and residualize the three-way products
 				temp3 <- data.frame(datProd3way, dat1, dat2, dat3, datProd2wayFull)
 				express3 <- paste("cbind(", paste(colnames(datProd3way), collapse = ", "), ") ~ ", paste(c(colnames(dat1), colnames(dat2), colnames(dat3), colnames(datProd2wayFull)), collapse = " + "), sep = "")
-				datProd3way <- lm(express3, data = temp3)$residuals
+				datProd3way[notmissing3way,] <- lm(express3, data = temp3)$residuals
 			}			
 			datProd <- cbind(datProd2way, datProd3way)
 		}
@@ -92,12 +94,13 @@ indProd <- function(data, var1, var2, var3=NULL, match = TRUE, meanC = TRUE, res
 			for (i in 1:length(var1)) datProd <- data.frame(datProd, matrix(rep(dat1[, i], length(var2)), ncol = length(var2)) * dat2)
 			datProd <- datProd[, -1]
 			if (residualC) {
+				notmissing <- which(!apply(datProd, 1, function(x) any(is.na(x))))
 				colnames(datProd) <- paste("interactionProduct", 1:ncol(datProd), sep = "")
 				# Write the expression for linear model and residualize the two-way products
 				temp <- data.frame(datProd, dat1, dat2)
 				express <- paste("cbind(", paste(colnames(datProd), collapse = ", "), ") ~ ", paste(c(colnames(dat1), colnames(dat2)), collapse = " + "), 
 					sep = "")
-				datProd <- lm(express, data = temp)$residuals
+				datProd[notmissing,] <- lm(express, data = temp)$residuals
 			}
 		} else {
 			# Create all possible combinations of the products of indicators
@@ -114,16 +117,18 @@ indProd <- function(data, var1, var2, var3=NULL, match = TRUE, meanC = TRUE, res
 			datProd2way <- datProd2way[, -1]
 			datProd3way <- datProd3way[, -1]
 			if (residualC) {
+				notmissing2way <- which(!apply(datProd2way, 1, function(x) any(is.na(x))))
 				colnames(datProd2way) <- paste("interaction2Product", 1:ncol(datProd2way), sep = "")
 				# Write the expression for linear model and residualize the two-way products
 				temp2 <- data.frame(datProd2way, dat1, dat2, dat3)
 				express2 <- paste("cbind(", paste(colnames(datProd2way), collapse = ", "), ") ~ ", paste(c(colnames(dat1), colnames(dat2), colnames(dat3)), collapse = " + "), sep = "")
-				datProd2way <- lm(express2, data = temp2)$residuals
+				datProd2way[notmissing2way,] <- lm(express2, data = temp2)$residuals
+				notmissing3way <- which(!apply(datProd3way, 1, function(x) any(is.na(x))))
 				colnames(datProd3way) <- paste("interaction3Product", 1:ncol(datProd3way), sep = "")
 				# Write the expression for linear model and residualize the three-way products
 				temp3 <- data.frame(datProd3way, dat1, dat2, dat3, datProd2way)
 				express3 <- paste("cbind(", paste(colnames(datProd3way), collapse = ", "), ") ~ ", paste(c(colnames(dat1), colnames(dat2), colnames(dat3), colnames(datProd2way)), collapse = " + "), sep = "")
-				datProd3way <- lm(express3, data = temp3)$residuals
+				datProd3way[notmissing3way,] <- lm(express3, data = temp3)$residuals
 			}
 			datProd <- cbind(datProd2way, datProd3way)
 		}

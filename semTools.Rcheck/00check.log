@@ -4,7 +4,7 @@
 * using session charset: ISO8859-1
 * checking for file 'semTools/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'semTools' version '0.4-3'
+* this is package 'semTools' version '0.4-4'
 * checking CRAN incoming feasibility ... OK
 Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking package namespace information ... OK
@@ -50,13 +50,12 @@ Maintainer: 'Sunthud Pornprasertmanit <psunthud@ku.edu>'
 * checking examples ... OK
 Examples with CPU or elapsed time > 5s
            user system elapsed
-bsBootMiss 8.52      0    8.54
-auxiliary  5.20      0    5.24
+bsBootMiss  6.3   0.02    6.35
 * checking PDF version of manual ... WARNING
 LaTeX errors when creating PDF version.
 This typically indicates Rd problems.
 LaTeX errors found:
 !pdfTeX error: pdflatex.EXE (file ts1-zi4r): Font ts1-zi4r at 600 not found
  ==> Fatal error occurred, no output PDF file produced!
-* checking PDF version of manual without hyperrefs or index ... OK
-WARNING: There was 1 warning.
+* checking PDF version of manual without hyperrefs or index ... ERROR
+Re-running with no redirection of stdout/stderr.
