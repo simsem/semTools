@@ -523,6 +523,9 @@ forceTest <- function(object) {
     # unfitted model - YR 26 okt 2012
 
     # create dummy x
+	
+	browser()
+	
     x <- numeric(0L)
     attr(x, "iterations") <- 0L;
     attr(x, "converged") <- TRUE # forced!

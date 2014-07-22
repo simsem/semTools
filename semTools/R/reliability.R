@@ -19,10 +19,12 @@ reliability <- function(object) {
 	for(i in 1:ngroup) {
 		if(!is.null(threshold[[i]])) flag <- TRUE
 		common <- (apply(ly[[i]], 2, sum)^2) * diag(ps[[i]])
+		truevar <- ly[[i]]%*%ps[[i]]%*%t(ly[[i]])
 		error <- rep(NA, length(common))
 		alpha <- rep(NA, length(common))
 		total <- rep(NA, length(common))
 		impliedTotal <- rep(NA, length(common))
+		avevar <- rep(NA, length(common))
 		for(j in 1:length(error)) {
 			index <- which(ly[[i]][,j] != 0)
 			error[j] <- sum(te[[i]][index, index])
@@ -30,10 +32,13 @@ reliability <- function(object) {
 			alpha[j] <- length(index)/(length(index) - 1) * (1.0 - sum(diag(sigma))/sum(sigma))
 			total[j] <- sum(sigma)
 			impliedTotal[j] <- sum(SigmaHat[[i]][index, index])
+			trueitem <- diag(truevar[index, index])
+			erritem <- diag(te[[i]][index, index])
+			avevar[j] <- mean(trueitem / (trueitem + erritem))
 		}
 		omega <- common/(common + error)
 		singleIndicator <- apply(ly[[i]], 2, function(x) sum(x != 0)) %in% 0:1
-		result[[i]] <- rbind(alpha=alpha, omega=omega, omega2=1.0 - error/impliedTotal,omega3=common/total)[,!singleIndicator]
+		result[[i]] <- rbind(alpha=alpha, omega=omega, omega2=1.0 - error/impliedTotal,omega3=common/total, avevar = avevar)[,!singleIndicator]
 	}
 	if(flag) warning("The alpha is calculated from polychoric (polyserial) correlation not from Pearson's correlation.\n")
 	if(ngroup == 1) {

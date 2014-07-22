@@ -28,13 +28,13 @@ sourceDirData <- function(path, trace = TRUE) {
 #dir <- "C:/Users/Sunthud/simsem_backup/simsem/R/"
 library(lavaan)
 
-dir <- "C:/Users/student/Dropbox/semTools/semTools/R/"
+dir <- "C:/Users/jaehoonl/Dropbox/semTools/semTools/R/"
 sourceDir(dir)
 
-dir2 <- "C:/Users/sunthud/Desktop/multcomp/R"
-sourceDir(dir2)
+# dir2 <- "C:/Users/sunthud/Desktop/multcomp/R"
+# sourceDir(dir2)
 
-dirData <- "C:/Users/student/Dropbox/semTools/semTools/data/"
+dirData <- "C:/Users/jaehoonl/Dropbox/semTools/semTools/data/"
 sourceDirData(dirData)
 ######### Distribution
 

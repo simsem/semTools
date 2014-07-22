@@ -31,16 +31,22 @@ The second coefficient omega (Bentler, 1972, 2009) can be calculated by
 
 where \eqn{\Theta} is the measurement error covariance matrix, \eqn{\hat{\Sigma}} is the model-implied covariance matrix, and \eqn{\bold{1}} is the \eqn{k}-dimensional vector of 1. The first and the second coefficients omega will have different values if there are dual loadings (or the existence of method factors). The first coefficient omega can be viewed as the reliability controlling for the other factors. The second coefficient omega can be viewed as the unconditional reliability. 
 
-The third coefficient omega (McDonald, 1999) can be calculated by
+The third coefficient omega (McDonald, 1999), which is sometimes referred to hierarchical omega, can be calculated by
 
-\deqn{ \omega_3 = 1 - \frac{\bold{1}\prime \Theta \bold{1}}{\bold{1}^\prime \Sigma \bold{1}}, }
+\deqn{ \omega =\frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2} Var\left( \psi \right)}{\bold{1}^\prime \Sigma \bold{1}}, }
 
 where \eqn{\Sigma} is the observed covariance matrix. If the model fits the data well, the third coefficient omega will be similar to the other two. Note that if there is a directional effect in the model, all coefficients omega will use the total factor variances, which is calculated by the \code{\link{impliedFactorCov}} function.
+
+The average variance extracted (AVE) can be calculated by 
+
+\deqn{ AVE = \frac{\bold{1}^\prime \textrm(diag)\left(\Lambda\Psi\Lambda^\prime\right)\bold{1}}{\bold{1}^\prime \textrm(diag)\left(\hat{\Sigma}\right) \bold{1}}, }
+
+Note that this formula is modified from Fornell & Larcker (1981) in the case that factor variances are not 1. 
 
 If measurement errors are not correlated, the last term in the denominator of the middle expression is dropped. For the categorical items, the reliability indices are calculated from the latent variable underlying the categorical items (i.e., using polychoric/polyserial correlations). Therefore, the coefficient alpha from this function may be not the same as the standard alpha calculation for categorical items. Researchers may check the \code{alpha} function in the \code{psych} package for the standard coefficient alpha calculation. 
 }
 \value{
-	Reliability values (coefficient alpha, coefficients omega) of each factor in each group
+	Reliability values (coefficient alpha, coefficients omega, average variance extracted) of each factor in each group
 }
 \references{
 Bentler, P. M. (1972). A lower-bound method for the dimension-free measurement of internal consistency. \emph{Social Science Research, 1}, 343-357.
@@ -48,6 +54,8 @@ Bentler, P. M. (1972). A lower-bound method for the dimension-free measurement o
 Bentler, P. M. (2009). Alpha, dimension-free, and model-based internal consistency reliability. \emph{Psychometrika, 74}, 137-143.
 
 Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334. 
+
+Fornell, C., & Larcker, D. F. (1981). Evaluating structural equation models with unobservable variables and measurement errors. \emph{Journal of Marketing Research, 18}, 39-50.
 
 McDonald, R. P. (1999). Test theory: A unified treatment. Mahwah, NJ: Erlbaum.
 
