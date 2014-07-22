@@ -38,7 +38,7 @@
 \examples{
 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
 summary(unrotated, std=TRUE)
-inspect(unrotated, "standardized")
+inspect(unrotated, "std")
 
 # Rotated by Quartimin
 rotated <- oblqRotate(unrotated, method="quartimin")
