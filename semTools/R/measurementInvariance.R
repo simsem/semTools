@@ -86,7 +86,7 @@ printFitLine <- function(object, horizontal=TRUE) {
     # which `tests' do we have?
     scaled <- FALSE
     TESTS <- unlist(lapply(object@Fit@test, "[", "test"))
-    if(any(c("satorra.bentler", "yuan.bentler") %in% TESTS)) {
+    if(any(c("satorra.bentler", "yuan.bentler", "scaled.shifted") %in% TESTS)) {
         scaled <- TRUE
     }
 
@@ -109,13 +109,13 @@ difftest <- function(model1, model2) {
     # which `tests' do we have for each model?
     model1.scaled <- FALSE
     TESTS <- unlist(lapply(model1@Fit@test, "[", "test"))
-    if(any(c("satorra.bentler", "yuan.bentler") %in% TESTS)) {
+    if(any(c("satorra.bentler", "yuan.bentler", "scaled.shifted") %in% TESTS)) {
         model1.scaled <- TRUE
     }
     
     model2.scaled <- FALSE
     TESTS <- unlist(lapply(model2@Fit@test, "[", "test"))
-    if(any(c("satorra.bentler", "yuan.bentler") %in% TESTS)) {
+    if(any(c("satorra.bentler", "yuan.bentler", "scaled.shifted") %in% TESTS)) {
         model2.scaled <- TRUE
     }
 

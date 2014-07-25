@@ -5,7 +5,7 @@ importFrom("graphics", hist)
 exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss)
 exportMethods(hist)
 export(
-	measurementInvariance, longInvariance, 
+	measurementInvariance, longInvariance, measurementInvarianceCat,
 	moreFitIndices, miPowerFit, nullRMSEA, 
 	skew, kurtosis, mardiaSkew, mardiaKurtosis, 
 	orthogonalize, 
