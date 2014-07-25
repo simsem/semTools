@@ -10,7 +10,7 @@ Determines power for model parameters using the Satorra & Sarris (1985) method
 SSpower(popModel, n, powerModel, fun = "cfa", nparam = 1, alpha = .05, ...)
 }
 \arguments{
-\item{powerModel}{
+\item{popModel}{
     lavaan syntax for the population model. This model should specify population  values for all paramters in the model.
 }
 \item{n}{

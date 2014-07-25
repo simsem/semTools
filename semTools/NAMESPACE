@@ -10,7 +10,7 @@ export(
 	skew, kurtosis, mardiaSkew, mardiaKurtosis, 
 	orthogonalize, 
 	runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi, fmi,
-	plotRMSEApower, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize,
+	plotRMSEApower, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, SSpower,
 	findRMSEApowernested, findRMSEAsamplesizenested, plotRMSEApowernested,
 	parcelAllocation, 
 	monteCarloMed, 

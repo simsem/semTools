@@ -14,8 +14,6 @@
 ##Function to return power for a given model parameter
 #inputs: popModel = lavaan syntax specifying data generating model (be sure to provide a value for all parameters), n =sample size (either scalar or vector), powerModel=Model to be fit, with parameter of interest fixed to 0, fun = lavaan function to use, nparam = number of parameters fixed in the power Model, ... additional arguments to pass to lavaan
 SSpower <- function(popModel, n, powerModel, fun = "cfa", nparam = 1, alpha = .05, ...) {
-require(lavaan)
-
 ##Two item list, first item is covariance matrix, second item is mean vector
 popCov <- fitted(do.call(fun, list(model=popModel)))
 
