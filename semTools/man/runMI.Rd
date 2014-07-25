@@ -24,7 +24,7 @@ lavaan.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all",
 }
 \arguments{
   \item{model}{
-lavaan syntax for the the model to be analyzed. 
+lavaan syntax for the model to be analyzed. 
 }
   \item{data}{
 Data frame with missing observations or a list of data frames where each data frame is one imputed data set (for imputed data generated outside of the function). If a list of data frames is supplied, then other options can be left at the default.
