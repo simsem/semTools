@@ -52,6 +52,13 @@ HW.model <- ' visual =~ x1 + x2 + x3
 
 measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
 
+
+model <- ' f1 =~ u1 + u2 + u3 + u4
+           f2 =~ u5 + u6 + u7 + u8'
+
+measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
+    estimator="wlsmv")
+	
 ######### moreFitIndices
 
 HS.model <- ' visual  =~ x1 + x2 + x3

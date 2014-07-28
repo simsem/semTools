@@ -519,49 +519,12 @@ mrPooledChi <-function(chimean, m, k, ariv){
 }
 
 forceTest <- function(object) {
-    # dirty hack to get a test statistic and fit measures from an
-    # unfitted model - YR 26 okt 2012
-
-    # create dummy x
-	
-	browser()
-	
-    x <- numeric(0L)
-    attr(x, "iterations") <- 0L;
-    attr(x, "converged") <- TRUE # forced!
-    attr(x, "control") <- object@Fit@control
-	
-    attr(x, "fx") <- lavaan:::lav_model_objective(object@Model,
-                                   lavsamplestats=object@SampleStats,
-                                   estimator=object@Options$estimator)
-								   
-    # get test statistic
-	
-    TEST <- lavaan:::lav_model_test(object@Model,
-                                          lavpartable=object@ParTable,
-                                          x=x,
-                                          lavoptions=object@Options,
-                                          lavsamplestats=object@SampleStats,
-                                          lavdata=object@Data)
-	
-    lavaanFit <- lavaan:::lav_model_fit(lavpartable = object@ParTable,
-                     start    = object@Fit@start,
-                     lavmodel    = object@Model,
-                     x        = x,
-                     VCOV     = NULL,
-                     TEST     = TEST)
-
-    lav <- new("lavaan",
-               call         = object@call,
-               timing       = object@timing,
-               Options      = object@Options,
-               ParTable     = object@ParTable,
-               Data         = object@Data,
-               SampleStats  = object@SampleStats,
-               Model        = object@Model,
-               Fit          = lavaanFit
-              )
-    lav
+	previousCall <- object@call
+	args <- as.list(previousCall[-1])
+	args$model <- partable(object)
+	args$control <- list(optim.method="none", optim.force.converged=TRUE)
+	lav <- do.call(as.character(previousCall[[1]])[3], args)
+	lav
 }
 
 imposeGLIST <- function(object, coef, partable) {
