@@ -30,5 +30,6 @@ export(
 	wald, imposeStart,
 	compareFit,
 	efaUnrotate, orthRotate, oblqRotate, funRotate,
-	kd, bsBootMiss, net
+	kd, bsBootMiss, net, 
+	singleParamTest
 )

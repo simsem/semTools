@@ -523,7 +523,8 @@ forceTest <- function(object) {
 	args <- as.list(previousCall[-1])
 	args$model <- partable(object)
 	args$control <- list(optim.method="none", optim.force.converged=TRUE)
-	lav <- do.call(as.character(previousCall[[1]])[3], args)
+	funcall <- as.character(previousCall[[1]])
+	lav <- do.call(funcall[length(funcall)], args)
 	lav
 }
 

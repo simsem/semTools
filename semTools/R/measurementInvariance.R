@@ -8,31 +8,37 @@ measurementInvariance <- measurementinvariance <- function(...,
 
     res <- list()
     # base-line model: configural invariance
-    res$fit.configural <- cfa(..., group.equal="")
-
+	
+	configural <- dotdotdot
+	configural$group.equal <- ""
+    res$fit.configural <- do.call("cfa", configural)
+	
     # fix loadings across groups
-    res$fit.loadings <- cfa(..., group.equal=c("loadings"))
+	loadings <- dotdotdot
+	loadings$group.equal <- c("loadings")
+    res$fit.loadings <- do.call("cfa", loadings)
 
     # fix loadings + intercepts across groups
-    res$fit.intercepts <- cfa(..., group.equal=c("loadings",
-                                                 "intercepts"))
+	intercepts <- dotdotdot
+	intercepts$group.equal <- c("loadings", "intercepts")
+    res$fit.intercepts <- do.call("cfa", intercepts)
 
     if(strict) {
         # fix loadings + intercepts + residuals
-        res$fit.residuals <- cfa(..., group.equal=c("loadings",
-                                                    "intercepts",
-                                                    "residuals"))
+		residuals <- dotdotdot
+		residuals$group.equal <- c("loadings", "intercepts", "residuals")
+		res$fit.residuals <- do.call("cfa", residuals)
 
         # fix loadings + residuals + intercepts + means
-        res$fit.means <- cfa(..., group.equal=c("loadings",
-                                                "intercepts",
-                                                "residuals",
-                                                "means"))
+		means <- dotdotdot
+		means$group.equal <- c("loadings", "intercepts", "residuals", "means")
+		res$fit.means <- do.call("cfa", means)
+	
     } else {
         # fix loadings + intercepts + means
-        res$fit.means <- cfa(..., group.equal=c("loadings",
-                                                "intercepts",
-                                                 "means"))
+		means <- dotdotdot
+		means$group.equal <- c("loadings", "intercepts", "means")
+		res$fit.means <- do.call("cfa", means)
     }
 
     if(!quiet) {

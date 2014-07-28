@@ -776,3 +776,36 @@ HS.model <- ' visual  =~ x1 + a*x2 + b*x3
 
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
 
+################################# Single Parameter Test
+
+library(lavaan)
+HW.model <- ' visual =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed =~ x7 + x8 + x9 '
+
+models <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
+singleParamTest(models[[1]], models[[2]])
+singleParamTest(models[[3]], models[[4]])
+
+script1 <- ' f1 =~ u1 + u2 + u3 + u4
+           f2 =~ u5 + u6 + u7 + u8'
+script2 <- ' f1 =~ 1*u1 + 1*u2 + 1*u3 + 1*u4
+           f2 =~ 1*u5 + 1*u6 + 1*u7 + 1*u8'
+
+m1 <- cfa(script1, data = datCat, parameterization="theta", estimator="wlsmv")	   
+m2 <- cfa(script2, data = datCat, parameterization="theta", estimator="wlsmv")	   
+singleParamTest(m1, m2)
+
+HS.model1 <- ' visual =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6'
+HS.model2 <- ' visual =~ a*x1 + a*x2 + a*x3
+              textual =~ b*x4 + b*x5 + b*x6'
+
+m1 <- cfa(HS.model1, data = HolzingerSwineford1939, std.lv=TRUE, estimator="MLR")	   
+m2 <- cfa(HS.model2, data = HolzingerSwineford1939, std.lv=TRUE, estimator="MLR")	   
+singleParamTest(m1, m2)
+			  
+
+measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
+    estimator="wlsmv")
+	

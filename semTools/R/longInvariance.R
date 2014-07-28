@@ -269,7 +269,11 @@ constrainParTable <- function(parTable, lhs, op, rhs, group) {
 # matchElement: Find the number of row that have the specification in vec (lhs, op, rhs, group)
 
 matchElement <- function(parTable, vec) {
-	which((parTable$lhs == vec[1]) & (parTable$op == vec[2]) & (parTable$rhs == vec[3]) & (parTable$group == vec[4]))
+	if(is.null(parTable$group)) {
+		return(which((parTable$lhs == vec[1]) & (parTable$op == vec[2]) & (parTable$rhs == vec[3])))
+	} else {
+		return(which((parTable$lhs == vec[1]) & (parTable$op == vec[2]) & (parTable$rhs == vec[3]) & (parTable$group == vec[4])))
+	}
 }
 
 # rearrangeFreeElement: Rearrange the number listed in 'free' or 'unco' in parameter tables 
