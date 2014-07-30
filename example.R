@@ -50,7 +50,7 @@ HW.model <- ' visual =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed =~ x7 + x8 + x9 '
 
-measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
+measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", strict = TRUE)
 
 
 model <- ' f1 =~ u1 + u2 + u3 + u4

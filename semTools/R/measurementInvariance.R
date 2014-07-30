@@ -11,76 +11,76 @@ measurementInvariance <- measurementinvariance <- function(...,
 	
 	configural <- dotdotdot
 	configural$group.equal <- ""
-    res$fit.configural <- do.call("cfa", configural)
+    res$configural <- do.call("cfa", configural)
 	
     # fix loadings across groups
 	loadings <- dotdotdot
 	loadings$group.equal <- c("loadings")
-    res$fit.loadings <- do.call("cfa", loadings)
+    res$metric <- do.call("cfa", loadings)
 
     # fix loadings + intercepts across groups
 	intercepts <- dotdotdot
 	intercepts$group.equal <- c("loadings", "intercepts")
-    res$fit.intercepts <- do.call("cfa", intercepts)
+    res$scalar <- do.call("cfa", intercepts)
 
     if(strict) {
         # fix loadings + intercepts + residuals
 		residuals <- dotdotdot
 		residuals$group.equal <- c("loadings", "intercepts", "residuals")
-		res$fit.residuals <- do.call("cfa", residuals)
+		res$strict <- do.call("cfa", residuals)
 
         # fix loadings + residuals + intercepts + means
 		means <- dotdotdot
 		means$group.equal <- c("loadings", "intercepts", "residuals", "means")
-		res$fit.means <- do.call("cfa", means)
+		res$means <- do.call("cfa", means)
 	
     } else {
         # fix loadings + intercepts + means
 		means <- dotdotdot
 		means$group.equal <- c("loadings", "intercepts", "means")
-		res$fit.means <- do.call("cfa", means)
+		res$means <- do.call("cfa", means)
     }
 
     if(!quiet) {
         cat("\nMeasurement invariance tests:\n")
         cat("\nModel 1: configural invariance:\n")
-        printFitLine(res$fit.configural)
+        printFitLine(res$configural)
 
         cat("\nModel 2: weak invariance (equal loadings):\n")
-        printFitLine(res$fit.loadings)
+        printFitLine(res$metric)
 
         cat("\n[Model 1 versus model 2]\n")
-        difftest(res$fit.configural, res$fit.loadings)
+        difftest(res$configural, res$metric)
 
         cat("\nModel 3: strong invariance (equal loadings + intercepts):\n")
-        printFitLine(res$fit.intercepts)
+        printFitLine(res$scalar)
         cat("\n[Model 1 versus model 3]\n")
-        difftest(res$fit.configural, res$fit.intercepts)
+        difftest(res$configural, res$scalar)
         cat("\n[Model 2 versus model 3]\n")
-        difftest(res$fit.loadings, res$fit.intercepts)
+        difftest(res$metric, res$scalar)
 
 
         if(strict) {
             cat("\nModel 4: strict invariance (equal loadings + intercepts + residuals):\n")
-            printFitLine(res$fit.residuals)
+            printFitLine(res$strict)
             cat("\n[Model 1 versus model 4]\n")
-            difftest(res$fit.configural, res$fit.residuals)
+            difftest(res$configural, res$strict)
             cat("\n[Model 3 versus model 4]\n")
-            difftest(res$fit.intercepts, res$fit.residuals)
+            difftest(res$scalar, res$strict)
   
             cat("\nModel 5: equal loadings + intercepts + residuals + means:\n")
-            printFitLine(res$fit.means,horizontal=TRUE)
+            printFitLine(res$means,horizontal=TRUE)
             cat("\n[Model 1 versus model 5]\n")
-            difftest(res$fit.configural, res$fit.means)
+            difftest(res$configural, res$means)
             cat("\n[Model 4 versus model 5]\n")
-            difftest(res$fit.residuals, res$fit.means)
+            difftest(res$strict, res$means)
         } else {
             cat("\nModel 4: equal loadings + intercepts + means:\n")
-            printFitLine(res$fit.means)
+            printFitLine(res$means)
             cat("\n[Model 1 versus model 4]\n")
-            difftest(res$fit.configural, res$fit.means)
+            difftest(res$configural, res$means)
             cat("\n[Model 3 versus model 4]\n")
-            difftest(res$fit.intercepts, res$fit.means)
+            difftest(res$scalar, res$means)
         }
     }
     invisible(res)

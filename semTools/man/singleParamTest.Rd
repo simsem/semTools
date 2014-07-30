@@ -39,9 +39,6 @@ Note that this function does not adjust for the inflated Type I error rate from 
 	
 	If \code{return.fit = TRUE}, a list with two elements are provided. The first element is the tabular result. The second element is the submodels used in the \code{free} and \code{fix} methods. 
 }
-\seealso{
-	\code{\linkS4class{lavaanStar}}
-}
 \examples{
 # Nested model comparison by hand
 HS.model1 <- ' visual =~ x1 + x2 + x3

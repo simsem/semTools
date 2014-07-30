@@ -31,11 +31,7 @@ singleParamTest <- function(model1, model2, mi = TRUE, return.fit = FALSE) {
 	for(i in seq_along(index)) {
 		runnum <- index[i]
 		temp <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], pt0$group[runnum]) 
-		previousCall <- fit0@call
-		args <- as.list(previousCall[-1])
-		args$model <- temp
-		funcall <- as.character(previousCall[[1]])
-		tryresult <- try(tempfit <- do.call(funcall[length(funcall)], args), silent = TRUE)
+		tryresult <- try(tempfit <- refit(temp, fit0), silent = TRUE)
 		if(!is(tryresult, "try-error")) {
 			compresult <- try(modelcomp <- lavTestLRT(tempfit, fit0), silent = TRUE)
 			if(!is(compresult, "try-error")) freeCon[i,] <- unlist(modelcomp[2, c(5, 7)])
@@ -58,11 +54,7 @@ singleParamTest <- function(model1, model2, mi = TRUE, return.fit = FALSE) {
 			constrainVal <- which(pt0$free == pt0$free[runnum])
 			temp <- constrainParTable(pt1, pt1$lhs[constrainVal], pt1$op[constrainVal], pt1$rhs[constrainVal], pt1$group[constrainVal])
 		}
-		previousCall <- fit1@call
-		args <- as.list(previousCall[-1])
-		args$model <- temp
-		funcall <- as.character(previousCall[[1]])
-		tryresult <- try(tempfit <- do.call(funcall[length(funcall)], args), silent = TRUE)
+		tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 		if(!is(tryresult, "try-error")) {
 			compresult <- try(modelcomp <- lavTestLRT(tempfit, fit0), silent = TRUE)
 			if(!is(compresult, "try-error"))  fixCon[i,] <- unlist(modelcomp[2,c(5, 7)])
@@ -105,4 +97,12 @@ paramNameFromPt <- function(pt) {
 		grouplab[grouplab == ".g0" | grouplab == ".g1"] <- ""
 		return(paste0(pt$lhs, pt$op, pt$rhs, grouplab))
 	}
+}
+
+refit <- function(pt, object) {
+	previousCall <- object@call
+	args <- as.list(previousCall[-1])
+	args$model <- pt
+	funcall <- as.character(previousCall[[1]])
+	tempfit <- do.call(funcall[length(funcall)], args)
 }

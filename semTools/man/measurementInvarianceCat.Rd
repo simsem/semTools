@@ -1,6 +1,5 @@
 \name{measurementInvarianceCat}
 \alias{measurementInvarianceCat}
-\alias{measurementinvarianceCat}
 \title{
 Measurement Invariance Tests for Categorical Items
 }
@@ -63,5 +62,5 @@ model <- ' f1 =~ u1 + u2 + u3 + u4
            f2 =~ u5 + u6 + u7 + u8'
 
 measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
-    estimator="wlsmv")
+    estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4", "u5", "u6", "u7", "u8"))
 }
