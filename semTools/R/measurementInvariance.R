@@ -1,4 +1,4 @@
-measurementInvariance <- measurementinvariance <- function(...,
+measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
     strict=FALSE, quiet=FALSE) {
 
     # check for a group.equal argument in ...
@@ -11,34 +11,92 @@ measurementInvariance <- measurementinvariance <- function(...,
 	
 	configural <- dotdotdot
 	configural$group.equal <- ""
-    res$configural <- do.call("cfa", configural)
+	template <- do.call("cfa", configural)
+	pttemplate <- partable(template)
+	varnames <- unique(pttemplate$rhs[pttemplate$op == "=~"])
+	facnames <- unique(pttemplate$lhs[(pttemplate$op == "=~") & (pttemplate$rhs %in% varnames)])
+	ngroups <- max(pttemplate$group)
+	if(ngroups <= 1) stop("Well, the number of groups is 1. Measurement invariance across 'groups' cannot be done.")
+
+	if(std.lv) {
+		for(i in facnames) {
+			pttemplate <- fixParTable(pttemplate, i, "~~", i, 1:ngroups, 1)
+		}
+		fixloadings <- which(pttemplate$op == "=~" & pttemplate$free == 0)
+		for(i in fixloadings) {
+			pttemplate <- freeParTable(pttemplate, pttemplate$lhs[i], "=~", pttemplate$rhs[i], pttemplate$group[i])
+		}
+		res$configural <- refit(pttemplate, template)
+	} else {
+		res$configural <- template
+	}
 	
     # fix loadings across groups
-	loadings <- dotdotdot
-	loadings$group.equal <- c("loadings")
-    res$metric <- do.call("cfa", loadings)
-
-    # fix loadings + intercepts across groups
-	intercepts <- dotdotdot
-	intercepts$group.equal <- c("loadings", "intercepts")
-    res$scalar <- do.call("cfa", intercepts)
-
-    if(strict) {
-        # fix loadings + intercepts + residuals
-		residuals <- dotdotdot
-		residuals$group.equal <- c("loadings", "intercepts", "residuals")
-		res$strict <- do.call("cfa", residuals)
-
-        # fix loadings + residuals + intercepts + means
-		means <- dotdotdot
-		means$group.equal <- c("loadings", "intercepts", "residuals", "means")
-		res$means <- do.call("cfa", means)
+	if(std.lv) {
+		findloadings <- which(pttemplate$op == "=~" & pttemplate$free != 0 & pttemplate$group == 1)
+		for(i in findloadings) {
+			pttemplate <- constrainParTable(pttemplate, pttemplate$lhs[i], "=~", pttemplate$rhs[i], 1:ngroups)
+		}
+		for(i in facnames) {
+			pttemplate <- freeParTable(pttemplate, i, "~~", i, 2:ngroups)
+		}		
+		res$metric <- refit(pttemplate, template)
+	} else {
+		loadings <- dotdotdot
+		loadings$group.equal <- c("loadings")
+		res$metric <- do.call("cfa", loadings)
+	}
 	
+    # fix loadings + intercepts across groups
+	if(std.lv) {
+		findintcepts <- which(pttemplate$op == "~1" & pttemplate$lhs %in% varnames & pttemplate$free != 0 & pttemplate$group == 1)
+		for(i in findintcepts) {
+			pttemplate <- constrainParTable(pttemplate, pttemplate$lhs[i], "~1", "", 1:ngroups)
+		}
+		for(i in facnames) {
+			pttemplate <- freeParTable(pttemplate, i, "~1", "", 2:ngroups)
+		}	
+		res$scalar <- refit(pttemplate, template)
+	} else {
+		intercepts <- dotdotdot
+		intercepts$group.equal <- c("loadings", "intercepts")
+		res$scalar <- do.call("cfa", intercepts)
+	}
+	
+    if(strict) {
+		if(std.lv) {
+			findresiduals <- which(pttemplate$op == "~~" & pttemplate$lhs %in% varnames & pttemplate$rhs == pttemplate$lhs & pttemplate$free != 0 & pttemplate$group == 1)
+			for(i in findresiduals) {
+				pttemplate <- constrainParTable(pttemplate, pttemplate$lhs[i], "~~", pttemplate$rhs[i], 1:ngroups)
+			}
+			res$strict <- refit(pttemplate, template)
+			for(i in facnames) {
+				pttemplate <- fixParTable(pttemplate, i, "~1", "", 1:ngroups, 0)
+			}
+			res$means <- refit(pttemplate, template)
+		} else {
+			# fix loadings + intercepts + residuals
+			residuals <- dotdotdot
+			residuals$group.equal <- c("loadings", "intercepts", "residuals")
+			res$strict <- do.call("cfa", residuals)
+
+			# fix loadings + residuals + intercepts + means
+			means <- dotdotdot
+			means$group.equal <- c("loadings", "intercepts", "residuals", "means")
+			res$means <- do.call("cfa", means)
+		}
     } else {
-        # fix loadings + intercepts + means
-		means <- dotdotdot
-		means$group.equal <- c("loadings", "intercepts", "means")
-		res$means <- do.call("cfa", means)
+		if(std.lv) {
+			for(i in facnames) {
+				pttemplate <- fixParTable(pttemplate, i, "~1", "", 1:ngroups, 0)
+			}
+			res$means <- refit(pttemplate, template)
+		} else {
+			# fix loadings + intercepts + means
+			means <- dotdotdot
+			means$group.equal <- c("loadings", "intercepts", "means")
+			res$means <- do.call("cfa", means)
+		}
     }
 
     if(!quiet) {

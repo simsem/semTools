@@ -809,3 +809,43 @@ singleParamTest(m1, m2)
 measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
     estimator="wlsmv")
 	
+################################ Partial Invariance Tests
+
+
+conf <- "
+f1 =~ NA*x1 + x2 + x3
+f2 =~ NA*x4 + x5 + x6
+f1 ~~ c(1, 1)*f1
+f2 ~~ c(1, 1)*f2
+"
+
+weak <- "
+f1 =~ NA*x1 + x2 + x3
+f2 =~ NA*x4 + x5 + x6
+f1 ~~ c(1, NA)*f1
+f2 ~~ c(1, NA)*f2
+"
+
+configural <- cfa(conf, data = HolzingerSwineford1939, std.lv = TRUE, group="school")
+weak <- cfa(weak, data = HolzingerSwineford1939, group="school", group.equal="loadings")
+models <- list(configural = configural, metric = weak)
+partialInvariance(models, "metric")
+
+partialInvariance(models, "metric", free = "x5") # "x5" is free across groups in advance
+partialInvariance(models, "metric", fix = "x4") # "x4" is fixed across groups in advance
+
+# Use the result from the measurementInvariance function
+HW.model <- ' visual =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed =~ x7 + x8 + x9 '
+
+models2 <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
+partialInvariance(models2, "scalar")
+
+models3 <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", std.lv = TRUE)
+partialInvariance(models3, "scalar")
+partialInvariance(models2, "scalar")
+
+partialInvariance(models2, "metric")
+partialInvariance(models3, "metric")
+

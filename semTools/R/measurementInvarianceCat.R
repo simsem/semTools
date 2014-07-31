@@ -1,4 +1,4 @@
-measurementInvarianceCat <- function(..., strict=FALSE, quiet=FALSE) {
+measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FALSE) {
 	List <- list(...)
 	if(!is.null(List$parameterization) && tolower(List$parameterization) != "theta") warnings("The parameterization is set to 'theta' by default.")
 	List$parameterization <- "theta"
@@ -68,7 +68,11 @@ measurementInvarianceCat <- function(..., strict=FALSE, quiet=FALSE) {
 	# Group 1
 	for(i in facName) {
 		lavaanParTable <- fixParTable(lavaanParTable, i, "~1", "", 1, 0) # Fix factor means as 0
-		lavaanParTable <- freeParTable(lavaanParTable, i, "~~", i, 1, NA) # Free factor variances
+		if(std.lv) {
+			lavaanParTable <- fixParTable(lavaanParTable, i, "~~", i, 1, 1)
+		} else {
+			lavaanParTable <- freeParTable(lavaanParTable, i, "~~", i, 1, NA) # Free factor variances
+		}
 		# Assuming that all factor covariances are freeParTable
 	}
 	for(i in varList) {
@@ -79,7 +83,11 @@ measurementInvarianceCat <- function(..., strict=FALSE, quiet=FALSE) {
 	for(k in 2:ngroups) {
 		for(i in facName) {
 			lavaanParTable <- freeParTable(lavaanParTable, i, "~1", "", k, NA)
-			lavaanParTable <- freeParTable(lavaanParTable, i, "~~", i, k, NA)
+			if(std.lv) {
+				lavaanParTable <- fixParTable(lavaanParTable, i, "~~", i, k, 1)
+			} else {
+				lavaanParTable <- freeParTable(lavaanParTable, i, "~~", i, k, NA)
+			}
 		}	
 		for(i in varList) {
 			lavaanParTable <- freeParTable(lavaanParTable, i, "~~", i, k, NA)
@@ -87,6 +95,12 @@ measurementInvarianceCat <- function(..., strict=FALSE, quiet=FALSE) {
 		# Fix the indicator variances of marker variables with two categories as 1
 		for(i in seq_along(marker)) {
 			if(numThresholdMarker[i] == 1)  lavaanParTable <- fixParTable(lavaanParTable, marker[i], "~~", marker[i], k, 1)
+		}
+	}
+	
+	if(std.lv) {
+		for(i in seq_along(factorRep)) {
+			lavaanParTable <- freeParTable(lavaanParTable, names(factorRep)[i], "=~", marker[i], 1:ngroups, NA)
 		}
 	}
 	# Fit configural invariance
@@ -98,9 +112,19 @@ measurementInvarianceCat <- function(..., strict=FALSE, quiet=FALSE) {
 	ptMetric <- lavaanParTable
 	
 	for(i in seq_along(factorRep)) {
-		varwithin <- setdiff(factorRep[[i]], marker[i])
+		varwithin <- factorRep[[i]]
+		if(!std.lv) {
+			varwithin <- setdiff(varwithin, marker[i])
+		}
 		for(j in seq_along(varwithin)) {
 			ptMetric <- constrainParTable(ptMetric, names(factorRep)[i], "=~", varwithin[j], 1:ngroups)
+		}
+	}
+	if(std.lv) {
+		for(k in 2:ngroups) {
+			for(i in facName) {
+				ptMetric <- freeParTable(ptMetric, i, "~~", i, k, NA)
+			}
 		}
 	}
 	

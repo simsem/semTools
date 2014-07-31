@@ -1,6 +1,6 @@
 # Work with only with congeneric models
 
-partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = FALSE) { 
+partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit = FALSE) { 
 	type <- tolower(type)
 	numType <- 0
 	fit1 <- fit0 <- NULL
@@ -23,11 +23,17 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 		}
 	} else if (type %in% c("strict", "residual", "residuals", "error", "errors")) {
 		numType <- 3
-		if(all(c("scalar", "strict") %in% names(fit))) {
-			fit1 <- fit$scalar
+		if("strict" %in% names(fit)) {
 			fit0 <- fit$strict
+			if("scalar" %in% names(fit)) {
+				fit1 <- fit$scalar			
+			} else if ("metric" %in% names(fit)) {
+				fit1 <- fit$metric			
+			} else {
+				stop("Either scalar or metric invariance models is needed in the 'fit' argument")
+			}			
 		} else {
-			stop("Both scalar and strict invariance models are needed in the 'fit' argument")
+			stop("The strict invariance model is needed in the 'fit' argument")
 		}
 	} else if (type %in% c("means", "mean")) {
 		numType <- 4
@@ -37,8 +43,10 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 				fit1 <- fit$strict			
 			} else if ("scalar" %in% names(fit)) {
 				fit1 <- fit$scalar			
+			} else if ("metric" %in% names(fit)) {
+				fit1 <- fit$metric			
 			} else {
-				stop("Either scalar or strict invariance models is needed in the 'fit' argument")
+				stop("Either metric, scalar, or strict invariance models is needed in the 'fit' argument")
 			}
 		} else {
 			stop("Mean invariance models is needed in the 'fit' argument")
@@ -67,10 +75,21 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 		fixLoadingFac[[i]] <- pt1$rhs[select]
 	}
 	names(fixLoadingFac) <- names(facList)
+	
+	# Find the number of thresholds
+	# Check whether the factor configuration is the same across gorups
+	groupParTable <- split(pt1, pt1$group)
+	group1pt <- groupParTable[[1]]
+	numThreshold <- table(sapply(group1pt, "[", group1pt$op == "|")[,"lhs"])
+	numFixedThreshold <- table(sapply(group1pt, "[", group1pt$op == "|" & group1pt$eq.id != 0)[,"lhs"])
 	fixIntceptFac <- list()
 	for(i in seq_along(facList)) {
-		select <- pt1$op == "~1" & pt1$rhs %in% facList[[i]] & pt1$group == 1 & pt1$free == 0
-		fixIntceptFac[[i]] <- pt1$rhs[select]
+		tmp <- numFixedThreshold[facList[[i]]]
+		if(all(tmp > 1)) {
+			fixIntceptFac[[i]] <- integer(0)
+		} else {
+			fixIntceptFac[[i]] <- names(which.max(tmp))[1]
+		}
 	}
 	names(fixIntceptFac) <- names(facList)
 	
@@ -209,7 +228,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
-				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
+				if(!is(compresult0, "try-error"))  freeCon[oos,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			pos <- pos + 1
@@ -223,27 +242,38 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 				facinfix <- findFactor(fix, facList)
 				dup <- duplicated(facinfix)
 				for(i in seq_along(fix)) {
-					if(dup[i]) {
-						pt0 <- constrainParTable(pt0, fix[i], "~1", "", 1:ngroups)
-						pt1 <- constrainParTable(pt1, fix[i], "~1", "", 1:ngroups)					
-					} else {
-						oldmarker <- fixIntceptFac[[facinfix[i]]]
-						if(length(oldmarker) > 0) {
-							oldmarkerval <- pt1$ustart[pt1$lhs == fix[i] & pt1$op == "~1" & pt1$rhs == "" & pt1$group == 1]
-							if(oldmarker == fix[i]) {
-								pt0 <- fixParTable(pt0, fix[i], "~1", "", 1:ngroups, oldmarkerval)
-								pt1 <- fixParTable(pt1, fix[i], "~1", "", 1:ngroups, oldmarkerval)
-							} else {
-								pt0 <- freeParTable(pt0, oldmarker, "~1", "", 1:ngroups)
-								pt0 <- constrainParTable(pt0, oldmarker, "~1", "", 1:ngroups)
-								pt1 <- freeParTable(pt1, oldmarker, "~1", "", 1:ngroups)
-								pt0 <- fixParTable(pt0, fix[i], "~1", "", 1:ngroups, oldmarkerval)
-								pt1 <- fixParTable(pt1, fix[i], "~1", "", 1:ngroups, oldmarkerval)
-								fixIntceptFac[[facinfix[i]]] <- fix[i]
+					numfixthres <- numThreshold[fix[i]]
+					if(numfixthres > 1) {
+						if(dup[i]) {
+							for(s in 2:numfixthres) {
+								pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)
+								pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)			
 							}
 						} else {
-							pt0 <- constrainParTable(pt0, fix[i], "~1", "", 1:ngroups)
-							pt1 <- constrainParTable(pt1, fix[i], "~1", "", 1:ngroups)						
+							oldmarker <- fixIntceptFac[[facinfix[i]]]
+							numoldthres <- numThreshold[oldmarker]
+							if(length(oldmarker) > 0) {
+								if(oldmarker == fix[i]) {
+									for(s in 2:numfixthres) {
+										pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)
+										pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)			
+									}	
+								} else {
+									for(r in 2:numoldthres) {
+										pt1 <- freeParTable(pt1, oldmarker, "|", paste0("t", r), 1:ngroups)										
+									}
+									for(s in 2:numfixthres) {
+										pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)		
+										pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)	
+									}	
+									fixIntceptFac[[facinfix[i]]] <- fix[i]
+								}
+							} else {
+								for(s in 2:numfixthres) {
+									pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)
+									pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)			
+								}				
+							}
 						}
 					}
 				}
@@ -251,19 +281,26 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 			if(!is.null(free)) {
 				facinfree <- findFactor(free, facList)
 				for(i in seq_along(free)) {
+					numfreethres <- numThreshold[free[i]]
 					# Need to change marker variable if fixed
 					oldmarker <- fixIntceptFac[[facinfree[i]]]
+					numoldthres <- numThreshold[oldmarker]
 					if(length(oldmarker) > 0 && oldmarker == free[i]) {
-						oldmarkerval <- pt1$ustart[pt1$lhs == oldmarker & pt1$op == "~1" & pt1$rhs == "" & pt1$group == 1]
-						candidatemarker <- setdiff(facList[[facinfree[i]]], free[i])[1]
-						pt0 <- freeParTable(pt0, free[i], "~1", "", 1:ngroups)
-						pt1 <- freeParTable(pt1, free[i], "~1", "", 1:ngroups)
-						pt0 <- fixParTable(pt0, candidatemarker, "~1", "", 1:ngroups, oldmarkerval)
-						pt1 <- fixParTable(pt1, candidatemarker, "~1", "", 1:ngroups, oldmarkerval)
+						candidatemarker <- setdiff(facList[[facinfree[i]]], free[i])
+						candidatemarker <- candidatemarker[numThreshold[candidatemarker] > 1][1]
+						numcandidatethres <- numThreshold[candidatemarker]
+						pt0 <- constrainParTable(pt0, candidatemarker, "|", "t2", 1:ngroups)
+						pt1 <- constrainParTable(pt1, candidatemarker, "|", "t2", 1:ngroups)
+						for(s in 2:numfixthres) {
+							pt0 <- freeParTable(pt0, free[i], "|", paste0("t", s), 1:ngroups)
+							pt1 <- freeParTable(pt1, free[i], "|", paste0("t", s), 1:ngroups)			
+						}	
 						fixIntceptFac[[facinfix[i]]] <- candidatemarker
 					} else {
-						pt0 <- freeParTable(pt0, free[i], "~1", "", 1:ngroups)
-						pt1 <- freeParTable(pt1, free[i], "~1", "", 1:ngroups)
+						for(s in 2:numfixthres) {
+							pt0 <- freeParTable(pt0, free[i], "|", paste0("t", s), 1:ngroups)
+							pt1 <- freeParTable(pt1, free[i], "|", paste0("t", s), 1:ngroups)			
+						}	
 					}
 				}
 			}
@@ -278,46 +315,55 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
 		freeCon <- matrix(NA, length(varfree), 3)
 		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
-		index <- which((pt1$lhs %in% varfree) & (pt1$op == "~1") & (pt1$group == 1))
+
 		facinfix <- findFactor(fix, facList)
 		varinfixvar <- unlist(facList[facinfix])
 		varinfixvar <- setdiff(varinfixvar, setdiff(varinfixvar, varfree))
-		indexfixvar <- which((pt1$lhs %in% varinfixvar) & (pt1$op == "~1") & (pt1$group == 1))
 		varnonfixvar <- setdiff(varfree, varinfixvar)
-		indexnonfixvar <- setdiff(index, indexfixvar)
-	
+		
 		pos <- 1
 		for(i in seq_along(varinfixvar)) {
-			runnum <- index[i]
-			temp <- constrainParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
+			temp <- pt1
+			for(s in 2:numThreshold[varinfixvar[i]]) {
+				runnum <- which((pt1$lhs == varfree[i]) & (pt1$op == "|") & (pt1$rhs == paste0("t", s)) & (pt1$group == 1))
+				temp <- constrainParTable(temp, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
+			}
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
 				compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
 				if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
 			}
 			listFixCon <- c(listFixCon, tryresult)
-			temp0 <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+			temp0 <- pt0
+			for(s in 2:numThreshold[varinfixvar[i]]) {
+				runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
+				temp0 <- freeParTable(temp0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+			}			
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
-			pos <- pos + 1
 		}
 
-		facinvarfree <- findFactor(varfree, facList)
+		facinvarfree <- findFactor(varnonfixvar, facList)
 		for(i in seq_along(varnonfixvar)) {
-			runnum <- index[i]
 			# Need to change marker variable if fixed
 			oldmarker <- fixIntceptFac[[facinvarfree[i]]]
 			if(length(oldmarker) > 0 && oldmarker == varfree[i]) {
-				candidatemarker <- setdiff(facList[[facinvarfree[i]]], varfree[i])[1]
-				temp <- freeParTable(pt1, varfree[i], "~1", "", 1:ngroups)
-				temp <- constrainParTable(temp, varfree[i], "~1", "", 1:ngroups)
-				temp <- fixParTable(temp, candidatemarker, "~1", "", 1:ngroups)
-				newparent <- freeParTable(pt1, varfree[i], "~1", "", 1:ngroups)
-				newparent <- fixParTable(newparent, candidatemarker, "~1", "", 1:ngroups)
+				candidatemarker <- setdiff(facList[[facinvarfree[i]]], varnonfixvar[i])
+				candidatemarker <- candidatemarker[numThreshold[candidatemarker] > 1][1]
+				numcandidatethres <- numThreshold[candidatemarker]
+				newparent <- constrainParTable(pt1, candidatemarker, "|", "t2", 1:ngroups)
+				for(s in 2:numfixthres) {
+					newparent <- freeParTable(newparent, varnonfixvar[i], "|", paste0("t", s), 1:ngroups)			
+				}	
+				temp <- newparent
+				for(s in 2:numThreshold[varnonfixvar[i]]) {
+					runnum <- which((newparent$lhs == varnonfixvar[i]) & (newparent$op == "|") & (newparent$rhs == paste0("t", s)) & (newparent$group == 1))
+					temp <- constrainParTable(temp, newparent$lhs[runnum], newparent$op[runnum], newparent$rhs[runnum], 1:ngroups)
+				}
 				newparentfit <- refit(newparent, fit1)
 				
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
@@ -326,7 +372,11 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
 				}
 			} else {
-				temp <- constrainParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
+				temp <- pt1
+				for(s in 2:numThreshold[varnonfixvar[i]]) {
+					runnum <- which((pt1$lhs == varfree[i]) & (pt1$op == "|") & (pt1$rhs == paste0("t", s)) & (pt1$group == 1))
+					temp <- constrainParTable(temp, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
+				}
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 				if(!is(tryresult, "try-error")) {
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
@@ -334,10 +384,11 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 				}
 			}
 			listFixCon <- c(listFixCon, tryresult)
-			if(length(oldmarker) > 0 && oldmarker == varfree[i]) {
-				temp0 <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 2:ngroups)
-			} else {
-				temp0 <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+			
+			temp0 <- pt0
+			for(s in 2:numThreshold[varnonfixvar[i]]) {
+				runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
+				temp0 <- freeParTable(temp0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 			}
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
@@ -345,10 +396,9 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
-			pos <- pos + 1
 		}
 
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- namept1[c(indexfixvar, indexnonfixvar)]
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- namept1[c(varinfixvar, varnonfixvar)]
 		result <- cbind(freeCon, fixCon)	
 	} else if (numType == 3) {
 		if(!is.null(free) | !is.null(fix)) {
@@ -457,10 +507,4 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, return.fit = F
 	} else {
 		return(result)
 	}
-}
-
-findFactor <- function(var, facList) {
-	tempfac <- lapply(facList, intersect, var)
-	facinvar <- rep(names(tempfac), sapply(tempfac, length))
-	facinvar[match(unlist(tempfac), var)]
 }

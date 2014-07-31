@@ -8,11 +8,12 @@ Testing measurement invariance across groups using a typical sequence of
 model comparison tests.
 }
 \usage{
-measurementInvarianceCat(..., strict = FALSE, quiet = FALSE)
+measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE, quiet = FALSE)
 }
 \arguments{
   \item{...}{The same arguments as for any lavaan model.
     See \code{\link{cfa}} for more information.}
+  \item{std.lv}{If \code{TRUE}, the fixed-factor method of scale identification is used. If \code{FALSE}, the first variable for each factor is used as marker variable.}
   \item{strict}{If \code{TRUE}, the sequence requires `strict' invariance.
     See details for more information.}
   \item{quiet}{If \code{TRUE}, a summary is printed out containing an
@@ -58,9 +59,8 @@ Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial invariance in ordered
 	\code{\link{longInvariance}} For the measurement invariance test within person with continuous variables
 }
 \examples{
-model <- ' f1 =~ u1 + u2 + u3 + u4
-           f2 =~ u5 + u6 + u7 + u8'
+model <- ' f1 =~ u1 + u2 + u3 + u4'
 
 measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
-    estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4", "u5", "u6", "u7", "u8"))
+    estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4"))
 }
