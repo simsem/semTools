@@ -1,6 +1,6 @@
 # Work with only with congeneric models
 
-partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit = FALSE) { 
+partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = "none", return.fit = FALSE) { 
 	type <- tolower(type)
 	numType <- 0
 	fit1 <- fit0 <- NULL
@@ -240,6 +240,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			listFreeCon <- c(listFreeCon, tryresult0)
 			pos <- pos + 1
 		}
+		freeCon[,3] <- stats::p.adjust(freeCon[,3], p.adjust)
+		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
+		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[c(indexfixvar, indexnonfixvar)]
 		result <- cbind(freeCon, fixCon, waldCon)		
@@ -426,6 +429,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			listFreeCon <- c(listFreeCon, tryresult0)
 			pos <- pos + 1
 		}
+		freeCon[,3] <- stats::p.adjust(freeCon[,3], p.adjust)
+		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
+		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- paste0(c(varinfixvar, varnonfixvar), "|")
 		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 3) {
@@ -474,6 +480,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			listFreeCon <- c(listFreeCon, tryresult0)
 			waldCon[i,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
 		}
+		freeCon[,3] <- stats::p.adjust(freeCon[,3], p.adjust)
+		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
+		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[index]
 		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 4) {
@@ -533,6 +542,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			listFreeCon <- c(listFreeCon, tryresult0)
 			waldCon[i,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
 		}
+		freeCon[,3] <- stats::p.adjust(freeCon[,3], p.adjust)
+		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
+		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[index]
 		result <- cbind(freeCon, fixCon, waldCon)		
 	}

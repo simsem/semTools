@@ -8,14 +8,17 @@ Partial Measurement Invariance Testing Across Groups
 This test will provide partial invariance testing by (a) freeing a parameter one-by-one from nested model and compare with the original nested model or (b) fixing (or constraining) a parameter one-by-one from the parent model and compare with the original parent model. This function only works with congeneric models. The \code{partialInvariance} is used for continuous variable. The \code{partialInvarianceCat} is used for categorical variables.
 }
 \usage{
-partialInvariance(fit, type, free = NULL, fix = NULL, return.fit = FALSE)
-partialInvarianceCat(fit, type, free = NULL, fix = NULL, return.fit = FALSE)
+partialInvariance(fit, type, free = NULL, fix = NULL, p.adjust = "none", 
+	return.fit = FALSE)
+partialInvarianceCat(fit, type, free = NULL, fix = NULL, p.adjust = "none", 
+	return.fit = FALSE)
 }
 \arguments{
   \item{fit}{A list of models for invariance testing. Each model should be assigned by appropriate names (see details). The result from \code{\link{measurementInvariance}} or \code{\link{measurementInvarianceCat}} could be used in this argument directly.}
   \item{type}{The types of invariance testing: "metric", "scalar", "strict", or "means"}
   \item{free}{A vector of variable names that are free across groups in advance. If partial mean invariance is tested, this argument represents a vector of factor names that are free across groups.}
   \item{fix}{A vector of variable names that are constrained to be equal across groups in advance. If partial mean invariance is tested, this argument represents a vector of factor names that are fixed across groups.}
+  \item{p.adjust}{The method used to adjust p values. See \code{\link[stats]{p.adjust}} for the options for adjusting p values. The default is to not use any corrections.}
   \item{return.fit}{Return the submodels fitted by this function}
 }
 \details{
