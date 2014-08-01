@@ -57,7 +57,6 @@ Satorra-Bentler or Yuan-Bentler test statistic), a special version of the
 chi-square difference test is used as described in
 \url{http://www.statmodel.com/chidiff.shtml}
 }
-
 \value{
 Invisibly, all model fits in the sequence are returned as a list.
 }
@@ -69,7 +68,7 @@ Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the measur
 	Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
 }
 \seealso{
-	\code{\link{longInvariance}} For the measurement invariance test within person
+	\code{\link{longInvariance}} for the measurement invariance test within person; \code{partialInvariance} for the automated function for finding partial invariance models
 }
 \examples{
 HW.model <- ' visual =~ x1 + x2 + x3

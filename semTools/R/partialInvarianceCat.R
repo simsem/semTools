@@ -537,7 +537,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 		result <- cbind(freeCon, fixCon, waldCon)		
 	}
 	if(return.fit) {
-		return(invisible(list(result = result, models = list(free = listFreeCon, fix = listFixCon))))
+		return(invisible(list(result = result, models = list(free = listFreeCon, fix = listFixCon, nested = fit0, parent = fit1))))
 	} else {
 		return(result)
 	}

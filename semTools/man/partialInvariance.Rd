@@ -40,7 +40,7 @@ Note that this function does not adjust for the inflated Type I error rate from 
 \value{
 	If \code{return.fit = FALSE}, the result tables are provided. Chi-square and p-value are provided for all methods. 
 	
-	If \code{return.fit = TRUE}, a list with two elements are provided. The first element is the tabular result. The second element is the submodels used in the \code{free} and \code{fix} methods. 
+	If \code{return.fit = TRUE}, a list with two elements are provided. The first element is the tabular result. The second element is the submodels used in the \code{free} and \code{fix} methods, as well as the nested and parent models. The nested and parent models will be changed from the original models if \code{free} or \code{fit} arguments are specified. 
 }
 \author{
 	Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})

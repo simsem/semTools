@@ -56,7 +56,8 @@ Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial invariance in ordered
 }
 \seealso{
 	\code{\link{measurementInvariance}} for measurement invariance for continuous variables; 
-	\code{\link{longInvariance}} For the measurement invariance test within person with continuous variables
+	\code{\link{longInvariance}} For the measurement invariance test within person with continuous variables; 
+	\code{partialInvariance} for the automated function for finding partial invariance models
 }
 \examples{
 model <- ' f1 =~ u1 + u2 + u3 + u4'
