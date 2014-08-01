@@ -32,5 +32,5 @@ export(
 	efaUnrotate, orthRotate, oblqRotate, funRotate,
 	kd, bsBootMiss, net, 
 	singleParamTest,
-	partialInvariance
+	partialInvariance, partialInvarianceCat
 )

@@ -839,13 +839,88 @@ HW.model <- ' visual =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed =~ x7 + x8 + x9 '
 
-models2 <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
-partialInvariance(models2, "scalar")
-
-models3 <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", std.lv = TRUE)
-partialInvariance(models3, "scalar")
-partialInvariance(models2, "scalar")
+models2 <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", strict = TRUE)
+models3 <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", std.lv = TRUE, strict = TRUE)
 
 partialInvariance(models2, "metric")
 partialInvariance(models3, "metric")
 
+partialInvariance(models2, "scalar")
+partialInvariance(models3, "scalar")
+
+partialInvariance(models2, "strict")
+partialInvariance(models3, "strict")
+
+partialInvariance(models2, "means")
+partialInvariance(models3, "means")
+
+################################ Partial Invariance Cat Tests
+
+f <- rnorm(1000, 0, 1)
+u1 <- 0.9*f + rnorm(1000, 1, sqrt(0.19))
+u2 <- 0.8*f + rnorm(1000, 1, sqrt(0.36))
+u3 <- 0.6*f + rnorm(1000, 1, sqrt(0.64))
+u4 <- 0.7*f + rnorm(1000, 1, sqrt(0.51))
+u1 <- as.numeric(cut(u1, breaks = c(-Inf, 0, Inf)))
+u2 <- as.numeric(cut(u2, breaks = c(-Inf, 0.5, Inf)))
+u3 <- as.numeric(cut(u3, breaks = c(-Inf, 0, Inf)))
+u4 <- as.numeric(cut(u4, breaks = c(-Inf, -0.5, Inf)))
+g <- rep(c(1, 2), 500)
+dat2 <- data.frame(u1, u2, u3, u4, g)
+
+configural2 <- "
+f1 =~ NA*u1 + u2 + u3 + u4
+u1 | c(t11, t11)*t1 
+u2 | c(t21, t21)*t1 
+u3 | c(t31, t31)*t1 
+u4 | c(t41, t41)*t1 
+f1 ~~ c(1, 1)*f1
+f1 ~ c(0, NA)*1
+u1 ~~ c(1, 1)*u1
+u2 ~~ c(1, NA)*u2
+u3 ~~ c(1, NA)*u3
+u4 ~~ c(1, NA)*u4
+"
+
+outConfigural2 <- cfa(configural2, data = dat2, group = "g", parameterization="theta", estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4"))
+
+weak2 <- "
+f1 =~ NA*u1 + c(f11, f11)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4
+u1 | c(t11, t11)*t1 
+u2 | c(t21, t21)*t1 
+u3 | c(t31, t31)*t1 
+u4 | c(t41, t41)*t1 
+f1 ~~ c(1, NA)*f1
+f1 ~ c(0, NA)*1
+u1 ~~ c(1, 1)*u1
+u2 ~~ c(1, NA)*u2
+u3 ~~ c(1, NA)*u3
+u4 ~~ c(1, NA)*u4
+"
+
+outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization="theta", estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4"))
+modelsCat <- list(configural = outConfigural2, metric = outWeak2)
+
+partialInvarianceCat(modelsCat, type = "metric") 
+partialInvarianceCat(modelsCat, type = "metric", free = "u2") 
+partialInvarianceCat(modelsCat, type = "metric", fix = "u3") 
+
+model <- ' f1 =~ u1 + u2 + u3 + u4
+           f2 =~ u5 + u6 + u7 + u8'
+
+modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
+    estimator="wlsmv", strict = TRUE)
+modelsCat3 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
+    estimator="wlsmv", std.lv = TRUE, strict = TRUE)
+
+partialInvarianceCat(modelsCat2, type = "scalar")
+partialInvarianceCat(modelsCat3, type = "scalar")
+
+partialInvarianceCat(modelsCat2, type = "metric")
+partialInvarianceCat(modelsCat3, type = "metric")
+
+partialInvarianceCat(modelsCat2, type = "strict")
+partialInvarianceCat(modelsCat3, type = "strict")
+
+partialInvarianceCat(modelsCat2, type = "means")
+partialInvarianceCat(modelsCat3, type = "means")

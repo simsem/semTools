@@ -102,7 +102,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 		if(!all(c(free, fix) %in% varnames)) stop("'free' and 'fix' arguments should consist of variable names.")
 	}
 	result <- fixCon <- freeCon <- NULL
-	listFreeCon <- listFixCon <- list()		
+	listFreeCon <- listFixCon <- list()	
+	beta <- coef(fit1)
+	waldMat <- matrix(0, ngroups - 1, length(beta))	
 	if(numType == 1) {
 		if(!is.null(free) | !is.null(fix)) {
 			if(!is.null(fix)) {
@@ -157,13 +159,15 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			namept0 <- paramNameFromPt(pt0)
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
+			beta <- coef(fit1)
+			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		fixCon <- matrix(NA, length(varfree), 3)
+		fixCon <- freeCon <- waldCon <- matrix(NA, length(varfree), 3)
 		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
-		freeCon <- matrix(NA, length(varfree), 3)
 		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
+		colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
 		index <- which((pt1$rhs %in% varfree) & (pt1$op == "=~") & (pt1$group == 1))
 		facinfix <- findFactor(fix, facList)
 		varinfixvar <- unlist(facList[facinfix])
@@ -189,6 +193,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
+			waldCon[pos,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
 			pos <- pos + 1
 		}
 
@@ -211,6 +216,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, newparentfit), silent = TRUE)
 					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
 				}
+				waldCon[pos,] <- waldConstraint(newparentfit, newparent, waldMat, cbind(facinvarfree[i], "=~", varnonfixvar[i], 1:ngroups))
 			} else {
 				temp <- constrainParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
@@ -218,6 +224,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
 					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
 				}
+				waldCon[pos,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
 			}
 			listFixCon <- c(listFixCon, tryresult)
 			if(length(oldmarker) > 0 && oldmarker == varnonfixvar[i]) {
@@ -228,14 +235,14 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
-				if(!is(compresult0, "try-error"))  freeCon[oos,] <- unlist(modelcomp0[2,5:7])
+				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			pos <- pos + 1
 		}
 
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- namept1[c(indexfixvar, indexnonfixvar)]
-		result <- cbind(freeCon, fixCon)
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[c(indexfixvar, indexnonfixvar)]
+		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 2) {
 		if(!is.null(free) | !is.null(fix)) {
 			if(!is.null(fix)) {
@@ -308,13 +315,15 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			namept0 <- paramNameFromPt(pt0)
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
+			beta <- coef(fit1)
+			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		fixCon <- matrix(NA, length(varfree), 3)
+		fixCon <- freeCon <- waldCon <- matrix(NA, length(varfree), 3)
 		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
-		freeCon <- matrix(NA, length(varfree), 3)
 		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
+		colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
 
 		facinfix <- findFactor(fix, facList)
 		varinfixvar <- unlist(facList[facinfix])
@@ -345,6 +354,13 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
+			args <- list(fit1, pt1, waldMat)
+			for(s in 2:numThreshold[varinfixvar[i]]) {
+				runnum <- which((pt1$lhs == varfree[i]) & (pt1$op == "|") & (pt1$rhs == paste0("t", s)) & (pt1$group == 1))
+				args <- c(args, list(cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)))
+			}
+			waldCon[pos,] <- do.call(waldConstraint, args)
+			pos <- pos + 1
 		}
 
 		facinvarfree <- findFactor(varnonfixvar, facList)
@@ -371,6 +387,12 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, newparentfit), silent = TRUE)
 					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
 				}
+				args <- list(newparentfit, newparent, waldMat)
+				for(s in 2:numThreshold[varnonfixvar[i]]) {
+					runnum <- which((newparent$lhs == varnonfixvar[i]) & (newparent$op == "|") & (newparent$rhs == paste0("t", s)) & (newparent$group == 1))
+					args <- c(args, list(cbind(newparent$lhs[runnum], newparent$op[runnum], newparent$rhs[runnum], 1:ngroups)))
+				}
+				waldCon[pos,] <- do.call(waldConstraint, args)
 			} else {
 				temp <- pt1
 				for(s in 2:numThreshold[varnonfixvar[i]]) {
@@ -382,6 +404,12 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
 					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
 				}
+				args <- list(fit1, pt1, waldMat)
+				for(s in 2:numThreshold[varnonfixvar[i]]) {
+					runnum <- which((pt1$lhs == varfree[i]) & (pt1$op == "|") & (pt1$rhs == paste0("t", s)) & (pt1$group == 1))
+					args <- c(args, list(cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)))
+				}
+				waldCon[pos,] <- do.call(waldConstraint, args)
 			}
 			listFixCon <- c(listFixCon, tryresult)
 			
@@ -396,10 +424,10 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
+			pos <- pos + 1
 		}
-
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- namept1[c(varinfixvar, varnonfixvar)]
-		result <- cbind(freeCon, fixCon)	
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- paste0(c(varinfixvar, varnonfixvar), "|")
+		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 3) {
 		if(!is.null(free) | !is.null(fix)) {
 			if(!is.null(fix)) {
@@ -418,13 +446,15 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			namept0 <- paramNameFromPt(pt0)
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
+			beta <- coef(fit1)
+			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		fixCon <- matrix(NA, length(varfree), 3)
+		fixCon <- freeCon <- waldCon <- matrix(NA, length(varfree), 3)
 		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
-		freeCon <- matrix(NA, length(varfree), 3)
 		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
+		colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
 		index <- which((pt1$lhs %in% varfree) & (pt1$op == "~~") & (pt1$lhs == pt1$rhs) & (pt1$group == 1))
 		for(i in seq_along(index)) {
 			runnum <- index[i]
@@ -442,9 +472,10 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 				if(!is(compresult0, "try-error"))  freeCon[i,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
+			waldCon[i,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
 		}
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- namept1[index]
-		result <- cbind(freeCon, fixCon)		
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[index]
+		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 4) {
 		varfree <- facnames
 		if(!is.null(free) | !is.null(fix)) {
@@ -464,13 +495,15 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 			namept0 <- paramNameFromPt(pt0)
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
+			beta <- coef(fit1)
+			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		fixCon <- matrix(NA, length(varfree), 3)
+		fixCon <- freeCon <- waldCon <- matrix(NA, length(varfree), 3)
 		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
-		freeCon <- matrix(NA, length(varfree), 3)
 		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
+		colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
 		index <- which((pt1$lhs %in% varfree) & (pt1$op == "~1") & (pt1$group == 1))
 		for(i in seq_along(index)) {
 			runnum <- index[i]
@@ -498,9 +531,10 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, return.fit 
 				if(!is(compresult0, "try-error"))  freeCon[i,] <- unlist(modelcomp0[2,5:7])
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
+			waldCon[i,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
 		}
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- namept1[index]
-		result <- cbind(freeCon, fixCon)		
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[index]
+		result <- cbind(freeCon, fixCon, waldCon)		
 	}
 	if(return.fit) {
 		return(invisible(list(result = result, models = list(free = listFreeCon, fix = listFixCon))))
