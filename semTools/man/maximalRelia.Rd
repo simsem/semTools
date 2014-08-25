@@ -1,0 +1,66 @@
+\name{maximalRelia}
+\alias{maximalRelia}
+\title{
+Calculate maximal reliability
+}
+\description{
+Calculate maximal reliability of a scale
+}
+\usage{
+maximalRelia(object)
+}
+\arguments{
+  \item{object}{The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.}
+}
+\details{
+Given that a composite score (\eqn{W}) is a weighted sum of item scores:
+
+\deqn{ W = \bold{w}^\prime \bold{x} ,}
+
+where \eqn{\bold{x}} is a \eqn{k \times 1} vector of the scores of each item, \eqn{\bold{w}} is a \eqn{k \times 1} weight vector of each item, and \eqn{k} represents the number of items. Then, maximal reliability is obtained by finding \eqn{\bold{w}} such that reliability attains its maximum (Li, 1997; Raykov, 2012). Note that the reliability can be obtained by
+
+\deqn{ \rho = \frac{\bold{w}^\prime \bold{S}_T \bold{w}}{\bold{w}^\prime \bold{S}_X \bold{w}}}
+
+where \eqn{\bold{S}_T} is the covariance matrix explained by true scores and \eqn{\bold{S}_X} is the observed covariance matrix. Numerical method is used to find \eqn{\bold{w}} in this function.
+
+For continuous items, \eqn{\bold{S}_T} can be calculated by
+
+\deqn{ \bold{S}_T = \Lambda \Psi \Lambda^\prime,}
+
+where \eqn{\Lambda} is the factor loading matrix and \eqn{\Psi} is the covariance matrix among factors. \eqn{\bold{S}_X} is directly obtained by covariance among items.
+
+For categorical items, Green and Yang's (2009) method is used for calculating \eqn{\bold{S}_T} and \eqn{\bold{S}_X}. The element \eqn{i} and \eqn{j} of \eqn{\bold{S}_T} can be calculated by
+
+\deqn{ \left[\bold{S}_T\right]_{ij} = \sum^{C_i - 1}_{c_i = 1} \sum^{C_j - 1}_{c_j - 1} \Phi_2\left( \tau_{x_{c_i}}, \tau_{x_{c_j}}, \left[ \Lambda \Psi \Lambda^\prime \right]_{ij} \right) - \sum^{C_i - 1}_{c_i = 1} \Phi_1(\tau_{x_{c_i}}) \sum^{C_j - 1}_{c_j - 1} \Phi_1(\tau_{x_{c_j}}),}
+
+where \eqn{C_i} and \eqn{C_j} represents the number of thresholds in Items \eqn{i} and \eqn{j}, \eqn{\tau_{x_{c_i}}} represents the threshold \eqn{c_i} of Item \eqn{i}, \eqn{\tau_{x_{c_j}}} represents the threshold \eqn{c_i} of Item \eqn{j}, \eqn{ \Phi_1(\tau_{x_{c_i}})} is the cumulative probability of \eqn{\tau_{x_{c_i}}} given a univariate standard normal cumulative distribution and \eqn{\Phi_2\left( \tau_{x_{c_i}}, \tau_{x_{c_j}}, \rho \right)} is the joint cumulative probability of \eqn{\tau_{x_{c_i}}} and \eqn{\tau_{x_{c_j}}} given a bivariate standard normal cumulative distribution with a correlation of \eqn{\rho}
+
+Each element of \eqn{\bold{S}_X} can be calculated by
+
+\deqn{ \left[\bold{S}_T\right]_{ij} = \sum^{C_i - 1}_{c_i = 1} \sum^{C_j - 1}_{c_j - 1} \Phi_2\left( \tau_{V_{c_i}}, \tau_{V_{c_j}}, \rho^*_{ij} \right) - \sum^{C_i - 1}_{c_i = 1} \Phi_1(\tau_{V_{c_i}}) \sum^{C_j - 1}_{c_j - 1} \Phi_1(\tau_{V_{c_j}}),}
+
+where \eqn{\rho^*_{ij}} is a polychoric correlation between Items \eqn{i} and \eqn{j}.
+}
+\value{
+	Maximal reliability values of each group. The maximal-reliability weights are also provided. Users may extracted the weighted by the \code{attr} function (see example below). 
+}
+\references{
+Li, H. (1997). A unifying expression for the maximal reliability of a linear composite. \emph{Psychometrika, 62}, 245-249.
+
+Raykov, T. (2012). Scale construction and development using structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of structural equation modeling} (pp. 472-494). New York: Guilford. 
+}
+\author{
+    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+}
+\seealso{
+	\code{\link{reliability}} for reliability of an unweighted composite score
+}
+\examples{
+total <- 'f =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 '
+fit <- cfa(total, data=HolzingerSwineford1939)
+maximalRelia(fit)
+
+# Extract the weight
+mr <- maximalRelia(fit)
+attr(mr, "weight")
+}

@@ -22,7 +22,7 @@ export(
 	clipboard, saveFile, 
 	auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary, lavaan.auxiliary, 
 	loadingFromAlpha, 
-	reliability, reliabilityL2, 
+	reliability, reliabilityL2, maximalRelia,
 	impliedFactorMean, impliedFactorCov, impliedFactorStat,
 	tukeySEM,
 	nullMx, saturateMx, fitMeasuresMx, standardizeMx,

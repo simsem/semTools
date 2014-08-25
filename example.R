@@ -924,3 +924,38 @@ partialInvarianceCat(modelsCat3, type = "strict")
 
 partialInvarianceCat(modelsCat2, type = "means")
 partialInvarianceCat(modelsCat3, type = "means")
+
+################################# Maximal Reliability
+
+
+mod1 <- ' visual  =~ x1 + x2 + x3'
+fit <- cfa(mod1, data=HolzingerSwineford1939)
+maximalRelia(fit)
+
+HS.model <- ' visual  =~ x1 + x2 + x3
+              textual =~ x4 + x5 + x6
+              speed   =~ x7 + x8 + x9 '
+
+fit2 <- cfa(HS.model, data=HolzingerSwineford1939)
+maximalRelia(fit2)
+
+fit3 <- cfa(HS.model, data=HolzingerSwineford1939, group="school")
+maximalRelia(fit3)
+
+library(psych)
+dat <- iqitems
+for(i in 1:ncol(iqitems)) {
+	dat[,i] <- ordered(iqitems[,i])
+}
+iq.model1 <- '
+reason =~ reason.4 + reason.16 + reason.17 + reason.19
+'
+fit4 <- cfa(iq.model1, data=dat)
+maximalRelia(fit4) 
+
+iq.model2 <- '
+reason =~ reason.4 + reason.16 + reason.17 + reason.19
+letter =~ letter.7 + letter.33 + letter.34 + letter.58
+'
+fit5 <- cfa(iq.model2, data=dat)
+maximalRelia(fit5) # Should provide a warning for coefficient alpha

@@ -7,7 +7,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	ngroups <- 1
 	if(!is.null(List$group)) {
 		group <- List$group
-		ngroups <- length(unique(List$data[,group]))
+		ngroups <- length(setdiff(unique(List$data[,group]), NA))
 	} else {
 		stop("Please specify the group variable")
 	}
