@@ -287,3 +287,12 @@ rearrangeFreeElement <- function(vec) {
 	class(vec2) <- "integer"
 	return(vec2)
 }
+
+getValue <- function(parTable, est, lhs, op, rhs, group) {
+	target <- cbind(lhs, op, rhs, group)
+	element <- apply(target, 1, matchElement, parTable=parTable)
+	free <- parTable$free[element]
+	out <- parTable$ustart[element]
+	out[free != 0] <- est[free[free != 0]]
+	out
+}

@@ -8,8 +8,8 @@ Partial Measurement Invariance Testing Across Groups
 This test will provide partial invariance testing by (a) freeing a parameter one-by-one from nested model and compare with the original nested model or (b) fixing (or constraining) a parameter one-by-one from the parent model and compare with the original parent model. This function only works with congeneric models. The \code{partialInvariance} is used for continuous variable. The \code{partialInvarianceCat} is used for categorical variables.
 }
 \usage{
-partialInvariance(fit, type, free = NULL, fix = NULL, p.adjust = "none", 
-	return.fit = FALSE)
+partialInvariance(fit, type, free = NULL, fix = NULL, refgroup = NULL, 
+    p.adjust = "none", return.fit = FALSE)
 partialInvarianceCat(fit, type, free = NULL, fix = NULL, p.adjust = "none", 
 	return.fit = FALSE)
 }
@@ -18,6 +18,7 @@ partialInvarianceCat(fit, type, free = NULL, fix = NULL, p.adjust = "none",
   \item{type}{The types of invariance testing: "metric", "scalar", "strict", or "means"}
   \item{free}{A vector of variable names that are free across groups in advance. If partial mean invariance is tested, this argument represents a vector of factor names that are free across groups.}
   \item{fix}{A vector of variable names that are constrained to be equal across groups in advance. If partial mean invariance is tested, this argument represents a vector of factor names that are fixed across groups.}
+  \item{refgroup}{The reference group used to make the effect size comparison with the other groups.}
   \item{p.adjust}{The method used to adjust p values. See \code{\link[stats]{p.adjust}} for the options for adjusting p values. The default is to not use any corrections.}
   \item{return.fit}{Return the submodels fitted by this function}
 }
@@ -33,17 +34,22 @@ There are four types of partial invariance testing:
 
 Two types of comparisons are used in this function:
 \enumerate{
-  \item{\code{free}: The nested model is used as a template. Then, one parameter indicating the differences between two models is free. The new model is compared with the nested model. This process is repeated for all differences between two models.}
-  \item{\code{fix}: The parent model is used as a template. Then, one parameter indicating the differences between two models is fixed or constrained to be equal to other parameters. The new model is then compared with the parent model. This process is repeated for all differences between two models.}
+  \item{\code{free}: The nested model is used as a template. Then, one parameter indicating the differences between two models is free. The new model is compared with the nested model. This process is repeated for all differences between two models. The likelihood-ratio test and the difference in CFI are provided.}
+  \item{\code{fix}: The parent model is used as a template. Then, one parameter indicating the differences between two models is fixed or constrained to be equal to other parameters. The new model is then compared with the parent model. This process is repeated for all differences between two models. The likelihood-ratio test and the difference in CFI are provided.}
   \item{\code{wald}: This method is similar to the \code{fix} method. However, instead of building a new model and compare them with likelihood-ratio test, multivariate wald test is used to compare equality between parameter estimates. See \code{\link{wald}} for further details. Note that if any rows of the contrast cannot be summed to 0, the Wald test is not provided, such as comparing two means where one of the means is fixed as 0. This test statistic is not as accurate as likelihood-ratio test provided in \code{fix}. I provide it here in case that likelihood-ratio test fails to converge.}
 }
 
 Note that this function does not adjust for the inflated Type I error rate from multiple tests. The degree of freedom of all tests would be the number of groups minus 1.
+
+The details of standardized estimates and the effect size used for each parameters are provided in the vignettes by running \code{vignette("partialInvariance")}.
 }
 \value{
-	If \code{return.fit = FALSE}, the result tables are provided. Chi-square and p-value are provided for all methods. 
-	
-	If \code{return.fit = TRUE}, a list with two elements are provided. The first element is the tabular result. The second element is the submodels used in the \code{free} and \code{fix} methods, as well as the nested and parent models. The nested and parent models will be changed from the original models if \code{free} or \code{fit} arguments are specified. 
+	A list of results are provided. The list will consists of at least two elements:
+	\enumerate{
+	  \item{\code{estimates}: The results of parameter estimates including pooled estimates (\code{poolest}), the estimates for each group, standardized estimates for each group (\code{std}), the difference in standardized values, and the effect size statistic (\emph{q} for factor loading difference and \emph{h} for error variance difference).}
+	  \item{\code{results}: Statistical tests as well as the change in CFI are provided. Chi-square and p-value are provided for all methods. }
+	  \item{\code{models}: The submodels used in the \code{free} and \code{fix} methods, as well as the nested and parent models. The nested and parent models will be changed from the original models if \code{free} or \code{fit} arguments are specified. }
+	}	
 }
 \author{
 	Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})

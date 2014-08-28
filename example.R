@@ -854,6 +854,33 @@ partialInvariance(models3, "strict")
 partialInvariance(models2, "means")
 partialInvariance(models3, "means")
 
+genscript <- '
+f1 =~ 0.7*x1 + c(0.9, 0.1, 0.2, 0.5)*x2 + 0.5*x3 + 0.7*x4 + 0.8*x5
+f1 ~~ c(1, 1.1, 0.9, 0.7)*f1
+f1 ~ c(0, 0.5, -0.5, 0.2)*1
+x1 ~~ 0.5*x1
+x2 ~~ 0.5*x2
+x3 ~~ 0.5*x3
+x4 ~~ 0.5*x4
+x5 ~~ 0.5*x5
+x1 ~ 0*1
+x2 ~ c(0, -0.5, 0.5, 0.2)*x2
+x3 ~ 0*1
+x4 ~ 0*1
+x5 ~ 0*1
+'
+dat <- simulateData(genscript, sample.nobs = c(150, 200, 250, 300))
+
+mod <- 'f1 =~ x1 + x2 + x3 + x4 + x5'
+models4 <- measurementInvariance(mod, data=dat, group="group", strict = TRUE)
+models5 <- measurementInvariance(mod, data=dat, group="group", strict = TRUE, std.lv=TRUE)
+
+partialInvariance(models4, "metric", refgroup = 2)
+partialInvariance(models5, "metric", refgroup = 2)
+
+partialInvariance(models4, "scalar")
+partialInvariance(models5, "scalar")
+
 ################################ Partial Invariance Cat Tests
 
 f <- rnorm(1000, 0, 1)
