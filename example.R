@@ -940,11 +940,11 @@ modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", parame
 modelsCat3 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
     estimator="wlsmv", std.lv = TRUE, strict = TRUE)
 
-partialInvarianceCat(modelsCat2, type = "scalar")
-partialInvarianceCat(modelsCat3, type = "scalar")
-
 partialInvarianceCat(modelsCat2, type = "metric")
 partialInvarianceCat(modelsCat3, type = "metric")
+
+partialInvarianceCat(modelsCat2, type = "scalar")
+partialInvarianceCat(modelsCat3, type = "scalar")
 
 partialInvarianceCat(modelsCat2, type = "strict")
 partialInvarianceCat(modelsCat3, type = "strict")

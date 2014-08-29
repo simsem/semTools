@@ -1,6 +1,21 @@
 # Work with only with congeneric models
 
-partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = "none", return.fit = FALSE) { 
+partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, poolvar = TRUE, p.adjust = "none", return.fit = FALSE) { 
+	# model <- ' f1 =~ u1 + u2 + u3 + u4
+			   # f2 =~ u5 + u6 + u7 + u8'
+
+	# modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
+		# estimator="wlsmv", strict = TRUE)
+	# fit <- modelsCat2
+	# type <- "strict"
+	# free <- NULL
+	# fix <- NULL
+	# refgroup <- 1
+	# poolvar <- TRUE
+	# p.adjust <- "none"
+	# return.fit <- FALSE
+	
+
 	type <- tolower(type)
 	numType <- 0
 	fit1 <- fit0 <- NULL
@@ -94,6 +109,14 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 	names(fixIntceptFac) <- names(facList)
 	
 	ngroups <- max(pt0$group)
+	neach <- unlist(fit0@Data@nobs)
+	groupvar <- fit0@Data@group
+	grouplab <- fit0@Data@group.label
+	if(!is.numeric(refgroup)) refgroup <- which(refgroup == grouplab)
+	grouporder <- 1:ngroups
+	grouporder <- c(refgroup, setdiff(grouporder, refgroup))
+	grouplaborder <- grouplab[grouporder]
+	complab <- paste(grouplaborder[2:ngroups], "vs.", grouplaborder[1])
 	if(ngroups <= 1) stop("Well, the number of groups is 1. Measurement invariance across 'groups' cannot be done.")
 
 	if(numType == 4) {
@@ -102,8 +125,10 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 		if(!all(c(free, fix) %in% varnames)) stop("'free' and 'fix' arguments should consist of variable names.")
 	}
 	result <- fixCon <- freeCon <- NULL
+	estimates <- NULL
 	listFreeCon <- listFixCon <- list()	
 	beta <- coef(fit1)
+	beta0 <- coef(fit0)
 	waldMat <- matrix(0, ngroups - 1, length(beta))	
 	if(numType == 1) {
 		if(!is.null(free) | !is.null(fix)) {
@@ -160,13 +185,22 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
 			beta <- coef(fit1)
+			beta0 <- coef(fit0)
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		fixCon <- freeCon <- waldCon <- matrix(NA, length(varfree), 3)
-		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
-		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
+		estimates <- matrix(NA, length(varfree), ngroups + 1)
+		stdestimates <- matrix(NA, length(varfree), ngroups)
+		colnames(estimates) <- c("poolest", paste0("load:", grouplab))
+		colnames(stdestimates) <- paste0("std:", grouplab)
+		esstd <- esz <- matrix(NA, length(varfree), ngroups - 1)
+		colnames(esstd) <- paste0("diff_std:", complab)
+		colnames(esz) <- paste0("q:", complab)
+		fixCon <- freeCon <- matrix(NA, length(varfree), 4)
+		waldCon <- matrix(NA, length(varfree), 3)
+		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p", "fix.cfi")
+		colnames(freeCon) <- c("free.chi", "free.df", "free.p", "free.cfi")
 		colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
 		index <- which((pt1$rhs %in% varfree) & (pt1$op == "=~") & (pt1$group == 1))
 		facinfix <- findFactor(fix, facList)
@@ -183,14 +217,31 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
 				compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
-				if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
+				if(!is(compresult, "try-error"))  fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 			}
 			listFixCon <- c(listFixCon, tryresult)
 			temp0 <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+			estimates[pos, 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
-				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
+				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
+				loadVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				estimates[pos, 2:ncol(estimates)] <- loadVal
+				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
+				totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$rhs[runnum])
+				names(facVal) <- names(totalVal) <- grouplab
+				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
+				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+				stdLoadVal <- loadVal * sqrt(refFacVal) / sqrt(refTotalVal)
+				stdestimates[pos,] <- stdLoadVal
+				stdLoadVal <- stdLoadVal[grouporder]
+				esstd[pos,] <- stdLoadVal[2:ngroups] - stdLoadVal[1]
+				if(any(abs(stdLoadVal) > 0.9999)) warning(paste("Standardized Loadings of", pt0$rhs[runnum], "in some groups are less than -1 or over 1. The standardized loadings used in Fisher z transformation are changed to -0.9999 or 0.9999."))
+				stdLoadVal[stdLoadVal > 0.9999] <- 0.9999
+				stdLoadVal[stdLoadVal < -0.9999] <- -0.9999
+				zLoadVal <- atanh(stdLoadVal)
+				esz[pos,] <- zLoadVal[2:ngroups] - zLoadVal[1]
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			waldCon[pos,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
@@ -214,7 +265,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 				if(!is(tryresult, "try-error")) {
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, newparentfit), silent = TRUE)
-					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
+					if(!is(compresult, "try-error")) fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(newparentfit, tempfit))
 				}
 				waldCon[pos,] <- waldConstraint(newparentfit, newparent, waldMat, cbind(facinvarfree[i], "=~", varnonfixvar[i], 1:ngroups))
 			} else {
@@ -222,7 +273,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 				if(!is(tryresult, "try-error")) {
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
-					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
+					if(!is(compresult, "try-error"))  fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 				}
 				waldCon[pos,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
 			}
@@ -232,10 +283,27 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			} else {
 				temp0 <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 			}
+			estimates[pos, 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
-				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
+				if(!is(compresult0, "try-error")) freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
+				loadVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				estimates[pos, 2:ncol(estimates)] <- loadVal
+				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
+				totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$rhs[runnum])
+				names(facVal) <- names(totalVal) <- grouplab
+				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
+				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+				stdLoadVal <- loadVal * sqrt(refFacVal) / sqrt(refTotalVal)
+				stdestimates[pos,] <- stdLoadVal
+				stdLoadVal <- stdLoadVal[grouporder]
+				esstd[pos,] <- stdLoadVal[2:ngroups] - stdLoadVal[1]
+				if(any(abs(stdLoadVal) > 0.9999)) warning(paste("Standardized Loadings of", pt0$rhs[runnum], "in some groups are less than -1 or over 1. The standardized loadings used in Fisher z transformation are changed to -0.9999 or 0.9999."))
+				stdLoadVal[stdLoadVal > 0.9999] <- 0.9999
+				stdLoadVal[stdLoadVal < -0.9999] <- -0.9999
+				zLoadVal <- atanh(stdLoadVal)
+				esz[pos,] <- zLoadVal[2:ngroups] - zLoadVal[1]
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			pos <- pos + 1
@@ -244,7 +312,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[c(indexfixvar, indexnonfixvar)]
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[c(indexfixvar, indexnonfixvar)]
+		estimates <- cbind(estimates, stdestimates, esstd, esz)
 		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 2) {
 		if(!is.null(free) | !is.null(fix)) {
@@ -257,7 +326,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 						if(dup[i]) {
 							for(s in 2:numfixthres) {
 								pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)
-								pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)			
+								pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)	
 							}
 						} else {
 							oldmarker <- fixIntceptFac[[facinfix[i]]]
@@ -270,7 +339,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 									}	
 								} else {
 									for(r in 2:numoldthres) {
-										pt1 <- freeParTable(pt1, oldmarker, "|", paste0("t", r), 1:ngroups)										
+										pt1 <- freeParTable(pt1, oldmarker, "|", paste0("t", r), 1:ngroups)									
 									}
 									for(s in 2:numfixthres) {
 										pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)		
@@ -319,13 +388,25 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
 			beta <- coef(fit1)
+			beta0 <- coef(fit0)
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		fixCon <- freeCon <- waldCon <- matrix(NA, length(varfree), 3)
-		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
-		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
+		maxcolumns <- max(numThreshold[varfree]) - 1
+		tname <- paste0("t", 2:(maxcolumns + 1))
+		estimates <- matrix(NA, length(varfree), (ngroups * length(tname)) + length(tname))
+		stdestimates <- matrix(NA, length(varfree), ngroups * length(tname))
+		tnameandlab <- expand.grid(tname, grouplab)
+		colnames(estimates) <- c(paste0("pool:", tname), paste0(tnameandlab[,1], ":", tnameandlab[,2]))
+		colnames(stdestimates) <- paste0("std:", tnameandlab[,1], ":", tnameandlab[,2])
+		esstd <- matrix(NA, length(varfree), (ngroups - 1)* length(tname))
+		tnameandcomplab <- expand.grid(tname, complab)
+		colnames(esstd) <- paste0("diff_std:", tnameandcomplab[,1], ":", tnameandcomplab[,2])
+		fixCon <- freeCon <- matrix(NA, length(varfree), 4)
+		waldCon <- matrix(NA, length(varfree), 3)
+		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p", "fix.cfi")
+		colnames(freeCon) <- c("free.chi", "free.df", "free.p", "free.cfi")
 		colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
 
 		facinfix <- findFactor(fix, facList)
@@ -343,18 +424,30 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
 				compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
-				if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
+				if(!is(compresult, "try-error"))  fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 			}
 			listFixCon <- c(listFixCon, tryresult)
 			temp0 <- pt0
 			for(s in 2:numThreshold[varinfixvar[i]]) {
 				runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
 				temp0 <- freeParTable(temp0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				estimates[pos, s - 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			}			
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
-				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
+				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
+				for(s in 2:numThreshold[varinfixvar[i]]) {
+					runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
+					thresVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+					estimates[pos, maxcolumns*(1:ngroups) + (s - 1)] <- thresVal
+					totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$lhs[runnum])
+					ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+					stdIntVal <- thresVal / sqrt(refTotalVal)
+					stdestimates[pos, maxcolumns*(1:ngroups - 1) + (s - 1)] <- stdIntVal
+					stdIntVal <- stdIntVal[grouporder]
+					esstd[pos, maxcolumns*(1:length(complab) - 1) + (s - 1)] <- stdIntVal[2:ngroups] - stdIntVal[1]
+				}
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			args <- list(fit1, pt1, waldMat)
@@ -375,8 +468,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 				candidatemarker <- candidatemarker[numThreshold[candidatemarker] > 1][1]
 				numcandidatethres <- numThreshold[candidatemarker]
 				newparent <- constrainParTable(pt1, candidatemarker, "|", "t2", 1:ngroups)
-				for(s in 2:numfixthres) {
-					newparent <- freeParTable(newparent, varnonfixvar[i], "|", paste0("t", s), 1:ngroups)			
+				for(s in 2:numcandidatethres) {
+					newparent <- freeParTable(newparent, varnonfixvar[i], "|", paste0("t", s), 1:ngroups)		
 				}	
 				temp <- newparent
 				for(s in 2:numThreshold[varnonfixvar[i]]) {
@@ -388,7 +481,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 				if(!is(tryresult, "try-error")) {
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, newparentfit), silent = TRUE)
-					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
+					if(!is(compresult, "try-error")) fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(newparentfit, tempfit))
 				}
 				args <- list(newparentfit, newparent, waldMat)
 				for(s in 2:numThreshold[varnonfixvar[i]]) {
@@ -405,7 +498,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 				if(!is(tryresult, "try-error")) {
 					compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
-					if(!is(compresult, "try-error"))  fixCon[pos,] <- unlist(modelcomp[2,5:7])
+					if(!is(compresult, "try-error"))  fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 				}
 				args <- list(fit1, pt1, waldMat)
 				for(s in 2:numThreshold[varnonfixvar[i]]) {
@@ -420,11 +513,23 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			for(s in 2:numThreshold[varnonfixvar[i]]) {
 				runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
 				temp0 <- freeParTable(temp0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				estimates[pos, s - 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			}
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
-				if(!is(compresult0, "try-error"))  freeCon[pos,] <- unlist(modelcomp0[2,5:7])
+				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
+				for(s in 2:numThreshold[varnonfixvar[i]]) {
+					runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
+					thresVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+					estimates[pos, maxcolumns*(1:ngroups) + (s - 1)] <- thresVal
+					totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$lhs[runnum])
+					ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+					stdIntVal <- thresVal / sqrt(refTotalVal)
+					stdestimates[pos, maxcolumns*(1:ngroups - 1) + (s - 1)] <- stdIntVal
+					stdIntVal <- stdIntVal[grouporder]
+					esstd[pos, maxcolumns*(1:length(complab) - 1) + (s - 1)] <- stdIntVal[2:ngroups] - stdIntVal[1]
+				}
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			pos <- pos + 1
@@ -432,7 +537,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 		freeCon[,3] <- stats::p.adjust(freeCon[,3], p.adjust)
 		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- paste0(c(varinfixvar, varnonfixvar), "|")
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- paste0(c(varinfixvar, varnonfixvar), "|")
+		estimates <- cbind(estimates, stdestimates, esstd)
 		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 3) {
 		if(!is.null(free) | !is.null(fix)) {
@@ -453,29 +559,52 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
 			beta <- coef(fit1)
+			beta0 <- coef(fit0)
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		fixCon <- freeCon <- waldCon <- matrix(NA, length(varfree), 3)
-		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
-		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
+		estimates <- matrix(NA, length(varfree), ngroups + 1)
+		stdestimates <- matrix(NA, length(varfree), ngroups)
+		colnames(estimates) <- c("poolest", paste0("errvar:", grouplab))
+		colnames(stdestimates) <- paste0("std:", grouplab)
+		esstd <- esz <- matrix(NA, length(varfree), ngroups - 1)
+		colnames(esstd) <- paste0("diff_std:", complab)
+		colnames(esz) <- paste0("h:", complab)
+		fixCon <- freeCon <- matrix(NA, length(varfree), 4)
+		waldCon <- matrix(NA, length(varfree), 3)
+		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p", "fix.cfi")
+		colnames(freeCon) <- c("free.chi", "free.df", "free.p", "free.cfi")
 		colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
 		index <- which((pt1$lhs %in% varfree) & (pt1$op == "~~") & (pt1$lhs == pt1$rhs) & (pt1$group == 1))
 		for(i in seq_along(index)) {
 			runnum <- index[i]
-			temp <- constrainParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
+			ustart <- getValue(pt1, beta, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1)
+			temp <- fixParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 2:ngroups, ustart)
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
 				compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
-				if(!is(compresult, "try-error"))  fixCon[i,] <- unlist(modelcomp[2,5:7])
+				if(!is(compresult, "try-error"))  fixCon[i,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 			}
 			listFixCon <- c(listFixCon, tryresult)
-			temp0 <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+			temp0 <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 2:ngroups)
+			estimates[i, 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
-				if(!is(compresult0, "try-error"))  freeCon[i,] <- unlist(modelcomp0[2,5:7])
+				if(!is(compresult0, "try-error"))  freeCon[i,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
+				errVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				estimates[i, 2:ncol(estimates)] <- errVal
+				totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$rhs[runnum])
+				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+				stdErrVal <- errVal / sqrt(refTotalVal)
+				stdestimates[i,] <- stdErrVal
+				stdErrVal <- stdErrVal[grouporder]
+				esstd[i,] <- stdErrVal[2:ngroups] - stdErrVal[1]
+				if(any(abs(stdErrVal) > 0.9999)) warning(paste("The uniqueness of", pt0$rhs[runnum], "in some groups are over 1. The uniqueness used in arctan transformation are changed to 0.9999."))
+				stdErrVal[stdErrVal > 0.9999] <- 0.9999
+				zErrVal <- asin(sqrt(stdErrVal))
+				esz[i,] <- zErrVal[2:ngroups] - zErrVal[1]
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			waldCon[i,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
@@ -483,7 +612,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 		freeCon[,3] <- stats::p.adjust(freeCon[,3], p.adjust)
 		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[index]
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[index]
+		estimates <- cbind(estimates, stdestimates, esstd, esz)
 		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 4) {
 		varfree <- facnames
@@ -505,13 +635,21 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
 			beta <- coef(fit1)
+			beta0 <- coef(fit0)
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		fixCon <- freeCon <- waldCon <- matrix(NA, length(varfree), 3)
-		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p")
-		colnames(freeCon) <- c("free.chi", "free.df", "free.p")
+		estimates <- matrix(NA, length(varfree), ngroups + 1)
+		stdestimates <- matrix(NA, length(varfree), ngroups)
+		colnames(estimates) <- c("poolest", paste0("mean:", grouplab))
+		colnames(stdestimates) <- paste0("std:", grouplab)
+		esstd <- matrix(NA, length(varfree), ngroups - 1)
+		colnames(esstd) <- paste0("diff_std:", complab)
+		fixCon <- freeCon <- matrix(NA, length(varfree), 4)
+		waldCon <- matrix(NA, length(varfree), 3)
+		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p", "fix.cfi")
+		colnames(freeCon) <- c("free.chi", "free.df", "free.p", "free.cfi")
 		colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
 		index <- which((pt1$lhs %in% varfree) & (pt1$op == "~1") & (pt1$group == 1))
 		for(i in seq_along(index)) {
@@ -525,7 +663,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
 				compresult <- try(modelcomp <- lavTestLRT(tempfit, fit1), silent = TRUE)
-				if(!is(compresult, "try-error"))  fixCon[i,] <- unlist(modelcomp[2,5:7])
+				if(!is(compresult, "try-error"))  fixCon[i,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 			}
 			listFixCon <- c(listFixCon, tryresult)
 			isfree0 <- pt0$free[runnum] != 0
@@ -534,10 +672,19 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 			} else {
 				temp0 <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 2:ngroups)
 			}
+			estimates[i, 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavTestLRT(tempfit0, fit0), silent = TRUE)
-				if(!is(compresult0, "try-error"))  freeCon[i,] <- unlist(modelcomp0[2,5:7])
+				if(!is(compresult0, "try-error"))  freeCon[i,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
+				meanVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				estimates[i, 2:ncol(estimates)] <- meanVal
+				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
+				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
+				stdMeanVal <- meanVal / sqrt(refFacVal)
+				stdestimates[i,] <- stdMeanVal
+				stdMeanVal <- stdMeanVal[grouporder]
+				esstd[i,] <- stdMeanVal[2:ngroups] - stdMeanVal[1]
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			waldCon[i,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
@@ -545,12 +692,29 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, p.adjust = 
 		freeCon[,3] <- stats::p.adjust(freeCon[,3], p.adjust)
 		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
-		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- namept1[index]
-		result <- cbind(freeCon, fixCon, waldCon)		
+		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[index]
+		estimates <- cbind(estimates, stdestimates, esstd)
+		result <- cbind(freeCon, fixCon, waldCon)			
 	}
 	if(return.fit) {
-		return(invisible(list(result = result, models = list(free = listFreeCon, fix = listFixCon, nested = fit0, parent = fit1))))
+		return(invisible(list(estimates = estimates, results = result, models = list(free = listFreeCon, fix = listFixCon, nested = fit0, parent = fit1))))
 	} else {
-		return(result)
+		return(list(estimates = estimates, results = result))
 	}
+}
+
+thetaImpliedTotalVar <- function(object) {
+	param <- inspect(object, "coef")
+	ngroup <- object@Data@ngroups
+	name <- names(param)
+	ly <- param[name == "lambda"]
+	ps <- impliedFactorCov(object)
+	if(ngroup == 1) ps <- list(ps)
+	te <- param[name == "theta"]
+	result <- list()
+	for(i in 1:ngroup) {
+		common <- (apply(ly[[i]], 2, sum)^2) * diag(ps[[i]])
+		result[[i]] <- ly[[i]]%*%ps[[i]]%*%t(ly[[i]]) + te[[i]]
+	}
+	result
 }

@@ -1,6 +1,6 @@
 # Work with only with congeneric models
 
-partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NULL, p.adjust = "none", return.fit = FALSE) { 
+partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, poolvar = TRUE, p.adjust = "none", return.fit = FALSE) { 
 	type <- tolower(type)
 	numType <- 0
 	fit1 <- fit0 <- NULL
@@ -78,9 +78,9 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NUL
 	neach <- unlist(fit0@Data@nobs)
 	groupvar <- fit0@Data@group
 	grouplab <- fit0@Data@group.label
-	if(!is.null(refgroup) & !is.numeric(refgroup)) refgroup <- which(refgroup == grouplab)
+	if(!is.numeric(refgroup)) refgroup <- which(refgroup == grouplab)
 	grouporder <- 1:ngroups
-	if(!is.null(refgroup)) grouporder <- c(refgroup, setdiff(grouporder, refgroup))
+	grouporder <- c(refgroup, setdiff(grouporder, refgroup))
 	grouplaborder <- grouplab[grouporder]
 	complab <- paste(grouplaborder[2:ngroups], "vs.", grouplaborder[1])
 	if(ngroups <= 1) stop("Well, the number of groups is 1. Measurement invariance across 'groups' cannot be done.")
@@ -197,8 +197,8 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NUL
 				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
 				totalVal <- sapply(fitted.values(tempfit0), function(x, v) x$cov[v, v], v = pt0$rhs[runnum])
 				names(facVal) <- names(totalVal) <- grouplab
-				ifelse(is.null(refgroup), refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
-				ifelse(is.null(refgroup), refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
+				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
 				stdLoadVal <- loadVal * sqrt(refFacVal) / sqrt(refTotalVal)
 				stdestimates[pos,] <- stdLoadVal
 				stdLoadVal <- stdLoadVal[grouporder]
@@ -214,7 +214,6 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NUL
 			pos <- pos + 1
 		}
 
-		
 		facinvarfree <- findFactor(varnonfixvar, facList)
 		for(i in seq_along(indexnonfixvar)) {
 			runnum <- indexnonfixvar[i]
@@ -260,8 +259,8 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NUL
 				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
 				totalVal <- sapply(fitted.values(tempfit0), function(x, v) x$cov[v, v], v = pt0$rhs[runnum])
 				names(facVal) <- names(totalVal) <- grouplab
-				ifelse(is.null(refgroup), refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
-				ifelse(is.null(refgroup), refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
+				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
 				stdLoadVal <- loadVal * sqrt(refFacVal) / sqrt(refTotalVal)
 				stdestimates[pos,] <- stdLoadVal
 				stdLoadVal <- stdLoadVal[grouporder]
@@ -379,7 +378,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NUL
 				intVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[pos, 2:ncol(estimates)] <- intVal
 				totalVal <- sapply(fitted.values(tempfit0), function(x, v) x$cov[v, v], v = pt0$lhs[runnum])
-				ifelse(is.null(refgroup), refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
 				stdIntVal <- intVal / sqrt(refTotalVal)
 				stdestimates[pos,] <- stdIntVal
 				stdIntVal <- stdIntVal[grouporder]
@@ -433,7 +432,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NUL
 				intVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[pos, 2:ncol(estimates)] <- intVal
 				totalVal <- sapply(fitted.values(tempfit0), function(x, v) x$cov[v, v], v = pt0$lhs[runnum])
-				ifelse(is.null(refgroup), refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
 				stdIntVal <- intVal / sqrt(refTotalVal)
 				stdestimates[pos,] <- stdIntVal
 				stdIntVal <- stdIntVal[grouporder]
@@ -504,7 +503,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NUL
 				errVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[i, 2:ncol(estimates)] <- errVal
 				totalVal <- sapply(fitted.values(tempfit0), function(x, v) x$cov[v, v], v = pt0$rhs[runnum])
-				ifelse(is.null(refgroup), refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
+				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
 				stdErrVal <- errVal / sqrt(refTotalVal)
 				stdestimates[i,] <- stdErrVal
 				stdErrVal <- stdErrVal[grouporder]
@@ -589,7 +588,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = NUL
 				meanVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[i, 2:ncol(estimates)] <- meanVal
 				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
-				ifelse(is.null(refgroup), refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
+				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
 				stdMeanVal <- meanVal / sqrt(refFacVal)
 				stdestimates[i,] <- stdMeanVal
 				stdMeanVal <- stdMeanVal[grouporder]
