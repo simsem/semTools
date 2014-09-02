@@ -226,14 +226,15 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 				temp <- fixParTable(temp, facinvarfree[i], "=~", candidatemarker, 1:ngroups)
 				newparent <- freeParTable(pt1, facinvarfree[i], "=~", varnonfixvar[i], 1:ngroups)
 				newparent <- fixParTable(newparent, facinvarfree[i], "=~", candidatemarker, 1:ngroups)
-				newparentfit <- refit(newparent, fit1)
-				
-				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
-				if(!is(tryresult, "try-error")) {
-					compresult <- try(modelcomp <- lavTestLRT(tempfit, newparentfit), silent = TRUE)
-					if(!is(compresult, "try-error")) fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(newparentfit, tempfit))
+				newparentresult <- try(newparentfit <- refit(newparent, fit1), silent = TRUE)
+				if(!is(newparentresult, "try-error")) {
+					tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
+					if(!is(tryresult, "try-error")) {
+						compresult <- try(modelcomp <- lavTestLRT(tempfit, newparentfit), silent = TRUE)
+						if(!is(compresult, "try-error")) fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(newparentfit, tempfit))
+					}
+					waldCon[pos,] <- waldConstraint(newparentfit, newparent, waldMat, cbind(facinvarfree[i], "=~", varnonfixvar[i], 1:ngroups))
 				}
-				waldCon[pos,] <- waldConstraint(newparentfit, newparent, waldMat, cbind(facinvarfree[i], "=~", varnonfixvar[i], 1:ngroups))
 			} else {
 				temp <- constrainParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
@@ -401,14 +402,15 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 				temp <- fixParTable(temp, candidatemarker, "~1", "", 1:ngroups)
 				newparent <- freeParTable(pt1, varfree[i], "~1", "", 1:ngroups)
 				newparent <- fixParTable(newparent, candidatemarker, "~1", "", 1:ngroups)
-				newparentfit <- refit(newparent, fit1)
-				
-				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
-				if(!is(tryresult, "try-error")) {
-					compresult <- try(modelcomp <- lavTestLRT(tempfit, newparentfit), silent = TRUE)
-					if(!is(compresult, "try-error")) fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(newparentfit, tempfit))
+				newparentresult <- try(newparentfit <- refit(newparent, fit1), silent = TRUE)
+				if(!is(newparentresult, "try-error")) {
+					tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
+					if(!is(tryresult, "try-error")) {
+						compresult <- try(modelcomp <- lavTestLRT(tempfit, newparentfit), silent = TRUE)
+						if(!is(compresult, "try-error")) fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(newparentfit, tempfit))
+					}
+					waldCon[pos,] <- waldConstraint(newparentfit, newparent, waldMat, cbind(varfree[i], "~1", "", 1:ngroups))
 				}
-				waldCon[pos,] <- waldConstraint(newparentfit, newparent, waldMat, cbind(varfree[i], "~1", "", 1:ngroups))
 			} else {
 				temp <- constrainParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)

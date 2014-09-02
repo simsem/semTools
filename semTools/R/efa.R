@@ -191,7 +191,7 @@ funRotate <- function(object, fun, ...) {
 rotateStdLoadings <- function(est, object, rotate=NULL, aux=NULL) {
 	ov.names <- lavNames(object@ParTable, "ov", group = 1)
     lv.names <- lavNames(object@ParTable, "lv", group = 1)
-	OV <- sqrt(lavaan:::computeVY(object@Model, samplestats = object@SampleStats)[[1]])[!(ov.names %in% aux)]
+	OV <- sqrt(lavTech(object, "vy")[[1]])[!(ov.names %in% aux)]
 	partable <- object@ParTable
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	loading <- (solve(diag(OV)) %*% matrix(est[idx], ncol=length(lv.names))) %*% rotate
@@ -220,7 +220,7 @@ seStdLoadings <- function(rotate, object) {
 	if(is(object, "lavaanStar")) {
 		aux <- object@auxNames
 	}
-	JAC <- lavaan:::lavJacobianD(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate, aux=aux)
+	JAC <- lav_func_jacobian_simple(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate, aux=aux)
 	LIST <- inspect(object, "list")
 	unco.idx <- which(LIST$unco > 0L)
 	LIST <- LIST[,c("lhs", "op", "rhs", "group")]

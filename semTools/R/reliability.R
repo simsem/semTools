@@ -18,7 +18,8 @@ reliability <- function(object) {
 	threshold <- NULL
 	S <- object@SampleStats@cov
 	if(categorical) {
-		polycor <- polycorLavaan(object)
+		polycor <- polycorLavaan(object) # Check the order of variable names!!!!!!!!!!!!!!!!!!!!!!!!!!
+		# Check when the ordered argument is not specified!!!!!!!!!!!!!!!!!
 		if(ngroup == 1) polycor <- list(polycor)
 		S <- polycor
 		threshold <- getThreshold(object)

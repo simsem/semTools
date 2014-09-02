@@ -100,7 +100,7 @@ satParFMI <- function(dat.imp, var.names=NULL, groups=NULL){
   unco <- id
   par.sat <- list(id, lhs.all, op.all, rhs.all, user, group,
                   free, ustart, exo, label, eq.id, unco)
-  names(par.sat)<-names(par.null)
+  names(par.sat) <- c("id", "lhs", "op", "rhs", "user", "group", "free", "ustart", "exo", "label", "eq.id", "unco")
   return(par.sat)
 }
 

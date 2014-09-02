@@ -120,7 +120,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	} else {
 		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
 	}
-	nullModel <- partable(lavaan:::independence.model.fit(template))
+	nullModel <- lav_partable_independence(template)
     null.results <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...))
 
 	convergedNull.l <- sapply(null.results, function(x) x@Fit@converged)
@@ -421,7 +421,7 @@ satPartable <- function(fit.alt){
 	ngroups <- fit.alt@Data@ngroups # get the number of groups 
 	# gets the parameter table from the null model
 	
-	par.null <- partable(lavaan:::independence.model.fit(fit.alt))
+	par.null <- lav_partable_independence(fit.alt)
 	lhs.diag <- par.null$lhs
 	op.diag <- par.null$op
 	rhs.diag <- par.null$rhs
@@ -447,7 +447,7 @@ satPartable <- function(fit.alt){
 	unco <- id
 	par.sat <- list(id, lhs.all, op.all, rhs.all, user, group,
 				  free, ustart, exo, label, eq.id, unco)
-	names(par.sat)<-colnames(par.alt)
+	names(par.sat) <- c("id", "lhs", "op", "rhs", "user", "group", "free", "ustart", "exo", "label", "eq.id", "unco")
 	return(par.sat)
 }
 
