@@ -18,11 +18,11 @@ reliability <- function(object) {
 	threshold <- NULL
 	S <- object@SampleStats@cov
 	if(categorical) {
-		polycor <- polycorLavaan(object) # Check the order of variable names!!!!!!!!!!!!!!!!!!!!!!!!!!
-		# Check when the ordered argument is not specified!!!!!!!!!!!!!!!!!
+		polycor <- polycorLavaan(object) 
 		if(ngroup == 1) polycor <- list(polycor)
-		S <- polycor
+		S <- lapply(polycor, function(x) x[rownames(ly[[1]]), rownames(ly[[1]])])
 		threshold <- getThreshold(object)
+		SigmaHat <- thetaImpliedTotalVar(object)
 	}
 	flag <- FALSE
 	result <- list()
@@ -145,6 +145,7 @@ omegaCat <- function(truevar, implied, threshold, denom) {
 	invstdvar <- 1 / sqrt(diag(implied))
 	polyr <- diag(invstdvar) %*% polyc %*% diag(invstdvar)
 	nitem <- ncol(implied)
+	denom <- cov2cor(denom)
 	sumnum <- 0
 	addden <- 0
 	for(j in 1:nitem) {
@@ -282,10 +283,8 @@ maximalRelia <- function(object) {
 	ly <- param[name == "lambda"]
 	ps <- impliedFactorCov(object)
 	if(ngroup == 1) ps <- list(ps)
-	te <- param[name == "theta"]
 	SigmaHat <- object@Fit@Sigma.hat
 	tau <- param[name = "tau"]
-	implied <- fitted.values(object)[name = "cov"]
 	categorical <- !is.null(tau[[1]])
 	threshold <- NULL
 	S <- object@SampleStats@cov
@@ -293,8 +292,9 @@ maximalRelia <- function(object) {
 	if(categorical) {
 		polycor <- polycorLavaan(object)
 		if(ngroup == 1) polycor <- list(polycor)
-		S <- polycor
+		S <- lapply(polycor, function(x) x[rownames(ly[[1]]), rownames(ly[[1]])])
 		threshold <- getThreshold(object)
+		SigmaHat <- thetaImpliedTotalVar(object)
 	}
 	for(i in 1:ngroup) {
 		truevar <- ly[[i]]%*%ps[[i]]%*%t(ly[[i]])

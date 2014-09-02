@@ -619,6 +619,9 @@ rotate =~ rotate.3 + rotate.4 + rotate.6 + rotate.8
 fit4 <- cfa(iq.model, data=dat)
 reliability(fit4) # Should provide a warning for coefficient alpha
 
+fit42 <- cfa(iq.model, data=dat, parameterization = "theta")
+reliability(fit42) # Should provide a warning for coefficient alpha
+
 HS.model2 <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 
@@ -985,4 +988,4 @@ reason =~ reason.4 + reason.16 + reason.17 + reason.19
 letter =~ letter.7 + letter.33 + letter.34 + letter.58
 '
 fit5 <- cfa(iq.model2, data=dat)
-maximalRelia(fit5) # Should provide a warning for coefficient alpha
+maximalRelia(fit5) a
