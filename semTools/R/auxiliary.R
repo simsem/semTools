@@ -60,19 +60,19 @@ auxiliary <- function(model, aux, fun, ...) {
 	args$missing <- "fiml"
 	
 	if(is(model, "lavaan")) {
-		if(!fit@Options$meanstructure) stop("The lavaan fitted model must evaluate the meanstructure. Please re-fit the lavaan object again with 'meanstructure=TRUE'")
+		if(!model@Options$meanstructure) stop("The lavaan fitted model must evaluate the meanstructure. Please re-fit the lavaan object again with 'meanstructure=TRUE'")
 		model <- model@ParTable
 	} else if(!(is.list(model) && ("lhs" %in% names(model)))) {
 		fit <- do.call(fun, c(list(model=model, do.fit=FALSE), args))
 		model <- fit@ParTable
 	}
-	
+	model <- model[setdiff(1:length(model), which(names(model) == "start"))]
+
 	if(any(model$exo == 1)) {
 		stop("All exogenous variables (covariates) must be treated as endogenous variables by the 'auxiliary' function (fixed.x = FALSE).")
 	}
 
 	auxResult <- craftAuxParTable(model = model, aux = aux, ...)
-	
 	if(checkOrdered(args$data, auxResult$indName, ...)) {
 		stop("The analysis model or the analysis data have ordered categorical variables. The auxiliary variable feature is not available for the models for categorical variables with the weighted least square approach.")
 	}
@@ -111,7 +111,6 @@ craftAuxParTable <- function(model, aux, ...) {
 	constraintLine <- model$op %in% c("==", ":=", ">", "<")
 	modelConstraint <- lapply(model, "[", constraintLine)
 	model <- lapply(model, "[", !constraintLine)
-	
 	facName <- NULL
 	indName <- NULL
 	singleIndicator <- NULL
@@ -123,17 +122,20 @@ craftAuxParTable <- function(model, aux, ...) {
 		model$lhs <- gsub(singleIndicator[i], facSingleIndicator[i], model$lhs)
 		model$rhs <- gsub(singleIndicator[i], facSingleIndicator[i], model$rhs)
 	}
-		
 	ngroups <- max(model$group)
-		if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, facSingleIndicator, "=~", singleIndicator, ngroups, fixed = TRUE, ustart = 1, expand = FALSE)
-		if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, singleIndicator, "~~", singleIndicator, ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
+	if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, facSingleIndicator, "=~", singleIndicator, ngroups, fixed = TRUE, ustart = 1, expand = FALSE)
+	if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, singleIndicator, "~~", singleIndicator, ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
+	if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, singleIndicator, "~1", "", ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
 	if(is.null(indName) || length(indName) == 0) {
 		faux <- paste0("f", aux)
 		model <- attachPT(model, faux, "=~", aux, ngroups, fixed = TRUE, ustart = 1, expand = FALSE)
 		model <- attachPT(model, aux, "~~", aux, ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
 		model <- attachPT(model, facSingleIndicator, "~~", faux, ngroups)
 		model <- attachPT(model, faux, "~~", faux, ngroups, symmetric=TRUE)
-		if(any(model$op == "~1")) model <- attachPT(model, faux, "~1", "", ngroups)
+		if(any(model$op == "~1")) {
+			model <- attachPT(model, faux, "~1", "", ngroups)
+			model <- attachPT(model, aux, "~1", "", ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
+		}
 	} else {
 		if(!is.null(indName) && length(indName) != 0) model <- attachPT(model, indName, "~~", aux, ngroups)
 		model <- attachPT(model, aux, "~~", aux, ngroups, symmetric=TRUE, useUpper=TRUE)
@@ -141,6 +143,7 @@ craftAuxParTable <- function(model, aux, ...) {
 		if(any(model$op == "~1")) model <- attachPT(model, aux, "~1", "", ngroups)
 	}
 	model <- attachConstraint(model, modelConstraint)
+
 	list(model = model, indName = union(indName, singleIndicator))
 }
 
