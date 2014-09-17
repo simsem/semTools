@@ -14,7 +14,7 @@ export(
 	findRMSEApowernested, findRMSEAsamplesizenested, plotRMSEApowernested,
 	parcelAllocation, 
 	monteCarloMed, 
-	splitSample, 
+	splitSample, mvrnonnorm,
 	indProd, 
 	residualCovariate, 
 	probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC, 
@@ -32,5 +32,6 @@ export(
 	efaUnrotate, orthRotate, oblqRotate, funRotate,
 	kd, bsBootMiss, net, 
 	singleParamTest,
-	partialInvariance, partialInvarianceCat
+	partialInvariance, partialInvarianceCat,
+	quark, combinequark
 )

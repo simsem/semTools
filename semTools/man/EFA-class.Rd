@@ -33,7 +33,7 @@
 \code{\link{efaUnrotate}}; \code{\link{orthRotate}}; \code{\link{oblqRotate}}
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \examples{
 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")

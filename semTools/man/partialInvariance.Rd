@@ -53,7 +53,7 @@ The details of standardized estimates and the effect size used for each paramete
 	}	
 }
 \author{
-	Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+	Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \seealso{
 	\code{\link{measurementInvariance}} for measurement invariance for continuous variables; \code{\link{measurementInvarianceCat}} for measurement invariance for categorical variables; \code{\link{wald}} for multivariate Wald test

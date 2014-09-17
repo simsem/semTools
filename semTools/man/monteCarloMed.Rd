@@ -36,13 +36,13 @@ A list with two elements. The first element is the point estimate for the indire
 \references{
 Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method for assessing multilevel mediation: An interactive tool for creating confidence intervals for indirect effects in 1-1-1 multilevel models [Computer software]. Available from \url{http://quantpsy.org/}.
 
-Preacher, K. J., & Selig, J. P. (in press). Advantages of Monte Carlo confidence intervals for indirect effects. \emph{Communication Methods and Measures}.
+Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence intervals for indirect effects. \emph{Communication Methods and Measures, 6}, 77-98.
 
 Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for assessing mediation: An interactive tool for creating confidence intervals for indirect effects [Computer software]. Available from \url{http://quantpsy.org/}.
 
 }
 \author{
-    Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
+    Corbin Quick (University of Michigan; \email{corbinq@umich.edu})
 	Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 	James P. Selig (University of New Mexico; \email{selig@unm.edu})
 }

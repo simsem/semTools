@@ -33,7 +33,7 @@ MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis and de
 Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit index. \emph{Structural Equation Modeling, 5}, 411-419.
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \seealso{
 	\itemize{

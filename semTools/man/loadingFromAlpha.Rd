@@ -15,7 +15,7 @@ loadingFromAlpha(alpha, ni)
     \item{result}{The standardized factor loadings that make desired coefficient alpha with specified number of items.}
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \examples{
     loadingFromAlpha(0.8, 4)

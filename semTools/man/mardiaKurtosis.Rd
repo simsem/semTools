@@ -28,7 +28,7 @@ mardiaKurtosis(dat)
 Mardia, K. V. (1970). Measures of multivariate skewness and kurtosis with applications. \emph{Biometrika, 57}, 519-530.
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \seealso{
 	\itemize{

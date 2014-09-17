@@ -34,7 +34,7 @@ Sterba, S.K. (2011). Implications of parcel-allocation variability for comparing
 Sterba, S.K. & MacCallum, R.C. (2010). Variability in parameter estimates and model fit across random allocations of items to parcels. \emph{Multivariate Behavioral Research, 45,} 322-358.
 }
 \author{
-    Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
+    Corbin Quick (University of Michigan; \email{corbinq@umich.edu})
 	Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 }
 \examples{

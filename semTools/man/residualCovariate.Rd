@@ -27,7 +27,7 @@ residualCovariate(data, targetVar, covVar)
 Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., & Little, T. D. (in press). Orthogonalizing through residual centering: Applications and caveats. \emph{Educational and Psychological Measurement.}
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \seealso{
 	\code{\link{indProd}} For creating the indicator products with no centering, mean centering, double-mean centering, or residual centering.	

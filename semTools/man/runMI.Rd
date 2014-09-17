@@ -63,10 +63,10 @@ Meng, X.L. & Rubin, D.B. (1992). Performing likelihood ratio tests with multiply
 
 Rubin, D.B. (1987) \emph{Multiple Imputation for Nonresponse in Surveys.} J. Wiley & Sons, New York.
 }
-\author{Alexander M. Schoemann (University of Kansas;  \email{schoemann@ku.edu})
-Patrick Miller (University of Kansas; \email{patr1ckm@ku.edu})
-Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
-Mijke Rhemtulla (University of Kansas; \email{mijke@ku.edu})
+\author{Alexander M. Schoemann (East Carolina University;  \email{schoemanna@ecu.edu})
+Patrick Miller (University of Notre Dame; \email{pmille13@nd.edu})
+Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+Mijke Rhemtulla (University of Amsterdam; \email{M.T.Rhemtulla@uva.nl})
 Alexander Robitzsch (Federal Institute for Education Research, Innovation, and Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
 Craig Enders (Arizona State University; \email{Craig.Enders@asu.edu})
 Mauricio Garnier Villarreal (University of Kansas; \email{mgv@ku.edu})

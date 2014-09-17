@@ -73,7 +73,7 @@ Invisibly, all model fits in the sequence are returned as a list.
 Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the measurement invariance literature: Suggestions, practices, and recommendations for organizational research. \emph{Organizational Research Methods, 3,} 4-70.
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu}); Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu}); Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 }
 \seealso{
 	\code{\link{measurementinvariance}} For the measurement invariance test between groups

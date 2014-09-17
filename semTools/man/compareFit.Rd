@@ -24,7 +24,7 @@ compareFit(..., nested = TRUE)
 	\code{\linkS4class{FitDiff}}, \code{\link{clipboard}}
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \examples{
 m1 <- ' visual  =~ x1 + x2 + x3

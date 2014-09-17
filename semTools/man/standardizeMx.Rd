@@ -24,7 +24,7 @@ standardizeMx(object, free = TRUE)
 	\code{\link{saturateMx}}, \code{\link{nullMx}}, \code{\link{fitMeasuresMx}}
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \examples{
 \dontrun{

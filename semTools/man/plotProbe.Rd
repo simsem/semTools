@@ -30,7 +30,7 @@ plotProbe(object, xlim, xlab="Indepedent Variable", ylab="Dependent Variable", .
 	None. This function will plot the simple main effect only.
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \seealso{
 	\itemize{

@@ -59,7 +59,7 @@ lisrel2lavaan(filename = NULL, analyze = TRUE, silent = FALSE, ...)
 }
 }
 \author{
-    Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
+    Corbin Quick (University of Michigan; \email{corbinq@umich.edu})
 }
 \examples{
 \dontrun{

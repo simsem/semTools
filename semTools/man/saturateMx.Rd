@@ -24,7 +24,7 @@ saturateMx(data, groupLab = NULL)
 	\code{\link{nullMx}}, \code{\link{fitMeasuresMx}}, \code{\link{standardizeMx}}
 }
 \author{
-    Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \examples{
 \dontrun{

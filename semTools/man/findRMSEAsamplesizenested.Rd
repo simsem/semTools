@@ -23,7 +23,7 @@ rmsea1B = NULL, dfA, dfB, power=0.80, alpha=.05, group=1)
 MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing differences between nested covariance structure models: Power analysis and null hypotheses. \emph{Psychological Methods, 11}, 19-35.
 }
 \author{
-	Bell Clinton (University of Kansas; \email{clintonbell@ku.edu}); Pavel Panko (University of Kansas; \email{pavel@ku.edu}); Sunthud Pornprasertmanit (University of Kansas; \email{psunthud@ku.edu})
+	Bell Clinton (University of Kansas; \email{clintonbell@ku.edu}); Pavel Panko (Texas Tech University; \email{pavel.panko@ttu.edu}); Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \seealso{
 	\itemize{

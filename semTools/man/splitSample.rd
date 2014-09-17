@@ -23,7 +23,7 @@ This function randomly orders the rows of a data set, divides the data set into 
 \item{dataL}{List of output data sets. ONLY IF dataset is an R object and path is default. Otherwise, output will saved to hard drive with the same formatting as input.}
 }
 \author{
-    Corbin Quick (University of Kansas; \email{corbinq@ku.edu})
+    Corbin Quick (University of Michigan; \email{corbinq@umich.edu})
 }
 \examples{
 #### Input is .dat file

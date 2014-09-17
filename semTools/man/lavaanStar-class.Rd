@@ -35,6 +35,9 @@ see \code{\linkS4class{lavaan}}}
 \seealso{
 \code{\link{auxiliary}}; \code{\link{runMI}}
 }
+\author{
+    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+}
 \examples{
 HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
