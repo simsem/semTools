@@ -7,6 +7,8 @@ setClass("Net", representation(test = "matrix", df = "vector"))
 
 ## function to test whether model "x" is nested within model "y"
 x.within.y <- function(x, y, crit = crit) {
+  if (x@Options$estimator %in% c("WLS", "DWLS") | y@Options$estimator %in% c("WLS", "DWLS")) stop(
+    "The net() function is not available for categorical-data estimators.")
   prepCov <- function(x, varNames) {
     for (g in seq_along(x)) {
       colnames(x[[g]]) <- varNames[[g]]
