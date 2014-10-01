@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### 31 Oct 2013
+### Last updated: 22 Sep 2014
 ### semTools function for Nesting and Equivalence Testing
 
 setClass("Net", representation(test = "matrix", df = "vector"))
@@ -7,6 +7,8 @@ setClass("Net", representation(test = "matrix", df = "vector"))
 
 ## function to test whether model "x" is nested within model "y"
 x.within.y <- function(x, y, crit = crit) {
+  if (x@Options$estimator %in% c("WLS", "DWLS") | y@Options$estimator %in% c("WLS", "DWLS")) stop(
+    "The net() function is not available for categorical-data estimators.")
   prepCov <- function(x, varNames) {
     for (g in seq_along(x)) {
       colnames(x[[g]]) <- varNames[[g]]
@@ -21,21 +23,28 @@ x.within.y <- function(x, y, crit = crit) {
     }
     x
   }
-  
-  ## check the data information matches (e.g., sample sizes)
-  if (!identical(x@Data, y@Data)) stop("Models must apply to the same data")
-
+  ##############################################################################
+  if (!all(sapply(c(x@Data@eXo, y@Data@eXo), is.null))) {
+    stop(c("The net() function does not work with exogenous variables.\n",
+           "Set 'fixed.x = FALSE' or remove exogenous predictors from model syntax."))
+  }
   ## variable names
   Xnames <- x@pta$vnames$ov
   if (is.null(Xnames)) Xnames <- x@Data@ov.names
   Ynames <- y@pta$vnames$ov
   if (is.null(Ynames)) Ynames <- y@Data@ov.names
-  if (identical(Xnames, Ynames)) {
+  if (identical(sort(Xnames[[1]]), sort(Ynames[[1]]))) {
     varNames <- Xnames
   } else {
     stop("Models do not contain the same variables")
   }
 
+  ## check that the analyzed data matches
+  xData <- do.call(rbind, lapply(x@Data@X, function(foo) foo[ , rank(Xnames[[1]])]))
+  yData <- do.call(rbind, lapply(y@Data@X, function(foo) foo[ , rank(Ynames[[1]])]))
+  if (!identical(xData, yData)) stop("Models must apply to the same data")
+  ##############################################################################
+  
   ## check degrees of freedom support nesting structure
   if (inspect(x, "fit")["df"] < inspect(y, "fit")["df"]) stop("
       x cannot be nested within y because y is more restricted than x")
@@ -48,7 +57,8 @@ x.within.y <- function(x, y, crit = crit) {
   ## fit model and inspect chi-squared
   suppressWarnings(try(myFit <- lavaan(sample.cov = Sigma, sample.mean = Mu,
                                        sample.nobs = N, slotParTable = y@ParTable,
-                                       slotOptions = y@Options)))
+                                       slotOptions = y@Options,
+                                       WLS.V = x@SampleStats@WLS.V)))
   if(!inspect(myFit, "converged")) return(NA) else {
     result <- inspect(myFit, "fit")["chisq"] < crit
     names(result) <- NULL
