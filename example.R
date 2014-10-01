@@ -28,13 +28,13 @@ sourceDirData <- function(path, trace = TRUE) {
 #dir <- "C:/Users/Sunthud/simsem_backup/simsem/R/"
 library(lavaan)
 
-dir <- "C:/Users/jaehoonl/Dropbox/semTools/semTools/R/"
+dir <- "C:/Users/spornpra/Dropbox/semTools/semTools/R/"
 sourceDir(dir)
 
 # dir2 <- "C:/Users/sunthud/Desktop/multcomp/R"
 # sourceDir(dir2)
 
-dirData <- "C:/Users/jaehoonl/Dropbox/semTools/semTools/data/"
+dirData <- "C:/Users/spornpra/Dropbox/semTools/semTools/data/"
 sourceDirData(dirData)
 ######### Distribution
 
@@ -741,6 +741,11 @@ anova(unrotated2, unrotated3)
 
 orthRotate(unrotated3, method="varimax")
 
+dat <- HolzingerSwineford1939[,paste0("x", 1:9)]
+miss <- matrix(rbinom(prod(dim(dat)), 1, 0.2), nrow(dat))
+dat[miss == 1] <- NA
+unrotated2 <- efaUnrotate(dat, nf=2, varList=paste0("x", 1:9), missing = "fiml")
+
 library(psych)
 unrotatedCat <- efaUnrotate(iqitems, nf=4, ordered=colnames(iqitems))
 
@@ -827,10 +832,6 @@ m1 <- cfa(HS.model1, data = HolzingerSwineford1939, std.lv=TRUE, estimator="MLR"
 m2 <- cfa(HS.model2, data = HolzingerSwineford1939, std.lv=TRUE, estimator="MLR")	   
 singleParamTest(m1, m2)
 			  
-
-measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
-    estimator="wlsmv")
-	
 ################################ Partial Invariance Tests
 
 
@@ -1009,163 +1010,3 @@ letter =~ letter.7 + letter.33 + letter.34 + letter.58
 fit5 <- cfa(iq.model2, data=dat)
 maximalRelia(fit5)
 
-###########################################
-
-genmod <- '
-f1 =~ 0.7*y1 + 0.7*y2 + 0.7*y3
-f2 =~ 0.7*y4 + 0.7*y5 + 0.7*y6
-f3 =~ 0.7*y7 + 0.7*y8 + 0.7*y9
-f =~ 0.7*f1 + 0.7*f2 + 0.7*f3
-f1 ~~ 0.51*f1
-f2 ~~ 0.51*f2
-f3 ~~ 0.51*f3
-f ~~ 1*f
-y1 ~~ 0.51*y1 
-y2 ~~ 0.51*y2 
-y3 ~~ 0.51*y3 
-y4 ~~ 0.51*y4 
-y5 ~~ 0.51*y5 
-y6 ~~ 0.51*y6 
-y7 ~~ 0.51*y7 
-y8 ~~ 0.51*y8 
-y9 ~~ 0.51*y9 
-'
-
-dat <- simulateData(genmod, sample.nobs = 500)
-for(i in 1:ncol(dat)) dat[as.logical(rbinom(nrow(dat), 1, 0.3)), i] <- NA
-
-m <- 20
-
-imps <- mice(dat, m)
-ydata.mi <- list()
-for (j in 1:m) {
-  temp <- complete(imps, j)
-  ydata.mi[[j]] <- data.frame(as.matrix(temp))
-  colnames(ydata.mi[[j]]) <- paste("y", 1:9, sep = "")
-}  
-
-mod <- '
-f1 =~ y1 + y2 + y3
-f2 =~ y4 + y5 + y6
-f3 =~ y7 + y8 + y9
-f =~ f1 + f2 + f3
-'
-result <- try(runMI(data = ydata.mi, model = mod, chi = "mplus", fun = "cfa")) #try to get mr pooled chi-square
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-genmod <- '
-f1 =~ 0.7*x1 + 0.7*x2 + 0.7*x3
-f2 =~ 0.7*x4 + 0.7*x5 + 0.7*x6
-f3 =~ 0.7*x7 + 0.7*x8 + 0.7*x9
-f =~ 0.7*f1 + 0.7*f2 + 0.7*f3
-f1 ~~ 0.51*f1
-f2 ~~ 0.51*f2
-f3 ~~ 0.51*f3
-f ~~ 0.51*f
-x1 ~~ 0.51*x1 
-x2 ~~ 0.51*x2 
-x3 ~~ 0.51*x3 
-x4 ~~ 0.51*x4 
-x5 ~~ 0.51*x5 
-x6 ~~ 0.51*x6 
-x7 ~~ 0.51*x7 
-x8 ~~ 0.51*x8 
-x9 ~~ 0.51*x9 
-
-g1 =~ 0.7*y1 + 0.7*y2 + 0.7*y3
-g2 =~ 0.7*y4 + 0.7*y5 + 0.7*y6
-g3 =~ 0.7*y7 + 0.7*y8 + 0.7*y9
-g =~ 0.7*g1 + 0.7*g2 + 0.7*g3
-g1 ~~ 0.51*g1
-g2 ~~ 0.51*g2
-g3 ~~ 0.51*g3
-g ~~ 0.51*g
-y1 ~~ 0.51*y1 
-y2 ~~ 0.51*y2 
-y3 ~~ 0.51*y3 
-y4 ~~ 0.51*y4 
-y5 ~~ 0.51*y5 
-y6 ~~ 0.51*y6 
-y7 ~~ 0.51*y7 
-y8 ~~ 0.51*y8 
-y9 ~~ 0.51*y9 
-
-h1 =~ 0.7*z1 + 0.7*z2 + 0.7*z3
-h2 =~ 0.7*z4 + 0.7*z5 + 0.7*z6
-h3 =~ 0.7*z7 + 0.7*z8 + 0.7*z9
-h =~ 0.7*h1 + 0.7*h2 + 0.7*h3
-h1 ~~ 0.51*h1
-h2 ~~ 0.51*h2
-h3 ~~ 0.51*h3
-h ~~ 0.51*h
-z1 ~~ 0.51*z1 
-z2 ~~ 0.51*z2 
-z3 ~~ 0.51*z3 
-z4 ~~ 0.51*z4 
-z5 ~~ 0.51*z5 
-z6 ~~ 0.51*z6 
-z7 ~~ 0.51*z7 
-z8 ~~ 0.51*z8 
-z9 ~~ 0.51*z9 
-
-a =~ 0.7*f + 0.7*g + 0.7*h
-a ~~ 1*a
-'
-
-dat <- simulateData(genmod, sample.nobs = 500)
-
-mod <- '
-f1 =~ x1 + x2 + x3
-f2 =~ x4 + x5 + x6
-f3 =~ x7 + x8 + x9
-g1 =~ y1 + y2 + y3
-g2 =~ y4 + y5 + y6
-g3 =~ y7 + y8 + y9
-h1 =~ z1 + z2 + z3
-h2 =~ z4 + z5 + z6
-h3 =~ z7 + z8 + z9
-f =~ f1 + f2 + f3
-g =~ g1 + g2 + g3
-h =~ h1 + h2 + h3
-a =~ f + g + h
-'
-
-outnomiss <- cfa(mod, data = dat)
-
-for(i in 1:ncol(dat)) dat[as.logical(rbinom(nrow(dat), 1, 0.3)), i] <- NA
-
-m <- 20
-
-imps <- mice(dat, m)
-ydata.mi <- list()
-for (j in 1:m) {
-  temp <- complete(imps, j)
-  ydata.mi[[j]] <- data.frame(as.matrix(temp))
-  colnames(ydata.mi[[j]]) <- c(paste0("x", 1:9), paste0("y", 1:9), paste0("z", 1:9))
-}  
-
-result <- try(runMI(data = ydata.mi, model = mod, chi = "mplus", fun = "cfa")) #try to get mr pooled chi-square

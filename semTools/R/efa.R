@@ -87,7 +87,9 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 		outtemp <- do.call("cfa", List)
 		covtemp <- outtemp@SampleStats@cov[[1]]
 		partemp <- parTable(outtemp)
-		startval <- sqrt(diag(diag(covtemp))) %*% factanal(factors=nf, covmat=covtemp)$loadings[] 
+		err <- try(startload <- factanal(factors=nf, covmat=covtemp)$loadings[], silent = TRUE)
+		if(is(err, "try-error")) stop("The starting values from the factanal function cannot be calculated. Please use start=FALSE instead.")
+		startval <- sqrt(diag(diag(covtemp))) %*% startload
 		partemp$ustart[match(as.vector(loading), partemp$label)] <- as.vector(startval)
 		syntax <- partemp
 	} 

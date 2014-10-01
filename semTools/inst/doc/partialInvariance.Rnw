@@ -44,6 +44,16 @@ $$q = \arctan\left(\lambda_{ijA}\cdot\frac{\psi_{jP}}{\sigma_{iP}}\right) - \arc
 
 Then, the $q$ values of .1, .3, and .5 are interpreted as small, medium, and large effect sizes.
 
+For continuous outcomes, the amount of mean differences implied by the factor loading difference given a factor score can be used as an effect size \citep{millsap2012}. Let $X_ijg$ be the observed score of Item $i$ loaded on Factor $j$ from Group $g$ and $W_{j}$ represents the score of Factor $j$. The expected value of the observed score differences between Group A and Group B is calculated as follows:
+
+$$E\left(X_{iA} - X_iB | W_j \right) = \left( \nu_{iA} - \nu_{iB} \right) + \left( \lambda_{ijA} - \lambda_{ijB} \right) \times W_{j},
+$$
+
+\noindent
+where $\nu_{ig}$ represents the intercept of Item $i$ in Group $g$. Let the values between $W_{jl}$ and $W_{jh}$ be the values of interest. We can find the expected difference in the observed scores under this range of the factor scores. \cite{millsap2012} proposed that, if the size of the expected difference is over the value of meaningful differences, the loading difference is not negligible. See their article for the discussion of the meaningful difference.
+
+Note that, in the \texttt{partialInvariance} function, $W_{jl}$ is calculated by (a) finding the factor scores representing a low \emph{z}-score (e.g., -2) from all groups and (b) selecting the lowest factor score across all groups. $W_{jh}$ is calculated by (a) finding the factor scores representing a high \emph{z}-score (e.g., 2) from all groups and (b) selecting the highest factor score across all groups. 
+
 \section{Item Intercepts}
 
 Let $\nu_{ig}$ be the intercept of Item $i$ in Group $g$. A standardized intercept $\nu^*_{ig}$ is defined as follows \citep{muthen1998}:
@@ -55,6 +65,14 @@ Thus, the standardized difference between Groups A and B in item intercepts is d
 $$\Delta\nu^*_{i} = (\nu_{iA} - \nu_{iB}) / \sigma_{iP}.$$
 
 Note that $\sigma_{iA}$ can substitute $\sigma_{iP}$ if Group A is the reference group. By using this scale, .2, .5, and .8 can be interpreted as small, medium, and large effect sizes according to \cite{cohen1992}.
+
+The proportion of the intercept difference over the observed score difference may be used as an effect size \citep{millsap2012}:
+
+$$(\nu_{iA} - \nu_{iB}) / (M_{iA} - M_{iB}),
+$$
+
+\noindent
+where $M_{ig}$ represents the observed mean of Item $i$ in Group $g$. \cite{millsap2012} noted that a relatively small proportion (e.g., less than 20\%) is ignorable. If the sign is negative or the value is over 1, the interpretation is doubtful.
 
 \section{Item Thresholds}
 
@@ -86,6 +104,14 @@ Assume that $\sigma_{iP}$ is always greater than $\theta_{iA}$ and $\theta_{iB}$
 $$h = \sin^{-1}\sqrt{\frac{\theta_{iA}}{\sigma_{iP}}} - \sin^{-1}\sqrt{\frac{\theta_{iB}}{\sigma_{iP}}}.$$
 
 Then, the $h$ values of .2, .5, and .8 are interpreted as small, medium, and large effect sizes.
+
+If items are continuous, the proportion of the error variance difference over the observed variance difference may be used as an effect size \citep{millsap2012}:
+
+$$(\theta_{iA} - \theta_{iB}) / (\sigma_{iA} - \sigma_{iB}).
+$$
+
+\noindent
+If the sign is negative or the value is over 1, the interpretation is doubtful.
 
 \section{Factor Means}
 

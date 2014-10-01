@@ -1,6 +1,17 @@
 # Work with only with congeneric models
 
-partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, poolvar = TRUE, p.adjust = "none", return.fit = FALSE) { 
+partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, poolvar = TRUE, p.adjust = "none", fbound = 2, return.fit = FALSE) { 
+	# fit <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", strict = TRUE)
+	# type <- "weak"
+	# free <- NULL
+	# fix <- "x1"
+	# refgroup <- 1
+	# poolvar <- TRUE
+	# p.adjust <- "none"
+	# return.fit <- FALSE
+	# fbound <- 2
+
+
 	type <- tolower(type)
 	numType <- 0
 	fit1 <- fit0 <- NULL
@@ -155,7 +166,13 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
-
+		
+		obsmean <- sapply(inspect(fit0, "sampstat"), "[[", "mean")
+		obsmean <- obsmean[,grouporder]
+		obsdiff <- obsmean[,2:ngroups, drop = FALSE] - matrix(obsmean[,1], nrow(obsmean), ngroups - 1)
+		obsdiff <- obsdiff[varfree, , drop = FALSE]
+		colnames(obsdiff) <- paste0("diff_mean:", complab)
+		
 		estimates <- matrix(NA, length(varfree), ngroups + 1)
 		stdestimates <- matrix(NA, length(varfree), ngroups)
 		colnames(estimates) <- c("poolest", paste0("load:", grouplab))
@@ -163,6 +180,14 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 		esstd <- esz <- matrix(NA, length(varfree), ngroups - 1)
 		colnames(esstd) <- paste0("diff_std:", complab)
 		colnames(esz) <- paste0("q:", complab)
+		esdiff <- matrix(NA, length(varfree), ngroups - 1)
+		
+		# Extract facmean, facsd, load, tau -> lowdiff, highdiff
+		lowdiff <- matrix(NA, length(varfree), ngroups - 1)
+		highdiff <- matrix(NA, length(varfree), ngroups - 1)
+		colnames(lowdiff) <- paste0("low_fscore:", complab)
+		colnames(highdiff) <- paste0("high_fscore:", complab)
+		
 		fixCon <- freeCon <- matrix(NA, length(varfree), 4)
 		waldCon <- matrix(NA, length(varfree), 3)
 		colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p", "fix.cfi")
@@ -208,6 +233,17 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 				stdLoadVal[stdLoadVal < -0.9999] <- -0.9999
 				zLoadVal <- atanh(stdLoadVal)
 				esz[pos,] <- zLoadVal[2:ngroups] - zLoadVal[1]
+				
+				facMean <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~1", "", 1:ngroups)
+				wlow <- min(facMean - fbound * sqrt(facVal))
+				whigh <- max(facMean + fbound * sqrt(facVal))
+				intVal <- getValue(temp0, coef(tempfit0), pt0$rhs[runnum], "~1", "", 1:ngroups)
+				loadVal <- loadVal[grouporder]
+				intVal <- intVal[grouporder]
+				loaddiff <- loadVal[2:ngroups] - loadVal[1]
+				intdiff <- intVal[2:ngroups] - intVal[1]
+				lowdiff[pos,] <- intdiff + wlow * loaddiff
+				highdiff[pos,] <- intdiff + whigh * loaddiff				
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			waldCon[pos,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
@@ -271,6 +307,17 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 				stdLoadVal[stdLoadVal < -0.9999] <- -0.9999
 				zLoadVal <- atanh(stdLoadVal)
 				esz[pos,] <- zLoadVal[2:ngroups] - zLoadVal[1]
+				
+				facMean <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~1", "", 1:ngroups)
+				wlow <- min(facMean - fbound * sqrt(facVal))
+				whigh <- max(facMean + fbound * sqrt(facVal))
+				intVal <- getValue(temp0, coef(tempfit0), pt0$rhs[runnum], "~1", "", 1:ngroups)
+				loadVal <- loadVal[grouporder]
+				intVal <- intVal[grouporder]
+				loaddiff <- loadVal[2:ngroups] - loadVal[1]
+				intdiff <- intVal[2:ngroups] - intVal[1]
+				lowdiff[pos,] <- intdiff + wlow * loaddiff
+				highdiff[pos,] <- intdiff + whigh * loaddiff
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			pos <- pos + 1
@@ -279,7 +326,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[c(indexfixvar, indexnonfixvar)]
-		estimates <- cbind(estimates, stdestimates, esstd, esz)
+		estimates <- cbind(estimates, stdestimates, esstd, esz, obsdiff, lowdiff, highdiff)
 		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 2) {
 		if(!is.null(free) | !is.null(fix)) {
@@ -341,6 +388,16 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
+		obsmean <- sapply(inspect(fit0, "sampstat"), "[[", "mean")
+		obsmean <- obsmean[,grouporder]
+		obsdiff <- obsmean[,2:ngroups, drop = FALSE] - matrix(obsmean[,1], nrow(obsmean), ngroups - 1)
+		obsdiff <- obsdiff[varfree, , drop = FALSE]
+		colnames(obsdiff) <- paste0("diff_mean:", complab)
+
+		# Prop diff
+		propdiff <- matrix(NA, length(varfree), ngroups - 1)
+		colnames(propdiff) <- paste0("propdiff:", complab)
+
 		estimates <- matrix(NA, length(varfree), ngroups + 1)
 		stdestimates <- matrix(NA, length(varfree), ngroups)
 		colnames(estimates) <- c("poolest", paste0("int:", grouplab))
@@ -384,6 +441,9 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 				stdestimates[pos,] <- stdIntVal
 				stdIntVal <- stdIntVal[grouporder]
 				esstd[pos,] <- stdIntVal[2:ngroups] - stdIntVal[1]
+				
+				intVal <- intVal[grouporder]
+				propdiff[pos,] <- (intVal[2:ngroups] - intVal[1]) / obsdiff[pos,]
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			waldCon[pos,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
@@ -439,6 +499,9 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 				stdestimates[pos,] <- stdIntVal
 				stdIntVal <- stdIntVal[grouporder]
 				esstd[pos,] <- stdIntVal[2:ngroups] - stdIntVal[1]
+
+				intVal <- intVal[grouporder]
+				propdiff[pos,] <- (intVal[2:ngroups] - intVal[1]) / obsdiff[pos,]
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			pos <- pos + 1
@@ -448,7 +511,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 				
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[c(indexfixvar, indexnonfixvar)]
-		estimates <- cbind(estimates, stdestimates, esstd)
+		estimates <- cbind(estimates, stdestimates, esstd, obsdiff, propdiff)
 		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 3) {
 		if(!is.null(free) | !is.null(fix)) {
@@ -473,6 +536,10 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
+
+		# Prop diff
+		propdiff <- matrix(NA, length(varfree), ngroups - 1)
+		colnames(propdiff) <- paste0("propdiff:", complab)
 
 		estimates <- matrix(NA, length(varfree), ngroups + 1)
 		stdestimates <- matrix(NA, length(varfree), ngroups)
@@ -514,6 +581,12 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 				stdErrVal[stdErrVal > 0.9999] <- 0.9999
 				zErrVal <- asin(sqrt(stdErrVal))
 				esz[i,] <- zErrVal[2:ngroups] - zErrVal[1]
+				
+				errVal <- errVal[grouporder]
+				totalVal <- totalVal[grouporder]
+				errdiff <- errVal[2:ngroups] - errVal[1]
+				totaldiff <- totalVal[2:ngroups] - totalVal[1]
+				propdiff[i,] <- errdiff / totaldiff
 			}
 			listFreeCon <- c(listFreeCon, tryresult0)
 			waldCon[i,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
@@ -523,7 +596,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 		fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[index]
-		estimates <- cbind(estimates, stdestimates, esstd, esz)
+		estimates <- cbind(estimates, stdestimates, esstd, esz, propdiff)
 		result <- cbind(freeCon, fixCon, waldCon)		
 	} else if (numType == 4) {
 		varfree <- facnames
