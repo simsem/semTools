@@ -3,7 +3,7 @@ imposeStart <- function(out, expr, silent = TRUE) {
 	template2 <- template <- substitute(expr)
 	template2$do.fit <- FALSE
 	model <- eval(expr = template2, enclos = parent.frame())
-	ptmodel <- parTable(model)
+	ptmodel <- lavaan::parTable(model)
 	coefmodel <- coef(model)
 	coefout <- coef(out)
 	start <- coefout[match(names(coefmodel), names(coefout))]

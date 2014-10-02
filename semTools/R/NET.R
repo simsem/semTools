@@ -55,7 +55,7 @@ x.within.y <- function(x, y, crit = crit) {
   N <- x@Data@nobs
 
   ## fit model and inspect chi-squared
-  suppressWarnings(try(myFit <- lavaan(sample.cov = Sigma, sample.mean = Mu,
+  suppressWarnings(try(myFit <- lavaan::lavaan(sample.cov = Sigma, sample.mean = Mu,
                                        sample.nobs = N, slotParTable = y@ParTable,
                                        slotOptions = y@Options,
                                        WLS.V = x@SampleStats@WLS.V)))

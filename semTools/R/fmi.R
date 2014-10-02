@@ -7,7 +7,7 @@
 #### group is the grouping variable, in case you want to get the fmi for each group
 #### exclude are the variables that you wnat to exclude from the analysis
 
-fmi<-function(dat.imp, method="saturated", varnames=NULL, group=NULL, exclude=NULL, digits=3){ 
+fmi <- function(dat.imp, method="saturated", varnames=NULL, group=NULL, exclude=NULL, digits=3){ 
   
   if(is.character(varnames)){
     vars <- varnames
@@ -35,7 +35,7 @@ fmi<-function(dat.imp, method="saturated", varnames=NULL, group=NULL, exclude=NU
   comb.results <- inspect(comb.results1, "impute")[[2]]
   
   comb.results <- data.frame(comb.results[,c("lhs","op","rhs","group")], 
-                             round(parameterEstimates(comb.results1)[,"est"], digits), 
+                             round(lavaan::parameterEstimates(comb.results1)[,"est"], digits), 
                              round(comb.results[,c("fmi1","fmi2")], digits))
   
   colnames(comb.results) <- c('lhs', 'op', 'rhs', 'group', 'coef', 'fmi.1', 'fmi.2')

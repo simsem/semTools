@@ -37,6 +37,8 @@ funRotate(object, fun, ...)
     Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \examples{
+library(lavaan)
+
 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
 
 # Orthogonal varimax

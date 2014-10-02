@@ -41,6 +41,8 @@ Sterba, S.K. & MacCallum, R.C. (2010). Variability in parameter estimates and mo
 #Fit 3 factor CFA to simulated data.
 #Each factor has 9 indicators that are randomly parceled into 3 parcels
 #Lavaan syntax for the model to be fit to parceled data
+library(lavaan)
+
 syntax <- 'La =~ V1 + V2 + V3 
            Lb =~ V4 + V5 + V6
 '

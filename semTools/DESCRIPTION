@@ -2,7 +2,7 @@ Package: semTools
 Type: Package
 Title: Useful tools for structural equation modeling.
 Version: 0.4-6
-Date: 2014-10-1
+Date: 2014-10-2
 Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("aut", "cre"), email = "sunthud.pornprasertmanit@ttu.edu"), 
 		person(given = "Patrick", family = "Miller", role = "aut", email="pmille13@nd.edu"), 
 		person(given = "Alexander", family = "Schoemann", role = "aut", email="schoemanna@ecu.edu"),
@@ -43,7 +43,7 @@ Author: Sunthud Pornprasertmanit [aut, cre],
 		Terry Jorgensen [ctb],
 		Steven Chesnut [ctb]
 Maintainer: Sunthud Pornprasertmanit <sunthud.pornprasertmanit@ttu.edu>
-Depends: R(>= 3.0), lavaan(>= 0.5-16), methods
+Depends: R(>= 3.0), methods, lavaan(>= 0.5-17)
 Suggests: MASS, parallel, Amelia, mice, foreign, OpenMx, GPArotation, mnormt
 Description: This package provide useful tools for structural equation modeling analysis. Note that the OpenMx package can be obtained from the following URL: http://openmx.psyc.virginia.edu/
 License: GPL (>= 2)

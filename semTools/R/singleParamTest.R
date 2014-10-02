@@ -8,8 +8,8 @@ singleParamTest <- function(model1, model2, mi = TRUE, return.fit = FALSE) {
         fit1 <- model1
     }
 	# fit0 = Nested model, fit1 = Parent model
-	pt1 <- partable(fit1)
-	pt0 <- partable(fit0)
+	pt1 <- lavaan::partable(fit1)
+	pt0 <- lavaan::partable(fit0)
 	namept1 <- paramNameFromPt(pt1)
 	namept0 <- paramNameFromPt(pt0)
 
@@ -33,7 +33,7 @@ singleParamTest <- function(model1, model2, mi = TRUE, return.fit = FALSE) {
 		temp <- freeParTable(pt0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], pt0$group[runnum]) 
 		tryresult <- try(tempfit <- refit(temp, fit0), silent = TRUE)
 		if(!is(tryresult, "try-error")) {
-			compresult <- try(modelcomp <- lavTestLRT(tempfit, fit0), silent = TRUE)
+			compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit0), silent = TRUE)
 			if(!is(compresult, "try-error")) freeCon[i,] <- unlist(modelcomp[2, c(5, 7)])
 		}
 		listFreeCon <- c(listFreeCon, tryresult)
@@ -56,7 +56,7 @@ singleParamTest <- function(model1, model2, mi = TRUE, return.fit = FALSE) {
 		}
 		tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 		if(!is(tryresult, "try-error")) {
-			compresult <- try(modelcomp <- lavTestLRT(tempfit, fit0), silent = TRUE)
+			compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit0), silent = TRUE)
 			if(!is(compresult, "try-error"))  fixCon[i,] <- unlist(modelcomp[2,c(5, 7)])
 		}
 		listFixCon <- c(listFixCon, tryresult)
@@ -72,7 +72,7 @@ singleParamTest <- function(model1, model2, mi = TRUE, return.fit = FALSE) {
 		} else {
 			target <- cbind(pt0$lhs[index], pt0$op[index], pt0$rhs[index], pt0$group[index])
 		}
-		miResult <- modindices(fit0)
+		miResult <- lavaan::modindices(fit0)
 		element <- apply(target, 1, matchElement, parTable=miResult)
 		mi.chi <- miResult$mi[element]
 		mi.p <- pchisq(mi.chi, df=1, lower.tail=FALSE)

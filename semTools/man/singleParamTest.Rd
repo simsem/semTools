@@ -43,6 +43,8 @@ Note that this function does not adjust for the inflated Type I error rate from 
     Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
 }
 \examples{
+library(lavaan)
+
 # Nested model comparison by hand
 HS.model1 <- ' visual =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6'

@@ -14,7 +14,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	
 	# Get the lavaan parameter table
 	template <- do.call("cfa", c(List, do.fit=FALSE))
-    lavaanParTable <- parTable(template)
+    lavaanParTable <- lavaan::parTable(template)
 	
 	# Check whether all variables are categorical
 	sampstat <- inspect(template, "samp")[[1]]

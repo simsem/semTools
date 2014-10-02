@@ -815,7 +815,7 @@ while(!is.null(find("pa",doc))){
     row.n <- (eval(parse(text=paste(ref[find(nam.n,ref),2]))))
     lis.n <- doc[(loc.n+1):(loc.n+row.n)]
     if(length(lis.n[[1]])!=length(lis.n[[length(lis.n)]])){
-      lis.n <- lower2full(char2num(paste(lapply(lis.n,paste,collapse=", "),collapse="\n")))
+      lis.n <- lavaan::lower2full(lavaan::char2num(paste(lapply(lis.n,paste,collapse=", "),collapse="\n")))
     }else{
       lis.n <- do.call(rbind,lapply(lis.n,as.numeric.s))
     }
@@ -849,7 +849,7 @@ while(!is.null(find("ma",doc))){
       }
       if(is.list(lis.n)){
         if(length(lis.n[[1]])!=length(lis.n[[length(lis.n)]])){
-          lis.n <- lower2full(char2num(paste(lapply(lis.n,paste,collapse=", "),collapse="\n")))
+          lis.n <- lavaan::lower2full(lavaan::char2num(paste(lapply(lis.n,paste,collapse=", "),collapse="\n")))
         }else{
           lis.n <- do.call(rbind,lapply(lis.n,as.numeric.s))
         }
@@ -863,7 +863,7 @@ while(!is.null(find("ma",doc))){
       row.n <- (eval(parse(text=paste(ref[find(nam.n,ref),2]))))
       lis.n <- doc[(loc.n+1):(loc.n+row.n)]
       if(length(lis.n[[1]])!=length(lis.n[[length(lis.n)]])){
-        lis.n <- lower2full(char2num(paste(lapply(lis.n,paste,collapse=", "),collapse="\n")))
+        lis.n <- lavaan::lower2full(lavaan::char2num(paste(lapply(lis.n,paste,collapse=", "),collapse="\n")))
       }else{
         lis.n <- do.call(rbind,lapply(lis.n,as.numeric.s))
       }
@@ -1593,7 +1593,7 @@ if(ng>1){
       }
     }
     if(is.null(data$cm) && is.null(data$ra)){
-      invisible(suppressWarnings(lavaan(model=parTable)))
+      invisible(suppressWarnings(lavaan::lavaan(model=parTable)))
       stop("lisrel2lavaan requires either 1) raw data (specified in the RA paragraph in LISREL syntax), 2) a variance-covariance matrix (the CM paragraph in LISREL syntax), or 3) a correlation matrix AND standard deviation vector (the KM and SD paragraphs respectively) in order to fit models.")
     } else {
       if(!is.null(data$me)){
@@ -1602,7 +1602,7 @@ if(ng>1){
         macs <- F
       }
 #      return(parTable)
-	fit <- lavaan(model=parTable,data=data$ra,sample.cov=data$cm,sample.mean=data$me,estimator=estimator,sample.nobs=n,...)
+	fit <- lavaan::lavaan(model=parTable,data=data$ra,sample.cov=data$cm,sample.mean=data$me,estimator=estimator,sample.nobs=n,...)
 	  if(silent==F){
 		summary(fit, standardized=TRUE, fit.measures=TRUE)
 		invisible(fit)

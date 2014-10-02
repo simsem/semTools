@@ -121,8 +121,8 @@ fixData <- function(data){
 
 aImp <- function(data, silent = FALSE){
   if(!silent) cat("Starting Algorithm Imputation...\n")
-  data <- mice(data,maxit=1,m=1, printFlag = !silent)
-  data <- complete(data)
+  data <- mice::mice(data,maxit=1,m=1, printFlag = !silent)
+  data <- mice::complete(data)
   if(!silent) cat("Ending Algorithm Imputation...\n")
   return(data)
 }

@@ -86,7 +86,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 		List$do.fit <- FALSE
 		outtemp <- do.call("cfa", List)
 		covtemp <- outtemp@SampleStats@cov[[1]]
-		partemp <- parTable(outtemp)
+		partemp <- lavaan::parTable(outtemp)
 		err <- try(startload <- factanal(factors=nf, covmat=covtemp)$loadings[], silent = TRUE)
 		if(is(err, "try-error")) stop("The starting values from the factanal function cannot be calculated. Please use start=FALSE instead.")
 		startval <- sqrt(diag(diag(covtemp))) %*% startload
@@ -106,9 +106,9 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 		args$missing <- "fiml"		
 		result <- do.call("cfa", args)
 		codeNull <- nullAuxiliary(aux, auxResult$indName, NULL, any(syntax$op == "~1"), max(syntax$group))
-		resultNull <- lavaan(codeNull, data=data, ...)
+		resultNull <- lavaan::lavaan(codeNull, data=data, ...)
 		result <- as(result, "lavaanStar")
-		fit <- fitMeasures(resultNull)
+		fit <- lavaan::fitMeasures(resultNull)
 		name <- names(fit)
 		fit <- as.vector(fit)
 		names(fit) <- name
@@ -123,7 +123,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 stdLoad <- function(object) {
 	out <- solve(sqrt(diag(diag(fitted.values(object)$cov)))) %*% inspect(object, "coef")$lambda
 	
-	rownames(out) <- lavNames(object@ParTable, "ov", group = 1)
+	rownames(out) <- lavaan::lavNames(object@ParTable, "ov", group = 1)
 	if(is(object, "lavaanStar")) {
 		out <- out[!(rownames(out) %in% object@auxNames),]
 	}
@@ -135,7 +135,7 @@ orthRotate <- function(object, method="varimax", ...) {
 	mc <- match.call()
 	library(GPArotation)
 	initL <- stdLoad(object)
-	rotated <- GPForth(initL, method=method, ...)
+	rotated <- GPArotation::GPForth(initL, method=method, ...)
 	rotateMat <- t(solve(rotated$Th))
 	LIST <- seStdLoadings(rotateMat, object)
 	orthogonal <- rotated$orthogonal
@@ -154,7 +154,7 @@ oblqRotate <- function(object, method="quartimin", ...) {
 	mc <- match.call()
 	library(GPArotation)
 	initL <- stdLoad(object)
-	rotated <- GPFoblq(initL, method=method, ...)
+	rotated <- GPArotation::GPFoblq(initL, method=method, ...)
 	rotateMat <- t(solve(rotated$Th))
 	LIST <- seStdLoadings(rotateMat, object)
 	orthogonal <- rotated$orthogonal
@@ -191,9 +191,9 @@ funRotate <- function(object, fun, ...) {
 }
 
 rotateStdLoadings <- function(est, object, rotate=NULL, aux=NULL) {
-	ov.names <- lavNames(object@ParTable, "ov", group = 1)
-    lv.names <- lavNames(object@ParTable, "lv", group = 1)
-	OV <- sqrt(lavTech(object, "vy")[[1]])[!(ov.names %in% aux)]
+	ov.names <- lavaan::lavNames(object@ParTable, "ov", group = 1)
+    lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
+	OV <- sqrt(lavaan::lavTech(object, "vy")[[1]])[!(ov.names %in% aux)]
 	partable <- object@ParTable
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	loading <- (solve(diag(OV)) %*% matrix(est[idx], ncol=length(lv.names))) %*% rotate
@@ -222,7 +222,7 @@ seStdLoadings <- function(rotate, object) {
 	if(is(object, "lavaanStar")) {
 		aux <- object@auxNames
 	}
-	JAC <- lav_func_jacobian_simple(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate, aux=aux)
+	JAC <- lavaan::lav_func_jacobian_simple(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate, aux=aux)
 	LIST <- inspect(object, "list")
 	unco.idx <- which(LIST$unco > 0L)
 	LIST <- LIST[,c("lhs", "op", "rhs", "group")]
@@ -235,7 +235,7 @@ seStdLoadings <- function(rotate, object) {
 	LIST$se <- rep(NA, length(LIST$lhs))
 	LIST$se[unco.idx] <- sqrt(diag(COV))
 	tmp.se <- ifelse( LIST$se == 0.0, NA, LIST$se)
-    lv.names <- lavNames(object@ParTable, "lv", group = 1)
+    lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
 	partable <- object@ParTable
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	matrix(LIST$se[idx], ncol=length(lv.names))

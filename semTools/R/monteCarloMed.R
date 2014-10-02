@@ -29,9 +29,9 @@ monteCarloMed<-function(expression, ..., ACM=NULL, object = NULL, rep=20000, CI=
   }
 
   vecs<-list()
-    require(MASS)
+    library(MASS)
 	#Matrix of values, need to be converted to a list
-	dat <- mvrnorm(n=rep, mu=input, Sigma=ACM)
+	dat <- MASS::mvrnorm(n=rep, mu=input, Sigma=ACM)
 	#Add parameters as the first row
 	dat <-rbind(input, dat)
 	#Convert to a list,

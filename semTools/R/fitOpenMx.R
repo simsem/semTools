@@ -18,23 +18,23 @@ saturateMx <- function(data, groupLab = NULL) {
 		}
 		temp <- mapply(saturateMxSingleGroup, data = data.l, title = paste0("group", 1:ngroups), groupnum = 1:ngroups, SIMPLIFY=FALSE)
 		title <- "Multiple group Saturate Model"
-		algebra <- mxAlgebra("", name="allobjective")
+		algebra <- OpenMx::mxAlgebra("", name="allobjective")
 		groupnames <- paste0("group", 1:ngroups)
 		groupnames <- paste0(groupnames, ".objective")
 		groupnames <- lapply(groupnames, as.name)
 		algebra@formula <- as.call(c(list(as.name("sum")), groupnames))
-		objective <- mxAlgebraObjective("allobjective")
-		Saturate <- mxModel(title, unlist(temp), algebra, objective)
+		objective <- OpenMx::mxAlgebraObjective("allobjective")
+		Saturate <- OpenMx::mxModel(title, unlist(temp), algebra, objective)
 	} else {
 		Saturate <- saturateMxSingleGroup(data, title = "Saturate Model")
 	}
-	capture.output(fit <- mxRun(Saturate, suppressWarnings = FALSE))
+	capture.output(fit <- OpenMx::mxRun(Saturate, suppressWarnings = FALSE))
 	fit
 }
 
 saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NULL) {
 	if(!is(data, "MxData")) {
-		data <- mxData(
+		data <- OpenMx::mxData(
 			observed=data,
 			type="raw")
 	}
@@ -97,7 +97,7 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 			c(f, rep(NA, tot - length(f)))
 		}
 		valueThreshold <- sapply(datCategorical, FUN2, maxCat - 1)
-		T <- mxMatrix(
+		T <- OpenMx::mxMatrix(
 				type="Full",
 				nrow=maxCat - 1,
 				ncol=length(labCategorical),
@@ -107,10 +107,10 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 				byrow=TRUE,
 				name="thresh"
 		)
-		Saturate <- mxModel(title,
+		Saturate <- OpenMx::mxModel(title,
 			data,
 			# means
-			mxMatrix(
+			OpenMx::mxMatrix(
 				type="Full",
 				nrow=1,
 				ncol=p,
@@ -120,7 +120,7 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 				name="M"
 			),
 			# symmetric paths
-			mxMatrix(
+			OpenMx::mxMatrix(
 				type="Symm",
 				nrow=p,
 				ncol=p,
@@ -131,7 +131,7 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 				name="S"
 			),
 			T,
-			mxFIMLObjective(
+			OpenMx::mxFIMLObjective(
 				covariance="S",
 				means="M",
 				dimnames=colnames(data@observed),
@@ -140,12 +140,12 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 		)
 	} else {
 		if(data@type == "raw") {
-			obj <- mxFIMLObjective(
+			obj <- OpenMx::mxFIMLObjective(
 				covariance="S",
 				means="M",
 				dimnames=colnames(data@observed)
 			)
-			modelMean <- mxMatrix(
+			modelMean <- OpenMx::mxMatrix(
 				type="Full",
 				nrow=1,
 				ncol=p,
@@ -156,7 +156,7 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 			)
 		} else {
 			if(!all(is.na(data@means))) {
-				modelMean <- mxMatrix(
+				modelMean <- OpenMx::mxMatrix(
 					type="Full",
 					nrow=1,
 					ncol=p,
@@ -165,26 +165,26 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 					labels=paste0("mean", 1:p, "_", groupnum),
 					name="M"
 				)
-				obj <- mxMLObjective(
+				obj <- OpenMx::mxMLObjective(
 					covariance="S",
 					means="M",
 					dimnames=colnames(data@observed)
 				)
 			} else {
 				modelMean <- NULL
-				obj <- mxMLObjective(
+				obj <- OpenMx::mxMLObjective(
 					covariance="S",
 					dimnames=colnames(data@observed)
 				)
 			}
 			
 		}
-		Saturate <- mxModel(title,
+		Saturate <- OpenMx::mxModel(title,
 			data,
 			# means
 			modelMean,
 			# symmetric paths
-			mxMatrix(
+			OpenMx::mxMatrix(
 				type="Symm",
 				nrow=p,
 				ncol=p,
@@ -218,23 +218,23 @@ nullMx <- function(data, groupLab = NULL) {
 		}
 		temp <- mapply(nullMxSingleGroup, data = data.l, title = paste0("group", 1:ngroups), groupnum = 1:ngroups, SIMPLIFY=FALSE)
 		title <- "Multiple group Null Model"
-		algebra <- mxAlgebra("", name="allobjective")
+		algebra <- OpenMx::mxAlgebra("", name="allobjective")
 		groupnames <- paste0("group", 1:ngroups)
 		groupnames <- paste0(groupnames, ".objective")
 		groupnames <- lapply(groupnames, as.name)
 		algebra@formula <- as.call(c(list(as.name("sum")), groupnames))
-		objective <- mxAlgebraObjective("allobjective")
-		Null <- mxModel(title, unlist(temp), algebra, objective)
+		objective <- OpenMx::mxAlgebraObjective("allobjective")
+		Null <- OpenMx::mxModel(title, unlist(temp), algebra, objective)
 	} else {
 		Null <- nullMxSingleGroup(data, title = "Null Model")
 	}
-	capture.output(fit <- mxRun(Null, suppressWarnings = FALSE))
+	capture.output(fit <- OpenMx::mxRun(Null, suppressWarnings = FALSE))
 	fit
 }
 
 nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 	if(!is(data, "MxData")) {
-		data <- mxData(
+		data <- OpenMx::mxData(
 			observed=data,
 			type="raw")
 	}
@@ -274,7 +274,7 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 			c(f, rep(NA, tot - length(f)))
 		}
 		valueThreshold <- sapply(datCategorical, FUN2, maxCat - 1)
-		T <- mxMatrix(
+		T <- OpenMx::mxMatrix(
 				type="Full",
 				nrow=maxCat - 1,
 				ncol=length(labCategorical),
@@ -284,10 +284,10 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 				byrow=TRUE,
 				name="thresh"
 		)
-		NullModel <- mxModel(title,
+		NullModel <- OpenMx::mxModel(title,
 			data,
 			# means
-			mxMatrix(
+			OpenMx::mxMatrix(
 				type="Full",
 				nrow=1,
 				ncol=p,
@@ -297,7 +297,7 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 				name="M"
 			),
 			# symmetric paths
-			mxMatrix(
+			OpenMx::mxMatrix(
 				type="Diag",
 				nrow=p,
 				ncol=p,
@@ -308,7 +308,7 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 				name="S"
 			),
 			T,
-			mxFIMLObjective(
+			OpenMx::mxFIMLObjective(
 				covariance="S",
 				means="M",
 				dimnames=colnames(data@observed),
@@ -317,12 +317,12 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 		)
 	} else {
 		if(data@type == "raw") {
-			obj <- mxFIMLObjective(
+			obj <- OpenMx::mxFIMLObjective(
 				covariance="S",
 				means="M",
 				dimnames=colnames(data@observed)
 			)
-			modelMean <- mxMatrix(
+			modelMean <- OpenMx::mxMatrix(
 				type="Full",
 				nrow=1,
 				ncol=p,
@@ -333,7 +333,7 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 			)
 		} else {
 			if(!all(is.na(data@means))) {
-				modelMean <- mxMatrix(
+				modelMean <- OpenMx::mxMatrix(
 					type="Full",
 					nrow=1,
 					ncol=p,
@@ -342,26 +342,26 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 					labels=paste0("mean", 1:p, "_", groupnum),
 					name="M"
 				)
-				obj <- mxMLObjective(
+				obj <- OpenMx::mxMLObjective(
 					covariance="S",
 					means="M",
 					dimnames=colnames(data@observed)
 				)
 			} else {
 				modelMean <- NULL
-				obj <- mxMLObjective(
+				obj <- OpenMx::mxMLObjective(
 					covariance="S",
 					dimnames=colnames(data@observed)
 				)
 			}
 			
 		}
-		NullModel <- mxModel(title,
+		NullModel <- OpenMx::mxModel(title,
 			data,
 			# means
 			modelMean,
 			# symmetric paths
-			mxMatrix(
+			OpenMx::mxMatrix(
 				type="Diag",
 				nrow=p,
 				ncol=p,

@@ -12,7 +12,7 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 	configural <- dotdotdot
 	configural$group.equal <- ""
 	template <- do.call("cfa", configural)
-	pttemplate <- partable(template)
+	pttemplate <- lavaan::partable(template)
 	varnames <- unique(pttemplate$rhs[pttemplate$op == "=~"])
 	facnames <- unique(pttemplate$lhs[(pttemplate$op == "=~") & (pttemplate$rhs %in% varnames)])
 	ngroups <- max(pttemplate$group)
@@ -155,10 +155,10 @@ printFitLine <- function(object, horizontal=TRUE) {
     }
 
     if(!scaled) {
-        out <- fitMeasures(object, c("chisq", "df", "pvalue",
+        out <- lavaan::fitMeasures(object, c("chisq", "df", "pvalue",
                                       "cfi", "rmsea", "bic"))
     } else {
-        out <- fitMeasures(object, c("chisq.scaled", "df.scaled",
+        out <- lavaan::fitMeasures(object, c("chisq.scaled", "df.scaled",
                                       "pvalue.scaled",
                                       "cfi.scaled", "rmsea.scaled", "bic"))
         names(out) <- c("chisq.scaled", "df", "pvalue",
@@ -176,9 +176,9 @@ difftest <- function(model1, model2) {
         fit0 <- model2
         fit1 <- model1
     }
-	d <- unlist(lavTestLRT(fit1, fit0)[2,5:7])
-	i0 <- fitMeasures(fit0)
-	i1 <- fitMeasures(fit1)
+	d <- unlist(lavaan::lavTestLRT(fit1, fit0)[2,5:7])
+	i0 <- lavaan::fitMeasures(fit0)
+	i1 <- lavaan::fitMeasures(fit1)
 	names(d) <- c("delta.chisq", "delta.df", "delta.p.value")
 	if("cfi" %in% names(i0) & "cfi" %in% names(i1)) {
 		temp <- i1["cfi"] - i0["cfi"]

@@ -28,6 +28,7 @@ Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit
 }
 \examples{
 # Test the difference in factor loadings
+library(lavaan)
 HS.model <- ' visual  =~ x1 + con1*x2 + con1*x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + con2*x8 + con2*x9 '

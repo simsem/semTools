@@ -74,6 +74,8 @@ Raykov, T. (2001). Estimation of congeneric scale reliability using covariance s
 	\code{\link{reliabilityL2}} for reliability value of a desired second-order factor, \code{\link{maximalRelia}} for the maximal reliability of weighted composite
 }
 \examples{
+library(lavaan)
+
 HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 '

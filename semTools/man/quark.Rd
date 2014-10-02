@@ -48,6 +48,8 @@ Steven R. Chesnut  (Texas Tech University; \email{steven.chesnut@ttu.edu}), Dann
 }
 \examples{
 set.seed(123321)
+library(lavaan)
+
 dat <- HolzingerSwineford1939[,7:15]
 misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
 dat[misspat] <- NA

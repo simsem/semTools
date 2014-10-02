@@ -56,7 +56,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	
 	coefAll <- sapply(imputed.results.l, function(x) x@Fit@est)
 	seAll <- sapply(imputed.results.l, function(x) x@Fit@se)
-	partableImp <- partable(imputed.results.l[[1]])
+	partableImp <- lavaan::partable(imputed.results.l[[1]])
 	posVar <- (partableImp$op == "~~") & (partableImp$lhs == partableImp$rhs)
 	convergedtemp <- converged.l
 	properSE <- apply(seAll, 2, function(x) all(x >= 0) & !(all(x == 0)))
@@ -94,7 +94,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
 	template@Model <- imposeGLIST(template@Model, comb.results$coef, template@ParTable)
 	
-	fmi.results <- cbind(parameterEstimates(template)[,1:3], group=template@ParTable$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
+	fmi.results <- cbind(lavaan::parameterEstimates(template)[,1:3], group=template@ParTable$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
 
 	fit <- imputed.results.l[[1]]@Fit@test
 	df <- fit[[1]]$df
@@ -120,7 +120,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	} else {
 		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
 	}
-	nullModel <- lav_partable_independence(template)
+	nullModel <- lavaan::lav_partable_independence(template)
     null.results <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...))
 
 	convergedNull.l <- sapply(null.results, function(x) x@Fit@converged)
@@ -215,7 +215,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
     ## HACK! YR
     templateNull@Fit@converged <- TRUE ### ! to trick fitMeasures
     ## 
-	notused <- capture.output(fitVec <- suppressWarnings(fitMeasures(templateNull)))
+	notused <- capture.output(fitVec <- suppressWarnings(lavaan::fitMeasures(templateNull)))
 	name <- names(fitVec)
 	fitVec <- as.vector(fitVec)
 	names(fitVec) <- name
@@ -247,48 +247,14 @@ runlavaanMI <- function(MIdata, syntax, fun, ...) {
 	out <- c(out, list(...))
 	fit <- NULL
 	try(fit <- do.call(fun, out), silent=TRUE)
-    # FitIndices <- inspect(fit, 'fit')
-	# Converged = TRUE
-	# if(sum(unlist(lapply(inspect(fit, "se"), sum))) == 0) Converged = FALSE
-	# params <- parameterEstimates(fit,standardized=T)
     return(fit)
 }
 	
-testMI <- function() {
-##Shamelessly using the example in lavaan
-
-test<-HolzingerSwineford1939[,-5]
-HS.model <- ' visual  =~ NA*x1 + x2 + x3
-               textual =~ NA*x4 + x5 + x6
-               speed   =~ NA*x7 + x8 + x9 
-			   visual ~~1*visual
-			   textual ~~ 1*textual
-			   speed ~~ 1*speed
-			   visual ~ speed'
-summary(cfa(HS.model,data=test), fit.measures=TRUE)
-
-test[(test$x6>3 && test$x6<4)]
-##Impose missing data to test
-log.mat1 <- matrix(FALSE, nrow=dim(test)[1], ncol=dim(test)[2])
-log.mat1[,9] <- test$x6>3
-test[log.mat1] <- NA
-
-runMI(test,HS.model,3, idvars='id')
-
-
-
-# fit@Options (May need to be changed some options)
-# fit@Model@GLIST
-# fit@Fit@est; fit@Fit@sd; fit@Fit@test 
-
-}
-
-
 #Conveniance function to run impuations on data and only return list of data
 imputeMissingAmelia <- function(data,m, miArgs){
   # pull out only the imputations
-  require(Amelia)
-  out <- c(list(amelia, x = data, m = m, p2s=0), miArgs)
+  library(Amelia)
+  out <- c(list(Amelia::amelia, x = data, m = m, p2s=0), miArgs)
   temp.am <- eval(as.call(out))
   return(temp.am$imputations)
 
@@ -296,12 +262,12 @@ imputeMissingAmelia <- function(data,m, miArgs){
 
 imputeMissingMice <- function(data,m, miArgs){
   # pull out only the imputations
-  require(mice)
-  out <- c(list(mice, data=data, m = m, diagnostics=FALSE, printFlag=FALSE), miArgs)
+  library(mice)
+  out <- c(list(mice::mice, data=data, m = m, diagnostics=FALSE, printFlag=FALSE), miArgs)
   temp.mice <- eval(as.call(out))
   temp.mice.imp <- NULL
   for(i in 1:m) {
-	temp.mice.imp[[i]] <- complete(x=temp.mice, action=i, include=FALSE) 
+	temp.mice.imp[[i]] <- mice::complete(x=temp.mice, action=i, include=FALSE) 
   }
   return(temp.mice.imp)
 } # end imputeMissingAmelia
@@ -417,17 +383,17 @@ lmrrPooledChi <- function(chis, df) {
 ## using the information in a lavaan object from the cfa function
 satPartable <- function(fit.alt){
   
-	par.alt<-partable(fit.alt) #get the parameter table form the original model
+	par.alt <- lavaan::partable(fit.alt) #get the parameter table form the original model
 	ngroups <- fit.alt@Data@ngroups # get the number of groups 
 	# gets the parameter table from the null model
 	
-	par.null <- lav_partable_independence(fit.alt)
+	par.null <- lavaan::lav_partable_independence(fit.alt)
 	lhs.diag <- par.null$lhs
 	op.diag <- par.null$op
 	rhs.diag <- par.null$rhs
 	gnull <- par.null$group
 	#combine the variable names to set al the covariances
-	pairs <- t(combn(lavaanNames(fit.alt, type="ov"), 2))
+	pairs <- t(combn(lavaan::lavaanNames(fit.alt, type="ov"), 2))
 	lhs.up <- rep(pairs[, 1],times=ngroups)
 	op.up <- rep("~~", length(lhs.up))
 	rhs.up <- rep(pairs[, 2],times=ngroups)
@@ -468,7 +434,7 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat
     comb.sat2 <- lapply(comb.sat2, forceTest)
 	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
 	
-	par.alt2 <- partable(template)
+	par.alt2 <- lavaan::partable(template)
 	par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
 	par.alt2$ustart <- coef
 	comb.alt2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...))
@@ -521,7 +487,7 @@ mrPooledChi <-function(chimean, m, k, ariv){
 forceTest <- function(object) {
 	previousCall <- object@call
 	args <- as.list(previousCall[-1])
-	args$model <- partable(object)
+	args$model <- lavaan::partable(object)
 	args$control <- list(optim.method="none", optim.force.converged=TRUE)
 	funcall <- as.character(previousCall[[1]])
 	lav <- do.call(funcall[length(funcall)], args)

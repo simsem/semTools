@@ -132,7 +132,7 @@ compareFit <- function(..., nested = TRUE) {
 	nestedout <- data.frame()
 	ord <- NA
 	if(nested) {
-		dfs <- sapply(mods, function(x) fitMeasures(x)["df"])
+		dfs <- sapply(mods, function(x) lavaan::fitMeasures(x)["df"])
 		ord <- order(dfs, decreasing = TRUE)
 		modsTemp <- mods[ord]
 		modsA <- modsTemp[-1]
@@ -146,14 +146,14 @@ compareFit <- function(..., nested = TRUE) {
 			fitA <- modsA[[i]]
 			fitB <- modsB[[i]]
 			fitDiff <- anova(fitA, fitB)
-			cfidiff <- c(cfidiff, fitMeasures(fitA)["cfi"] - fitMeasures(fitB)["cfi"])
+			cfidiff <- c(cfidiff, lavaan::fitMeasures(fitA)["cfi"] - lavaan::fitMeasures(fitB)["cfi"])
 			chisqdiff <- c(chisqdiff, fitDiff["Chisq diff"][2, 1])
 			dfdiff <- c(dfdiff, fitDiff["Df diff"][2, 1])
 			pdiff <- c(pdiff, fitDiff["Pr(>Chisq)"][2, 1])
 		}
 		nestedout <- data.frame(chi = chisqdiff, df = dfdiff, p = pdiff, delta.cfi = cfidiff)
 	}
-	fit <- as.data.frame(t(sapply(mods, fitMeasures)))
+	fit <- as.data.frame(t(sapply(mods, lavaan::fitMeasures)))
 	new("FitDiff", name = nameMods, nested = nestedout, ordernested = ord, fit = fit)
 }
 

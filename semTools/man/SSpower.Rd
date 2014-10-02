@@ -40,6 +40,8 @@ SSpower(popModel, n, powerModel, fun = "cfa", nparam = 1, alpha = .05, ...)
 Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio test in covariance structure analysis. \emph{Psychometrika, 50}, 83-90.}
 
 \examples{
+library(lavaan)
+
 #Specify population values. Note every paramter has a fixed value
 modelP <- '
          f1 =~ .7*V1 + .7*V2 + .7*V3 + .7*V4

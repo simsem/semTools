@@ -172,7 +172,7 @@ omegaCat <- function(truevar, implied, threshold, denom) {
 
 
 p2 <- function(t1, t2, r) {
-	pmnorm(c(t1, t2), c(0,0), matrix(c(1, r, r, 1), 2, 2))
+	mnormt::pmnorm(c(t1, t2), c(0,0), matrix(c(1, r, r, 1), 2, 2))
 }
 
 

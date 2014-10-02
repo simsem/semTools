@@ -236,11 +236,11 @@ if(Maxv > 0){
   for (i in 1:nAlloc){
     data <- as.data.frame(Allocations[[i]], row.names = NULL, optional = FALSE)
     ## convert allocation matrix to dataframe for model estimation 
-    fit <- sem(syntax, data=data, ...)
+    fit <- lavaan::sem(syntax, data=data, ...)
     ## estimate model in lavaan
-    Param[[i]] <- parameterEstimates(fit)
+    Param[[i]] <- lavaan::parameterEstimates(fit)
     ## assign allocation parameter estimates to list
-    Fitind[[i]] <- fitMeasures(fit,  c("chisq", "df", "cfi", "tli", "rmsea", "srmr"))
+    Fitind[[i]] <- lavaan::fitMeasures(fit,  c("chisq", "df", "cfi", "tli", "rmsea", "srmr"))
     ## assign allocation parameter estimates to list
   }
   

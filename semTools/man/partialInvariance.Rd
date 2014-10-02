@@ -66,6 +66,8 @@ Millsap, R. E., & Olivera-Aguilar, M. (2012). Investigating measurement invarian
 # Conduct weak invariance testing manually by using fixed-factor
 # method of scale identification
 
+library(lavaan)
+
 conf <- "
 f1 =~ NA*x1 + x2 + x3
 f2 =~ NA*x4 + x5 + x6

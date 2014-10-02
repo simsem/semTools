@@ -72,7 +72,7 @@ nullRMSEA <- function (object, scaled = FALSE, silent = FALSE) {
 	# return RMSEA of the null model, warn if it is lower than 0.158, because it makes the TLI/CLI hard to interpret
 	test <- object@Options$test 
 	
-	fits <- fitMeasures(object)
+	fits <- lavaan::fitMeasures(object)
 	N <- object@SampleStats@ntotal # sample size
 	
 	X2 <- as.numeric ( fits['baseline.chisq'] ) # get baseline chisq

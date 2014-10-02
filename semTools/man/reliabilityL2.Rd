@@ -48,6 +48,8 @@ Note that if the second-order factor has a direct factor loading on some observe
 	\code{\link{reliability}} for the reliability of the first-order factors.
 }
 \examples{
+library(lavaan)
+
 HS.model3 <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 

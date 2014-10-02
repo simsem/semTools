@@ -81,9 +81,9 @@ auxiliary <- function(model, aux, fun, ...) {
 	result <- do.call(fun, args)
 	
 	codeNull <- nullAuxiliary(aux, auxResult$indName, NULL, any(model$op == "~1"), max(model$group))
-	resultNull <- lavaan(codeNull, ...)
+	resultNull <- lavaan::lavaan(codeNull, ...)
 	result <- as(result, "lavaanStar")
-	fit <- fitMeasures(resultNull)
+	fit <- lavaan::fitMeasures(resultNull)
 	name <- names(fit)
 	fit <- as.vector(fit)
 	names(fit) <- name
