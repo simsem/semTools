@@ -193,7 +193,7 @@ longInvariance <- function(model, varList, auto = "all", constrainAuto = FALSE, 
             difftest(fitScalar, fitMeans)
         }
 	}
-	return(invisible(list(configural = fitConfigural, metric = fitMetric, scalar = fitScalar, strict = fitStrict, means = fitMeans)))
+	return(invisible(list(fit.configural = fitConfigural, fit.loadings = fitMetric, fit.intercepts = fitScalar, fit.residuals = fitStrict, fit.means = fitMeans)))
 }
 
 # freeParTable: Free elements in parameter table

@@ -22,49 +22,49 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 	# fit0 = Nested model, fit1 = Parent model
 	if(type %in% c("metric", "weak", "loading", "loadings")) {
 		numType <- 1
-		if(all(c("configural", "metric") %in% names(fit))) {
-			fit1 <- fit$configural
-			fit0 <- fit$metric
+		if(all(c("fit.configural", "fit.loadings") %in% names(fit))) {
+			fit1 <- fit$fit.configural
+			fit0 <- fit$fit.loadings
 		} else {
-			stop("Both configural and metric invariance models are needed in the 'fit' argument")
+			stop("The elements named 'fit.configural' and 'fit.loadings' are needed in the 'fit' argument")
 		}
 	} else if (type %in% c("scalar", "strong", "intercept", "intercepts", "threshold", "thresholds")) {
 		numType <- 2
-		if(all(c("metric", "scalar") %in% names(fit))) {
-			fit1 <- fit$metric
-			fit0 <- fit$scalar
+		if(all(c("fit.loadings", "fit.thresholds") %in% names(fit))) {
+			fit1 <- fit$fit.loadings
+			fit0 <- fit$fit.thresholds
 		} else {
-			stop("Both metric and scalar invariance models are needed in the 'fit' argument")
+			stop("The elements named 'fit.loadings' and 'fit.thresholds' are needed in the 'fit' argument")
 		}
 	} else if (type %in% c("strict", "residual", "residuals", "error", "errors")) {
 		numType <- 3
-		if("strict" %in% names(fit)) {
-			fit0 <- fit$strict
-			if("scalar" %in% names(fit)) {
-				fit1 <- fit$scalar			
-			} else if ("metric" %in% names(fit)) {
-				fit1 <- fit$metric			
+		if("fit.residuals" %in% names(fit)) {
+			fit0 <- fit$fit.residuals
+			if("fit.thresholds" %in% names(fit)) {
+				fit1 <- fit$fit.thresholds			
+			} else if ("fit.loadings" %in% names(fit)) {
+				fit1 <- fit$fit.loadings			
 			} else {
-				stop("Either scalar or metric invariance models is needed in the 'fit' argument")
+				stop("The element named either 'fit.thresholds' or 'fit.loadings' is needed in the 'fit' argument")
 			}			
 		} else {
-			stop("The strict invariance model is needed in the 'fit' argument")
+			stop("The element named 'fit.residuals' is needed in the 'fit' argument")
 		}
 	} else if (type %in% c("means", "mean")) {
 		numType <- 4
-		if("means" %in% names(fit)) {
-			fit0 <- fit$means
-			if("strict" %in% names(fit)) {
-				fit1 <- fit$strict			
-			} else if ("scalar" %in% names(fit)) {
-				fit1 <- fit$scalar			
-			} else if ("metric" %in% names(fit)) {
-				fit1 <- fit$metric			
+		if("fit.means" %in% names(fit)) {
+			fit0 <- fit$fit.means
+			if("fit.residuals" %in% names(fit)) {
+				fit1 <- fit$fit.residuals			
+			} else if ("fit.thresholds" %in% names(fit)) {
+				fit1 <- fit$fit.thresholds			
+			} else if ("fit.loadings" %in% names(fit)) {
+				fit1 <- fit$fit.loadings			
 			} else {
-				stop("Either metric, scalar, or strict invariance models is needed in the 'fit' argument")
+				stop("The element named either 'fit.residuals', 'fit.thresholds', or 'fit.loadings' is needed in the 'fit' argument")
 			}
 		} else {
-			stop("Mean invariance models is needed in the 'fit' argument")
+			stop("The element named 'fit.means' is needed in the 'fit' argument")
 		}
 	} else {
 		stop("Please specify the correct type of measurement invariance. See the help page.")

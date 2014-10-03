@@ -18,41 +18,41 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 	# fit0 = Nested model, fit1 = Parent model
 	if(type %in% c("metric", "weak", "loading", "loadings")) {
 		numType <- 1
-		if(all(c("configural", "metric") %in% names(fit))) {
-			fit1 <- fit$configural
-			fit0 <- fit$metric
+		if(all(c("fit.configural", "fit.loadings") %in% names(fit))) {
+			fit1 <- fit$fit.configural
+			fit0 <- fit$fit.loadings
 		} else {
-			stop("Both configural and metric invariance models are needed in the 'fit' argument")
+			stop("The elements named 'fit.configural' and 'fit.loadings' are needed in the 'fit' argument")
 		}
 	} else if (type %in% c("scalar", "strong", "intercept", "intercepts", "threshold", "thresholds")) {
 		numType <- 2
-		if(all(c("metric", "scalar") %in% names(fit))) {
-			fit1 <- fit$metric
-			fit0 <- fit$scalar
+		if(all(c("fit.loadings", "fit.intercepts") %in% names(fit))) {
+			fit1 <- fit$fit.loadings
+			fit0 <- fit$fit.intercepts
 		} else {
-			stop("Both metric and scalar invariance models are needed in the 'fit' argument")
+			stop("The elements named 'fit.loadings' and 'fit.intercepts' are needed in the 'fit' argument")
 		}
 	} else if (type %in% c("strict", "residual", "residuals", "error", "errors")) {
 		numType <- 3
-		if(all(c("scalar", "strict") %in% names(fit))) {
-			fit1 <- fit$scalar
-			fit0 <- fit$strict
+		if(all(c("fit.intercepts", "fit.residuals") %in% names(fit))) {
+			fit1 <- fit$fit.intercepts
+			fit0 <- fit$fit.residuals
 		} else {
-			stop("Both scalar and strict invariance models are needed in the 'fit' argument")
+			stop("The elements named 'fit.intercepts' and 'fit.residuals' are needed in the 'fit' argument")
 		}
 	} else if (type %in% c("means", "mean")) {
 		numType <- 4
-		if("means" %in% names(fit)) {
-			fit0 <- fit$means
-			if("strict" %in% names(fit)) {
-				fit1 <- fit$strict			
-			} else if ("scalar" %in% names(fit)) {
-				fit1 <- fit$scalar			
+		if("fit.means" %in% names(fit)) {
+			fit0 <- fit$fit.means
+			if("fit.residuals" %in% names(fit)) {
+				fit1 <- fit$fit.residuals		
+			} else if ("fit.intercepts" %in% names(fit)) {
+				fit1 <- fit$fit.intercepts			
 			} else {
-				stop("Either scalar or strict invariance models is needed in the 'fit' argument")
+				stop("The elements named either 'fit.residuals' or 'fit.intercepts	' is needed in the 'fit' argument")
 			}
 		} else {
-			stop("Mean invariance models is needed in the 'fit' argument")
+			stop("The elements named 'fit.means' is needed in the 'fit' argument")
 		}
 	} else {
 		stop("Please specify the correct type of measurement invariance. See the help page.")

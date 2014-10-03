@@ -258,7 +258,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
             difftest(fitMetric, fitMeans)
 		}
 	}
-	return(invisible(list(configural = fitConfigural, metric = fitMetric, scalar = fitScalar, strict = fitStrict, means = fitMeans)))
+	return(invisible(list(fit.configural = fitConfigural, fit.loadings = fitMetric, fit.thresholds = fitScalar, fit.residuals = fitStrict, fit.means = fitMeans)))
 }
 
 multipleAllEqual <- function(...) {

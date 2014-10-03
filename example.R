@@ -851,7 +851,7 @@ f2 ~~ c(1, NA)*f2
 
 configural <- cfa(conf, data = HolzingerSwineford1939, std.lv = TRUE, group="school")
 weak <- cfa(weak, data = HolzingerSwineford1939, group="school", group.equal="loadings")
-models <- list(configural = configural, metric = weak)
+models <- list(fit.configural = configural, fit.loadings = weak)
 partialInvariance(models, "metric")
 
 partialInvariance(models, "metric", free = "x5") # "x5" is free across groups in advance
@@ -949,7 +949,7 @@ u4 ~~ c(1, NA)*u4
 "
 
 outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization="theta", estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4"))
-modelsCat <- list(configural = outConfigural2, metric = outWeak2)
+modelsCat <- list(fit.configural = outConfigural2, fit.loadings = outWeak2)
 
 partialInvarianceCat(modelsCat, type = "metric") 
 partialInvarianceCat(modelsCat, type = "metric", free = "u2") 

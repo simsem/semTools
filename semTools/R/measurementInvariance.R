@@ -26,9 +26,9 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 		for(i in fixloadings) {
 			pttemplate <- freeParTable(pttemplate, pttemplate$lhs[i], "=~", pttemplate$rhs[i], pttemplate$group[i])
 		}
-		res$configural <- refit(pttemplate, template)
+		res$fit.configural <- refit(pttemplate, template)
 	} else {
-		res$configural <- template
+		res$fit.configural <- template
 	}
 	
     # fix loadings across groups
@@ -40,11 +40,11 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 		for(i in facnames) {
 			pttemplate <- freeParTable(pttemplate, i, "~~", i, 2:ngroups)
 		}		
-		res$metric <- refit(pttemplate, template)
+		res$fit.loadings <- refit(pttemplate, template)
 	} else {
 		loadings <- dotdotdot
 		loadings$group.equal <- c("loadings")
-		res$metric <- do.call("cfa", loadings)
+		res$fit.loadings <- do.call("cfa", loadings)
 	}
 	
     # fix loadings + intercepts across groups
@@ -56,11 +56,11 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 		for(i in facnames) {
 			pttemplate <- freeParTable(pttemplate, i, "~1", "", 2:ngroups)
 		}	
-		res$scalar <- refit(pttemplate, template)
+		res$fit.intercepts <- refit(pttemplate, template)
 	} else {
 		intercepts <- dotdotdot
 		intercepts$group.equal <- c("loadings", "intercepts")
-		res$scalar <- do.call("cfa", intercepts)
+		res$fit.intercepts <- do.call("cfa", intercepts)
 	}
 	
     if(strict) {
@@ -69,76 +69,76 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 			for(i in findresiduals) {
 				pttemplate <- constrainParTable(pttemplate, pttemplate$lhs[i], "~~", pttemplate$rhs[i], 1:ngroups)
 			}
-			res$strict <- refit(pttemplate, template)
+			res$fit.residuals <- refit(pttemplate, template)
 			for(i in facnames) {
 				pttemplate <- fixParTable(pttemplate, i, "~1", "", 1:ngroups, 0)
 			}
-			res$means <- refit(pttemplate, template)
+			res$fit.means <- refit(pttemplate, template)
 		} else {
 			# fix loadings + intercepts + residuals
 			residuals <- dotdotdot
 			residuals$group.equal <- c("loadings", "intercepts", "residuals")
-			res$strict <- do.call("cfa", residuals)
+			res$fit.residuals <- do.call("cfa", residuals)
 
 			# fix loadings + residuals + intercepts + means
 			means <- dotdotdot
 			means$group.equal <- c("loadings", "intercepts", "residuals", "means")
-			res$means <- do.call("cfa", means)
+			res$fit.means <- do.call("cfa", means)
 		}
     } else {
 		if(std.lv) {
 			for(i in facnames) {
 				pttemplate <- fixParTable(pttemplate, i, "~1", "", 1:ngroups, 0)
 			}
-			res$means <- refit(pttemplate, template)
+			res$fit.means <- refit(pttemplate, template)
 		} else {
 			# fix loadings + intercepts + means
 			means <- dotdotdot
 			means$group.equal <- c("loadings", "intercepts", "means")
-			res$means <- do.call("cfa", means)
+			res$fit.means <- do.call("cfa", means)
 		}
     }
 
     if(!quiet) {
         cat("\nMeasurement invariance tests:\n")
         cat("\nModel 1: configural invariance:\n")
-        printFitLine(res$configural)
+        printFitLine(res$fit.configural)
 
         cat("\nModel 2: weak invariance (equal loadings):\n")
-        printFitLine(res$metric)
+        printFitLine(res$fit.loadings)
 
         cat("\n[Model 1 versus model 2]\n")
-        difftest(res$configural, res$metric)
+        difftest(res$fit.configural, res$fit.loadings)
 
         cat("\nModel 3: strong invariance (equal loadings + intercepts):\n")
-        printFitLine(res$scalar)
+        printFitLine(res$fit.intercepts)
         cat("\n[Model 1 versus model 3]\n")
-        difftest(res$configural, res$scalar)
+        difftest(res$fit.configural, res$fit.intercepts)
         cat("\n[Model 2 versus model 3]\n")
-        difftest(res$metric, res$scalar)
+        difftest(res$fit.loadings, res$fit.intercepts)
 
 
         if(strict) {
             cat("\nModel 4: strict invariance (equal loadings + intercepts + residuals):\n")
-            printFitLine(res$strict)
+            printFitLine(res$fit.residuals)
             cat("\n[Model 1 versus model 4]\n")
-            difftest(res$configural, res$strict)
+            difftest(res$fit.configural, res$fit.residuals)
             cat("\n[Model 3 versus model 4]\n")
-            difftest(res$scalar, res$strict)
+            difftest(res$fit.intercepts, res$fit.residuals)
   
             cat("\nModel 5: equal loadings + intercepts + residuals + means:\n")
-            printFitLine(res$means,horizontal=TRUE)
+            printFitLine(res$fit.means,horizontal=TRUE)
             cat("\n[Model 1 versus model 5]\n")
-            difftest(res$configural, res$means)
+            difftest(res$fit.configural, res$fit.means)
             cat("\n[Model 4 versus model 5]\n")
-            difftest(res$strict, res$means)
+            difftest(res$fit.residuals, res$fit.means)
         } else {
             cat("\nModel 4: equal loadings + intercepts + means:\n")
-            printFitLine(res$means)
+            printFitLine(res$fit.means)
             cat("\n[Model 1 versus model 4]\n")
-            difftest(res$configural, res$means)
+            difftest(res$fit.configural, res$fit.means)
             cat("\n[Model 3 versus model 4]\n")
-            difftest(res$scalar, res$means)
+            difftest(res$fit.intercepts, res$fit.means)
         }
     }
     invisible(res)
