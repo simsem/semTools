@@ -7,7 +7,7 @@ moreFitIndices <- function(object, nPrior = 1) {
 	# Extract fit indices information from lavaan object
 	fit <- inspect(object, "fit")
 	# Get the number of variable
-	p <- length(fitted(object)$mean)
+	p <- length(object@Data@ov.names[[1]])
 	
 	# Get the number of parameters
 	nParam <- fit["baseline.df"] - fit["df"]
