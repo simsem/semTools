@@ -1,6 +1,6 @@
 # miPowerFit: Evaluate model fit by Satorra, Saris, & van der Weld (2009) method
 
-miPowerFit <- function(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, delta=NULL) {
+miPowerFit <- function(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, delta=NULL, cilevel=0.90) {
 	mi <- inspect(lavaanObj, "mi")
 	sigma <- mi[,"epc"] / sqrt(mi[,"mi"])
 	if(is.null(delta)) {
@@ -21,9 +21,19 @@ miPowerFit <- function(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2
 	decision <- mapply(decisionMIPow, sigMI=sigMI, highPow=highPow, epc=mi[,"epc"], trivialEpc=delta)
 	if(is.null(stdDelta)) stdDelta <- standardizeEpc(mi, findTotalVar(lavaanObj), delta=delta)
 	result <- cbind(mi[,1:3], group, as.numeric(mi[,"mi"]), mi[,"epc"], delta, standardizeEpc(mi, findTotalVar(lavaanObj)), stdDelta, sigMI, highPow, decision)
+	# New method
+	crit <- abs(qnorm((1 - cilevel)/2))
+	seepc <- abs(result[,6]) / sqrt(abs(result[,5]))
+	lowerepc <- result[,6] - crit * seepc
+	upperepc <- result[,6] + crit * seepc
+	stdlowerepc <- standardizeEpc(mi, findTotalVar(lavaanObj), delta = lowerepc)
+	stdupperepc <- standardizeEpc(mi, findTotalVar(lavaanObj), delta = upperepc)
+	isVar <- mi[,"op"] == "~~" & mi[,"lhs"] == mi[,"rhs"]
+	decisionci <- mapply(decisionCIEpc, targetval=as.numeric(stdDelta), lower=stdlowerepc, upper=stdupperepc, positiveonly=isVar)
 	
+	result <- cbind(result, seepc, lowerepc, upperepc, stdlowerepc, stdupperepc, decisionci)
 	result <- result[!is.na(decision),]
-	colnames(result) <- c("lhs", "op", "rhs", "group", "mi", "epc", "target.epc", "std.epc", "std.target.epc", "significant.mi", "high.power", "decision")
+	colnames(result) <- c("lhs", "op", "rhs", "group", "mi", "epc", "target.epc", "std.epc", "std.target.epc", "significant.mi", "high.power", "decision.pow", "se.epc", "lower.epc", "upper.epc", "lower.std.epc", "upper.std.epc", "decision.ci")
 	result <- format(result, scientific=FALSE, digits=4)
 	return(result)
 }
@@ -158,5 +168,27 @@ decisionMIPow <- function(sigMI, highPow, epc, trivialEpc) {
 		return("I")
 	} else {
 		return(NA)
+	}
+}
+
+decisionCIEpc <- function(targetval, lower, upper, positiveonly = FALSE) {
+	if(is.na(lower) | is.na(upper)) return(NA)
+	if(positiveonly) {
+		if(lower > targetval) {
+			return("M")
+		} else if (upper < targetval) {
+			return("NM")
+		} else {
+			return("I")
+		}
+	} else {
+		negtargetval <- -targetval
+		if(lower > targetval | upper < negtargetval) {
+			return("M")
+		} else if (upper < targetval & negtargetval < lower) {
+			return("NM")
+		} else {
+			return("I")
+		}	
 	}
 }

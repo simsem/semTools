@@ -5,11 +5,11 @@
 Modification indices and their power approach for model fit evaluation
 }
 \description{
-The model fit evaluation approach using modification indices and their power proposed by Saris, Satorra, and van der Veld (2009, pp. 570-573).
+The model fit evaluation approach using modification indices and expected parameter changes.
 }
 \usage{
 miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, 
-	delta=NULL)
+	delta=NULL, cilevel = 0.90)
 }
 \arguments{
   \item{lavaanObj}{The lavaan model object used to evaluate model fit}
@@ -19,9 +19,14 @@ miPowerFit(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=N
   \item{intcept}{The amount of standardized intercept (similar to Cohen's \emph{d} that one would like to be detected (rejected). The default value is 0.2, which is equivalent to a low effect size proposed by Cohen (1988, 1992).}
   \item{stdDelta}{The vector of the standardized parameters that one would like to be detected (rejected). If this argument is specified, the value here will overwrite the other arguments above. The order of the vector must be the same as the row order from modification indices from the \code{lavaan} object. If a single value is specified, the value will be applied to all parameters.}
   \item{delta}{The vector of the unstandardized parameters that one would like to be detected (rejected). If this argument is specified, the value here will overwrite the other arguments above. The order of the vector must be the same as the row order from modification indices from the \code{lavaan} object. If a single value is specified, the value will be applied to all parameters.}
+  \item{cilevel}{The confidence level of the confidence interval of expected parameter changes. The confidence intervals are used in the equivalence testing.}
 }
 \details{
-In the lavaan object, one can inspect the modification indices and expected parameter changes. Those values can be used to evaluate model fit by the method proposed by Saris and colleagues (2009). First, one should evaluate whether the modification index of each parameter is significant. Second, one should evaluate whether the power to detect a target expected parameter change is high enough. If the modification index is not significant and the power is high, there is no misspecification. If the modification index is significant and the power is low, the fixed parameter is misspecified. If the modification index is significant and the power is high, the expected parameter change is investigated. If the expected parameter change is large (greater than the the target expected parameter change), the parameter is misspecified. If the expected parameter change is low (lower than the target expected parameter change), the parameter is not misspecificied. If the modification index is not significant and the power is low, the decision is inconclusive.
+In the lavaan object, one can inspect the modification indices and expected parameter changes. Those values can be used to evaluate model fit by two methods. 
+
+First, Saris, Satorra, and van der Veld (2009, pp. 570-573) used the power to detect modification indices and expected parameter changes to evaluate model fit. First, one should evaluate whether the modification index of each parameter is significant. Second, one should evaluate whether the power to detect a target expected parameter change is high enough. If the modification index is not significant and the power is high, there is no misspecification. If the modification index is significant and the power is low, the fixed parameter is misspecified. If the modification index is significant and the power is high, the expected parameter change is investigated. If the expected parameter change is large (greater than the the target expected parameter change), the parameter is misspecified. If the expected parameter change is low (lower than the target expected parameter change), the parameter is not misspecificied. If the modification index is not significant and the power is low, the decision is inconclusive.
+
+Second, the confidence intervals of the expected parameter changes are formed. These confidence intervals are compared with the range of trivial misspecification, which could be (-\code{delta}, \code{delta}) or (0, \code{delta}) for nonnegative parameters. If the confidence intervals are outside of the range of trivial misspecification, the fixed parameters are severely misspecified. If the confidence intervals are inside the range of trivial misspecification, the fixed parameters are trivially misspecified. If confidence intervals are overlapped the range of trivial misspecification, the decision is inconclusive.
 }
 \value{
 A data frame with these variables:
@@ -37,7 +42,13 @@ A data frame with these variables:
   \item{std.target.epc} The standardized target expected parameter change
   \item{significant.mi} Represents whether the modification index value is significant
   \item{high.power} Represents whether the power is enough to detect the target expected parameter change
-  \item{decision} The decision whether the parameter is misspecified or not: \code{"M"} represents the parameter is misspecified, \code{"NM"} represents the parameter is not misspecified, \code{"EPC:M"} represents the parameter is misspecified decided by checking the expected parameter change value, \code{"EPC:NM"} represents the parameter is not misspecified decided by checking the expected parameter change value, and \code{"I"} represents the decision is inconclusive.
+  \item{decision.pow} The decision whether the parameter is misspecified or not based on Saris et al's method: \code{"M"} represents the parameter is misspecified, \code{"NM"} represents the parameter is not misspecified, \code{"EPC:M"} represents the parameter is misspecified decided by checking the expected parameter change value, \code{"EPC:NM"} represents the parameter is not misspecified decided by checking the expected parameter change value, and \code{"I"} represents the decision is inconclusive.
+  \item{se.epc} The standard errors of the expected parameter changes.
+  \item{lower.epc} The lower bound of the confidence interval of expected parameter changes.
+  \item{upper.epc} The upper bound of the confidence interval of expected parameter changes.
+  \item{lower.std.epc} The lower bound of the confidence interval of standardized expected parameter changes.
+  \item{upper.std.epc} The upper bound of the confidence interval of standardized expected parameter changes.
+  \item{decision.ci} The decision whether the parameter is misspecified or not based on the confidence interval method: \code{"M"} represents the parameter is misspecified, \code{"NM"} represents the parameter is not misspecified, and \code{"I"} represents the decision is inconclusive.
 }
 The row numbers matches with the results obtained from the \code{inspect(object, "mi")} function.
 }
