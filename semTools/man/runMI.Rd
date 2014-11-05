@@ -123,6 +123,25 @@ inspect(out3, "fit")
 inspect(out3, "impute")
 
 # Categorical variables
+popModel <- "
+f1 =~ 0.6*y1 + 0.6*y2 + 0.6*y3 + 0.6*y4
+y1 ~*~ 1*y1
+y2 ~*~ 1*y2
+y3 ~*~ 1*y3
+y4 ~*~ 1*y4
+f1 ~~ 1*f1
+y1 | 0.5*t1
+y2 | 0.25*t1
+y3 | 0*t1
+y4 | -0.5*t1
+"
+analyzeModel <- "
+f1 =~ y1 + y2 + y3 + y4
+y1 ~*~ 1*y1
+y2 ~*~ 1*y2
+y3 ~*~ 1*y3
+y4 ~*~ 1*y4
+"
 dat <- simulateData(popModel, sample.nobs  = 200L)
 miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
 dat[miss.pat] <- NA
