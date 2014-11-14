@@ -41,9 +41,9 @@ In conclusion, \eqn{\omega_1}, \eqn{\omega_2}, and \eqn{\omega_3} are different 
 
 The average variance extracted (AVE) can be calculated by 
 
-\deqn{ AVE = \frac{\bold{1}^\prime \textrm(diag)\left(\Lambda\Psi\Lambda^\prime\right)\bold{1}}{\bold{1}^\prime \textrm(diag)\left(\hat{\Sigma}\right) \bold{1}}, }
+\deqn{ AVE = \frac{\bold{1}^\prime \textrm{diag}\left(\Lambda\Psi\Lambda^\prime\right)\bold{1}}{\bold{1}^\prime \textrm{diag}\left(\hat{\Sigma}\right) \bold{1}}, }
 
-Note that this formula is modified from Fornell & Larcker (1981) in the case that factor variances are not 1. 
+Note that this formula is modified from Fornell & Larcker (1981) in the case that factor variances are not 1. The proposed formula from Fornell & Larcker (1981) assumes that the factor variances are 1.
 
 Regarding to categorical items, coefficient alpha and AVE are calculated based on polychoric correlations. The coefficient alpha from this function may be not the same as the standard alpha calculation for categorical items. Researchers may check the \code{alpha} function in the \code{psych} package for the standard coefficient alpha calculation. 
 
