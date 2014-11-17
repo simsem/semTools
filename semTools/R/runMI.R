@@ -517,13 +517,17 @@ imposeGLIST <- function(object, coef, partable) {
 				GLIST[names(GLIST) == "theta"][[group]][lhs, rhs] <- coef[i]
 			}
 		} else if (partable$op[i] == "~") {
-			GLIST[names(GLIST) == "beta"][[group]][lhs, rhs] <- coef[i]
+			targetName <- "beta"
+			if(!(rhs %in% colnames(GLIST[names(GLIST) == "beta"][[group]]))) targetName <- "gamma"
+			GLIST[names(GLIST) == targetName][[group]][lhs, rhs] <- coef[i]
 		} else if (partable$op[i] == "~1") {
 			if(lhs %in% rownames(GLIST[names(GLIST) == "alpha"][[group]])) {
 				GLIST[names(GLIST) == "alpha"][[group]][lhs, 1] <- coef[i]
 			} else {
 				GLIST[names(GLIST) == "nu"][[group]][lhs, 1] <- coef[i]
 			}		
+		} else if (partable$op[i] == "|") {
+			GLIST[names(GLIST) == "tau"][[group]][paste0(lhs, "|", rhs), 1] <- coef[i]
 		}
 	}
 	object@GLIST <- GLIST

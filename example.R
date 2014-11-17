@@ -28,13 +28,13 @@ sourceDirData <- function(path, trace = TRUE) {
 #dir <- "C:/Users/Sunthud/simsem_backup/simsem/R/"
 library(lavaan)
 
-dir <- "C:/Users/spornpra/Dropbox/semTools/semTools/R/"
+dir <- "C:/Users/Sunthud/Dropbox/semTools/semTools/R/"
 sourceDir(dir)
 
 # dir2 <- "C:/Users/sunthud/Desktop/multcomp/R"
 # sourceDir(dir2)
 
-dirData <- "C:/Users/spornpra/Dropbox/semTools/semTools/data/"
+dirData <- "C:/Users/Sunthud/Dropbox/semTools/semTools/data/"
 sourceDirData(dirData)
 ######### Distribution
 
@@ -65,7 +65,7 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 '
 
-fit <- cfa(HS.model, data=HolzingerSwineford1939)
+fit <- cfa(HS.model, data=HolzingerSwineford1939, fixed.x = FALSE)
 moreFitIndices(fit)
 
 fit2 <- cfa(HS.model, data=HolzingerSwineford1939, estimator="MLR")
