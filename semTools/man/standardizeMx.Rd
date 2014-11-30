@@ -83,6 +83,6 @@ standardizeMx(oneFactorFit)
 library(lavaan)
 script <- "f1 =~ x1 + x2 + x3 + x4 + x5 + x6"
 fit <- cfa(script, data=myFADataRaw, meanstructure=TRUE)
-standardize(fit)
+standardizedSolution(fit)
 }
 }

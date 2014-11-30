@@ -48,7 +48,7 @@ reliability <- function(object) {
 			if(categorical) {
 				omega1[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], truevar[index, index] + te[[i]][index, index])
 				omega2[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], SigmaHat[[i]][index, index])
-				omega3[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], sigma)
+				omega3[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], sigma[index, index])
 			} else {
 				omega1[j] <- common[j] / (common[j] + error[j])
 				omega2[j] <- common[j] / impliedTotal[j]

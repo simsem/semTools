@@ -140,10 +140,9 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		chiNullScaled1 <- sapply(null.results, function(x) x@Fit@test[[2]]$stat)
 		dfNullScaled <- null.results[[1]]@Fit@test[[2]]$df
 	}
-	
 	outNull <- list(model=nullModel, data=imputed.l[[1]], se="none", do.fit=FALSE)
 	outNull <- c(outNull, list(...))
-	templateNull <- do.call(fun, outNull)
+	templateNull <- suppressWarnings(do.call(fun, outNull))
 	
 	coefsNull <- sapply(null.results, function(x) x@Fit@est)
 	seNull <- sapply(null.results, function(x) x@Fit@se)
