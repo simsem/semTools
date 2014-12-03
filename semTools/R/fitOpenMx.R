@@ -18,12 +18,13 @@ saturateMx <- function(data, groupLab = NULL) {
 		}
 		temp <- mapply(saturateMxSingleGroup, data = data.l, title = paste0("group", 1:ngroups), groupnum = 1:ngroups, SIMPLIFY=FALSE)
 		title <- "Multiple group Saturate Model"
-		algebra <- OpenMx::mxAlgebra("", name="allobjective")
+		asdf <- NULL
+		algebra <- OpenMx::mxAlgebra(asdf, name="allobjective")
 		groupnames <- paste0("group", 1:ngroups)
 		groupnames <- paste0(groupnames, ".objective")
 		groupnames <- lapply(groupnames, as.name)
 		algebra@formula <- as.call(c(list(as.name("sum")), groupnames))
-		objective <- OpenMx::mxAlgebraObjective("allobjective")
+		objective <- OpenMx::mxFitFunctionAlgebra("allobjective")
 		Saturate <- OpenMx::mxModel(title, unlist(temp), algebra, objective)
 	} else {
 		Saturate <- saturateMxSingleGroup(data, title = "Saturate Model")
@@ -136,7 +137,8 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 				means="M",
 				dimnames=colnames(data@observed),
 				thresholds = "thresh"				
-			)
+			),
+			OpenMx::mxFitFunctionML()
 		)
 	} else {
 		if(data@type == "raw") {
@@ -219,12 +221,13 @@ nullMx <- function(data, groupLab = NULL) {
 		}
 		temp <- mapply(nullMxSingleGroup, data = data.l, title = paste0("group", 1:ngroups), groupnum = 1:ngroups, SIMPLIFY=FALSE)
 		title <- "Multiple group Null Model"
-		algebra <- OpenMx::mxAlgebra("", name="allobjective")
+		asdf <- NULL
+		algebra <- OpenMx::mxAlgebra(asdf, name="allobjective")
 		groupnames <- paste0("group", 1:ngroups)
 		groupnames <- paste0(groupnames, ".objective")
 		groupnames <- lapply(groupnames, as.name)
 		algebra@formula <- as.call(c(list(as.name("sum")), groupnames))
-		objective <- OpenMx::mxAlgebraObjective("allobjective")
+		objective <- OpenMx::mxFitFunctionAlgebra("allobjective")
 		Null <- OpenMx::mxModel(title, unlist(temp), algebra, objective)
 	} else {
 		Null <- nullMxSingleGroup(data, title = "Null Model")
@@ -314,7 +317,8 @@ nullMxSingleGroup <- function(data, title = "Null Model", groupnum = NULL) {
 				means="M",
 				dimnames=colnames(data@observed),
 				thresholds = "thresh"				
-			)
+			),
+			OpenMx::mxFitFunctionML()
 		)
 	} else {
 		if(data@type == "raw") {
@@ -911,14 +915,15 @@ fitMeasuresMx <- function(object, fit.measures="all") {
         
         if(G > 1) {
 			## FIXME: get the scaling right
-            SRMR_BENTLER <- as.numeric( (unlist(object@SampleStats@nobs) %*% srmr_bentler.group) / object@SampleStats@ntotal )
-            SRMR_BENTLER_NOMEAN <- as.numeric( (unlist(object@SampleStats@nobs) %*% srmr_bentler_nomean.group) / object@SampleStats@ntotal )
-            SRMR_BOLLEN <- as.numeric( (unlist(object@SampleStats@nobs) %*% srmr_bollen.group) / object@SampleStats@ntotal )
-            SRMR_BOLLEN_NOMEAN <- as.numeric( (unlist(object@SampleStats@nobs) %*% srmr_bollen_nomean.group) / object@SampleStats@ntotal )
-            SRMR_MPLUS <- as.numeric( (unlist(object@SampleStats@nobs) %*% srmr_mplus.group) / object@SampleStats@ntotal )
-            SRMR_MPLUS_NOMEAN <- as.numeric( (unlist(object@SampleStats@nobs) %*% srmr_mplus_nomean.group) / object@SampleStats@ntotal )
-            RMR <- as.numeric( (unlist(object@SampleStats@nobs) %*% rmr.group) / object@SampleStats@ntotal )
-            RMR_NOMEAN <- as.numeric( (unlist(object@SampleStats@nobs) %*% rmr_nomean.group) / object@SampleStats@ntotal )
+			ngroups <- sapply(dat, slot, "numObs")
+            SRMR_BENTLER <- as.numeric( (ngroups %*% srmr_bentler.group) / N )
+            SRMR_BENTLER_NOMEAN <- as.numeric( (ngroups %*% srmr_bentler_nomean.group) / N )
+            SRMR_BOLLEN <- as.numeric( (ngroups %*% srmr_bollen.group) / N )
+            SRMR_BOLLEN_NOMEAN <- as.numeric( (ngroups %*% srmr_bollen_nomean.group) / N )
+            SRMR_MPLUS <- as.numeric( (ngroups %*% srmr_mplus.group) / N )
+            SRMR_MPLUS_NOMEAN <- as.numeric( (ngroups %*% srmr_mplus_nomean.group) / N )
+            RMR <- as.numeric( (ngroups %*% rmr.group) / N )
+            RMR_NOMEAN <- as.numeric( (ngroups %*% rmr_nomean.group) / N )
         } else {
             SRMR_BENTLER <- srmr_bentler.group[1]
             SRMR_BENTLER_NOMEAN <- srmr_bentler_nomean.group[1]
