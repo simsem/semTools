@@ -10,7 +10,7 @@ moreFitIndices <- function(object, nPrior = 1) {
 	p <- length(object@Data@ov.names[[1]])
 	
 	# Get the number of parameters
-	nParam <- fit["baseline.df"] - fit["df"]
+	nParam <- fit["npar"]
 	
 	# Get number of observations
 	n <- object@SampleStats@ntotal
