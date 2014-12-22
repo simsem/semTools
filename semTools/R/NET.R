@@ -149,7 +149,7 @@ function(object) {
   } else {
     cat(data.class(object@test), "(0)\n", sep = "")
   }
-  invisible(object@test)
+  invisible(object)
 })
 
 
@@ -173,6 +173,6 @@ function(object) {
       cat("Model \"", mods[R], "\" is ", rel, " model \"", mods[C], "\"\n", sep = "")
     }
   }
-  invisible(x)
+  invisible(object)
 })
 	
