@@ -3,55 +3,59 @@
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------##
 
-moreFitIndices <- function(object, nPrior = 1) {
-	# Extract fit indices information from lavaan object
-	fit <- inspect(object, "fit")
-	# Get the number of variable
-	p <- length(object@Data@ov.names[[1]])
-	
-	# Get the number of parameters
-	nParam <- fit["npar"]
-	
-	# Get number of observations
-	n <- object@SampleStats@ntotal
-	
-	# Calculate the minimized discrepancy function
-	f <- -2 * fit["logl"]
-	# Find the number of groups
-	ngroup <- object@Data@ngroups
-	
-	# Compute fit indices
-	gammaHatValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
-	adjGammaHatValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHatValue)
-	nullRmseaValue <- nullRMSEA(object, silent = TRUE)
-	result <- c(gammaHatValue, adjGammaHatValue, nullRmseaValue)
-	names(result) <- c("gammaHat", "adjGammaHat", "baseline.rmsea")
+moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
+  ## check for validity of user-specified "fit.measures" argument
+  fit.choices <- c("gammaHat","adjGammaHat","baseline.rmsea","aic.smallN","bic.priorN","hqc",
+                   "sic","gammaHat.scaled","adjGammaHat.scaled","baseline.rmsea.scaled")
+  flags <- setdiff(fit.measures, c("all", fit.choices))
+  if (length(flags)) stop(paste("Argument 'fit.measures' includes invalid options:",
+                                paste(flags, collapse = ", "),
+                                "Please choose 'all' or among the following:",
+                                paste(fit.choices, collapse = ", "), sep = "\n"))
+  if("all" %in% fit.measures) fit.measures <- fit.choices
 
-	if(!is.na(f)) {
-		aiccValue <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
-		bicStarValue <- f + log(1 + n/nPrior) * nParam
-		hqcValue <- f + 2 * log(log(n)) * nParam
-		temp <- c(aiccValue, bicStarValue, hqcValue)
-		names(temp) <- c("aic.smallN", "bic.priorN", "hqc")
-		result <- c(result, temp)
-	}
+  # Extract fit indices information from lavaan object
+  fit <- inspect(object, "fit")
+  # Get the number of variable
+  p <- length(object@Data@ov.names[[1]])
+  # Get the number of parameters
+  nParam <- fit["npar"]
 	
-	# Vector of result
-	if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
-		gammaHatScaledValue <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
-		adjGammaHatScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaledValue)
-		nullRmseaScaledValue <- nullRMSEA(object, scaled = TRUE, silent = TRUE)
-		resultScaled <- c(gammaHatScaledValue, adjGammaHatScaledValue, nullRmseaScaledValue)
-		names(resultScaled) <- c("gammaHat.scaled", "adjGammaHat.scaled", "baseline.rmsea.scaled")
-		result <- c(result, resultScaled)
-    } else {
-		if(!is.na(f)) {
-			sicValue <- sic(f, object)
-			result <- c(result, "sic" = sicValue)
-		}
-	}
-	
-	return(result)
+  # Get number of observations
+  n <- object@SampleStats@ntotal
+  # Find the number of groups
+  ngroup <- object@Data@ngroups
+  
+  # Calculate -2*log(likelihood)
+  f <- -2 * fit["logl"]
+  
+  # Compute fit indices
+  result <- list()
+  if (length(grep("gamma", fit.measures, ignore.case = TRUE))) {
+    gammaHatValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
+    adjGammaHatValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHatValue)
+    result["gammaHat"] <- gammaHatValue
+    result["adjGammaHat"] <- adjGammaHatValue
+    if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
+      gammaHatScaledValue <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
+      adjGammaHatScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaledValue)
+      result["gammaHat.scaled"] <- gammaHatScaledValue
+      result["adjGammaHat.scaled"] <- adjGammaHatScaledValue
+    }
+  }
+  if (length(grep("rmsea", fit.measures))) {
+    result["baseline.rmsea"] <- nullRMSEA(object, silent = TRUE)
+    if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
+      result["baseline.rmsea.scaled"] <- nullRMSEA(object, scaled = TRUE, silent = TRUE)
+    }
+  }
+  if(!is.na(f)) {
+    if("aic.smallN" %in% fit.measures) result["aic.smallN"] <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
+    if("bic.priorN" %in% fit.measures) result["bic.priorN"] <- f + log(1 + n/nPrior) * nParam
+    if("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(n)) * nParam
+    if("sic" %in% fit.measures) result["sic"] <- sic(f, object)
+  }
+  unlist(result[fit.measures])
 }
 
 ## Stochastic Information Criterion
@@ -63,7 +67,7 @@ sic <- function(f, lresults = NULL) {
 	v <- NA
 	try(v <- vcov(lresults), silent = TRUE)
 	ifelse(is.na(v) || det(v) <= 0, return(NA), try(expinf <- solve(v) / lresults@SampleStats@ntotal, silent = TRUE))
-	sic <- as.numeric(f + log(det(lresults@SampleStats@ntotal * (expinf))))/2
+	sic <- as.numeric(f + log(det(lresults@SampleStats@ntotal * (expinf))))
 	return(sic)
 }
 
