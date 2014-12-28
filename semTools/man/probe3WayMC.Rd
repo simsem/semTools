@@ -1,7 +1,7 @@
 \name{probe3WayMC}
 \alias{probe3WayMC}
 \title{
-Probing two-way interaction on the residual-centered latent interaction
+Probing two-way interaction on the no-centered or mean-centered latent interaction
 }
 \description{
 Probing interaction for simple intercept and simple slope for the no-centered or mean-centered latent two-way interaction
