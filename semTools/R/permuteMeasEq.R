@@ -132,6 +132,7 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, AFIs, moreAFIs,
 ## function to permute difference in fits
 permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAFIs = NULL,
                           param = "loadings", maxSparse = 10, maxNonconv = 10) {
+  nPermute <- as.integer(nPermute[1])
   ## logical check that models were fit to the same data
   if (!all.equal(con@Data, uncon@Data)) stop("Models must be fit to the same groups")
   ## check for least-squares estimators
