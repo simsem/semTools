@@ -23,7 +23,7 @@ out <- c(out, list(...))
 mod <- do.call(fun, out)
 
 ##get NCP from chi square
-ncp <- lavaan::fitmeasures(mod)[2]
+ncp <- lavaan::fitmeasures(mod)["chisq"]
 critVal <- qchisq(1-alpha, nparam)
 
 1-pchisq(critVal, nparam, ncp)
