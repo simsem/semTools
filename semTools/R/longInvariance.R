@@ -215,16 +215,13 @@ freeParTable <- function(parTable, lhs, op, rhs, group, ustart = NA) {
 			parTable$exo <- c(parTable$exo, as.integer(0))
 			parTable$eq.id <- c(parTable$eq.id, as.integer(0))
 			parTable$label <- c(parTable$label, as.character(""))
-			parTable$unco <- c(parTable$unco, as.integer(max(parTable$unco) + 1))
 		} else {
 			if(parTable$free[element[i]] != 0) warnings(paste("The", lhs, op, rhs, group, "is free already."))
-			parTable$unco[element[i]] <- max(parTable$unco) + 1
 			parTable$ustart[element[i]] <- ustart
 			parTable$user[element[i]] <- 1
 			parTable$free[element[i]] <- max(parTable$free) + 1
 		}
 	}
-	parTable$unco <- rearrangeFreeElement(parTable$unco)
 	parTable$free <- rearrangeFreeElement(parTable$free)	
 	return(parTable)
 }
@@ -236,12 +233,10 @@ fixParTable <- function(parTable, lhs, op, rhs, group, ustart = NA) {
 	element <- apply(target, 1, matchElement, parTable=parTable)
 	for(i in 1:nrow(target)) {
 		if(parTable$free[element[i]] == 0) warnings(paste("The", lhs, op, rhs, group, "is fixed already."))
-		parTable$unco[element[i]] <- 0
 		parTable$ustart[element[i]] <- ustart
 		parTable$user[element[i]] <- 1
 		parTable$free[element[i]] <- 0
 	}
-	parTable$unco <- rearrangeFreeElement(parTable$unco)
 	parTable$free <- rearrangeFreeElement(parTable$free)	
 	return(parTable)
 }
@@ -261,7 +256,6 @@ constrainParTable <- function(parTable, lhs, op, rhs, group) {
 		parTable$free[element[i]] <- free
 		parTable$eq.id[element[i]] <- eq.id
 	}
-	parTable$unco <- rearrangeFreeElement(parTable$unco)
 	parTable$free <- rearrangeFreeElement(parTable$free)	
 	return(parTable)	
 }
@@ -276,7 +270,7 @@ matchElement <- function(parTable, vec) {
 	}
 }
 
-# rearrangeFreeElement: Rearrange the number listed in 'free' or 'unco' in parameter tables 
+# rearrangeFreeElement: Rearrange the number listed in 'free' in parameter tables 
 
 rearrangeFreeElement <- function(vec) {
 	vec2 <- vec
