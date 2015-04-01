@@ -161,7 +161,6 @@ attachConstraint <- function(pt, con) {
 		pt$exo <- c(pt$exo, con$exo)
 		pt$label <- c(pt$label, con$label)
 		pt$eq.id <- c(pt$eq.id, con$eq.id)
-		pt$unco <- c(pt$unco, con$unco)
 	}
 	pt
 }
@@ -193,9 +192,6 @@ attachPT <- function(pt, lhs, op, rhs, ngroups, symmetric=FALSE, exo=FALSE, fixe
 	pt$exo <- c(pt$exo, rep(as.numeric(exo), num))
 	pt$label <- c(pt$label, rep("", num))
 	pt$eq.id <- c(pt$eq.id, rep(0L, num))
-	unco <- (max(pt$unco)+1):(max(pt$unco)+num)
-	if(fixed) unco <- rep(0L, num)
-	pt$unco <- c(pt$unco, unco)
 	return(pt)
 }
 
@@ -215,7 +211,6 @@ nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
 	pt$exo <- rep(0, num)
 	pt$label <- rep("", num)
 	pt$eq.id <- rep(0, num)
-	pt$unco <- 1:num
 	if(meanstructure) {
 		pt$lhs <- rep(rep(indName, ngroups), 2)
 		pt$op <- rep(c("~~", "~1"), each=num/2)
