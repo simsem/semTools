@@ -78,9 +78,10 @@ West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection in st
 }
 \author{
     Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
-	Aaron Boulton (University of North Carolina, Chapel Hill; \email{aboulton@email.unc.edu})
-	Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
-  Terrence Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+    Terrence Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+    Aaron Boulton (University of North Carolina, Chapel Hill; \email{aboulton@email.unc.edu})
+    Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
+    Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 }
 \seealso{
 	\itemize{
