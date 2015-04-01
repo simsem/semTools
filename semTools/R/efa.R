@@ -224,16 +224,16 @@ seStdLoadings <- function(rotate, object) {
 	}
 	JAC <- lavaan::lav_func_jacobian_simple(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate, aux=aux)
 	LIST <- inspect(object, "list")
-	unco.idx <- which(LIST$unco > 0L)
+	free.idx <- which(LIST$free > 0L)
 	LIST <- LIST[,c("lhs", "op", "rhs", "group")]
-	JAC <- JAC[unco.idx,unco.idx]
+	JAC <- JAC[free.idx,free.idx]
 	VCOV <- as.matrix(vcov(object, labels=FALSE))
 	if(object@Model@eq.constraints) {
 		JAC <- JAC %*% object@Model@eq.constraints.K
 	}
 	COV <- JAC %*% VCOV %*% t(JAC)
 	LIST$se <- rep(NA, length(LIST$lhs))
-	LIST$se[unco.idx] <- sqrt(diag(COV))
+	LIST$se[free.idx] <- sqrt(diag(COV))
 	tmp.se <- ifelse( LIST$se == 0.0, NA, LIST$se)
     lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
 	partable <- object@ParTable
