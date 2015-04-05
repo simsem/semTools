@@ -213,8 +213,8 @@ freeParTable <- function(parTable, lhs, op, rhs, group, ustart = NA) {
 			parTable$free <- c(parTable$free, as.integer(max(parTable$free) + 1))
 			parTable$ustart <- c(parTable$ustart, as.numeric(NA))
 			parTable$exo <- c(parTable$exo, as.integer(0))
-			parTable$eq.id <- c(parTable$eq.id, as.integer(0))
 			parTable$label <- c(parTable$label, as.character(""))
+			parTable$plabel <- c(parTable$plabel, paste0(".p", max(parTable$id), "."))
 		} else {
 			if(parTable$free[element[i]] != 0) warnings(paste("The", lhs, op, rhs, group, "is free already."))
 			parTable$ustart[element[i]] <- ustart
