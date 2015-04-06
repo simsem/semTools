@@ -26,7 +26,7 @@ net(..., crit = .0001)
 	The \linkS4class{Net} object representing the outputs for nesting and equivalent testing, including a logical matrix of test results and a vector of degrees of freedom for each model.
 }
 \author{
-    Terrence D. Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+    Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \references{
 Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence. \emph{Psychological Methods, 15}, 111-123. doi:10.1037/a0019625
