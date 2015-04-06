@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### 21 January 2015
+### 6 April 2015
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -7,18 +7,24 @@
 setClass("MeasEq.observed", representation(AFI = "vector",
                                            DIF = "matrix"))
 setClass("MeasEq.p.values", representation(AFI = "vector",
+                                           DIF.ss = "vector",
                                            DIF.all = "matrix",
-                                           DIF.each = "matrix"))
-setClass("MeasEq.permute", representation(observed = "MeasEq.observed",
-                                          p.values = "MeasEq.p.values",
-                                          ANOVA = "vector",
-                                          n.Permutations = "integer",
-                                          n.Converged = "integer",
-                                          n.nonConverged = "vector",
-                                          n.Sparse = "vector"))
+                                           DIF.each = "matrix",
+                                           DIF.pairs = "matrix"))
+setClass("permuteMeasEq", representation(observed = "MeasEq.observed",
+                                         p.values = "MeasEq.p.values",
+                                         ANOVA = "vector",
+                                         n.Permutations = "integer",
+                                         n.Converged = "integer",
+                                         n.nonConverged = "vector",
+                                         n.Sparse = "vector",
+                                         DIF.dist = "matrix",
+                                         AFI.dist = "data.frame"))
 
 ## function to calculate DIF in specified parameters from an unconstrained model
 calculateDIF <- function(uncon, param) {
+  if (class(uncon) != "lavaan") stop("This function only applies to fitted lavaan models.")
+  if (uncon@Data@ngroups == 1L) stop("This function only applies to multiple-group models.")
   ## save all estimates from less constrained model
   allCoefs <- parameterEstimates(uncon)
   ## extract parameters of interest
@@ -57,7 +63,8 @@ calculateDIF <- function(uncon, param) {
 
 
 ## function to find delta-AFIs AND maximum DIF in one permutation
-permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, AFIs, moreAFIs, maxSparse = 10, maxNonconv = 10) {
+permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
+                        AFIs, moreAFIs, maxSparse = 10, maxNonconv = 10) {
   nSparse <- 0L
   nTries <- 1L
   while ( (nSparse <= maxSparse) & (nTries <= maxNonconv) ) {
@@ -119,12 +126,15 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, AFIs, moreAFIs,
     names(AFI) <- allAFIs[!is.na(allAFIs)]
     temp <- calculateDIF(uncon, param)[,1]
     temp[1:length(temp)] <- NA
-    return(list(AFI = AFI, DIF = c(temp, all = NA), n.nonConverged = nTries, n.Sparse = nSparse))
+    return(list(AFI = AFI, DIF = c(temp, all = NA, ss = NA), n.nonConverged = nTries, n.Sparse = nSparse))
   }
   
   permuted <- calculateDIF(out1, param)
   list(AFI = unlist(fit1) - unlist(fit0),
-       DIF = c(apply(abs(permuted), 1, max), all = max((abs(permuted)))),
+       DIF = c(apply(abs(permuted), 1, max),
+               all = max(abs(permuted)),
+               ss = getMaxSS(permuted)),
+       DIF0 = abs(permuted) >= abs(diffs),
        n.nonConverged = nTries - 1L, n.Sparse = nSparse)
 }
 
@@ -134,7 +144,7 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
                           param = "loadings", maxSparse = 10, maxNonconv = 10) {
   nPermute <- as.integer(nPermute[1])
   ## logical check that models were fit to the same data
-  if (!all.equal(con@Data, uncon@Data)) stop("Models must be fit to the same groups")
+  # if (!all.equal(con@Data, uncon@Data)) stop("Models must be fit to the same groups")
   ## check for least-squares estimators
   leastSq <- any(c(uncon@Options$estimator, con@Options$estimator) %in% c("ULS","GLS","WLS", "DWLS"))
   
@@ -191,8 +201,8 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
   
   ###################### PERMUTED RESULTS ###########################
   ## permute groups and return distributions of delta-AFIs and largest DIF
-  permuDist <- lapply(1:nPermute, permuteOnce, d = allData, G = G, AFIs = AFIs,
-                      moreAFIs = moreAFIs, uncon = uncon, con = con, null = null,
+  permuDist <- lapply(1:nPermute, permuteOnce, d = allData, G = G, diffs = diffs,
+                      AFIs = AFIs, moreAFIs = moreAFIs, uncon = uncon, con = con, null = null,
                       param = param, maxSparse = maxSparse, maxNonconv = maxNonconv)
   
   ## extract AFI distribution
@@ -214,33 +224,42 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
   p.AFI <- mapply(FUN = function(x, y) mean(x >= y, na.rm = TRUE),
                   x = unclass(AFI.dist), y = AFI.diff)
   
-  ## extract DIF distribution
+  ## extract distribution of maximum absolute DIF
   DIF.dist <- sapply(permuDist, function(x) x$DIF)
+  
   ## calculate p values for DIF estimates
   p.all <- matrix(NA, nrow(diffs), ncol(diffs), dimnames = dimnames(diffs))
   p.each <- matrix(NA, nrow(diffs), ncol(diffs), dimnames = dimnames(diffs))
+  p.ss <- rep(NA, times = nrow(diffs))
+  names(p.ss) <- rownames(diffs)
+  obs.ss <- apply(diffs, 1, function(x) sum(x^2))
   for (i in 1:nrow(diffs)) {
+    p.ss[i] <- mean(DIF.dist["ss", ] >= obs.ss[i], na.rm = TRUE)
     for (j in 1:ncol(diffs)) {
-      p.all[i, j] <- mean(abs(DIF.dist["all", ]) >= abs(diffs[i, j]), na.rm = TRUE)
-      p.each[i, j] <- mean(abs(DIF.dist[i, ]) >= abs(diffs[i, j]), na.rm = TRUE)
+      p.all[i, j] <- mean(DIF.dist["all", ] >= diffs[i, j]^2, na.rm = TRUE)
+      p.each[i, j] <- mean(DIF.dist[i, ] >= diffs[i, j]^2, na.rm = TRUE)
     }
   }
-  ## calculate all two-tailed p-values
-  pVals <- new("MeasEq.p.values", AFI = p.AFI, DIF.all = p.all, DIF.each = p.each)
+  DIF.pairs <- Reduce("+", lapply(permuDist, function(x) x$DIF0)) / length(permuDist)
+  #apply(simplify2array(lapply(tempDist, function(x) x$DIF0)), 1:2, mean)
   
+  ## save all p-values
+  pVals <- new("MeasEq.p.values", AFI = p.AFI, DIF.all = p.all,
+               DIF.each = p.each, DIF.pairs = DIF.pairs, DIF.ss = p.ss)
   ## return observed results, permutation p values, and ANOVA results
   delta <- anova(uncon, con)
   ANOVA <- sapply(delta[,c("Chisq diff","Pr(>Chisq)")], function(x) x[2])
-  out <- new("MeasEq.permute", observed = obs, p.values = pVals, ANOVA = ANOVA,
+  out <- new("permuteMeasEq", observed = obs, ANOVA = ANOVA, p.values = pVals,
              n.Permutations = nPermute, n.Converged = sum(!is.na(AFI.dist[ , 1])),
              n.nonConverged = sapply(permuDist, function(x) x$n.nonConverged),
-             n.Sparse = sapply(permuDist, function(x) x$n.Sparse))
+             n.Sparse = sapply(permuDist, function(x) x$n.Sparse),
+             DIF.dist = DIF.dist, AFI.dist = AFI.dist) ######## ONLY ADDED FOR SIMULATIONS
   out
 }
 
 
 ## methods
-setMethod("show", "MeasEq.permute", function(object) {
+setMethod("show", "permuteMeasEq", function(object) {
   cat("p values based on nonparametric permutation method: \n\n")
   print(data.frame(AFI_diff = object@observed@AFI, p.value = object@p.values@AFI))
   cat("\n\np value based on parametric method (chi-sq difference test): \n\n")
@@ -254,17 +273,29 @@ setMethod("show", "MeasEq.permute", function(object) {
   invisible(object)
 })
 
-setMethod("summary", "MeasEq.permute", function(object, alpha = .05, type = c("all","each"), digits = 3) {
+setMethod("summary", "permuteMeasEq", function(object, alpha = .05, digits = 3,
+                                               type = c("all","each","pairs","step-up")) {
   printMeasEq <- function(mat, crit, digits = 3) {
     printMat <- matrix("", nrow(mat), ncol(mat), dimnames = dimnames(mat))
     printMat[crit] <- round(mat[crit], digits = digits)
     print(printMat, quote = FALSE)
     invisible(NULL)
   }
-  DIF <- slot(object@p.values, paste0("DIF.", type[1]))
-  sig <- which(DIF < alpha, arr.ind = TRUE)
+  cat("\np values for DIF for each parameter based on permutation of max-SumSq: \n\n")
+  print(object@p.values@DIF.ss)
+  
+  if (type[1] == "step-up") {
+    DIF <- object@p.values@DIF.pairs
+    rankedAlpha <- matrix((alpha * rank(DIF)) / length(DIF),
+                          nrow(DIF), ncol(DIF), dimnames = dimnames(DIF))
+    sig <- which(DIF < rankedAlpha, arr.ind = TRUE)
+  } else {
+    DIF <- slot(object@p.values, paste0("DIF.", type[1]))
+    sig <- which(DIF < alpha, arr.ind = TRUE)
+  }
+  
   if (nrow(sig) == 0) {
-    cat("There are no significant differences between groups. \n\n")
+    cat("\n\nThere are no significant differences between groups. \n\n")
     return(invisible(object))
   }
   cat("There are significant differences between the following groups' parameters: \n\n")
