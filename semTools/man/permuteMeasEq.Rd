@@ -55,7 +55,7 @@ calculateDIF(uncon, param)
 	The \linkS4class{permuteMeasEq} object representing the results of testing measurement equivalence (the multivariate omnibus null hypothesis) and DIF (tests of differences among individaul measurement parameters).
 }
 \author{
-    Terrence D. Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+    Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \references{
 Cheung, G. W., & Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes for testing measurement invariance. \emph{Structural Equation Modeling, 9}(2), 233-255. doi:10.1207/S15328007SEM0902_5
