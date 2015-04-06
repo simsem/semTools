@@ -84,7 +84,7 @@ Savalei, V., \& Yuan, K.-H. (2009). On the model-based bootstrap with missing da
 	\code{\linkS4class{BootMiss}}
 }
 \author{
-    Terrence D. Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+    Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
 dat1 <- HolzingerSwineford1939
