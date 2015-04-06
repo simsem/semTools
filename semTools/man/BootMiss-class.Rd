@@ -31,7 +31,7 @@
   }
 }
 \author{
-    Terrence D. Jorgensen (University of Kansas; \email{TJorgensen314@gmail.com})
+    Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \seealso{
 \code{\link{bsBootMiss}}
