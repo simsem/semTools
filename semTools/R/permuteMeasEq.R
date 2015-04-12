@@ -236,8 +236,8 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
   for (i in 1:nrow(diffs)) {
     p.ss[i] <- mean(DIF.dist["ss", ] >= obs.ss[i], na.rm = TRUE)
     for (j in 1:ncol(diffs)) {
-      p.all[i, j] <- mean(DIF.dist["all", ] >= diffs[i, j]^2, na.rm = TRUE)
-      p.each[i, j] <- mean(DIF.dist[i, ] >= diffs[i, j]^2, na.rm = TRUE)
+      p.all[i, j] <- mean(DIF.dist["all", ] >= abs(diffs[i, j]), na.rm = TRUE)
+      p.each[i, j] <- mean(DIF.dist[i, ] >= abs(diffs[i, j]), na.rm = TRUE)
     }
   }
   DIF.pairs <- Reduce("+", lapply(permuDist, function(x) x$DIF0)) / length(permuDist)
