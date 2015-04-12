@@ -61,6 +61,11 @@ calculateDIF <- function(uncon, param) {
   diffs
 }
 
+## function to get the maximum sum-of-squared DIF across items
+getMaxSS <- function(difmat) {
+  if (is.null(nrow(difmat))) return(sum(difmat^2))
+  max(apply(difmat, 1, function(x) sum(x^2)))
+}
 
 ## function to find delta-AFIs AND maximum DIF in one permutation
 permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
