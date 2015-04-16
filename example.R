@@ -24,17 +24,17 @@ sourceDirData <- function(path, trace = TRUE) {
 
 #get
 #assign
-#dir <- "C:/Users/sunthud/Dropbox/semTools/semTools/R"
-#dir <- "C:/Users/Sunthud/simsem_backup/simsem/R/"
+#dir <- "C:/Users/User/Dropbox/semTools/semTools/R"
+#dir <- "C:/Users/User/simsem_backup/simsem/R/"
 library(lavaan)
 
-dir <- "C:/Users/Sunthud/Dropbox/semTools/semTools/R/"
+dir <- "C:/Users/User/Dropbox/semTools/semTools/R/"
 sourceDir(dir)
 
-# dir2 <- "C:/Users/sunthud/Desktop/multcomp/R"
+# dir2 <- "C:/Users/User/Desktop/multcomp/R"
 # sourceDir(dir2)
 
-dirData <- "C:/Users/Sunthud/Dropbox/semTools/semTools/data/"
+dirData <- "C:/Users/User/Dropbox/semTools/semTools/data/"
 sourceDirData(dirData)
 
 ######### Distribution
@@ -1011,3 +1011,127 @@ letter =~ letter.7 + letter.33 + letter.34 + letter.58
 fit5 <- cfa(iq.model2, data=dat)
 maximalRelia(fit5)
 
+####################### Spatial Correction
+
+library(ggplot2)
+
+qplot(x, y, data=boreal, size=Wet, color=NDVI) +
+  theme_bw(base_size=18) + 
+  scale_size_continuous("Index of Wetness", range=c(0,10)) + 
+  scale_color_gradient("NDVI", low="lightgreen", high="darkgreen")
+
+
+## @knitr sem-model
+library(lavaan)
+
+# A simple model where NDVI is determined
+# by nTot, temperature, and Wetness
+# and nTot is related to temperature
+borModel <- '
+  NDVI ~ nTot + T61 + Wet 
+  nTot ~ T61
+'
+
+#note meanstructure=T to obtain intercepts
+borFit <- sem(borModel, data=boreal, meanstructure=T)
+
+## @knitr residuals
+# residuals are key for the analysis
+borRes <- as.data.frame(residuals(borFit, "casewise"))
+
+#raw visualization of NDVI residuals
+qplot(x, y, data=boreal, color=borRes$NDVI, size=I(5)) +
+  theme_bw(base_size=17) + 
+  scale_color_gradient("NDVI Residual", low="blue", high="yellow")
+
+## @knitr residual-analysis-sign
+#raw visualization of sign of residuals
+qplot(x, y, data=boreal, color=borRes$NDVI>0, size=I(5)) +
+  theme_bw(base_size=17) + 
+  scale_color_manual("NDVI Residual >0", values=c("blue", "red"))
+
+
+
+## @knitr generate-spatial-weight-matrix
+#Evaluate Spatial Residuals
+#First create a distance matrix
+library(ape)
+distMat <- as.matrix(dist(cbind(boreal$x, boreal$y)))
+
+#invert this matrix for weights
+distsInv <- 1/distMat
+diag(distsInv) <- 0
+
+## @knitr moran_i_ndvi
+#calculate Moran's I just for NDVI
+mi.ndvi <- Moran.I(borRes$NDVI, distsInv)
+mi.ndvi
+
+## @knitr spatial_corrected_sample
+#What is our corrected sample size?
+n.ndvi <- nrow(boreal)*(1-mi.ndvi$observed)/(1+mi.ndvi$observed)
+
+
+## @knitr spatial_corrected_se
+#Where did we get the SE from?
+sqrt(diag(vcov(borFit)))
+
+#New SE
+ndvi.var <- diag(vcov(borFit))[1:3]
+
+ndvi.se <- sqrt(ndvi.var*nrow(boreal)/n.ndvi)
+
+ndvi.se
+
+
+#compare to old SE
+sqrt(diag(vcov(borFit)))[1:3]
+
+
+## @knitr spatial_corrected_z
+#new z values
+z <- coef(borFit)[1:3]/ndvi.se
+
+2*pnorm(abs(z), lower.tail=F)
+
+
+summary(borFit, standardized=T)
+
+lavSpatialCorrect(borFit, boreal$x, boreal$y)
+
+# create a correlation structure (exponential)
+str <- -0.1 # strength of autocorrelation, inv. proportional to str
+omega1 <- exp(str*distMat/100)
+# calculate correlation weights, and invert weights matrix
+weights <- chol(solve(omega1))
+weights_inv <- solve(weights)
+# create an autocorrelated random field
+set.seed(123321)
+library(MASS)
+error <- weights_inv %*% mvrnorm(dim(distMat)[1], rep(0, 3), diag(0.51, 3))
+
+f1 <- rnorm(533, 0, 1)
+f <- weights_inv %*% f1
+x1 <- 0.7*f + error[,1]
+x2 <- 0.7*f + error[,2]
+x3 <- 0.7*f + error[,3]
+x1[as.logical(rbinom(533, 1, 0.1)),] <- NA
+
+boreal2 <- data.frame(boreal, x1, x2, x3)
+
+qplot(x, y, data=boreal2, size=x1) +
+  theme_bw(base_size=18) + 
+  scale_size_continuous("X1", range=c(0,10))
+  
+facModel <- '
+  f =~ x1 + x2 + x3
+'
+
+#note meanstructure=T to obtain intercepts
+facFit <- cfa(facModel, data=boreal2, meanstructure=T, std.lv = TRUE, missing = "ML")
+lavSpatialCorrect(facFit, boreal2$x, boreal2$y)
+
+obj <- facFit
+xvar <- boreal2$x
+yvar <- boreal2$y
+alpha <- 0.05
