@@ -408,11 +408,10 @@ satPartable <- function(fit.alt){
 	ustart <- rep(NA, length(lhs.all))
 	exo <- rep(0, length(lhs.all))
 	label <- rep("", length(lhs.all))
-	eq.id <- exo
-	unco <- id
+	plabel <- paste0(".p", id, ".")
 	par.sat <- list(id, lhs.all, op.all, rhs.all, user, group,
-				  free, ustart, exo, label, eq.id, unco)
-	names(par.sat) <- c("id", "lhs", "op", "rhs", "user", "group", "free", "ustart", "exo", "label", "eq.id", "unco")
+				  free, ustart, exo, label, plabel)
+	names(par.sat) <- c("id", "lhs", "op", "rhs", "user", "group", "free", "ustart", "exo", "label", "plabel")
 	return(par.sat)
 }
 

@@ -96,11 +96,10 @@ satParFMI <- function(dat.imp, var.names=NULL, groups=NULL){
   ustart <- rep(NA, length(lhs.all))
   exo <- rep(0, length(lhs.all))
   label <- rep("", length(lhs.all))
-  eq.id <- exo
-  unco <- id
+  plabel <- rep("", length(lhs.all))
   par.sat <- list(id, lhs.all, op.all, rhs.all, user, group,
-                  free, ustart, exo, label, eq.id, unco)
-  names(par.sat) <- c("id", "lhs", "op", "rhs", "user", "group", "free", "ustart", "exo", "label", "eq.id", "unco")
+                  free, ustart, exo, label, plabel)
+  names(par.sat) <- c("id", "lhs", "op", "rhs", "user", "group", "free", "ustart", "exo", "label", "plabel")
   return(par.sat)
 }
 
@@ -135,11 +134,10 @@ nullParFMI <- function(dat.imp, var.names=NULL, groups=NULL){
   ustart <- rep(NA, length(lhs.diag))
   exo <- rep(0, length(lhs.diag))
   label <- rep("", length(lhs.diag))
-  eq.id <- exo
-  unco <- id
+  plabel <- rep("", length(lhs.diag))
   null.sat.fmi <- list(id, as.character(first$lhs.diag), as.character(first$op.diag), 
                        as.character(first$rhs.diag), user, first$group,
-                       free, ustart, exo, label, eq.id, unco)
-  names(null.sat.fmi) <- c("id","lhs","op","rhs","user","group","free","ustart","exo","label","eq.id","unco")
+                       free, ustart, exo, label, plabel)
+  names(null.sat.fmi) <- c("id","lhs","op","rhs","user","group","free","ustart","exo","label","plabel")
   return(null.sat.fmi)
 }
