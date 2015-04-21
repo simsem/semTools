@@ -99,7 +99,7 @@ mardiaSkew <- function(dat) {
 	d <- ncol(dat)
 	chi <- nrow(dat) * b1d / 6
 	df <- d * (d + 1) * (d + 2) / 6
-	p <- pchisq(chi, df = df)
+	p <- pchisq(chi, df = df, lower.tail = FALSE)
 	return(c(b1d = b1d, chi = chi, df=df, p=p))
 }
 
