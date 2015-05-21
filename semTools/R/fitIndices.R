@@ -53,7 +53,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
     if("aic.smallN" %in% fit.measures) result["aic.smallN"] <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
     if("bic.priorN" %in% fit.measures) result["bic.priorN"] <- f + log(1 + n/nPrior) * nParam
     if("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(n)) * nParam
-    if("sic" %in% fit.measures) result["sic"] <- sic(f, object)
+    # if("sic" %in% fit.measures) result["sic"] <- sic(f, object)
   }
   unlist(result[fit.measures])
 }
@@ -117,7 +117,7 @@ sic <- function(f, lresults = NULL) {
   R <- lavaan::lav_func_jacobian_complex(func = lresults@Model@ceq.function, x = lresults@Fit@x)
   
   ## calculate Fisher Information Matrix
-  E <- lavTech(lresults, "information")
+  E <- lavaan::lavTech(lresults, "information")
   
   ## Calculate Fisher Information Matrix of only the non-redundant parameters.
   ## This is Yves' fix (search "calculate determinant" in lavaan Google group for details).

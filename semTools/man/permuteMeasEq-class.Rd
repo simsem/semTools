@@ -21,6 +21,8 @@
     \item{\code{n.Converged}:}{An integer indicating the number of permuation iterations which yielded a converged solution}
     \item{\code{n.nonConverged}:}{A vector of length \code{n.Permutations} indicating how many times group assignment was randomly permuted (at each iteration) before converging on a solution}
     \item{\code{n.Sparse}:}{Only relevant with \code{ordered} indicators. A vector of length \code{n.Permutations} indicating  how many times group assignment was randomly permuted (at each iteration) before obtaining a sample with all categories observed in all groups}
+    \item{\code{AFI.dist}:}{TBD}
+    \item{\code{DIF.dist}:}{TBD}
   }
 }
 \section{Methods}{

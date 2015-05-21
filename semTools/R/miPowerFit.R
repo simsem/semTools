@@ -2,6 +2,7 @@
 
 miPowerFit <- function(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, delta=NULL, cilevel=0.90) {
 	mi <- inspect(lavaanObj, "mi")
+	mi <- mi[mi$op != "==",]
 	sigma <- mi[,"epc"] / sqrt(mi[,"mi"])
 	if(is.null(delta)) {
 		if(is.null(stdDelta)) stdDelta <- getTrivialEpc(mi, stdLoad=stdLoad, cor=cor, stdBeta=stdBeta, intcept=intcept)

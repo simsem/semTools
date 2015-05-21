@@ -9,9 +9,11 @@ This test will provide partial invariance testing by (a) freeing a parameter one
 }
 \usage{
 partialInvariance(fit, type, free = NULL, fix = NULL, refgroup = 1, 
-    poolvar = TRUE, p.adjust = "none", fbound = 2, return.fit = FALSE)
+    poolvar = TRUE, p.adjust = "none", fbound = 2, return.fit = FALSE,
+	method = "satorra.bentler.2001")
 partialInvarianceCat(fit, type, free = NULL, fix = NULL, refgroup = 1, 
-    poolvar = TRUE, p.adjust = "none", return.fit = FALSE)
+    poolvar = TRUE, p.adjust = "none", return.fit = FALSE, 
+	method = "satorra.bentler.2001")
 }
 \arguments{
   \item{fit}{A list of models for invariance testing. Each model should be assigned by appropriate names (see details). The result from \code{\link{measurementInvariance}} or \code{\link{measurementInvarianceCat}} could be used in this argument directly.}
@@ -23,6 +25,7 @@ partialInvarianceCat(fit, type, free = NULL, fix = NULL, refgroup = 1,
   \item{p.adjust}{The method used to adjust p values. See \code{\link[stats]{p.adjust}} for the options for adjusting p values. The default is to not use any corrections.}
   \item{fbound}{The z-scores of factor that is used to calculate the effect size of the loading difference proposed by Millsap and Olivera-Aguilar (2012).}
   \item{return.fit}{Return the submodels fitted by this function}
+  \item{method}{The method used to calculate likelihood ratio test. See \code{\link[lavaan]{lavTestLRT}} for available options}
 }
 \details{
 There are four types of partial invariance testing:

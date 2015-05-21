@@ -1,5 +1,5 @@
 measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
-    strict=FALSE, quiet=FALSE) {
+    strict=FALSE, quiet=FALSE, fit.measures = "default", method = "satorra.bentler.2001") {
 
     # check for a group.equal argument in ...
     dotdotdot <- list(...)
@@ -99,106 +99,58 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 		}
     }
 
-    if(!quiet) {
-        cat("\nMeasurement invariance tests:\n")
-        cat("\nModel 1: configural invariance:\n")
-        printFitLine(res$fit.configural)
-
-        cat("\nModel 2: weak invariance (equal loadings):\n")
-        printFitLine(res$fit.loadings)
-
-        cat("\n[Model 1 versus model 2]\n")
-        difftest(res$fit.configural, res$fit.loadings)
-
-        cat("\nModel 3: strong invariance (equal loadings + intercepts):\n")
-        printFitLine(res$fit.intercepts)
-        cat("\n[Model 1 versus model 3]\n")
-        difftest(res$fit.configural, res$fit.intercepts)
-        cat("\n[Model 2 versus model 3]\n")
-        difftest(res$fit.loadings, res$fit.intercepts)
-
-
-        if(strict) {
-            cat("\nModel 4: strict invariance (equal loadings + intercepts + residuals):\n")
-            printFitLine(res$fit.residuals)
-            cat("\n[Model 1 versus model 4]\n")
-            difftest(res$fit.configural, res$fit.residuals)
-            cat("\n[Model 3 versus model 4]\n")
-            difftest(res$fit.intercepts, res$fit.residuals)
-  
-            cat("\nModel 5: equal loadings + intercepts + residuals + means:\n")
-            printFitLine(res$fit.means,horizontal=TRUE)
-            cat("\n[Model 1 versus model 5]\n")
-            difftest(res$fit.configural, res$fit.means)
-            cat("\n[Model 4 versus model 5]\n")
-            difftest(res$fit.residuals, res$fit.means)
-        } else {
-            cat("\nModel 4: equal loadings + intercepts + means:\n")
-            printFitLine(res$fit.means)
-            cat("\n[Model 1 versus model 4]\n")
-            difftest(res$fit.configural, res$fit.means)
-            cat("\n[Model 3 versus model 4]\n")
-            difftest(res$fit.intercepts, res$fit.means)
-        }
+	if(!quiet) {
+        printInvarianceResult(res, fit.measures, method)
     }
+	
     invisible(res)
 }
 
+printInvarianceResult <- function(FIT, fit.measures, method) {
+	# compare models
+	NAMES <- names(FIT); names(FIT) <- NULL
+	TABLE <- do.call("lavTestLRT", c(FIT, list(model.names = NAMES,
+									 method = method)))
 
-printFitLine <- function(object, horizontal=TRUE) {
-
-    # which `tests' do we have?
-    scaled <- FALSE
-    TESTS <- unlist(lapply(object@Fit@test, "[", "test"))
-    if(any(c("satorra.bentler", "yuan.bentler", "scaled.shifted") %in% TESTS)) {
-        scaled <- TRUE
-    }
-
-    if(!scaled) {
-        out <- lavaan::fitMeasures(object, c("chisq", "df", "pvalue",
-                                      "cfi", "rmsea", "bic"))
-    } else {
-        out <- lavaan::fitMeasures(object, c("chisq.scaled", "df.scaled",
-                                      "pvalue.scaled",
-                                      "cfi.scaled", "rmsea.scaled", "bic"))
-        names(out) <- c("chisq.scaled", "df", "pvalue",
-                        "cfi.scaled", "rmsea.scaled", "bic")
-    }
-    
-    print(out)
-}
-
-difftest <- function(model1, model2) {
-	if(model1@Fit@test[[1]]$df > model2@Fit@test[[1]]$df) {
-        fit0 <- model1
-        fit1 <- model2
-    } else {
-        fit0 <- model2
-        fit1 <- model1
-    }
-	d <- unlist(lavaan::lavTestLRT(fit1, fit0)[2,5:7])
-	i0 <- lavaan::fitMeasures(fit0)
-	i1 <- lavaan::fitMeasures(fit1)
-	names(d) <- c("delta.chisq", "delta.df", "delta.p.value")
-	if("cfi" %in% names(i0) & "cfi" %in% names(i1)) {
-		temp <- i1["cfi"] - i0["cfi"]
-		names(temp) <- NULL
-		d <- c(d, "delta.cfi" = temp)
+	if(length(fit.measures) == 1L && fit.measures == "default") {
+		# scaled test statistic?
+		if(length(FIT[[1]]@Fit@test) > 1L) {
+			fit.measures <- c("cfi.scaled", "rmsea.scaled")
+		} else {
+			fit.measures <- c("cfi", "rmsea")
+		}
 	}
-	if("cfi.scaled" %in% names(i0) & "cfi.scaled" %in% names(i1)) {
-		temp <- i1["cfi.scaled"] - i0["cfi.scaled"]
-		names(temp) <- NULL
-		d <- c(d, "delta.cfi.scaled" = temp)
-	}
-	print.lavaan.vector(d)
-    invisible(d)
-}
 
-print.lavaan.vector <- function(x, ..., nd=3) {
-    y <- unclass(x)
-    #if(!is.null(names(x))) {
-    #    names(y) <- abbreviate(names(x), minlength = nd + 3)
-    #}
-    print( round(y, nd), ... )
-    invisible(x)
+	# add some fit measures
+	if(length(fit.measures)) {
+
+		FM <- lapply(FIT, lavaan::fitMeasures, fit.measures)
+		FM.table1 <- sapply(fit.measures, function(x) sapply(FM, "[[", x))
+		if(length(FM) == 1L) {
+			FM.table1 <- rbind( rep(as.numeric(NA), length(fit.measures)),
+								FM.table1 )
+		}
+		if(length(FM) > 1L) {
+			FM.table2 <- rbind(as.numeric(NA),
+							   abs(apply(FM.table1, 2, diff)))
+			colnames(FM.table2) <- paste(colnames(FM.table2), ".delta", sep="")
+			FM.TABLE <- as.data.frame(cbind(FM.table1, FM.table2))
+		} else {
+			FM.TABLE <- as.data.frame(FM.table1)
+		} 
+		rownames(FM.TABLE) <- rownames(TABLE)
+		class(FM.TABLE) <- c("lavaan.data.frame", "data.frame")
+	}
+	cat("\n")
+	cat("Measurement invariance models:\n\n")
+	cat(paste(paste("Model", seq_along(FIT), ":", NAMES), collapse = "\n"))
+	cat("\n\n")
+
+	print(TABLE)
+	if(length(fit.measures)) {
+		cat("\n\n")
+		cat("Fit measures:\n\n")
+		print(FM.TABLE)
+		cat("\n")
+	}
 }

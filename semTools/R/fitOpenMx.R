@@ -1,7 +1,5 @@
 
 saturateMx <- function(data, groupLab = NULL) {
-	library(OpenMx)
-
 	multipleGroup <- FALSE
 	if(is.data.frame(data) && !is.null(groupLab) && groupLab %in% colnames(data)) multipleGroup <- TRUE
 	if(is.list(data) && !is.data.frame(data)) multipleGroup <- TRUE
@@ -58,22 +56,6 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 	}
 	startCor <- diag(p)
 
-	# library(polycor)
-	# for(i in seq_len(p)) {
-		# for(j in seq_len(i - 1)) {
-			# if(categorical[i] & categorical[j]) {
-				# startCor[i, j] <- polychor(data@observed[,i], data@observed[,j])
-			# } else if (categorical[i] & !categorical[j]) {
-				# startCor[i, j] <- polyserial(data@observed[,j], data@observed[,i])
-			# } else if (!categorical[i] & categorical[j]) {
-				# startCor[i, j] <- polyserial(data@observed[,i], data@observed[,j])
-			# } else {
-				# startCor[i, j] <- cor(sapply(data@observed[,c(i,j)], as.numeric), use="pairwise.complete.obs")[2,1]
-			# }
-			# startCor[j, i] <- startCor[i, j]
-		# }
-	# }
-	
 	startVar[categorical] <- 1
 	startMeans[categorical] <- 0
 	startCov <- lavaan::cor2cov(startCor, sqrt(startVar))
@@ -204,7 +186,6 @@ saturateMxSingleGroup <- function(data, title = "Saturate Model", groupnum = NUL
 }
 
 nullMx <- function(data, groupLab = NULL) {
-	library(OpenMx)
 	multipleGroup <- FALSE
 	if(is.data.frame(data) && !is.null(groupLab) && groupLab %in% colnames(data)) multipleGroup <- TRUE
 	if(is.list(data) && !is.data.frame(data)) multipleGroup <- TRUE
@@ -388,8 +369,6 @@ checkConvergence <- function(object) {
 }
 
 fitMeasuresMx <- function(object, fit.measures="all") {
-	library(OpenMx)
-	
 	mxMixture <- FALSE
 	if(length(object@submodels) > 1) {
 		if(is.null(object@submodels[[1]]@data)) mxMixture <- TRUE

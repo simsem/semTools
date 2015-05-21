@@ -45,10 +45,10 @@ reliability <- function(object) {
 			trueitem <- diag(truevar[index, index])
 			erritem <- diag(te[[i]][index, index])
 			avevar[j] <- sum(trueitem) / sum(trueitem + erritem)
-			if(categorical) {
+			if(categorical) {				
 				omega1[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], truevar[index, index] + te[[i]][index, index])
 				omega2[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], SigmaHat[[i]][index, index])
-				omega3[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], sigma[index, index])
+				omega3[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], sigma)
 			} else {
 				omega1[j] <- common[j] / (common[j] + error[j])
 				omega2[j] <- common[j] / impliedTotal[j]
@@ -140,7 +140,6 @@ reliabilityL2 <- function(object, secondFactor) {
 
 omegaCat <- function(truevar, implied, threshold, denom) {
 	# denom could be polychoric correlation, model-implied correlation, or model-implied without error correlation
-	library(mnormt)
 	polyc <- truevar
 	invstdvar <- 1 / sqrt(diag(implied))
 	polyr <- diag(invstdvar) %*% polyc %*% diag(invstdvar)

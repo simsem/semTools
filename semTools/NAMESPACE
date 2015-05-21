@@ -2,7 +2,7 @@ importFrom("methods", show)
 importFrom("lavaan", summary, inspect)
 
 importFrom("graphics", hist)
-exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss)
+exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss, permuteMeasEq)
 exportMethods(hist)
 export(
 	measurementInvariance, longInvariance, measurementInvarianceCat,
@@ -33,5 +33,7 @@ export(
 	kd, bsBootMiss, net, 
 	singleParamTest,
 	partialInvariance, partialInvarianceCat,
-	quark, combinequark
+	quark, combinequark,
+	spatialCorrect,
+	calculateDIF, permuteMeasEq
 )

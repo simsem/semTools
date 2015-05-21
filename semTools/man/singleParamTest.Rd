@@ -7,7 +7,8 @@
 	In comparing two nested models, chi-square test may indicate that two models are different. However, like other omnibus tests, researchers do not know which fixed parameters or constraints make these two models different. This function will help researchers identify the significant parameter.
 }
 \usage{
-singleParamTest(model1, model2, mi = TRUE, return.fit = FALSE)
+singleParamTest(model1, model2, return.fit = FALSE, 
+  method = "satorra.bentler.2001")
 }
 \arguments{
   \item{model1}{
@@ -16,12 +17,10 @@ singleParamTest(model1, model2, mi = TRUE, return.fit = FALSE)
   \item{model2}{
 	Model 2. Note that two models must be nested models. Further, the order of parameters in their parameter tables are the same. That is, nested models with different scale identifications may not be able to test by this function.
   }
-  \item{mi}{
-	Provide the results from modification indices of the nested model
-  }
   \item{return.fit}{
 	Return the submodels fitted by this function
   }
+  \item{method}{The method used to calculate likelihood ratio test. See \code{\link[lavaan]{lavTestLRT}} for available options}
 }
 \details{
 This function first identify the differences between these two models. The model with more free parameters is referred to as parent model and the model with less free parameters is referred to as nested model. Three tests are implemented here:
@@ -29,7 +28,7 @@ This function first identify the differences between these two models. The model
 \enumerate{
   \item{\code{free}: The nested model is used as a template. Then, one parameter indicating the differences between two models is free. The new model is compared with the nested model. This process is repeated for all differences between two models.}
   \item{\code{fix}: The parent model is used as a template. Then, one parameter indicating the differences between two models is fixed or constrained to be equal to other parameters. The new model is then compared with the parent model. This process is repeated for all differences between two models.}
-  \item{\code{mi}: Modification indices of the differences between two models from the nested model are provided. The expected parameter changes are also provided, as well as standardized forms. sepc.lv = latent variables are standardized. sepc.all = latent variables and exogenous and endogenous observed variables are standardized. sepc.nox = latent variables and endogenous observed variables.}
+  \item{\code{mi}: No longer available because the test of modification indices is not consistent. For example, two parameters are equally constrained. The modification index from the first parameter is not equal to the second parameter.}
 }
 
 Note that this function does not adjust for the inflated Type I error rate from multiple tests.

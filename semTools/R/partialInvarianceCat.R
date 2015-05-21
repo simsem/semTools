@@ -1,23 +1,23 @@
-# Work with only with congeneric models
+# Wald stat did not show up
 
-partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, poolvar = TRUE, p.adjust = "none", return.fit = FALSE) { 
+partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, poolvar = TRUE, p.adjust = "none", return.fit = FALSE, method = "satorra.bentler.2001") { 
 	# model <- ' f1 =~ u1 + u2 + u3 + u4
 			   # f2 =~ u5 + u6 + u7 + u8'
 
 	# modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
 		# estimator="wlsmv", strict = TRUE)
 	# fit <- modelsCat2
-	# type <- "strict"
+	# type <- "weak"
 	# free <- NULL
 	# fix <- NULL
 	# refgroup <- 1
 	# poolvar <- TRUE
 	# p.adjust <- "none"
 	# return.fit <- FALSE
-	
+	# method = "satorra.bentler.2001"
 
 	type <- tolower(type)
-	numType <- 0
+	numType <- 1
 	fit1 <- fit0 <- NULL
 	# fit0 = Nested model, fit1 = Parent model
 	if(type %in% c("metric", "weak", "loading", "loadings")) {
@@ -71,6 +71,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 	}
 	pt1 <- lavaan::partable(fit1)
 	pt0 <- lavaan::partable(fit0)
+	pt1$label[substr(pt1$label, 1, 1) == "." & substr(pt1$label, nchar(pt1$label), nchar(pt1$label)) == "."] <- ""
+	pt0$label[substr(pt0$label, 1, 1) == "." & substr(pt0$label, nchar(pt0$label), nchar(pt0$label)) == "."] <- ""
 	namept1 <- paramNameFromPt(pt1)
 	namept0 <- paramNameFromPt(pt0)
 	if(length(table(table(pt0$rhs[pt0$op == "=~"]))) != 1) stop("The model is not congeneric. This function does not support non-congeneric model.")
@@ -93,10 +95,15 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 	
 	# Find the number of thresholds
 	# Check whether the factor configuration is the same across gorups
-	groupParTable <- split(pt1, pt1$group)
-	group1pt <- groupParTable[[1]]
+	
+	conParTable <- lapply(pt1, "[", pt1$op == "==")
+	group1pt <- lapply(pt1, "[", pt1$group != 1)
+	
 	numThreshold <- table(sapply(group1pt, "[", group1pt$op == "|")[,"lhs"])
-	numFixedThreshold <- table(sapply(group1pt, "[", group1pt$op == "|" & group1pt$eq.id != 0)[,"lhs"])
+	plabelthres <- split(group1pt$plabel[group1pt$op == "|"], group1pt$lhs[group1pt$op == "|"])
+	numFixedThreshold <- sapply(lapply(plabelthres, function(vec) !is.na(match(vec, conParTable$lhs)) | !is.na(match(vec, conParTable$rhs))), sum)[names(numThreshold)]  
+	
+	#numFixedThreshold <- table(sapply(group1pt, "[", group1pt$op == "|" & group1pt$eq.id != 0)[,"lhs"])
 	fixIntceptFac <- list()
 	for(i in seq_along(facList)) {
 		tmp <- numFixedThreshold[facList[[i]]]
@@ -216,7 +223,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			temp <- constrainParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
-				compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1), silent = TRUE)
+				compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1, method = method), silent = TRUE)
 				if(!is(compresult, "try-error"))  fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 			}
 			listFixCon <- c(listFixCon, tryresult)
@@ -224,7 +231,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			estimates[pos, 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
-				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0), silent = TRUE)
+				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
 				loadVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[pos, 2:ncol(estimates)] <- loadVal
@@ -264,7 +271,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				if(!is(newparentresult, "try-error")) {
 					tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 					if(!is(tryresult, "try-error")) {
-						compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, newparentfit), silent = TRUE)
+						compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, newparentfit, method = method), silent = TRUE)
 						if(!is(compresult, "try-error")) fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(newparentfit, tempfit))
 					}
 					waldCon[pos,] <- waldConstraint(newparentfit, newparent, waldMat, cbind(facinvarfree[i], "=~", varnonfixvar[i], 1:ngroups))
@@ -273,7 +280,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				temp <- constrainParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups)
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 				if(!is(tryresult, "try-error")) {
-					compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1), silent = TRUE)
+					compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1, method = method), silent = TRUE)
 					if(!is(compresult, "try-error"))  fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 				}
 				waldCon[pos,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
@@ -287,7 +294,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			estimates[pos, 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
-				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0), silent = TRUE)
+				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error")) freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
 				loadVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[pos, 2:ncol(estimates)] <- loadVal
@@ -424,7 +431,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			}
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
-				compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1), silent = TRUE)
+				compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1, method = method), silent = TRUE)
 				if(!is(compresult, "try-error"))  fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 			}
 			listFixCon <- c(listFixCon, tryresult)
@@ -436,7 +443,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			}			
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
-				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0), silent = TRUE)
+				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
 				for(s in 2:numThreshold[varinfixvar[i]]) {
 					runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
@@ -481,7 +488,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				if(!is(newparentresult, "try-error")) {
 					tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 					if(!is(tryresult, "try-error")) {
-						compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, newparentfit), silent = TRUE)
+						compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, newparentfit, method = method), silent = TRUE)
 						if(!is(compresult, "try-error")) fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(newparentfit, tempfit))
 					}
 					args <- list(newparentfit, newparent, waldMat)
@@ -499,7 +506,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				}
 				tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 				if(!is(tryresult, "try-error")) {
-					compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1), silent = TRUE)
+					compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1, method = method), silent = TRUE)
 					if(!is(compresult, "try-error"))  fixCon[pos,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 				}
 				args <- list(fit1, pt1, waldMat)
@@ -519,7 +526,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			}
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
-				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0), silent = TRUE)
+				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
 				for(s in 2:numThreshold[varnonfixvar[i]]) {
 					runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
@@ -585,7 +592,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			temp <- fixParTable(pt1, pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 2:ngroups, ustart)
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
-				compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1), silent = TRUE)
+				compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1, method = method), silent = TRUE)
 				if(!is(compresult, "try-error"))  fixCon[i,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 			}
 			listFixCon <- c(listFixCon, tryresult)
@@ -593,7 +600,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			estimates[i, 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
-				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0), silent = TRUE)
+				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[i,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
 				errVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[i, 2:ncol(estimates)] <- errVal
@@ -664,7 +671,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			}
 			tryresult <- try(tempfit <- refit(temp, fit1), silent = TRUE)
 			if(!is(tryresult, "try-error")) {
-				compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1), silent = TRUE)
+				compresult <- try(modelcomp <- lavaan::lavTestLRT(tempfit, fit1, method = method), silent = TRUE)
 				if(!is(compresult, "try-error"))  fixCon[i,] <- c(unlist(modelcomp[2,5:7]), deltacfi(fit1, tempfit))
 			}
 			listFixCon <- c(listFixCon, tryresult)
@@ -677,7 +684,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			estimates[i, 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
-				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0), silent = TRUE)
+				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[i,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
 				meanVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[i, 2:ncol(estimates)] <- meanVal

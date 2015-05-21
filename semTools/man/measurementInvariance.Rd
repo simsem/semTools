@@ -9,7 +9,8 @@ Testing measurement invariance across groups using a typical sequence of
 model comparison tests.
 }
 \usage{
-measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE)
+measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
+fit.measures = "default", method = "satorra.bentler.2001")
 }
 \arguments{
   \item{...}{The same arguments as for any lavaan model.
@@ -20,6 +21,8 @@ measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE)
   \item{quiet}{If \code{TRUE}, a summary is printed out containing an
     overview of the different models that are fitted, together with some
     model comparison tests.}
+  \item{fit.measures}{Fit measures used to calculate the differences between nested models.}
+  \item{method}{The method used to calculate likelihood ratio test. See \code{\link[lavaan]{lavTestLRT}} for available options}
 }
 \details{
 If \code{strict = FALSE}, the following four models are tested in order:

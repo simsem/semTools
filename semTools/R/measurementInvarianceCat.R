@@ -1,4 +1,6 @@
-measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FALSE) {
+measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FALSE,
+                                   fit.measures = "default",
+                                   method = "satorra.bentler.2001") {
 	List <- list(...)
 	if(!is.null(List$parameterization) && tolower(List$parameterization) != "theta") warnings("The parameterization is set to 'theta' by default.")
 	List$parameterization <- "theta"
@@ -178,87 +180,14 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	ListMeans$model <- ptMeans
 	fitMeans <- do.call("lavaan", ListMeans)		
 
-	# Modify these functions from measurementInvariance function
+	FIT <- invisible(list(fit.configural = fitConfigural, fit.loadings = fitMetric, fit.thresholds = fitScalar, fit.residuals = fitStrict, fit.means = fitMeans))
+	FIT <- FIT[!sapply(FIT, is.null)]
+
 	if(!quiet) {
-		cat("\n#################### Measurement invariance tests ####################\n")
-		if(!scalar) {
-			cat("\nNOTE: All thresholds are equal across groups for scale identification.\n")
-		}
-		cat("\n#################### Model 1: configural invariance:\n")
-		printFitLine(fitConfigural)
+        printInvarianceResult(FIT, fit.measures, method)
+    }
 
-		cat("\n#################### Model 2: weak invariance (equal loadings):\n")
-		printFitLine(fitMetric)
-
-		cat("\n[Model 1 versus model 2]\n")
-		difftest(fitConfigural, fitMetric)
-		
-		if(scalar & strict) {
-			cat("\n#################### Model 3: strong invariance (equal loadings + thresholds):\n")
-			printFitLine(fitScalar)
-			cat("\n[Model 1 versus model 3]\n")
-			difftest(fitConfigural, fitScalar)
-			cat("\n[Model 2 versus model 3]\n")
-			difftest(fitMetric, fitScalar)
-            cat("\n#################### Model 4: strict invariance (equal loadings + thresholds + residuals):\n")
-            printFitLine(fitStrict)
-            cat("\n[Model 1 versus model 4]\n")
-            difftest(fitConfigural, fitStrict)
-            cat("\n[Model 2 versus model 4]\n")
-            difftest(fitMetric, fitStrict)
-            cat("\n[Model 3 versus model 4]\n")
-            difftest(fitScalar, fitStrict)
-  
-            cat("\n#################### Model 5: equal loadings + thresholds + residuals + means:\n")
-            printFitLine(fitMeans, horizontal=TRUE)
-            cat("\n[Model 1 versus model 5]\n")
-            difftest(fitConfigural, fitMeans)
-            cat("\n[Model 2 versus model 5]\n")
-            difftest(fitMetric, fitMeans)
-            cat("\n[Model 3 versus model 5]\n")
-            difftest(fitScalar, fitMeans)
-            cat("\n[Model 4 versus model 5]\n")
-            difftest(fitStrict, fitMeans)		
-		} else if (!scalar & strict) {
-            cat("\n#################### Model 3: strict invariance (equal loadings + residuals):\n")
-            printFitLine(fitStrict)
-            cat("\n[Model 1 versus model 3]\n")
-            difftest(fitConfigural, fitStrict)
-            cat("\n[Model 2 versus model 3]\n")
-            difftest(fitMetric, fitStrict)
-            cat("\n#################### Model 4: equal loadings + residuals + means:\n")
-            printFitLine(fitMeans, horizontal=TRUE)
-            cat("\n[Model 1 versus model 4]\n")
-            difftest(fitConfigural, fitMeans)
-            cat("\n[Model 2 versus model 4]\n")
-            difftest(fitMetric, fitMeans)
-            cat("\n[Model 3 versus model 4]\n")
-            difftest(fitStrict, fitMeans)		
-		} else if (scalar & !strict) {
-			cat("\n#################### Model 3: strong invariance (equal loadings + thresholds):\n")
-			printFitLine(fitScalar)
-			cat("\n[Model 1 versus model 3]\n")
-			difftest(fitConfigural, fitScalar)
-			cat("\n[Model 2 versus model 3]\n")
-			difftest(fitMetric, fitScalar)
-            cat("\n#################### Model 4: equal loadings + thresholds + means:\n")
-            printFitLine(fitMeans)
-            cat("\n[Model 1 versus model 4]\n")
-            difftest(fitConfigural, fitMeans)
-            cat("\n[Model 2 versus model 4]\n")
-            difftest(fitMetric, fitMeans)
-            cat("\n[Model 3 versus model 4]\n")
-            difftest(fitScalar, fitMeans)
-		} else {
-            cat("\n#################### Model 3: equal loadings + means:\n")
-            printFitLine(fitMeans)
-            cat("\n[Model 1 versus model 3]\n")
-            difftest(fitConfigural, fitMeans)
-            cat("\n[Model 2 versus model 3]\n")
-            difftest(fitMetric, fitMeans)
-		}
-	}
-	return(invisible(list(fit.configural = fitConfigural, fit.loadings = fitMetric, fit.thresholds = fitScalar, fit.residuals = fitStrict, fit.means = fitMeans)))
+    invisible(FIT)
 }
 
 multipleAllEqual <- function(...) {

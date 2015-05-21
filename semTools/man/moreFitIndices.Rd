@@ -7,10 +7,11 @@ Calculate more fit indices
 Calculate more fit indices that are not already provided in lavaan.
 }
 \usage{
-moreFitIndices(object, nPrior = 1)
+moreFitIndices(object, fit.measures = "all", nPrior = 1)
 }
 \arguments{
   \item{object}{The lavaan model object provided after running the \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.}
+  \item{fit.measures}{Additional fit measures to be calculated. All additional fit measures are calculated by default}
   \item{nPrior}{The sample size on which prior is based. This argument is used to compute BIC*.}
 }
 \details{
@@ -36,6 +37,7 @@ Corrected Bayesian Information Criterion (bic.priorN; Kuha, 2004) is similar to 
 
 \deqn{ bic.priorN = f + k\log{(1 + N/N_{prior})},}
 
+((((SIC is currently not available.))))
 Stochastic information criterion (sic; Preacher, 2006) is similar to aic or bic. This index will account for model complexity in the model's function form, in addition to the number of free parameters. This index will be provided only when the chi-squared value is not scaled. sic can be computed by
 
 \deqn{ sic = \frac{1}{2}\left(f - \log{\det{I(\hat{\theta})}}\right),}

@@ -1,4 +1,5 @@
 \name{permuteMeasEq}
+\alias{calculateDIF}
 \alias{permuteMeasEq}
 \title{
 	Permutation Randomization Tests of Measurement Equivalence and Differential Item Functioning (DIF)
@@ -103,7 +104,7 @@ fit.metric <- cfa(mod.metric, data = HolzingerSwineford1939,
                   std.lv = TRUE, group = "sex", group.equal = "loadings")
 AFI.metric <- c(fitMeasures(fit.metric, fit.measures = myAFIs,
                             baseline.model = fit.null),
-                moreFitIndices(fit.metric, fitmeasures = moreAFIs))
+                moreFitIndices(fit.metric, fit.measures = moreAFIs))
 
 ## calculate observed differences in fit indices
 myDiffs <- AFI.config - AFI.metric
@@ -112,9 +113,9 @@ myDiffs
 anova(fit.config, fit.metric)
 
 
-## Use only 20 permutations for a demo (in practice, use > 500)
+## Use only 10 permutations for a demo (in practice, use > 500)
 set.seed(12345)
-out <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
+out <- permuteMeasEq(nPermute = 10, uncon = fit.config, con = fit.metric,
                      AFIs = myAFIs, moreAFIs = moreAFIs, param = "loadings",
                      null = fit.null) 
 

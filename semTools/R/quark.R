@@ -1,6 +1,4 @@
 quark <- function(data, id, order = 1, silent = FALSE){
-  library(mice) 
-  
   if(!is.data.frame(data) && !is.matrix(data)) {
     stop("Inappropriate data file provided.")
   }
@@ -120,6 +118,8 @@ fixData <- function(data){
 }
 
 aImp <- function(data, silent = FALSE){
+  requireNamespace("mice")
+  attachNamespace("mice")
   if(!silent) cat("Starting Algorithm Imputation...\n")
   data <- mice::mice(data,maxit=1,m=1, printFlag = !silent)
   data <- mice::complete(data)

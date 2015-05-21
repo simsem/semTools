@@ -26,7 +26,7 @@ calculateDIF <- function(uncon, param) {
   if (class(uncon) != "lavaan") stop("This function only applies to fitted lavaan models.")
   if (uncon@Data@ngroups == 1L) stop("This function only applies to multiple-group models.")
   ## save all estimates from less constrained model
-  allCoefs <- parameterEstimates(uncon)
+  allCoefs <- lavaan::parameterEstimates(uncon)
   ## extract parameters of interest
   if (param[1] == "loadings") params <- allCoefs[allCoefs$op == "=~", c("lhs","op","rhs","group","est")]
   if (param[1] == "intercepts") params <- allCoefs[allCoefs$lhs %in% uncon@Data@ov$name & allCoefs$op == "~1",
@@ -79,7 +79,7 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
     ## for ordered indicators, check that groups have same observed categories
     ordVars <- uncon@Data@ov$name[uncon@Data@ov$type == "ordered"]
     if (length(ordVars) > 0) {
-      try(passTest <- lavTables(d, dim = 1L, categorical = ordVars, group = G))
+      try(passTest <- lavaan::lavTables(d, dim = 1L, categorical = ordVars, group = G))
       if (!exists("passTest")) {
         nSparse <- nSparse + 1
         next
@@ -87,11 +87,11 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
     }
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan(data = d, group = G, slotParTable = null@ParTable, slotOptions = null@Options)
+      out.null <- lavaan::lavaan(data = d, group = G, slotParTable = null@ParTable, slotOptions = null@Options)
     } else out.null <- NULL
     
     ## fit other models, check for convergence
-    try(out1 <- lavaan(data = d, group = G, slotParTable = uncon@ParTable, slotOptions = uncon@Options))
+    try(out1 <- lavaan::lavaan(data = d, group = G, slotParTable = uncon@ParTable, slotOptions = uncon@Options))
     if (! exists("out1")) {
       nTries <- nTries + 1
       next
@@ -101,7 +101,7 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
       next
     }
     
-    try(out0 <- lavaan(data = d, group = G, slotParTable = con@ParTable, slotOptions = con@Options))
+    try(out0 <- lavaan::lavaan(data = d, group = G, slotParTable = con@ParTable, slotOptions = con@Options))
     if (! exists("out0")) {
       nTries <- nTries + 1
       next
@@ -114,8 +114,8 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
     fit1 <- list()
     fit0 <- list()
     if (!is.na(AFIs[1])) {
-      fit1[[1]] <- fitMeasures(out1, fit.measures = AFIs, baseline.model = out.null)
-      fit0[[1]] <- fitMeasures(out0, fit.measures = AFIs, baseline.model = out.null)
+      fit1[[1]] <- lavaan::fitMeasures(out1, fit.measures = AFIs, baseline.model = out.null)
+      fit0[[1]] <- lavaan::fitMeasures(out0, fit.measures = AFIs, baseline.model = out.null)
     }
     if (!is.na(moreAFIs[1])) {
       fit1[[2]] <- moreFitIndices(out1, fit.measures = moreAFIs)
@@ -181,8 +181,8 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
   AFI1 <- list()
   AFI0 <- list()
   if (!is.na(AFIs[1])) {
-    AFI1[[1]] <- fitMeasures(uncon, fit.measures = AFIs, baseline.model = null)
-    AFI0[[1]] <- fitMeasures(con, fit.measures = AFIs, baseline.model = null)
+    AFI1[[1]] <- lavaan::fitMeasures(uncon, fit.measures = AFIs, baseline.model = null)
+    AFI0[[1]] <- lavaan::fitMeasures(con, fit.measures = AFIs, baseline.model = null)
   }
   if (!is.na(moreAFIs[1])) {
     AFI1[[2]] <- moreFitIndices(uncon, fit.measures = moreAFIs)

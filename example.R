@@ -1,6 +1,4 @@
-# library(tools)
-# dirMan <- "C:/Users/student/Dropbox/semTools/semTools/man/runMI.Rd"
-# showNonASCIIfile(dirMan)
+# moreFitIndices, longInvariance
 
 sourceDir <- function(path, trace = TRUE, ...) {
      for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
@@ -28,13 +26,13 @@ sourceDirData <- function(path, trace = TRUE) {
 #dir <- "C:/Users/User/simsem_backup/simsem/R/"
 library(lavaan)
 
-dir <- "C:/Users/User/Dropbox/semTools/semTools/R/"
+dir <- "C:/Users/Sunthud/Dropbox/semTools/semTools/R/"
 sourceDir(dir)
 
 # dir2 <- "C:/Users/User/Desktop/multcomp/R"
 # sourceDir(dir2)
 
-dirData <- "C:/Users/User/Dropbox/semTools/semTools/data/"
+dirData <- "C:/Users/Sunthud/Dropbox/semTools/semTools/data/"
 sourceDirData(dirData)
 
 ######### Distribution
@@ -57,9 +55,11 @@ measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", str
 model <- ' f1 =~ u1 + u2 + u3 + u4
            f2 =~ u5 + u6 + u7 + u8'
 
-measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
-    estimator="wlsmv")
+measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", estimator="wlsmv")
+
+measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", estimator="wlsmv", std.lv = TRUE)
 	
+
 ######### moreFitIndices
 
 HS.model <- ' visual  =~ x1 + x2 + x3
@@ -438,7 +438,7 @@ fit2 <- cfa(model2, data=my.df, std.lv=TRUE, missing='fiml')
 
 # Script for data generation
 library(boot) # need for the inv.logit function
-library(semTools)
+#library(semTools)
 set.seed(1234)
 x <- rnorm(200, 0, 1)
 y <- 0.5*x + rnorm(200, 0, sqrt(0.75))
@@ -970,9 +970,11 @@ partialInvarianceCat(modelsCat3, type = "metric")
 partialInvarianceCat(modelsCat2, type = "scalar")
 partialInvarianceCat(modelsCat3, type = "scalar")
 
+# Wald stat did not show up
 partialInvarianceCat(modelsCat2, type = "strict")
 partialInvarianceCat(modelsCat3, type = "strict")
 
+# Wald stat did not show up
 partialInvarianceCat(modelsCat2, type = "means")
 partialInvarianceCat(modelsCat3, type = "means")
 
@@ -1013,17 +1015,6 @@ maximalRelia(fit5)
 
 ####################### Spatial Correction
 
-library(ggplot2)
-
-qplot(x, y, data=boreal, size=Wet, color=NDVI) +
-  theme_bw(base_size=18) + 
-  scale_size_continuous("Index of Wetness", range=c(0,10)) + 
-  scale_color_gradient("NDVI", low="lightgreen", high="darkgreen")
-
-
-## @knitr sem-model
-library(lavaan)
-
 # A simple model where NDVI is determined
 # by nTot, temperature, and Wetness
 # and nTot is related to temperature
@@ -1055,7 +1046,7 @@ qplot(x, y, data=boreal, color=borRes$NDVI>0, size=I(5)) +
 ## @knitr generate-spatial-weight-matrix
 #Evaluate Spatial Residuals
 #First create a distance matrix
-library(ape)
+
 distMat <- as.matrix(dist(cbind(boreal$x, boreal$y)))
 
 #invert this matrix for weights
@@ -1064,7 +1055,7 @@ diag(distsInv) <- 0
 
 ## @knitr moran_i_ndvi
 #calculate Moran's I just for NDVI
-mi.ndvi <- Moran.I(borRes$NDVI, distsInv)
+mi.ndvi <- moran(borRes$NDVI, distsInv)
 mi.ndvi
 
 ## @knitr spatial_corrected_sample
@@ -1097,7 +1088,7 @@ z <- coef(borFit)[1:3]/ndvi.se
 
 summary(borFit, standardized=T)
 
-lavSpatialCorrect(borFit, boreal$x, boreal$y)
+spatialCorrect(borFit, boreal$x, boreal$y)
 
 # create a correlation structure (exponential)
 str <- -0.1 # strength of autocorrelation, inv. proportional to str
@@ -1119,19 +1110,10 @@ x1[as.logical(rbinom(533, 1, 0.1)),] <- NA
 
 boreal2 <- data.frame(boreal, x1, x2, x3)
 
-qplot(x, y, data=boreal2, size=x1) +
-  theme_bw(base_size=18) + 
-  scale_size_continuous("X1", range=c(0,10))
-  
 facModel <- '
   f =~ x1 + x2 + x3
 '
 
 #note meanstructure=T to obtain intercepts
 facFit <- cfa(facModel, data=boreal2, meanstructure=T, std.lv = TRUE, missing = "ML")
-lavSpatialCorrect(facFit, boreal2$x, boreal2$y)
-
-obj <- facFit
-xvar <- boreal2$x
-yvar <- boreal2$y
-alpha <- 0.05
+spatialCorrect(facFit, boreal2$x, boreal2$y)

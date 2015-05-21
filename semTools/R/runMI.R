@@ -252,7 +252,6 @@ runlavaanMI <- function(MIdata, syntax, fun, ...) {
 #Conveniance function to run impuations on data and only return list of data
 imputeMissingAmelia <- function(data,m, miArgs){
   # pull out only the imputations
-  library(Amelia)
   out <- c(list(Amelia::amelia, x = data, m = m, p2s=0), miArgs)
   temp.am <- eval(as.call(out))
   return(temp.am$imputations)
@@ -261,7 +260,6 @@ imputeMissingAmelia <- function(data,m, miArgs){
 
 imputeMissingMice <- function(data,m, miArgs){
   # pull out only the imputations
-  library(mice)
   out <- c(list(mice::mice, data=data, m = m, diagnostics=FALSE, printFlag=FALSE), miArgs)
   temp.mice <- eval(as.call(out))
   temp.mice.imp <- NULL

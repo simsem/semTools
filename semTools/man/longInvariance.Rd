@@ -11,7 +11,7 @@ Testing measurement invariance across timepoints (longitudinal) or any context i
 longInvariance(model, varList, auto = "all", constrainAuto = FALSE, 
 fixed.x = TRUE, std.lv = FALSE, group=NULL, group.equal="", 
 group.partial="", warn=TRUE, debug=FALSE, strict = FALSE, quiet = FALSE, 
-...)
+fit.measures = "default", method = "satorra.bentler.2001", ...)
 }
 \arguments{
 	\item{model}{lavaan syntax or parameter table}
@@ -27,6 +27,8 @@ group.partial="", warn=TRUE, debug=FALSE, strict = FALSE, quiet = FALSE,
 	\item{debug}{See \code{\link[lavaan]{lavaan}.}}
 	\item{strict}{If \code{TRUE}, the sequence requires `strict' invariance. See details for more information.}
 	\item{quiet}{If \code{TRUE}, a summary is printed out containing an overview of the different models that are fitted, together with some model comparison tests.}
+	\item{fit.measures}{Fit measures used to calculate the differences between nested models.}
+	\item{method}{The method used to calculate likelihood ratio test. See \code{\link[lavaan]{lavTestLRT}} for available options}
 	\item{...}{Additional arguments in the \code{\link[lavaan]{lavaan}} function.}
 }
 \details{

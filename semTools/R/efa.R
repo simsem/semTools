@@ -133,7 +133,6 @@ stdLoad <- function(object) {
 
 orthRotate <- function(object, method="varimax", ...) {
 	mc <- match.call()
-	library(GPArotation)
 	initL <- stdLoad(object)
 	rotated <- GPArotation::GPForth(initL, method=method, ...)
 	rotateMat <- t(solve(rotated$Th))
@@ -152,7 +151,6 @@ orthRotate <- function(object, method="varimax", ...) {
 
 oblqRotate <- function(object, method="quartimin", ...) {
 	mc <- match.call()
-	library(GPArotation)
 	initL <- stdLoad(object)
 	rotated <- GPArotation::GPFoblq(initL, method=method, ...)
 	rotateMat <- t(solve(rotated$Th))
@@ -171,8 +169,9 @@ oblqRotate <- function(object, method="quartimin", ...) {
 
 funRotate <- function(object, fun, ...) {
 	stopifnot(is.character(fun))
+	requireNamespace("GPArotation")
+	attachNamespace("GPArotation")
 	mc <- match.call()
-	library(GPArotation)
 	initL <- stdLoad(object)
 	rotated <- do.call(fun, c(list(L = initL), list(...)))
 	rotateMat <- t(solve(rotated$Th))
