@@ -260,6 +260,8 @@ imputeMissingAmelia <- function(data,m, miArgs){
 
 imputeMissingMice <- function(data,m, miArgs){
   # pull out only the imputations
+  requireNamespace("mice")
+  if(!("package:mice" %in% search())) attachNamespace("mice")
   out <- c(list(mice::mice, data=data, m = m, diagnostics=FALSE, printFlag=FALSE), miArgs)
   temp.mice <- eval(as.call(out))
   temp.mice.imp <- NULL

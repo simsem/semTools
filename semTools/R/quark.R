@@ -119,7 +119,7 @@ fixData <- function(data){
 
 aImp <- function(data, silent = FALSE){
   requireNamespace("mice")
-  attachNamespace("mice")
+  if(!("package:mice" %in% search())) attachNamespace("mice")
   if(!silent) cat("Starting Algorithm Imputation...\n")
   data <- mice::mice(data,maxit=1,m=1, printFlag = !silent)
   data <- mice::complete(data)

@@ -170,7 +170,7 @@ oblqRotate <- function(object, method="quartimin", ...) {
 funRotate <- function(object, fun, ...) {
 	stopifnot(is.character(fun))
 	requireNamespace("GPArotation")
-	attachNamespace("GPArotation")
+	if(!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
 	mc <- match.call()
 	initL <- stdLoad(object)
 	rotated <- do.call(fun, c(list(L = initL), list(...)))
