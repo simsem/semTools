@@ -1,5 +1,5 @@
 ## Title: Compute more fit indices
-## Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Aaron Boulton <aboulton@ku.edu>, Ruben Arslan <rubenarslan@gmail.com>, Terrence Jorgensen <tdj@ku.edu>
+## Author: Sunthud Pornprasertmanit <psunthud@ku.edu>, Aaron Boulton <aboulton@ku.edu>, Ruben Arslan <rubenarslan@gmail.com>, Terrence Jorgensen <TJorgensen314@gmail.com>
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------##
 
@@ -53,7 +53,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
     if("aic.smallN" %in% fit.measures) result["aic.smallN"] <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
     if("bic.priorN" %in% fit.measures) result["bic.priorN"] <- f + log(1 + n/nPrior) * nParam
     if("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(n)) * nParam
-    # if("sic" %in% fit.measures) result["sic"] <- sic(f, object)
+    if("sic" %in% fit.measures) result["sic"] <- sic(f, object)
   }
   unlist(result[fit.measures])
 }
@@ -113,24 +113,22 @@ nullRMSEA <- function (object, scaled = FALSE, silent = FALSE) {
 ## lresults = lavaan sem output object
 
 sic <- function(f, lresults = NULL) {
-  ## calculate Jacobian
-  R <- lavaan::lav_func_jacobian_complex(func = lresults@Model@ceq.function, x = lresults@Fit@x)
-  
-  ## calculate Fisher Information Matrix
-  E <- lavaan::lavTech(lresults, "information")
-  
-  ## Calculate Fisher Information Matrix of only the non-redundant parameters.
-  ## This is Yves' fix (search "calculate determinant" in lavaan Google group for details).
-  QR <- qr(t(R))
-  ranK <- QR$rank
-  Q <- qr.Q(QR, complete = TRUE)
-  Q1 <- Q[ , 1:ranK, drop = FALSE]         # range space
-  Q2 <- Q[ , -seq_len(ranK), drop = FALSE] # null space
-  FIM <- t(Q2) %*% E %*% Q2
-  
-  ## check that the non-redundant Fisher Information Matrix is not singular
-  if (det(FIM) <= 0) return(NA)
-  
+
+  E.inv <- lavaan::lavTech(lresults, "inverted.information")
+  if(inherits(E.inv, "try-error")) {
+    return(as.numeric(NA))
+  }
+  E <- MASS::ginv(E.inv) * nobs(lresults)
+
+  eigvals <- eigen(E, symmetric = TRUE, only.values = TRUE)$values
+  # only positive ones
+  eigvals <- eigvals[ eigvals > sqrt(.Machine$double.eps)]
+
+  DET <- prod(eigvals)
+
+  ## check singular
+  if (DET <= 0) return(NA)
+
   ## return SIC
-  f + log(det(lresults@SampleStats@ntotal * FIM))
+  f + log(DET)
 }
