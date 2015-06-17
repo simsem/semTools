@@ -217,7 +217,7 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
     names(y) <- c(n, con@Data@group)
     for (i in numVars) {
       if (centerVars) y[ , i] <- scale(y[ , i], scale = FALSE)[,1]
-      if (scaleVars) y[ , i] <- scale(y[ , i], scale = FALSE)[,1]
+      if (scaleVars) y[ , i] <- scale(y[ , i], center = FALSE)[,1]
     }
     y
   }, x = con@Data@X, g = con@Data@group.label, n = con@Data@ov.names,
