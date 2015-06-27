@@ -1,5 +1,4 @@
 \name{permuteMeasEq}
-\alias{calculateDIF}
 \alias{permuteMeasEq}
 \title{
 	Permutation Randomization Tests of Measurement Equivalence and Differential Item Functioning (DIF)
@@ -28,10 +27,10 @@ calculateDIF(uncon, param)
   Optional.  A \code{lavaan} object, in which an alternative null model is fit (besides the default independence model specified by \code{lavaan}) for the calculation of incremental fit indices. See Widamin & Thompson (2003) for details. If \code{NULL}, \code{lavaan}'s default independence model is used.
 }
   \item{AFIs}{
-  A character vector indicating which alternative fit indices, returned by \code{lavaan::fitMeasures}, is to be used to test the multivariate omnibus null hypothesis of no group differences in any parameters. If \code{NULL}, the default \code{AFIs} will be returned: \code{c("cfi","rni","tli","rmsea","srmr","mfi")}.
+  A character vector indicating which alternative fit indices, returned by \code{lavaan::fitMeasures}, is to be used to test the multivariate omnibus null hypothesis of no group differences in any parameters. If \code{NULL}, the default \code{AFIs} will be returned: \code{c("cfi","rni","tli","rmsea","srmr","mfi")}. If \code{NA}, none of the AFIs from \code{lavaan::fitMeasures} will be returned.
 }
   \item{moreAFIs}{
-  A character vector indicating which alternative fit indices, returned by \code{semTools::moreFitIndices}, is to be used to test the multivariate omnibus null hypothesis of no group differences in any parameters. If \code{NULL}, the default \code{moreAFIs} will be returned: \code{c("gammaHat","adjGammaHat")}.
+  A character vector indicating which alternative fit indices, returned by \code{semTools::moreFitIndices}, is to be used to test the multivariate omnibus null hypothesis of no group differences in any parameters. If \code{NULL}, the default \code{moreAFIs} will be returned: \code{c("gammaHat","adjGammaHat")}. If \code{NA}, none of the AFIs from \code{semTools::moreFitIndices} will be returned.
 }
   \item{param}{
   A character vector indicating which parameters are to be tested for significant DIF. Parameter names must match those returned by \code{names(coef(uncon))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}). Alternatively, to test an entire set of a certain type of parameter, \code{param} may take any one of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, or \code{"residuals"}.
@@ -45,11 +44,11 @@ calculateDIF(uncon, param)
 }
 \details{
 	The multivariate omnibus null hypothesis of measurement equivalence/invariance is that there are no group differences in any measurement parameters. This can be tested using the \code{anova} method on nested lavaan objects, as seen in the output of \code{\link[semTools]{measurementInvariance}}, or by inspecting the change in alternative fit indices (AFIs) such as the CFI. See Cheung & Rensvold (2002) and Meade, Johnson, & Braddy (2008) for details.
-  
+
   If the multivariate omnibus null hypothesis is rejected using a global indicator of fit, partial invariance can still be established by freeing parameters that differ across groups, while maintaining equality constraints for other indicators. DIF can be estimated using the less constrained model, in which the parameters are allowed to differ, but multiple testing across items and across pairwise comparisons between groups) leads to inflation of Type I error rates. The permutation randomization method employed by \code{permuteMeasEq} creates a distribution of the maximum absolute-value of DIF if the null hypothesis is true, similar to Tukey's \emph{q} distribution for the Honestly Significant Difference (HSD) post hoc test, which allows the researcher to control the familywise Type I error rate. Two distributions are estimated: (1) the maximum absolute DIF across all pairwise comparisons within each item (using \code{type = "all"}), and (2) the maximum absolute DIF across all items and pairwise comparisons (using \code{type = "each"}).
-  
+
   As an alternative to the multivariate omnibus test using global fit measures, \code{permuteMeasEq} also creates a distribution of the maximum sum-of-squared-DIF for each item. Thus, univariate omnibus tests can be performed for each item, with familywise Type I errors (across items) controlled analogously to Tukey's HSD. If the univariate omnibus null hypothesis for any item is rejected, then follow-up tests can be conducted using \code{type = "all"}.
-  
+
   Because extreme observations become more likely to occur at least once as the number of tests grows, the familywise Type I error rate can only be controlled at the expense of power. Rather than trying to keep Type I errors close to a nominal alpha level, a linear step-up method (Maxwell & Delaney, 2004, pp. 230-234) can be used to keep the expected false discovery rate (FDR) close to a nominal alpha level. The expected FDR is the proportion of all rejected null hypotheses that are Type I errors. Controlling FDR guarantees controlling the familywise Type I error rate when all null hypotheses are true, but when at least one null hypothesis is false, controlling FDR is a compromise that keeps the number of incorrectly rejected null hypotheses (Type I errors) low relative to the total number of rejected null hypotheses, but with greater power to detect true group differences than methods that control the familywise Type I error rate. \code{permuteMeasEq} also employs the linear step-up procedure, and those results can be extracted by setting the argument \code{type = "step-up"}).
 }
 \value{
@@ -104,7 +103,7 @@ fit.metric <- cfa(mod.metric, data = HolzingerSwineford1939,
                   std.lv = TRUE, group = "sex", group.equal = "loadings")
 AFI.metric <- c(fitMeasures(fit.metric, fit.measures = myAFIs,
                             baseline.model = fit.null),
-                moreFitIndices(fit.metric, fit.measures = moreAFIs))
+                moreFitIndices(fit.metric, fitmeasures = moreAFIs))
 
 ## calculate observed differences in fit indices
 myDiffs <- AFI.config - AFI.metric
@@ -113,11 +112,11 @@ myDiffs
 anova(fit.config, fit.metric)
 
 
-## Use only 10 permutations for a demo (in practice, use > 500)
+## Use only 20 permutations for a demo (in practice, use > 500)
 set.seed(12345)
-out <- permuteMeasEq(nPermute = 10, uncon = fit.config, con = fit.metric,
+out <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
                      AFIs = myAFIs, moreAFIs = moreAFIs, param = "loadings",
-                     null = fit.null) 
+                     null = fit.null)
 
 ## Results object contains info about multivariate omnibus and follow-up tests.
 ## It contains the observed DIF that can be calculated using calculateDIF:
@@ -127,7 +126,8 @@ calculateDIF(uncon = fit.config, param = "loadings")
 ## The p values for each method's distribution can be inspected:
 out@p.values
 
-## The "show" method prints results for multivariate omnibus null hypothesis
+## The "show" method prints results for multivariate omnibus null hypothesis,
+## as well as individual omnibus tests per item (controlling familywise errors)
 out
 
 ## The "summary" method gives details about "follow-up" DIF tests.
@@ -143,8 +143,10 @@ summary(out, digits = 2)
 ## Note that we can raise the alpha level and control the number of digits.
 summary(out, type = "each", alpha = .10, digits = 2)
 
-## To not control the Type I error rate at all:
-summary(out, type = "pairs", digits = 2)
+## To not control the Type I error rate at all (and use a liberal alpha):
+outsum <- summary(out, type = "pairs", alpha = 0.30)
+## notice that the returned object is a logical matrix: is.rejected?
+outsum
 
 ## To control FDR (instead of familywise Type I errors) at level alpha:
 summary(out, type = "step-up", digits = 2)

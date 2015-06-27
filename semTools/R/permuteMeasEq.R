@@ -26,13 +26,13 @@ calculateDIF <- function(uncon, param) {
   if (class(uncon) != "lavaan") stop("This function only applies to fitted lavaan models.")
   if (uncon@Data@ngroups == 1L) stop("This function only applies to multiple-group models.")
   ## save all estimates from less constrained model
-  allCoefs <- lavaan::parameterEstimates(uncon)
+  allCoefs <- parameterEstimates(uncon)
   ## extract parameters of interest
   if (param[1] == "loadings") params <- allCoefs[allCoefs$op == "=~", c("lhs","op","rhs","group","est")]
   if (param[1] == "intercepts") params <- allCoefs[allCoefs$lhs %in% uncon@Data@ov$name & allCoefs$op == "~1",
                                                    c("lhs","op","rhs","group","est")]
   if (param[1] == "thresholds") params <- allCoefs[allCoefs$op == "|", c("lhs","op","rhs","group","est")]
-  if (param[1] == "residuals") params <- allCoefs[allCoefs$lhs %in% uncon@Data@ov$name & 
+  if (param[1] == "residuals") params <- allCoefs[allCoefs$lhs %in% uncon@Data@ov$name &
                                                     allCoefs$lhs == allCoefs$rhs & allCoefs$op == "~~",
                                                   c("lhs","op","rhs","group","est")]
   if (!param[1] %in% c("loadings","intercepts","thresholds","residuals")) {
@@ -49,13 +49,16 @@ calculateDIF <- function(uncon, param) {
     parList <- c(parList, list(params$est[params$group == i]))
   }
   names(parList) <- uncon@Data@group.label
-  ## calculate observed DIF estimates from less constrained model
-  comp <- combn(uncon@Data@group.label, 2) # all possible group comparisons
-  parDiff <- function(groups = "", parList) { # function to compare one pair of groups
+
+    ## all possible group comparisons, sorted so permutations are always in the same order
+  comp <- combn(sort(uncon@Data@group.label), 2)
+  ## function to compare one pair of groups
+  parDiff <- function(groups = "", parList) {
     if (length(groups) != 2) stop("Must compare exactly 2 vectors of parameters")
     (parList[[ groups[1] ]] - parList[[ groups[2] ]])
   }
-  diffs <- apply(comp, 2, parDiff, parList = parList) # apply to all comparisons
+  ## Calculate observed DIF estimates for all comparisons from less constrained model
+  diffs <- apply(comp, 2, parDiff, parList = parList)
   colnames(diffs) <- apply(comp, 2, paste, collapse = "-")
   rownames(diffs) <- g1.names
   diffs
@@ -75,11 +78,11 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
   while ( (nSparse <= maxSparse) & (nTries <= maxNonconv) ) {
     ## permute grouping variable
     d[ , G] <- sample(d[ , G])
-    
+
     ## for ordered indicators, check that groups have same observed categories
     ordVars <- uncon@Data@ov$name[uncon@Data@ov$type == "ordered"]
     if (length(ordVars) > 0) {
-      try(passTest <- lavaan::lavTables(d, dim = 1L, categorical = ordVars, group = G))
+      try(passTest <- lavTables(d, dim = 1L, categorical = ordVars, group = G))
       if (!exists("passTest")) {
         nSparse <- nSparse + 1
         next
@@ -87,11 +90,11 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
     }
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::lavaan(data = d, group = G, slotParTable = null@ParTable, slotOptions = null@Options)
+      out.null <- lavaan(data = d, group = G, slotParTable = null@ParTable, slotOptions = null@Options)
     } else out.null <- NULL
-    
+
     ## fit other models, check for convergence
-    try(out1 <- lavaan::lavaan(data = d, group = G, slotParTable = uncon@ParTable, slotOptions = uncon@Options))
+    try(out1 <- lavaan(data = d, group = G, slotParTable = uncon@ParTable, slotOptions = uncon@Options))
     if (! exists("out1")) {
       nTries <- nTries + 1
       next
@@ -100,8 +103,8 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
       nTries <- nTries + 1
       next
     }
-    
-    try(out0 <- lavaan::lavaan(data = d, group = G, slotParTable = con@ParTable, slotOptions = con@Options))
+
+    try(out0 <- lavaan(data = d, group = G, slotParTable = con@ParTable, slotOptions = con@Options))
     if (! exists("out0")) {
       nTries <- nTries + 1
       next
@@ -114,14 +117,14 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
     fit1 <- list()
     fit0 <- list()
     if (!is.na(AFIs[1])) {
-      fit1[[1]] <- lavaan::fitMeasures(out1, fit.measures = AFIs, baseline.model = out.null)
-      fit0[[1]] <- lavaan::fitMeasures(out0, fit.measures = AFIs, baseline.model = out.null)
+      fit1[[1]] <- fitMeasures(out1, fit.measures = AFIs, baseline.model = out.null)
+      fit0[[1]] <- fitMeasures(out0, fit.measures = AFIs, baseline.model = out.null)
     }
     if (!is.na(moreAFIs[1])) {
       fit1[[2]] <- moreFitIndices(out1, fit.measures = moreAFIs)
       fit0[[2]] <- moreFitIndices(out0, fit.measures = moreAFIs)
     }
-    
+
     break
   } ## end WHILE loop
   ## if loop ended before getting results, return NA
@@ -133,7 +136,7 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
     temp[1:length(temp)] <- NA
     return(list(AFI = AFI, DIF = c(temp, all = NA, ss = NA), n.nonConverged = nTries, n.Sparse = nSparse))
   }
-  
+
   permuted <- calculateDIF(out1, param)
   list(AFI = unlist(fit1) - unlist(fit0),
        DIF = c(apply(abs(permuted), 1, max),
@@ -143,16 +146,22 @@ permuteOnce <- function(i, d, uncon, con, null = NULL, param, G, diffs,
        n.nonConverged = nTries - 1L, n.Sparse = nSparse)
 }
 
-
 ## function to permute difference in fits
 permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAFIs = NULL,
                           param = "loadings", maxSparse = 10, maxNonconv = 10) {
+  ## FIXME: Temporarily warn about testing thresholds; learn more about necessary constraints
+  if (param == "thresholds" | any(grepl("\\|", param))) {
+    stop("This function is not yet optimized for testing thresholds.
+       Necessary identification contraints might not be specified.")
+  }
+  if (all(is.na(AFIs[1]), is.na(moreAFIs[1]))) warning("No AFIs were selected, so only the chi-squared statistic will be permuted.")
+
   nPermute <- as.integer(nPermute[1])
   ## logical check that models were fit to the same data
   # if (!all.equal(con@Data, uncon@Data)) stop("Models must be fit to the same groups")
   ## check for least-squares estimators
   leastSq <- any(c(uncon@Options$estimator, con@Options$estimator) %in% c("ULS","GLS","WLS", "DWLS"))
-  
+
   ## specify default AFIs if NULL, or check validity of user-specified AFIs
   if (is.null(AFIs)) {
     AFIs <- c("cfi","rni","tli","rmsea","srmr","mfi")
@@ -175,14 +184,14 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
                                          "Information criteria unavailable for least-squares estimators.",
                                          sep = "\n"))
   }
-  
+
   ###################### OBSERVED RESULTS ##########################
   ## save observed delta-AFIs
   AFI1 <- list()
   AFI0 <- list()
   if (!is.na(AFIs[1])) {
-    AFI1[[1]] <- lavaan::fitMeasures(uncon, fit.measures = AFIs, baseline.model = null)
-    AFI0[[1]] <- lavaan::fitMeasures(con, fit.measures = AFIs, baseline.model = null)
+    AFI1[[1]] <- fitMeasures(uncon, fit.measures = AFIs, baseline.model = null)
+    AFI0[[1]] <- fitMeasures(con, fit.measures = AFIs, baseline.model = null)
   }
   if (!is.na(moreAFIs[1])) {
     AFI1[[2]] <- moreFitIndices(uncon, fit.measures = moreAFIs)
@@ -192,24 +201,42 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
   ## calculate observed DIF estimates
   diffs <- calculateDIF(uncon, param = param)
   obs <- new("MeasEq.observed", AFI = AFI.diff, DIF = diffs)
-  
+
   ######################### PREP DATA ##############################
   ## save name of grouping variable
   G <- con@Data@group
-  ## assemble data that models were fit to
-  dataList <- mapply(FUN = function(x, g, n) {
-    y <- data.frame(x, g)
+  ## check for categorical variables
+  # catVars <- which(con@Data@ov$type[!con@Data@ov$exo] == "ordered")
+  numVars <- which(con@Data@ov$type[!con@Data@ov$exo] != "ordered")
+  ## check whether mean-str or cov-str measurement parameters are being tested
+  centerVars <- param %in% c("loadings","residuals") | any(grepl("~~", param)) | any(grepl("=~", param))
+  scaleVars <- param == "intercepts" | any(grepl("~1", param))
+  ## assemble data to which the models were fit
+  dataList <- mapply(FUN = function(x, g, n, numVars, centerVars, scaleVars) {
+    y <- data.frame(as.data.frame(x), g, stringsAsFactors = FALSE)
     names(y) <- c(n, con@Data@group)
+    for (i in numVars) {
+      if (centerVars) y[ , i] <- scale(y[ , i], scale = FALSE)[,1]
+      if (scaleVars) y[ , i] <- scale(y[ , i], center = FALSE)[,1]
+    }
     y
-  }, x = con@Data@X, g = con@Data@group.label, n = con@Data@ov.names, SIMPLIFY = FALSE)
+  }, x = con@Data@X, g = con@Data@group.label, n = con@Data@ov.names,
+     numVars = numVars, centerVars = centerVars, scaleVars = scaleVars, SIMPLIFY = FALSE)
   allData <- do.call(rbind, dataList)
-  
+
+  ############ FIXME: remove the next 5 lines if standardizing does not work
+  ## fit standardized data again
+  # uncon <- lavaan(data = allData, group = uncon@Data@group, slotParTable = uncon@ParTable, slotOptions = uncon@Options)
+  ## calculate observed DIF estimates
+  # diffs <- calculateDIF(uncon, param = param)
+  # obs <- new("MeasEq.observed", AFI = AFI.diff, DIF = diffs)
+
   ###################### PERMUTED RESULTS ###########################
   ## permute groups and return distributions of delta-AFIs and largest DIF
   permuDist <- lapply(1:nPermute, permuteOnce, d = allData, G = G, diffs = diffs,
                       AFIs = AFIs, moreAFIs = moreAFIs, uncon = uncon, con = con, null = null,
                       param = param, maxSparse = maxSparse, maxNonconv = maxNonconv)
-  
+
   ## extract AFI distribution
   if (length(AFI.diff) > 1) {
     AFI.dist <- as.data.frame(t(sapply(permuDist, function(x) x$AFI)))
@@ -228,10 +255,10 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
   ## calculate all one-directional p-values
   p.AFI <- mapply(FUN = function(x, y) mean(x >= y, na.rm = TRUE),
                   x = unclass(AFI.dist), y = AFI.diff)
-  
+
   ## extract distribution of maximum absolute DIF
   DIF.dist <- sapply(permuDist, function(x) x$DIF)
-  
+
   ## calculate p values for DIF estimates
   p.all <- matrix(NA, nrow(diffs), ncol(diffs), dimnames = dimnames(diffs))
   p.each <- matrix(NA, nrow(diffs), ncol(diffs), dimnames = dimnames(diffs))
@@ -247,7 +274,7 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
   }
   DIF.pairs <- Reduce("+", lapply(permuDist, function(x) x$DIF0)) / length(permuDist)
   #apply(simplify2array(lapply(tempDist, function(x) x$DIF0)), 1:2, mean)
-  
+
   ## save all p-values
   pVals <- new("MeasEq.p.values", AFI = p.AFI, DIF.all = p.all,
                DIF.each = p.each, DIF.pairs = DIF.pairs, DIF.ss = p.ss)
@@ -258,17 +285,19 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
              n.Permutations = nPermute, n.Converged = sum(!is.na(AFI.dist[ , 1])),
              n.nonConverged = sapply(permuDist, function(x) x$n.nonConverged),
              n.Sparse = sapply(permuDist, function(x) x$n.Sparse),
-             DIF.dist = DIF.dist, AFI.dist = AFI.dist) ######## ONLY ADDED FOR SIMULATIONS
+             DIF.dist = DIF.dist, AFI.dist = AFI.dist)
   out
 }
 
 
 ## methods
 setMethod("show", "permuteMeasEq", function(object) {
-  cat("p values based on nonparametric permutation method: \n\n")
+  cat("Omnibus p values based on nonparametric permutation method: \n\n")
   print(data.frame(AFI_diff = object@observed@AFI, p.value = object@p.values@AFI))
-  cat("\n\np value based on parametric method (chi-sq difference test): \n\n")
+  cat("\n\nOmnibus p value based on parametric method (chi-sq difference test): \n\n")
   print(object@ANOVA)
+  cat("\n\nItemwise omnibus p values based on permutation distribution of maximum-SS-DIF per item: \n\n")
+  print(object@p.values@DIF.ss)
   ## print warning if there are nonConverged permutations
   if (object@n.Permutations != object@n.Converged) {
     warning(paste("Only", object@n.Converged, "out of",
@@ -286,24 +315,36 @@ setMethod("summary", "permuteMeasEq", function(object, alpha = .05, digits = 3,
     print(printMat, quote = FALSE)
     invisible(NULL)
   }
-  cat("\np values for DIF for each parameter based on permutation of max-SumSq: \n\n")
-  print(object@p.values@DIF.ss)
-  
-  if (type[1] == "step-up") {
+
+  type <- type[1]
+
+  ## print matching omnibus test (for type == "pairs", print both)
+  if (type %in% c("all","pairs","step-up")) {
+    cat("\nOmnibus p values based on nonparametric permutation method: \n\n")
+    print(data.frame(AFI_diff = object@observed@AFI, p.value = object@p.values@AFI))
+  }
+  if (type %in% c("each","pairs")) {
+    cat("\nItemwise omnibus p values based on permutation distribution of maximum-SS-DIF per item: \n\n")
+    print(object@p.values@DIF.ss)
+  }
+
+  ## extract requested DIF test results
+  if (type == "step-up") {
     DIF <- object@p.values@DIF.pairs
     rankedAlpha <- matrix((alpha * rank(DIF)) / length(DIF),
                           nrow(DIF), ncol(DIF), dimnames = dimnames(DIF))
     sig <- which(DIF < rankedAlpha, arr.ind = TRUE)
   } else {
-    DIF <- slot(object@p.values, paste0("DIF.", type[1]))
+    DIF <- slot(object@p.values, paste0("DIF.", type))
     sig <- which(DIF < alpha, arr.ind = TRUE)
   }
-  
+
+  ## print requested DIF test results
   if (nrow(sig) == 0) {
     cat("\n\nThere are no significant differences between groups. \n\n")
-    return(invisible(object))
+    return(invisible(DIF < alpha))
   }
-  cat("There are significant differences between the following groups' parameters: \n\n")
+  cat("\n\nThere are significant differences between the following groups' parameters: \n\n")
   for (i in 1:nrow(sig)) {
     print(c(Groups = colnames(DIF)[[ sig[i, 2] ]],
             Parameter = rownames(DIF)[[ sig[i, 1] ]]))
@@ -317,6 +358,6 @@ setMethod("summary", "permuteMeasEq", function(object, alpha = .05, digits = 3,
                   object@n.Permutations, "models converged within",
                   max(object@n.nonConverged), "attempts per permutation."))
   }
-  invisible(object)
+  invisible(DIF < alpha)
 })
 

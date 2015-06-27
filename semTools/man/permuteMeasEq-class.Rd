@@ -21,14 +21,14 @@
     \item{\code{n.Converged}:}{An integer indicating the number of permuation iterations which yielded a converged solution}
     \item{\code{n.nonConverged}:}{A vector of length \code{n.Permutations} indicating how many times group assignment was randomly permuted (at each iteration) before converging on a solution}
     \item{\code{n.Sparse}:}{Only relevant with \code{ordered} indicators. A vector of length \code{n.Permutations} indicating  how many times group assignment was randomly permuted (at each iteration) before obtaining a sample with all categories observed in all groups}
-    \item{\code{AFI.dist}:}{TBD}
-    \item{\code{DIF.dist}:}{TBD}
+    \item{\code{AFI.dist}:}{The permutation distribution(s) of AFI(s). A data.frame with \code{nrow == n.Permutations} and one column for each AFI.}
+    \item{\code{DIF.dist}:}{The permutation distributions of the maximum DIF of "each" item's comparisons, the maximum DIF across "all" comparisons (the second-to-last row), and the maximum sum-of-squared-DIF across items (the last row). Each column of the numeric matrix is a different permutation.}
   }
 }
 \section{Methods}{
   \describe{
     \item{show}{\code{signature(object = "permuteMeasEq"):} The show function is used to summarize the results of the multivariate omnibus test of measurement equivalence, using the user-specified AFIs.}
-	  \item{summary}{\code{signature(object = "permuteMeasEq", alpha = .05, type = c("all","each","pairs","step-up"), digits = 3):} The summary function is used to summarize the results of the univariate omnibus tests (using the maximum Sum-of-Squared-DIF across items), as well as results of DIF tests for each user-specified parameter, using a specified \code{alpha} level and \code{type} of reference distribution for the maximum DIF under the null. The user can also specify the number of \code{digits} reported for DIF estimates. Results of the linear step-up procedure can also be summarized, which control the expected false discovery rate (FDR) to yield greater power than controlling the familywise Type I error rate.}
+    \item{summary}{\code{signature(object = "permuteMeasEq", alpha = .05, type = c("all","each","pairs","step-up"), digits = 3):} The summary function is used to summarize the results of the univariate omnibus tests (using the maximum Sum-of-Squared-DIF across items), as well as results of DIF tests for each user-specified parameter, using a specified \code{alpha} level and \code{type} of reference distribution for the maximum DIF under the null. The user can also specify the number of \code{digits} reported for DIF estimates. Results of the linear step-up procedure can also be summarized, which control the expected false discovery rate (FDR) to yield greater power than controlling the familywise Type I error rate. The invisibly returned object is a logical matrix indicating whether each pairwise comparison was rejected, using the specified type of distribution and alpha level.}
   }
 }
 \author{
