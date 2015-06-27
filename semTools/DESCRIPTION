@@ -23,7 +23,7 @@ Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("au
 		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu")
 		)
 Description: Provides useful tools for structural equation modeling packages. 
-Depends: R(>= 3.0), methods, lavaan(>= 0.5-19)
+Depends: R(>= 3.0), methods, lavaan(>= 0.5-18)
 Suggests: MASS, parallel, Amelia, mice, foreign, OpenMx(>= 2.0.0), GPArotation, mnormt
 License: GPL (>= 2)
 LazyData: yes
@@ -50,4 +50,4 @@ Author: Sunthud Pornprasertmanit [aut, cre],
   Steven Chesnut [ctb],
   Jarrett Byrnes [ctb]
 Maintainer: Sunthud Pornprasertmanit <sunthud.pornprasertmanit@ttu.edu>
-Date/Publication: 2015-06-01
+Date/Publication: 2015-06-28

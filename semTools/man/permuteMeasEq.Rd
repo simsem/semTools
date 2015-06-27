@@ -1,5 +1,6 @@
 \name{permuteMeasEq}
 \alias{permuteMeasEq}
+\alias{calculateDIF}
 \title{
 	Permutation Randomization Tests of Measurement Equivalence and Differential Item Functioning (DIF)
 }
@@ -70,6 +71,7 @@ Widamin, K. F., & Thompson, J. S. (2003). On specifying the null model for incre
 \code{\link[stats]{TukeyHSD}}, \code{\link[semTools]{measurementInvariance}}, \code{\link[semTools]{measurementInvarianceCat}}
 }
 \examples{
+\dontrun{
 ## fit indices of interest for multivariate omnibus test of measurement equivalence
 myAFIs <- c("cfi","rni","tli","rmsea","srmr","mfi","gfi","aic","bic")
 moreAFIs <- c("gammaHat","adjGammaHat")
@@ -103,7 +105,7 @@ fit.metric <- cfa(mod.metric, data = HolzingerSwineford1939,
                   std.lv = TRUE, group = "sex", group.equal = "loadings")
 AFI.metric <- c(fitMeasures(fit.metric, fit.measures = myAFIs,
                             baseline.model = fit.null),
-                moreFitIndices(fit.metric, fitmeasures = moreAFIs))
+                moreFitIndices(fit.metric, fit.measures = moreAFIs))
 
 ## calculate observed differences in fit indices
 myDiffs <- AFI.config - AFI.metric
@@ -117,7 +119,6 @@ set.seed(12345)
 out <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
                      AFIs = myAFIs, moreAFIs = moreAFIs, param = "loadings",
                      null = fit.null)
-
 ## Results object contains info about multivariate omnibus and follow-up tests.
 ## It contains the observed DIF that can be calculated using calculateDIF:
 out@observed@DIF
@@ -150,6 +151,6 @@ outsum
 
 ## To control FDR (instead of familywise Type I errors) at level alpha:
 summary(out, type = "step-up", digits = 2)
-
+}
 }
 
