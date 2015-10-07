@@ -154,7 +154,10 @@ permuteMeasEq <- function(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAF
     stop("This function is not yet optimized for testing thresholds.
        Necessary identification contraints might not be specified.")
   }
-  if (all(is.na(AFIs[1]), is.na(moreAFIs[1]))) warning("No AFIs were selected, so only the chi-squared statistic will be permuted.")
+  if (all(is.na(AFIs[1]), is.na(moreAFIs[1]))) {
+    warning("No AFIs were selected, so only the chi-squared statistic will be permuted.")
+    AFIs <- "chisq"
+  }
 
   nPermute <- as.integer(nPermute[1])
   ## logical check that models were fit to the same data
