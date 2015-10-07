@@ -121,8 +121,10 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 }
 
 stdLoad <- function(object) {
-	out <- solve(sqrt(diag(diag(fitted.values(object)$cov)))) %*% inspect(object, "coef")$lambda
-	
+	lambda <- inspect(object, "coef")$lambda
+	impcov <- lavaan::fitted.values(object)$cov
+	impsd <- sqrt(diag(diag(impcov)))
+	out <- solve(impsd) %*% lambda
 	rownames(out) <- lavaan::lavNames(object@ParTable, "ov", group = 1)
 	if(is(object, "lavaanStar")) {
 		out <- out[!(rownames(out) %in% object@auxNames),]
@@ -132,6 +134,8 @@ stdLoad <- function(object) {
 }
 
 orthRotate <- function(object, method="varimax", ...) {
+	requireNamespace("GPArotation")
+	if(!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
 	mc <- match.call()
 	initL <- stdLoad(object)
 	rotated <- GPArotation::GPForth(initL, method=method, ...)
@@ -150,6 +154,8 @@ orthRotate <- function(object, method="varimax", ...) {
 }
 
 oblqRotate <- function(object, method="quartimin", ...) {
+	requireNamespace("GPArotation")
+	if(!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
 	mc <- match.call()
 	initL <- stdLoad(object)
 	rotated <- GPArotation::GPFoblq(initL, method=method, ...)
@@ -226,7 +232,7 @@ seStdLoadings <- function(rotate, object) {
 	free.idx <- which(LIST$free > 0L)
 	LIST <- LIST[,c("lhs", "op", "rhs", "group")]
 	JAC <- JAC[free.idx,free.idx]
-	VCOV <- as.matrix(vcov(object, labels=FALSE))
+	VCOV <- as.matrix(lavaan::vcov(object, labels=FALSE))
 	if(object@Model@eq.constraints) {
 		JAC <- JAC %*% object@Model@eq.constraints.K
 	}

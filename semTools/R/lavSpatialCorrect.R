@@ -1,6 +1,6 @@
 spatialCorrect <- function(obj, xvar, yvar, alpha=0.05){
   #first, get the residuals from the model
-  resids <- as.data.frame(residuals(obj, "casewise"))
+  resids <- as.data.frame(lavaan::residuals(obj, "casewise"))
   
   #get only endogenous variables
   resids <- resids[,which(apply(resids, 2, function(x) length(unique(x))) !=1)]
@@ -29,14 +29,14 @@ spatialCorrect <- function(obj, xvar, yvar, alpha=0.05){
   
   
   #get the vcov matrix
-  v <- diag(vcov(obj))
+  v <- diag(lavaan::vcov(obj))
   n <- nrow(resids)
   #using new sample sizes, for each variable, calculate new Z-scores
   params <- lapply(names(morans_i), function(acol){
     idx <- grep(paste0(acol, "~"),names(v))  #regression or covariances
     idx <- c(idx, grep(paste0("=~",acol),names(v)))  #latent variable definitions
     v_idx <- v[idx]*n/morans_i[[acol]]$n.eff
-    ret <-  data.frame(Parameter = names(v)[idx], Estimate=coef(obj)[idx], 
+    ret <-  data.frame(Parameter = names(v)[idx], Estimate=lavaan::coef(obj)[idx], 
                        n.eff = morans_i[[acol]]$n.eff, Std.err = sqrt(v_idx))
     ret[["Z-value"]] <- ret$Estimate/ret$Std.err
     ret[["P(>|z|)"]] <- 2*pnorm(abs(ret[["Z-value"]]), lower.tail=F)

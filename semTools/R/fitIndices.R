@@ -118,7 +118,7 @@ sic <- function(f, lresults = NULL) {
   if(inherits(E.inv, "try-error")) {
     return(as.numeric(NA))
   }
-  E <- MASS::ginv(E.inv) * nobs(lresults)
+  E <- MASS::ginv(E.inv) * lavaan::nobs(lresults)
 
   eigvals <- eigen(E, symmetric = TRUE, only.values = TRUE)$values
   # only positive ones

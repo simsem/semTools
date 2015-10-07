@@ -55,22 +55,22 @@ saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...)
 		target <- inspect(object, what=what)
 		if(tableFormat) {
 			if(is(target, "lavaan.data.frame") || is(target, "data.frame")) {
-				write.table(target, file=file, sep="\t", row.names=FALSE, col.names=TRUE)
+				utils::write.table(target, file=file, sep="\t", row.names=FALSE, col.names=TRUE)
 			} else if (is(target, "list")) {
 				if(is(target[[1]], "list")) {
 					target <- lapply(target, listToDataFrame)
 					target <- mapply(function(x, y) rbind(rep("", ncol(y)), c(x, rep("", ncol(y) - 1)), y), names(target), target, SIMPLIFY=FALSE)
 					target <- do.call(rbind, target)
-					write.table(target[-1,], file=file, sep="\t", row.names=FALSE, col.names=FALSE)
+					utils::write.table(target[-1,], file=file, sep="\t", row.names=FALSE, col.names=FALSE)
 				} else {
 					target <- listToDataFrame(target)
-					write.table(target, file=file, sep="\t", row.names=FALSE, col.names=FALSE)
+					utils::write.table(target, file=file, sep="\t", row.names=FALSE, col.names=FALSE)
 				}
 			} else {
-				write.table(target, file=file, sep="\t", row.names=TRUE, col.names=TRUE)
+				utils::write.table(target, file=file, sep="\t", row.names=TRUE, col.names=TRUE)
 			}
 		} else {
-			write(paste(capture.output(target), collapse="\n"), file=file)
+			write(paste(utils::capture.output(target), collapse="\n"), file=file)
 		}
 	}
 }
@@ -80,7 +80,7 @@ saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...)
 # object = lavaan object input
 copySummary <- function(object, file) {
 	# Capture the output of the lavaan class
-	outputText <- capture.output(summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE))
+	outputText <- utils::capture.output(summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE))
 
 	# Split the text by two spaces
 	outputText <- strsplit(outputText, "  ")
@@ -155,7 +155,7 @@ copySummary <- function(object, file) {
 	set3 <- t(sapply(set3, set3Parse, numcol))
 
 	# Copy the output into the clipboard
-	write.table(rbind(set1, set2, set3), file=file, sep="\t", row.names=FALSE, col.names=FALSE)
+	utils::write.table(rbind(set1, set2, set3), file=file, sep="\t", row.names=FALSE, col.names=FALSE)
 }
 
 # trim function from the R.oo package

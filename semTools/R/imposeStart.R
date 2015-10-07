@@ -4,8 +4,8 @@ imposeStart <- function(out, expr, silent = TRUE) {
 	template2$do.fit <- FALSE
 	model <- eval(expr = template2, enclos = parent.frame())
 	ptmodel <- lavaan::parTable(model)
-	coefmodel <- coef(model)
-	coefout <- coef(out)
+	coefmodel <- lavaan::coef(model)
+	coefout <- lavaan::coef(out)
 	start <- coefout[match(names(coefmodel), names(coefout))]
 	ptmodel$ustart[ptmodel$free != 0] <- start[ptmodel$free[ptmodel$free != 0]]
 	if(!silent) {

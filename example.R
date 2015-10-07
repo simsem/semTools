@@ -778,31 +778,31 @@ orthRotate(unrotated4, method="varimax")
 
 ################################ Multiple Comparison
 
-library(multcomp)
+# library(multcomp)
 
-lmod <- lm(Fertility ~ ., data = swiss)
+# lmod <- lm(Fertility ~ ., data = swiss)
 
-### test of H_0: all regression coefficients are zero 
-### (ignore intercept)
+## test of H_0: all regression coefficients are zero 
+## (ignore intercept)
 
-### define coefficients of linear function directly
-K <- diag(length(coef(lmod)))[-1,]
-rownames(K) <- names(coef(lmod))[-1]
-K
+## define coefficients of linear function directly
+# K <- diag(length(coef(lmod)))[-1,]
+# rownames(K) <- names(coef(lmod))[-1]
+# K
 
-### set up general linear hypothesis
-x1 <- glht(lmod, linfct = K)
+## set up general linear hypothesis
+# x1 <- glht(lmod, linfct = K)
 
-example(cfa)
-x2 <- glht(fit)
+# example(cfa)
+# x2 <- glht(fit)
 
-## The famous Holzinger and Swineford (1939) example
-HS.model <- ' visual  =~ x1 + a*x2 + b*x3
-              textual =~ x4 + x5 + x6
-              speed   =~ x7 + x8 + x9 
-			  c := a - b'
+# The famous Holzinger and Swineford (1939) example
+# HS.model <- ' visual  =~ x1 + a*x2 + b*x3
+              # textual =~ x4 + x5 + x6
+              # speed   =~ x7 + x8 + x9 
+			  # c := a - b'
 
-fit <- cfa(HS.model, data=HolzingerSwineford1939)
+# fit <- cfa(HS.model, data=HolzingerSwineford1939)
 
 ################################# Single Parameter Test
 
@@ -1117,3 +1117,237 @@ facModel <- '
 #note meanstructure=T to obtain intercepts
 facFit <- cfa(facModel, data=boreal2, meanstructure=T, std.lv = TRUE, missing = "ML")
 spatialCorrect(facFit, boreal2$x, boreal2$y)
+
+
+#### ci.reliability
+
+.test.ci.reliability <- function() {
+	source("C:/Users/Sunthud/Dropbox/newcirelia.R")
+	set.seed(123321)
+	script <- 'f1 =~ 0.7*y1 + 0.7*y2 + 0.8*y3 + 0.9*y4 + 0.5*y5
+	y1 | -0.5*t1 + 0*t2 + 0.5*t3
+	y2 | -0.5*t1 + 0*t2 + 0.5*t3
+	y3 | -0.5*t1 + 0*t2 + 0.5*t3
+	y4 | -0.5*t1 + 0*t2 + 0.5*t3
+	y5 | -0.5*t1 + 0*t2 + 0.5*t3
+	'
+
+	dat <- lavaan::simulateData(script, sample.nobs = 50)
+	ci.reliability(data = dat, inttype = "perc", B = 200)
+	ci.reliability(data = dat, inttype = "bca", B = 200)
+	ci.reliability(data = dat, inttype = "bsi", B = 200)
+	ci.reliability(data = dat, inttype = "bsil", B = 200)
+
+	script2 <- 'f1 =~ 0.7*y1 + 0.7*y2 + 0.8*y3 + 0.9*y4 + 0.5*y5
+	y1 ~~ 0.05*y2
+	y2 ~~ -0.02*y3
+	y3 ~~ 0.04*y4
+	y4 ~~ 0.02*y5'
+
+	dat2 <- simulateData(script2, sample.nobs = 300)
+
+	ci.reliability(dat2, type = "alpha", inttype = "none")
+	ci.reliability(dat2, type = "alpha", inttype = "parallel")
+	ci.reliability(dat2, type = "alpha", inttype = "feldt")
+	ci.reliability(dat2, type = "alpha", inttype = "siotani")
+	ci.reliability(dat2, type = "alpha", inttype = "fisher")
+	ci.reliability(dat2, type = "alpha", inttype = "bonett")
+	ci.reliability(dat2, type = "alpha", inttype = "hakstianwhalen")
+	ci.reliability(dat2, type = "alpha", inttype = "hakstianbarchard")
+	ci.reliability(dat2, type = "alpha", inttype = "intraclass correlation")
+	ci.reliability(dat2, type = "alpha", inttype = "normal-theory")
+	ci.reliability(dat2, type = "alpha", inttype = "normall")
+	#try(ci.reliability(dat2, type = "alpha", inttype = "mlr"))
+	#try(ci.reliability(dat2, type = "alpha", inttype = "mlrl"))
+	ci.reliability(dat2, type = "alpha", inttype = "adf")
+	ci.reliability(dat2, type = "alpha", inttype = "adfl")
+	ci.reliability(dat2, type = "alpha", inttype = "ll")
+	ci.reliability(dat2, type = "alpha", inttype = "bsi", B = 500)
+	ci.reliability(dat2, type = "alpha", inttype = "bsil", B = 500)
+	ci.reliability(dat2, type = "alpha", inttype = "perc", B = 500)
+	ci.reliability(dat2, type = "alpha", inttype = "bca", B = 500)
+	
+	ci.reliability(dat2, type = "aa", inttype = "none")
+	ci.reliability(dat2, type = "aa", inttype = "parallel")
+	ci.reliability(dat2, type = "aa", inttype = "feldt")
+	ci.reliability(dat2, type = "aa", inttype = "siotani")
+	ci.reliability(dat2, type = "aa", inttype = "fisher")
+	ci.reliability(dat2, type = "aa", inttype = "bonett")
+	ci.reliability(dat2, type = "aa", inttype = "hakstianwhalen")
+	ci.reliability(dat2, type = "aa", inttype = "hakstianbarchard")
+	ci.reliability(dat2, type = "aa", inttype = "intraclass correlation")
+	ci.reliability(dat2, type = "aa", inttype = "normal-theory")
+	ci.reliability(dat2, type = "aa", inttype = "normall")
+	ci.reliability(dat2, type = "aa", inttype = "mlr")
+	ci.reliability(dat2, type = "aa", inttype = "mlrl")
+	ci.reliability(dat2, type = "aa", inttype = "adf")
+	ci.reliability(dat2, type = "aa", inttype = "adfl")
+	ci.reliability(dat2, type = "aa", inttype = "ll")
+	ci.reliability(dat2, type = "aa", inttype = "bsi", B = 500)
+	ci.reliability(dat2, type = "aa", inttype = "bsil", B = 500)
+	ci.reliability(dat2, type = "aa", inttype = "perc", B = 500)
+	ci.reliability(dat2, type = "aa", inttype = "bca", B = 500)
+	
+	ci.reliability(dat2, type = "omega", inttype = "none")
+	#ci.reliability(dat2, type = "omega", inttype = "parallel")
+	ci.reliability(dat2, type = "omega", inttype = "feldt")
+	ci.reliability(dat2, type = "omega", inttype = "siotani")
+	ci.reliability(dat2, type = "omega", inttype = "fisher")
+	ci.reliability(dat2, type = "omega", inttype = "bonett")
+	ci.reliability(dat2, type = "omega", inttype = "hakstianwhalen")
+	ci.reliability(dat2, type = "omega", inttype = "hakstianbarchard")
+	ci.reliability(dat2, type = "omega", inttype = "intraclass correlation")
+	ci.reliability(dat2, type = "omega", inttype = "normal-theory")
+	ci.reliability(dat2, type = "omega", inttype = "normall")
+	ci.reliability(dat2, type = "omega", inttype = "mlr")
+	ci.reliability(dat2, type = "omega", inttype = "mlrl")
+	ci.reliability(dat2, type = "omega", inttype = "adf")
+	ci.reliability(dat2, type = "omega", inttype = "adfl")
+	ci.reliability(dat2, type = "omega", inttype = "ll")
+	ci.reliability(dat2, type = "omega", inttype = "bsi", B = 500)
+	ci.reliability(dat2, type = "omega", inttype = "bsil", B = 500)
+	ci.reliability(dat2, type = "omega", inttype = "perc", B = 500)
+	ci.reliability(dat2, type = "omega", inttype = "bca", B = 500)
+
+	ci.reliability(dat2, type = "h", inttype = "none")
+	ci.reliability(dat2, type = "h", inttype = "bsi", B = 500)
+	ci.reliability(dat2, type = "h", inttype = "bsil", B = 500)
+	ci.reliability(dat2, type = "h", inttype = "perc", B = 500)
+	ci.reliability(dat2, type = "h", inttype = "bca", B = 500)
+	
+	# Test with S and N only
+	
+	S <- cov(dat2)
+	N <- 300
+	
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "none")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "parallel")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "feldt")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "siotani")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "fisher")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "bonett")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "hakstianwhalen")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "hakstianbarchard")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "intraclass correlation")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "normal-theory")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "normall")
+	#ci.reliability(S = S, N = N, type = "alpha", inttype = "mlr")
+	#ci.reliability(S = S, N = N, type = "alpha", inttype = "mlrl")
+	#ci.reliability(S = S, N = N, type = "alpha", inttype = "adf")
+	#ci.reliability(S = S, N = N, type = "alpha", inttype = "adfl")
+	ci.reliability(S = S, N = N, type = "alpha", inttype = "ll")
+	
+	ci.reliability(S = S, N = N, type = "aa", inttype = "none")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "parallel")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "feldt")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "siotani")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "fisher")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "bonett")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "hakstianwhalen")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "hakstianbarchard")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "intraclass correlation")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "normal-theory")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "normall")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "mlr")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "mlrl")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "adf")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "adfl")
+	ci.reliability(S = S, N = N, type = "aa", inttype = "ll")
+	
+	ci.reliability(S = S, N = N, type = "omega", inttype = "none")
+	#try(ci.reliability(S = S, N = N, type = "omega", inttype = "parallel"))
+	ci.reliability(S = S, N = N, type = "omega", inttype = "feldt")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "siotani")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "fisher")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "bonett")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "hakstianwhalen")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "hakstianbarchard")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "intraclass correlation")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "normal-theory")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "normall")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "mlr")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "mlrl")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "adf")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "adfl")
+	ci.reliability(S = S, N = N, type = "omega", inttype = "ll")
+
+	ci.reliability(S = S, N = N, type = "h", inttype = "none")
+	
+	# With Missing Data
+	z <- rnorm(300, 0, 1)
+	pmiss <- 1/(1 + exp(-(-2 + z)))
+	miss <- rbinom(300, 1, pmiss)
+	dat3 <- dat2
+	dat3[as.logical(miss), "y5"] <- NA
+	dat3 <- data.frame(dat3, z)
+	
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "none")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "parallel")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "feldt")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "siotani")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "fisher")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "bonett")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "hakstianwhalen")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "hakstianbarchard")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "intraclass correlation")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "normal-theory")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "normall")
+	#try(ci.reliability(dat3, aux = "z", type = "alpha", inttype = "mlr"))
+	#try(ci.reliability(dat3, aux = "z", type = "alpha", inttype = "mlrl"))
+	#ci.reliability(dat3, aux = "z", type = "alpha", inttype = "adf")
+	#ci.reliability(dat3, aux = "z", type = "alpha", inttype = "adfl")
+	#ci.reliability(dat3, aux = "z", type = "alpha", inttype = "ll")
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "bsi", B = 500)
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "bsil", B = 500)
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "perc", B = 500)
+	ci.reliability(dat3, aux = "z", type = "alpha", inttype = "bca", B = 500)
+	
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "none")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "parallel")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "feldt")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "siotani")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "fisher")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "bonett")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "hakstianwhalen")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "hakstianbarchard")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "intraclass correlation")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "normal-theory")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "normall")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "mlr")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "mlrl")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "adf")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "adfl")
+	#ci.reliability(dat3, aux = "z", type = "aa", inttype = "ll")
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "bsi", B = 500)
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "bsil", B = 500)
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "perc", B = 500)
+	ci.reliability(dat3, aux = "z", type = "aa", inttype = "bca", B = 500)
+	
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "none")
+	#ci.reliability(dat3, aux = "z", type = "omega", inttype = "parallel")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "feldt")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "siotani")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "fisher")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "bonett")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "hakstianwhalen")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "hakstianbarchard")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "intraclass correlation")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "normal-theory")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "normall")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "mlr")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "mlrl")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "adf")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "adfl")
+	#ci.reliability(dat3, aux = "z", type = "omega", inttype = "ll")
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "bsi", B = 500)
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "bsil", B = 500)
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "perc", B = 500)
+	ci.reliability(dat3, aux = "z", type = "omega", inttype = "bca", B = 500)
+
+	ci.reliability(dat3, aux = "z", type = "h", inttype = "none")
+	ci.reliability(dat3, aux = "z", type = "h", inttype = "bsi", B = 500)
+	ci.reliability(dat3, aux = "z", type = "h", inttype = "bsil", B = 500)
+	ci.reliability(dat3, aux = "z", type = "h", inttype = "perc", B = 500)
+	ci.reliability(dat3, aux = "z", type = "h", inttype = "bca", B = 500)
+	
+}

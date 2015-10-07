@@ -21,7 +21,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 	betaNC <- as.matrix(est$beta[nameY, nameX]); colnames(betaNC) <- nameY
 
 	# Extract all varEst
-	varEst <- vcov(fit) 
+	varEst <- lavaan::vcov(fit) 
 	
 	# Check whether intercept are estimated
 	targetcol <- paste(nameY, "~", 1, sep="") 
@@ -156,7 +156,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 	resVarNC <- varY - (t(betaNCWithIntcept) %*% SSNC %*% betaNCWithIntcept)/numobs + meanY^2 
 
 	# Extract all varEst
-	varEst <- vcov(fit) 
+	varEst <- lavaan::vcov(fit) 
 	
 	# Check whether intercept are estimated
 	targetcol <- paste(nameY, "~", 1, sep="") 
@@ -241,7 +241,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	betaNC <- as.matrix(est$beta[nameY, nameX]); colnames(betaNC) <- nameY
 
 	# Extract all varEst
-	varEst <- vcov(fit)
+	varEst <- lavaan::vcov(fit)
 	
 	# Check whether intercept are estimated
 	targetcol <- paste(nameY, "~", 1, sep="")
@@ -426,7 +426,7 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	resVarNC <- varY - (t(betaNCWithIntcept) %*% SSNC %*% betaNCWithIntcept)/numobs + meanY^2
 
 	# Extract all varEst
-	varEst <- vcov(fit)
+	varEst <- lavaan::vcov(fit)
 	
 	# Check whether intercept are estimated
 	targetcol <- paste(nameY, "~", 1, sep="")

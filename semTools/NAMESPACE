@@ -1,7 +1,11 @@
-importFrom("methods", show)
-importFrom("lavaan", summary, inspect)
+importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
+importFrom("lavaan", summary, inspect, anova)
+importFrom("stats", 
+           cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, uniroot, lm, pnorm, pf, var, vcov, fitted.values, nobs, residuals, dist, ptukey, dchisq)
+importFrom("utils", 
+           capture.output, write.table, combn, read.table, read.csv)
+importFrom("graphics", hist, plot, par, abline, lines, legend)
 
-importFrom("graphics", hist)
 exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss, permuteMeasEq)
 exportMethods(hist)
 export(
@@ -35,5 +39,6 @@ export(
 	partialInvariance, partialInvarianceCat,
 	quark, combinequark,
 	spatialCorrect,
-	calculateDIF, permuteMeasEq
+	calculateDIF, permuteMeasEq,
+	ci.reliability
 )

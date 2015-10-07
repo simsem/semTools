@@ -134,8 +134,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 	result <- fixCon <- freeCon <- NULL
 	estimates <- NULL
 	listFreeCon <- listFixCon <- list()	
-	beta <- coef(fit1)
-	beta0 <- coef(fit0)
+	beta <- lavaan::coef(fit1)
+	beta0 <- lavaan::coef(fit0)
 	waldMat <- matrix(0, ngroups - 1, length(beta))	
 	if(numType == 1) {
 		if(!is.null(free) | !is.null(fix)) {
@@ -191,8 +191,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			namept0 <- paramNameFromPt(pt0)
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
-			beta <- coef(fit1)
-			beta0 <- coef(fit0)
+			beta <- lavaan::coef(fit1)
+			beta0 <- lavaan::coef(fit0)
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
@@ -233,9 +233,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
-				loadVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				loadVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[pos, 2:ncol(estimates)] <- loadVal
-				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
+				facVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
 				totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$rhs[runnum])
 				names(facVal) <- names(totalVal) <- grouplab
 				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
@@ -296,9 +296,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error")) freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
-				loadVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				loadVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[pos, 2:ncol(estimates)] <- loadVal
-				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
+				facVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
 				totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$rhs[runnum])
 				names(facVal) <- names(totalVal) <- grouplab
 				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
@@ -395,8 +395,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			namept0 <- paramNameFromPt(pt0)
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
-			beta <- coef(fit1)
-			beta0 <- coef(fit0)
+			beta <- lavaan::coef(fit1)
+			beta0 <- lavaan::coef(fit0)
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
@@ -447,7 +447,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
 				for(s in 2:numThreshold[varinfixvar[i]]) {
 					runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
-					thresVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+					thresVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 					estimates[pos, maxcolumns*(1:ngroups) + (s - 1)] <- thresVal
 					totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$lhs[runnum])
 					ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
@@ -530,7 +530,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				if(!is(compresult0, "try-error"))  freeCon[pos,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
 				for(s in 2:numThreshold[varnonfixvar[i]]) {
 					runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
-					thresVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+					thresVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 					estimates[pos, maxcolumns*(1:ngroups) + (s - 1)] <- thresVal
 					totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$lhs[runnum])
 					ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
@@ -567,8 +567,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			namept0 <- paramNameFromPt(pt0)
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
-			beta <- coef(fit1)
-			beta0 <- coef(fit0)
+			beta <- lavaan::coef(fit1)
+			beta0 <- lavaan::coef(fit0)
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
@@ -602,7 +602,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[i,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
-				errVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				errVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[i, 2:ncol(estimates)] <- errVal
 				totalVal <- sapply(thetaImpliedTotalVar(tempfit0), function(x, v) x[v, v], v = pt0$rhs[runnum])
 				ifelse(poolvar, refTotalVal <- poolVariance(totalVal, neach), refTotalVal <- totalVal[refgroup])
@@ -643,8 +643,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			namept0 <- paramNameFromPt(pt0)
 			fit0 <- refit(pt0, fit0)
 			fit1 <- refit(pt1, fit1)
-			beta <- coef(fit1)
-			beta0 <- coef(fit0)
+			beta <- lavaan::coef(fit1)
+			beta0 <- lavaan::coef(fit0)
 			waldMat <- matrix(0, ngroups - 1, length(beta))
 			varfree <- setdiff(varfree, c(free, fix))
 		}
@@ -686,9 +686,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
 				if(!is(compresult0, "try-error"))  freeCon[i,] <- c(unlist(modelcomp0[2,5:7]), deltacfi(tempfit0, fit0))
-				meanVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
+				meanVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[i, 2:ncol(estimates)] <- meanVal
-				facVal <- getValue(temp0, coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
+				facVal <- getValue(temp0, lavaan::coef(tempfit0), pt0$lhs[runnum], "~~", pt0$lhs[runnum], 1:ngroups)
 				ifelse(poolvar, refFacVal <- poolVariance(facVal, neach), refFacVal <- facVal[refgroup])
 				stdMeanVal <- meanVal / sqrt(refFacVal)
 				stdestimates[i,] <- stdMeanVal

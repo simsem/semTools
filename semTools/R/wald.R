@@ -15,7 +15,7 @@ wald <- function(object, syntax) {
     idx <- which(nzchar(model))
     model <- model[idx]
 
-	beta <- coef(object)
+	beta <- lavaan::coef(object)
 	contrast <- matrix(0, length(model), length(beta))
 	
     for(i in 1:length(model)) {
@@ -69,8 +69,8 @@ wald <- function(object, syntax) {
 }
 
 waldContrast <- function(object, contrast) {
-	beta <- coef(object)
-	acov <- vcov(object)
+	beta <- lavaan::coef(object)
+	acov <- lavaan::vcov(object)
 	chisq <- t(contrast %*% beta) %*%  solve(contrast %*% as.matrix(acov) %*% t(contrast)) %*% (contrast %*% beta)
 	df <- nrow(contrast)
 	p <- pchisq(chisq, df, lower.tail=FALSE)

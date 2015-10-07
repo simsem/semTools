@@ -24,8 +24,8 @@ monteCarloMed<-function(expression, ..., ACM=NULL, object = NULL, rep=20000, CI=
 
   #If input is a lavaan object pull out coefs and ACM
   if(class(object)=="lavaan"){
-  input <- coef(object)[paramnames]
-  ACM <- vcov(object)[paramnames,paramnames]  
+  input <- lavaan::coef(object)[paramnames]
+  ACM <- lavaan::vcov(object)[paramnames,paramnames]  
   }
 
   vecs<-list()

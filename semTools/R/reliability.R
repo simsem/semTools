@@ -13,7 +13,7 @@ reliability <- function(object) {
 	te <- param[name == "theta"]
 	SigmaHat <- object@Fit@Sigma.hat
 	tau <- param[name = "tau"]
-	implied <- fitted.values(object)[name = "cov"]
+	implied <- lavaan::fitted.values(object)[name = "cov"]
 	categorical <- !is.null(tau[[1]])
 	threshold <- NULL
 	S <- object@SampleStats@cov

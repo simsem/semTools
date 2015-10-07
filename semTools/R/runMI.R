@@ -89,8 +89,8 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template@Fit@Sigma.hat <- meanSigmaHat
 	template@Fit@Mu.hat <- meanMuHat
 	comb.results <- miPoolVector(t(coefs),t(se), m)
-	template@Fit@est <- comb.results$coef
-	template@Fit@se <- comb.results$se
+	template@Fit@est <- template@ParTable$est <- comb.results$coef
+	template@Fit@se <- template@ParTable$se <- comb.results$se
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
 	template@Model <- imposeGLIST(template@Model, comb.results$coef, template@ParTable)
 	
