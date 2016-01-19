@@ -642,6 +642,11 @@ reliability(fit4) # Should provide a warning for coefficient alpha
 fit42 <- cfa(iq.model, data=dat, parameterization = "theta")
 reliability(fit42) # Should provide a warning for coefficient alpha
 
+dat <- data.frame(dat, group = c(rep(1, 1000), rep(2, 525)))
+fit4g <- cfa(iq.model, data=dat, group = "group")
+reliability(fit4g) # Should provide a warning for coefficient alpha
+
+
 HS.model2 <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ x7 + x8 + x9 

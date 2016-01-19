@@ -182,7 +182,7 @@ polycorLavaan <- function(object) {
 	if(ngroups == 1) {
 		targettaunames <- rownames(coef$tau)
 	} else {
-		targettaunames <- rownames(coef[[1]]$tau)
+		targettaunames <- rownames(coef[names(coef) == "tau"][[1]])
 	}
 	barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
 	varnames <- unique(apply(data.frame(targettaunames, barpos - 1), 1, function(x) substr(x[1], 1, x[2])))
@@ -196,7 +196,7 @@ polycorLavaan <- function(object) {
 	if(ngroups == 1) {
 		return(inspect(newobject, "coef")$theta)
 	} else {
-		return(lapply(inspect(newobject, "coef"), "[[", "theta"))
+		return(inspect(newobject, "coef")[names(coef) == "theta"])
 	}
 }
 
@@ -212,10 +212,10 @@ getThreshold <- function(object) {
 	} else {
 		result <- list()
 		for(g in 1:ngroups) {
-			targettaunames <- rownames(coef[[g]]$tau)
+			targettaunames <- rownames(coef[names(coef) == "tau"][[g]])
 			barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
 			varthres <- apply(data.frame(targettaunames, barpos - 1), 1, function(x) substr(x[1], 1, x[2]))
-			result[[g]] <- split(coef[[g]]$tau, varthres)
+			result[[g]] <- split(coef[names(coef) == "tau"][[g]], varthres)
 		}
 	}
 	return(result)
