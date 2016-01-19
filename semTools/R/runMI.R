@@ -206,7 +206,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 			fitNull[[1]]$pvalue <- as.numeric(mplusNull[3])
 		}
 	}
-	template@Fit@test <- fit
+	template@test <- fit
 	template@Fit@npar <- imputed.results.l[[1]]@Fit@npar
 	template@Options <- imputed.results.l[[1]]@Options
 	templateNull@Fit@test <- fitNull
