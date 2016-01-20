@@ -553,8 +553,31 @@ imputedData <- NULL
 for(i in 1:5) {
 imputedData[[i]] <- complete(x=imp, action=i, include=FALSE) 
 }
-  
-out4 <- runMI(model.syntax, data=imputedData, fun="growth")
+
+nullmodel.syntax <- '
+    t1 ~~ NA*t1
+    t2 ~~ NA*t2
+    t3 ~~ NA*t3
+    t4 ~~ NA*t4
+	t1 ~ 0*x1 + 0*x2
+	t2 ~ 0*x1 + 0*x2
+	t3 ~ 0*x1 + 0*x2
+	t4 ~ 0*x1 + 0*x2
+    t1 ~~ 0*t2 + 0*t3 + 0*t4
+    t2 ~~ 0*t3 + 0*t4
+    t3 ~~ 0*t4
+    t1 ~ a*1
+    t2 ~ a*1
+    t3 ~ a*1
+    t4 ~ a*1
+    # x1 ~~ NA*x1
+    # x2 ~~ NA*x2
+    # x1 ~~ NA*x2
+    # x1 ~~ NA*1
+    # x2 ~~ NA*1
+'
+
+out4 <- runMI(model.syntax, data=imputedData, fun="growth", nullModel = nullmodel.syntax)
 summary(out4)
 inspect(out4, "fit")
 inspect(out4, "impute")

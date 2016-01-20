@@ -12,15 +12,15 @@ This function takes data with missing observations, multiple imputes the data, r
 }
 \usage{
 runMI(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
-	seed=12345, fun, ...) 
+	seed=12345, fun, nullModel = NULL, ...) 
 cfa.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
-	seed=12345, ...)
+	seed=12345, nullModel = NULL, ...)
 sem.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all",  
-	seed=12345, ...)
+	seed=12345, nullModel = NULL, ...)
 growth.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
-	seed=12345, ...)
+	seed=12345, nullModel = NULL, ...)
 lavaan.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
-	seed=12345, ...)
+	seed=12345, nullModel = NULL, ...)
 }
 \arguments{
   \item{model}{
@@ -43,6 +43,9 @@ The method to combine the chi-square. Can be one of the following: \code{"mr"} f
 }
  \item{seed}{
 	Random number seed to be used in imputations.
+}
+ \item{nullModel}{
+lavaan syntax for the null model. If not specified, the default null model from lavaan is used.
 }
  \item{fun}{
 	The character of the function name used in running lavaan model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}). 

@@ -6,24 +6,24 @@
 
 ##Currently outputs a list of parameter estimates, standard errors, fit indices and fraction missing information
 
-cfa.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, ...) {
-	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="cfa", ...)
+cfa.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="cfa", nullModel = nullModel, ...)
 }
 
-sem.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, ...) {
-	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="sem", ...)
+sem.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="sem", nullModel = nullModel, ...)
 }
 
-growth.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, ...) {
-	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="growth", ...)
+growth.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="growth", nullModel = nullModel, ...)
 }
 
-lavaan.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, ...) {
-	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="lavaan", ...)
+lavaan.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="lavaan", nullModel = nullModel, ...)
 }
 
 
-runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", seed=12345, fun, ...) 
+runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", seed=12345, fun, nullModel = NULL, ...) 
 {
 	set.seed(seed)
 	chi <- tolower(chi)
@@ -59,7 +59,8 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	partableImp <- lavaan::partable(imputed.results.l[[1]])
 	posVar <- (partableImp$op == "~~") & (partableImp$lhs == partableImp$rhs)
 	convergedtemp <- converged.l
-	properSE <- apply(seAll, 2, function(x) all(x >= 0) & !(all(x == 0)))
+	properSE <- apply(seAll, 2, function(x) all(!is.na(x)) & all(x >= 0) & !(all(x == 0)))
+	
 	properVariance <- apply(coefAll[posVar, ,drop=FALSE], 2, function(x) all(x >= 0))
 	converged.l <- converged.l & properSE & properVariance
 	if(sum(converged.l) < 2) {
@@ -96,10 +97,10 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	
 	fmi.results <- cbind(lavaan::parameterEstimates(template, remove.eq = FALSE, remove.ineq = FALSE)[,1:3], group=template@ParTable$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
 
-	fit <- imputed.results.l[[1]]@Fit@test
+	fit <- imputed.results.l[[1]]@test
 	df <- fit[[1]]$df
   if (df == 0) chi <- "none" # for saturated models, no model fit available
-	chi1 <- sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat)
+	chi1 <- sapply(imputed.results.l, function(x) x@test[[1]]$stat)
 
 	if(any(template@Data@ov$type == "ordered") | (length(fit) > 1)) {
 		if(chi=="all") chi <- "lmrr"
@@ -111,34 +112,36 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	chiScaled1 <- NULL
 	dfScaled <- NULL
 	if(length(fit) > 1) {
-		chiScaled1 <- sapply(imputed.results.l, function(x) x@Fit@test[[2]]$stat)
+		chiScaled1 <- sapply(imputed.results.l, function(x) x@test[[2]]$stat)
 		dfScaled <- fit[[2]]$df
 	}
 	
 	if(template@SampleStats@ngroups == 1) {
-		fit[[1]]$stat.group <- mean(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
+		fit[[1]]$stat.group <- mean(sapply(imputed.results.l, function(x) x@test[[1]]$stat.group))
 	} else {
-		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@Fit@test[[1]]$stat.group))
+		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@test[[1]]$stat.group))
 	}
-	nullModel <- lavaan::lav_partable_independence(template)
+	if(is.null(nullModel)) nullModel <- lavaan::lav_partable_independence(template)
+	
+	
     null.results <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...))
 
 	convergedNull.l <- sapply(null.results, function(x) x@Fit@converged)
 	seNullAll <- sapply(null.results, function(x) x@Fit@se)
-	convergedNull.l <- convergedNull.l & apply(seNullAll, 2, function(x) all(x >= 0))
+	convergedNull.l <- convergedNull.l & apply(seNullAll, 2, function(x) all(!is.na(x) & (x >= 0)))
+	if(!any(convergedNull.l)) stop("No null model is converged")
 	
 	mNull <- sum(convergedNull.l)
 	convergenceNullRate <- mNull/mOriginal
 	null.results <- null.results[convergedNull.l]
-	
-	chiNull <- sapply(null.results, function(x) x@Fit@test[[1]]$stat)
-	dfNull <- null.results[[1]]@Fit@test[[1]]$df
+	chiNull <- sapply(null.results, function(x) x@test[[1]]$stat)
+	dfNull <- null.results[[1]]@test[[1]]$df
 	
 	chiNullScaled1 <- NULL
 	dfNullScaled <- NULL
 	if(length(fit) > 1) {
-		chiNullScaled1 <- sapply(null.results, function(x) x@Fit@test[[2]]$stat)
-		dfNullScaled <- null.results[[1]]@Fit@test[[2]]$df
+		chiNullScaled1 <- sapply(null.results, function(x) x@test[[2]]$stat)
+		dfNullScaled <- null.results[[1]]@test[[2]]$df
 	}
 	outNull <- list(model=nullModel, data=imputed.l[[1]], se="none", do.fit=FALSE)
 	outNull <- c(outNull, list(...))
@@ -148,7 +151,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	seNull <- sapply(null.results, function(x) x@Fit@se)
 	
 	comb.results.null <- miPoolVector(t(coefsNull),t(seNull), mNull)
-	fitNull <- null.results[[1]]@Fit@test
+	fitNull <- null.results[[1]]@test
 
 	
 	lmrr <- NULL
@@ -171,10 +174,10 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		if(!is.null(chiScaled1)) {
 			lmrrScaled <- lmrrPooledChi(chiScaled1, dfScaled)
 			lmrrScaledNull <- lmrrPooledChi(chiNullScaled1, dfNullScaled)
-			fit[[2]] <- imputed.results.l[[1]]@Fit@test[[2]]
+			fit[[2]] <- imputed.results.l[[1]]@test[[2]]
 			fit[[2]]$stat <- as.numeric(lmrrScaled[1] * lmrrScaled[2])
 			fit[[2]]$pvalue <- as.numeric(lmrrScaled[4])
-			fitNull[[2]] <- null.results[[1]]@Fit@test[[2]]
+			fitNull[[2]] <- null.results[[1]]@test[[2]]
 			fitNull[[2]]$stat <- as.numeric(lmrrScaledNull[1] * lmrrScaledNull[2])
 			fitNull[[2]]$pvalue <- as.numeric(lmrrScaledNull[4])
 			template@Options$estimator <- imputed.results.l[[1]]@Options$estimator 
@@ -209,7 +212,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template@test <- fit
 	template@Fit@npar <- imputed.results.l[[1]]@Fit@npar
 	template@Options <- imputed.results.l[[1]]@Options
-	templateNull@Fit@test <- fitNull
+	templateNull@test <- fitNull
 	result <- as(template, "lavaanStar")
     ## HACK! YR
     templateNull@Fit@converged <- TRUE ### ! to trick fitMeasures
