@@ -81,11 +81,17 @@ net <- function(..., crit = .0001) {
                paste(fitNames[notLavaan], collapse = "\t")))
   }
   
+  ## check whether any models include categorical outcomes
+  catMod <- sapply(fitList, function(x) x@Options$categorical)
+  if (any(catMod)) stop("This method only applies to continuous outcomes.")
+  
   ## get degrees of freedom for each model
   DFs <- sapply(fitList, function(x) inspect(x, "fit")["df"])
 
   ## name according to named objects, with DF in parentheses
-  fitNames <- sapply(as.list(substitute(list(...)))[-1], deparse)
+  fitNames <- names(fitList)
+  noName <- which(fitNames == "")
+  fitNames[noName] <- sapply(as.list(substitute(list(...)))[-1], deparse)[noName]
   names(fitList) <- paste(fitNames, " (df = ", DFs, ")", sep = "")
 
   ## sort list according to DFs
