@@ -7,7 +7,9 @@
 	This function quantifies and assesses the consequences of parcel-allocation variability for model ranking of structural equation models (SEMs) that differ in their structural specification but share the same parcel-level measurement specification (see Sterba & Rights, 2016). This function is a modified version of \code{\link{parcelAllocation}} which can be used with only one SEM in isolation. The PAVranking function repeatedly generates a specified number of random item-to-parcel allocations, and then fits two models to each allocation. Output includes summary information about the distribution of model selection results (including plots) and the distribution of results for each model individually, across allocations within-sample. Note that this function can be used when selecting among more than two competing structural models as well (see instructions below involving randomseed).
 }
 \usage{
-PAVranking(nPerPar, facPlc, nAlloc=100, parceloutput, syntaxA, syntaxB, dataset, names=matrix(NA,length(nPerPar),1), leaveout=0, randomseed=NA, ...) 
+PAVranking(nPerPar, facPlc, nAlloc=100, parceloutput, syntaxA, 
+   syntaxB, dataset, names=matrix(NA,length(nPerPar),1), 
+   leaveout=0, seed=NA, ...) 
 }
 \arguments{
   \item{nPerPar}{
@@ -31,8 +33,8 @@ PAVranking(nPerPar, facPlc, nAlloc=100, parceloutput, syntaxA, syntaxB, dataset,
   \item{parceloutput}{
 	folder where parceled data sets will be outputted (note for Windows users: file path must  specified using forward slashes).
   }
-  \item{randomseed}{
-	(Optional) Random seed used for parceling items. When the same random seed is specified and the program is re-run, the same allocations will be generated. The randomseed argument can be used to assess parcel-allocation variability in model ranking when considering more than two models. For each pair of models under comparison, the program should be rerun using the same random seed. Doing so ensures that multiple model comparisons will employ the same set of parcel datasets.
+  \item{seed}{
+	(Optional) Random seed used for parceling items. When the same random seed is specified and the program is re-run, the same allocations will be generated. The seed argument can be used to assess parcel-allocation variability in model ranking when considering more than two models. For each pair of models under comparison, the program should be rerun using the same random seed. Doing so ensures that multiple model comparisons will employ the same set of parcel datasets.
   }
   \item{names}{
 	(Optional) A character vector containing the names of parceled variables.
