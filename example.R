@@ -592,7 +592,7 @@ y4 | -0.5*t1
 "
 
 analyzeModel <- "
-f1 =~ y1 + y2 + y3 + y4
+f1 =~ y1 + k*y2 + k*y3 + y4
 "
 
 dat <- simulateData(popModel, sample.nobs  = 200L)
@@ -602,6 +602,114 @@ out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, miArgs=l
 summary(out5)
 inspect(out5, "fit")
 inspect(out5, "impute")
+
+# Invariance test
+
+library(simsem)
+set.seed(123321)
+loading.in <- matrix(0, 8, 2)
+loading.in[1:4, 1] <- paste0("load", 1:4)
+loading.in[5:8, 2] <- paste0("load", 5:8)
+LY.in <- bind(loading.in, 0.7)
+
+latent.cor <- matrix(NA, 2, 2)
+diag(latent.cor) <- 1
+RPS <- binds(latent.cor, 0.5)
+
+RTE <- binds(diag(8))
+
+VTE <- bind(rep(NA, 8), 0.51)
+
+TY.in <- bind(paste0("int", 1:8), 0)
+
+VPS1 <- bind(rep(1, 2))
+VPS2 <- bind(rep(NA, 2), c(1.1, 1.2))
+
+AL1 <- bind(rep(0, 2))
+AL2 <- bind(rep(NA, 2), c(-0.5, 0.2))
+
+strong <- model(LY = LY.in, RPS = RPS, VPS=list(VPS1, VPS2), RTE = RTE, VTE=VTE, TY=TY.in, AL=list(AL1, AL2), ngroups=2, modelType = "CFA")
+
+dat <- generate(strong,1000)
+dat2 <- dat
+dat5 <- dat
+
+for(i in 1:8) {
+dat2[,i] <- as.numeric(cut(dat[,i], breaks=c(-Inf, 0, Inf)))
+dat5[,i] <- as.numeric(cut(dat[,i], breaks=c(-Inf, -1.5, -0.5, 0.5, 1.5, Inf)))
+}
+
+colnames(dat5) <- c("u1", "u2", "u3", "u4", "u5", "u6", "u7", "u8", "g")
+for(i in 1:8) dat5[,i] <- ordered(dat5[,i])
+dat5[,9] <- factor(dat5[,9], labels = c("male", "female"))
+
+dat5[,paste0("u", c(1, 4, 7))] <- imposeMissing(dat5[,paste0("u", c(1, 4, 7))], pmMCAR=0.2)
+
+
+imp <- mice(dat5,m=5,print=F)
+
+imputedData <- NULL
+for(i in 1:5) {
+imputedData[[i]] <- complete(x=imp, action=i, include=FALSE) 
+}
+
+
+configural5 <- "
+f1 =~ c(1, 1)*u1 + u2 + u3 + u4
+f2 =~ c(1, 1)*u5 + u6 + u7 + u8
+u1 | c(t11, t11)*t1 + c(t12, t12)*t2 + t3 + t4
+u2 | c(t21, t21)*t1 + t2 + t3 + t4
+u3 | c(t31, t31)*t1 + t2 + t3 + t4
+u4 | c(t41, t41)*t1 + t2 + t3 + t4
+u5 | c(t51, t51)*t1 + c(t52, t52)*t2 + t3 + t4
+u6 | c(t61, t61)*t1 + t2 + t3 + t4
+u7 | c(t71, t71)*t1 + t2 + t3 + t4
+u8 | c(t81, t81)*t1 + t2 + t3 + t4
+f1 ~~ NA*f1
+f2 ~~ NA*f2
+f1 ~~ NA*f2
+f1 ~ c(0, NA)*1
+f2 ~ c(0, NA)*1
+u1 ~~ c(1, NA)*u1
+u2 ~~ c(1, NA)*u2
+u3 ~~ c(1, NA)*u3
+u4 ~~ c(1, NA)*u4
+u5 ~~ c(1, NA)*u5
+u6 ~~ c(1, NA)*u6
+u7 ~~ c(1, NA)*u7
+u8 ~~ c(1, NA)*u8
+"
+
+outConfigural5 <- cfa.mi(configural5, data = imputedData, group = "g", parameterization="theta", estimator="wlsmv")
+
+weak5 <- "
+f1 =~ c(1, 1)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4
+f2 =~ c(1, 1)*u5 + c(f62, f62)*u6 + c(f72, f72)*u7 + c(f82, f82)*u8
+u1 | c(t11, t11)*t1 + c(t12, t12)*t2 + t3 + t4
+u2 | c(t21, t21)*t1 + t2 + t3 + t4
+u3 | c(t31, t31)*t1 + t2 + t3 + t4
+u4 | c(t41, t41)*t1 + t2 + t3 + t4
+u5 | c(t51, t51)*t1 + c(t52, t52)*t2 + t3 + t4
+u6 | c(t61, t61)*t1 + t2 + t3 + t4
+u7 | c(t71, t71)*t1 + t2 + t3 + t4
+u8 | c(t81, t81)*t1 + t2 + t3 + t4
+f1 ~~ NA*f1
+f2 ~~ NA*f2
+f1 ~~ NA*f2
+f1 ~ c(0, NA)*1
+f2 ~ c(0, NA)*1
+u1 ~~ c(1, NA)*u1
+u2 ~~ c(1, NA)*u2
+u3 ~~ c(1, NA)*u3
+u4 ~~ c(1, NA)*u4
+u5 ~~ c(1, NA)*u5
+u6 ~~ c(1, NA)*u6
+u7 ~~ c(1, NA)*u7
+u8 ~~ c(1, NA)*u8
+"
+
+outWeak5 <- cfa.mi(weak5, data = imputedData, group = "g", parameterization="theta", estimator="wlsmv")
+
 
 ############### FMI function
 
