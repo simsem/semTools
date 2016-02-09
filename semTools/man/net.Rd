@@ -19,8 +19,7 @@ net(..., crit = .0001)
 }
 \details{
 	The concept of nesting/equivalence should be the same regardless of estimation method. However, the particular method of testing nesting/equivalence (as described in Bentler & Satorra, 2010) employed by the net function is based on a limited-information estimator (analyzing model-implied means and covariance matrices, not raw data). In the case of robust methods like MLR, the raw data is only utilized for the robust adjustment to SE and chi-sq, and the net function only checks the unadjusted chi-sq for the purposes of testing nesting/equivalence. 
-	However, the WLS and DWLS estimators for categorical data need to estimate thresholds from raw data, not from summary information. After fitting a model with thresholds constrained to equality across groups, those thresholds could not be fed to lavaan as data (along with polychoric correlation matrix and weight matrix) to see whether it is nested within a less constrained model in which thresholds can differ between groups -- the thresholds could not be estimated from the prespecified thresholds of the more constrained model.
-	To check whether the covariance structure parts of categorical-data models are nested, use ML estimation (although the point and SE estimates should not be trusted, the net function can still test parametric nesting). In most situations, logic should suffice to determine whether the models are also nested in terms of the threshold parameters.
+	This method does not apply to models that estimate thresholds for categorical data, so an error message will be issued if such a model is provided.
 }
 \value{
 	The \linkS4class{Net} object representing the outputs for nesting and equivalent testing, including a logical matrix of test results and a vector of degrees of freedom for each model.
