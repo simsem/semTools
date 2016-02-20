@@ -60,7 +60,7 @@ Cohen, J. (1992). A power primer. \emph{Psychological Bulletin, 112}, 155-159.
 Saris, W. E., Satorra, A., & van der Veld, W. M. (2009). Testing structural equation models or detection of misspecifications? \emph{Structural Equation Modeling, 16}, 561-582.
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
 	\code{\link{moreFitIndices}} For the additional fit indices information

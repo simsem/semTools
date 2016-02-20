@@ -16,7 +16,7 @@ export(
 	runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi, fmi,
 	plotRMSEApower, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, SSpower,
 	findRMSEApowernested, findRMSEAsamplesizenested, plotRMSEApowernested,
-	parcelAllocation, 
+	parcelAllocation, PAVranking, 
 	monteCarloMed, 
 	splitSample, mvrnonnorm,
 	indProd, 

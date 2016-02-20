@@ -39,7 +39,7 @@ Note that this function does not adjust for the inflated Type I error rate from 
 	If \code{return.fit = TRUE}, a list with two elements are provided. The first element is the tabular result. The second element is the submodels used in the \code{free} and \code{fix} methods. 
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 library(lavaan)

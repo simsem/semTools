@@ -68,7 +68,7 @@ Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the measur
 }
 \author{
     Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be}); 
-	Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+	Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
 	\code{\link{longInvariance}} for the measurement invariance test within person; \code{partialInvariance} for the automated function for finding partial invariance models

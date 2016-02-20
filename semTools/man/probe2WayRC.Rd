@@ -41,7 +41,7 @@ Pornprasertmanit, S., Schoemann, A. M., Geldhof, G. J., & Little, T. D. (submitt
 
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
 	\itemize{

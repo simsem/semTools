@@ -36,7 +36,7 @@ efaUnrotate(data, nf, varList=NULL, start=TRUE, aux=NULL, ...)
 	A \code{lavaan} output of unrotated exploratory factor analysis solution.
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")

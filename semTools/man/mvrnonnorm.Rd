@@ -24,7 +24,7 @@ mvrnonnorm(n, mu, Sigma, skewness = NULL, kurtosis = NULL, empirical = FALSE)
 Vale, C. D. & Maurelli, V. A. (1983) Simulating multivariate nonormal distributions. \emph{Psychometrika, 48}, 465-471.
 }
 \author{
-    The original function is the \code{simulateData} function written by Yves Rosseel in the \code{lavaan} package. The function is adjusted for a convenient usage by Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    The original function is the \code{simulateData} function written by Yves Rosseel in the \code{lavaan} package. The function is adjusted for a convenient usage by Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 mvrnonnorm(100, c(1, 2), matrix(c(10, 2, 2, 5), 2, 2), 

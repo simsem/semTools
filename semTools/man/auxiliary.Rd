@@ -41,7 +41,7 @@ Enders, C. K. (2008). A note of the use of missing auxiliary variables in full i
 	\code{\linkS4class{lavaanStar}}
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 # Example of confirmatory factor analysis

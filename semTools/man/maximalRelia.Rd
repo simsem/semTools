@@ -50,7 +50,7 @@ Li, H. (1997). A unifying expression for the maximal reliability of a linear com
 Raykov, T. (2012). Scale construction and development using structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of structural equation modeling} (pp. 472-494). New York: Guilford. 
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
 	\code{\link{reliability}} for reliability of an unweighted composite score

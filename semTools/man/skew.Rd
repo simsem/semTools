@@ -50,7 +50,7 @@ Weisstein, Eric W. (n.d.). \emph{Skewness.} Retrived from MathWorld--A Wolfram W
 	}
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 skew(1:5)

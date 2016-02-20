@@ -1,9 +1,11 @@
 
-PAVranking <- function(nPerPar, facPlc, nAlloc=100, parceloutput=0, syntaxA, syntaxB, dataset, names = matrix(NA,length(nPerPar),1), leaveout=0, seed=NA, ...) {
+PAVranking <- function(nPerPar, facPlc, nAlloc=100, parceloutput=0, syntaxA, syntaxB, dataset, names = NULL, leaveout=0, seed=NA, ...) {
   if(is.character(dataset)){
     dataset <- read.csv(dataset)
   }  
 
+  if(is.null(names)) names <- matrix(NA,length(nPerPar), 1)
+  
   if (is.na(seed)==FALSE) set.seed(seed)
   ## set random seed if specified 
   
@@ -18,44 +20,44 @@ isProperSolution <- function(object) {
     lavfit <- object@Fit
     lavdata <- object@Data
     lavmodel <- object@Model
-    lavsamplestats <- object@SampleStats
-    vnames <- lavaan:::vnames
-
-
+  
 
        # 1. check for Heywood cases, negative (residual) variances, ...
         var.idx <- which(lavpartable$op == "~~" &
-                         #!lavpartable$lhs %in% unlist(lavpta$vnames$ov.ord) &
                          lavpartable$lhs == lavpartable$rhs)
         if(length(var.idx) > 0L && any(lavfit@est[var.idx] < 0.0))
             return(FALSE)
 
         # 2. is cov.lv (PSI) positive definite?
-        if(length(vnames(lavpartable, type="lv.regular")) > 0L) {
-            ETA <- lavaan:::computeVETA(lavmodel, lavsamplestats = lavsamplestats)
+        if(length(lavaan::lavaanNames(lavpartable, type="lv.regular")) > 0L) {
+            ETA <- list(lavaan::lavInspect(object,"cov.lv"))
             for(g in 1:lavdata@ngroups) {
                 eigvals <- eigen(ETA[[g]], symmetric=TRUE,
                                  only.values=TRUE)$values
                 if(any(eigvals < -1 * .Machine$double.eps^(3/4)))
                    return(FALSE)
             }
-        }
+            
+            }
+        
 
         # 3. is THETA positive definite (but only for numeric variables)
-        THETA <- lavaan:::computeTHETA(lavmodel)
+        THETA <- list(lavaan::lavInspect(object,"theta"))
+        
         for(g in 1:lavdata@ngroups) {
                 num.idx <- lavmodel@num.idx[[g]]
                 if(length(num.idx) > 0L) {
-                    eigvals <- eigen(THETA[[g]][num.idx,num.idx,drop=FALSE],
+                    eigvals <- eigen(THETA[[g]][unlist(num.idx),unlist(num.idx),drop=FALSE],
                                      symmetric=TRUE,
                                      only.values=TRUE)$values
                     if(any(eigvals < -1 * .Machine$double.eps^(3/4))) {
                        return(FALSE)
-                    }
+                     }
                 }
         }
-
-    TRUE
+ 
+        
+   TRUE
 
 }  
   
@@ -301,13 +303,13 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
   for (i in 1:nAlloc){
     data_A <- as.data.frame(Allocations[[i]], row.names = NULL, optional = FALSE)
     ## convert allocation matrix to dataframe for model estimation 
-	fit_A <- sem(syntaxA, data=data_A, ...)
+	fit_A <- lavaan::sem(syntaxA, data=data_A, ...)
     ## estimate model in lavaan
 	if (inspect(fit_A, "converged")==TRUE){
 	Converged_A[[i]] <- 1
 	} else Converged_A[[i]] <- 0
     ## determine whether or not each allocation converged
-	Param_A[[i]] <- parameterEstimates(fit_A)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
+	Param_A[[i]] <- lavaan::parameterEstimates(fit_A)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
     ## assign allocation parameter estimates to list
 	if (isProperSolution(fit_A)==TRUE & Converged_A[[i]]==1){
 	ProperSolution_A[[i]] <- 1
@@ -324,7 +326,7 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
 	## make parameter estimates null for nonconverged, improper solutions
 	
     if (ConvergedProper_A[[i]]==1) {
-	Fitind_A[[i]] <- fitMeasures(fit_A,  c("chisq", "df", "cfi", "tli", "rmsea", "srmr", "logl", "bic", "aic"))
+	Fitind_A[[i]] <- lavaan::fitMeasures(fit_A,  c("chisq", "df", "cfi", "tli", "rmsea", "srmr", "logl", "bic", "aic"))
     } else Fitind_A[[i]] <- c(NA,NA,NA,NA,NA,NA,NA,NA,NA)
 	### assign allocation parameter estimates to list
 	
@@ -478,13 +480,13 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
   for (i in 1:nAlloc){
     data <- as.data.frame(Allocations[[i]], row.names = NULL, optional = FALSE)
     ## convert allocation matrix to dataframe for model estimation 
-    fit <- sem(syntaxB, data=data, ...)
+    fit <- lavaan::sem(syntaxB, data=data, ...)
     ## estimate model in lavaan
 	if (inspect(fit, "converged")==TRUE){
 	Converged[[i]] <- 1
 	} else Converged[[i]] <- 0
 	## determine whether or not each allocation converged
-	Param[[i]] <- parameterEstimates(fit)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
+	Param[[i]] <- lavaan::parameterEstimates(fit)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
     ## assign allocation parameter estimates to list
     if (isProperSolution(fit)==TRUE & Converged[[i]]==1) {
 	ProperSolution[[i]] <- 1
@@ -501,7 +503,7 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
 	## make parameter estimates null for nonconverged, improper solutions
 	
     if (ConvergedProper[[i]]==1) {
-	Fitind[[i]] <- fitMeasures(fit,  c("chisq", "df", "cfi", "tli", "rmsea", "srmr", "logl", "bic", "aic"))
+	Fitind[[i]] <- lavaan::fitMeasures(fit,  c("chisq", "df", "cfi", "tli", "rmsea", "srmr", "logl", "bic", "aic"))
     } else Fitind[[i]] <- c(NA,NA,NA,NA,NA,NA,NA,NA,NA)
 	### assign allocation parameter estimates to list 
 	
@@ -687,17 +689,17 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
   
   data <- as.data.frame(Allocations[[i]], row.names = NULL, optional = FALSE)
   ## convert allocation matrix to dataframe for model estimation 
-  fit_A <- sem(syntaxA, data=data, ...)
+  fit_A <- lavaan::sem(syntaxA, data=data, ...)
   ## estimate model A in lavaan
-  fit <- sem(syntaxB, data=data, ...)
+  fit <- lavaan::sem(syntaxB, data=data, ...)
   ## estimate model B in lavaan
-  lrtest_AB[[i]] <- lrtest(fit_A,fit)
+  lrtest_AB[[i]] <- lavaan::lavTestLRT(fit_A,fit)
   ## likelihood ratio test comparing A and B
   lrtestd_AB <- as.data.frame(lrtest_AB[[i]], row.names = NULL, optional = FALSE)
   ## convert lrtest results to dataframe
-  lrchisq_AB[[i]] <- lrtestd_AB[2,4]
+  lrchisq_AB[[i]] <- lrtestd_AB[2,5]
   ## write lrtest chisq as single numeric variable
-  lrchisqp_AB[[i]] <- lrtestd_AB[2,5]
+  lrchisqp_AB[[i]] <- lrtestd_AB[2,7]
   ## write lrtest p-value as single numeric variable
   if (lrchisqp_AB[[i]]<.05) {
   lrsig_AB[[i]] <- 1

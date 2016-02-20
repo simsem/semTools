@@ -66,7 +66,7 @@ Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of latent
 Preacher, K. J., Curran, P. J., & Bauer, D. J. (2006). Computational tools for probing interactions in multiple linear regression, multilevel modeling, and latent curve analysis. \emph{Journal of Educational and Behavioral Statistics, 31}, 437-448.
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
 	\itemize{

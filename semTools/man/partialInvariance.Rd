@@ -60,7 +60,7 @@ The details of standardized estimates and the effect size used for each paramete
 Millsap, R. E., & Olivera-Aguilar, M. (2012). Investigating measurement invariance using confirmatory factor analysis. In R. H. Hoyle (Ed.), \emph{Handbook of structural equation modeling} (pp. 380-392). New York: Guilford.
 }
 \author{
-	Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+	Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
 	\code{\link{measurementInvariance}} for measurement invariance for continuous variables; \code{\link{measurementInvarianceCat}} for measurement invariance for categorical variables; \code{\link{wald}} for multivariate Wald test

@@ -26,7 +26,7 @@
   }
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
 \code{\link{compareFit}}; \code{\link{clipboard}}

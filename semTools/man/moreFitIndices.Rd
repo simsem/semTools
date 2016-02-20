@@ -78,7 +78,7 @@ Preacher, K. J. (2006). Quantifying parsimony in structural equation modeling. \
 West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of Structural Equation Modeling.} New York: Guilford.
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
     Terrence Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
     Aaron Boulton (University of North Carolina, Chapel Hill; \email{aboulton@email.unc.edu})
     Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})

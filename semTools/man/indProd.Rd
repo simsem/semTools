@@ -52,7 +52,7 @@ orthogonalize(data, var1, var2, var3=NULL, match=TRUE, namesProd=NULL)
 	Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of orthogonalizing powered and product terms: Implications for modeling interactions among latent variables. \emph{Structural Equation Modeling, 13}, 497-519.
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 	Alexander Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 }
 \seealso{

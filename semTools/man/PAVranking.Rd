@@ -7,8 +7,8 @@
 	This function quantifies and assesses the consequences of parcel-allocation variability for model ranking of structural equation models (SEMs) that differ in their structural specification but share the same parcel-level measurement specification (see Sterba & Rights, 2016). This function is a modified version of \code{\link{parcelAllocation}} which can be used with only one SEM in isolation. The PAVranking function repeatedly generates a specified number of random item-to-parcel allocations, and then fits two models to each allocation. Output includes summary information about the distribution of model selection results (including plots) and the distribution of results for each model individually, across allocations within-sample. Note that this function can be used when selecting among more than two competing structural models as well (see instructions below involving randomseed).
 }
 \usage{
-PAVranking(nPerPar, facPlc, nAlloc=100, parceloutput, syntaxA, 
-   syntaxB, dataset, names=matrix(NA,length(nPerPar),1), 
+PAVranking(nPerPar, facPlc, nAlloc=100, parceloutput = 0,
+   syntaxA, syntaxB, dataset, names = NULL, 
    leaveout=0, seed=NA, ...) 
 }
 \arguments{
@@ -60,12 +60,13 @@ NOTE: Libraries required for this function are: \code{lavaan} and \code{lmtest}.
 \item{LRT Summary, Model A vs. Model B}{A table with columns corresponding to: average likelihood ratio test (LRT) statistic for comparing Model A vs. Model B (null hypothesis is no difference in fit between Models A and B in the population), degrees of freedom (i.e. difference in the number of free parameters between Models A and B), as well as the standard deviation, maximum, and minimum of LRT statistics across allocations, and the percent of allocations where the LRT was significant (indicating preference for the more complex Model B). }
 \item{LRT Summary, Model A vs. Model B}{A table with columns corresponding to: average likelihood ratio test (LRT) statistic for comparing Model A vs. Model B (null hypothesis is no difference in fit between Models A and B in the population), degrees of freedom (i.e. difference in the number of free parameters between Models A and B), as well as the standard deviation, maximum, and minimum of LRT statistics across allocations, and the percent of allocations where the LRT was significant (indicating preference for the more complex Model B). }
 \item{Fit index differences}{A table containing percentage of allocations where Model A is preferred over Model B according to BIC, AIC, RMSEA, CFI, TLI and SRMR and where Model B is preferred over Model A according to the same indices. Also includes the average amount by which the given model is preferred (calculated only using allocations where it was preferred).}
-\item{Fit index difference histograms}{Histograms are automatically outputted showing the distribution of the differences (Model A – Model B) for each fit index and for the p-value of the likelihood ratio difference test.}
-\item{Percent of Allocations with | BIC Diff |  > 10}{A table containing the percentage of allocations with (BIC for Model A) – (BIC for Model B) < -10, indicating "very strong evidence" to prefer Model A over Model B and the percentage of allocations with (BIC for Model A) – (BIC for Model B) > 10, indicating "very strong evidence" to prefer Model B over Model A (Raftery, 1995).}
+\item{Fit index difference histograms}{Histograms are automatically outputted showing the distribution of the differences (Model A - Model B) for each fit index and for the p-value of the likelihood ratio difference test.}
+\item{Percent of Allocations with | BIC Diff |  > 10}{A table containing the percentage of allocations with (BIC for Model A) - (BIC for Model B) < -10, indicating "very strong evidence" to prefer Model A over Model B and the percentage of allocations with (BIC for Model A) - (BIC for Model B) > 10, indicating "very strong evidence" to prefer Model B over Model A (Raftery, 1995).}
 \item{Converged and proper}{A table containing the proportion of allocations that converged for Model A, Model B, and both models, and the proportion of allocations with converged and proper solutions for Model A, Model B, and both models.}
 }
 \references{
 Enders, C. K. (2008). A note of the use of missing auxiliary variables in full information maximum likelihood-based structural equation models. \emph{Structural Equation Modeling, 15}, 434-448.
+Sterba, S., & Rights, J. D. (2016). Effects of Parceling on Model Selection: Parcel-Allocation Variability in Model Ranking. \emph{Psychological Methods}. 
 }
 \seealso{
 	\code{\linkS4class{lavaanStar}}
@@ -77,67 +78,62 @@ Enders, C. K. (2008). A note of the use of missing auxiliary variables in full i
 }
 \examples{
 \dontrun{
-##Lavaan syntax for Model A: a 2 Uncorrelated factor CFA model to be fit to parceled data
-parmodelA <- '
-f1 =~ NA*p1f1+p2f1+p3f1+p4f1+p5f1 
-f2 =~ NA*p1f2+p2f2+p3f2+p4f2+p5f2
-p1f1~1 
-p2f1~1
-p3f1~1
-p4f1~1
-p5f1~1
-p1f2~1
-p2f2~1
-p3f2~1
-p4f2~1
-p5f2~1
-p1f1~~p1f1 
-p2f1~~p2f1
-p3f1~~p3f1
-p4f1~~p4f1
-p5f1~~p5f1
-p1f2~~p1f2
-p2f2~~p2f2
-p3f2~~p3f2
-p4f2~~p4f2
-p5f2~~p5f2
-f1~~1*f1
-f2~~1*f2
-f1~~0*f2' 
+## Lavaan syntax for Model A: a 2 Uncorrelated 
+## factor CFA model to be fit to parceled data
 
-##Lavaan syntax for Model B: a 2 Correlated factor CFA model to be fit to parceled data
+parmodelA <- '
+   f1 =~ NA*p1f1+p2f1+p3f1
+   f2 =~ NA*p1f2+p2f2+p3f2
+   p1f1~1  
+   p2f1~1
+   p3f1~1
+   p1f2~1
+   p2f2~1
+   p3f2~1
+   p1f1~~p1f1 
+   p2f1~~p2f1
+   p3f1~~p3f1
+   p1f2~~p1f2
+   p2f2~~p2f2
+   p3f2~~p3f2
+   f1~~1*f1
+   f2~~1*f2
+   f1~~0*f2
+'
+
+## Lavaan syntax for Model B: a 2 Correlated 
+## factor CFA model to be fit to parceled data
+
 parmodelB <- '
-f1 =~ NA*p1f1+p2f1+p3f1+p4f1+p5f1 
-f2 =~ NA*p1f2+p2f2+p3f2+p4f2+p5f2
-p1f1~1 
-p2f1~1
-p3f1~1
-p4f1~1
-p5f1~1
-p1f2~1
-p2f2~1
-p3f2~1
-p4f2~1
-p5f2~1
-p1f1~~p1f1 
-p2f1~~p2f1
-p3f1~~p3f1
-p4f1~~p4f1
-p5f1~~p5f1
-p1f2~~p1f2
-p2f2~~p2f2
-p3f2~~p3f2
-p4f2~~p4f2
-p5f2~~p5f2
-f1~~1*f1
-f2~~1*f2
-f1~~f2' 
+   f1 =~ NA*p1f1+p2f1+p3f1
+   f2 =~ NA*p1f2+p2f2+p3f2
+   p1f1~1
+   p2f1~1
+   p3f1~1
+   p1f2~1
+   p2f2~1
+   p3f2~1 
+   p1f1~~p1f1 
+   p2f1~~p2f1
+   p3f1~~p3f1
+   p1f2~~p1f2
+   p2f2~~p2f2
+   p3f2~~p3f2
+   f1~~1*f1
+   f2~~1*f2
+   f1~~f2
+'
 
 ##specify items for each factor
-f1name <- colnames(exampledata)[1:15]  
-f2name <- colnames(exampledata)[16:30]
+f1name <- colnames(simParcel)[1:9]  
+f2name <- colnames(simParcel)[10:18]
 
 ##run function
-PAVranking(nPerPar=list(c(3,3,3,3,3),c(3,3,3,3,3)), facPlc=list(f1name,f2name), nAlloc=100, syntaxA=parmodelA, parceloutput=0, syntaxB=parmodelB, dataset=exampledata, names=list("p1f1","p2f1","p3f1","p4f1","p5f1","p1f2","p2f2","p3f2","p4f2","p5f2"))
+PAVranking(nPerPar=list(c(3,3,3),c(3,3,3)), 
+  facPlc=list(f1name,f2name), nAlloc=100, 
+  parceloutput=0, syntaxA=parmodelA, 
+  syntaxB=parmodelB, dataset = simParcel, 
+  names=list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"),
+  leaveout=0)
 }
 }

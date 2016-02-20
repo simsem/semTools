@@ -128,7 +128,7 @@ of Cronbach's alpha. \emph{Psychometrika, 65} (3), 271-280.
 Yuan, K. & Bentler, P. M. (2002) On robustness of the normal-theory based asymptotic distributions of three
 reliability coefficient estimates. \emph{Psychometrika, 67} (2), 251-259.
 }
-\author{Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu}). The previous version was written by Keke Lai (University of California, Merced; \email{klai25@ucmerced.edu}), Leann J. Terry, and Ken Kelley (University of Notre Dame; \email{kkelley@nd.edu}); }
+\author{Sunthud Pornprasertmanit (\email{psunthud@gmail.com}). The previous version was written by Keke Lai (University of California, Merced; \email{klai25@ucmerced.edu}), Leann J. Terry, and Ken Kelley (University of Notre Dame; \email{kkelley@nd.edu}); }
 \examples{
 # Use this function for the attitude dataset (ignoring the overall rating variable)
 ci.reliability(data=attitude[,-1], type = "omega", inttype = "mlrl", B = 100)

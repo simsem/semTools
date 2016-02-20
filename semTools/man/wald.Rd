@@ -24,7 +24,7 @@ where \eqn{C} is the contrast matrix, \eqn{\hat{b}} is the estimated fixed effec
 Chi-square value with \emph{p} value.
 }
 \author{
-Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 # Test the difference in factor loadings

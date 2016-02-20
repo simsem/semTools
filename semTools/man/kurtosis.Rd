@@ -50,7 +50,7 @@ Weisstein, Eric W. (n.d.). \emph{Kurtosis.} Retrived from MathWorld--A Wolfram W
 	}
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 kurtosis(1:5)

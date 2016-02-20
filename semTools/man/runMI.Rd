@@ -68,7 +68,7 @@ Rubin, D.B. (1987) \emph{Multiple Imputation for Nonresponse in Surveys.} J. Wil
 }
 \author{Alexander M. Schoemann (East Carolina University;  \email{schoemanna@ecu.edu})
 Patrick Miller (University of Notre Dame; \email{pmille13@nd.edu})
-Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 Mijke Rhemtulla (University of Amsterdam; \email{M.T.Rhemtulla@uva.nl})
 Alexander Robitzsch (Federal Institute for Education Research, Innovation, and Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
 Craig Enders (Arizona State University; \email{Craig.Enders@asu.edu})

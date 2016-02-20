@@ -37,7 +37,7 @@ The \code{impliedFactorStat} function is used to provide both model-implied mean
 	Model-implied factor means or model-implied factor covariance matrix, or both
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 HS.model <- ' visual  =~ x1 + x2 + x3

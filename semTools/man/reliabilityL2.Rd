@@ -42,7 +42,7 @@ Note that if the second-order factor has a direct factor loading on some observe
 	Reliability values at Levels 1 and 2 of the second-order factor, as well as the partial reliability value at Level 1
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
 	\code{\link{reliability}} for the reliability of the first-order factors.

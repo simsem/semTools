@@ -68,7 +68,7 @@ McDonald, R. P. (1999). Test theory: A unified treatment. Mahwah, NJ: Erlbaum.
 Raykov, T. (2001). Estimation of congeneric scale reliability using covariance structure analysis with nonlinear constraints \emph{British Journal of Mathematical and Statistical Psychology, 54}, 315-323.
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu}); Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com}); Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 }
 \seealso{
 	\code{\link{reliabilityL2}} for reliability value of a desired second-order factor, \code{\link{maximalRelia}} for the maximal reliability of weighted composite

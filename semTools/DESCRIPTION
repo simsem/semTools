@@ -1,7 +1,7 @@
 Package: semTools
 Title: Useful Tools for Structural Equation Modeling
 Version: 0.4-11
-Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("aut", "cre"), email = "sunthud.pornprasertmanit@ttu.edu"), 
+Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@gmail.com"), 
 		person(given = "Patrick", family = "Miller", role = "aut", email="pmille13@nd.edu"), 
 		person(given = "Alexander", family = "Schoemann", role = "aut", email="schoemanna@ecu.edu"),
 		person(given = "Yves", family = "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be"),
@@ -20,10 +20,11 @@ Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("au
 		person(given = "Edgar", family = "Merkle", role = "ctb", email="merklee@missouri.edu"),
 		person(given = "Terry", family = "Jorgensen", role = "ctb", email="TJorgensen314@gmail.com"),
 		person(given = "Steven", family = "Chesnut", role = "ctb", email="steven.chesnut@ttu.edu"),
-		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu")
+		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu"), 
+		person(given = "Jason", family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu") 		
 		)
 Description: Provides useful tools for structural equation modeling packages. 
-Depends: R(>= 3.0), methods, lavaan(>= 0.5-18), utils, stats, graphics
+Depends: R(>= 3.0), methods, lavaan(>= 0.5-20), utils, stats, graphics
 Suggests: MASS, parallel, Amelia, mice, foreign, OpenMx(>= 2.0.0), GPArotation, mnormt, boot
 License: GPL (>= 2)
 LazyData: yes
@@ -48,6 +49,7 @@ Author: Sunthud Pornprasertmanit [aut, cre],
   Edgar Merkle [ctb],
   Terry Jorgensen [ctb],
   Steven Chesnut [ctb],
-  Jarrett Byrnes [ctb]
-Maintainer: Sunthud Pornprasertmanit <sunthud.pornprasertmanit@ttu.edu>
-Date/Publication: 2016-01-20
+  Jarrett Byrnes [ctb], 
+  Jason Rights [ctb]
+Maintainer: Sunthud Pornprasertmanit <psunthud@gmail.com>
+Date/Publication: 2016-02-20

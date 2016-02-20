@@ -54,7 +54,7 @@ Invisibly, all model fits in the sequence are returned as a list.
 Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial invariance in ordered-categorical measures. \emph{Multivariate Behavioral Research, 39}, 479-515.
 }
 \author{
-	Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+	Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
     Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be}) 
 }
 \seealso{

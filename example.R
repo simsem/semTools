@@ -710,6 +710,26 @@ u8 ~~ c(1, NA)*u8
 
 outWeak5 <- cfa.mi(weak5, data = imputedData, group = "g", parameterization="theta", estimator="wlsmv")
 
+popmodel<-'A2~0.5*B1
+ B2~0.3*A1+0.5*B1
+ A1~~0.2*B1
+ A2~~0.2*B2'
+
+CLmodel<-'A2~B1
+ B2~A1+B1
+ A1~~B1
+ A2~~B2'
+
+dat <- simulateData(popmodel, sample.nobs = 200)
+dat[matrix(as.logical(rbinom(200*4, 1, 0.1)), 200, 4)] <- NA
+
+library(mice)
+imp <- mice(dat, m=5)
+mice.imp <- NULL
+for(i in 1:5) mice.imp[[i]] <- complete(imp,action=i,include=FALSE)
+
+library(semTools)
+out <- runMI(CLmodel, data=mice.imp, chi="all",fun="sem")
 
 ############### FMI function
 
@@ -1487,3 +1507,61 @@ spatialCorrect(facFit, boreal2$x, boreal2$y)
 	ci.reliability(dat3, aux = "z", type = "h", inttype = "bca", B = 500)
 	
 }
+
+### PAVranking
+
+parmodelA <- '
+   f1 =~ NA*p1f1+p2f1+p3f1
+   f2 =~ NA*p1f2+p2f2+p3f2
+   p1f1~1  
+   p2f1~1
+   p3f1~1
+   p1f2~1
+   p2f2~1
+   p3f2~1
+   p1f1~~p1f1 
+   p2f1~~p2f1
+   p3f1~~p3f1
+   p1f2~~p1f2
+   p2f2~~p2f2
+   p3f2~~p3f2
+   f1~~1*f1
+   f2~~1*f2
+   f1~~0*f2
+'
+
+## Lavaan syntax for Model B: a 2 Correlated 
+## factor CFA model to be fit to parceled data
+
+parmodelB <- '
+   f1 =~ NA*p1f1+p2f1+p3f1
+   f2 =~ NA*p1f2+p2f2+p3f2
+   p1f1~1
+   p2f1~1
+   p3f1~1
+   p1f2~1
+   p2f2~1
+   p3f2~1 
+   p1f1~~p1f1 
+   p2f1~~p2f1
+   p3f1~~p3f1
+   p1f2~~p1f2
+   p2f2~~p2f2
+   p3f2~~p3f2
+   f1~~1*f1
+   f2~~1*f2
+   f1~~f2
+'
+
+##specify items for each factor
+f1name <- colnames(simParcel)[1:9]  
+f2name <- colnames(simParcel)[10:18]
+
+##run function
+PAVranking(nPerPar=list(c(3,3,3),c(3,3,3)), 
+  facPlc=list(f1name,f2name), nAlloc=100, 
+  parceloutput=0, syntaxA=parmodelA, 
+  syntaxB=parmodelB, dataset = simParcel, 
+  names=list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"),
+  leaveout=0)
+  

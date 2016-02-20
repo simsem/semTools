@@ -24,7 +24,7 @@ imposeStart(out, expr, silent = TRUE)
 	A fitted lavaan model
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 # The following example show that the longitudinal weak invariance model

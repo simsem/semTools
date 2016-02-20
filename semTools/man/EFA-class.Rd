@@ -33,7 +33,7 @@
 \code{\link{efaUnrotate}}; \code{\link{orthRotate}}; \code{\link{oblqRotate}}
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 library(lavaan)

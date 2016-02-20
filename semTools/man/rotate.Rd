@@ -34,7 +34,7 @@ funRotate(object, fun, ...)
 	An \code{linkS4class{EFA}} object that saves the rotated EFA solution.
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 library(lavaan)

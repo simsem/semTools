@@ -32,7 +32,7 @@ saveFile(object, file, what="summary", tableFormat=FALSE, ...)
 	The resulting output will be saved into a clipboard or a file. If using the \code{clipboard} function, users may paste it in the other applications.
 }
 \author{
-    Sunthud Pornprasertmanit (Texas Tech University; \email{sunthud.pornprasertmanit@ttu.edu})
+    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
 \dontrun{
