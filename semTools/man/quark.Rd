@@ -41,7 +41,7 @@ The output value from using the quark function is a list. It will return a list 
 Howard, W. J., Little, T. D., & Rhemtulla, M. (in press). Using principal component analysis (PCA) to obtain auxiliary variables for missing data estimation in large data sets. \emph{Multivariate Behavioral Research}.
 }
 \author{
-Steven R. Chesnut  (University of Southern Mississippi; \email{steven.chesnut@ttu.edu}), Danny Squire (Texas Tech University). The PCA code is copied and modified from the \code{FactoMineR} package. The function to print correlation matrix is copied from the \code{psych} package.
+Steven R. Chesnut  (University of Southern Mississippi; \email{Steven.Chesnut@usm.edu}), Danny Squire (Texas Tech University). The PCA code is copied and modified from the \code{FactoMineR} package. The function to print correlation matrix is copied from the \code{psych} package.
 }
 \seealso{
 \code{\link{combinequark}}

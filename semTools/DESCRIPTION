@@ -19,7 +19,7 @@ Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("au
 		person(given = "Pavel", family = "Panko", role = "ctb", email="pavel.panko@ttu.edu"),
 		person(given = "Edgar", family = "Merkle", role = "ctb", email="merklee@missouri.edu"),
 		person(given = "Terry", family = "Jorgensen", role = "ctb", email="TJorgensen314@gmail.com"),
-		person(given = "Steven", family = "Chesnut", role = "ctb", email="steven.chesnut@ttu.edu"),
+		person(given = "Steven", family = "Chesnut", role = "ctb", email="Steven.Chesnut@usm.edu"),
 		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu"), 
 		person(given = "Jason", family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu") 		
 		)

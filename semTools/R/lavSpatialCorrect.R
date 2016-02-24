@@ -4,7 +4,7 @@ spatialCorrect <- function(obj, xvar, yvar, alpha=0.05){
   
   #get only endogenous variables
   resids <- resids[,which(apply(resids, 2, function(x) length(unique(x))) !=1)]
-  
+  # resids <- resids[, lavaan::lavNames(obj, "ov.y")]
 
   #make a distance matrix
   distMat <- as.matrix(dist(cbind(xvar, yvar)))

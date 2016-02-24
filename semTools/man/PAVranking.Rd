@@ -4,7 +4,7 @@
 	Parcel-Allocation Variability in Model Ranking
 }
 \description{
-	This function quantifies and assesses the consequences of parcel-allocation variability for model ranking of structural equation models (SEMs) that differ in their structural specification but share the same parcel-level measurement specification (see Sterba & Rights, 2016). This function is a modified version of \code{\link{parcelAllocation}} which can be used with only one SEM in isolation. The PAVranking function repeatedly generates a specified number of random item-to-parcel allocations, and then fits two models to each allocation. Output includes summary information about the distribution of model selection results (including plots) and the distribution of results for each model individually, across allocations within-sample. Note that this function can be used when selecting among more than two competing structural models as well (see instructions below involving randomseed).
+	This function quantifies and assesses the consequences of parcel-allocation variability for model ranking of structural equation models (SEMs) that differ in their structural specification but share the same parcel-level measurement specification (see Sterba & Rights, 2016). This function is a modified version of \code{\link{parcelAllocation}} which can be used with only one SEM in isolation. The \code{PAVranking} function repeatedly generates a specified number of random item-to-parcel allocations, and then fits two models to each allocation. Output includes summary information about the distribution of model selection results (including plots) and the distribution of results for each model individually, across allocations within-sample. Note that this function can be used when selecting among more than two competing structural models as well (see instructions below involving \code{seed}).
 }
 \usage{
 PAVranking(nPerPar, facPlc, nAlloc=100, parceloutput = 0,
@@ -51,7 +51,7 @@ This is a modified version of \code{\link{parcelAllocation}} which was, in turn,
 
 For further details on the benefits of the random allocation of items to parcels, see Sterba (2011) and Sterba and MacCallum (2010).
 
-NOTE: Libraries required for this function are: \code{lavaan} and \code{lmtest}. Missing data code needs to be \code{NA}. If function returns \code{"Error in plot.new() : figure margins too large,"} user may need to increase size of the plot window and rerun. 
+NOTE: NOTE: This function requires the \code{lavaan} package. Missing data code needs to be \code{NA}. If function returns \code{"Error in plot.new() : figure margins too large,"} user may need to increase size of the plot window and rerun. 
 }
 \value{
 \item{Estimates_A, Estimates_B}{A table containing results related to parameter estimates (in table Estimates_A for Model A and in table Estimates_B for Model B) with columns corresponding to parameter name, average parameter estimate across allocations, standard deviation of parameter estimate across allocations, the maximum parameter estimate across allocations, the minimum parameter estimate across allocations, the range of parameter estimates across allocations, and the percent of allocations in which the parameter estimate is significant.}
@@ -66,10 +66,17 @@ NOTE: Libraries required for this function are: \code{lavaan} and \code{lmtest}.
 }
 \references{
 Enders, C. K. (2008). A note of the use of missing auxiliary variables in full information maximum likelihood-based structural equation models. \emph{Structural Equation Modeling, 15}, 434-448.
-Sterba, S., & Rights, J. D. (2016). Effects of Parceling on Model Selection: Parcel-Allocation Variability in Model Ranking. \emph{Psychological Methods}. 
+
+Raftery, A. E. (1995). Bayesian model selection in social research. \emph{Sociological Methodology, 25}, 111-163.
+
+Sterba, S. K. (2011). Implications of parcel-allocation variability for comparing fit of item-solutions and parcel-solutions. \emph{Structural Equation Modeling: A Multidisciplinary Journal, 18}(4), 554-577.
+
+Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates and model fit across repeated allocations of items to parcels. \emph{Multivariate Behavioral Research, 45}(2), 322-358.
+
+Sterba, S., & Rights, J. D. (2016). Effects of Parceling on Model Selection: Parcel-Allocation Variability in Model Ranking. \emph{Psychological Methods}. \url{http://dx.doi.org/10.1037/met0000067}
 }
 \seealso{
-	\code{\linkS4class{lavaanStar}}
+	\code{\link{parcelAllocation}}
 }
 \author{
     Jason D. Rights (Vanderbilt University; \email{jason.d.rights@vanderbilt.edu})
@@ -82,46 +89,46 @@ Sterba, S., & Rights, J. D. (2016). Effects of Parceling on Model Selection: Par
 ## factor CFA model to be fit to parceled data
 
 parmodelA <- '
-   f1 =~ NA*p1f1+p2f1+p3f1
-   f2 =~ NA*p1f2+p2f2+p3f2
-   p1f1~1  
-   p2f1~1
-   p3f1~1
-   p1f2~1
-   p2f2~1
-   p3f2~1
-   p1f1~~p1f1 
-   p2f1~~p2f1
-   p3f1~~p3f1
-   p1f2~~p1f2
-   p2f2~~p2f2
-   p3f2~~p3f2
-   f1~~1*f1
-   f2~~1*f2
-   f1~~0*f2
+   f1 =~ NA*p1f1 + p2f1 + p3f1
+   f2 =~ NA*p1f2 + p2f2 + p3f2
+   p1f1 ~ 1  
+   p2f1 ~ 1
+   p3f1 ~ 1
+   p1f2 ~ 1
+   p2f2 ~ 1
+   p3f2 ~ 1
+   p1f1 ~~ p1f1 
+   p2f1 ~~ p2f1
+   p3f1 ~~ p3f1
+   p1f2 ~~ p1f2
+   p2f2 ~~ p2f2
+   p3f2 ~~ p3f2
+   f1 ~~ 1*f1
+   f2 ~~ 1*f2
+   f1 ~~ 0*f2
 '
 
 ## Lavaan syntax for Model B: a 2 Correlated 
 ## factor CFA model to be fit to parceled data
 
 parmodelB <- '
-   f1 =~ NA*p1f1+p2f1+p3f1
-   f2 =~ NA*p1f2+p2f2+p3f2
-   p1f1~1
-   p2f1~1
-   p3f1~1
-   p1f2~1
-   p2f2~1
-   p3f2~1 
-   p1f1~~p1f1 
-   p2f1~~p2f1
-   p3f1~~p3f1
-   p1f2~~p1f2
-   p2f2~~p2f2
-   p3f2~~p3f2
-   f1~~1*f1
-   f2~~1*f2
-   f1~~f2
+   f1 =~ NA*p1f1 + p2f1 + p3f1
+   f2 =~ NA*p1f2 + p2f2 + p3f2
+   p1f1 ~ 1
+   p2f1 ~ 1
+   p3f1 ~ 1
+   p1f2 ~ 1
+   p2f2 ~ 1
+   p3f2 ~ 1 
+   p1f1 ~~ p1f1 
+   p2f1 ~~ p2f1
+   p3f1 ~~ p3f1
+   p1f2 ~~ p1f2
+   p2f2 ~~ p2f2
+   p3f2 ~~ p3f2
+   f1 ~~ 1*f1
+   f2 ~~ 1*f2
+   f1 ~~ f2
 '
 
 ##specify items for each factor

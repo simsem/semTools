@@ -17,7 +17,7 @@ combinequark(quark, percent)
 The output of this function is the original dataset used in quark combined with enough principal component scores to be able to account for the amount of variance that was requested.
 }
 \author{
-Steven R. Chesnut (University of Southern Mississippi \email{steven.chesnut@ttu.edu})
+Steven R. Chesnut (University of Southern Mississippi \email{Steven.Chesnut@usm.edu})
 }
 \seealso{
 \code{\link{quark}}

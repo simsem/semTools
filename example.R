@@ -1179,67 +1179,12 @@ borModel <- '
   nTot ~ T61
 '
 
-#note meanstructure=T to obtain intercepts
-borFit <- sem(borModel, data=boreal, meanstructure=T)
+borFit <- sem(borModel, data=semTools::boreal, meanstructure=T)
 
+residuals(borFit, "casewise")
 ## @knitr residuals
 # residuals are key for the analysis
 borRes <- as.data.frame(residuals(borFit, "casewise"))
-
-#raw visualization of NDVI residuals
-qplot(x, y, data=boreal, color=borRes$NDVI, size=I(5)) +
-  theme_bw(base_size=17) + 
-  scale_color_gradient("NDVI Residual", low="blue", high="yellow")
-
-## @knitr residual-analysis-sign
-#raw visualization of sign of residuals
-qplot(x, y, data=boreal, color=borRes$NDVI>0, size=I(5)) +
-  theme_bw(base_size=17) + 
-  scale_color_manual("NDVI Residual >0", values=c("blue", "red"))
-
-
-
-## @knitr generate-spatial-weight-matrix
-#Evaluate Spatial Residuals
-#First create a distance matrix
-
-distMat <- as.matrix(dist(cbind(boreal$x, boreal$y)))
-
-#invert this matrix for weights
-distsInv <- 1/distMat
-diag(distsInv) <- 0
-
-## @knitr moran_i_ndvi
-#calculate Moran's I just for NDVI
-mi.ndvi <- moran(borRes$NDVI, distsInv)
-mi.ndvi
-
-## @knitr spatial_corrected_sample
-#What is our corrected sample size?
-n.ndvi <- nrow(boreal)*(1-mi.ndvi$observed)/(1+mi.ndvi$observed)
-
-
-## @knitr spatial_corrected_se
-#Where did we get the SE from?
-sqrt(diag(vcov(borFit)))
-
-#New SE
-ndvi.var <- diag(vcov(borFit))[1:3]
-
-ndvi.se <- sqrt(ndvi.var*nrow(boreal)/n.ndvi)
-
-ndvi.se
-
-
-#compare to old SE
-sqrt(diag(vcov(borFit)))[1:3]
-
-
-## @knitr spatial_corrected_z
-#new z values
-z <- coef(borFit)[1:3]/ndvi.se
-
-2*pnorm(abs(z), lower.tail=F)
 
 
 summary(borFit, standardized=T)
