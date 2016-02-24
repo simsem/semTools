@@ -1,40 +1,40 @@
 \name{permuteMeasEq}
 \alias{permuteMeasEq}
-\alias{calculateDIF}
 \title{
 	Permutation Randomization Tests of Measurement Equivalence and Differential Item Functioning (DIF)
 }
 \description{
-The function \code{permuteMeasEq} accepts a pair of nested lavaan objects, the less constrained of which freely estimates a set of measurement parameters (e.g., factor loadings, intercepts, or thresholds) in all groups, and the more constrained of which constrains those measurement parameters to equality across groups. Group assignment is repeatedly permuted and the model is fit to each permutation, in order to produce an empirical distribution of (a) changes in fit indices and (b) differences in measurement parameters, for which the null hypothesis of no group differences is true. This function is for testing measurement equivalence only across groups, not occasions.
+The function \code{permuteMeasEq} accepts a pair of nested lavaan objects, the less constrained of which (\code{uncon}) freely estimates a set of measurement parameters (e.g., factor loadings, intercepts, or thresholds) in all groups, and the more constrained of which (\code{con}) constrains those measurement parameters to equality across groups. Group assignment is repeatedly permuted and the model is fit to each permutation, in order to produce an empirical distribution under the null hypothesis of no group differences, both for (a) changes in user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for (b) the maximum modification index among the user-specified parameters (see \code{param}). This function is for testing measurement equivalence only across groups, not occasions. Configural invariance can also be tested by providing that fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which case \code{param} must be \code{NULL} as well.
 
-DIF estimates of specified parameters (\code{param}) are calculated from a single unconstrained model (\code{uncon}) using the function \code{calculateDIF}, which can be used to program more nuanced permutation methods if \code{permuteMeasEq} does not address the user's needs.
+Modification indices for equality constraints on parameters specified in \code{param} are calculated from the constrained model (\code{con}) using the function \code{\link[lavaan]{lavTestScore}}, which can also be used to request expected parameter changes if the user has a need for them.
 }
 \usage{
-permuteMeasEq(nPermute, uncon, con, null = NULL, AFIs = NULL, moreAFIs = NULL,
-              param = "loadings", maxSparse = 10, maxNonconv = 10)
-calculateDIF(uncon, param)
+permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
+              param = NULL, AFIs = NULL, moreAFIs = NULL,
+              maxSparse = 10, maxNonconv = 10)
 }
 \arguments{
   \item{nPermute}{
 	An integer indicating the number of random permutations of group assignment used to form empirical distributions under the null hypothesis.
 }
-  \item{uncon}{
-	The unconstrained \code{lavaan} object, in which a set of measurement parameters of interest (e.g., factor loadings for testing metric/weak invariance, item intercepts for testing scalar/strong invariance) are freely estimated in all groups.
-}
   \item{con}{
-  The constrained \code{lavaan} object, in which the measurement parameters of interest in \code{uncon} are constrained to equality across all groups.
+  The constrained \code{lavaan} object, in which the parameters specified in \code{param} are constrained to equality across all groups. In the case of testing \emph{configural} invariance, \code{con} is the configural model (implicitly, the unconstrained model is the saturated model, so use the default \code{uncon = NULL}).
+}
+  \item{uncon}{
+	Optional.  The unconstrained \code{lavaan} object, in which the parameters specified in \code{param} are freely estimated in all groups. Only in the case of testing \emph{configural} invariance should this argument be \code{NULL}.
 }
   \item{null}{
   Optional.  A \code{lavaan} object, in which an alternative null model is fit (besides the default independence model specified by \code{lavaan}) for the calculation of incremental fit indices. See Widamin & Thompson (2003) for details. If \code{NULL}, \code{lavaan}'s default independence model is used.
 }
+  \item{param}{
+  A character vector indicating which parameters are constrained across groups in \code{con} and are unconstrained in \code{uncon}. Parameter names must match those returned by \code{names(coef(uncon))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels. Alternatively, to test an entire set of a certain type of parameter, \code{param} may take any one of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, or \code{"residuals"}.
+}
   \item{AFIs}{
-  A character vector indicating which alternative fit indices, returned by \code{lavaan::fitMeasures}, is to be used to test the multivariate omnibus null hypothesis of no group differences in any parameters. If \code{NULL}, the default \code{AFIs} will be returned: \code{c("cfi","rni","tli","rmsea","srmr","mfi")}. If \code{NA}, none of the AFIs from \code{lavaan::fitMeasures} will be returned.
+  A character vector indicating which alternative fit indices (or chi-squared itself) are to be used to test the multiparameter omnibus null hypothesis of no group differences in any parameters specified in \code{param}. Any fit measures returned by \code{\link[lavaan]{fitMeasures}} may be specified (including constants like \code{"df"}, which would be nonsensical). If both \code{AFIs} and \code{moreAFIs} are \code{NULL}, only \code{"chisq"} will be returned.
+
 }
   \item{moreAFIs}{
-  A character vector indicating which alternative fit indices, returned by \code{semTools::moreFitIndices}, is to be used to test the multivariate omnibus null hypothesis of no group differences in any parameters. If \code{NULL}, the default \code{moreAFIs} will be returned: \code{c("gammaHat","adjGammaHat")}. If \code{NA}, none of the AFIs from \code{semTools::moreFitIndices} will be returned.
-}
-  \item{param}{
-  A character vector indicating which parameters are to be tested for significant DIF. Parameter names must match those returned by \code{names(coef(uncon))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}). Alternatively, to test an entire set of a certain type of parameter, \code{param} may take any one of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, or \code{"residuals"}.
+  Optional. A character vector indicating which (if any) alternative fit indices returned by \code{\link[semTools]{moreFitIndices}} are to be used to test the multiparameter omnibus null hypothesis of no group differences in any parameters specified in \code{param}.
 }
   \item{maxSparse}{
   An integer indicating the maximum number of consecutive times that randomly permuted group assignment can yield a sample in which at least one category (of an \code{ordered} indicator) is unobserved in at least one group, such that the same set of parameters cannot be estimated in each group. If such a sample occurs, group assignment is randomly permuted again, repeatedly until a sample is obtained with all categories observed in all groups. If \code{maxSparse} is exceeded, \code{NA} will be returned for that iteration of the permutation distribution.
@@ -44,24 +44,18 @@ calculateDIF(uncon, param)
 }
 }
 \details{
-	The multivariate omnibus null hypothesis of measurement equivalence/invariance is that there are no group differences in any measurement parameters. This can be tested using the \code{anova} method on nested lavaan objects, as seen in the output of \code{\link[semTools]{measurementInvariance}}, or by inspecting the change in alternative fit indices (AFIs) such as the CFI. See Cheung & Rensvold (2002) and Meade, Johnson, & Braddy (2008) for details.
+	The multiparameter omnibus null hypothesis of measurement equivalence/invariance is that there are no group differences in any measurement parameters. This can be tested using the \code{anova} method on nested \code{lavaan} objects, as seen in the output of \code{\link[semTools]{measurementInvariance}}, or by inspecting the change in alternative fit indices (AFIs) such as the CFI. See Cheung & Rensvold (2002) or Meade, Johnson, & Braddy (2008) for details.
 
-  If the multivariate omnibus null hypothesis is rejected using a global indicator of fit, partial invariance can still be established by freeing parameters that differ across groups, while maintaining equality constraints for other indicators. DIF can be estimated using the less constrained model, in which the parameters are allowed to differ, but multiple testing across items and across pairwise comparisons between groups) leads to inflation of Type I error rates. The permutation randomization method employed by \code{permuteMeasEq} creates a distribution of the maximum absolute-value of DIF if the null hypothesis is true, similar to Tukey's \emph{q} distribution for the Honestly Significant Difference (HSD) post hoc test, which allows the researcher to control the familywise Type I error rate. Two distributions are estimated: (1) the maximum absolute DIF across all pairwise comparisons within each item (using \code{type = "all"}), and (2) the maximum absolute DIF across all items and pairwise comparisons (using \code{type = "each"}).
-
-  As an alternative to the multivariate omnibus test using global fit measures, \code{permuteMeasEq} also creates a distribution of the maximum sum-of-squared-DIF for each item. Thus, univariate omnibus tests can be performed for each item, with familywise Type I errors (across items) controlled analogously to Tukey's HSD. If the univariate omnibus null hypothesis for any item is rejected, then follow-up tests can be conducted using \code{type = "all"}.
-
-  Because extreme observations become more likely to occur at least once as the number of tests grows, the familywise Type I error rate can only be controlled at the expense of power. Rather than trying to keep Type I errors close to a nominal alpha level, a linear step-up method (Maxwell & Delaney, 2004, pp. 230-234) can be used to keep the expected false discovery rate (FDR) close to a nominal alpha level. The expected FDR is the proportion of all rejected null hypotheses that are Type I errors. Controlling FDR guarantees controlling the familywise Type I error rate when all null hypotheses are true, but when at least one null hypothesis is false, controlling FDR is a compromise that keeps the number of incorrectly rejected null hypotheses (Type I errors) low relative to the total number of rejected null hypotheses, but with greater power to detect true group differences than methods that control the familywise Type I error rate. \code{permuteMeasEq} also employs the linear step-up procedure, and those results can be extracted by setting the argument \code{type = "step-up"}).
+  If the multiparameter omnibus null hypothesis is rejected, partial invariance can still be established by freeing parameters that differ across groups, while maintaining equality constraints for at least two other indicators per factor. Modification indices can be calculated from the constrained model (\code{con}), but multiple testing leads to inflation of Type I error rates. The permutation randomization method employed by \code{permuteMeasEq} creates a distribution of the maximum modification index if the null hypothesis is true, which allows the user to control the familywise Type I error rate in a manner similar to Tukey's \emph{q} (studentized range) distribution for the Honestly Significant Difference (HSD) post hoc test.
 }
 \value{
-	The \linkS4class{permuteMeasEq} object representing the results of testing measurement equivalence (the multivariate omnibus null hypothesis) and DIF (tests of differences among individaul measurement parameters).
+	The \linkS4class{permuteMeasEq} object representing the results of testing measurement equivalence (the multiparameter omnibus test) and DIF (modification indices).
 }
 \author{
     Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \references{
 Cheung, G. W., & Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes for testing measurement invariance. \emph{Structural Equation Modeling, 9}(2), 233-255. doi:10.1207/S15328007SEM0902_5
-
-Maxwell, S. E., & Delaney, H. D. (2004). \emph{Designing experiments and analyzing data: A model comparison perspective} (2nd ed.). Mahwah, NJ: Lawrence Erlbaum Associates, Inc.
 
 Meade, A. W., Johnson, E. C., & Braddy, P. W. (2008). Power and sensitivity of alternative fit indices in tests of measurement invariance. \emph{Journal of Applied Psychology, 93}(3), 568-592. doi:10.1037/0021-9010.93.3.568
 
@@ -72,85 +66,59 @@ Widamin, K. F., & Thompson, J. S. (2003). On specifying the null model for incre
 }
 \examples{
 \dontrun{
-## fit indices of interest for multivariate omnibus test of measurement equivalence
-myAFIs <- c("cfi","rni","tli","rmsea","srmr","mfi","gfi","aic","bic")
-moreAFIs <- c("gammaHat","adjGammaHat")
+## create 3-group data in lavaan example(cfa) data
+HS <- lavaan::HolzingerSwineford1939
+HS$ageGroup <- ifelse(HS$ageyr < 13, "preteen",
+                      ifelse(HS$ageyr > 13, "teen", "thirteen"))
 
 ## run models to be compared
-mod.null <- c(paste0("x", 1:9, " ~~ c(L", 1:9, ", L", 1:9, ")*x", 1:9),
-              paste0("x", 1:9, " ~ c(T", 1:9, ", T", 1:9, ")*1"))
-fit.null <- cfa(mod.null, data = HolzingerSwineford1939, group = "sex")
+mod.null <- c(paste0("x", 1:9, " ~ c(T", 1:9, ", T", 1:9, ", T", 1:9, ")*1"),
+              paste0("x", 1:9, " ~~ c(L", 1:9, ", L", 1:9, ", L", 1:9, ")*x", 1:9))
+fit.null <- cfa(mod.null, data = HS, group = "ageGroup")
 
+## fit model with varying levels of measurement equivalence
 mod.config <- '
 visual  =~ x1 + x2 + x3
 textual =~ x4 + x5 + x6
 speed   =~ x7 + x8 + x9
 '
+miout <- measurementInvariance(mod.config, data = HS, std.lv = TRUE,
+                               group = "ageGroup")
 
-fit.config <- cfa(mod.config, data = HolzingerSwineford1939,
-                  std.lv = TRUE, group = "sex")
-AFI.config <- c(fitMeasures(fit.config, fit.measures = myAFIs,
-                            baseline.model = fit.null),
-                moreFitIndices(fit.config, fit.measures = moreAFIs))
+## fit indices of interest for multiparameter omnibus test of measurement equivalence
+myAFIs <- c("chisq","cfi","rmsea","srmr","mfi","aic")
+moreAFIs <- c("gammaHat","adjGammaHat")
 
-mod.metric <- '
-visual  =~ x1 + x2 + x3
-textual =~ x4 + x5 + x6
-speed   =~ x7 + x8 + x9
-visual ~~ c(1, NA)*visual
-textual ~~ c(1, NA)*textual
-speed ~~ c(1, NA)*speed
-'
-fit.metric <- cfa(mod.metric, data = HolzingerSwineford1939,
-                  std.lv = TRUE, group = "sex", group.equal = "loadings")
-AFI.metric <- c(fitMeasures(fit.metric, fit.measures = myAFIs,
-                            baseline.model = fit.null),
-                moreFitIndices(fit.metric, fit.measures = moreAFIs))
-
-## calculate observed differences in fit indices
-myDiffs <- AFI.config - AFI.metric
-myDiffs
-## compare to ANOVA result
-anova(fit.config, fit.metric)
+fit.config <- miout[["fit.configural"]]
+fit.metric <- miout[["fit.loadings"]]
+fit.scalar <- miout[["fit.intercepts"]]
 
 
-## Use only 20 permutations for a demo (in practice, use > 500)
-set.seed(12345)
-out <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
-                     AFIs = myAFIs, moreAFIs = moreAFIs, param = "loadings",
-                     null = fit.null)
-## Results object contains info about multivariate omnibus and follow-up tests.
-## It contains the observed DIF that can be calculated using calculateDIF:
-out@observed@DIF
-calculateDIF(uncon = fit.config, param = "loadings")
+## Use only 20 permutations for a demo
+## In practice, use > 1000 to reduce sampling variability of estimated p values
+set.seed(123)
+out.config <- permuteMeasEq(nPermute = 20, con = fit.config)
+out.config
 
-## The p values for each method's distribution can be inspected:
-out@p.values
+set.seed(456)
+out.metric <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
+                            param = "loadings", AFIs = myAFIs,
+                            moreAFIs = moreAFIs, null = fit.null)
+summary(out.metric, nd = 4)
 
-## The "show" method prints results for multivariate omnibus null hypothesis,
-## as well as individual omnibus tests per item (controlling familywise errors)
-out
+set.seed(789)
+out.scalar <- permuteMeasEq(nPermute = 20, uncon = fit.metric, con = fit.scalar,
+                            param = "intercepts", AFIs = myAFIs,
+                            moreAFIs = moreAFIs, null = fit.null)
+summary(out.scalar)
 
-## The "summary" method gives details about "follow-up" DIF tests.
-
-## The default (type = "all") is a Tukey-type method appropriate if the
-## multivariate omnibus null is reject AFIs
-summary(out, digits = 2)
 ## Not much to see with only one significant DIF.
+## Try using an absurdly high alpha level for illustration.
+outsum <- summary(out.scalar, alpha = .50)
 
-## Try using individual maximum-DIF distributions for each parameter, which is
-## appropriate for a particular item when its univariate omnibus null is
-## rejected using the maximum Sum-of-Squared DIF across items.
-## Note that we can raise the alpha level and control the number of digits.
-summary(out, type = "each", alpha = .10, digits = 2)
-
-## To not control the Type I error rate at all (and use a liberal alpha):
-outsum <- summary(out, type = "pairs", alpha = 0.30)
-## notice that the returned object is a logical matrix: is.rejected?
+## notice that the returned object is the table of DIF tests
 outsum
 
-## To control FDR (instead of familywise Type I errors) at level alpha:
-summary(out, type = "step-up", digits = 2)
 }
 }
 
