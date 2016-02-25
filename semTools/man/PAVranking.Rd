@@ -51,7 +51,7 @@ This is a modified version of \code{\link{parcelAllocation}} which was, in turn,
 
 For further details on the benefits of the random allocation of items to parcels, see Sterba (2011) and Sterba and MacCallum (2010).
 
-NOTE: NOTE: This function requires the \code{lavaan} package. Missing data code needs to be \code{NA}. If function returns \code{"Error in plot.new() : figure margins too large,"} user may need to increase size of the plot window and rerun. 
+NOTE: This function requires the \code{lavaan} package. Missing data code needs to be \code{NA}. If function returns \code{"Error in plot.new() : figure margins too large,"} user may need to increase size of the plot window and rerun. 
 }
 \value{
 \item{Estimates_A, Estimates_B}{A table containing results related to parameter estimates (in table Estimates_A for Model A and in table Estimates_B for Model B) with columns corresponding to parameter name, average parameter estimate across allocations, standard deviation of parameter estimate across allocations, the maximum parameter estimate across allocations, the minimum parameter estimate across allocations, the range of parameter estimates across allocations, and the percent of allocations in which the parameter estimate is significant.}
@@ -65,15 +65,13 @@ NOTE: NOTE: This function requires the \code{lavaan} package. Missing data code 
 \item{Converged and proper}{A table containing the proportion of allocations that converged for Model A, Model B, and both models, and the proportion of allocations with converged and proper solutions for Model A, Model B, and both models.}
 }
 \references{
-Enders, C. K. (2008). A note of the use of missing auxiliary variables in full information maximum likelihood-based structural equation models. \emph{Structural Equation Modeling, 15}, 434-448.
-
 Raftery, A. E. (1995). Bayesian model selection in social research. \emph{Sociological Methodology, 25}, 111-163.
 
 Sterba, S. K. (2011). Implications of parcel-allocation variability for comparing fit of item-solutions and parcel-solutions. \emph{Structural Equation Modeling: A Multidisciplinary Journal, 18}(4), 554-577.
 
 Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates and model fit across repeated allocations of items to parcels. \emph{Multivariate Behavioral Research, 45}(2), 322-358.
 
-Sterba, S., & Rights, J. D. (2016). Effects of Parceling on Model Selection: Parcel-Allocation Variability in Model Ranking. \emph{Psychological Methods}. \url{http://dx.doi.org/10.1037/met0000067}
+"Sterba, S. K., & Rights, J. D. (2016). Effects of parceling on model selection: Parcel-allocation variability in model ranking. \emph{Psychological Methods}. \url{http://dx.doi.org/10.1037/met0000067}
 }
 \seealso{
 	\code{\link{parcelAllocation}}
