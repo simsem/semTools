@@ -66,17 +66,22 @@ Widamin, K. F., & Thompson, J. S. (2003). On specifying the null model for incre
 }
 \examples{
 \dontrun{
+
+########################
+## Traditional Method ##
+########################
+
 ## create 3-group data in lavaan example(cfa) data
 HS <- lavaan::HolzingerSwineford1939
 HS$ageGroup <- ifelse(HS$ageyr < 13, "preteen",
                       ifelse(HS$ageyr > 13, "teen", "thirteen"))
 
-## run models to be compared
+## specify and fit an appropriate null model for incremental fit indices
 mod.null <- c(paste0("x", 1:9, " ~ c(T", 1:9, ", T", 1:9, ", T", 1:9, ")*1"),
               paste0("x", 1:9, " ~~ c(L", 1:9, ", L", 1:9, ", L", 1:9, ")*x", 1:9))
 fit.null <- cfa(mod.null, data = HS, group = "ageGroup")
 
-## fit model with varying levels of measurement equivalence
+## fit target model with varying levels of measurement equivalence
 mod.config <- '
 visual  =~ x1 + x2 + x3
 textual =~ x4 + x5 + x6
@@ -85,34 +90,41 @@ speed   =~ x7 + x8 + x9
 miout <- measurementInvariance(mod.config, data = HS, std.lv = TRUE,
                                group = "ageGroup")
 
-## fit indices of interest for multiparameter omnibus test of measurement equivalence
+(fit.config <- miout[["fit.configural"]])
+(fit.metric <- miout[["fit.loadings"]])
+(fit.scalar <- miout[["fit.intercepts"]])
+
+########################
+## Permutation Method ##
+########################
+
+## fit indices of interest for multiparameter omnibus test
 myAFIs <- c("chisq","cfi","rmsea","srmr","mfi","aic")
 moreAFIs <- c("gammaHat","adjGammaHat")
 
-fit.config <- miout[["fit.configural"]]
-fit.metric <- miout[["fit.loadings"]]
-fit.scalar <- miout[["fit.intercepts"]]
+## Use only 20 permutations for a demo.  In practice, 
+## use > 1000 to reduce sampling variability of estimated p values
 
-
-## Use only 20 permutations for a demo
-## In practice, use > 1000 to reduce sampling variability of estimated p values
+## test configural invariance
 set.seed(123)
 out.config <- permuteMeasEq(nPermute = 20, con = fit.config)
 out.config
 
+## test metric equivalence
 set.seed(456)
 out.metric <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
                             param = "loadings", AFIs = myAFIs,
                             moreAFIs = moreAFIs, null = fit.null)
 summary(out.metric, nd = 4)
 
+## test scalar equivalence
 set.seed(789)
 out.scalar <- permuteMeasEq(nPermute = 20, uncon = fit.metric, con = fit.scalar,
                             param = "intercepts", AFIs = myAFIs,
                             moreAFIs = moreAFIs, null = fit.null)
 summary(out.scalar)
 
-## Not much to see with only one significant DIF.
+## Not much to see without significant DIF.
 ## Try using an absurdly high alpha level for illustration.
 outsum <- summary(out.scalar, alpha = .50)
 
