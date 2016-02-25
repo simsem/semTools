@@ -281,7 +281,7 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
   } else {
     delta <- anova(uncon, con)
   }
-  ANOVA <- sapply(delta[,c("Chisq diff","Pr(>Chisq)")], function(x) x[2])
+  ANOVA <- sapply(delta[,c("Chisq diff","Df diff","Pr(>Chisq)")], function(x) x[2])
   out <- new("permuteMeasEq", PT = PT, ANOVA = ANOVA,
              AFI.obs = AFI.obs, AFI.dist = AFI.dist, AFI.pval = AFI.pval,
              MI.obs = as.data.frame(unclass(MI.obs)), MI.dist = MI.dist,
