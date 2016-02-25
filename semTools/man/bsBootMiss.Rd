@@ -13,7 +13,8 @@ bsBootMiss(x, transformation = 2, nBoot = 500, model, rawData,
 	Sigma, Mu, group, ChiSquared, EMcov,
 	writeTransData = FALSE, transDataOnly = FALSE,
 	writeBootData = FALSE, bootSamplesOnly = FALSE,
-	writeArgs, seed = NULL, suppressWarn = TRUE, ...)
+	writeArgs, seed = NULL, suppressWarn = TRUE,
+	showProgress = TRUE, ...)
 }
 \arguments{
   \item{x}{
@@ -59,13 +60,16 @@ bsBootMiss(x, transformation = 2, nBoot = 500, model, rawData,
 	Logical. If \code{TRUE}, the stacked bootstrap data sets are written to a text file, \code{bootSamplesOnly} is set to \code{TRUE}, and the list of bootstrap data sets are returned invisibly.
   }
   \item{writeArgs}{
-	Optional. If \code{TRUE} or \code{TRUE} are \code{TRUE}, user can pass arguments to the \code{\link[utils]{write.table}} function as a list.  Some default values are provided: \code{file} = "bootstrappedSamples.dat", \code{row.names} = \code{FALSE}, and \code{na} = "-999", but the user can override all of these by providing other values for those arguments in the \code{writeArgs} list.
+	Optional \code{list}. If \code{writeBootData = TRUE} or \code{writeBootData = TRUE}, user can pass arguments to the \code{\link[utils]{write.table}} function as a list.  Some default values are provided: \code{file} = "bootstrappedSamples.dat", \code{row.names} = \code{FALSE}, and \code{na} = "-999", but the user can override all of these by providing other values for those arguments in the \code{writeArgs} list.
   }
   \item{seed}{
 	The seed number used in randomly drawing bootstrap samples.
   }
   \item{suppressWarn}{
 	Logical. If \code{TRUE}, warnings from \code{lavaan} function will be suppressed when fitting the model to each bootstrap sample.
+  }
+  \item{showProgress}{
+	Logical. Indicating whether to display a progress bar while fitting models to bootstrap samples.
   }
   \item{\dots}{
 	The additional arguments in the \code{\link[lavaan]{lavaan}} function.
