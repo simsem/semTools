@@ -376,3 +376,106 @@ setMethod("summary", "permuteMeasEq", function(object, alpha = .05, nd = 3) {
   invisible(object)
 })
 
+setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
+                                            printLegend = TRUE,
+                                            legendArgs = list(x = "topleft")) {
+  histArgs <- list(...)
+  histArgs$x <- x@AFI.dist[[AFI]]
+  if (is.null(histArgs$col)) histArgs$col <- "grey69"
+  histArgs$freq <- !grepl("chi", AFI)
+  histArgs$ylab <- if (histArgs$freq) "Frequency" else "Probability Density"
+
+  if (printLegend) legendArgs$box.lty <- 0
+  pVal <- if (x@AFI.pval[[AFI]] < .0001) "< .0001" else paste("=", round(x@AFI.pval[[AFI]], nd))
+
+  delta <- length(x@MI.dist) > 0L
+  if (grepl("chi", AFI)) {   ####################################### Chi-squared
+    ChiSq <- x@AFI.obs[AFI]
+    DF <- x@ANOVA[2]
+    histArgs$xlim <- range(c(ChiSq, x@AFI.dist[[AFI]], qchisq(c(.01, .99), DF)))
+    xVals <- seq(histArgs$xlim[1], histArgs$xlim[2], by = .1)
+    theoDist <- dchisq(xVals, df = DF)
+    TheoCrit <- round(qchisq(p = alpha, df = DF, lower.tail = FALSE), 2)
+    Crit <- quantile(histArgs$x, probs = 1 - alpha)
+    if (ChiSq > histArgs$xlim[2]) histArgs$xlim[2] <- ChiSq
+    if (delta) {
+      histArgs$main <- expression(Permutation~Distribution~of~Delta*chi^2)
+      histArgs$xlab <- expression(Delta*chi^2)
+      if (printLegend) {
+        legendArgs$legend <- c(bquote(Theoretical~Delta*chi[Delta*.(paste("df =", DF))]^2 ~ Distribution),
+                               bquote(Critical~chi[alpha~.(paste(" =", alpha))]^2 == .(round(TheoCrit, nd))),
+                               bquote(.(paste("Permuted Critical Value =", round(Crit, nd)))),
+                               bquote(Observed~Delta*chi^2 == .(round(ChiSq, nd))),
+                               expression(paste("")),
+                               bquote(Permuted~italic(p)~.(pVal)))
+      }
+    } else {
+      histArgs$main <- expression(Permutation~Distribution~of~chi^2)
+      histArgs$xlab <- expression(chi^2)
+      if (printLegend) {
+        legendArgs$legend <- c(bquote(Theoretical~chi[.(paste("df =", DF))]^2 ~ Distribution),
+                               bquote(Critical~chi[alpha~.(paste(" =", alpha))]^2 == .(round(TheoCrit, nd))),
+                               bquote(.(paste("Permuted Critical Value =", round(Crit, nd)))),
+                               bquote(Observed~chi^2 == .(round(ChiSq, nd))),
+                               expression(paste("")),
+                               bquote(Permuted~italic(p)~.(pVal)))
+      }
+    }
+    H <- do.call(hist, c(histArgs["x"], plot = FALSE))
+    histArgs$ylim <- c(0, max(H$density, theoDist))
+    if (printLegend) {
+      legendArgs <- c(legendArgs, list(lty = c(2, 2, 1, 1, 0, 0),
+                                       lwd = c(2, 2, 2, 3, 0, 0),
+                                       col = c("black","black","black","red","","")))
+    }
+  } else {        ################################################### other AFIs
+    badness <- grepl(pattern = "fmin|aic|bic|rmr|rmsea|cn|sic|hqc",
+                     x = AFI, ignore.case = TRUE)
+    if (badness) {
+      Crit <- quantile(histArgs$x, probs = 1 - alpha)
+    } else {
+      Crit <- quantile(histArgs$x, probs = alpha)
+    }
+    histArgs$xlim <- range(histArgs$x, x@AFI.obs[AFI])
+    if (delta) {
+      histArgs$main <- bquote(~Permutation~Distribution~of~Delta*.(toupper(AFI)))
+      histArgs$xlab <- bquote(~Delta*.(toupper(AFI)))
+      if (printLegend) {
+        legendArgs$legend <- c(bquote(Critical~Delta*.(toupper(AFI))[alpha~.(paste(" =", alpha))] == .(round(Crit, nd))),
+                               bquote(Observed~Delta*.(toupper(AFI)) == .(round(x@AFI.obs[AFI], nd))),
+                               expression(paste("")),
+                               bquote(Permuted~italic(p)~.(pVal)))
+
+      }
+    } else {
+      histArgs$main <- paste("Permutation Distribution of", toupper(AFI))
+      histArgs$xlab <- toupper(AFI)
+      if (printLegend) {
+        legendArgs$legend <- c(bquote(Critical~.(toupper(AFI))[alpha~.(paste(" =", alpha))] == .(round(Crit, nd))),
+                               bquote(Observed~.(toupper(AFI)) == .(round(x@AFI.obs[AFI], nd))),
+                               expression(paste("")),
+                               bquote(Permuted~italic(p)~.(pVal)))
+
+      }
+    }
+    if (printLegend) {
+      legendArgs <- c(legendArgs, list(lty = c(1, 1, 0, 0),
+                                       lwd = c(2, 3, 0, 0),
+                                       col = c("black","red","","")))
+    }
+  }
+  ## print histogram (and optionally, print legend)
+  suppressWarnings({
+    H <- do.call(hist, histArgs)
+    if (grepl("chi", AFI)) {
+      lines(x = xVals, y = theoDist, lwd = 2, lty = 2)
+      abline(v = TheoCrit, col = "black", lwd = 2, lty = 2)
+    }
+    abline(v = Crit, col = "black", lwd = 2)
+    abline(v = x@AFI.obs[AFI], col = "red", lwd = 3)
+    if (printLegend) do.call(legend, legendArgs)
+  })
+  ## return arguments to create histogram (and optionally, legend)
+  invisible(list(hist = histArgs, legend = legendArgs))
+})
+
