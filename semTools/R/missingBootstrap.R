@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### 17 Nov 2013
+### Last updated: 25 February 2016
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 setClass("BootMiss", representation(timeTrans = "numeric", timeFit = "numeric", transData = "data.frame", bootDist = "vector", origChi = "numeric", df = "numeric", bootP="numeric"))
@@ -371,7 +371,8 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
                              Sigma, Mu, group, ChiSquared, EMcov,
                              writeTransData = FALSE, transDataOnly = FALSE,
                              writeBootData = FALSE, bootSamplesOnly = FALSE,
-                             writeArgs, seed = NULL, suppressWarn = TRUE, ...) {
+                             writeArgs, seed = NULL, suppressWarn = TRUE,
+                             showProgress = TRUE, ...) {
   if(writeTransData) transDataOnly <- TRUE
   if(writeBootData) bootSamplesOnly <- TRUE
 
@@ -564,9 +565,6 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     lavaanArgs$slotParTable <- x@ParTable
     lavaanArgs$slotModel <- x@Model
     lavaanArgs$slotOptions <- x@Options
-    ## run bootstrap fits
-    output$timeFit <- system.time(bootFits <- sapply(bootSamples, fitBootSample,
-                                                  args = lavaanArgs, suppress = suppressWarn))    
   } else {
     lavaanArgs$model <- model
     lavaanArgs$missing <- "fiml"
@@ -576,11 +574,27 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     if (!exists("auto.var", where = lavaanArgs)) lavaanArgs$auto.var <- TRUE
     if (!exists("auto.cov.y", where = lavaanArgs)) lavaanArgs$auto.cov.y <- TRUE
     if (!exists("auto.cov.lv.x", where = lavaanArgs)) lavaanArgs$auto.cov.lv.x <- TRUE
-    ## run bootstrap fits
-    output$timeFit <- system.time(bootFits <- sapply(bootSamples, fitBootSample,
-                                                  args = lavaanArgs, suppress = suppressWarn))    
   }
-  
+  ## run bootstrap fits
+  if (showProgress) {
+    mypb <- txtProgressBar(min = 1, max = nBoot, initial = 1, char = "=",
+                           width = 50, style = 3, file = "")
+    bootFits <- numeric()
+    tStart <- Sys.time()
+    for (j in 1:nBoot) {
+      bootFits[j] <- fitBootSample(bootSamples[[j]], args = lavaanArgs,
+                                   suppress = suppressWarn)
+      setTxtProgressBar(mypb, j)
+    }
+    close(mypb)
+    output$timeFit <- Sys.time() - tStart
+  } else {
+    tStart <- Sys.time()
+    bootFits <- sapply(bootSamples, fitBootSample, args = lavaanArgs,
+                       suppress = suppressWarn)
+    output$timeFit <- Sys.time() - tStart
+  }
+
   ## stack groups, save transformed data and distribution in output object
   for (g in seq_along(myTransDat)) myTransDat[[g]][ , group] <- group.label[g]
   output$Transformed.Data <- do.call("rbind", myTransDat)
