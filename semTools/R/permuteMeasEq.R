@@ -259,8 +259,8 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
                    x = names(AFI.obs), ignore.case = TRUE)
   ## calculate all one-directional p-values
   AFI.pval <- mapply(FUN = function(x, y, b) {
-      if (b) return(mean(x <= y, na.rm = TRUE))
-      mean(x >= y, na.rm = TRUE)
+      if (b) return(mean(x >= y, na.rm = TRUE))
+      mean(x <= y, na.rm = TRUE)
     }, x = unclass(AFI.dist), y = AFI.obs, b = badness)
 
   ## extract distribution of maximum modification indices
