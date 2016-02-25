@@ -11,7 +11,7 @@ Modification indices for equality constraints on parameters specified in \code{p
 \usage{
 permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
               param = NULL, AFIs = NULL, moreAFIs = NULL,
-              maxSparse = 10, maxNonconv = 10)
+              maxSparse = 10, maxNonconv = 10, showProgress = TRUE)
 }
 \arguments{
   \item{nPermute}{
@@ -41,6 +41,9 @@ permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
 }
   \item{maxNonconv}{
   An integer indicating the maximum number of consecutive times that randomly permuted group assignment can yield a sample for which the model does not converge on a solution. If such a sample occurs, group assignment is randomly permuted again, repeatedly until a sample is obtained for which the model does converge. If \code{maxNonconv} is exceeded, \code{NA} will be returned for that iteration of the permutation distribution, and a warning will be printed when using \code{show} or \code{summary}.
+}
+  \item{showProgress}{
+	Logical. Indicating whether to display a progress bar while permuting.
 }
 }
 \details{
