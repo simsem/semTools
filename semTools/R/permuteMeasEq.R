@@ -129,7 +129,7 @@ permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
 ## Function to permute difference in fits
 permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
                           param = NULL, AFIs = NULL, moreAFIs = NULL,
-                          maxSparse = 10, maxNonconv = 10) {
+                          maxSparse = 10, maxNonconv = 10, showProgress = TRUE) {
   library(lavaan)
   nPermute <- as.integer(nPermute[1])
 
@@ -227,9 +227,24 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
 
   ###################### PERMUTED RESULTS ###########################
   ## permute groups and return distributions of delta-AFIs and largest MI
-  permuDist <- lapply(1:nPermute, permuteOnce, d = allData, G = G, AFIs = AFIs,
-                      moreAFIs = moreAFIs, uncon = uncon, con = con, null = null,
-                      param = param, maxSparse = maxSparse, maxNonconv = maxNonconv)
+  if (showProgress) {
+    mypb <- txtProgressBar(min = 1, max = nPermute, initial = 1, char = "=",
+                           width = 50, style = 3, file = "")
+    permuDist <- list()
+    for (j in 1:nPermute) {
+      permuDist[[j]] <- permuteOnce(j, d = allData, con = con, uncon = uncon,
+                                    null = null, param = param, G = G,
+                                    AFIs = AFIs, moreAFIs = moreAFIs,
+                                    maxSparse = maxSparse, maxNonconv = maxNonconv)
+      setTxtProgressBar(mypb, j)
+    }
+    close(mypb)
+  } else {
+    permuDist <- lapply(1:nPermute, permuteOnce, d = allData, con = con,
+                        uncon = uncon, null = null, param = param, G = G,
+                        AFIs = AFIs, moreAFIs = moreAFIs,
+                        maxSparse = maxSparse, maxNonconv = maxNonconv)
+  }
 
   ## extract AFI distribution
   if (length(AFI.obs) > 1) {
