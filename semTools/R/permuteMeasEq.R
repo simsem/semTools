@@ -119,7 +119,7 @@ permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
       AFI <- unlist(fit0)
       MI <- NULL
     } else {
-      AFI <- unlist(fit1) - unlist(fit0)
+      AFI <- unlist(fit0) - unlist(fit1)
       MI <- max(getMIs(out0, param)$X2)
     }
   }
@@ -204,7 +204,7 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
     AFI.obs <- unlist(AFI0)
     MI.obs <- data.frame(NULL)
   } else {
-    AFI.obs <- unlist(AFI1) - unlist(AFI0)
+    AFI.obs <- unlist(AFI0) - unlist(AFI1)
     MI.obs <- getMIs(con, param = param)
   }
 
