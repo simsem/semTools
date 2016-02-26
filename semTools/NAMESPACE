@@ -39,6 +39,6 @@ export(
 	partialInvariance, partialInvarianceCat,
 	quark, combinequark,
 	spatialCorrect,
-	calculateDIF, permuteMeasEq,
+	permuteMeasEq,
 	ci.reliability
 )

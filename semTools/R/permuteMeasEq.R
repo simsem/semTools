@@ -21,7 +21,7 @@ getMIs <- function(con, param) {
   if (class(con) != "lavaan") stop("This function only applies to fitted lavaan models.")
   if (con@Data@ngroups == 1L) stop("This function only applies to multiple-group models.")
   ## save all estimates from less constrained model
-  PT <- parTable(con)[ , c("lhs","op","rhs","group","plabel")]
+  PT <- lavaan::parTable(con)[ , c("lhs","op","rhs","group","plabel")]
   ## extract parameters of interest
   if (param[1] == "loadings") params <- PT[PT$op == "=~", ]
   if (param[1] == "intercepts") params <- PT[PT$lhs %in% con@Data@ov$name & PT$op == "~1", ]
@@ -33,7 +33,7 @@ getMIs <- function(con, param) {
     params <- PT[allNames %in% param, ]
   }
   ## return modification indices for specified constraints (param)
-  MIs <- lavTestScore(con)$uni
+  MIs <- lavaan::lavTestScore(con)$uni
   MIs[MIs$lhs %in% params$plabel, ]
 }
 
@@ -49,7 +49,7 @@ permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
     ## for ordered indicators, check that groups have same observed categories
     ordVars <- con@Data@ov$name[con@Data@ov$type == "ordered"]
     if (length(ordVars) > 0) {
-      onewayTables <- lavTables(d, dimension = 1L,
+      onewayTables <- lavaan::lavTables(d, dimension = 1L,
                                 categorical = ordVars, group = G)
       if (any(onewayTables$obs.prop == 1)) {
         nSparse <- nSparse + 1L
@@ -58,12 +58,12 @@ permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
     }
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan(data = d, group = G, slotParTable = null@ParTable,
+      out.null <- lavaan::lavaan(data = d, group = G, slotParTable = null@ParTable,
                          slotOptions = null@Options)
     } else out.null <- NULL
 
     ## fit constrained model, check for convergence
-    suppressWarnings(try(out0 <- lavaan(data = d, group = G,
+    suppressWarnings(try(out0 <- lavaan::lavaan(data = d, group = G,
                                         slotParTable = con@ParTable,
                                         slotOptions = con@Options)))
     if (!exists("out0")) {
@@ -77,7 +77,7 @@ permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
 
     ## fit unconstrained model (unless NULL), check for convergence
     if (!is.null(uncon)) {
-    suppressWarnings(try(out1 <- lavaan(data = d, group = G,
+    suppressWarnings(try(out1 <- lavaan::lavaan(data = d, group = G,
                                         slotParTable = uncon@ParTable,
                                         slotOptions = uncon@Options)))
     if (!exists("out1")) {
@@ -94,9 +94,9 @@ permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
     fit1 <- list()
     fit0 <- list()
     if (!is.null(AFIs[1])) {
-      if (!is.null(uncon)) fit1[[1]] <- fitMeasures(out1, fit.measures = AFIs,
+      if (!is.null(uncon)) fit1[[1]] <- lavaan::fitMeasures(out1, fit.measures = AFIs,
                                                     baseline.model = out.null)
-      fit0[[1]] <- fitMeasures(out0, fit.measures = AFIs,
+      fit0[[1]] <- lavaan::fitMeasures(out0, fit.measures = AFIs,
                                baseline.model = out.null)
     }
     if (!is.null(moreAFIs[1])) {
@@ -130,7 +130,6 @@ permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
 permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
                           param = NULL, AFIs = NULL, moreAFIs = NULL,
                           maxSparse = 10, maxNonconv = 10) {
-  library(lavaan)
   nPermute <- as.integer(nPermute[1])
 
   ## check that "param" is NULL if uncon is NULL, and check for lavaan class
@@ -182,9 +181,9 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
                  "Information criteria unavailable for least-squares estimators.",
                  sep = "\n"))
     }
-    if (!is.null(uncon)) AFI1[[1]] <- fitMeasures(uncon, fit.measures = AFIs,
+    if (!is.null(uncon)) AFI1[[1]] <- lavaan::fitMeasures(uncon, fit.measures = AFIs,
                                                   baseline.model = null)
-    AFI0[[1]] <- fitMeasures(con, fit.measures = AFIs, baseline.model = null)
+    AFI0[[1]] <- lavaan::fitMeasures(con, fit.measures = AFIs, baseline.model = null)
   }
   ## check validity of user-specified moreAFIs
   if (!is.null(moreAFIs)) {
@@ -256,7 +255,7 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
   }
 
   ## save parameter table for show/summary methods
-  PT <- as.data.frame(parTable(con))
+  PT <- as.data.frame(lavaan::parTable(con))
   PT$par <- paste0(PT$lhs, PT$op, PT$rhs)
   PT$group.label[PT$group > 0] <- con@Data@group.label[PT$group]
 
