@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 February 2016
+### Last updated: 26 February 2016
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -384,8 +384,20 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
   histArgs$freq <- !grepl("chi", AFI)
   histArgs$ylab <- if (histArgs$freq) "Frequency" else "Probability Density"
 
-  if (printLegend) legendArgs$box.lty <- 0
-  pVal <- if (x@AFI.pval[[AFI]] < .0001) "< .0001" else paste("=", round(x@AFI.pval[[AFI]], nd))
+  if (printLegend) {
+    if (is.null(legendArgs$box.lty)) legendArgs$box.lty <- 0
+    if (nd < length(strsplit(as.character(1 / alpha), "")[[1]]) - 1) {
+      warning(paste0("The number of digits argument (nd = ", nd ,
+                     ") is too low to display your p value at the",
+                     " same precision as your requested alpha level (alpha = ",
+                     alpha, ")"))
+    }
+    if (x@AFI.pval[[AFI]] < (1 / 10^nd)) {
+      pVal <- paste(c("< .", rep(0, nd - 1),"1"), collapse = "")
+    } else {
+      pVal <- paste("=", round(x@AFI.pval[[AFI]], nd))
+    }
+  }
 
   delta <- length(x@MI.dist) > 0L
   if (grepl("chi", AFI)) {   ####################################### Chi-squared
@@ -465,7 +477,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
   }
   ## print histogram (and optionally, print legend)
   suppressWarnings({
-    H <- do.call(hist, histArgs)
+    do.call(hist, histArgs)
     if (grepl("chi", AFI)) {
       lines(x = xVals, y = theoDist, lwd = 2, lty = 2)
       abline(v = TheoCrit, col = "black", lwd = 2, lty = 2)

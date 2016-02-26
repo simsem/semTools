@@ -105,7 +105,7 @@ miout <- measurementInvariance(mod.config, data = HS, std.lv = TRUE,
 myAFIs <- c("chisq","cfi","rmsea","srmr","mfi","aic")
 moreAFIs <- c("gammaHat","adjGammaHat")
 
-## Use only 20 permutations for a demo.  In practice, 
+## Use only 20 permutations for a demo.  In practice,
 ## use > 1000 to reduce sampling variability of estimated p values
 
 ## test configural invariance
@@ -133,6 +133,12 @@ outsum <- summary(out.scalar, alpha = .50)
 
 ## notice that the returned object is the table of DIF tests
 outsum
+
+## visualize permutation distribution
+hist(out.config, AFI = "chisq")
+hist(out.metric, AFI = "chisq", nd = 2, alpha = .01,
+     legendArgs = list(x = "topright"))
+hist(out.scalar, AFI = "cfi", printLegend = FALSE)
 
 }
 }

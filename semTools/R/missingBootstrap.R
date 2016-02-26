@@ -1,8 +1,8 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 February 2016
+### Last updated: 26 February 2016
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
-setClass("BootMiss", representation(timeTrans = "numeric", timeFit = "numeric", transData = "data.frame", bootDist = "vector", origChi = "numeric", df = "numeric", bootP="numeric"))
+setClass("BootMiss", representation(time = "list", transData = "data.frame", bootDist = "vector", origChi = "numeric", df = "numeric", bootP="numeric"))
 
 
 #########################################
@@ -17,95 +17,85 @@ function(object) {
       "\n    i.e., pchisq(", object@origChi, ", df = ",
                     object@df, ", lower.tail = FALSE)\n",
       "\nBootstrapped p value = ", object@bootP, "\n\n", sep = "")
+  invisible(object)
 })
 
 setMethod("summary", "BootMiss",
 function(object) {
-  ## format a time stamp to print to the screen
-  timeStamp <- function(y) {
-    Time <- list(seconds = y)
-    if (Time$seconds > 60) {
-      Time$minutes <- Time$seconds %/% 60
-      Time$seconds <- Time$seconds %% 60
-      if (Time$minutes > 60) {
-        Time$hours <- Time$minutes %/% 60
-        Time$minutes <- Time$minutes %% 60
-        if (Time$hours > 24) {
-          Time$days <- Time$hours %/% 24
-          Time$hours <- Time$hours %% 24
-        }
-      }
-    }
-    myNames <- names(Time)
-    myTimes <- as.numeric(Time)
-    if (any(myTimes == 1)) {
-      Singular <- which(myTimes == 1)
-      nameLetters <- strsplit(myNames[Singular], split = "")
-      newNames <- sapply(nameLetters, function(z) paste(z[-length(z)], collapse = ""))
-      myNames[Singular] <- newNames
-    }
-    paste(rev(myTimes), rev(myNames), collapse = ", ")
-  }
-  ## print information to screen
-  cat("It took", timeStamp(object@timeTrans), "to transform the data.\n",
-      "\nIt took", timeStamp(object@timeFit), "\nto fit the model to",
-      length(object@bootDist), "bootstrapped samples.\n",
-      "\nMean of Theoretical Distribution = DF =", object@df,
+  cat("Time elapsed to transform the data:\n")
+  print(object@time$transform)
+  cat("\nTime elapsed to fit the model to", length(object@bootDist),
+      "bootstrapped samples:\n")
+  print(object@time$fit)
+  cat("\nMean of Theoretical Distribution = DF =", object@df,
       "\nVariance of Theoretical Distribution = 2*DF =", 2*object@df,
       "\n\nMean of Bootstrap Distribution =", mean(object@bootDist),
       "\nVariance of Bootstrap Distribution =",
       var(object@bootDist), "\n\n")
-  print(object)
+  show(object)
+  invisible(object)
 })
 
 setMethod("hist", "BootMiss",
-function(x, conf = .95, legend = c("left", "right", "none"), ...) {
-  if (length(legend) > 1) legend <- legend[1]
+function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
+         legendArgs = list(x = "topleft")) {
   ChiSq <- x@origChi
   DF <- x@df
-  pVal <- x@bootP
-  
   bootDist <- x@bootDist
-  theoDist <- dchisq(seq(0, max(c(ChiSq, bootDist)), by = .1), df = DF)
-  Crit <- round(qchisq(p = conf, df = DF), 2)
-  Lim <- c(0, max(c(ChiSq, bootDist)))
+  bCrit <- round(quantile(bootDist, probs = 1 - alpha), nd)
+  theoDist <- dchisq(seq(.1, max(c(ChiSq, bootDist)), by = .1), df = DF)
+  Crit <- round(qchisq(p = alpha, df = DF, lower.tail = FALSE), nd)
+  Lim <- c(0, max(c(ChiSq, bootDist, Crit)))
   if (ChiSq > Lim[2]) Lim[2] <- ChiSq
-  
-  histArgs <- list(x = bootDist, freq = FALSE, col = "grey75", xlim = Lim,
-                   main = expression("Model-Based Bootstrap Distribution of" ~ chi^2),
-                   ylab = "Probability Density", xlab = expression(chi^2))
-  dots <- list(...)
-  duplicates <- which(names(histArgs) %in% names(dots))
-  if (length(duplicates)) histArgs <- histArgs[-duplicates]
-  histArgs <- c(histArgs, dots)
-  
-  H <- do.call(hist, histArgs)
-  if (max(H$density) < max(theoDist)) {
-    histArgs$ylim <- c(0, max(theoDist))
-    H <- do.call(hist, histArgs)
-  }
-  lines(x = seq(0, max(c(ChiSq, bootDist)), by = .1), y = theoDist, lwd = 2)
-  abline(v = Crit, col = "black", lwd = 2, lty = 2)
-  abline(v = ChiSq, col = "red", lwd = 3)
-  if (legend != "none") {
-    if (legend == "left") {
-      xLim <- 0
-      xJust <- 0
-    } 
-    if (legend == "right") {
-      xLim <- Lim[2] - 1
-      xJust <- 1
+
+  histArgs <- list(...)
+  histArgs$x <- bootDist
+  histArgs$freq <- FALSE
+  if (is.null(histArgs$col)) histArgs$col <- "grey69"
+  if (is.null(histArgs$xlim)) histArgs$xlim <- Lim
+  if (is.null(histArgs$main)) histArgs$main <- expression("Model-Based Bootstrap Distribution of" ~ chi^2)
+  if (is.null(histArgs$ylab)) histArgs$ylab <- "Probability Density"
+  if (is.null(histArgs$xlab)) histArgs$xlab <- expression(chi^2)
+
+  if (printLegend) {
+    if (nd < length(strsplit(as.character(1 / alpha), "")[[1]]) - 1) {
+      warning(paste0("The number of digits argument (nd = ", nd ,
+                     ") is too low to display your p value at the",
+                     " same precision as your requested alpha level (alpha = ",
+                     alpha, ")"))
     }
-    suppressWarnings(legend(x = xLim, y = max(H$density), box.lty = 0,
-                            legend = c(bquote(chi[.(paste("df =", DF))]^2),
-                                       bquote(Critical ~ chi[alpha ~ .(paste(" =", 1 - conf))]^2 == .(Crit)),
-                                       expression(Observed ~ chi^2), bquote(.("")),
-                                       bquote(Bootstrap ~ italic(p) == .(pVal))),
-                            yjust = 1, xjust = xJust, lty = c(1, 2, 1, 0, 0),
-                            lwd = c(2, 2, 3, 0, 0), cex = c(1.1, 1, 1, 1, .9),
-                            col = c("black", "black", "red", "", "")))    
+    pVal <- round(x@bootP, nd)
+    if (x@bootP < (1 / 10^nd)) {
+      pVal <- paste(c("< .", rep(0, nd - 1),"1"), collapse = "")
+    } else {
+      paste("=", round(x@bootP, nd))
+    }
+
+    if (is.null(legendArgs$box.lty)) legendArgs$box.lty <- 0
+    if (is.null(legendArgs$lty)) legendArgs$lty <- c(1, 2, 2, 1, 0, 0)
+    if (is.null(legendArgs$lwd)) legendArgs$lwd <- c(2, 2, 2, 3, 0, 0)
+    #if (is.null(legendArgs$cex)) legendArgs$cex <- c(1.1, 1, 1, 1, 1, 1)
+    if (is.null(legendArgs$col)) legendArgs$col <- c("black","black","grey69","red","", "")
+    legendArgs$legend <- c(bquote(chi[.(paste("df =", DF))]^2),
+                           bquote(Critical ~ chi[alpha ~ .(paste(" =", alpha))]^2 == .(Crit)),
+                           bquote(Bootstrap~Critical~chi[alpha ~ .(paste(" =", alpha))]^2 == .(bCrit)),
+                           expression(Observed ~ chi^2),
+                           bquote(.("")),
+                           bquote(Bootstrap ~ italic(p) ~~ .(pVal)))
   }
-  summary(x)
+
+  H <- do.call(hist, c(histArgs["x"], plot = FALSE))
+  histArgs$ylim <- c(0, max(H$density, theoDist))
+  suppressWarnings({
+    do.call(hist, histArgs)
+    lines(x = seq(.1, max(c(ChiSq, bootDist)), by = .1), y = theoDist, lwd = 2)
+    abline(v = Crit, col = "black", lwd = 2, lty = 2)
+    abline(v = bCrit, col = "grey69", lwd = 2, lty = 2)
+    abline(v = ChiSq, col = "red", lwd = 3)
+    if (printLegend) do.call(legend, legendArgs)
+  })
+  ## return arguments to create histogram (and optionally, legend)
+  invisible(list(hist = histArgs, legend = legendArgs))
 })
 
 ## Function to execute Transformation 1 on a single missing-data pattern
@@ -134,17 +124,17 @@ trans2 <- function(dat, Sigma, Mu, EMcov) {
     }
     ga
   }
-  
+
   ## Computing Derivative of Function of A (eq. 13)
   eq13 <- function(A) {
     deriv12 <- matrix(0, nrow = pStar, ncol = pStar)
     for (j in 1:J) {
       Tj1 <- Mjs[[j]] %*% A %*% Hjs[[j]]
       deriv12 <- deriv12 + 2*Njs[j]*Dupinv %*% kronecker(Tj1, Mjs[[j]]) %*% Dup
-    } 
+    }
     deriv12
-  }  
-  
+  }
+
   ## get missing data patterns
   R <- ifelse(is.na(dat), 1, 0)
   rowMissPatt <- apply(R, 1, function(x) paste(x, collapse = ""))
@@ -154,16 +144,16 @@ trans2 <- function(dat, Sigma, Mu, EMcov) {
   J <- length(MDpattern) # number of MD patterns
   p <- ncol(dat) # number of variables in model
   pStar <- p*(p + 1) / 2  # number of nonredundant covariance elements
-  
+
   ## create empty lists for each MD pattern
   Xjs <- vector("list", J)
   Hjs <- vector("list", J)
   Mjs <- vector("list", J)
-  
+
   ## Create Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
   Dup <- lavaan::duplicationMatrix(p)
   Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
-  
+
   ## step through each MD pattern, populate Hjs and Mjs
   for (j in 1:J) {
     Xjs[[j]] <- apply(dat[rowMissPatt == MDpattern[j], ], 2, scale, scale = FALSE)
@@ -174,7 +164,7 @@ trans2 <- function(dat, Sigma, Mu, EMcov) {
     Mjs[[j]] <- replace(Sj, !is.na(Sj), solve(Sigma[observed, observed]))
     Mjs[[j]] <- replace(Mjs[[j]], is.na(Mjs[[j]]), 0)
   }
-  
+
   ## Compute starting Values for A
   if (is.null(EMcov)) {
     A <- diag(p)
@@ -186,7 +176,7 @@ trans2 <- function(dat, Sigma, Mu, EMcov) {
     B <- Sigrt %*% EMrti
     A <- .5*(B + t(B))
   }
-  
+
   ## Newton Algorithm for finding root (eq. 14)
   crit <- .1
   a <- c(A)
@@ -198,8 +188,8 @@ trans2 <- function(dat, Sigma, Mu, EMcov) {
     fA <- eq12(A)
     crit <- max(abs(fA))
   }
-  
-  ## Transform dataset X to dataset Y 
+
+  ## Transform dataset X to dataset Y
   Yjs <- Xjs
   for (j in 1:J) {
     observed <- !is.na(Xjs[[j]][1, ])
@@ -225,7 +215,7 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
     }
     Mjtoti %*% M
   }
-  
+
   # Computing Function of A (eq. 18) whose root is desired
   eq18 <- function(A) {
     ga <- rep(0, pStar)
@@ -239,7 +229,7 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
     }
     ga
   }
-  
+
   # Computing Derivative of Function eq. 18
   deriv18 <- function(A) {
     d18 <- matrix(0, nrow = pStar, ncol = pStar)
@@ -253,7 +243,7 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
     }
     d18
   }
-  
+
   ## get missing data patterns
   R <- ifelse(is.na(dat), 1, 0)
   rowMissPatt <- apply(R, 1, function(x) paste(x, collapse = ""))
@@ -263,7 +253,7 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
   J <- length(MDpattern) # number of MD patterns
   p <- ncol(dat) # number of variables in model
   pStar <- p*(p + 1) / 2  # number of nonredundant covariance elements
-  
+
   ## create empty lists for each MD pattern
   Xjs <- vector("list", J)
   Ybarjs <- vector("list", J)
@@ -271,11 +261,11 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
   Mjs <- vector("list", J)
   Mjtot <- matrix(0, ncol = p, nrow = p)
   Tj3add <- matrix(0, nrow = p, ncol = p * p)
-  
+
   ## Create Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
   Dup <- lavaan::duplicationMatrix(p)
   Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
-  
+
   ## step through each MD pattern, populate Hjs and Mjs
   for (j in 1:J) {
     Xjs[[j]] <- apply(dat[rowMissPatt == MDpattern[j], ], 2, scale, scale = FALSE)
@@ -292,7 +282,7 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
     Tj3add <- Tj3add + Njs[[j]] * kronecker(t(Ybarjs[[j]]), Mjs[[j]])
   }
   Mjtoti <- solve(Mjtot)
-  
+
   ## Compute starting Values for A
   if (is.null(EMcov)) {
     A <- diag(p)
@@ -304,7 +294,7 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
     B <- Sigrt %*% EMrti
     A <- .5*(B + t(B))
   }
-  
+
   ## Newton Algorithm for finding root (eq. 14)
   crit <- .1
   a <- c(A)
@@ -316,7 +306,7 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
     fA <- eq18(A)
     crit <- max(abs(fA))
   }
-  
+
   ## Transform dataset X to dataset Y (Z in the paper, eqs. 15-16)
   Yjs <- Xjs
   for (j in 1:J) {
@@ -378,7 +368,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
 
   check.nBoot <- (!is.numeric(nBoot) | nBoot < 1L) & !transDataOnly
   if (check.nBoot) stop("The \"nBoot\" argument must be a positive integer.")
-  
+
   ## Which transformation?
   if (!(transformation %in% 1:2)) stop("User must specify transformation 1 or 2.
        Consult Savalei & Yuan (2009) for advice.
@@ -389,7 +379,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   ######################
   ## Data Preparation ##
   ######################
-  
+
   ## If a lavaan object is supplied, the extracted values for rawData, Sigma, Mu,
   ## EMcov, and EMmeans will override any user-supplied arguments.
   if (hasArg(x)) {
@@ -411,7 +401,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
       stop("Without a lavaan fitted object, user must supply raw data and model-implied moments.")
     }
     if (!hasArg(model) & !(transDataOnly | bootSamplesOnly)) {
-      stop("Without model syntax or fitted lavaan object, user can only 
+      stop("Without model syntax or fitted lavaan object, user can only
        call this function to save transformed data or bootstrapped samples.")
     }
     if (!hasArg(ChiSquared) & !(transDataOnly | bootSamplesOnly)) {
@@ -422,7 +412,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     if (!any(c(transDataOnly, bootSamplesOnly))) {
       if (!is.numeric(ChiSquared)) stop("The \"ChiSquared\" argument must be numeric.")
     }
-    
+
     ## If user supplies one-group data & moments, convert to lists.
     if (class(rawData) == "data.frame") {
       rawData <- list(rawData)
@@ -434,7 +424,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     }
     if (class(Sigma) == "matrix") Sigma <- list(Sigma)
     if (is.numeric(Mu)) Mu <- list(Mu)
-    
+
     ## check whether EMcov was supplied for starting values in Trans2/Trans3
     if (!hasArg(EMcov)) {
       EMcov <- vector("list", length(Sigma))
@@ -447,20 +437,20 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
         if (unequalDim) stop("Unequal dimensions in Sigma and EMcov.")
       }
     }
-    
+
     ## Check the number of groups by the size of the lists.
     unequalGroups <- !all(length(rawData) == c(length(Sigma), length(Mu)))
     if (unequalGroups) stop("Unequal number of groups in rawData, Sigma, Mu.
        For multiple-group models, rawData must be a list of data frames,
        NOT a single data frame with a \"group\" column.")
-    
+
     ## In each group, check Sigma is symmetric and dimensions match rawData and Mu.
     for (g in seq_along(rawData)) {
       if (!isSymmetric(Sigma[[g]])) stop("Sigma in group ", g, " not symmetric.")
       unequalDim <- !all(ncol(rawData[[g]]) == c(nrow(Sigma[[g]]), length(Mu[[g]])))
       if (unequalDim) stop("Unequal dimensions in rawData, Sigma, Mu.")
     }
-    
+
     ## Check for names of group levels. If NULL, assign arbitrary ones.
     if (!hasArg(group)) group <- "group"
     if (!is.character(group)) stop("The \"group\" argument must be a character string.")
@@ -470,17 +460,17 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
       group.label <- names(rawData)
     }
   }
-  
+
   ## save a copy as myTransDat, whose elements will be replaced iteratively by
   ## group and by missing data pattern within group.
   myTransDat <- rawData
   names(myTransDat) <- group.label
   output <- list()
-  
+
   #########################
   ## Data Transformation ##
   #########################
-  
+
   for (g in seq_along(group.label)) {
     if (transformation == 1) {
       ## get missing data patterns
@@ -490,15 +480,19 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
       myRows <- lapply(patt, function(x) which(rowMissPatt == x))
 
       ## for each pattern, apply transformation
-      output$timeTrans <- system.time(transDatList <- lapply(patt, trans1, rowMissPatt = rowMissPatt,
-                                              dat = rawData[[g]], Sigma = Sigma[[g]], Mu = Mu[[g]]))
+      tStart <- Sys.time()
+      transDatList <- lapply(patt, trans1, rowMissPatt = rowMissPatt,
+                             dat = rawData[[g]], Sigma = Sigma[[g]], Mu = Mu[[g]])
+      output$timeTrans <- Sys.time() - tStart
       for (i in seq_along(patt)) myTransDat[[g]][myRows[[i]], ] <- transDatList[[i]]
     } else {
-      output$timeTrans <- system.time(myTransDat[[g]] <- SavaleiYuan(dat = rawData[[g]],
-                                        Sigma = Sigma[[g]], Mu = Mu[[g]], EMcov = EMcov[[g]]))
+      tStart <- Sys.time()
+      myTransDat[[g]] <- SavaleiYuan(dat = rawData[[g]],vSigma = Sigma[[g]],
+                                     Mu = Mu[[g]], EMcov = EMcov[[g]])
+      output$timeTrans <- Sys.time() - tStart
     }
   }
-  
+
   ## option to end function here
   if (transDataOnly) {
     for (g in seq_along(myTransDat)) myTransDat[[g]][ , group] <- group.label[g]
@@ -510,11 +504,11 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
       if (!exists("file", where = writeArgs)) writeTransArgs$file <- "transformedData.dat"
       if (!exists("row.names", where = writeArgs)) writeArgs$row.names <- FALSE
       if (!exists("na", where = writeArgs)) writeArgs$na <- "-999"
-      
+
       ## add grouping variable and bind together into one data frame
       for (g in seq_along(myTransDat)) myTransDat[[g]][ , group] <- group.label[g]
       writeArgs$x <- do.call("rbind", myTransDat)
-      
+
       ## write to file, print details to screen
       do.call("write.table", writeArgs)
       cat("Transformed data was written to file \"", writeArgs$file, "\" in:\n\n",
@@ -523,11 +517,11 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     }
     return(do.call("rbind", myTransDat))
   }
-  
+
   #############################################
   ## Bootstrap distribution of fit statistic ##
   #############################################
-  
+
   ## draw bootstrap samples
   if (!is.null(seed)) set.seed(seed)
   bootSamples <- lapply(1:nBoot, function(x) getBootSample(myTransDat, group, group.label))
@@ -540,11 +534,11 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     if (!exists("file", where = writeArgs)) writeTransArgs$file <- "bootstrappedSamples.dat"
     if (!exists("row.names", where = writeArgs)) writeArgs$row.names <- FALSE
     if (!exists("na", where = writeArgs)) writeArgs$na <- "-999"
-        
+
     ## add indicator for bootstrapped sample, bind together into one data frame
     for (b in seq_along(bootSamples)) bootSamples[[b]]$bootSample <- b
     writeArgs$x <- do.call("rbind", bootSamples)
-    
+
     ## write to file, print details to screen
     do.call("write.table", writeArgs)
     cat("Bootstrapped samples written to file \"", writeArgs$file, "\" in:\n\n",
@@ -554,11 +548,11 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
 
   ## option to end function here
   if (bootSamplesOnly) return(bootSamples)
-  
+
   ## check for lavaan arguments in (...)
   lavaanArgs <- list(...)
   lavaanArgs$group <- group
-  
+
   ## fit model to bootstrap samples, save distribution of chi-squared test stat
   if (hasArg(x)) {
     ## grab defaults from lavaan object "x"
@@ -607,19 +601,19 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     lavaanArgs$data <- bootSamples[[convSamp]]
     output$Degrees.Freedom <- inspect(do.call("lavaan", lavaanArgs), "fit")["df"]
   }
-  
+
   ## calculate bootstrapped p-value
   output$Bootstrapped.p.Value <- mean(bootFits >= ChiSquared, na.rm = TRUE)
-  
+
   ## print warning if any models didn't converge
   if (any(is.na(bootFits))) {
     nonConvMessage <- paste("Model did not converge for the following bootstrapped samples",
-                            paste(which(is.na(bootFits)), collapse = "\t"), sep = ":\n") 
+                            paste(which(is.na(bootFits)), collapse = "\t"), sep = ":\n")
     warning(nonConvMessage)
   }
-  
-  finalResult <- new("BootMiss", timeTrans = round(output$timeTrans["elapsed"], 2), timeFit = round(output$timeFit["elapsed"], 2), transData = output$Transformed.Data, bootDist = output$Bootstrapped.Distribution, origChi = output$Original.ChiSquared, df = output$Degrees.Freedom, bootP = output$Bootstrapped.p.Value)
-  
+
+  finalResult <- new("BootMiss", time = list(transform = output$timeTrans, fit = output$timeFit), transData = output$Transformed.Data, bootDist = output$Bootstrapped.Distribution, origChi = output$Original.ChiSquared, df = output$Degrees.Freedom, bootP = output$Bootstrapped.p.Value)
+
   finalResult
 }
 
