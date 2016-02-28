@@ -3,6 +3,7 @@
 \alias{permuteMeasEq-class}
 \alias{show,permuteMeasEq-method}
 \alias{summary,permuteMeasEq-method}
+\alias{hist,permuteMeasEq-method}
 \title{
   Class for the Results of Permutation Randomization Tests of Measurement Equivalence and DIF
 }
