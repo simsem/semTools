@@ -1,9 +1,9 @@
 importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
 importFrom("lavaan", summary, inspect, anova)
 importFrom("stats", 
-           cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, uniroot, lm, pnorm, pf, var, vcov, fitted.values, nobs, residuals, dist, ptukey, dchisq)
+           cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, uniroot, lm, pnorm, pf, var, vcov, fitted.values, nobs, residuals, dist, ptukey, dchisq, na.omit, qf)
 importFrom("utils", 
-           capture.output, write.table, combn, read.table, read.csv)
+           capture.output, write.table, combn, read.table, read.csv, setTxtProgressBar, txtProgressBar)
 importFrom("graphics", hist, plot, par, abline, lines, legend)
 
 exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss, permuteMeasEq)
