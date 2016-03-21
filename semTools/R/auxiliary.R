@@ -2,7 +2,7 @@
 ## Author: Sunthud Pornprasertmanit
 # Description: Automatically accounts for auxiliary variable in full information maximum likelihood
 
-setClass("lavaanStar", contains = "lavaan", representation(nullfit = "vector", imputed="list", auxNames="vector"), prototype(nullfit=c(chi=0,df=0), imputed=list(), auxNames = ""))
+setClass("lavaanStar", contains = "lavaan", representation(nullfit = "vector", imputed="list", imputedResults="list", auxNames="vector"), prototype(nullfit=c(chi=0,df=0), imputed=list(), imputedResults=list(), auxNames = ""))
 
 setMethod("inspect", "lavaanStar",
 function(object, what="free") {
@@ -420,5 +420,73 @@ fitMeasuresLavaanStar <- function(object) {
 			result["rni.scaled"] <- RNI
 		}
 	} 
+	
+	#logl
+	imputed <- object@imputed
+	if(length(imputed) > 0) {
+		loglikval <- unlist(imputed[["logl"]])
+		npar <- result["npar"]
+		result["unrestricted.logl"] <- loglikval["unrestricted.logl"]
+		result["logl"] <- loglikval["logl"]
+		result["aic"] <-  -2*loglikval["logl"] + 2*npar
+        result["bic"] <- -2*loglikval["logl"] + npar*log(result["ntotal"])
+		N.star <- (result["ntotal"] + 2) / 24
+		result["bic2"] <- -2*loglikval["logl"] + npar*log(N.star)
+		result <- result[-which("fmin" == names(result))]
+	}
 	result	
 }
+
+
+setMethod("summary", "lavaanStar",
+function(object, fit.measures=FALSE, ...) {
+	getMethod("summary", "lavaan")(object, fit.measures=FALSE, ...)
+	if(fit.measures) {
+		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: inspect(object, what='fit').\n")
+	}
+})
+
+setMethod("anova", signature(object = "lavaanStar"),
+function(object, ...) {
+	imputed <- object@imputed
+	if(length(imputed) > 0) {
+		dots <- list(...)
+		if(length(dots) > 1) stop("Multiple Imputed Results: Cannot compare more than two objects")
+		object2 <- dots[[1]]
+		imputed2 <- object2@imputed
+		if(length(imputed) == 0) stop("The second object must come from multiple imputation.")
+		listlogl1 <- imputed[["indivlogl"]]
+		listlogl2 <- imputed2[["indivlogl"]]
+		df1 <- inspect(object, "fit")["df"]
+		df2 <- inspect(object2, "fit")["df"]
+		if(df2 < df1) {
+			templogl <- listlogl1
+			listlogl1 <- listlogl2
+			listlogl2 <- templogl
+		}
+		anovaout <- mapply(anova, object@imputedResults, object2@imputedResults, SIMPLIFY = FALSE)
+		chidiff <- sapply(anovaout, function(u) u[2, "Chisq diff"])
+		dfdiff <- anovaout[[1]][2, "Df diff"]
+		fit.altcc <- mean(chidiff)
+		naive <- c(fit.altcc, dfdiff, 1 - pchisq(fit.altcc, dfdiff))
+		names(naive) <- c("chisq", "df", "pvalue")	
+		lmrr <- lmrrPooledChi(chidiff, dfdiff)
+		mr <- NULL
+		mplus <- NULL
+		if(("loglmod" %in% names(listlogl1)) | ("loglmod" %in% names(listlogl2))) {
+			logl1 <- listlogl1[["loglmod"]]
+			logl2 <- listlogl2[["loglmod"]]
+			chimean <- mean((logl1 - logl2)*2)
+			m <- length(logl1)
+			ariv <- ((m+1)/((m-1)*dfdiff))*(fit.altcc-chimean)
+
+			mplus <- mplusPooledChi(chimean, dfdiff, ariv)
+			mr <- mrPooledChi(chimean, m, dfdiff, ariv)
+		}
+		result <- list(naive = naive, lmrr = lmrr, mr = mr, mplus = mplus)
+		return(result)
+	} else {
+		return(getMethod("anova", "lavaan")(object, ...))
+	}
+})
+

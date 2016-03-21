@@ -467,6 +467,7 @@ randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
 HSMiss[randomMiss] <- NA
 
 out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
+
 summary(out)
 inspect(out, "fit")
 inspect(out, "impute")
@@ -477,12 +478,21 @@ summary(outscaled)
 inspect(outscaled, "fit")
 inspect(outscaled, "impute")
 
+HS.model2 <- ' visual  =~ x1 + a*x2 + a*x3
+              textual =~ x4 + b*x5 + b*x6
+              speed   =~ x7 + c*x8 + c*x9 '
+
+out2 <- cfa.mi(HS.model2, data=HSMiss, m = 3, chi="all")
+
+anova(out, out2)
+
 ##Multiple group example
 HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
 out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
 summary(out2)
 inspect(out2, "fit")
 inspect(out2, "impute")
+
 
 ##Example using previously imputed data with runMI
 library(Amelia)
@@ -603,6 +613,19 @@ summary(out5)
 inspect(out5, "fit")
 inspect(out5, "impute")
 
+analyzeModel2 <- "
+f1 =~ y1 + y2 + y3 + y4
+"
+out6 <- cfa.mi(analyzeModel2, data=dat, ordered=paste0("y", 1:4), std.lv = TRUE, m = 3, miArgs=list(ords = c("y1", "y2", "y3", "y4")))
+summary(out6)
+
+wald.syntax <- '
+	f1=~y1 - f1=~y2
+	f1=~y1 - f1=~y3
+	f1=~y1 - f1=~y4
+'
+wald(out6, wald.syntax)
+
 # Invariance test
 
 library(simsem)
@@ -709,27 +732,6 @@ u8 ~~ c(1, NA)*u8
 "
 
 outWeak5 <- cfa.mi(weak5, data = imputedData, group = "g", parameterization="theta", estimator="wlsmv")
-
-popmodel<-'A2~0.5*B1
- B2~0.3*A1+0.5*B1
- A1~~0.2*B1
- A2~~0.2*B2'
-
-CLmodel<-'A2~B1
- B2~A1+B1
- A1~~B1
- A2~~B2'
-
-dat <- simulateData(popmodel, sample.nobs = 200)
-dat[matrix(as.logical(rbinom(200*4, 1, 0.1)), 200, 4)] <- NA
-
-library(mice)
-imp <- mice(dat, m=5)
-mice.imp <- NULL
-for(i in 1:5) mice.imp[[i]] <- complete(imp,action=i,include=FALSE)
-
-library(semTools)
-out <- runMI(CLmodel, data=mice.imp, chi="all",fun="sem")
 
 ############### FMI function
 

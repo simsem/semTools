@@ -63,8 +63,10 @@ Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial invariance in ordered
 	\code{partialInvariance} for the automated function for finding partial invariance models
 }
 \examples{
+\dontrun{
 model <- ' f1 =~ u1 + u2 + u3 + u4'
 
 measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
     estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4"))
+}
 }

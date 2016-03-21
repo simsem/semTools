@@ -3,6 +3,7 @@
 \alias{lavaanStar-class}
 \alias{inspect,lavaanStar-method}
 \alias{summary,lavaanStar-method}
+\alias{anova,lavaanStar-method}
 
 \title{Class For Representing A (Fitted) Latent Variable Model with Additional Elements}
 \description{This is the \code{lavaan} class that contains additional information about the fit values from the null model. Some functions are adjusted according to the change.}
@@ -26,7 +27,8 @@ about the data.}
     \item{\code{Fit}:}{Object of internal class \code{"Fit"}: the 
       results of fitting the model}
 	\item{\code{nullfit}:}{The fit-indices information from the null model}
-	\item{\code{imputed}:}{The list of information from running multiple imputation. The first element is the convergence rate of the target and null models. The second element is the fraction missing information. The first estimate of FMI (FMI.1) is asymptotic FMI and the second estimate of FMI (FMI.2) is corrected for small numbers of imputation. The third element is the fit values of the target model by the specified chi-squared methods. The fourth element is the fit values of the null model by the specified chi-square methods.}
+	\item{\code{imputed}:}{The list of information from running multiple imputation. The first element is the convergence rate of the target and null models. The second element is the fraction missing information. The first estimate of FMI (FMI.1) is asymptotic FMI and the second estimate of FMI (FMI.2) is corrected for small numbers of imputation. The third element is the fit values of the target model by the specified chi-squared methods. The fourth element is the fit values of the null model by the specified chi-square methods. The fifth element is the adjusted log-likelihood for target model and satuated model. The sixth element is the chi-square values and the log-likehood values (based on fixing parameter estimates as the estimated values) from each imputed data set.}
+	\item{\code{imputedResults}:}{Results from fitting models for imputed data sets.}	
 	\item{\code{auxNames}:}{The list of auxiliary variables in the analysis.}
   }
 }

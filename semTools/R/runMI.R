@@ -50,7 +50,6 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	out <- list(model=model, data=imputed.l[[1]], se="none", do.fit=FALSE)
 	out <- c(out, list(...))
 	template <- do.call(fun, out)
-
     imputed.results.l <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=model, fun=fun, ...))
 	converged.l <- sapply(imputed.results.l, function(x) x@Fit@converged)
 	
@@ -90,10 +89,18 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template@Fit@Sigma.hat <- meanSigmaHat
 	template@Fit@Mu.hat <- meanMuHat
 	comb.results <- miPoolVector(t(coefs),t(se), m)
+	
+	
 	template@Fit@est <- template@ParTable$est <- comb.results$coef
 	template@Fit@se <- template@ParTable$se <- comb.results$se
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
 	template@Model <- imposeGLIST(template@Model, comb.results$coef, template@ParTable)
+	
+	selectVCOV <- lavaan::partable(imputed.results.l[[1]])$free != 0
+	# VCOV
+	VCOVs <- sapply(imputed.results.l, function(x) vecsmat(vcov(x)))
+	
+	template@vcov$vcov <- vcovPool(t(coefs[selectVCOV, ]),t(VCOVs), m)
 	
 	fmi.results <- cbind(lavaan::parameterEstimates(template, remove.system.eq = FALSE, remove.eq = FALSE, remove.ineq = FALSE)[,1:3], group=template@ParTable$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
 
@@ -162,6 +169,11 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	mplusNull <- NULL
 	lmrrScaled <- NULL
 	lmrrScaledNull <- NULL
+	logsat <- NA
+	logalt <- NA
+	loglnull <- NULL
+	loglsat <- NULL
+	loglmod <- NULL
 	
 	if(chi %in% c("lmrr", "all")){
 		lmrr <- lmrrPooledChi(chi1, df)
@@ -188,8 +200,17 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	}
 	
 	if(chi %in% c("mplus", "mr", "all")){
-		mrplus <- mrplusPooledChi(template, imputed.l[converged.l], chi1, df, coef=comb.results$coef, m=m, fun=fun, ...)
-		mrplusNull <- mrplusPooledChi(templateNull, imputed.l[convergedNull.l], chiNull, dfNull, coef=comb.results.null$coef, m=mNull, fun=fun, par.sat=satPartable(template), ...)
+		mrplusOut <- mrplusPooledChi(template, imputed.l[converged.l], chi1, df, coef=comb.results$coef, m=m, fun=fun, ...)
+		mrplus <- mrplusOut[[1]]
+		mrplusChi <- mrplusOut[[2]]
+		mrplusNullOut <- mrplusPooledChi(templateNull, imputed.l[convergedNull.l], chiNull, dfNull, coef=comb.results.null$coef, m=mNull, fun=fun, par.sat=satPartable(template), ...)
+		mrplusNull <- mrplusNullOut[[1]]
+		mrplusNullChi <- mrplusNullOut[[2]]
+		logsat <- mrplus[5] / (1 + mrplus[4])
+		logalt <- mrplus[6] / (1 + mrplus[4])
+		loglnull <- mrplusNullChi[,2]
+		loglsat <- mrplusChi[,1]
+		loglmod <- mrplusChi[,2]
 		
 		if(chi %in% c("mr", "all")){
 			mr <- mrPooledChi(mrplus[1], mrplus[2], mrplus[3], mrplus[4])
@@ -231,14 +252,18 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	summaryImputed[[2]] <- fmi.results
 	summaryImputed[[3]] <- list(lmrr = lmrr, mr = mr, mplus = mplus)
 	summaryImputed[[4]] <- list(lmrr = lmrrNull, mr = mrNull, mplus = mplusNull)
+	summaryImputed[[5]] <- list(unrestricted.logl = logsat, logl = logalt)
+	summaryImputed[[6]] <- list(chiorig = chi1, loglmod = loglmod, loglnull = loglnull, loglsat = loglsat)
+	nameImputed <- c("convergenceRate", "fractionMissing", "targetFit", "nullFit", "logl", "indivlogl")
 	if(!is.null(lmrrScaled)) {
-		summaryImputed[[5]] <- list(lmrr = lmrrScaled)
-		summaryImputed[[6]] <- list(lmrr = lmrrScaledNull)
-		names(summaryImputed) <- c("convergenceRate", "fractionMissing", "targetFit", "nullFit", "targetFit.scaled", "nullFit.scaled")
+		summaryImputed[[7]] <- list(lmrr = lmrrScaled)
+		summaryImputed[[8]] <- list(lmrr = lmrrScaledNull)
+		names(summaryImputed) <- c(nameImputed, "targetFit.scaled", "nullFit.scaled")
 	} else {
-		names(summaryImputed) <- c("convergenceRate", "fractionMissing", "targetFit", "nullFit")
+		names(summaryImputed) <- nameImputed
 	}
 	result@imputed <- summaryImputed
+	result@imputedResults <- imputed.results.l
 
 	return(result)
 }
@@ -356,6 +381,37 @@ names(MI.res)<-c('coef','se','FMI.1','FMI.2')
 #			Sunthud Pornprasertmanit (University of Kansas; psunthud@ku.edu)
 # Date Modified: March 31, 2012
 
+vecsmat <- function(X) X[lower.tri(X, diag = TRUE)]
+
+invvecsmat <- function(x) {
+	p <- (sqrt(1 + 8 * length(x)) - 1) /2
+	X <- matrix(0, p, p)
+	X[lower.tri(X, diag = TRUE)] <- x
+	vars <- diag(X)
+	X <- X + t(X)
+	diag(X) <- vars
+	X
+}
+
+vcovPool <- function(MI.param, MI.cov, imps) {
+   #compute parameter estimates
+  Estimates <- colMeans(MI.param)
+
+#compute between-imputation variance: variance of parameter estimates
+  Bm <- vecsmat(cov(MI.param))
+
+#compute within-imputation variance: average of squared estimated SEs 
+#Um <- colSums(MI.se^2/m)
+  Um <- apply(MI.cov,2,mean)
+
+#Total variance
+#Tm <- Um + (Bm)*((1+m)/m+1)
+#compute total variance: sum of between- and within- variance with correction
+  TV <- Um + ((imps+1)/imps)*Bm
+
+  return(invvecsmat(TV))
+}
+
 lmrrPooledChi <- function(chis, df) {
 	# From Li, Meng, Raghunathan, & Rubin (1991)
 	if(is.matrix(chis)) {
@@ -431,7 +487,6 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat
 	par.sat2$free <- as.integer(rep(0, length(par.sat2$free)))
 	par.sat2$ustart <- est.sat1
 	comb.sat2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...))
-	
     comb.sat2 <- lapply(comb.sat2, forceTest)
 	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
 	
@@ -444,11 +499,13 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat
   	
 	chinew <- cbind(fit.sat2, fit.alt2, (fit.sat2-fit.alt2)*2)
 	chimean <- mean(chinew[,3])
+	logsat <- mean(chinew[,1])
+	logalt <- mean(chinew[,2])
 	
 	fit.altcc <- mean(chi1)
 	ariv <- ((m+1)/((m-1)*df))*(fit.altcc-chimean)
-	resmrCHI <- c(chimean, m, df, ariv)
-	return(resmrCHI)
+	resmrCHI <- c(chimean, m, df, ariv, logsat, logalt)
+	return(list(resmrCHI, chinew))
 }
 
 ##### function that does the calculations for the Mplus chi combination

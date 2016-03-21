@@ -91,6 +91,7 @@ Savalei, V., \& Yuan, K.-H. (2009). On the model-based bootstrap with missing da
     Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
+\dontrun{
 dat1 <- HolzingerSwineford1939
 dat1$x5 <- ifelse(dat1$x1 <= quantile(dat1$x1, .3), NA, dat1$x5)
 dat1$x9 <- ifelse(is.na(dat1$x5), NA, dat1$x9)
@@ -116,5 +117,5 @@ hist(temp, printLegend = FALSE) # suppress the legend
 ## or a list of arguments to legend() via "legendArgs"
 hist(temp, alpha = .01, nd = 3, xlab = "something else", breaks = 25,
      legendArgs = list("bottomleft", box.lty = 2))
-
+}
 }
