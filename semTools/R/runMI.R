@@ -95,7 +95,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	template@Fit@se <- template@ParTable$se <- comb.results$se
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
 	template@Model <- imposeGLIST(template@Model, comb.results$coef, template@ParTable)
-	
+
 	selectVCOV <- lavaan::partable(imputed.results.l[[1]])$free != 0
 	# VCOV
 	VCOVs <- sapply(imputed.results.l, function(x) vecsmat(vcov(x)))
@@ -136,13 +136,15 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	convergedNull.l <- sapply(null.results, function(x) x@Fit@converged)
 	seNullAll <- sapply(null.results, function(x) x@Fit@se)
 	convergedNull.l <- convergedNull.l & apply(seNullAll, 2, function(x) all(!is.na(x) & (x >= 0)))
+	
+	dfNull <- null.results[[1]]@test[[1]]$df
+	if(dfNull == 0) convergedNull.l <- rep(TRUE, m)
 	if(!any(convergedNull.l)) stop("No null model is converged")
 	
 	mNull <- sum(convergedNull.l)
 	convergenceNullRate <- mNull/mOriginal
 	null.results <- null.results[convergedNull.l]
 	chiNull <- sapply(null.results, function(x) x@test[[1]]$stat)
-	dfNull <- null.results[[1]]@test[[1]]$df
 	
 	chiNullScaled1 <- NULL
 	dfNullScaled <- NULL
@@ -200,10 +202,10 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	}
 	
 	if(chi %in% c("mplus", "mr", "all")){
-		mrplusOut <- mrplusPooledChi(template, imputed.l[converged.l], chi1, df, coef=comb.results$coef, m=m, fun=fun, ...)
+		mrplusOut <- mrplusPooledChi(template, imputed.l[converged.l], chi1, df, coef=comb.results$coef, coefs = coefs, m=m, fun=fun, ...)
 		mrplus <- mrplusOut[[1]]
 		mrplusChi <- mrplusOut[[2]]
-		mrplusNullOut <- mrplusPooledChi(templateNull, imputed.l[convergedNull.l], chiNull, dfNull, coef=comb.results.null$coef, m=mNull, fun=fun, par.sat=satPartable(template), ...)
+		mrplusNullOut <- mrplusPooledChi(templateNull, imputed.l[convergedNull.l], chiNull, dfNull, coef=comb.results.null$coef, coefs = coefsNull, m=mNull, fun=fun, par.sat=satPartable(template), ...)
 		mrplusNull <- mrplusNullOut[[1]]
 		mrplusNullChi <- mrplusNullOut[[2]]
 		logsat <- mrplus[5] / (1 + mrplus[4])
@@ -475,7 +477,7 @@ satPartable <- function(fit.alt){
 }
 
 ##### function that does the part of the MR and Mplus combination methods are equal 
-mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat=NULL, ...) {
+mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, coefs, m, fun, par.sat=NULL, ...) {
 	
 	if(is.null(par.sat)) par.sat <- satPartable(template)
 	comb.sat <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat, fun=fun, ...))
@@ -489,15 +491,25 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, m, fun, par.sat
 	comb.sat2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...))
     comb.sat2 <- lapply(comb.sat2, forceTest)
 	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
-	
+
 	par.alt2 <- lavaan::partable(template)
 	par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
 	par.alt2$ustart <- coef
-	comb.alt2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...))
+	par.alt2.l <- rep(list(par.alt2), m)
+	TEMPFUN <- function(ptable, origcoef) {
+		exo <- ptable$exo == 1
+		ptable$ustart[exo] <- origcoef[exo]
+		ptable
+	}
+	par.alt2.l <- mapply(TEMPFUN, par.alt2.l, data.frame(coefs), SIMPLIFY = FALSE)
+	print(par.alt2.l)
+	comb.alt2 <- suppressWarnings(mapply(runlavaanMI, MIdata = imputed.l, syntax = par.alt2.l, SIMPLIFY = FALSE, MoreArgs = list(fun = fun, ...)))
+
+	#comb.alt2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...))
     comb.alt2 <- lapply(comb.alt2, forceTest)
 	fit.alt2 <- sapply(comb.alt2, function(x) inspect(x, "fit")["logl"])
-  	
 	chinew <- cbind(fit.sat2, fit.alt2, (fit.sat2-fit.alt2)*2)
+	
 	chimean <- mean(chinew[,3])
 	logsat <- mean(chinew[,1])
 	logalt <- mean(chinew[,2])

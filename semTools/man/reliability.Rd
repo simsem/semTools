@@ -27,15 +27,15 @@ where \eqn{\lambda_i} is the factor loading of item \emph{i}, \eqn{\psi} is the 
 
 The second coefficient omega (Bentler, 1972, 2009) can be calculated by 
 
-\deqn{ \omega_2 = 1 - \frac{\bold{1}\prime \Theta \bold{1}}{\bold{1}^\prime \hat{\Sigma} \bold{1}}, }
+\deqn{ \omega_2 = \frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2} Var\left( \psi \right)}{\bold{1}^\prime \hat{\Sigma} \bold{1}}, }
 
-where \eqn{\Theta} is the measurement error covariance matrix, \eqn{\hat{\Sigma}} is the model-implied covariance matrix, and \eqn{\bold{1}} is the \eqn{k}-dimensional vector of 1. The first and the second coefficients omega will have different values if there are dual loadings (or the existence of method factors). The first coefficient omega can be viewed as the reliability controlling for the other factors. The second coefficient omega can be viewed as the unconditional reliability. 
+where \eqn{\hat{\Sigma}} is the model-implied covariance matrix, and \eqn{\bold{1}} is the \eqn{k}-dimensional vector of 1. The first and the second coefficients omega will have different values if there are dual loadings (or the existence of method factors). The first coefficient omega can be viewed as the reliability controlling for the other factors (like partial eta-squared in ANOVA). The second coefficient omega can be viewed as the unconditional reliability (like eta-squared in ANOVA). 
 
 The third coefficient omega (McDonald, 1999), which is sometimes referred to hierarchical omega, can be calculated by
 
 \deqn{ \omega_3 =\frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2} Var\left( \psi \right)}{\bold{1}^\prime \Sigma \bold{1}}, }
 
-where \eqn{\Sigma} is the observed covariance matrix. If the model fits the data well, the third coefficient omega will be similar to the other two. Note that if there is a directional effect in the model, all coefficients omega will use the total factor variances, which is calculated by the \code{\link{impliedFactorCov}} function.
+where \eqn{\Sigma} is the observed covariance matrix. If the model fits the data well, the third coefficient omega will be similar to the \eqn{\omega_2}. Note that if there is a directional effect in the model, all coefficients omega will use the total factor variances, which is calculated by the \code{\link{impliedFactorCov}} function.
 
 In conclusion, \eqn{\omega_1}, \eqn{\omega_2}, and \eqn{\omega_3} are different in the denominator. The denominator of the first formula assumes that a model is congeneric factor model where measurement errors are not correlated. The second formula is accounted for correlated measurement errors. However, these two formulas assume that the model-implied covariance matrix explains item relationships perfectly. The residuals are subject to sampling error. The third formula use observed covariance matrix instead of model-implied covariance matrix to calculate the observed total variance. This formula is the most conservative method in calculating coefficient omega.
 
@@ -43,7 +43,7 @@ The average variance extracted (AVE) can be calculated by
 
 \deqn{ AVE = \frac{\bold{1}^\prime \textrm{diag}\left(\Lambda\Psi\Lambda^\prime\right)\bold{1}}{\bold{1}^\prime \textrm{diag}\left(\hat{\Sigma}\right) \bold{1}}, }
 
-Note that this formula is modified from Fornell & Larcker (1981) in the case that factor variances are not 1. The proposed formula from Fornell & Larcker (1981) assumes that the factor variances are 1.
+Note that this formula is modified from Fornell & Larcker (1981) in the case that factor variances are not 1. The proposed formula from Fornell & Larcker (1981) assumes that the factor variances are 1. Note that AVE will not be provided for factors consisting of items with dual loadings. AVE is the property of items but not the property of factors.
 
 Regarding to categorical items, coefficient alpha and AVE are calculated based on polychoric correlations. The coefficient alpha from this function may be not the same as the standard alpha calculation for categorical items. Researchers may check the \code{alpha} function in the \code{psych} package for the standard coefficient alpha calculation. 
 

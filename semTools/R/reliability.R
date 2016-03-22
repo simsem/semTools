@@ -42,17 +42,24 @@ reliability <- function(object) {
 			alpha[j] <- computeAlpha(sigma, length(index))
 			total[j] <- sum(sigma)
 			impliedTotal[j] <- sum(SigmaHat[[i]][index, index])
+			faccontrib <- ly[[i]][,j, drop = FALSE] %*%ps[[i]][j,j,drop = FALSE]%*%t(ly[[i]][,j, drop = FALSE])
+			truefac <- diag(faccontrib[index, index])
+			commonfac <- sum(faccontrib[index, index])
 			trueitem <- diag(truevar[index, index])
 			erritem <- diag(te[[i]][index, index])
-			avevar[j] <- sum(trueitem) / sum(trueitem + erritem)
-			if(categorical) {				
-				omega1[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], truevar[index, index] + te[[i]][index, index])
-				omega2[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], SigmaHat[[i]][index, index])
-				omega3[j] <- omegaCat(truevar[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], sigma)
+			if(sum(abs(trueitem - truefac)) < 0.00001) {
+				avevar[j] <- sum(trueitem) / sum(trueitem + erritem)
 			} else {
-				omega1[j] <- common[j] / (common[j] + error[j])
-				omega2[j] <- common[j] / impliedTotal[j]
-				omega3[j] <- common[j] / total[j]
+				avevar[j] <- NA
+			}
+			if(categorical) {				
+				omega1[j] <- omegaCat(faccontrib[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], faccontrib[index, index] + te[[i]][index, index])
+				omega2[j] <- omegaCat(faccontrib[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], SigmaHat[[i]][index, index])
+				omega3[j] <- omegaCat(faccontrib[index, index], SigmaHat[[i]][index, index], threshold[[i]][index], sigma)
+			} else {
+				omega1[j] <- commonfac / (commonfac + error[j])
+				omega2[j] <- commonfac / impliedTotal[j]
+				omega3[j] <- commonfac / total[j]
 			}
 		}
 		alpha <- c(alpha, total = computeAlpha(S[[i]], nrow(S[[i]])))

@@ -733,6 +733,8 @@ u8 ~~ c(1, NA)*u8
 
 outWeak5 <- cfa.mi(weak5, data = imputedData, group = "g", parameterization="theta", estimator="wlsmv")
 
+anova(outConfigural5, outWeak5)
+
 ############### FMI function
 
 library(Amelia)
@@ -832,7 +834,7 @@ HS.model5 <- ' visual  =~ x1 + x2 + x3 + x4
 
 fit8 <- cfa(HS.model5, data=HolzingerSwineford1939)
 reliability(fit8) 
-
+			  
 ########### Implied factor means and covariances
 
 HS.model <- ' visual  =~ x1 + x2 + x3
