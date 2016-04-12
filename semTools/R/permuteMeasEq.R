@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 February 2016
+### Last updated: 12 April 2016
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -17,29 +17,54 @@ setClass("permuteMeasEq", slots = c(PT = "data.frame",
                                     n.Sparse = "vector"))
 
 ## Function to extract modification indices for equality constraints
-getMIs <- function(con, param) {
-  if (class(con) != "lavaan") stop("This function only applies to fitted lavaan models.")
-  if (con@Data@ngroups == 1L) stop("This function only applies to multiple-group models.")
-  ## save all estimates from less constrained model
+getMIs <- function(con, param, freeParam) {
+  if (class(con) != "lavaan") stop("This function applies to fitted lavaan models.")
+  if (con@Data@ngroups == 1L) stop("This function applies to multigroup models.")
+  ## strip white space
+  param <- gsub("[[:space:]]+", "", param)
+  freeParam <- gsub("[[:space:]]+", "", freeParam)
+  ## save all estimates from constrained model
   PT <- lavaan::parTable(con)[ , c("lhs","op","rhs","group","plabel")]
   ## extract parameters of interest
-  if (param[1] == "loadings") params <- PT[PT$op == "=~", ]
-  if (param[1] == "intercepts") params <- PT[PT$lhs %in% con@Data@ov$name & PT$op == "~1", ]
-  if (param[1] == "thresholds") params <- PT[PT$op == "|", ]
-  if (param[1] == "residuals") params <- PT[(PT$lhs %in% con@Data@ov$name) &
-                                            (PT$lhs == PT$rhs) & PT$op == "~~", ]
-  if (!param[1] %in% c("loadings","intercepts","thresholds","residuals")) {
-    allNames <- paste0(PT$lhs, PT$op, PT$rhs)
-    params <- PT[allNames %in% param, ]
+  paramTypes <- c("loadings","intercepts","thresholds","residuals","means",
+                  "residual.covariances","lv.variances","lv.covariances")
+  params <- PT[paste0(PT$lhs, PT$op, PT$rhs) %in% setdiff(param, paramTypes), ]
+  ## add parameters by type, if any are specified
+  types <- intersect(param, paramTypes)
+  ov.names <- con@Data@ov$name
+  isOV <- PT$lhs %in% ov.names
+  lv.names <- unique(PT$lhs[PT$op == "=~"])
+  isLV <- PT$lhs %in% lv.names & PT$rhs %in% lv.names
+  if ("loadings" %in% types) params <- rbind(params, PT[PT$op == "=~", ])
+  if ("intercepts" %in% types) {
+    params <- rbind(params, PT[isOV & PT$op == "~1", ])
   }
+  if ("thresholds" %in% types) params <- rbind(params, PT[PT$op == "|", ])
+  if ("residuals" %in% types) {
+    params <- rbind(params, PT[isOV & PT$lhs == PT$rhs & PT$op == "~~", ])
+  } 
+  if ("residual.covariances" %in% types) {
+    params <- rbind(params, PT[isOV & PT$lhs != PT$rhs & PT$op == "~~", ])
+  } 
+  if ("means" %in% types) {
+    params <- rbind(params, PT[PT$lhs %in% lv.names & PT$op == "~1", ])
+  }
+  if ("lv.variances" %in% types) {
+    params <- rbind(params, PT[isLV & PT$lhs == PT$rhs & PT$op == "~~", ])
+  }
+  if ("lv.covariances" %in% types) {
+    params <- rbind(params, PT[isLV & PT$lhs != PT$rhs & PT$op == "~~", ])
+  }
+  ## remove parameters specified by "freeParam" argument
+  params <- params[!paste0(params$lhs, params$op, params$rhs) %in% freeParam, ]
   ## return modification indices for specified constraints (param)
   MIs <- lavaan::lavTestScore(con)$uni
   MIs[MIs$lhs %in% params$plabel, ]
 }
 
 ## Function to find delta-AFIs AND maximum modification index in one permutation
-permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
-                        maxSparse = 10, maxNonconv = 10) {
+permuteOnce <- function(i, d, con, uncon, null, param, freeParam, G,
+                        AFIs, moreAFIs, maxSparse = 10, maxNonconv = 10) {
   nSparse <- 0L
   nTries <- 1L
   while ( (nSparse <= maxSparse) & (nTries <= maxNonconv) ) {
@@ -120,15 +145,15 @@ permuteOnce <- function(i, d, con, uncon, null, param, G, AFIs, moreAFIs,
       MI <- NULL
     } else {
       AFI <- unlist(fit0) - unlist(fit1)
-      MI <- max(getMIs(out0, param)$X2)
+      MI <- max(getMIs(out0, , param = param, freeParam = freeParam)$X2)
     }
   }
   list(AFI = AFI, MI = MI, n.nonConverged = nTries - 1L, n.Sparse = nSparse)
 }
 
 ## Function to permute difference in fits
-permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
-                          param = NULL, AFIs = NULL, moreAFIs = NULL,
+permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL,
+                          freeParam = NULL, AFIs = NULL, moreAFIs = NULL,
                           maxSparse = 10, maxNonconv = 10, showProgress = TRUE) {
   nPermute <- as.integer(nPermute[1])
 
@@ -151,7 +176,7 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
 
   ## FIXME: Temporarily warn about testing thresholds without necessary constraints
   if (!is.null(param)) {
-    if (param == "thresholds" | any(grepl("\\|", param))) {
+    if ("thresholds" %in% param | any(grepl("\\|", param))) {
       warning(c("This function is not yet optimized for testing thresholds.\n",
                 "Necessary identification contraints might not be specified."))
     }
@@ -204,7 +229,7 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
     MI.obs <- data.frame(NULL)
   } else {
     AFI.obs <- unlist(AFI0) - unlist(AFI1)
-    MI.obs <- getMIs(con, param = param)
+    MI.obs <- getMIs(con, param = param, freeParam = freeParam)
   }
 
   ######################### PREP DATA ##############################
@@ -232,7 +257,8 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
     permuDist <- list()
     for (j in 1:nPermute) {
       permuDist[[j]] <- permuteOnce(j, d = allData, con = con, uncon = uncon,
-                                    null = null, param = param, G = G,
+                                    null = null, G = G,
+                                    param = param, freeParam = freeParam,
                                     AFIs = AFIs, moreAFIs = moreAFIs,
                                     maxSparse = maxSparse, maxNonconv = maxNonconv)
       setTxtProgressBar(mypb, j)
@@ -240,8 +266,8 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL,
     close(mypb)
   } else {
     permuDist <- lapply(1:nPermute, permuteOnce, d = allData, con = con,
-                        uncon = uncon, null = null, param = param, G = G,
-                        AFIs = AFIs, moreAFIs = moreAFIs,
+                        uncon = uncon, null = null, G = G, param = param,
+                        freeParam = freeParam, AFIs = AFIs, moreAFIs = moreAFIs,
                         maxSparse = maxSparse, maxNonconv = maxNonconv)
   }
 
