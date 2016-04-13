@@ -42,10 +42,10 @@ getMIs <- function(con, param, freeParam) {
   if ("thresholds" %in% types) params <- rbind(params, PT[PT$op == "|", ])
   if ("residuals" %in% types) {
     params <- rbind(params, PT[isOV & PT$lhs == PT$rhs & PT$op == "~~", ])
-  } 
+  }
   if ("residual.covariances" %in% types) {
     params <- rbind(params, PT[isOV & PT$lhs != PT$rhs & PT$op == "~~", ])
-  } 
+  }
   if ("means" %in% types) {
     params <- rbind(params, PT[PT$lhs %in% lv.names & PT$op == "~1", ])
   }
@@ -156,6 +156,9 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
                           freeParam = NULL, AFIs = NULL, moreAFIs = NULL,
                           maxSparse = 10, maxNonconv = 10, showProgress = TRUE) {
   nPermute <- as.integer(nPermute[1])
+  maxSparse <- as.integer(maxSparse[1])
+  maxNonconv <- as.integer(maxNonconv[1])
+  showProgress <- as.logical(showProgress[1])
 
   ## check that "param" is NULL if uncon is NULL, and check for lavaan class
   notLavaan <- "Non-NULL 'con', 'uncon', or 'null' must be fitted lavaan object."

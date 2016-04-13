@@ -4,13 +4,13 @@
 	Permutation Randomization Tests of Measurement Equivalence and Differential Item Functioning (DIF)
 }
 \description{
-The function \code{permuteMeasEq} accepts a pair of nested lavaan objects, the less constrained of which (\code{uncon}) freely estimates a set of measurement parameters (e.g., factor loadings, intercepts, or thresholds) in all groups, and the more constrained of which (\code{con}) constrains those measurement parameters to equality across groups. Group assignment is repeatedly permuted and the model is fit to each permutation, in order to produce an empirical distribution under the null hypothesis of no group differences, both for (a) changes in user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for (b) the maximum modification index among the user-specified parameters (see \code{param}). This function is for testing measurement equivalence only across groups, not occasions. Configural invariance can also be tested by providing that fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which case \code{param} must be \code{NULL} as well.
+The function \code{permuteMeasEq} accepts a pair of nested lavaan objects, the less constrained of which (\code{uncon}) freely estimates a set of measurement parameters (e.g., factor loadings, intercepts, or thresholds) in all groups, and the more constrained of which (\code{con}) constrains those measurement parameters to equality across groups. Group assignment is repeatedly permuted and the model is fit to each permutation, in order to produce an empirical distribution under the null hypothesis of no group differences, both for (a) changes in user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for (b) the maximum modification index among the user-specified parameters (see \code{param}). This function is for testing measurement equivalence only across groups (not occasions) using multiple-group CFA (not, for example, MIMIC/RFA or multilevel models). Configural invariance can also be tested by providing that fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which case \code{param} must be \code{NULL} as well.
 
 Modification indices for equality constraints on parameters specified in \code{param} are calculated from the constrained model (\code{con}) using the function \code{\link[lavaan]{lavTestScore}}, which can also be used to request expected parameter changes if the user has a need for them.
 }
 \usage{
 permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
-              param = NULL, AFIs = NULL, moreAFIs = NULL,
+              param = NULL, freeParam = NULL, AFIs = NULL, moreAFIs = NULL,
               maxSparse = 10, maxNonconv = 10, showProgress = TRUE)
 }
 \arguments{
@@ -27,7 +27,10 @@ permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
   Optional.  A \code{lavaan} object, in which an alternative null model is fit (besides the default independence model specified by \code{lavaan}) for the calculation of incremental fit indices. See Widamin & Thompson (2003) for details. If \code{NULL}, \code{lavaan}'s default independence model is used.
 }
   \item{param}{
-  A character vector indicating which parameters are constrained across groups in \code{con} and are unconstrained in \code{uncon}. Parameter names must match those returned by \code{names(coef(uncon))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels. Alternatively, to test an entire set of a certain type of parameter, \code{param} may take any one of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, or \code{"residuals"}.
+  A character vector indicating which parameters are constrained across groups in \code{con} and are unconstrained in \code{uncon}. Parameter names must match those returned by \code{names(coef(con))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels (that is, the parameter names must follow the rules of lavaan's \code{\link[lavaan]{model.syntax}}). Alternatively (or additionally), to indicate that all of a certain type (or multiple types) of parameter are constrained in \code{con} but unconstrained in \code{uncon}, \code{param} may take any combination of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, \code{"residuals"}, \code{"residual.covariances"}, \code{"means"}, \code{"lv.variances"}, or \code{"lv.covariances"}. Note that \code{param} does not indicate that certain parameters \emph{should} be constrained in \code{con}; that is for the user to specify when fitting the model. Rather, the \code{param} argument is to specify which of the existing equality constraints would be inspected if the omnibus null hypothesis were rejected by \code{AFIs}. Thus, users should exclude any "anchor items" from \code{param} that they would never intend to free across groups; exceptions to a type of parameter can be specified in \code{freeParam}.
+}
+  \item{freeParam}{
+  An optional character vector. If \code{param} includes a type of parameter (e.g., \code{"loadings"}), \code{freeParam} indicates exceptions that are unconstrained in both \code{con} and \code{uncon} (e.g., \code{"f1=~x1"}), or may be simply be anchor items that the user would not intend to free across groups and should therefore be ignored when calculating \emph{p} values adjusted for the number of follow-up tests. Parameter names must match those returned by \code{names(coef(con))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels (that is, the parameter names must follow the rules of lavaan \code{\link[lavaan]{model.syntax}}).
 }
   \item{AFIs}{
   A character vector indicating which alternative fit indices (or chi-squared itself) are to be used to test the multiparameter omnibus null hypothesis of no group differences in any parameters specified in \code{param}. Any fit measures returned by \code{\link[lavaan]{fitMeasures}} may be specified (including constants like \code{"df"}, which would be nonsensical). If both \code{AFIs} and \code{moreAFIs} are \code{NULL}, only \code{"chisq"} will be returned.
@@ -47,7 +50,7 @@ permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
 }
 }
 \details{
-	The multiparameter omnibus null hypothesis of measurement equivalence/invariance is that there are no group differences in any measurement parameters. This can be tested using the \code{anova} method on nested \code{lavaan} objects, as seen in the output of \code{\link[semTools]{measurementInvariance}}, or by inspecting the change in alternative fit indices (AFIs) such as the CFI. See Cheung & Rensvold (2002) or Meade, Johnson, & Braddy (2008) for details.
+	The multiparameter omnibus null hypothesis of measurement equivalence/invariance is that there are no group differences in any measurement parameters. This can be tested using the \code{anova} method on nested \code{lavaan} objects, as seen in the output of \code{\link[semTools]{measurementInvariance}}, or by inspecting the change in alternative fit indices (AFIs) such as the CFI. See Cheung & Rensvold (2002), Chen (2007), or Meade, Johnson, & Braddy (2008) for details.
 
   If the multiparameter omnibus null hypothesis is rejected, partial invariance can still be established by freeing parameters that differ across groups, while maintaining equality constraints for at least two other indicators per factor. Modification indices can be calculated from the constrained model (\code{con}), but multiple testing leads to inflation of Type I error rates. The permutation randomization method employed by \code{permuteMeasEq} creates a distribution of the maximum modification index if the null hypothesis is true, which allows the user to control the familywise Type I error rate in a manner similar to Tukey's \emph{q} (studentized range) distribution for the Honestly Significant Difference (HSD) post hoc test.
 }
@@ -58,6 +61,8 @@ permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
     Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \references{
+Chen, F. F. (2007). Sensitivity of goodness of fit indexes to lack of measurement invariance.  \emph{Structural Equation Modeling, 14}(3), 464–504. doi:10.1080/10705510701301834
+
 Cheung, G. W., & Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes for testing measurement invariance. \emph{Structural Equation Modeling, 9}(2), 233-255. doi:10.1207/S15328007SEM0902_5
 
 Meade, A. W., Johnson, E. C., & Braddy, P. W. (2008). Power and sensitivity of alternative fit indices in tests of measurement invariance. \emph{Journal of Applied Psychology, 93}(3), 568-592. doi:10.1037/0021-9010.93.3.568
