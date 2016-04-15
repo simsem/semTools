@@ -14,7 +14,8 @@ setClass("permuteMeasEq", slots = c(PT = "data.frame",
                                     n.Permutations = "integer",
                                     n.Converged = "integer",
                                     n.nonConverged = "vector",
-                                    n.Sparse = "vector"))
+                                    n.Sparse = "vector",
+                                    oldSeed = "integer"))
 
 ## Function to extract modification indices for equality constraints
 getMIs <- function(con, param, freeParam) {
@@ -33,7 +34,7 @@ getMIs <- function(con, param, freeParam) {
   types <- intersect(param, paramTypes)
   ov.names <- con@Data@ov$name
   isOV <- PT$lhs %in% ov.names
-  lv.names <- unique(PT$lhs[PT$op == "=~"])
+  lv.names <- con@pta$vnames$lv[[1]]
   isLV <- PT$lhs %in% lv.names & PT$rhs %in% lv.names
   if ("loadings" %in% types) params <- rbind(params, PT[PT$op == "=~", ])
   if ("intercepts" %in% types) {
@@ -64,7 +65,11 @@ getMIs <- function(con, param, freeParam) {
 
 ## Function to find delta-AFIs AND maximum modification index in one permutation
 permuteOnce <- function(i, d, con, uncon, null, param, freeParam, G,
-                        AFIs, moreAFIs, maxSparse = 10, maxNonconv = 10) {
+                        AFIs, moreAFIs, maxSparse = 10, maxNonconv = 10,
+                        warn = -1) {
+  old_options <- options()
+  options(warn = warn)
+
   nSparse <- 0L
   nTries <- 1L
   while ( (nSparse <= maxSparse) & (nTries <= maxNonconv) ) {
@@ -139,26 +144,73 @@ permuteOnce <- function(i, d, con, uncon, null, param, freeParam, G,
     MI <- if (is.null(uncon)) NULL else NA
     nTries <- nTries + 1L
   } else {
-    ## calculate AFI for configural, otherwise delta-AFI & max(MI)
+    ## calculate AFI for configural, otherwise delta-AFI &
     if (is.null(uncon)) {
       AFI <- unlist(fit0)
-      MI <- NULL
     } else {
       AFI <- unlist(fit0) - unlist(fit1)
-      MI <- max(getMIs(out0, , param = param, freeParam = freeParam)$X2)
+      MI <- max(getMIs(out0, param = param, freeParam = freeParam)$X2)
+    }
+    ## save max(MI) if !is.null(param)
+    if (is.null(param)) {
+      MI <- NULL
+    } else {
+      MI <- max(getMIs(out0, param = param, freeParam = freeParam)$X2)
     }
   }
+  options(old_options)
   list(AFI = AFI, MI = MI, n.nonConverged = nTries - 1L, n.Sparse = nSparse)
 }
 
 ## Function to permute difference in fits
 permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL,
                           freeParam = NULL, AFIs = NULL, moreAFIs = NULL,
-                          maxSparse = 10, maxNonconv = 10, showProgress = TRUE) {
+                          maxSparse = 10, maxNonconv = 10, showProgress = TRUE,
+                          warn = -1, parallelType = c("none","multicore","snow"),
+                          ncpus = NULL, cl = NULL, iseed = 12345) {
   nPermute <- as.integer(nPermute[1])
   maxSparse <- as.integer(maxSparse[1])
   maxNonconv <- as.integer(maxNonconv[1])
   showProgress <- as.logical(showProgress[1])
+  warn <- as.integer(warn[1])
+  oldSeed <- as.integer(NULL)
+  if (!parallelType %in% c("none", "multicore", "snow")) parallelType <- "none"
+  if (!is.null(cl)) {
+    if (!is(cl, "cluster")) stop("Invalid cluster object.  Check class(cl)")
+    parallelType <- "snow"
+    ncpus <- length(cl)
+  }
+  if (parallelType == "multicore" && .Platform$OS.type == "windows") {
+    parallelType <- "snow"
+    message("'multicore' option unavailable on Windows. Using 'snow' instead.")
+  }
+  ## parallel settings, adapted from boot::boot()
+  if (parallelType != "none") {
+    library(parallel)
+    if (is.null(ncpus) || ncpus > parallel::detectCores()) {
+      ncpus <- parallel::detectCores() - 1
+    }
+    if (ncpus <= 1L) {
+      parallelType <- "none"
+    } else {
+      showProgress <- FALSE
+      old_RNG <- RNGkind()
+      oldSeed <- .Random.seed
+      if (old_RNG[1] != "L'Ecuyer-CMRG") {
+        RNGkind("L'Ecuyer-CMRG")
+        message(paste("Your RNGkind() was changed from", old_RNG[1],
+                      "to L'Ecuyer-CMRG, which is required for reproducibility",
+                      "in parallel jobs.  Your RNGkind() has been returned to",
+                      old_RNG[1], "but the seed has not been set.",
+                      "The state of your previous RNG is saved in the slot",
+                      "named 'oldSeed', if you want to restore it using",
+                      "the syntax:  .Random.seed[-1] <- permuteMeasEqObject@oldSeed[-1]"))
+      }
+      iseed <- as.integer(iseed[1])
+      if (is.na(iseed)) iseed <- 12345
+    }
+  }
+
 
   ## check that "param" is NULL if uncon is NULL, and check for lavaan class
   notLavaan <- "Non-NULL 'con', 'uncon', or 'null' must be fitted lavaan object."
@@ -226,12 +278,16 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
     AFI0[[2]] <- moreFitIndices(con, fit.measures = moreAFIs)
   }
 
-  ## save observed delta-AFIs, and modification indices if !is.null(uncon)
+  ## save observed AFIs or delta-AFIs
   if (is.null(uncon)) {
     AFI.obs <- unlist(AFI0)
-    MI.obs <- data.frame(NULL)
   } else {
     AFI.obs <- unlist(AFI0) - unlist(AFI1)
+  }
+  ## save modification indices if !is.null(param)
+  if (is.null(param)) {
+    MI.obs <- data.frame(NULL)
+  } else {
     MI.obs <- getMIs(con, param = param, freeParam = freeParam)
   }
 
@@ -263,16 +319,43 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
                                     null = null, G = G,
                                     param = param, freeParam = freeParam,
                                     AFIs = AFIs, moreAFIs = moreAFIs,
-                                    maxSparse = maxSparse, maxNonconv = maxNonconv)
+                                    maxSparse = maxSparse, maxNonconv = maxNonconv,
+                                    warn = warn)
       setTxtProgressBar(mypb, j)
     }
     close(mypb)
+  } else if (parallelType == "multicore") {
+    if (length(iseed)) set.seed(iseed)
+    permuDist <- parallel::mclapply(1:nPermute, permuteOnce, d = allData, G = G,
+                                    con = con, uncon = uncon, null = null,
+                                    param = param, freeParam = freeParam,
+                                    AFIs = AFIs, moreAFIs = moreAFIs,
+                                    maxSparse = maxSparse, maxNonconv = maxNonconv,
+                                    warn = warn, mc.cores = ncpus, mc.set.seed = TRUE)
+    ## restore old RNG type
+    if (old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(old_RNG[1])
+  } else if (parallelType == "snow") {
+    if (is.null(cl)) {
+      stopTheCluster <- TRUE
+      cl <- parallel::makePSOCKcluster(rep("localhost", ncpus))
+    }
+    parallel::clusterSetRNGStream(cl, iseed = iseed)
+    permuDist <- parallel::parLapply(cl, 1:nPermute, permuteOnce, d = allData,
+                                     G = G,con = con, uncon = uncon, null = null,
+                                     param = param, freeParam = freeParam,
+                                     AFIs = AFIs, moreAFIs = moreAFIs, warn = warn,
+                                     maxSparse = maxSparse, maxNonconv = maxNonconv)
+    if (stopTheCluster) parallel::stopCluster(cl)
+    ## restore old RNG type
+    if (old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(old_RNG[1])
   } else {
     permuDist <- lapply(1:nPermute, permuteOnce, d = allData, con = con,
                         uncon = uncon, null = null, G = G, param = param,
                         freeParam = freeParam, AFIs = AFIs, moreAFIs = moreAFIs,
-                        maxSparse = maxSparse, maxNonconv = maxNonconv)
+                        maxSparse = maxSparse, maxNonconv = maxNonconv,
+                        warn = warn)
   }
+
 
   ## extract AFI distribution
   if (length(AFI.obs) > 1) {
@@ -315,7 +398,8 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
              MI.obs = as.data.frame(unclass(MI.obs)), MI.dist = MI.dist,
              n.Permutations = nPermute, n.Converged = sum(!is.na(AFI.dist[,1])),
              n.nonConverged = sapply(permuDist, function(x) x$n.nonConverged),
-             n.Sparse = sapply(permuDist, function(x) x$n.Sparse))
+             n.Sparse = sapply(permuDist, function(x) x$n.Sparse),
+             oldSeed = oldSeed)
   out
 }
 

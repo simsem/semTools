@@ -25,7 +25,8 @@
     \item{\code{n.Permutations}:}{An integer indicating the number of permutations requested by the user}
     \item{\code{n.Converged}:}{An integer indicating the number of permuation iterations which yielded a converged solution}
     \item{\code{n.nonConverged}:}{A vector of length \code{n.Permutations} indicating how many times group assignment was randomly permuted (at each iteration) before converging on a solution}
-    \item{\code{n.Sparse}:}{Only relevant with \code{ordered} indicators. A vector of length \code{n.Permutations} indicating  how many times group assignment was randomly permuted (at each iteration) before obtaining a sample with all categories observed in all groups}
+    \item{\code{n.Sparse}:}{Only relevant with \code{ordered} indicators. A vector of length \code{n.Permutations} indicating how many times group assignment was randomly permuted (at each iteration) before obtaining a sample with all categories observed in all groups}
+    \item{\code{oldSeed}:}{Only relevant when using parallel/multicore option and \code{RNGkind() != "L'Ecuyer-CMRG"}. An integer vector storing the value of \code{.Random.seed} before running \code{permuteMeasEq}. This enables users to restore their previous \code{.Random.seed} state, if desired, by running:  \code{.Random.seed[-1] <- permutedResults@oldSeed[-1]}}
   }
 }
 \section{Methods}{

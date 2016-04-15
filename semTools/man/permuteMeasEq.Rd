@@ -11,14 +11,16 @@ Modification indices for equality constraints on parameters specified in \code{p
 \usage{
 permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
               param = NULL, freeParam = NULL, AFIs = NULL, moreAFIs = NULL,
-              maxSparse = 10, maxNonconv = 10, showProgress = TRUE)
+              maxSparse = 10, maxNonconv = 10, showProgress = TRUE,
+              warn = -1, parallelType = c("none", "multicore", "snow"),
+              ncpus = 1L, cl = NULL, iseed = 12345)
 }
 \arguments{
   \item{nPermute}{
 	An integer indicating the number of random permutations of group assignment used to form empirical distributions under the null hypothesis.
 }
   \item{con}{
-  The constrained \code{lavaan} object, in which the parameters specified in \code{param} are constrained to equality across all groups. In the case of testing \emph{configural} invariance, \code{con} is the configural model (implicitly, the unconstrained model is the saturated model, so use the default \code{uncon = NULL}).
+  The constrained \code{lavaan} object, in which the parameters specified in \code{param} are constrained to equality across all groups. In the case of testing \emph{configural} invariance, \code{con} is the configural model (implicitly, the unconstrained model is the saturated model, so use the defaults \code{uncon = NULL} and \code{param = NULL}).
 }
   \item{uncon}{
 	Optional.  The unconstrained \code{lavaan} object, in which the parameters specified in \code{param} are freely estimated in all groups. Only in the case of testing \emph{configural} invariance should this argument be \code{NULL}.
@@ -27,10 +29,10 @@ permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
   Optional.  A \code{lavaan} object, in which an alternative null model is fit (besides the default independence model specified by \code{lavaan}) for the calculation of incremental fit indices. See Widamin & Thompson (2003) for details. If \code{NULL}, \code{lavaan}'s default independence model is used.
 }
   \item{param}{
-  A character vector indicating which parameters are constrained across groups in \code{con} and are unconstrained in \code{uncon}. Parameter names must match those returned by \code{names(coef(con))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels (that is, the parameter names must follow the rules of lavaan's \code{\link[lavaan]{model.syntax}}). Alternatively (or additionally), to indicate that all of a certain type (or multiple types) of parameter are constrained in \code{con} but unconstrained in \code{uncon}, \code{param} may take any combination of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, \code{"residuals"}, \code{"residual.covariances"}, \code{"means"}, \code{"lv.variances"}, or \code{"lv.covariances"}. Note that \code{param} does not indicate that certain parameters \emph{should} be constrained in \code{con}; that is for the user to specify when fitting the model. Rather, the \code{param} argument is to specify which of the existing equality constraints would be inspected if the omnibus null hypothesis were rejected by \code{AFIs}. Thus, users should exclude any "anchor items" from \code{param} that they would never intend to free across groups; exceptions to a type of parameter can be specified in \code{freeParam}.
+  A character vector indicating which parameters are constrained across groups in \code{con} and are unconstrained in \code{uncon}. Parameter names must match those returned by \code{names(coef(con))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels (that is, the parameter names must follow the rules of lavaan's \code{\link[lavaan]{model.syntax}}). Alternatively (or additionally), to indicate that all of a certain type (or multiple types) of parameter are constrained in \code{con} but unconstrained in \code{uncon}, \code{param} may take any combination of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, \code{"residuals"}, \code{"residual.covariances"}, \code{"means"}, \code{"lv.variances"}, or \code{"lv.covariances"}. Note that \code{param} does not indicate that certain parameters \emph{should} be constrained in \code{con}; that is for the user to specify when fitting the model. Rather, the \code{param} argument is to specify which of the existing equality constraints would be tested if the omnibus null hypothesis were rejected by \code{AFIs}. Thus, users should exclude any "anchor items" from \code{param} that they would never intend to free across groups; exceptions to a type of parameter can be specified in \code{freeParam}. Set \code{param = NULL} to avoid collecting modification indices for any follow-up tests.
 }
   \item{freeParam}{
-  An optional character vector. If \code{param} includes a type of parameter (e.g., \code{"loadings"}), \code{freeParam} indicates exceptions that are unconstrained in both \code{con} and \code{uncon} (e.g., \code{"f1=~x1"}), or may be simply be anchor items that the user would not intend to free across groups and should therefore be ignored when calculating \emph{p} values adjusted for the number of follow-up tests. Parameter names must match those returned by \code{names(coef(con))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels (that is, the parameter names must follow the rules of lavaan \code{\link[lavaan]{model.syntax}}).
+  An optional character vector. If \code{param} includes a type of parameter (e.g., \code{"loadings"}), \code{freeParam} indicates exceptions (i.e., anchor items) that the user would \emph{not} intend to free across groups and should therefore be ignored when calculating \emph{p} values adjusted for the number of follow-up tests. Parameter types that are already unconstrained across groups in the fitted \code{con} model (i.e., a \emph{partial} invariance model) will automatically be ignored, so they do not need to be specified in \code{freeParam}. Parameter names must match those returned by \code{names(coef(con))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels (that is, the parameter names must follow the rules of lavaan \code{\link[lavaan]{model.syntax}}).
 }
   \item{AFIs}{
   A character vector indicating which alternative fit indices (or chi-squared itself) are to be used to test the multiparameter omnibus null hypothesis of no group differences in any parameters specified in \code{param}. Any fit measures returned by \code{\link[lavaan]{fitMeasures}} may be specified (including constants like \code{"df"}, which would be nonsensical). If both \code{AFIs} and \code{moreAFIs} are \code{NULL}, only \code{"chisq"} will be returned.
@@ -46,8 +48,24 @@ permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
   An integer indicating the maximum number of consecutive times that randomly permuted group assignment can yield a sample for which the model does not converge on a solution. If such a sample occurs, group assignment is randomly permuted again, repeatedly until a sample is obtained for which the model does converge. If \code{maxNonconv} is exceeded, \code{NA} will be returned for that iteration of the permutation distribution, and a warning will be printed when using \code{show} or \code{summary}.
 }
   \item{showProgress}{
-	Logical. Indicating whether to display a progress bar while permuting.
+	Logical. Indicating whether to display a progress bar while permuting. Silently set to \code{FALSE} when using parallel options.
 }
+  \item{warn}{
+  Sets the handling of warning messages when fitting model(s) to permuted data sets. See \code{\link[base]{options}}.
+}
+  \item{parallelType}{
+  The type of parallel operation to be used (if any). The default is \code{"none"}. Forking is not possible on Windows, so if \code{"multicore"} is requested on a Windows machine, the request will be changed to \code{"snow"} with a message.
+}
+  \item{ncpus}{
+  Integer: number of processes to be used in parallel operation. If \code{NULL} and \code{parallelType \%in\% c("multicore","snow")}, the default is one less than the maximum number of processors detected by \code{\link[parallel]{detectCores}}. This default is also silently set if the user specifies more than the number of processors detected.
+}
+  \item{cl}{
+  An optional \pkg{parallel} or \pkg{snow} cluster for use if \code{parallelType = "snow"}.  If \code{NULL}, a \code{"PSOCK"} cluster on the local machine is created for the duration of the \code{permuteMeasEq} call. If a valid \code{\link[parallel]{makeCluster}} object is supplied, \code{parallelType} is silently set to \code{"snow"}, and \code{ncpus} is silently set to \code{length(cl)}.
+}
+  \item{iseed}{
+  Integer: Only used to set the states of the RNG when using parallel options, in which case \code{\link[base]{RNGkind}} is set to \code{"L'Ecuyer-CMRG"} with a message. See \code{\link[parallel]{clusterSetRNGStream}} and Section 6 of \code{vignette("parallel", "parallel")} for more details. If user supplies an invalid value, \code{iseed} is silently set to the default (12345). To set the state of the RNG when not using parallel options, call \code{\link[base]{set.seed}} before calling \code{permuteMeasEq}.
+}
+
 }
 \details{
 	The multiparameter omnibus null hypothesis of measurement equivalence/invariance is that there are no group differences in any measurement parameters. This can be tested using the \code{anova} method on nested \code{lavaan} objects, as seen in the output of \code{\link[semTools]{measurementInvariance}}, or by inspecting the change in alternative fit indices (AFIs) such as the CFI. See Cheung & Rensvold (2002), Chen (2007), or Meade, Johnson, & Braddy (2008) for details.
@@ -114,19 +132,19 @@ moreAFIs <- c("gammaHat","adjGammaHat")
 ## use > 1000 to reduce sampling variability of estimated p values
 
 ## test configural invariance
-set.seed(123)
+set.seed(12345)
 out.config <- permuteMeasEq(nPermute = 20, con = fit.config)
 out.config
 
 ## test metric equivalence
-set.seed(456)
+set.seed(12345) # same permutations
 out.metric <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
                             param = "loadings", AFIs = myAFIs,
                             moreAFIs = moreAFIs, null = fit.null)
 summary(out.metric, nd = 4)
 
 ## test scalar equivalence
-set.seed(789)
+set.seed(12345) # same permutations
 out.scalar <- permuteMeasEq(nPermute = 20, uncon = fit.metric, con = fit.scalar,
                             param = "intercepts", AFIs = myAFIs,
                             moreAFIs = moreAFIs, null = fit.null)
