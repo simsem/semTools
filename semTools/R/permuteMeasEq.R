@@ -5,6 +5,7 @@
 
 ## create s4 class for result object
 setClass("permuteMeasEq", slots = c(PT = "data.frame",
+                                    modelType = "character",
                                     ANOVA = "vector",
                                     AFI.obs = "vector",
                                     AFI.dist = "data.frame",
@@ -18,12 +19,9 @@ setClass("permuteMeasEq", slots = c(PT = "data.frame",
                                     oldSeed = "integer"))
 
 ## Function to extract modification indices for equality constraints
-getMIs <- function(con, param, freeParam) {
+getMIs <- function(con, param, freeParam = NULL) {
   if (class(con) != "lavaan") stop("This function applies to fitted lavaan models.")
-  if (con@Data@ngroups == 1L) stop("This function applies to multigroup models.")
-  ## strip white space
-  param <- gsub("[[:space:]]+", "", param)
-  freeParam <- gsub("[[:space:]]+", "", freeParam)
+  if (con@Data@ngroups == 1L) stop("This function applies to multigroup models.")     ## FIXME: allow 1 group for modelType == "mimic"
   ## save all estimates from constrained model
   PT <- lavaan::parTable(con)[ , c("lhs","op","rhs","group","plabel")]
   ## extract parameters of interest
@@ -63,10 +61,10 @@ getMIs <- function(con, param, freeParam) {
   MIs[MIs$lhs %in% params$plabel, ]
 }
 
-## Function to find delta-AFIs AND maximum modification index in one permutation
-permuteOnce <- function(i, d, con, uncon, null, param, freeParam, G,
-                        AFIs, moreAFIs, maxSparse = 10, maxNonconv = 10,
-                        warn = -1) {
+## Functions to find delta-AFIs & maximum modification index in one permutation
+permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
+                              AFIs, moreAFIs, maxSparse = 10, maxNonconv = 10,
+                              warn = -1) {
   old_options <- options()
   options(warn = warn)
 
@@ -100,7 +98,7 @@ permuteOnce <- function(i, d, con, uncon, null, param, freeParam, G,
       nTries <- nTries + 1L
       next
     }
-    if (!inspect(out0, "converged")) {
+    if (!lavaan::lavInspect(out0, "converged")) {
       nTries <- nTries + 1L
       next
     }
@@ -114,7 +112,7 @@ permuteOnce <- function(i, d, con, uncon, null, param, freeParam, G,
       nTries <- nTries + 1L
       next
     }
-    if (!inspect(out1, "converged")) {
+    if (!lavaan::lavInspect(out1, "converged")) {
       nTries <- nTries + 1L
       next
     }
@@ -149,7 +147,6 @@ permuteOnce <- function(i, d, con, uncon, null, param, freeParam, G,
       AFI <- unlist(fit0)
     } else {
       AFI <- unlist(fit0) - unlist(fit1)
-      MI <- max(getMIs(out0, param = param, freeParam = freeParam)$X2)
     }
     ## save max(MI) if !is.null(param)
     if (is.null(param)) {
@@ -162,19 +159,95 @@ permuteOnce <- function(i, d, con, uncon, null, param, freeParam, G,
   list(AFI = AFI, MI = MI, n.nonConverged = nTries - 1L, n.Sparse = nSparse)
 }
 
+permuteOnce.mimic <- function(i, d, G, con, null, param, AFIs, moreAFIs,
+                              maxNonconv = 10, warn = -1) {
+  old_options <- options()
+  options(warn = warn)
+
+  covariates <- unique(sapply(param, function(x) strsplit(x, split = "~")[[1]][2]))
+  # ordVars <- con@Data@ov$name[con@Data@ov$type == "ordered"]
+
+  nTries <- 1L
+  while (nTries <= maxNonconv) {
+    ## permute covariate(s) within each group
+    if (length(G)) {
+      for (gg in con@Data@group.label) {
+        for (COV in covariates) d[d[[G]] == gg, COV] <- sample(d[d[[G]] == gg, COV])
+      }
+    } else {
+      for (COV in covariates) d[ , COV] <- sample(d[ , COV])
+    }
+
+    ## fit null model, if it exists
+    if (!is.null(null)) {
+      out.null <- lavaan::lavaan(data = d, slotParTable = null@ParTable,
+                                 group = G, slotOptions = null@Options)
+    } else out.null <- NULL
+
+    ## fit constrained model
+    suppressWarnings(try(out0 <- lavaan::lavaan(data = d, group = G,
+                                                slotParTable = con@ParTable,
+                                                slotOptions = con@Options)))
+    ## check for convergence
+    if (!exists("out0")) {
+      nTries <- nTries + 1L
+      next
+    }
+    if (!lavaan::lavInspect(out0, "converged")) {
+      nTries <- nTries + 1L
+      next
+    }
+    ## collect (more)AFIs
+    fit0 <- list()
+    if (!is.null(AFIs[1])) {
+      fit0[[1]] <- lavaan::fitMeasures(out0, fit.measures = AFIs,
+                                       baseline.model = out.null)
+    }
+    if (!is.null(moreAFIs[1])) {
+      fit0[[2]] <- moreFitIndices(out0, fit.measures = moreAFIs)
+    }
+
+    break
+  } ## end WHILE loop
+  ## if loop ended before getting results, return NA
+  if (nTries == maxNonconv) {
+    allAFIs <- c(AFIs, moreAFIs)
+    AFI <- rep(NA, sum(!is.na(allAFIs)))
+    names(AFI) <- allAFIs[!is.na(allAFIs)]
+    MI <- NA
+    nTries <- nTries + 1L
+  } else {
+    AFI <- unlist(fit0)
+    MI <- max(lavTestScore(out0, add = param)$uni$X2)
+  }
+  options(old_options)
+  list(AFI = AFI, MI = MI, n.nonConverged = nTries - 1L, n.Sparse = integer(length = 0))
+}
+
+
 ## Function to permute difference in fits
-permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL,
+permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic","long"),
+                          con, uncon = NULL, null = NULL, param = NULL,
                           freeParam = NULL, AFIs = NULL, moreAFIs = NULL,
                           maxSparse = 10, maxNonconv = 10, showProgress = TRUE,
                           warn = -1, parallelType = c("none","multicore","snow"),
                           ncpus = NULL, cl = NULL, iseed = 12345) {
   nPermute <- as.integer(nPermute[1])
+  modelType <- modelType[1]
+  if (!modelType %in% c("mgcfa","mimic","long"))
+    stop('modelType must be one of c("mgcfa","mimic","long")')
+  if (modelType == "long") stop('modelType "long" not yet available.')
+  ## strip white space
+  param <- gsub("[[:space:]]+", "", param)
+  if (!is.null(freeParam)) freeParam <- gsub("[[:space:]]+", "", freeParam)
   maxSparse <- as.integer(maxSparse[1])
   maxNonconv <- as.integer(maxNonconv[1])
   showProgress <- as.logical(showProgress[1])
   warn <- as.integer(warn[1])
   oldSeed <- as.integer(NULL)
-  if (!parallelType %in% c("none", "multicore", "snow")) parallelType <- "none"
+  stopTheCluster <- FALSE
+  parallelType <- as.character(parallelType[1])
+  if (!parallelType %in% c("none","multicore","snow")) parallelType <- "none"
   if (!is.null(cl)) {
     if (!is(cl, "cluster")) stop("Invalid cluster object.  Check class(cl)")
     parallelType <- "snow"
@@ -211,11 +284,10 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
     }
   }
 
-
   ## check that "param" is NULL if uncon is NULL, and check for lavaan class
   notLavaan <- "Non-NULL 'con', 'uncon', or 'null' must be fitted lavaan object."
   if (is.null(uncon)) {
-    if (!is.null(param)) {
+    if (!is.null(param) && modelType == "mgcfa") {
       message(c(" When 'uncon = NULL', only configural invariance is tested.",
                 "\n So the 'param' argument was changed to NULL."))
       param <- NULL
@@ -246,6 +318,10 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
   leastSq <- grepl("LS", con@Options$estimator)
   if (!is.null(uncon)) {
     if (uncon@Options$estimator != con@Options$estimator)
+      stop("Models must be fit using same estimator.")
+  }
+  if (!is.null(null)) {
+    if (null@Options$estimator != con@Options$estimator)
       stop("Models must be fit using same estimator.")
   }
 
@@ -287,26 +363,46 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
   ## save modification indices if !is.null(param)
   if (is.null(param)) {
     MI.obs <- data.frame(NULL)
-  } else {
+  } else if (modelType == "mgcfa") {
     MI.obs <- getMIs(con, param = param, freeParam = freeParam)
+  } else if (modelType == "mimic") {
+    MI.obs <- lavaan::lavTestScore(fit.mimic, add = param)$uni
+  } else if (modelType == "long") {
+    ## coming soon
   }
 
   ######################### PREP DATA ##############################
-  ## save name of grouping variable
-  G <- con@Data@group
-  ## check for categorical variables
-  # catVars <- which(con@Data@ov$type[!con@Data@ov$exo] == "ordered")
-  # numVars <- which(con@Data@ov$type[!con@Data@ov$exo] != "ordered")
-  # latentVars <- con@pta$vnames$lv[[1]]
-
+  argList <- list(G = con@Data@group, con = con, null = null, param = param,
+                  AFIs = AFIs, moreAFIs = moreAFIs,
+                  maxNonconv = maxNonconv, warn = warn)
+    ## check for categorical variables
+    # catVars <- which(con@Data@ov$type[!con@Data@ov$exo] == "ordered")
+    # numVars <- which(con@Data@ov$type[!con@Data@ov$exo] != "ordered")
+    # latentVars <- con@pta$vnames$lv[[1]]
   ## assemble data to which the models were fit
-  dataList <- mapply(FUN = function(x, g, n) {
-    y <- data.frame(as.data.frame(x), g, stringsAsFactors = FALSE)
-    names(y) <- c(n, con@Data@group)
-    y
-  }, x = con@Data@X, g = con@Data@group.label,
-     n = con@Data@ov.names, SIMPLIFY = FALSE)
-  allData <- do.call(rbind, dataList)
+  if (length(argList$G)) {
+    dataList <- mapply(FUN = function(x, g, n) {
+      y <- data.frame(as.data.frame(x), g, stringsAsFactors = FALSE)
+      names(y) <- c(n, argList$G)
+      y
+    }, x = con@Data@X, g = con@Data@group.label,
+    n = con@Data@ov.names, SIMPLIFY = FALSE)
+    argList$d <- do.call(rbind, dataList)
+  } else {
+    argList$d <- as.data.frame(con@Data@X)
+    names(argList$d) <- con@Data@ov.names[[1]]
+  }
+  ## add arguments specific to modelType
+  if (modelType == "mgcfa") {
+    argList <- c(argList, list(uncon = uncon, freeParam = freeParam,
+                               maxSparse = maxSparse))
+  }
+  if (modelType == "mimic") {
+  }
+  if (modelType == "long") {
+    argList <- c(argList, list(uncon = uncon, #freeParam = freeParam,
+                               maxSparse = maxSparse))
+  }
 
   ###################### PERMUTED RESULTS ###########################
   ## permute groups and return distributions of delta-AFIs and largest MI
@@ -315,23 +411,18 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
                            width = 50, style = 3, file = "")
     permuDist <- list()
     for (j in 1:nPermute) {
-      permuDist[[j]] <- permuteOnce(j, d = allData, con = con, uncon = uncon,
-                                    null = null, G = G,
-                                    param = param, freeParam = freeParam,
-                                    AFIs = AFIs, moreAFIs = moreAFIs,
-                                    maxSparse = maxSparse, maxNonconv = maxNonconv,
-                                    warn = warn)
+      permuDist[[j]] <- do.call(paste("permuteOnce", modelType, sep = "."),
+                                args = c(argList, i = j))
       setTxtProgressBar(mypb, j)
     }
     close(mypb)
   } else if (parallelType == "multicore") {
     if (length(iseed)) set.seed(iseed)
-    permuDist <- parallel::mclapply(1:nPermute, permuteOnce, d = allData, G = G,
-                                    con = con, uncon = uncon, null = null,
-                                    param = param, freeParam = freeParam,
-                                    AFIs = AFIs, moreAFIs = moreAFIs,
-                                    maxSparse = maxSparse, maxNonconv = maxNonconv,
-                                    warn = warn, mc.cores = ncpus, mc.set.seed = TRUE)
+    argList$FUN <- paste("permuteOnce", modelType, sep = ".")
+    argList$X <- 1:nPermute
+    argList$mc.cores <- ncpus
+    argList$mc.set.seed <- TRUE
+    permuDist <- do.call(parallel::mclapply, args = argList)
     ## restore old RNG type
     if (old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(old_RNG[1])
   } else if (parallelType == "snow") {
@@ -339,23 +430,19 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
       stopTheCluster <- TRUE
       cl <- parallel::makePSOCKcluster(rep("localhost", ncpus))
     }
-    parallel::clusterSetRNGStream(cl, iseed = iseed)
-    permuDist <- parallel::parLapply(cl, 1:nPermute, permuteOnce, d = allData,
-                                     G = G,con = con, uncon = uncon, null = null,
-                                     param = param, freeParam = freeParam,
-                                     AFIs = AFIs, moreAFIs = moreAFIs, warn = warn,
-                                     maxSparse = maxSparse, maxNonconv = maxNonconv)
+    parallel::clusterSetRNGStream(cl, iseed = iseed) #; clusterExport(cl, "getMIs") # for debugging
+    argList$cl <- cl
+    argList$X <- 1:nPermute
+    argList$fun <- paste("permuteOnce", modelType, sep = ".")
+    permuDist <- do.call(parallel::parLapply, args = argList)
     if (stopTheCluster) parallel::stopCluster(cl)
     ## restore old RNG type
     if (old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(old_RNG[1])
   } else {
-    permuDist <- lapply(1:nPermute, permuteOnce, d = allData, con = con,
-                        uncon = uncon, null = null, G = G, param = param,
-                        freeParam = freeParam, AFIs = AFIs, moreAFIs = moreAFIs,
-                        maxSparse = maxSparse, maxNonconv = maxNonconv,
-                        warn = warn)
+    argList$X <- 1:nPermute
+    argList$FUN <- paste("permuteOnce", modelType, sep = ".")
+    permuDist <- do.call(lapply, args = argList)
   }
-
 
   ## extract AFI distribution
   if (length(AFI.obs) > 1) {
@@ -377,7 +464,7 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
   ## extract distribution of maximum modification indices
   MI.dist <- as.numeric(unlist(lapply(permuDist, function(x) x$MI)))
   ## calculate Tukey-adjusted p values for modification indices
-  if (!is.null(uncon)) {
+  if (!is.null(param)) {
     MI.obs$tukey.p.value <- sapply(MI.obs$X2, function(i) mean(i <= MI.dist))
   }
 
@@ -393,7 +480,7 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
     delta <- anova(uncon, con)
   }
   ANOVA <- sapply(delta[,c("Chisq diff","Df diff","Pr(>Chisq)")], function(x) x[2])
-  out <- new("permuteMeasEq", PT = PT, ANOVA = ANOVA,
+  out <- new("permuteMeasEq", PT = PT, modelType = modelType, ANOVA = ANOVA,
              AFI.obs = AFI.obs, AFI.dist = AFI.dist, AFI.pval = AFI.pval,
              MI.obs = as.data.frame(unclass(MI.obs)), MI.dist = MI.dist,
              n.Permutations = nPermute, n.Converged = sum(!is.na(AFI.dist[,1])),
@@ -405,63 +492,47 @@ permuteMeasEq <- function(nPermute, con, uncon = NULL, null = NULL, param = NULL
 
 ## methods
 setMethod("show", "permuteMeasEq", function(object) {
-  cat("Omnibus p value based on parametric chi-squared difference test:\n\n")
-  print(round(object@ANOVA, digits = 3))
-
-  cat("\n\nOmnibus p values based on nonparametric permutation method: \n\n")
-  AFI <- data.frame(AFI.Difference = object@AFI.obs, p.value = object@AFI.pval)
-  class(AFI) <- c("lavaan.data.frame","data.frame")
-  print(AFI, nd = 3)
   ## print warning if there are nonConverged permutations
   if (object@n.Permutations != object@n.Converged) {
     warning(paste("Only", object@n.Converged, "out of",
                   object@n.Permutations, "models converged within",
-                  max(object@n.nonConverged), "attempts per permutation."))
+                  max(object@n.nonConverged), "attempts per permutation.\n\n"))
   }
+  ## print ANOVA
+  cat("Omnibus p value based on parametric chi-squared difference test:\n\n")
+  print(round(object@ANOVA, digits = 3))
+  ## print permutation results
+  cat("\n\nOmnibus p values based on nonparametric permutation method: \n\n")
+  AFI <- data.frame(AFI.Difference = object@AFI.obs, p.value = object@AFI.pval)
+  class(AFI) <- c("lavaan.data.frame","data.frame")
+  print(AFI, nd = 3)
   invisible(object)
 })
 
 setMethod("summary", "permuteMeasEq", function(object, alpha = .05, nd = 3) {
+  ## print warning if there are nonConverged permutations
+  if (object@n.Permutations != object@n.Converged) {
+    warning(paste("Only", object@n.Converged, "out of",
+                  object@n.Permutations, "models converged within",
+                  max(object@n.nonConverged), "attempts per permutation.\n\n"))
+  }
+  ## print ANOVA
   cat("Omnibus p value based on parametric chi-squared difference test:\n\n")
   print(round(object@ANOVA, digits = nd))
-
+  ## print permutation results
   cat("\n\nOmnibus p values based on nonparametric permutation method: \n\n")
   AFI <- data.frame(AFI.Difference = object@AFI.obs, p.value = object@AFI.pval)
   class(AFI) <- c("lavaan.data.frame","data.frame")
   print(AFI, nd = nd)
 
-  ## unless testing configural, print requested DIF test results
+  ## print DIF test results, if any were requested
   if (length(object@MI.dist)) {
     cat("\n\n Modification indices for equality constrained parameter estimates,\n",
         "with unadjusted 'p.value' based on chi-squared distribution and\n",
         "adjusted 'tukey.p.value' based on permutation distribution of the\n",
         "maximum modification index per iteration: \n\n")
-    MI <- object@MI.obs
-    class(MI) <- c("lavaan.data.frame","data.frame")
-    PT <- object@PT
-    eqPar <- rbind(PT[PT$plabel %in% MI$lhs, ], PT[PT$plabel %in% MI$rhs, ])
-    MI$flag <- ""
-    MI$parameter <- ""
-    MI$group.lhs <- ""
-    MI$group.rhs <- ""
-    for (i in 1:nrow(MI)) {
-      par1 <- eqPar$par[ eqPar$plabel == MI$lhs[i] ]
-      par2 <- eqPar$par[ eqPar$plabel == MI$rhs[i] ]
-      MI$parameter[i] <- par1
-      MI$group.lhs[i] <- eqPar$group.label[ eqPar$plabel == MI$lhs[i] ]
-      MI$group.rhs[i] <- eqPar$group.label[ eqPar$plabel == MI$rhs[i] ]
-      if (par1 != par2) {
-        myMessage <- paste0("Constraint '", MI$lhs[i], "==", MI$rhs[i],
-                            "' refers to different parameters: \n'",
-                            MI$lhs[i], "' is '", par1, "' in group '",
-                            MI$group.lhs[i], "'\n'",
-                            MI$rhs[i], "' is '", par2, "' in group '",
-                            MI$group.rhs[i], "'\n")
-
-        warning(myMessage)
-      }
-      if (MI$tukey.p.value[i] < alpha) MI$flag[i] <- "*  -->"
-    }
+    MI <- do.call(paste("summ", object@modelType, sep = "."),
+                  args = list(object = object, alpha = alpha))
     print(MI, nd = nd)
 
     ## print messages about potential DIF
@@ -471,22 +542,58 @@ setMethod("summary", "permuteMeasEq", function(object, alpha = .05, nd = 3) {
     }
     cat("\n\nThe following equality constraints were flagged as significant:\n\n")
     for (i in which(MI$tukey.p.value < alpha)) {
-      cat("Parameter '", MI$parameter[i], "' may differ between Groups '",
-          MI$group.lhs[i], "' and '", MI$group.rhs[i], "'.\n", sep = "")
+      if (object@modelType == "mgcfa") {
+        cat("Parameter '", MI$parameter[i], "' may differ between Groups '",
+            MI$group.lhs[i], "' and '", MI$group.rhs[i], "'.\n", sep = "")
+      } else if (object@modelType == "mimic") {
+        cat("Parameter '", as.character(MI$lhs[i]),
+            "' may be significant.\n", sep = "")
+      } else if (object@modelType == "long") {}
     }
     cat("\nUse lavTestScore(..., epc = TRUE) on your constrained model to",
         "display expected parameter changes for these equality constraints\n\n")
     return(invisible(MI))
   }
 
-  ## print warning if there are nonConverged permutations
-  if (object@n.Permutations != object@n.Converged) {
-    warning(paste("Only", object@n.Converged, "out of",
-                  object@n.Permutations, "models converged within",
-                  max(object@n.nonConverged), "attempts per permutation."))
-  }
   invisible(object)
 })
+
+summ.mgcfa <- function(object, alpha) {
+  MI <- object@MI.obs
+  class(MI) <- c("lavaan.data.frame","data.frame")
+  PT <- object@PT
+  eqPar <- rbind(PT[PT$plabel %in% MI$lhs, ], PT[PT$plabel %in% MI$rhs, ])
+  MI$flag <- ""
+  MI$parameter <- ""
+  MI$group.lhs <- ""
+  MI$group.rhs <- ""
+  for (i in 1:nrow(MI)) {
+    par1 <- eqPar$par[ eqPar$plabel == MI$lhs[i] ]
+    par2 <- eqPar$par[ eqPar$plabel == MI$rhs[i] ]
+    MI$parameter[i] <- par1
+    MI$group.lhs[i] <- eqPar$group.label[ eqPar$plabel == MI$lhs[i] ]
+    MI$group.rhs[i] <- eqPar$group.label[ eqPar$plabel == MI$rhs[i] ]
+    if (par1 != par2) {
+      myMessage <- paste0("Constraint '", MI$lhs[i], "==", MI$rhs[i],
+                          "' refers to different parameters: \n'",
+                          MI$lhs[i], "' is '", par1, "' in group '",
+                          MI$group.lhs[i], "'\n'",
+                          MI$rhs[i], "' is '", par2, "' in group '",
+                          MI$group.rhs[i], "'\n")
+
+      warning(myMessage)
+    }
+    if (MI$tukey.p.value[i] < alpha) MI$flag[i] <- "*  -->"
+  }
+  MI
+}
+
+summ.mimic <- function(object, alpha) {
+  MI <- object@MI.obs
+  class(MI) <- c("lavaan.data.frame","data.frame")
+  MI$flag <- ifelse(MI$tukey.p.value < alpha, "*  -->", "")
+  MI
+}
 
 setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
                                             printLegend = TRUE,
@@ -512,7 +619,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
     }
   }
 
-  delta <- length(x@MI.dist) > 0L
+  delta <- length(x@MI.dist && x@modelType == "mgcfa") > 0L
   if (grepl("chi", AFI)) {   ####################################### Chi-squared
     ChiSq <- x@AFI.obs[AFI]
     DF <- x@ANOVA[2]
