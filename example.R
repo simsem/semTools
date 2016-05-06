@@ -1,3 +1,12 @@
+# The bugs I found currently 05/01/59:
+#	1. std.lv = TRUE in measurementInvariance does not work
+#	2. EFA with categorical items
+#	3. Full options for the unified approach
+# 	4. longInvarianceCat
+#	5. Multiple constructs in longInvariance
+# 	6. Fix spatial correction
+
+
 # moreFitIndices, longInvariance
 
 sourceDir <- function(path, trace = TRUE, ...) {

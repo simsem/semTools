@@ -21,7 +21,8 @@ Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("au
 		person(given = "Terry", family = "Jorgensen", role = "ctb", email="TJorgensen314@gmail.com"),
 		person(given = "Steven", family = "Chesnut", role = "ctb", email="Steven.Chesnut@usm.edu"),
 		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu"), 
-		person(given = "Jason", family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu") 		
+		person(given = "Jason", family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"), 		
+		person(given = "Ylenio", family = "Longo", role = "ctb", email="ylenio.longo@nottingham.ac.uk") 		
 		)
 Description: Provides useful tools for structural equation modeling packages. 
 Depends: R(>= 3.0), methods, lavaan(>= 0.5-20), utils, stats, graphics
@@ -50,6 +51,7 @@ Author: Sunthud Pornprasertmanit [aut, cre],
   Terry Jorgensen [ctb],
   Steven Chesnut [ctb],
   Jarrett Byrnes [ctb], 
-  Jason Rights [ctb]
+  Jason Rights [ctb],
+  Ylenio Longo [ctb]
 Maintainer: Sunthud Pornprasertmanit <psunthud@gmail.com>
-Date/Publication: 2016-03-21
+Date/Publication: 2016-05-06

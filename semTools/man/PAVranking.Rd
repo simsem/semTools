@@ -74,7 +74,7 @@ Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates and
 "Sterba, S. K., & Rights, J. D. (2016). Effects of parceling on model selection: Parcel-allocation variability in model ranking. \emph{Psychological Methods}. \url{http://dx.doi.org/10.1037/met0000067}
 }
 \seealso{
-	\code{\link{parcelAllocation}}
+	\code{\link{parcelAllocation}}, \code{\link{poolMAlloc}}
 }
 \author{
     Jason D. Rights (Vanderbilt University; \email{jason.d.rights@vanderbilt.edu})
