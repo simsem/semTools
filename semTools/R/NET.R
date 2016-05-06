@@ -44,9 +44,9 @@ x.within.y <- function(x, y, crit = crit) {
   yData <- do.call(rbind, lapply(y@Data@X, function(foo) foo[ , rank(Ynames[[1]])]))
   if (!identical(xData, yData)) stop("Models must apply to the same data")
   ##############################################################################
-  
+
   ## check degrees of freedom support nesting structure
-  if (inspect(x, "fit")["df"] < inspect(y, "fit")["df"]) stop("
+  if (lavaan::lavInspect(x, "fit")["df"] < lavaan::lavInspect(y, "fit")["df"]) stop("
       x cannot be nested within y because y is more restricted than x")
 
   ## model-implied moments
@@ -59,10 +59,11 @@ x.within.y <- function(x, y, crit = crit) {
                                        sample.nobs = N, slotParTable = y@ParTable,
                                        slotOptions = y@Options,
                                        WLS.V = x@SampleStats@WLS.V)))
-  if(!inspect(myFit, "converged")) return(NA) else {
-    result <- inspect(myFit, "fit")["chisq"] < crit
+  if(!lavaan::lavInspect(myFit, "converged")) return(NA) else {
+    result <- lavaan::lavInspect(myFit, "fit")["chisq"] < crit
     names(result) <- NULL
-    if (inspect(x, "fit")["df"] == inspect(y, "fit")["df"]) return(c(Equivalent = result))
+    if (lavaan::lavInspect(x, "fit")["df"] ==
+        lavaan::lavInspect(y, "fit")["df"]) return(c(Equivalent = result))
   }
   c(Nested = result)
 }
@@ -72,26 +73,31 @@ net <- function(..., crit = .0001) {
   ## put fitted objects in a list
   fitList <- list(...)
   nFits <- length(fitList)
-  
+
   ## check that they are all lavaan objects
   notLavaan <- sapply(fitList, class) != "lavaan"
   if (any(notLavaan)) {
     fitNames <- sapply(as.list(substitute(list(...)))[-1], deparse)
-    stop(paste("The following arguments are not fitted lavaan objects:\n", 
+    stop(paste("The following arguments are not fitted lavaan objects:\n",
                paste(fitNames[notLavaan], collapse = "\t")))
   }
-  
+
   ## check whether any models include categorical outcomes
   catMod <- sapply(fitList, function(x) x@Options$categorical)
   if (any(catMod)) stop("This method only applies to continuous outcomes.")
-  
+
   ## get degrees of freedom for each model
-  DFs <- sapply(fitList, function(x) inspect(x, "fit")["df"])
+  DFs <- sapply(fitList, function(x) lavaan::lavInspect(x, "fit")["df"])
 
   ## name according to named objects, with DF in parentheses
   fitNames <- names(fitList)
-  noName <- which(fitNames == "")
-  fitNames[noName] <- sapply(as.list(substitute(list(...)))[-1], deparse)[noName]
+  dotNames <- sapply(as.list(substitute(list(...)))[-1], deparse)
+  if (is.null(names(fitList))) {
+    fitNames <- dotNames
+  } else {
+    noName <- which(fitNames == "")
+    fitNames[noName] <- dotNames[noName]
+  }
   names(fitList) <- paste(fitNames, " (df = ", DFs, ")", sep = "")
 
   ## sort list according to DFs
@@ -120,7 +126,7 @@ net <- function(..., crit = .0001) {
       }
     }
   }
-  
+
     # class(nestMat) <- c("Net", class(nestMat))
   # attr(nestMat, "df") <- orderedDFs
     out <- new("Net",
@@ -137,19 +143,19 @@ function(object) {
     m[upper.tri(m, diag = TRUE)] <- ""
     cat("
      If cell [R, C] is TRUE, the model in row R is nested within column C.
-     
+
      If cell [R, C] is TRUE and the models have the same degrees of freedom,
      they are equivalent models.  See Bentler & Satorra (2010) for details.
-     
+
      If cell [R, C] is NA, then the model in column C did not converge when
      fit to the implied means and covariance matrix from the model in row R.
-     
+
      The hidden diagonal is TRUE because any model is equivalent to itself.
      The upper triangle is hidden because for models with the same degrees
      of freedom, cell [C, R] == cell [R, C].  For all models with different
      degrees of freedom, the upper diagonal is all FALSE because models with
      fewer degrees of freedom (i.e., more parameters) cannot be nested
-     within models with more degrees of freedom (i.e., fewer parameters).  
+     within models with more degrees of freedom (i.e., fewer parameters).
      \n")
     print(m, quote = FALSE)
   } else {
@@ -181,4 +187,4 @@ function(object) {
   }
   invisible(object)
 })
-	
+

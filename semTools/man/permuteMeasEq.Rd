@@ -4,60 +4,105 @@
 	Permutation Randomization Tests of Measurement Equivalence and Differential Item Functioning (DIF)
 }
 \description{
-The function \code{permuteMeasEq} accepts a pair of nested lavaan objects, the less constrained of which (\code{uncon}) freely estimates a set of measurement parameters (e.g., factor loadings, intercepts, or thresholds) in all groups, and the more constrained of which (\code{con}) constrains those measurement parameters to equality across groups. Group assignment is repeatedly permuted and the model is fit to each permutation, in order to produce an empirical distribution under the null hypothesis of no group differences, both for (a) changes in user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for (b) the maximum modification index among the user-specified parameters (see \code{param}). This function is for testing measurement equivalence only across groups, not occasions. Configural invariance can also be tested by providing that fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which case \code{param} must be \code{NULL} as well.
+The function \code{permuteMeasEq} provides tests of hypotheses involving measurement equivalence, in one of two frameworks:
 
-Modification indices for equality constraints on parameters specified in \code{param} are calculated from the constrained model (\code{con}) using the function \code{\link[lavaan]{lavTestScore}}, which can also be used to request expected parameter changes if the user has a need for them.
+(1) For multiple-group CFA models, provide a pair of nested lavaan objects, the less constrained of which (\code{uncon}) freely estimates a set of measurement parameters (e.g., factor loadings, intercepts, or thresholds; specified in \code{param}) in all groups, and the more constrained of which (\code{con}) constrains those measurement parameters to equality across groups. Group assignment is repeatedly permuted and the models are fit to each permutation, in order to produce an empirical distribution under the null hypothesis of no group differences, both for (a) changes in user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for (b) the maximum modification index among the user-specified equality constraints. Configural invariance can also be tested by providing that fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which case \code{param} must be \code{NULL} as well.
+
+(2) In MIMIC models, one or a set of continuous and/or discrete \code{covariates} can be permuted, and a constrained model is fit to each permutation in order to provide a distribution of any fit measures (namely, the maximum modification index among fixed parameters in \code{param}) under the null hypothesis of measurement equivalence across levels of those covariates.
+
+In either framework, modification indices for equality constraints or fixed parameters specified in \code{param} are calculated from the constrained model (\code{con}) using the function \code{\link[lavaan]{lavTestScore}}.
 }
 \usage{
-permuteMeasEq(nPermute, con, uncon = NULL, null = NULL,
-              param = NULL, AFIs = NULL, moreAFIs = NULL,
-              maxSparse = 10, maxNonconv = 10, showProgress = TRUE)
+permuteMeasEq(nPermute, modelType = c("mgcfa","mimic"),
+              con, uncon = NULL, null = NULL,
+              param = NULL, freeParam = NULL, covariates = NULL,
+              AFIs = NULL, moreAFIs = NULL,
+              maxSparse = 10L, maxNonconv = 10L, showProgress = TRUE,
+              warn = -1L, datafun, extra,
+              parallelType = c("none", "multicore", "snow"),
+              ncpus = NULL, cl = NULL, iseed = 12345L)
 }
 \arguments{
   \item{nPermute}{
-	An integer indicating the number of random permutations of group assignment used to form empirical distributions under the null hypothesis.
+	An integer indicating the number of random permutations used to form empirical distributions under the null hypothesis.
+}
+  \item{modelType}{
+	A character string indicating type of model employed: multiple-group CFA (\code{"mgcfa"}) or MIMIC (\code{"mimic"}).
 }
   \item{con}{
-  The constrained \code{lavaan} object, in which the parameters specified in \code{param} are constrained to equality across all groups. In the case of testing \emph{configural} invariance, \code{con} is the configural model (implicitly, the unconstrained model is the saturated model, so use the default \code{uncon = NULL}).
+  The constrained \code{lavaan} object, in which the parameters specified in \code{param} are constrained to equality across all groups when \code{modelType = "mgcfa"}, or which regression paths are fixed to zero when \code{modelType = "mimic"}. In the case of testing \emph{configural} invariance when \code{modelType = "mgcfa"}, \code{con} is the configural model (implicitly, the unconstrained model is the saturated model, so use the defaults \code{uncon = NULL} and \code{param = NULL}). When \code{modelType = "mimic"}, \code{con} is the MIMIC model in which the covariate predicts the latent construct(s) but no indicators (unless they have already been identified as DIF items).
 }
   \item{uncon}{
-	Optional.  The unconstrained \code{lavaan} object, in which the parameters specified in \code{param} are freely estimated in all groups. Only in the case of testing \emph{configural} invariance should this argument be \code{NULL}.
+	Optional.  The unconstrained \code{lavaan} object, in which the parameters specified in \code{param} are freely estimated in all groups. When \code{modelType = "mgcfa"}, only in the case of testing \emph{configural} invariance should \code{uncon = NULL}. When \code{modelType = "mimic"}, any non-\code{NULL uncon} is silently set to \code{NULL}.
 }
   \item{null}{
   Optional.  A \code{lavaan} object, in which an alternative null model is fit (besides the default independence model specified by \code{lavaan}) for the calculation of incremental fit indices. See Widamin & Thompson (2003) for details. If \code{NULL}, \code{lavaan}'s default independence model is used.
 }
   \item{param}{
-  A character vector indicating which parameters are constrained across groups in \code{con} and are unconstrained in \code{uncon}. Parameter names must match those returned by \code{names(coef(uncon))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels. Alternatively, to test an entire set of a certain type of parameter, \code{param} may take any one of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, or \code{"residuals"}.
+  An optional character vector or list of character vectors indicating which parameters the user would test for DIF following a rejection of the omnibus null hypothesis tested using (\code{more})\code{AFIs}. Note that \code{param} does not guarantee certain parameters \emph{are} constrained in \code{con}; that is for the user to specify when fitting the model. If users have any "anchor items" that they would never intend to free across groups (or levels of a covariate), these should be excluded from \code{param}; exceptions to a type of parameter can be specified in \code{freeParam}. When \code{modelType = "mgcfa"}, \code{param} indicates which parameters of interest are constrained across groups in \code{con} and are unconstrained in \code{uncon}. Parameter names must match those returned by \code{names(coef(con))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels (that is, the parameter names must follow the rules of lavaan's \code{\link[lavaan]{model.syntax}}). Alternatively (or additionally), to test all constraints of a certain type (or multiple types) of parameter in \code{con}, \code{param} may take any combination of the following values: \code{"loadings"}, \code{"intercepts"}, \code{"thresholds"}, \code{"residuals"}, \code{"residual.covariances"}, \code{"means"}, \code{"lv.variances"}, and/or \code{"lv.covariances"}. When \code{modelType = "mimic"}, \code{param} must be a vector of individual parameters or a list of character strings to be passed one-at-a-time to \code{\link[lavaan]{lavTestScore}}\code{(object = con, add = param[i])}, indicating which (sets of) regression paths fixed to zero in \code{con} that the user would consider freeing (i.e., exclude anchor items). If \code{modelType = "mimic"} and \code{param} is a list of character strings, the multivariate test statistic will be saved for each list element instead of 1-\emph{df} modification indices for each individual parameter, and \code{names(param)} will name the rows of the \code{MI.obs} slot (see \linkS4class{permuteMeasEq}). Set \code{param = NULL} (default) to avoid collecting modification indices for any follow-up tests.
+}
+  \item{freeParam}{
+  An optional character vector, silently ignored when \code{modelType = "mimic"}. If \code{param} includes a type of parameter (e.g., \code{"loadings"}), \code{freeParam} indicates exceptions (i.e., anchor items) that the user would \emph{not} intend to free across groups and should therefore be ignored when calculating \emph{p} values adjusted for the number of follow-up tests. Parameter types that are already unconstrained across groups in the fitted \code{con} model (i.e., a \emph{partial} invariance model) will automatically be ignored, so they do not need to be specified in \code{freeParam}. Parameter names must match those returned by \code{names(coef(con))}, but omitting any group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or user-specified labels (that is, the parameter names must follow the rules of lavaan \code{\link[lavaan]{model.syntax}}).
+}
+  \item{covariates}{
+  An optional character vector, only applicable when \code{modelType = "mimic"}. The observed data are partitioned into columns indicated by \code{covariates}, and the rows are permuted simultaneously for the entire set before being merged with the remaining data.  Thus, the covariance structure is preserved among the covariates, which is necessary when (e.g.) multiple dummy codes are used to represent a discrete covariate or when covariates interact. If \code{covariates = NULL} when \code{modelType = "mimic"}, the value of \code{covariates} is inferred by searching \code{param} for predictors (i.e., variables appearing after the "\code{~}" operator).
 }
   \item{AFIs}{
-  A character vector indicating which alternative fit indices (or chi-squared itself) are to be used to test the multiparameter omnibus null hypothesis of no group differences in any parameters specified in \code{param}. Any fit measures returned by \code{\link[lavaan]{fitMeasures}} may be specified (including constants like \code{"df"}, which would be nonsensical). If both \code{AFIs} and \code{moreAFIs} are \code{NULL}, only \code{"chisq"} will be returned.
-
+  A character vector indicating which alternative fit indices (or chi-squared itself) are to be used to test the multiparameter omnibus null hypothesis that the constraints specified in \code{con} hold in the population. Any fit measures returned by \code{\link[lavaan]{fitMeasures}} may be specified (including constants like \code{"df"}, which would be nonsensical). If both \code{AFIs} and \code{moreAFIs} are \code{NULL}, only \code{"chisq"} will be returned.
 }
   \item{moreAFIs}{
-  Optional. A character vector indicating which (if any) alternative fit indices returned by \code{\link[semTools]{moreFitIndices}} are to be used to test the multiparameter omnibus null hypothesis of no group differences in any parameters specified in \code{param}.
+  Optional. A character vector indicating which (if any) alternative fit indices returned by \code{\link[semTools]{moreFitIndices}} are to be used to test the multiparameter omnibus null hypothesis that the constraints specified in \code{con} hold in the population.
 }
   \item{maxSparse}{
-  An integer indicating the maximum number of consecutive times that randomly permuted group assignment can yield a sample in which at least one category (of an \code{ordered} indicator) is unobserved in at least one group, such that the same set of parameters cannot be estimated in each group. If such a sample occurs, group assignment is randomly permuted again, repeatedly until a sample is obtained with all categories observed in all groups. If \code{maxSparse} is exceeded, \code{NA} will be returned for that iteration of the permutation distribution.
+  Only applicable when \code{modelType = "mgcfa"} and at least one indicator is \code{ordered}. An integer indicating the maximum number of consecutive times that randomly permuted group assignment can yield a sample in which at least one category (of an \code{ordered} indicator) is unobserved in at least one group, such that the same set of parameters cannot be estimated in each group. If such a sample occurs, group assignment is randomly permuted again, repeatedly until a sample is obtained with all categories observed in all groups. If \code{maxSparse} is exceeded, \code{NA} will be returned for that iteration of the permutation distribution.
 }
   \item{maxNonconv}{
-  An integer indicating the maximum number of consecutive times that randomly permuted group assignment can yield a sample for which the model does not converge on a solution. If such a sample occurs, group assignment is randomly permuted again, repeatedly until a sample is obtained for which the model does converge. If \code{maxNonconv} is exceeded, \code{NA} will be returned for that iteration of the permutation distribution, and a warning will be printed when using \code{show} or \code{summary}.
+  An integer indicating the maximum number of consecutive times that a random permutation can yield a sample for which the model does not converge on a solution. If such a sample occurs, permutation is attempted repeatedly until a sample is obtained for which the model does converge. If \code{maxNonconv} is exceeded, \code{NA} will be returned for that iteration of the permutation distribution, and a warning will be printed when using \code{show} or \code{summary}.
 }
   \item{showProgress}{
-	Logical. Indicating whether to display a progress bar while permuting.
+	Logical. Indicating whether to display a progress bar while permuting. Silently set to \code{FALSE} when using parallel options.
 }
+  \item{warn}{
+  Sets the handling of warning messages when fitting model(s) to permuted data sets. See \code{\link[base]{options}}.
+}
+  \item{datafun}{
+  An optional function that can be applied to the data (extracted from \code{con}) after each permutation, but before fitting the model(s) to each permutation. The \code{datafun} function must have an argument named \code{data} that accepts a \code{data.frame}, and it must return a \code{data.frame} containing the same column names. The column order may differ, the values of those columns may differ (so be careful!), and any additional columns will be ignored when fitting the model, but an error will result if any column names required by the model syntax do not appear in the transformed data set. Although available for any \code{modelType}, \code{datafun} may be useful when using the MIMIC method to test for nonuniform DIF (metric/weak invariance) by using product indicators for a latent factor representing the interaction between a factor and one of the \code{covariates}, in which case the product indicators would need to be recalculated after each permutation of the \code{covariates}. To access other R objects used within \code{permuteMeasEq}, the arguments to \code{datafun} may also contain any subset of the following: \code{"con"}, \code{"uncon"}, \code{"null"}, \code{"param"}, \code{"freeParam"}, \code{"covariates"}, \code{"AFIs"}, \code{"moreAFIs"}, \code{"maxSparse"}, \code{"maxNonconv"}, and/or \code{"iseed"}. The values for those arguments will be the same as the values supplied to \code{permuteMeasEq}.
+}
+  \item{extra}{
+  An optional function that can be applied to any (or all) of the fitted lavaan objects (\code{con}, \code{uncon}, and/or \code{null}). This function will also be applied after fitting the model(s) to each permuted data set. To access the R objects used within \code{permuteMeasEq}, the arguments to \code{extra} must be any subset of the following: \code{"con"}, \code{"uncon"}, \code{"null"}, \code{"param"}, \code{"freeParam"}, \code{"covariates"}, \code{"AFIs"}, \code{"moreAFIs"}, \code{"maxSparse"}, \code{"maxNonconv"}, and/or \code{"iseed"}. The values for those arguments will be the same as the values supplied to \code{permuteMeasEq}. The \code{extra} function must return a named \code{numeric} vector or a named \code{list} of scalars (i.e., a \code{list} of \code{numeric} vectors of \code{length == 1}). Any unnamed elements (e.g., \code{""} or \code{NULL}) of the returned object will result in an error.
+}
+  \item{parallelType}{
+  The type of parallel operation to be used (if any). The default is \code{"none"}. Forking is not possible on Windows, so if \code{"multicore"} is requested on a Windows machine, the request will be changed to \code{"snow"} with a message.
+}
+  \item{ncpus}{
+  Integer: number of processes to be used in parallel operation. If \code{NULL} (the default) and \code{parallelType \%in\% c("multicore","snow")}, the default is one less than the maximum number of processors detected by \code{\link[parallel]{detectCores}}. This default is also silently set if the user specifies more than the number of processors detected.
+}
+  \item{cl}{
+  An optional \pkg{parallel} or \pkg{snow} cluster for use when \code{parallelType = "snow"}.  If \code{NULL}, a \code{"PSOCK"} cluster on the local machine is created for the duration of the \code{permuteMeasEq} call. If a valid \code{\link[parallel]{makeCluster}} object is supplied, \code{parallelType} is silently set to \code{"snow"}, and \code{ncpus} is silently set to \code{length(cl)}.
+}
+  \item{iseed}{
+  Integer: Only used to set the states of the RNG when using parallel options, in which case \code{\link[base]{RNGkind}} is set to \code{"L'Ecuyer-CMRG"} with a message. See \code{\link[parallel]{clusterSetRNGStream}} and Section 6 of \code{vignette("parallel", "parallel")} for more details. If user supplies an invalid value, \code{iseed} is silently set to the default (12345). To set the state of the RNG when not using parallel options, call \code{\link[base]{set.seed}} before calling \code{permuteMeasEq}.
+}
+
 }
 \details{
-	The multiparameter omnibus null hypothesis of measurement equivalence/invariance is that there are no group differences in any measurement parameters. This can be tested using the \code{anova} method on nested \code{lavaan} objects, as seen in the output of \code{\link[semTools]{measurementInvariance}}, or by inspecting the change in alternative fit indices (AFIs) such as the CFI. See Cheung & Rensvold (2002) or Meade, Johnson, & Braddy (2008) for details.
+	For multiple-group CFA models, the multiparameter omnibus null hypothesis of measurement equivalence/invariance is that there are no group differences in any measurement parameters (of a particular type). This can be tested using the \code{anova} method on nested \code{lavaan} objects, as seen in the output of \code{\link[semTools]{measurementInvariance}}, or by inspecting the change in alternative fit indices (AFIs) such as the CFI. The permutation randomization method employed by \code{permuteMeasEq} generates an empirical distribution of any \code{AFIs} under the null hypothesis, so the user is not restricted to using fixed cutoffs proposed by Cheung & Rensvold (2002), Chen (2007), or Meade, Johnson, & Braddy (2008).
 
-  If the multiparameter omnibus null hypothesis is rejected, partial invariance can still be established by freeing parameters that differ across groups, while maintaining equality constraints for at least two other indicators per factor. Modification indices can be calculated from the constrained model (\code{con}), but multiple testing leads to inflation of Type I error rates. The permutation randomization method employed by \code{permuteMeasEq} creates a distribution of the maximum modification index if the null hypothesis is true, which allows the user to control the familywise Type I error rate in a manner similar to Tukey's \emph{q} (studentized range) distribution for the Honestly Significant Difference (HSD) post hoc test.
+  If the multiparameter omnibus null hypothesis is rejected, partial invariance can still be established by freeing invalid equality constraints, as long as equality constraints are valid for at least two indicators per factor. Modification indices can be calculated from the constrained model (\code{con}), but multiple testing leads to inflation of Type I error rates. The permutation randomization method employed by \code{permuteMeasEq} creates a distribution of the maximum modification index if the null hypothesis is true, which allows the user to control the familywise Type I error rate in a manner similar to Tukey's \emph{q} (studentized range) distribution for the Honestly Significant Difference (HSD) post hoc test.
+
+  For MIMIC models, DIF can be tested by comparing modification indices of regression paths to the permutation distribution of the maximum modification index, which controls the familywise Type I error rate. The MIMIC approach could also be applied with multiple-group models, but the grouping variable would not be permuted; rather, the covariates would be permuted separately within each group to preserve between-group differences. So whether parameters are constrained or unconstrained across groups, the MIMIC approach is only for testing null hypotheses about the effects of \code{covariates} on indicators, controlling for common factors.
+
+  In either framework, \code{\link[lavaan]{lavaan}}'s \code{group.label} argument is used to preserve the order of groups seen in \code{con} when permuting the data.
 }
 \value{
-	The \linkS4class{permuteMeasEq} object representing the results of testing measurement equivalence (the multiparameter omnibus test) and DIF (modification indices).
+	The \linkS4class{permuteMeasEq} object representing the results of testing measurement equivalence (the multiparameter omnibus test) and DIF (modification indices), as well as diagnostics and any \code{extra} output.
 }
 \author{
     Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \references{
+Chen, F. F. (2007). Sensitivity of goodness of fit indexes to lack of measurement invariance.  \emph{Structural Equation Modeling, 14}(3), 464-504. doi:10.1080/10705510701301834
+
 Cheung, G. W., & Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes for testing measurement invariance. \emph{Structural Equation Modeling, 9}(2), 233-255. doi:10.1207/S15328007SEM0902_5
 
 Meade, A. W., Johnson, E. C., & Braddy, P. W. (2008). Power and sensitivity of alternative fit indices in tests of measurement invariance. \emph{Journal of Applied Psychology, 93}(3), 568-592. doi:10.1037/0021-9010.93.3.568
@@ -65,13 +110,13 @@ Meade, A. W., Johnson, E. C., & Braddy, P. W. (2008). Power and sensitivity of a
 Widamin, K. F., & Thompson, J. S. (2003). On specifying the null model for incremental fit indices in structural equation modeling. \emph{Psychological Methods, 8}(1), 16-37. doi:10.1037/1082-989X.8.1.16
 }
 \seealso{
-\code{\link[stats]{TukeyHSD}}, \code{\link[semTools]{measurementInvariance}}, \code{\link[semTools]{measurementInvarianceCat}}
+\code{\link[stats]{TukeyHSD}}, \code{\link[lavaan]{lavTestScore}}, \code{\link[semTools]{measurementInvariance}}, \code{\link[semTools]{measurementInvarianceCat}}
 }
 \examples{
 \dontrun{
 
 ########################
-## Traditional Method ##
+## Multiple-Group CFA ##
 ########################
 
 ## create 3-group data in lavaan example(cfa) data
@@ -97,31 +142,30 @@ miout <- measurementInvariance(mod.config, data = HS, std.lv = TRUE,
 (fit.metric <- miout[["fit.loadings"]])
 (fit.scalar <- miout[["fit.intercepts"]])
 
-########################
-## Permutation Method ##
-########################
+
+####################### Permutation Method
 
 ## fit indices of interest for multiparameter omnibus test
-myAFIs <- c("chisq","cfi","rmsea","srmr","mfi","aic")
+myAFIs <- c("chisq","cfi","rmsea","mfi","aic")
 moreAFIs <- c("gammaHat","adjGammaHat")
 
 ## Use only 20 permutations for a demo.  In practice,
 ## use > 1000 to reduce sampling variability of estimated p values
 
 ## test configural invariance
-set.seed(123)
+set.seed(12345)
 out.config <- permuteMeasEq(nPermute = 20, con = fit.config)
 out.config
 
 ## test metric equivalence
-set.seed(456)
+set.seed(12345) # same permutations
 out.metric <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
                             param = "loadings", AFIs = myAFIs,
                             moreAFIs = moreAFIs, null = fit.null)
 summary(out.metric, nd = 4)
 
 ## test scalar equivalence
-set.seed(789)
+set.seed(12345) # same permutations
 out.scalar <- permuteMeasEq(nPermute = 20, uncon = fit.metric, con = fit.scalar,
                             param = "intercepts", AFIs = myAFIs,
                             moreAFIs = moreAFIs, null = fit.null)
@@ -139,6 +183,116 @@ hist(out.config, AFI = "chisq")
 hist(out.metric, AFI = "chisq", nd = 2, alpha = .01,
      legendArgs = list(x = "topright"))
 hist(out.scalar, AFI = "cfi", printLegend = FALSE)
+
+
+####################### Extra Output
+
+## function to calculate expected change of Group-2 and -3 latent means if
+## each intercept constraint were released
+extra <- function(con) {
+  output <- list()
+  output["x1.vis2"] <- lavTestScore(con, release = 19:20, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[70]
+  output["x1.vis3"] <- lavTestScore(con, release = 19:20, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[106]
+  output["x2.vis2"] <- lavTestScore(con, release = 21:22, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[70]
+  output["x2.vis3"] <- lavTestScore(con, release = 21:22, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[106]
+  output["x3.vis2"] <- lavTestScore(con, release = 23:24, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[70]
+  output["x3.vis3"] <- lavTestScore(con, release = 23:24, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[106]
+  output["x4.txt2"] <- lavTestScore(con, release = 25:26, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[71]
+  output["x4.txt3"] <- lavTestScore(con, release = 25:26, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[107]
+  output["x5.txt2"] <- lavTestScore(con, release = 27:28, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[71]
+  output["x5.txt3"] <- lavTestScore(con, release = 27:28, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[107]
+  output["x6.txt2"] <- lavTestScore(con, release = 29:30, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[71]
+  output["x6.txt3"] <- lavTestScore(con, release = 29:30, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[107]
+  output["x7.spd2"] <- lavTestScore(con, release = 31:32, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[72]
+  output["x7.spd3"] <- lavTestScore(con, release = 31:32, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[108]
+  output["x8.spd2"] <- lavTestScore(con, release = 33:34, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[72]
+  output["x8.spd3"] <- lavTestScore(con, release = 33:34, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[108]
+  output["x9.spd2"] <- lavTestScore(con, release = 35:36, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[72]
+  output["x9.spd3"] <- lavTestScore(con, release = 35:36, univariate = FALSE,
+                                    epc = TRUE, warn = FALSE)$epc$epc[108]
+  output
+}
+
+## observed EPC
+extra(fit.scalar)
+
+## permutation results, including extra output
+set.seed(12345) # same permutations
+out.scalar <- permuteMeasEq(nPermute = 20, uncon = fit.metric, con = fit.scalar,
+                            param = "intercepts", AFIs = myAFIs,
+                            moreAFIs = moreAFIs, null = fit.null, extra = extra)
+## summarize extra output
+summary(out.scalar, extra = TRUE)
+
+
+###########
+## MIMIC ##
+###########
+
+## Specify Restricted Factor Analysis (RFA) model, equivalent to MIMIC, but
+## the factor covaries with the covariate instead of being regressed on it.
+## The covariate defines a single-indicator construct, and the
+## double-mean-centered products of the indicators define a latent
+## interaction between the factor and the covariate.
+mod.mimic <- '
+visual  =~ x1 + x2 + x3
+age =~ ageyr
+age.by.vis =~ x1.ageyr + x2.ageyr + x3.ageyr
+
+x1 ~~ x1.ageyr
+x2 ~~ x2.ageyr
+x3 ~~ x3.ageyr
+'
+
+HS.orth <- indProd(var1 = paste0("x", 1:3), var2 = "ageyr", match = FALSE,
+                         data = HS[ , c("ageyr", paste0("x", 1:3))] )
+fit.mimic <- cfa(mod.mimic, data = HS.orth, meanstructure = TRUE)
+summary(fit.mimic, stand = TRUE)
+
+## Whereas MIMIC models specify direct effects of the covariate on an indicator,
+## DIF can be tested in RFA models by specifying free loadings of an indicator
+## on the covariate's construct (uniform DIF, scalar invariance) and the
+## interaction construct (nonuniform DIF, metric invariance).
+param <- as.list(paste0("age + age.by.vis =~ x", 1:3))
+names(param) <- paste0("x", 1:3)
+# param <- as.list(paste0("x", 1:3, " ~ age + age.by.vis")) # equivalent
+
+## test both parameters simultaneously for each indicator
+do.call(rbind, lapply(param, function(x) lavTestScore(fit.mimic, add = x)$test))
+## or test each parameter individually
+lavTestScore(fit.mimic, add = as.character(param))
+
+
+####################### Permutation Method
+
+## function to recalculate the interaction terms after permuting the covariate
+datafun <- function(data) {
+  d <- data[, !names(data) \%in\% paste0("x", 1:3, ".ageyr")]
+  indProd(var1 = paste0("x", 1:3), var2 = "ageyr", match = FALSE, data = d)
+}
+
+set.seed(12345)
+perm.mimic <- permuteMeasEq(nPermute = 20, modelType = "mimic", con = fit.mimic,
+                            param = param, covariates = "ageyr",
+                            datafun = datafun)
+summary(perm.mimic)
 
 }
 }
