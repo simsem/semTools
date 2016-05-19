@@ -7,11 +7,14 @@
 	Finding Mardia's multivariate kurtosis of multiple variables
 }
 \usage{
-mardiaKurtosis(dat)
+mardiaKurtosis(dat, use = "everything")
 }
 \arguments{
   \item{dat}{
 	The target matrix or data frame with multiple variables
+}
+  \item{use}{
+	Missing data handling method from the \code{\link[stats]{cov}} function.
 }
 }
 \value{

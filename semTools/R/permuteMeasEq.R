@@ -71,7 +71,6 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
   }
   ## parallel settings, adapted from boot::boot()
   if (parallelType != "none") {
-    library(parallel)
     if (is.null(ncpus) || ncpus > parallel::detectCores()) {
       ncpus <- parallel::detectCores() - 1
     }
@@ -578,7 +577,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic","long"),
   if (!missing(datafun)) argList$datafun <- datafun
 
   ###################### PERMUTED RESULTS ###########################
-  ## permute and return distributions of (Δ)AFIs, largest MI, and extras
+  ## permute and return distributions of (delta)AFIs, largest MI, and extras
   if (showProgress) {
     mypb <- txtProgressBar(min = 1, max = nPermute, initial = 1, char = "=",
                            width = 50, style = 3, file = "")

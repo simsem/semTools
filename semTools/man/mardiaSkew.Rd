@@ -7,11 +7,14 @@
 	Finding Mardia's multivariate skewness of multiple variables
 }
 \usage{
-mardiaSkew(dat)
+mardiaSkew(dat, use = "everything")
 }
 \arguments{
   \item{dat}{
 	The target matrix or data frame with multiple variables
+}
+  \item{use}{
+	Missing data handling method from the \code{\link[stats]{cov}} function.
 }
 }
 \value{

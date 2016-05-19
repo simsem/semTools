@@ -1,11 +1,9 @@
 ### HTMT function
 #Written by Ylenio Longo
 
-htmt <- function(data, model){
-        R <- cor(data, use="pairwise")
-        R <- abs(R) #this helps avoid errors
-        rownames(R) <- names(data)
-        colnames(R) <- names(data)
+htmt <- function(data, model, ...){
+	R <- lavaan::lavCor(object = data, ...)
+	R <- abs(R) #this helps avoid errors
     diag(R) <- NA
     m <- lavaan::lavaanify(model)
     m <- m[m$op%in% "=~",]
@@ -52,5 +50,6 @@ htmt <- function(data, model){
     ##results
     res <- matrix(outhtmt, nrow=length(factors), ncol=length(factors), dimnames=list(factors))
     colnames(res) <- factors
+	class(res) <- c("lavaan.matrix.symmetric", "matrix")
     res
 }

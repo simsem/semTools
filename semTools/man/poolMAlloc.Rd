@@ -1,7 +1,7 @@
 \name{poolMAlloc}
 \alias{poolMAlloc}
 \title{
-	Title Needed
+	Pooled estimates and standard errors across M parcel-allocations: Combining sampling variability and parcel-allocation variability.
 }
 \description{
 	This function employs an iterative algorithm to pick the number of random item-to-parcel allocations needed to meet user-defined stability criteria for a fitted structural equation model (SEM) (see "Details" below for more information). Pooled parameter and standard error estimates from this SEM can be outputted at this final selected number of allocations. Additionally, new indices (see Sterba & Rights, 2016) are outputted for assessing the relative contributions of parcel-allocation variability vs. sampling variability in each estimate. At each iteration, this function generates a given number of random item-to-parcel allocations using a modified version of the \code{\link{parcelAllocation}} function (Quick & Schoemann, 2012), fits a SEM to each allocation, pools results across allocations from that iteration, and then assesses whether stopping criteria are met. If stopping criteria are not met, the algorithm increments the number of allocations used (generating all new allocations).
@@ -35,10 +35,10 @@ poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
 	(Optional) folder where \emph{M} (the final selected number of allocations) parceled data sets will be outputted from the iteration where the algorithm met stopping criteria. (Note for Windows users: file path must be specified using forward slashes).
   }
   \item{stopProp}{
-	Value used in defining stopping criteria of the algorithm (\eqn{\delta_{a}} in Sterba & Rights, 2016). This is the minimum proportion of change (in any pooled parameter or pooled standard error estimate listed in \code{selectParam}) that is allowable from one iteration of the algorithm to the next. That is, change in pooled estimates and pooled standard errors from one iteration to the next must all be less than (\code{stopProp}) \eqn{\times} (value from former iteration). Note that \code{stopValue} can override this criterion (see below). Also note that values less than .01 are unlikely to lead to more substantively meaningful precision. Also note that if only \code{stopValue} is a desired criterion, \code{stopProp} can be set to 0.
+	Value used in defining stopping criteria of the algorithm (\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of change (in any pooled parameter or pooled standard error estimate listed in \code{selectParam}) that is allowable from one iteration of the algorithm to the next. That is, change in pooled estimates and pooled standard errors from one iteration to the next must all be less than (\code{stopProp}) \eqn{\times} (value from former iteration). Note that \code{stopValue} can override this criterion (see below). Also note that values less than .01 are unlikely to lead to more substantively meaningful precision. Also note that if only \code{stopValue} is a desired criterion, \code{stopProp} can be set to 0.
   }
   \item{stopValue}{
-	Value used in defining stopping criteria of the algorithm (\eqn{\delta_{b}} in Sterba & Rights, 2016). \code{stopValue} is a minimum allowable amount of absolute change (in any pooled parameter or pooled standard error estimate listed in \code{selectParam}) from one iteration of the algorithm to the next. For a given pooled estimate or pooled standard error, \code{stopValue} is only invoked as a stopping criteria when the minimum change required by \code{stopProp} is less than \code{stopValue}. Note that values less than .01 are unlikely to lead to more substantively meaningful precision. Also note that if only \code{stopProp} is a desired criterion, \code{stopValue} can be set to 0.
+	Value used in defining stopping criteria of the algorithm (\eqn{\delta_b} in Sterba & Rights, 2016). \code{stopValue} is a minimum allowable amount of absolute change (in any pooled parameter or pooled standard error estimate listed in \code{selectParam}) from one iteration of the algorithm to the next. For a given pooled estimate or pooled standard error, \code{stopValue} is only invoked as a stopping criteria when the minimum change required by \code{stopProp} is less than \code{stopValue}. Note that values less than .01 are unlikely to lead to more substantively meaningful precision. Also note that if only \code{stopProp} is a desired criterion, \code{stopValue} can be set to 0.
   }
   \item{selectParam}{
 	(Optional) A list of the pooled parameters to be used in defining stopping criteria (i.e., \code{stopProp} and \code{stopValue}). These parameters should appear in the order they are listed in the lavaan syntax. By default, all pooled parameters are used. Note that \code{selectParam} should only contain freely-estimated parameters. In one example from Sterba and Rights (2016) \code{selectParam} included all free parameters except item intercepts and in another example \code{selectParam} included only structural parameters.
@@ -56,7 +56,7 @@ poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
 	(Optional) If set to \code{TRUE}, function will output a separate set of results that uses all allocations created by the algorithm, rather than \emph{M} allocations (see "Allocations needed for stability" below). This distinction is further discussed in Sterba and Rights (2016).
   }
   \item{checkConv}{
-	Need a documentation
+	(Optional) If set to TRUE, function will output pooled estimates and standard errors from 10 iterations post-convergence.
   }
   \item{\dots}{
 	Additional arguments to be passed to \code{\link[lavaan]{lavaan}} 

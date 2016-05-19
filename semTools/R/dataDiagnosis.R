@@ -52,8 +52,11 @@ kStat <- function(x, ord) {
 # Argument:
 #	object:	The target vector
 #	population: The vector represents population values or sample values
-skew <- function(object, population=FALSE, na.rm = FALSE) {
-  if(na.rm) object <- object[!is.na(object)]
+skew <- function(object, population=FALSE) {
+	if(any(is.na(object))) {
+		object <- object[!is.na(object)]
+		warning("Missing observations are removed from a vector.")
+	}
 	if(population) {
 		return(centralMoment(object, 3)/(centralMoment(object, 2)^(3/2)))
 	} else {
@@ -70,8 +73,11 @@ skew <- function(object, population=FALSE, na.rm = FALSE) {
 # Argument:
 #	object:	The target vector
 #	population: The vector represents population values or sample values
-kurtosis <- function(object, population=FALSE, na.rm = FALSE) {
-  if(na.rm) object <- object[!is.na(object)]
+kurtosis <- function(object, population=FALSE) {
+	if(any(is.na(object))) {
+		object <- object[!is.na(object)]
+		warning("Missing observations are removed from a vector.")
+	}	
 	if(population) {
 		return((centralMoment(object, 4)/(centralMoment(object, 2)^2)) - 3)
 	} else {
