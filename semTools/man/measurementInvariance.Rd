@@ -18,9 +18,9 @@ fit.measures = "default", method = "satorra.bentler.2001")
   \item{std.lv}{If \code{TRUE}, the fixed-factor method of scale identification is used. If \code{FALSE}, the first variable for each factor is used as marker variable.}
   \item{strict}{If \code{TRUE}, the sequence requires `strict' invariance.
     See details for more information.}
-  \item{quiet}{If \code{TRUE}, a summary is printed out containing an
+  \item{quiet}{If \code{FALSE} (default), a summary is printed out containing an
     overview of the different models that are fitted, together with some
-    model comparison tests.}
+    model comparison tests. If \code{TRUE}, no summary is printed.}
   \item{fit.measures}{Fit measures used to calculate the differences between nested models.}
   \item{method}{The method used to calculate likelihood ratio test. See \code{\link[lavaan]{lavTestLRT}} for available options}
 }
@@ -67,7 +67,7 @@ Invisibly, all model fits in the sequence are returned as a list.
 Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the measurement invariance literature: Suggestions, practices, and recommendations for organizational research. \emph{Organizational Research Methods, 3,} 4-70.
 }
 \author{
-    Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be}); 
+    Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be});
 	Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \seealso{
