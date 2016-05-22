@@ -45,7 +45,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
   } else if (!is.null(param)) fixedCall$param <- gsub("[[:space:]]+", "", param)
   if (!is.null(freeParam)) fixedCall$freeParam <- gsub("[[:space:]]+", "", freeParam)
   if (fixedCall$modelType == "mimic") {
-    PT <- lavaanify(fixedCall$param)
+    PT <- lavaan::lavaanify(fixedCall$param)
     checkCovs <- unique(PT$rhs[PT$op == "~"])
     if (is.null(covariates)) covariates <- checkCovs
     if (length(setdiff(covariates, checkCovs)))
@@ -212,42 +212,42 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
 
 ## function to extract fit measures
 getAFIs <- function(...) {
-  ## assign dots to workspace
   dots <- list(...)
-  for (dd in names(dots)) assign(dd, dots[[dd]])
 
   AFI1 <- list()
   AFI0 <- list()
-  leastSq <- grepl("LS", con@Options$estimator)
+  leastSq <- grepl("LS", dots$con@Options$estimator)
   ## check validity of user-specified AFIs, save output
-  if (!is.null(AFIs)) {
-    IC <- grep("ic|logl", AFIs, value = TRUE)
+  if (!is.null(dots$AFIs)) {
+    IC <- grep("ic|logl", dots$AFIs, value = TRUE)
     if (leastSq & length(IC)) {
       stop(paste("Argument 'AFIs' includes invalid options:",
                  paste(IC, collapse = ", "),
                  "Information criteria unavailable for least-squares estimators.",
                  sep = "\n"))
     }
-    if (!is.null(uncon))
-      AFI1[[1]] <- lavaan::fitMeasures(uncon, fit.measures = AFIs,
-                                       baseline.model = null)
-    AFI0[[1]] <- lavaan::fitMeasures(con, fit.measures = AFIs, baseline.model = null)
+    if (!is.null(dots$uncon))
+      AFI1[[1]] <- lavaan::fitMeasures(dots$uncon, fit.measures = dots$AFIs,
+                                       baseline.model = dots$null)
+    AFI0[[1]] <- lavaan::fitMeasures(dots$con, fit.measures = dots$AFIs,
+                                     baseline.model = dots$null)
   }
   ## check validity of user-specified moreAFIs
-  if (!is.null(moreAFIs)) {
-    IC <- grep("ic|hqc", moreAFIs, value = TRUE)
+  if (!is.null(dots$moreAFIs)) {
+    IC <- grep("ic|hqc", dots$moreAFIs, value = TRUE)
     if (leastSq & length(IC)) {
       stop(paste("Argument 'moreAFIs' includes invalid options:",
                  paste(IC, collapse = ", "),
                  "Information criteria unavailable for least-squares estimators.",
                  sep = "\n"))
     }
-    if (!is.null(uncon)) AFI1[[2]] <- moreFitIndices(uncon, fit.measures = moreAFIs)
-    AFI0[[2]] <- moreFitIndices(con, fit.measures = moreAFIs)
+    if (!is.null(dots$uncon))
+      AFI1[[2]] <- moreFitIndices(dots$uncon, fit.measures = dots$moreAFIs)
+    AFI0[[2]] <- moreFitIndices(dots$con, fit.measures = dots$moreAFIs)
   }
 
   ## save observed AFIs or delta-AFIs
-  if (is.null(uncon)) {
+  if (is.null(dots$uncon)) {
     AFI.obs <- unlist(AFI0)
   } else {
     AFI.obs <- unlist(AFI0) - unlist(AFI1)
@@ -257,24 +257,22 @@ getAFIs <- function(...) {
 
 ## Function to extract modification indices for equality constraints
 getMIs <- function(...) {
-  ## assign dots to workspace
   dots <- list(...)
-  for (dd in names(dots)) assign(dd, dots[[dd]])
 
-  if (modelType == "mgcfa") {
+  if (dots$modelType == "mgcfa") {
     ## save all estimates from constrained model
-    PT <- lavaan::parTable(con)[ , c("lhs","op","rhs","group","plabel")]
+    PT <- lavaan::parTable(dots$con)[ , c("lhs","op","rhs","group","plabel")]
     ## extract parameters of interest
-    params <- PT[paste0(PT$lhs, PT$op, PT$rhs) %in% param, ]
+    params <- PT[paste0(PT$lhs, PT$op, PT$rhs) %in% dots$param, ]
     ## return modification indices for specified constraints (param)
-    MIs <- lavaan::lavTestScore(con)$uni
+    MIs <- lavaan::lavTestScore(dots$con)$uni
     MI.obs <- MIs[MIs$lhs %in% params$plabel, ]
-  } else if (modelType == "mimic") {
-    if (is.list(param)) {
-      MI <- lapply(param, function(x) lavaan::lavTestScore(con, add = x)$test)
+  } else if (dots$modelType == "mimic") {
+    if (is.list(dots$param)) {
+      MI <- lapply(dots$param, function(x) lavaan::lavTestScore(dots$con, add = x)$test)
       MI.obs <- do.call(rbind, MI)
-    } else MI.obs <- lavaan::lavTestScore(con, add = param)$uni
-  } else if (modelType == "long") {
+    } else MI.obs <- lavaan::lavTestScore(dots$con, add = dots$param)$uni
+  } else if (dots$modelType == "long") {
     ## coming soon
   }
 
@@ -503,12 +501,12 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
 
 
 ## Function to permute difference in fits
-permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic","long"),
+permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
                           con, uncon = NULL, null = NULL,
                           param = NULL, freeParam = NULL, covariates = NULL,
                           AFIs = NULL, moreAFIs = NULL,
                           maxSparse = 10, maxNonconv = 10, showProgress = TRUE,
-                          warn = -1, extra, datafun,
+                          warn = -1, datafun, extra,
                           parallelType = c("none","multicore","snow"),
                           ncpus = NULL, cl = NULL, iseed = 12345) {
 
@@ -596,7 +594,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic","long"),
     argList$mc.set.seed <- TRUE
     permuDist <- do.call(parallel::mclapply, args = argList)
     ## restore old RNG type
-    if (old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(old_RNG[1])
+    if (fullCall$old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(fullCall$old_RNG[1])
   } else if (parallelType == "snow") {
     stopTheCluster <- FALSE
     if (is.null(cl)) {
@@ -611,7 +609,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic","long"),
     permuDist <- do.call(parallel::parLapply, args = argList)
     if (stopTheCluster) parallel::stopCluster(cl)
     ## restore old RNG type
-    if (old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(old_RNG[1])
+    if (fullCall$old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(fullCall$old_RNG[1])
   } else {
     argList$X <- 1:nPermute
     argList$FUN <- paste("permuteOnce", modelType, sep = ".")
@@ -670,7 +668,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic","long"),
              n.Permutations = nPermute, n.Converged = sum(!is.na(AFI.dist[,1])),
              n.nonConverged = sapply(permuDist, function(x) x$n.nonConverged),
              n.Sparse = sapply(permuDist, function(x) x$n.Sparse),
-             oldSeed = oldSeed)
+             oldSeed = fullCall$oldSeed)
   out
 }
 
