@@ -45,12 +45,12 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
   } else if (!is.null(param)) fixedCall$param <- gsub("[[:space:]]+", "", param)
   if (!is.null(freeParam)) fixedCall$freeParam <- gsub("[[:space:]]+", "", freeParam)
   if (fixedCall$modelType == "mimic") {
-    PT <- lavaan::lavaanify(fixedCall$param)
-    checkCovs <- unique(PT$rhs[PT$op == "~"])
-    if (is.null(covariates)) covariates <- checkCovs
-    if (length(setdiff(covariates, checkCovs)))
-      warning('Argument "covariates" includes predictors not in argument "param"')
-    # ordVars <- con@Data@ov$name[con@Data@ov$type == "ordered"]
+    # PT <- lavaan::lavaanify(fixedCall$param)
+    # checkCovs <- unique(PT$rhs[PT$op == "~"])
+    # if (is.null(covariates)) covariates <- checkCovs
+    # if (length(setdiff(covariates, checkCovs)))
+    #   warning('Argument "covariates" includes predictors not in argument "param"')
+    ##### ordVars <- con@Data@ov$name[con@Data@ov$type == "ordered"]
     fixedCall$covariates <- as.character(covariates)
   }
   fixedCall$maxSparse <- as.integer(maxSparse[1])
@@ -511,10 +511,14 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
                           ncpus = NULL, cl = NULL, iseed = 12345) {
 
   ## save arguments from call
-  topCall <- as.list(match.call())[-1]
-  availableArgs <- formals(permuteMeasEq)
-  for (aa in names(topCall)) availableArgs[aa] <- topCall[aa]
-  availableArgs <- c(availableArgs, topCall[sapply(topCall, is.null)])
+  availableArgs <- as.list(formals(permuteMeasEq))
+  argNames <- names(availableArgs)
+  if (missing(datafun)) argNames <- setdiff(argNames, "datafun")
+  if (missing(extra)) argNames <- setdiff(argNames, "extra")
+  for (aa in argNames) {
+    if (!is.null(eval(as.name(aa))))
+      suppressWarnings(availableArgs[[aa]] <- eval(as.name(aa)))
+  }
   ## check and return them
   fullCall <- do.call(checkPermArgs, availableArgs)
   ## assign them to workspace (also adds old_RNG & oldSeed to workspace)
