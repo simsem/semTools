@@ -43,7 +43,7 @@ sourceDir(dir)
 
 dirData <- "C:/Users/Sunthud/Dropbox/semTools/semTools/data/"
 sourceDirData(dirData)
-
+	
 ######### Distribution
 
 skew(1:5)

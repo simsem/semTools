@@ -6,24 +6,24 @@
 
 ##Currently outputs a list of parameter estimates, standard errors, fit indices and fraction missing information
 
-cfa.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, ...) {
-	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="cfa", nullModel = nullModel, ...)
+cfa.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, includeImproper = FALSE, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="cfa", nullModel = nullModel, includeImproper = includeImproper, ...)
 }
 
-sem.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, ...) {
-	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="sem", nullModel = nullModel, ...)
+sem.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, includeImproper = FALSE, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="sem", nullModel = nullModel, includeImproper = includeImproper, ...)
 }
 
-growth.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, ...) {
-	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="growth", nullModel = nullModel, ...)
+growth.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, includeImproper = FALSE, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="growth", nullModel = nullModel, includeImproper = includeImproper, ...)
 }
 
-lavaan.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, ...) {
-	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="lavaan", nullModel = nullModel, ...)
+lavaan.mi <- function(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", seed=12345, nullModel = NULL, includeImproper = FALSE, ...) {
+	runMI(model=model, data=data, m=m, miArgs=miArgs, chi=chi, miPackage=miPackage, seed=seed, fun="lavaan", nullModel = nullModel, includeImproper = includeImproper, ...)
 }
 
 
-runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", seed=12345, fun, nullModel = NULL, ...) 
+runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", seed=12345, fun, nullModel = NULL, includeImproper = FALSE, ...) 
 {
 	set.seed(seed)
 	chi <- tolower(chi)
@@ -61,7 +61,9 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	properSE <- apply(seAll, 2, function(x) all(!is.na(x)) & all(x >= 0) & !(all(x == 0)))
 	
 	properVariance <- apply(coefAll[posVar, ,drop=FALSE], 2, function(x) all(x >= 0))
-	converged.l <- converged.l & properSE & properVariance
+	if(!includeImproper) {
+		converged.l <- converged.l & properSE & properVariance
+	}
 	if(sum(converged.l) < 2) {
 		tab <- cbind(convergedtemp, properSE, properVariance, converged.l)
 		colnames(tab) <- c("1. Convergence", "2. Proper SE", "3. Proper Variance Estimate", "Used for pooling")
@@ -106,7 +108,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 
 	fit <- imputed.results.l[[1]]@test
 	df <- fit[[1]]$df
-  if (df == 0) chi <- "none" # for saturated models, no model fit available
+  #if (df == 0) chi <- "none" # for saturated models, no model fit available
 	chi1 <- sapply(imputed.results.l, function(x) x@test[[1]]$stat)
 
 	if(any(template@Data@ov$type == "ordered") | (length(fit) > 1)) {
@@ -129,13 +131,15 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@test[[1]]$stat.group))
 	}
 	if(is.null(nullModel)) nullModel <- lavaan::lav_partable_independence(template)
-	
+	nullModel$ustart[nullModel$exo == 1] <- NA
 	
     null.results <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...))
 
 	convergedNull.l <- sapply(null.results, function(x) x@Fit@converged)
 	seNullAll <- sapply(null.results, function(x) x@Fit@se)
-	convergedNull.l <- convergedNull.l & apply(seNullAll, 2, function(x) all(!is.na(x) & (x >= 0)))
+	if(!includeImproper) {
+		convergedNull.l <- convergedNull.l & apply(seNullAll, 2, function(x) all(!is.na(x) & (x >= 0)))
+	}
 	
 	dfNull <- null.results[[1]]@test[[1]]$df
 	if(dfNull == 0) convergedNull.l <- rep(TRUE, m)
@@ -162,7 +166,6 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	comb.results.null <- miPoolVector(t(coefsNull),t(seNull), mNull)
 	fitNull <- null.results[[1]]@test
 
-	
 	lmrr <- NULL
 	lmrrNull <- NULL
 	mr <- NULL
@@ -205,7 +208,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		mrplusOut <- mrplusPooledChi(template, imputed.l[converged.l], chi1, df, coef=comb.results$coef, coefs = coefs, m=m, fun=fun, ...)
 		mrplus <- mrplusOut[[1]]
 		mrplusChi <- mrplusOut[[2]]
-		mrplusNullOut <- mrplusPooledChi(templateNull, imputed.l[convergedNull.l], chiNull, dfNull, coef=comb.results.null$coef, coefs = coefsNull, m=mNull, fun=fun, par.sat=satPartable(template), ...)
+		mrplusNullOut <- mrplusPooledChi(templateNull, imputed.l[convergedNull.l], chiNull, dfNull, coef=comb.results.null$coef, coefs = coefsNull, m=mNull, fun=fun, par.sat=lavaan::lav_partable_unrestricted(template), ...)
 		mrplusNull <- mrplusNullOut[[1]]
 		mrplusNullChi <- mrplusNullOut[[2]]
 		logsat <- mrplus[5] / (1 + mrplus[4])
@@ -438,48 +441,10 @@ lmrrPooledChi <- function(chis, df) {
 #Examples:
 #lmrrPooledChi(c(89.864, 81.116,71.500,49.022,61.986,64.422,55.256,57.890,79.416,63.944), 2)
 
-
-## function that builds a lavaan parameter table of the saturate model
-## using the information in a lavaan object from the cfa function
-satPartable <- function(fit.alt){
-  
-	par.alt <- lavaan::partable(fit.alt) #get the parameter table form the original model
-	ngroups <- fit.alt@Data@ngroups # get the number of groups 
-	# gets the parameter table from the null model
-	
-	par.null <- lavaan::lav_partable_independence(fit.alt)
-	lhs.diag <- par.null$lhs
-	op.diag <- par.null$op
-	rhs.diag <- par.null$rhs
-	gnull <- par.null$group
-	#combine the variable names to set al the covariances
-	pairs <- t(combn(lavaan::lavaanNames(fit.alt, type="ov"), 2))
-	lhs.up <- rep(pairs[, 1],times=ngroups)
-	op.up <- rep("~~", length(lhs.up))
-	rhs.up <- rep(pairs[, 2],times=ngroups)
-	galt <- sort(rep(1:ngroups,times=length(lhs.up)/ngroups))
-	#put together the null table and the covariances
-	lhs.all <- c(lhs.up, lhs.diag)
-	id <- seq(1:length(lhs.all))
-	op.all <- c(op.up, op.diag)
-	rhs.all <- c(rhs.up, rhs.diag)
-	user <- rep(1,length(lhs.all))
-	group <- as.integer(c(galt,gnull))
-	free <- as.integer(id)
-	ustart <- rep(NA, length(lhs.all))
-	exo <- rep(0, length(lhs.all))
-	label <- rep("", length(lhs.all))
-	plabel <- paste0(".p", id, ".")
-	par.sat <- list(id, lhs.all, op.all, rhs.all, user, group,
-				  free, ustart, exo, label, plabel)
-	names(par.sat) <- c("id", "lhs", "op", "rhs", "user", "group", "free", "ustart", "exo", "label", "plabel")
-	return(par.sat)
-}
-
 ##### function that does the part of the MR and Mplus combination methods are equal 
 mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, coefs, m, fun, par.sat=NULL, ...) {
 	
-	if(is.null(par.sat)) par.sat <- satPartable(template)
+	if(is.null(par.sat)) par.sat <- lavaan::lav_partable_unrestricted(template) 
 	comb.sat <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat, fun=fun, ...))
 	converged.sat1 <- sapply(comb.sat, function(x) x@Fit@converged)
 	
@@ -488,6 +453,8 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, coefs, m, fun, 
 	par.sat2 <- par.sat
 	par.sat2$free <- as.integer(rep(0, length(par.sat2$free)))
 	par.sat2$ustart <- est.sat1
+	par.sat2$start <- est.sat1
+	par.sat2$est <- est.sat1
 	comb.sat2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...))
     comb.sat2 <- lapply(comb.sat2, forceTest)
 	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
@@ -495,20 +462,23 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, coefs, m, fun, 
 	par.alt2 <- lavaan::partable(template)
 	par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
 	par.alt2$ustart <- coef
+	par.alt2$start <- coef
+	par.alt2$est <- coef
 	par.alt2.l <- rep(list(par.alt2), m)
 	TEMPFUN <- function(ptable, origcoef) {
 		exo <- ptable$exo == 1
 		ptable$ustart[exo] <- origcoef[exo]
+		ptable$start[exo] <- origcoef[exo]
+		ptable$est[exo] <- origcoef[exo]
 		ptable
 	}
 	par.alt2.l <- mapply(TEMPFUN, par.alt2.l, data.frame(coefs), SIMPLIFY = FALSE)
-	print(par.alt2.l)
 	comb.alt2 <- suppressWarnings(mapply(runlavaanMI, MIdata = imputed.l, syntax = par.alt2.l, SIMPLIFY = FALSE, MoreArgs = list(fun = fun, ...)))
-
 	#comb.alt2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...))
     comb.alt2 <- lapply(comb.alt2, forceTest)
 	fit.alt2 <- sapply(comb.alt2, function(x) inspect(x, "fit")["logl"])
 	chinew <- cbind(fit.sat2, fit.alt2, (fit.sat2-fit.alt2)*2)
+	
 	
 	chimean <- mean(chinew[,3])
 	logsat <- mean(chinew[,1])

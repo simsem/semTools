@@ -1,7 +1,7 @@
 \name{PAVranking}
 \alias{PAVranking}
 \title{
-	Parcel-Allocation Variability in Model Ranking
+Parcel-Allocation Variability in Model Ranking
 }
 \description{
 	This function quantifies and assesses the consequences of parcel-allocation variability for model ranking of structural equation models (SEMs) that differ in their structural specification but share the same parcel-level measurement specification (see Sterba & Rights, 2016). This function is a modified version of \code{\link{parcelAllocation}} which can be used with only one SEM in isolation. The \code{PAVranking} function repeatedly generates a specified number of random item-to-parcel allocations, and then fits two models to each allocation. Output includes summary information about the distribution of model selection results (including plots) and the distribution of results for each model individually, across allocations within-sample. Note that this function can be used when selecting among more than two competing structural models as well (see instructions below involving \code{seed}).
