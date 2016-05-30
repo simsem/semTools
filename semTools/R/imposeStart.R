@@ -7,7 +7,7 @@ imposeStart <- function(out, expr, silent = TRUE) {
 	coefmodel <- lavaan::coef(model)
 	coefout <- lavaan::coef(out)
 	start <- coefout[match(names(coefmodel), names(coefout))]
-	ptmodel$ustart[ptmodel$free != 0] <- start[ptmodel$free[ptmodel$free != 0]]
+	ptmodel$start[ptmodel$free != 0] <- start[ptmodel$free[ptmodel$free != 0]]
 	if(!silent) {
 		cat("########## Model with imposed starting values #########\n")
 		print(ptmodel)
