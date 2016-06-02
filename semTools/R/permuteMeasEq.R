@@ -596,7 +596,8 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
     argList$X <- 1:nPermute
     argList$mc.cores <- ncpus
     argList$mc.set.seed <- TRUE
-    permuDist <- do.call(parallel::mclapply, args = argList)
+	pmcl <- function(...) { parallel::mclapply(...) }
+    permuDist <- do.call(pmcl, args = argList)
     ## restore old RNG type
     if (fullCall$old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(fullCall$old_RNG[1])
   } else if (parallelType == "snow") {
@@ -610,7 +611,8 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
     argList$cl <- cl
     argList$X <- 1:nPermute
     argList$fun <- paste("permuteOnce", modelType, sep = ".")
-    permuDist <- do.call(parallel::parLapply, args = argList)
+	tempppl <- function(...) { parallel::parLapply(...) }
+    permuDist <- do.call(tempppl, args = argList)
     if (stopTheCluster) parallel::stopCluster(cl)
     ## restore old RNG type
     if (fullCall$old_RNG[1] != "L'Ecuyer-CMRG") RNGkind(fullCall$old_RNG[1])

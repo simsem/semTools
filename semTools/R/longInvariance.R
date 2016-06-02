@@ -53,7 +53,7 @@ longInvariance <- function(model, varList, auto = "all", constrainAuto = FALSE, 
         cat("model type: ", class(model), "\n")
         stop("lavaan ERROR: model is not of type character or list")
     }
-	
+
 	# Error checking on the varList argument and get the factor name corresponding to each elements of the list
 	facName <- lapply(varList, function(vec, pt) pt$lhs[(pt$op == "=~") & (pt$rhs %in% vec)], pt=lavaanParTable)
 	if(any(sapply(facName, function(x) length(unique(x)) > 1))) stop("The factor names of the same element of the 'varList' are not the same.")
@@ -208,6 +208,7 @@ longInvariance <- function(model, varList, auto = "all", constrainAuto = FALSE, 
 # freeParTable: Free elements in parameter table
 
 freeParTable <- function(parTable, lhs, op, rhs, group, ustart = NA) {
+	parTable$start <- parTable$est <- parTable$se <- NULL
 	target <- cbind(lhs, op, rhs, group)
 	for(i in 1:nrow(target)) {
 		targetElem <- matchElement(parTable = parTable, vec = target[i,])
@@ -246,6 +247,7 @@ removeEqCon <- function(pt, element) {
 # fixParTable: Fix elements in parameter table
 
 fixParTable <- function(parTable, lhs, op, rhs, group, ustart = NA) {
+	parTable$start <- parTable$est <- parTable$se <- NULL
 	target <- cbind(lhs, op, rhs, group)
 	element <- apply(target, 1, matchElement, parTable=parTable)
 	for(i in 1:nrow(target)) {
@@ -269,6 +271,7 @@ fixParTable <- function(parTable, lhs, op, rhs, group, ustart = NA) {
 # constrainParTable: Impose equality constraints in any set of elements in the parameter table
 
 constrainParTable <- function(parTable, lhs, op, rhs, group) {
+	parTable$start <- parTable$est <- parTable$se <- NULL
 	target <- cbind(lhs, op, rhs, group)
 	element <- apply(target, 1, matchElement, parTable=parTable)
 
@@ -409,12 +412,10 @@ patMerge <- function (pt1 = NULL, pt2 = NULL, remove.duplicated = FALSE,
     else if (is.null(pt2$start) && !is.null(pt1$start)) {
         pt2$start <- rep(as.numeric(NA), length(pt2$lhs))
     }
-    if (is.null(pt1$est) && !is.null(pt2$est)) {
-        pt1$est <- rep(0, length(pt1$lhs))
-    }
-    else if (is.null(pt2$est) && !is.null(pt1$est)) {
-        pt2$est <- rep(0, length(pt2$lhs))
-    }
+	if(!is.null(pt1$est)) pt1$est <- NULL
+	if(!is.null(pt2$est)) pt2$est <- NULL
+	if(!is.null(pt1$se)) pt1$se <- NULL
+	if(!is.null(pt2$se)) pt2$se <- NULL
     if (remove.duplicated) {
         idx <- which(duplicated(TMP, fromLast = fromLast))
         if (length(idx)) {
@@ -431,8 +432,7 @@ patMerge <- function (pt1 = NULL, pt2 = NULL, remove.duplicated = FALSE,
                 pt2 <- pt2[-idx, ]
             }
         }
-    }
-    else if (!is.null(pt1$start) && !is.null(pt2$start)) {
+    } else if (!is.null(pt1$start) && !is.null(pt2$start)) {
         for (i in 1:length(pt1$lhs)) {
             idx <- which(pt2$lhs == pt1$lhs[i] & pt2$op == pt1$op[i] & 
                 pt2$rhs == pt1$rhs[i] & pt2$group == pt1$group[i])

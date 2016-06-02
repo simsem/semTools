@@ -2,6 +2,8 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
                                    fit.measures = "default",
                                    method = "satorra.bentler.2001") {
 	List <- list(...)
+	lavaancfa <- function(...) { lavaan::cfa(...) }
+	lavaanlavaan <- function(...) { lavaan::lavaan(...) }
 	if(!is.null(List$parameterization) && tolower(List$parameterization) != "theta") warning("The parameterization is set to 'theta' by default.")
 	List$parameterization <- "theta"
 
@@ -9,11 +11,11 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	if(is.null(List$group)) stop("Please specify the group variable")
 
 	# Get the lavaan parameter table
-	template <- do.call("cfa", c(List, do.fit=FALSE))
-  lavaanParTable <- lavaan::parTable(template)
+	template <- do.call(lavaancfa, c(List, do.fit=FALSE))
+	lavaanParTable <- lavaan::parTable(template)
 
-  # Find the number of groups
-  ngroups <- max(lavaanParTable$group)
+	# Find the number of groups
+	ngroups <- max(lavaanParTable$group)
 
 	# Check whether all variables are categorical
 	sampstat <- inspect(template, "samp")[[1]]
@@ -105,7 +107,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	# Fit configural invariance
 	ListConfigural <- List
 	ListConfigural$model <- lavaanParTable
-	fitConfigural <- do.call("lavaan", ListConfigural)
+	fitConfigural <- do.call(lavaanlavaan, ListConfigural)
 
 	# Create the parameter table for metric invariance
 	ptMetric <- lavaanParTable
@@ -129,7 +131,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 
 	ListMetric <- List
 	ListMetric$model <- ptMetric
-	fitMetric <- do.call("lavaan", ListMetric)
+	fitMetric <- do.call(lavaanlavaan, ListMetric)
 
 	ptMeans <- ptStrict <- ptMetric
 
@@ -146,7 +148,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 		}
 		ListScalar <- List
 		ListScalar$model <- ptScalar
-		fitScalar <- do.call("lavaan", ListScalar)
+		fitScalar <- do.call(lavaanlavaan, ListScalar)
 		ptMeans <- ptStrict <- ptScalar
 	}
 
@@ -163,7 +165,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 		}
 		ListStrict <- List
 		ListStrict$model <- ptStrict
-		fitStrict <- do.call("lavaan", ListStrict)
+		fitStrict <- do.call(lavaanlavaan, ListStrict)
 		ptMeans <- ptStrict
 	}
 
@@ -175,7 +177,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	}
 	ListMeans <- List
 	ListMeans$model <- ptMeans
-	fitMeans <- do.call("lavaan", ListMeans)
+	fitMeans <- do.call(lavaanlavaan, ListMeans)
 
 	FIT <- invisible(list(fit.configural = fitConfigural, fit.loadings = fitMetric, fit.thresholds = fitScalar, fit.residuals = fitStrict, fit.means = fitMeans))
 	FIT <- FIT[!sapply(FIT, is.null)]

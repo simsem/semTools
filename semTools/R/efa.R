@@ -28,6 +28,7 @@ testLoadings <- function(object, level=0.95) {
 	crit <- qnorm(1 - (1 - level)/2)
 	est <- as.vector(loading)
 	se <- as.vector(se)
+	warnings("The standard error is currently invalid because it does not account for the variance of rotation function. It is simply based on delta method.")
 	out <- data.frame(lhs=lv.names[col(loading)], op="=~", rhs=rownames(loading)[row(loading)], std.loading=est, se=se, z=as.vector(z), p=as.vector(p), ci.lower=(est - crit*se), ci.upper=(est + crit*se))
 	class(out) <- c("lavaan.data.frame", "data.frame")
 	out
@@ -55,6 +56,7 @@ setMethod("summary", signature(object = "EFA"), function(object, suppress = 0.1,
 
 efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 	if(is.null(varList)) varList <- colnames(data)
+	lavaancfa <- function(...) { lavaan::cfa(...)}
 	nvar <- length(varList)
 	facnames <- paste0("factor", 1:nf)
 	loading <- outer(1:nvar, 1:nf, function(x, y) paste0("load", x, "_", y))
@@ -84,13 +86,14 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 	if(start) {
 		List <- c(list(model=syntax, data=data), list(...))
 		List$do.fit <- FALSE
-		outtemp <- do.call("cfa", List)
+		outtemp <- do.call(lavaancfa, List)
 		covtemp <- outtemp@SampleStats@cov[[1]]
 		partemp <- lavaan::parTable(outtemp)
 		err <- try(startload <- factanal(factors=nf, covmat=covtemp)$loadings[], silent = TRUE)
 		if(is(err, "try-error")) stop("The starting values from the factanal function cannot be calculated. Please use start=FALSE instead.")
 		startval <- sqrt(diag(diag(covtemp))) %*% startload
-		partemp$start[match(as.vector(loading), partemp$label)] <- as.vector(startval)
+		partemp$ustart[match(as.vector(loading), partemp$label)] <- as.vector(startval)
+		partemp$est <- partemp$se <- partemp$start <- NULL
 		syntax <- partemp
 	} 
 	args <- list(...)
@@ -104,7 +107,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 		args$model <- auxResult$model
 		args$fixed.x <- FALSE
 		args$missing <- "fiml"		
-		result <- do.call("cfa", args)
+		result <- do.call(lavaancfa, args)
 		codeNull <- nullAuxiliary(aux, auxResult$indName, NULL, any(syntax$op == "~1"), max(syntax$group))
 		resultNull <- lavaan::lavaan(codeNull, data=data, ...)
 		result <- as(result, "lavaanStar")
@@ -116,7 +119,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 		result@auxNames <- aux
 		return(result)
 	} else {
-		return(do.call("cfa", args))
+		return(do.call(lavaancfa, args))
 	}
 }
 

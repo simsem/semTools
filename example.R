@@ -59,6 +59,7 @@ HW.model <- ' visual =~ x1 + x2 + x3
               speed =~ x7 + x8 + x9 '
 
 measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", strict = TRUE)
+measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", strict = TRUE, std.lv = TRUE)
 
 
 model <- ' f1 =~ u1 + u2 + u3 + u4
@@ -156,7 +157,7 @@ model <- '
 fit2 <- sem(model, data=PoliticalDemocracy, meanstructure=TRUE)
 miPowerFit(fit2, stdLoad=0.3, cor=0.2, stdBeta=0.2, intcept=0.5)
 
-############### Measurement Invariance ############################################
+############### Longitudinal Measurement Invariance ############################################
 
 model <- ' f1t1 =~ y1t1 + y2t1 + y3t1
               f1t2 =~ y1t2 + y2t2 + y3t2
@@ -481,6 +482,14 @@ summary(out)
 inspect(out, "fit")
 inspect(out, "impute")
 standardizedSolution(out)
+
+HS.model2 <- ' g  =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 '
+out2 <- cfa.mi(HS.model2, data=HSMiss, m = 3, chi="all")
+anova(out, out2)
+
+outfiml <- cfa(HS.model, HSMiss, missing = "ml")
+outfiml2 <- cfa(HS.model2, HSMiss, missing = "ml")
+anova(outfiml, outfiml2)
 
 outscaled <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all", estimator="mlm")
 summary(outscaled)
@@ -909,6 +918,15 @@ unrotated2 <- efaUnrotate(HolzingerSwineford1939, nf=2, varList=paste0("x", 1:9)
 unrotated3 <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9))
 anova(unrotated2, unrotated3)
 
+colnames(dat) <- varnames
+
+out2 <- fa(HolzingerSwineford1939[,paste0("x", 1:9)], nfactors = 2, fm = "ml", rotate = "none")
+out3 <- fa(HolzingerSwineford1939[,paste0("x", 1:9)], nfactors = 3, fm = "ml", rotate = "varimax")
+loadings(out2)
+
+
+
+
 orthRotate(unrotated3, method="varimax")
 
 dat <- HolzingerSwineford1939[,paste0("x", 1:9)]
@@ -918,6 +936,7 @@ unrotated2 <- efaUnrotate(dat, nf=2, varList=paste0("x", 1:9), missing = "fiml")
 
 library(psych)
 unrotatedCat <- efaUnrotate(iqitems, nf=4, ordered=colnames(iqitems))
+out4 <- fa.poly(iqitems, nfactors = 4, rotate = "varimax")
 
 # Orthogonal varimax
 out.varimax <- orthRotate(unrotatedCat, method="varimax")

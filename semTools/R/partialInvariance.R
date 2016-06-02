@@ -60,6 +60,8 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 	}
 	pt1 <- lavaan::partable(fit1)
 	pt0 <- lavaan::partable(fit0)
+	pt0$start <- pt0$est <- pt0$se <- NULL
+	pt1$start <- pt1$est <- pt1$se <- NULL
 	pt1$label[substr(pt1$label, 1, 1) == "." & substr(pt1$label, nchar(pt1$label), nchar(pt1$label)) == "."] <- ""
 	pt0$label[substr(pt0$label, 1, 1) == "." & substr(pt0$label, nchar(pt0$label), nchar(pt0$label)) == "."] <- ""
 	namept1 <- paramNameFromPt(pt1)
@@ -87,7 +89,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 		fixIntceptFac[[i]] <- pt1$rhs[select]
 	}
 	names(fixIntceptFac) <- names(facList)
-	
+
 	ngroups <- max(pt0$group)
 	neach <- unlist(fit0@Data@nobs)
 	groupvar <- fit0@Data@group

@@ -131,7 +131,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@test[[1]]$stat.group))
 	}
 	if(is.null(nullModel)) nullModel <- lavaan::lav_partable_independence(template)
-	nullModel$ustart[nullModel$exo == 1] <- NA
+	if(is.list(nullModel)) nullModel$ustart[nullModel$exo == 1] <- NA
 	
     null.results <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...))
 

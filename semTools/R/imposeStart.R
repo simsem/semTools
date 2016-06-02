@@ -8,6 +8,8 @@ imposeStart <- function(out, expr, silent = TRUE) {
 	coefout <- lavaan::coef(out)
 	start <- coefout[match(names(coefmodel), names(coefout))]
 	ptmodel$start[ptmodel$free != 0] <- start[ptmodel$free[ptmodel$free != 0]]
+	ptmodel$est <- NULL
+	ptmodel$se <- NULL
 	if(!silent) {
 		cat("########## Model with imposed starting values #########\n")
 		print(ptmodel)

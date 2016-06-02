@@ -161,11 +161,15 @@ attachConstraint <- function(pt, con) {
 		pt$exo <- c(pt$exo, con$exo)
 		pt$label <- c(pt$label, con$label)
 		pt$plabel <- c(pt$plabel, con$plabel)
+		pt$start <- c(pt$start, con$start)
+		pt$est <- c(pt$est, con$est)
+		pt$se <- c(pt$se, con$se)
 	}
 	pt
 }
 
 attachPT <- function(pt, lhs, op, rhs, ngroups, symmetric=FALSE, exo=FALSE, fixed=FALSE, useUpper=FALSE, ustart = NA, expand = TRUE, diag = TRUE) {
+	pt$start <- pt$est <- pt$se <- NULL
 	if(expand) {
 		element <- expand.grid(lhs, rhs, stringsAsFactors = FALSE)
 	} else {

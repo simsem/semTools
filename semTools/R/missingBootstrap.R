@@ -340,10 +340,11 @@ getBootSample <- function(groupDat, group, group.label) {
 ## fit the model to a single bootstrapped sample and return chi-squared
 fitBootSample <- function(dat, args, suppress) {
   args$data <- dat
+  lavaanlavaan <- function(...) { lavaan::lavaan(...) }
   if (suppress) {
-    fit <- suppressWarnings(do.call("lavaan", args))
+    fit <- suppressWarnings(do.call(lavaanlavaan, args))
   } else {
-    fit <- do.call("lavaan", args)
+    fit <- do.call(lavaanlavaan, args)
   }
   if (!exists("fit")) return(c(chisq = NA))
   if (inspect(fit, "converged")) {
@@ -599,7 +600,8 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   } else {
     convSamp <- which(!is.na(bootFits))[1]
     lavaanArgs$data <- bootSamples[[convSamp]]
-    output$Degrees.Freedom <- inspect(do.call("lavaan", lavaanArgs), "fit")["df"]
+	lavaanlavaan <- function(...) { lavaan::lavaan(...) }
+    output$Degrees.Freedom <- inspect(do.call(lavaanlavaan, lavaanArgs), "fit")["df"]
   }
 
   ## calculate bootstrapped p-value

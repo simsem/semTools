@@ -1,6 +1,7 @@
 measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
     strict=FALSE, quiet=FALSE, fit.measures = "default", method = "satorra.bentler.2001") {
 
+	lavaancfa <- function(...) { lavaan::cfa(...)}
     # check for a group.equal argument in ...
     dotdotdot <- list(...)
     if(!is.null(dotdotdot$group.equal))
@@ -11,7 +12,7 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 	
 	configural <- dotdotdot
 	configural$group.equal <- ""
-	template <- do.call("cfa", configural)
+	template <- do.call(lavaancfa, configural)
 	pttemplate <- lavaan::partable(template)
 	varnames <- unique(pttemplate$rhs[pttemplate$op == "=~"])
 	facnames <- unique(pttemplate$lhs[(pttemplate$op == "=~") & (pttemplate$rhs %in% varnames)])
@@ -60,7 +61,7 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 	} else {
 		intercepts <- dotdotdot
 		intercepts$group.equal <- c("loadings", "intercepts")
-		res$fit.intercepts <- do.call("cfa", intercepts)
+		res$fit.intercepts <- do.call(lavaancfa, intercepts)
 	}
 	
     if(strict) {
@@ -78,12 +79,12 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 			# fix loadings + intercepts + residuals
 			residuals <- dotdotdot
 			residuals$group.equal <- c("loadings", "intercepts", "residuals")
-			res$fit.residuals <- do.call("cfa", residuals)
+			res$fit.residuals <- do.call(lavaancfa, residuals)
 
 			# fix loadings + residuals + intercepts + means
 			means <- dotdotdot
 			means$group.equal <- c("loadings", "intercepts", "residuals", "means")
-			res$fit.means <- do.call("cfa", means)
+			res$fit.means <- do.call(lavaancfa, means)
 		}
     } else {
 		if(std.lv) {
@@ -95,7 +96,7 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 			# fix loadings + intercepts + means
 			means <- dotdotdot
 			means$group.equal <- c("loadings", "intercepts", "means")
-			res$fit.means <- do.call("cfa", means)
+			res$fit.means <- do.call(lavaancfa, means)
 		}
     }
 
@@ -109,7 +110,8 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 printInvarianceResult <- function(FIT, fit.measures, method) {
 	# compare models
 	NAMES <- names(FIT); names(FIT) <- NULL
-	TABLE <- do.call("lavTestLRT", c(FIT, list(model.names = NAMES,
+	lavaanLavTestLRT <- function(...) { lavaan::lavTestLRT(...) }
+	TABLE <- do.call(lavaanLavTestLRT, c(FIT, list(model.names = NAMES,
 									 method = method)))
 
 	if(length(fit.measures) == 1L && fit.measures == "default") {
