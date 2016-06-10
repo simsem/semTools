@@ -1,7 +1,7 @@
 importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
 importFrom("lavaan", summary, inspect, anova, vcov)
 importFrom("stats", 
-           cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, uniroot, lm, pnorm, pf, var, fitted.values, nobs, residuals, dist, ptukey, dchisq, na.omit, qf)
+           cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, uniroot, lm, pnorm, pf, var, fitted.values, nobs, residuals, dist, ptukey, dchisq, na.omit, qf, pt, qt)
 importFrom("utils", 
            capture.output, write.table, combn, read.table, read.csv, setTxtProgressBar, txtProgressBar)
 importFrom("graphics", hist, plot, par, abline, lines, legend)

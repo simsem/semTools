@@ -35,7 +35,7 @@ poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
 	(Optional) folder where \emph{M} (the final selected number of allocations) parceled data sets will be outputted from the iteration where the algorithm met stopping criteria. (Note for Windows users: file path must be specified using forward slashes).
   }
   \item{stopProp}{
-	Value used in defining stopping criteria of the algorithm (\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of change (in any pooled parameter or pooled standard error estimate listed in \code{selectParam}) that is allowable from one iteration of the algorithm to the next. That is, change in pooled estimates and pooled standard errors from one iteration to the next must all be less than (\code{stopProp}) \eqn{\times} (value from former iteration). Note that \code{stopValue} can override this criterion (see below). Also note that values less than .01 are unlikely to lead to more substantively meaningful precision. Also note that if only \code{stopValue} is a desired criterion, \code{stopProp} can be set to 0.
+	Value used in defining stopping criteria of the algorithm (\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of change (in any pooled parameter or pooled standard error estimate listed in \code{selectParam}) that is allowable from one iteration of the algorithm to the next. That is, change in pooled estimates and pooled standard errors from one iteration to the next must all be less than (\code{stopProp}) x (value from former iteration). Note that \code{stopValue} can override this criterion (see below). Also note that values less than .01 are unlikely to lead to more substantively meaningful precision. Also note that if only \code{stopValue} is a desired criterion, \code{stopProp} can be set to 0.
   }
   \item{stopValue}{
 	Value used in defining stopping criteria of the algorithm (\eqn{\delta_b} in Sterba & Rights, 2016). \code{stopValue} is a minimum allowable amount of absolute change (in any pooled parameter or pooled standard error estimate listed in \code{selectParam}) from one iteration of the algorithm to the next. For a given pooled estimate or pooled standard error, \code{stopValue} is only invoked as a stopping criteria when the minimum change required by \code{stopProp} is less than \code{stopValue}. Note that values less than .01 are unlikely to lead to more substantively meaningful precision. Also note that if only \code{stopProp} is a desired criterion, \code{stopValue} can be set to 0.
@@ -84,7 +84,7 @@ Sterba, S. K. (2011). Implications of parcel-allocation variability for comparin
 
 Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates and model fit across repeated allocations of items to parcels. \emph{Multivariate Behavioral Research, 45}(2), 322-358.
 
-Sterba, S. & Rights, J. (2016). Accounting for parcel-allocation variability in practice: Combining sources of uncertainty and choosing the number of allocations. \emph{Multivariate Behavioral Research}. \url{http://www.tandfonline.com/doi/pdf/10.1080/00273171.2016.1144502}
+Sterba, S. K. & Rights, J. D. (2016). Accounting for parcel-allocation variability in practice: Combining sources of uncertainty and choosing the number of allocations. \emph{Multivariate Behavioral Research}. \url{http://www.tandfonline.com/doi/pdf/10.1080/00273171.2016.1144502}
 }
 \seealso{
 	\code{\link{parcelAllocation}}, \code{\link{PAVranking}}
@@ -127,8 +127,8 @@ f2name <- colnames(simParcel)[10:18]
 poolMAlloc(nPerPar=list(c(3,3,3),c(3,3,3)), 
   facPlc=list(f1name,f2name), nAllocStart=10, 
   nAllocAdd=10, syntax=parmodel, 
-  dataset=simParcel, stopProp=.02, 
-  stopValue=.02, selectParam=c(1:6,13:18,21), 
+  dataset=simParcel, stopProp=.03, 
+  stopValue=.03, selectParam=c(1:6,13:18,21), 
   names=list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"), 
   double=FALSE, useTotalAlloc=FALSE)
 }
