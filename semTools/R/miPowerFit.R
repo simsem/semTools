@@ -1,7 +1,7 @@
 # miPowerFit: Evaluate model fit by Satorra, Saris, & van der Weld (2009) method
 
 miPowerFit <- function(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, delta=NULL, cilevel=0.90) {
-	mi <- inspect(lavaanObj, "mi")
+	mi <- lavaan::lavInspect(lavaanObj, "mi")
 	mi <- mi[mi$op != "==",]
 	sigma <- mi[,"epc"] / sqrt(mi[,"mi"])
 	if(is.null(delta)) {
@@ -51,22 +51,11 @@ totalFacVar <- function(beta, psi) {
 
 findTotalVar <- function(lavaanObj) {
 	result <- list()
-	nGroups <- lavaanObj@Model@ngroups
-	posPsi <- which(names(lavaanObj@Model@GLIST) == "psi")
-	posBeta <- which(names(lavaanObj@Model@GLIST) == "beta")
-	isCfa <- length(posBeta) == 0
-	dimNames <- unlist(lavaanObj@Model@dimNames[[1]])
+	nGroups <- lavaan::lavInspect(lavaanObj, "ngroups")
+	cov.all <- lavaan::lavInspect(lavaanObj, "cov.all")
 	for(i in 1:nGroups) {
-		temp <- diag(lavaanObj@Fit@Sigma.hat[[i]])
-		if(isCfa) {
-			temp <- c(temp, diag(lavaanObj@Model@GLIST[[posPsi[i]]]))
-		} else {
-			groupPsi <- lavaanObj@Model@GLIST[[posPsi[i]]]
-			groupBeta <- lavaanObj@Model@GLIST[[posBeta[i]]]
-			facCov <- totalFacVar(groupBeta, groupPsi)
-			temp <- c(temp, facCov)
-		}
-		names(temp) <- dimNames
+		temp <- diag(cov.all[[i]])
+		names(temp) <- rownames(cov.all[[i]])
 		result[[i]] <- temp
 	}
 	return(result)

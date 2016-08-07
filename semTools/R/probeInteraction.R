@@ -11,11 +11,11 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 	if(is.na(modVar) || !(modVar %in% 1:2)) stop("The moderator name is not in the name of independent factors or not 1 or 2.")
 
 	# Check whether the fit object does not use mlm, mlr, or mlf estimator (because the variance-covariance matrix of parameter estimates cannot be computed
-	estSpec <- as.list(fit@call)$estimator
+	estSpec <- lavaan::lavInspect(fit, "call")$estimator
 	if(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf"))) stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as the estimator because the covariance matrix of the parameter estimates cannot be computed.")
 	
 	# Get the parameter estimate values from the lavaan object
-	est <- inspect(fit, "coef")
+	est <- lavaan::lavInspect(fit, "coef")
 
 	# Compute the intercept of no-centering
 	betaNC <- as.matrix(est$beta[nameY, nameX]); colnames(betaNC) <- nameY
@@ -93,11 +93,11 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 	if(is.na(modVar) || !(modVar %in% 1:2)) stop("The moderator name is not in the name of independent factors or not 1 or 2.")
 
 	# Check whether the fit object does not use mlm, mlr, or mlf estimator (because the variance-covariance matrix of parameter estimates cannot be computed
-	estSpec <- as.list(fit@call)$estimator
+	estSpec <- lavaan::lavInspect(fit, "call")$estimator
 	if(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf"))) stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as the estimator because the covariance matrix of the parameter estimates cannot be computed.")
 	
 	# Get the parameter estimate values from the lavaan object
-	est <- inspect(fit, "coef")
+	est <- lavaan::lavInspect(fit, "coef")
 	
 	# Find the mean and covariance matrix of independent factors
 	varX <- est$psi[nameX, nameX]
@@ -109,7 +109,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 	betaRC <- as.matrix(est$beta[nameY, nameX]); colnames(betaRC) <- nameY
 
 	# Find the number of observations
-	numobs <- fit@SampleStats@nobs[[1]]
+	numobs <- lavaan::lavInspect(fit, "nobs")
 	
 	# Compute SSRC 
 	meanXwith1 <- rbind(1, meanX) 
@@ -231,11 +231,11 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	if((NA %in% modVar) || !(do.call("&", as.list(modVar %in% 1:3)))) stop("The moderator name is not in the list of independent factors and is not 1, 2 or 3.") 
 
 	# Check whether the fit object does not use mlm, mlr, or mlf estimator (because the variance-covariance matrix of parameter estimates cannot be computed
-	estSpec <- as.list(fit@call)$estimator
+	estSpec <- lavaan::lavInspect(fit, "call")$estimator
 	if(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf"))) stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as the estimator because the covariance matrix of the parameter estimates cannot be computed.")
 
 	# Get the parameter estimate values from the lavaan object
-	est <- inspect(fit, "coef")
+	est <- lavaan::lavInspect(fit, "coef")
 
 	# Compute the intercept of no-centering
 	betaNC <- as.matrix(est$beta[nameY, nameX]); colnames(betaNC) <- nameY
@@ -321,11 +321,11 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	if((NA %in% modVar) || !(do.call("&", as.list(modVar %in% 1:3)))) stop("The moderator name is not in the list of independent factors and is not 1, 2 or 3.") # JG: Changed error
 
 	# Check whether the fit object does not use mlm, mlr, or mlf estimator (because the variance-covariance matrix of parameter estimates cannot be computed
-	estSpec <- as.list(fit@call)$estimator
+	estSpec <- lavaan::lavInspect(fit, "call")$estimator
 	if(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf"))) stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as the estimator because the covariance matrix of the parameter estimates cannot be computed.")
 
 	# Get the parameter estimate values from the lavaan object
-	est <- inspect(fit, "coef")
+	est <- lavaan::lavInspect(fit, "coef")
 	
 	# Find the mean and covariance matrix of independent factors
 	varX <- est$psi[nameX, nameX]
@@ -338,7 +338,7 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	betaRC <- as.matrix(est$beta[nameY, nameX]); colnames(betaRC) <- nameY
 
 	# Find the number of observations
-	numobs <- fit@SampleStats@nobs[[1]]
+	numobs <- lavaan::lavInspect(fit, "nobs")
 
 	# Compute SSRC
 	meanXwith1 <- rbind(1, meanX)

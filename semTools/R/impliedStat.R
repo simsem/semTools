@@ -4,8 +4,8 @@
 ##----------------------------------------------------------------------------##
 
 impliedFactorCov <- function(object) {
-	param <- inspect(object, "coef")
-	ngroup <- object@Data@ngroups
+	param <- lavaan::lavInspect(object, "coef")
+	ngroup <- lavaan::lavInspect(object, "ngroups")
 	name <- names(param)
 	be <- param[name == "beta"]
 	ps <- param[name == "psi"]
@@ -23,15 +23,15 @@ impliedFactorCov <- function(object) {
 	if(ngroup == 1) {
 		result <- result[[1]]
 	} else {
-		names(result) <- object@Data@group.label
+		names(result) <- lavaan::lavInspect(object, "group.label")
 	}
 	result
 }
 
 impliedFactorMean <- function(object) {
-	if(!object@Options$meanstructure) stop("This model does not estimate the mean structure.")
-	param <- inspect(object, "coef")
-	ngroup <- object@Data@ngroups
+	if(!lavaan::lavInspect(object, "options")$meanstructure) stop("This model does not estimate the mean structure.")
+	param <- lavaan::lavInspect(object, "coef")
+	ngroup <- lavaan::lavInspect(object, "ngroups")
 	name <- names(param)
 	be <- param[name == "beta"]
 	al <- param[name == "alpha"]
@@ -49,14 +49,14 @@ impliedFactorMean <- function(object) {
 	if(ngroup == 1) {
 		result <- result[[1]]
 	} else {
-		names(result) <- object@Data@group.label
+		names(result) <- lavaan::lavInspect(object, "group.label")
 	}
 	result
 }
 
 impliedFactorStat <- function(object) {
 	result <- list()
-	if(object@Options$meanstructure) {
+	if(lavaan::lavInspect(object, "options")$meanstructure) {
 		result$mean <- impliedFactorMean(object)
 	}
 	result$cov <- impliedFactorCov(object)

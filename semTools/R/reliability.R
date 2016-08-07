@@ -4,19 +4,24 @@
 ##----------------------------------------------------------------------------##
 
 reliability <- function(object) {
-	param <- inspect(object, "coef")
-	ngroup <- object@Data@ngroups
+	param <- lavaan::lavInspect(object, "coef")
+	ngroup <- lavaan::lavInspect(object, "ngroups")
 	name <- names(param)
 	ly <- param[name == "lambda"]
-	ps <- impliedFactorCov(object)
+	ps <- lavaan::lavInspect(object, "cov.ov")
 	if(ngroup == 1) ps <- list(ps)
 	te <- param[name == "theta"]
-	SigmaHat <- object@Fit@Sigma.hat
+	SigmaHat <- lavaan::lavInspect(object, "cov.ov")
+	if(ngroup == 1) SigmaHat <- list(SigmaHat)
 	tau <- param[name = "tau"]
 	implied <- lavaan::fitted.values(object)[name = "cov"]
 	categorical <- !is.null(tau[[1]])
 	threshold <- NULL
-	S <- object@SampleStats@cov
+	if(ngroup == 1) {
+    S <- list(lavaan::lavInspect(object, "sampstat")$cov)
+  } else {
+    S <- lapply(lavaan::lavInspect(object, "sampstat"), function(x) x$cov)
+  }
 	if(categorical) {
 		polycor <- polycorLavaan(object) 
 		if(ngroup == 1) polycor <- list(polycor)
@@ -81,7 +86,7 @@ reliability <- function(object) {
 	if(ngroup == 1) {
 		result <- result[[1]]
 	} else {
-		names(result) <- object@Data@group.label
+		names(result) <- lavaan::lavInspect(object, "group.label")
 	}
 	result
 }
@@ -89,18 +94,23 @@ reliability <- function(object) {
 computeAlpha <- function(S, k) k/(k - 1) * (1.0 - sum(diag(S))/sum(S))
 
 reliabilityL2 <- function(object, secondFactor) {
-	param <- inspect(object, "coef")
-	ngroup <- object@Data@ngroups
+	param <- lavaan::lavInspect(object, "coef")
+	ngroup <- lavaan::lavInspect(object, "ngroups")
 	name <- names(param)
 	ly <- param[name == "lambda"]
-	ve <- impliedFactorCov(object)
+	ve <- lavaan::lavInspect(object, "cov.ov") # should this be "cov.lv" for factor variances?
 	if(ngroup == 1) ve <- list(ve)
 	ps <- param[name == "psi"]
 	te <- param[name == "theta"]
 	be <- param[name == "beta"]
-	SigmaHat <- object@Fit@Sigma.hat
-	S <- object@SampleStats@cov
-	threshold <- object@SampleStats@th
+	SigmaHat <- lavaan::lavInspect(object, "cov.ov")
+	if(ngroup == 1) {
+    SigmaHat <- list(SigmaHat)
+    S <- list(lavaan::lavInspect(object, "sampstat")$cov)
+  } else {
+    S <- lapply(lavaan::lavInspect(object, "sampstat"), function(x) x$cov)
+  }
+	threshold <- lavaan::lavInspect(object, "th")
 	result <- list()
 	for(i in 1:ngroup) {
 		
@@ -140,7 +150,7 @@ reliabilityL2 <- function(object, secondFactor) {
 	if(ngroup == 1) {
 		result <- result[[1]]
 	} else {
-		names(result) <- object@Data@group.label
+		names(result) <- lavaan::lavInspect(object, "group.label")
 	}
 	result
 }
@@ -183,8 +193,8 @@ p2 <- function(t1, t2, r) {
 
 
 polycorLavaan <- function(object) {
-	ngroups <- object@Data@ngroups
-	coef <- inspect(object, "coef")
+	ngroups <- lavaan::lavInspect(object, "ngroups")
+	coef <- lavaan::lavInspect(object, "coef")
 	targettaunames <- NULL
 	if(ngroups == 1) {
 		targettaunames <- rownames(coef$tau)
@@ -201,15 +211,15 @@ polycorLavaan <- function(object) {
 	}
 	newobject <- refit(script, object)
 	if(ngroups == 1) {
-		return(inspect(newobject, "coef")$theta)
+		return(lavaan::lavInspect(newobject, "coef")$theta)
 	} else {
-		return(inspect(newobject, "coef")[names(coef) == "theta"])
+		return(lavaan::lavInspect(newobject, "coef")[names(coef) == "theta"])
 	}
 }
 
 getThreshold <- function(object) {
-	ngroups <- object@Data@ngroups
-	coef <- inspect(object, "coef")
+	ngroups <- lavaan::lavInspect(object, "ngroups")
+	coef <- lavaan::lavInspect(object, "coef")
 	result <- NULL
 	if(ngroups == 1) {
 		targettaunames <- rownames(coef$tau)
@@ -283,23 +293,28 @@ calcMaximalReliaCat <- function(polyr, threshold, denom, nitem, varnames) {
 }
 
 maximalRelia <- function(object) {
-	param <- inspect(object, "coef")
-	ngroup <- object@Data@ngroups
+	param <- lavaan::lavInspect(object, "coef")
+	ngroup <- lavaan::lavInspect(object, "ngroups")
 	name <- names(param)
 	ly <- param[name == "lambda"]
-	ps <- impliedFactorCov(object)
+	ps <- lavaan::lavInspect(object, "cov.ov") # should this be "cov.lv" for Psi?
 	if(ngroup == 1) ps <- list(ps)
-	SigmaHat <- object@Fit@Sigma.hat
+	SigmaHat <- lavaan::lavInspect(object, "cov.ov")
+  if(ngroup == 1) {
+    SigmaHat <- list(SigmaHat)
+    S <- list(lavaan::lavInspect(object, "sampstat")$cov)
+  } else {
+    S <- lapply(lavaan::lavInspect(object, "sampstat"), function(x) x$cov)
+  }
 	tau <- param[name = "tau"]
 	categorical <- !is.null(tau[[1]])
 	threshold <- NULL
-	S <- object@SampleStats@cov
 	result <- list()
 	if(categorical) {
 		polycor <- polycorLavaan(object)
 		if(ngroup == 1) polycor <- list(polycor)
 		S <- lapply(polycor, function(x) x[rownames(ly[[1]]), rownames(ly[[1]])])
-		threshold <- getThreshold(object)
+		threshold <- getThreshold(object) # change to lavaan::lavInspect(object, "th")
 		SigmaHat <- thetaImpliedTotalVar(object)
 	}
 	for(i in 1:ngroup) {
@@ -317,7 +332,7 @@ maximalRelia <- function(object) {
 	if(ngroup == 1) {
 		result <- result[[1]]
 	} else {
-		names(result) <- object@Data@group.label
+		names(result) <- lavaan::lavInspect(object, "group.label")
 	}
 	result
 }

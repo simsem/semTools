@@ -52,7 +52,7 @@ saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...)
 			write(paste(capture.output(miPowerFit(object, ...)), collapse="\n"), file=file)
 		}
 	} else {
-		target <- inspect(object, what=what)
+		target <- lavaan::lavInspect(object, what=what)
 		if(tableFormat) {
 			if(is(target, "lavaan.data.frame") || is(target, "data.frame")) {
 				utils::write.table(target, file=file, sep="\t", row.names=FALSE, col.names=TRUE)

@@ -51,10 +51,10 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	out <- c(out, list(...))
 	template <- do.call(fun, out)
     imputed.results.l <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=model, fun=fun, ...))
-	converged.l <- sapply(imputed.results.l, function(x) x@Fit@converged)
+	converged.l <- sapply(imputed.results.l, lavaan::lavInspect, what = "converged")
 	
-	coefAll <- sapply(imputed.results.l, function(x) x@Fit@est)
-	seAll <- sapply(imputed.results.l, function(x) x@Fit@se)
+	coefAll <- sapply(imputed.results.l, function(x) lavaan::parTable(x)$est)
+	seAll <- sapply(imputed.results.l, function(x) lavaan::parTable(x)$se)
 	partableImp <- lavaan::partable(imputed.results.l[[1]])
 	posVar <- (partableImp$op == "~~") & (partableImp$lhs == partableImp$rhs)
 	convergedtemp <- converged.l
@@ -76,13 +76,13 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	convergenceRate <- m/mOriginal
 	imputed.results.l <- imputed.results.l[converged.l]
 	
-	coefs <- sapply(imputed.results.l, function(x) x@Fit@est)
-	se <- sapply(imputed.results.l, function(x) x@Fit@se)
-	Sigma.hat <- lapply(imputed.results.l, function(object) object@Fit@Sigma.hat)
-    Mu.hat <- lapply(imputed.results.l, function(object) object@Fit@Mu.hat)
+	coefs <- sapply(imputed.results.l, function(x) lavaan::parTable(x)$est)
+	se <- sapply(imputed.results.l, function(x) lavaan::parTable(x)$se)
+	Sigma.hat <- lapply(imputed.results.l, lavaan::lavInspect, what = "cov.ov")
+    Mu.hat <- lapply(imputed.results.l, lavaan::lavInspect, what = "mean.ov")
 	meanSigmaHat <- list()
 	meanMuHat <- list()
-	for(g in seq_len(template@SampleStats@ngroups)) {
+	for(g in seq_len(lavaan::lavInspect(template, "ngroups"))) {
 		tempSigma <- lapply(Sigma.hat, "[[", g)
 		meanSigmaHat[[g]] <- Reduce("+", tempSigma)/m
 		tempMu <- lapply(Mu.hat, "[[", g)
@@ -93,10 +93,10 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	comb.results <- miPoolVector(t(coefs),t(se), m)
 	
 	
-	template@Fit@est <- template@ParTable$est <- comb.results$coef
-	template@Fit@se <- template@ParTable$se <- comb.results$se
+	template@Fit@est <- lavaan::parTable(template)$est <- comb.results$coef
+	template@Fit@se <- lavaan::parTable(template)$se <- comb.results$se
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
-	template@Model <- imposeGLIST(template@Model, comb.results$coef, template@ParTable)
+	template@Model <- imposeGLIST(template@Model, comb.results$coef, lavaan::parTable(template))
 
 	selectVCOV <- lavaan::partable(imputed.results.l[[1]])$free != 0
 	# VCOV
@@ -104,14 +104,14 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	
 	template@vcov$vcov <- vcovPool(t(coefs[selectVCOV, ]),t(VCOVs), m)
 	
-	fmi.results <- cbind(lavaan::parameterEstimates(template, remove.system.eq = FALSE, remove.eq = FALSE, remove.ineq = FALSE)[,1:3], group=template@ParTable$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
+	fmi.results <- cbind(lavaan::parameterEstimates(template, remove.system.eq = FALSE, remove.eq = FALSE, remove.ineq = FALSE)[,1:3], group=lavaan::parTable(template)$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
 
-	fit <- imputed.results.l[[1]]@test
+	fit <- lavaan::lavInspect(imputed.results.l[[1]], "test")
 	df <- fit[[1]]$df
   #if (df == 0) chi <- "none" # for saturated models, no model fit available
-	chi1 <- sapply(imputed.results.l, function(x) x@test[[1]]$stat)
+	chi1 <- sapply(imputed.results.l, function(x) lavaan::lavInspect(x, "test")[[1]]$stat)
 
-	if(any(template@Data@ov$type == "ordered") | (length(fit) > 1)) {
+	if(length(lavaan:lavNames(template, "ov.ord")) | (length(fit) > 1)) {
 		if(chi=="all") chi <- "lmrr"
 		if(chi %in% c("mplus", "mr")) {
 			stop("The 'mplus' or 'mr' method for pooling chi-square values is not available with categorical variables.")
@@ -121,50 +121,50 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	chiScaled1 <- NULL
 	dfScaled <- NULL
 	if(length(fit) > 1) {
-		chiScaled1 <- sapply(imputed.results.l, function(x) x@test[[2]]$stat)
+		chiScaled1 <- sapply(imputed.results.l, function(x) lavaan::lavInspect(x, "test")[[2]]$stat)
 		dfScaled <- fit[[2]]$df
 	}
 	
-	if(template@SampleStats@ngroups == 1) {
-		fit[[1]]$stat.group <- mean(sapply(imputed.results.l, function(x) x@test[[1]]$stat.group))
+	if(lavaan::lavInspect(template, "ngroups") == 1) {
+		fit[[1]]$stat.group <- mean(sapply(imputed.results.l, function(x) lavaan::lavInspect(x, "test")[[1]]$stat.group))
 	} else {
-		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) x@test[[1]]$stat.group))
+		fit[[1]]$stat.group <- rowMeans(sapply(imputed.results.l, function(x) lavaan::lavInspect(x, "test")[[1]]$stat.group))
 	}
 	if(is.null(nullModel)) nullModel <- lavaan::lav_partable_independence(template)
 	if(is.list(nullModel)) nullModel$ustart[nullModel$exo == 1] <- NA
 	
     null.results <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=nullModel, fun=fun, ...))
 
-	convergedNull.l <- sapply(null.results, function(x) x@Fit@converged)
-	seNullAll <- sapply(null.results, function(x) x@Fit@se)
+	convergedNull.l <- sapply(null.results, lavaan::lavInspect, what = "converged")
+	seNullAll <- sapply(null.results, function(x) lavaan::parTable(x)$se)
 	if(!includeImproper) {
 		convergedNull.l <- convergedNull.l & apply(seNullAll, 2, function(x) all(!is.na(x) & (x >= 0)))
 	}
 	
-	dfNull <- null.results[[1]]@test[[1]]$df
+	dfNull <- lavaan::lavInspect(null.results[[1]], "test")[[1]]$df
 	if(dfNull == 0) convergedNull.l <- rep(TRUE, m)
 	if(!any(convergedNull.l)) stop("No null model is converged")
 	
 	mNull <- sum(convergedNull.l)
 	convergenceNullRate <- mNull/mOriginal
 	null.results <- null.results[convergedNull.l]
-	chiNull <- sapply(null.results, function(x) x@test[[1]]$stat)
+	chiNull <- sapply(null.results, function(x) lavaan::lavInspect(x, "test")[[1]]$stat)
 	
 	chiNullScaled1 <- NULL
 	dfNullScaled <- NULL
 	if(length(fit) > 1) {
-		chiNullScaled1 <- sapply(null.results, function(x) x@test[[2]]$stat)
-		dfNullScaled <- null.results[[1]]@test[[2]]$df
+		chiNullScaled1 <- sapply(null.results, function(x) lavaan::lavInspect(x, "test")[[2]]$stat)
+		dfNullScaled <- lavaan::lavInspect(null.results[[1]], "test")[[2]]$df
 	}
 	outNull <- list(model=nullModel, data=imputed.l[[1]], se="none", do.fit=FALSE)
 	outNull <- c(outNull, list(...))
 	templateNull <- suppressWarnings(do.call(fun, outNull))
 	
-	coefsNull <- sapply(null.results, function(x) x@Fit@est)
-	seNull <- sapply(null.results, function(x) x@Fit@se)
+	coefsNull <- sapply(null.results, function(x) lavaan::parTable(x)$est)
+	seNull <- sapply(null.results, function(x) lavaan::parTable(x)$se)
 	
 	comb.results.null <- miPoolVector(t(coefsNull),t(seNull), mNull)
-	fitNull <- null.results[[1]]@test
+	fitNull <- lavaan::lavInspect(null.results[[1]], "test")
 
 	lmrr <- NULL
 	lmrrNull <- NULL
@@ -191,16 +191,16 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		if(!is.null(chiScaled1)) {
 			lmrrScaled <- lmrrPooledChi(chiScaled1, dfScaled)
 			lmrrScaledNull <- lmrrPooledChi(chiNullScaled1, dfNullScaled)
-			fit[[2]] <- imputed.results.l[[1]]@test[[2]]
+			fit[[2]] <- lavaan::lavInspect(imputed.results.l[[1]], "test")[[2]]
 			fit[[2]]$stat <- as.numeric(lmrrScaled[1] * lmrrScaled[2])
 			fit[[2]]$pvalue <- as.numeric(lmrrScaled[4])
-			fitNull[[2]] <- null.results[[1]]@test[[2]]
+			fitNull[[2]] <- lavaan::lavInspect(null.results[[1]], "test")[[2]]
 			fitNull[[2]]$stat <- as.numeric(lmrrScaledNull[1] * lmrrScaledNull[2])
 			fitNull[[2]]$pvalue <- as.numeric(lmrrScaledNull[4])
-			template@Options$estimator <- imputed.results.l[[1]]@Options$estimator 
-			template@Options$test <- imputed.results.l[[1]]@Options$test 
-			templateNull@Options$estimator <- null.results[[1]]@Options$estimator 
-			templateNull@Options$test <- null.results[[1]]@Options$test 
+			template@Options$estimator <- lavaan::lavInspect(imputed.results.l[[1]], "options")$estimator 
+			template@Options$test <- lavaan::lavInspect(imputed.results.l[[1]], "options")$test 
+			templateNull@Options$estimator <- lavaan::lavInspect(null.results[[1]], "options")$estimator 
+			templateNull@Options$test <- lavaan::lavInspect(null.results[[1]], "options")$test 
 		}
 	}
 	
@@ -236,8 +236,8 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 		}
 	}
 	template@test <- fit
-	template@Fit@npar <- imputed.results.l[[1]]@Fit@npar
-	template@Options <- imputed.results.l[[1]]@Options
+	template@Fit@npar <- lavaan::fitMeasures(imputed.results.l[[1]], "npar")[[1]]
+	template@Options <- lavaan::lavInspect(imputed.results.l[[1]], "options")
 	templateNull@test <- fitNull
 	result <- as(template, "lavaanStar")
     ## HACK! YR
@@ -446,9 +446,9 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, coefs, m, fun, 
 	
 	if(is.null(par.sat)) par.sat <- lavaan::lav_partable_unrestricted(template) 
 	comb.sat <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat, fun=fun, ...))
-	converged.sat1 <- sapply(comb.sat, function(x) x@Fit@converged)
+	converged.sat1 <- sapply(comb.sat, lavaan::lavInspect, what = "converged")
 	
-	coefs.sat1 <- sapply(comb.sat, function(x) x@Fit@est)
+	coefs.sat1 <- sapply(comb.sat, function(x) lavaan::parTable(x)$est)
 	est.sat1 <- rowMeans(coefs.sat1[,converged.sat1])
 	par.sat2 <- par.sat
 	par.sat2$free <- as.integer(rep(0, length(par.sat2$free)))
@@ -457,7 +457,7 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, coefs, m, fun, 
 	par.sat2$est <- est.sat1
 	comb.sat2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.sat2, fun=fun, ...))
     comb.sat2 <- lapply(comb.sat2, forceTest)
-	fit.sat2 <- sapply(comb.sat2, function(x) inspect(x, "fit")["logl"])
+	fit.sat2 <- sapply(comb.sat2, function(x) lavaan::lavInspect(x, "fit")["logl"])
 
 	par.alt2 <- lavaan::partable(template)
 	par.alt2$free <- as.integer(rep(0, length(par.alt2$free)))
@@ -476,7 +476,7 @@ mrplusPooledChi <- function(template, imputed.l, chi1, df, coef, coefs, m, fun, 
 	comb.alt2 <- suppressWarnings(mapply(runlavaanMI, MIdata = imputed.l, syntax = par.alt2.l, SIMPLIFY = FALSE, MoreArgs = list(fun = fun, ...)))
 	#comb.alt2 <- suppressWarnings(lapply(imputed.l, runlavaanMI, syntax=par.alt2, fun=fun, ...))
     comb.alt2 <- lapply(comb.alt2, forceTest)
-	fit.alt2 <- sapply(comb.alt2, function(x) inspect(x, "fit")["logl"])
+	fit.alt2 <- sapply(comb.alt2, function(x) lavaan::lavInspect(x, "fit")["logl"])
 	chinew <- cbind(fit.sat2, fit.alt2, (fit.sat2-fit.alt2)*2)
 	
 	
@@ -525,9 +525,9 @@ mrPooledChi <-function(chimean, m, k, ariv){
 }
 
 forceTest <- function(object) {
-	previousCall <- object@call
-	args <- as.list(previousCall[-1])
-	args$model <- lavaan::partable(object)
+	previousCall <- lavaan::lavInspect(object, "call")
+	args <- previousCall[-1]
+	args$model <- lavaan::parTable(object)
 	args$control <- list(optim.method="none", optim.force.converged=TRUE)
 	funcall <- as.character(previousCall[[1]])
 	lav <- do.call(funcall[length(funcall)], args)

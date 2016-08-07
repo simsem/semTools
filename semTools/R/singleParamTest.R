@@ -1,6 +1,6 @@
 singleParamTest <- function(model1, model2, return.fit = FALSE, method = "satorra.bentler.2001") {
 	# Check nested models without any swaps
-	if(model1@Fit@test[[1]]$df > model2@Fit@test[[1]]$df) {
+	if(lavaan::fitMeasures(model1, "df")[[1]] > lavaan::fitMeasures(model2, "df")[[1]]) {
         fit0 <- model1
         fit1 <- model2
     } else {
@@ -131,8 +131,8 @@ paramNameFromPt <- function(pt) {
 
 refit <- function(pt, object, resetstart = TRUE) {
 	if(resetstart && "start" %in% names(pt)) pt <- pt[-which("start" == names(pt))]
-	previousCall <- object@call
-	args <- as.list(previousCall[-1])
+	previousCall <- lavaan::lavInspect(object, "call")
+	args <- previousCall[-1]
 	args$model <- pt
 	funcall <- as.character(previousCall[[1]])
 	tempfit <- do.call(funcall[length(funcall)], args)

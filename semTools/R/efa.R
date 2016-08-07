@@ -87,7 +87,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 		List <- c(list(model=syntax, data=data), list(...))
 		List$do.fit <- FALSE
 		outtemp <- do.call(lavaancfa, List)
-		covtemp <- outtemp@SampleStats@cov[[1]]
+		covtemp <- lavaan::lavInspect(outtemp, "sampstat")$cov
 		partemp <- lavaan::parTable(outtemp)
 		err <- try(startload <- factanal(factors=nf, covmat=covtemp)$loadings[], silent = TRUE)
 		if(is(err, "try-error")) stop("The starting values from the factanal function cannot be calculated. Please use start=FALSE instead.")
@@ -124,11 +124,11 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 }
 
 stdLoad <- function(object) {
-	lambda <- inspect(object, "coef")$lambda
+	lambda <- lavaan::lavInspect(object, "coef")$lambda
 	impcov <- lavaan::fitted.values(object)$cov
 	impsd <- sqrt(diag(diag(impcov)))
 	out <- solve(impsd) %*% lambda
-	rownames(out) <- lavaan::lavNames(object@ParTable, "ov", group = 1)
+	rownames(out) <- lavaan::lavNames(lavaan::parTable(object), "ov", group = 1)
 	if(is(object, "lavaanStar")) {
 		out <- out[!(rownames(out) %in% object@auxNames),]
 	}
@@ -199,10 +199,10 @@ funRotate <- function(object, fun, ...) {
 }
 
 rotateStdLoadings <- function(est, object, rotate=NULL, aux=NULL) {
-	ov.names <- lavaan::lavNames(object@ParTable, "ov", group = 1)
-    lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
+	ov.names <- lavaan::lavNames(lavaan::parTable(object), "ov", group = 1)
+    lv.names <- lavaan::lavNames(lavaan::parTable(object), "lv", group = 1)
 	OV <- sqrt(lavaan::lavTech(object, "vy")[[1]])[!(ov.names %in% aux)]
-	partable <- object@ParTable
+	partable <- lavaan::parTable(object)
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	loading <- (solve(diag(OV)) %*% matrix(est[idx], ncol=length(lv.names))) %*% rotate
 	est[idx] <- as.vector(loading)
@@ -225,13 +225,13 @@ rotateStdLoadings <- function(est, object, rotate=NULL, aux=NULL) {
 }
 
 seStdLoadings <- function(rotate, object) {
-	est <- object@Fit@est
+	est <- lavaan::parameterEstimates(object)$est
 	aux <- ""
 	if(is(object, "lavaanStar")) {
 		aux <- object@auxNames
 	}
-	JAC <- lavaan::lav_func_jacobian_simple(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate, aux=aux)
-	LIST <- inspect(object, "list")
+	JAC <- lavaan::lav_func_jacobian_simple(func=rotateStdLoadings, x=est, object=object, rotate=rotate, aux=aux)
+	LIST <- lavaan::lavInspect(object, "list")
 	free.idx <- which(LIST$free > 0L)
 	LIST <- LIST[,c("lhs", "op", "rhs", "group")]
 	JAC <- JAC[free.idx,free.idx]
@@ -242,9 +242,9 @@ seStdLoadings <- function(rotate, object) {
 	COV <- JAC %*% VCOV %*% t(JAC)
 	LIST$se <- rep(NA, length(LIST$lhs))
 	LIST$se[free.idx] <- sqrt(diag(COV))
-	tmp.se <- ifelse( LIST$se == 0.0, NA, LIST$se)
-    lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
-	partable <- object@ParTable
+	tmp.se <- ifelse(LIST$se == 0.0, NA, LIST$se)
+    lv.names <- lavaan::lavNames(parTable(object), "lv", group = 1)
+	partable <- parTable(object)
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	matrix(LIST$se[idx], ncol=length(lv.names))
 }
