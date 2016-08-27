@@ -1,6 +1,6 @@
 ## Terrence D. Jorgensen
-### Last updated: 23 August 2016
-### syntax to develop semTools function to implement 2-stage ML
+### Last updated: 26 August 2016
+### semTools function to implement 2-stage ML
 
 setClass("twostage",
          slots = c(saturated = "lavaan", target = "lavaan", baseline = "lavaan",
@@ -51,14 +51,11 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   }
   funArgs$NACOV <- NULL
   funArgs$do.fit <- NULL
-  ## check for groups
-  if (!is.null(funArgs$group))
-    stop(c("Two-Stage estimation is currently only implemented ",
-           "for single-group models.  Multiple-group models will be ",
-           "implemented in a future version of semTools."))
 
   ## STAGE 1:
   ## fit saturated model
+  if (!is.null(funArgs$group))
+    lavaanifyArgs$ngroups <- length(table(funArgs$data[ , funArgs$group]))
   targetNames <- lavaan::lavNames(do.call(lavaan::lavaanify, lavaanifyArgs))
   varnames <- c(targetNames, aux)
   covstruc <- outer(varnames, varnames, function(x, y) paste(x, "~~", y))
@@ -144,13 +141,18 @@ setMethod("nobs", "twostage",
 })
 
 setMethod("vcov", "twostage", function(object, baseline = FALSE) {
+  SLOT <- if (baseline) "baseline" else "target"
   ## calculate model derivatives and complete-data information matrix
   MATS <- twostageMatrices(object, baseline)
-  ## return asymptotic covariance matrix of 2-stage estimator
-  bread <- solve(t(MATS$delta) %*% MATS$H %*% MATS$delta)
-  meat <- MATS$H %*% MATS$delta
-  out <- bread %*% t(meat) %*% MATS$satACOV %*% meat %*% bread
-  class(out) <- c("lavaan.matrix.symmetric","matrix")
+  ## return asymptotic covariance matrices (by group) of 2-stage estimator
+  nG <- lavaan::lavInspect(slot(object, SLOT), "ngroups")
+  out <- list()
+  for (g in 1:nG) {
+    meat <- MATS$H[[g]] %*% MATS$delta[[g]]
+    bread <- MASS::ginv(t(MATS$delta[[g]]) %*% meat) # FIXME: why not solve()?
+    out[[g]] <- bread %*% t(meat) %*% MATS$satACOV[[g]] %*% meat %*% bread
+    class(out[[g]]) <- c("lavaan.matrix.symmetric","matrix")
+  }
   out
 })
 
@@ -191,8 +193,10 @@ setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
               pvalue = pchisq(chisq.naïve / cc, df = DF, lower.tail = FALSE))
   class(scaled) <- c("lavaan.vector","numeric")
   ## return both statistics
-  cat("Difference test for Browne (1984) residual-based statistics:\n\n")
-  print(residual)
+  if (lavaan::lavInspect(object@saturated, "options")$se == "standard") {
+    cat("Difference test for Browne (1984) residual-based statistics:\n\n")
+    print(residual)
+  }
   cat("\n\nSatorra-Bentler (2001) scaled difference test:\n\n")
   print(scaled)
   invisible(list(residual = residual, scaled = scaled))
@@ -218,7 +222,7 @@ setMethod("summary", "twostage", function(object, ...) {
   PT <- lavaan::parTable(object@target)
   PT <- PT[PT$group > 0, ]
   PE <- do.call(lavaan::parameterEstimates, c(dots, object = object@target))
-  SEs <- sqrt(diag(vcov(object)))
+  SEs <- do.call(c, lapply(vcov(object), function(x) sqrt(diag(x))))
   PE$se[PT$free > 0] <- SEs[PT$free]
   PE$z[PT$free > 0] <- PE$est[PT$free > 0] / PE$se[PT$free > 0]
   PE$pvalue[PT$free > 0] <- pnorm(abs(PE$z[PT$free > 0]), lower.tail = FALSE)*2
@@ -233,7 +237,7 @@ setMethod("summary", "twostage", function(object, ...) {
     #                   sample.cov = lavInspect(object@target, "cov.ov"),
     #                   sample.mean = lavInspect(object@target, "mean.ov"))
     # compVar <- diag(vcov(compFit))[PT$free]
-    missVar <- diag(vcov(object))[PT$free]
+    missVar <- SEs^2
     PE$fmi[PT$free > 0] <- 1 - compVar / missVar
   }
   PE
@@ -242,53 +246,90 @@ setMethod("summary", "twostage", function(object, ...) {
 ## (hidden?) function utilized by vcov and anova methods
 twostageMatrices <- function(object, baseline) {
   SLOT <- if (baseline) "baseline" else "target"
+  ## extract parameter table to isolate estimates by group
+  PTsat <- lavaan::parTable(object@saturated)
+  PT <- lavaan::parTable(slot(object, SLOT))
+  PT <- PT[PT$group > 0, ]
+  nG <- max(PT$group)
+  isMG <- nG > 1L
   ## model derivatives
   delta <- lavaan::lavInspect(slot(object, SLOT), "delta")
-  covparams <- grep(pattern = "~~", x = rownames(delta))
-  meanparams <- grep(pattern = "~1", x = rownames(delta))
-  delta <- delta[c(covparams, meanparams), ]
+  if (!isMG) delta <- list(delta) else for (g in 1:nG) {
+    delta[[g]] <- delta[[g]][ , PT$group[PT$free > 0L] == g]
+  }
+  for (g in 1:nG) {
+    covparams <- grep(pattern = "~~", x = rownames(delta[[g]]))
+    meanparams <- grep(pattern = "~1", x = rownames(delta[[g]]))
+    delta[[g]] <- delta[[g]][c(covparams, meanparams), ]
+  }
   ## extract estimated moments from saturated model, and number of moments
   satSigma <- lavaan::lavInspect(object@saturated, "cov.ov")
   satMu <- lavaan::lavInspect(object@saturated, "mean.ov")
+  if (!isMG) {
+    satSigma <- list(satSigma)
+    satMu <- list(satMu)
+  }
   if (length(object@auxNames)) {
-    PT <- parTable(object@saturated)
     an <- object@auxNames
     tn <- lavaan::lavNames(slot(object, SLOT))
-    satSigma <- satSigma[tn, tn]
-    satMu <- satMu[tn]
+    for (g in 1:nG) {
+      satSigma[[g]] <- satSigma[[g]][tn, tn]
+      satMu[[g]] <- satMu[[g]][tn]
+    }
   }
-  p <- length(satMu) # if ngroups > 1, lengths?
+  p <- length(satMu[[1]])
   pStar <- p*(p + 1) / 2
   ## extract model-implied moments
-  muHat <- lavaan::lavInspect(slot(object, SLOT), "mean.ov")[names(satMu)]
+  muHat <- lavaan::lavInspect(slot(object, SLOT), "mean.ov")
   sigmaHat <- lavaan::lavInspect(slot(object, SLOT), "cov.ov")
-  sigmaHat <- sigmaHat[rownames(satSigma), colnames(satSigma)]
-  shinv <- solve(sigmaHat)
+  if (!isMG) {
+    sigmaHat <- list(sigmaHat)
+    muHat <- list(muHat)
+  }
+  shinv <- list()
+  for (g in 1:nG) {
+    muHat[[g]] <- muHat[[g]][names(satMu[[g]])]
+    sigmaHat[[g]] <- sigmaHat[[g]][rownames(satSigma[[g]]), colnames(satSigma[[g]])]
+    shinv[[g]] <- solve(sigmaHat[[g]])
+  }
   ## assemble complete-data information matrix
-  H <- matrix(0, (pStar + p), (pStar + p))
+  H <- list()
+  for (g in 1:nG) H[[g]] <- matrix(0, (pStar + p), (pStar + p))
+
   if (lavaan::lavInspect(slot(object, SLOT), "options")$estimator == "observed") {
-    H[1:pStar, 1:pStar] <- .5*lavaan::lav_matrix_duplication_pre_post(shinv %x% shinv)
-    H[(pStar + 1):(pStar + p), (pStar + 1):(pStar + p)] <- shinv
+    for (g in 1:nG) {
+      H[[g]][1:pStar, 1:pStar] <- .5*lavaan::lav_matrix_duplication_pre_post(shinv[[g]] %x% shinv[[g]])
+      H[[g]][(pStar + 1):(pStar + p), (pStar + 1):(pStar + p)] <- shinv[[g]]
+    }
   } else {
-    dMu <- satMu - muHat
-    H[1:pStar, 1:pStar] <- lav_matrix_duplication_pre_post(shinv %x% (shinv %*% (satSigma + dMu %*% t(dMu)) %*% shinv - .5*shinv))
-    H[(pStar + 1):(pStar + p), 1:pStar] <- lav_matrix_duplication_post(shinv %x% (t(dMu) %*% shinv))
-    H[1:pStar, (pStar + 1):(pStar + p)] <- t(H[(pStar + 1):(pStar + p), 1:pStar])
-    H[(pStar + 1):(pStar + p), (pStar + 1):(pStar + p)] <- shinv
+    dMu <- list()
+    for (g in 1:nG) {
+      dMu[[g]] <- satMu[[g]] - muHat[[g]]
+      H[[g]][1:pStar, 1:pStar] <- lav_matrix_duplication_pre_post(shinv[[g]] %x% (shinv[[g]] %*% (satSigma[[g]] + dMu[[g]] %*% t(dMu[[g]])) %*% shinv[[g]] - .5*shinv[[g]]))
+      H[[g]][(pStar + 1):(pStar + p), 1:pStar] <- lav_matrix_duplication_post(shinv[[g]] %x% (t(dMu[[g]]) %*% shinv[[g]]))
+      H[[g]][1:pStar, (pStar + 1):(pStar + p)] <- t(H[[g]][(pStar + 1):(pStar + p), 1:pStar])
+      H[[g]][(pStar + 1):(pStar + p), (pStar + 1):(pStar + p)] <- shinv[[g]]
+    }
   }
   ## asymptotic information and covariance matrices of target model
-  satACOV <- vcov(object@saturated)
-  satInfo <- solve(satACOV * nobs(object@saturated))
+  SA.all <- vcov(object@saturated)
+  SI.all <- solve(SA.all * nobs(object@saturated))
   ## all(round(acov*N, 8) == round(solve(info), 8))
   ## all(round(acov, 8) == round(solve(info)/N, 8))
+  satACOV <- list()
+  satInfo <- list()
+  for (g in 1:nG) {
+    satACOV[[g]] <- SA.all[PTsat$group == g & PTsat$free > 0L, PTsat$group == g & PTsat$free > 0L]
+    satInfo[[g]] <- SI.all[PTsat$group == g & PTsat$free > 0L, PTsat$group == g & PTsat$free > 0L]
+  }
   if (length(object@auxNames)) {
-    dimTar <- PT$free[!(PT$lhs %in% an | PT$rhs %in% an)]
-    dimAux <- PT$free[PT$lhs %in% an | PT$rhs %in% an]
-    infoTar <- satInfo[dimTar, dimTar]
-    infoAux <- satInfo[dimAux, dimAux]
-    infoAT <- satInfo[dimAux, dimTar]
-    satInfo <- infoTar - t(infoAT) %*% solve(infoAux) %*% infoAT
-    satACOV <- solve(satInfo) / lavaan::lavInspect(object@saturated, "ntotal")
+    dimTar <- PTsat$free[PTsat$group == g & !(PTsat$lhs %in% an) & !(PTsat$rhs %in% an)]
+    dimAux <- PTsat$free[PTsat$group == g & (PTsat$lhs %in% an | PTsat$rhs %in% an)]
+    infoTar <- satInfo[[g]][dimTar, dimTar]
+    infoAux <- satInfo[[g]][dimAux, dimAux]
+    infoAT <- satInfo[[g]][dimAux, dimTar]
+    satInfo[[g]] <- infoTar - t(infoAT) %*% solve(infoAux) %*% infoAT
+    satACOV[[g]] <- solve(satInfo[[g]]) / lavInspect(object@saturated, "nobs")[[g]]
   }
   list(delta = delta, H = H, satACOV = satACOV, satInfo = satInfo)
 }
@@ -298,22 +339,30 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   SLOT <- if (baseline) "baseline" else "target"
   ## calculate model derivatives and complete-data information matrix
   MATS <- twostageMatrices(object, baseline)
-
   ## residual-based statistic (Savalei & Bentler, 2009, eq. 8)
-  N <- lavaan::lavInspect(slot(object, SLOT), "ntotal")
+  N <- lavaan::lavInspect(slot(object, SLOT), "nobs")
+  nG <- lavaan::lavInspect(slot(object, SLOT), "ngroups")
   res <- residuals(slot(object, SLOT))
-  etilde <- c(lavaan::lav_matrix_vech(res$cov), res$mean)
-  ID <- MATS$satInfo %*% MATS$delta
-  T.res <- N*t(etilde) %*% (MATS$satInfo - ID %*% solve(t(MATS$delta) %*% ID) %*% t(ID)) %*% etilde
+  if (nG == 1L) res <- list(res)
+  T.res <- 0
+  for (g in 1:nG) {
+    etilde <- c(lavaan::lav_matrix_vech(res[[g]]$cov), res[[g]]$mean)
+    ID <- MATS$satInfo[[g]] %*% MATS$delta[[g]]
+    T.res <- T.res + N[[g]]*t(etilde) %*% (MATS$satInfo[[g]] - ID %*% MASS::ginv(t(MATS$delta[[g]]) %*% ID) %*% t(ID)) %*% etilde # FIXME: why not solve()?
+  }
   DF <- lavaan::lavInspect(slot(object, SLOT), "fit")[["df"]]
   pval.res <- pchisq(T.res, df = DF, lower.tail = FALSE)
   residual <- c(chisq = T.res, df = DF, pvalue = pval.res)
   class(residual) <- c("lavaan.vector","numeric")
 
   ## scaled test statistic (Savalei & Bentler, 2009, eq. 9)
-  bread <- solve(t(MATS$delta) %*% MATS$H %*% MATS$delta)
-  meat <- MATS$H %*% MATS$delta
-  cc <- DF / sum(diag(solve(MATS$satInfo) %*% (MATS$H - meat %*% bread %*% t(meat))))
+  denom <- 0
+  for (g in 1:nG) {
+    meat <- MATS$H[[g]] %*% MATS$delta[[g]]
+    bread <- MASS::ginv(t(MATS$delta[[g]]) %*% meat) # FIXME: why not solve()?
+    denom <- denom + sum(diag(MATS$satACOV[[g]] %*% (MATS$H[[g]] - meat %*% bread %*% t(meat))))
+  }
+  cc <- DF / denom
   chisq <- lavaan::lavInspect(slot(object, SLOT), "fit")[["chisq"]]
   T.scaled <- cc * chisq
   pval.scaled <- pchisq(T.scaled, df = DF, lower.tail = FALSE)
@@ -323,8 +372,10 @@ twostageLRT <- function(object, baseline, print = FALSE) {
 
   ## return both statistics
   if (print) {
-    cat("Browne (1984) residual-based test statistic:\n\n")
-    print(residual)
+    if (lavaan::lavInspect(object@saturated, "options")$se == "standard") {
+      cat("Browne (1984) residual-based test statistic:\n\n")
+      print(residual)
+    }
     cat("\n\nSatorra-Bentler (2001) scaled test statistic:\n\n")
     print(scaled)
   }
