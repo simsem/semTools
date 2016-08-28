@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 26 August 2016
+### Last updated: 28 August 2016
 ### semTools function to implement 2-stage ML
 
 setClass("twostage",
@@ -243,9 +243,7 @@ twostageMatrices <- function(object, baseline) {
   SLOT <- if (baseline) "baseline" else "target"
   ## extract parameter table to isolate estimates by group
   PTsat <- lavaan::parTable(object@saturated)
-  PT <- lavaan::parTable(slot(object, SLOT))
-  PT <- PT[PT$group > 0, ]
-  nG <- max(PT$group)
+  nG <- max(PTsat$group)
   isMG <- nG > 1L
   ## model derivatives
   delta <- lavaan::lavInspect(slot(object, SLOT), "delta")
@@ -257,7 +255,7 @@ twostageMatrices <- function(object, baseline) {
   }
   ## stack groups' deltas into 1 matrix
   delta <- do.call(rbind, delta)
-  
+
   ## extract estimated moments from saturated model, and number of moments
   satSigma <- lavaan::lavInspect(object@saturated, "cov.ov")
   satMu <- lavaan::lavInspect(object@saturated, "mean.ov")
@@ -310,7 +308,7 @@ twostageMatrices <- function(object, baseline) {
   }
   ## combine into 1 block-diagonal matrix
   H <- do.call(lavaan::lav_matrix_bdiag, H)
-  
+
   ## asymptotic information and covariance matrices of target model
   satACOV <- vcov(object@saturated)
   satInfo <- solve(satACOV * nobs(object@saturated))
