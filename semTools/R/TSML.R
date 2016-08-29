@@ -25,6 +25,7 @@ lavaan.2stage <- function(..., aux = NULL, baseline.model = NULL) {
 twostage <- function(..., aux, fun, baseline.model = NULL) {
   if (all(aux == "")) aux <- NULL
   dots <- list(...)
+  if (is.null(dots$model)) stop("lavaan model syntax argument must be named 'model'.")
   lavaanifyArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaanify)))]
   funArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaan)))]
   ## set some non-optional lavaan arguments
