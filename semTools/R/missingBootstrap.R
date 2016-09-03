@@ -347,8 +347,8 @@ fitBootSample <- function(dat, args, suppress) {
     fit <- do.call(lavaanlavaan, args)
   }
   if (!exists("fit")) return(c(chisq = NA))
-  if (inspect(fit, "converged")) {
-    chisq <- inspect(fit, "fit")[c("chisq", "chisq.scaled")]
+  if (lavaan::lavInspect(fit, "converged")) {
+    chisq <- lavaan::lavInspect(fit, "fit")[c("chisq", "chisq.scaled")]
   } else {
     chisq <- NA
   }
@@ -384,17 +384,17 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   ## If a lavaan object is supplied, the extracted values for rawData, Sigma, Mu,
   ## EMcov, and EMmeans will override any user-supplied arguments.
   if (hasArg(x)) {
-    rawData <- lapply(x@Data@X, as.data.frame)
-    for (g in seq_along(rawData)) colnames(rawData[[g]]) <- x@pta$vnames$ov[[g]]
-    ChiSquared <- inspect(x, "fit")[c("chisq", "chisq.scaled")]
+    rawData <- lapply(lavaan::lavInspect(x, "data"), as.data.frame)
+    for (g in seq_along(rawData)) colnames(rawData[[g]]) <- lavaan::lavNames(x)
+    ChiSquared <- lavaan::lavInspect(x, "fit")[c("chisq", "chisq.scaled")]
     ChiSquared <- ifelse(is.na(ChiSquared[2]), ChiSquared[1], ChiSquared[2])
-    group <- x@Data@group
+    group <- lavaan::lavInspect(x, "group")
     if (length(group) == 0) group <- "group"
-    group.label <- x@Data@group.label
+    group.label <- lavaan::lavInspect(x, "group.label")
     if (length(group.label) == 0) group.label <- 1
-    Sigma <- x@Fit@Sigma.hat
-    Mu <- x@Fit@Mu.hat
-    EMcov <- x@SampleStats@cov
+    Sigma <- lavaan::lavInspect(x, "cov.ov")
+    Mu <- lavaan::lavInspect(x, "mean.ov")
+    EMcov <- lavaan::lavInspect(x, "sampstat")$cov
   } else {
   ## If no lavaan object is supplied, check that required arguments are.
     suppliedData <- c(hasArg(rawData), hasArg(Sigma), hasArg(Mu))
@@ -557,9 +557,9 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   ## fit model to bootstrap samples, save distribution of chi-squared test stat
   if (hasArg(x)) {
     ## grab defaults from lavaan object "x"
-    lavaanArgs$slotParTable <- x@ParTable
+    lavaanArgs$slotParTable <- parTable(x)
     lavaanArgs$slotModel <- x@Model
-    lavaanArgs$slotOptions <- x@Options
+    lavaanArgs$slotOptions <- lavaan::lavInspect(x, "options")
   } else {
     lavaanArgs$model <- model
     lavaanArgs$missing <- "fiml"
@@ -596,12 +596,12 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   output$Bootstrapped.Distribution <- bootFits
   output$Original.ChiSquared <- ChiSquared
   if (hasArg(x)) {
-    output$Degrees.Freedom <- inspect(x, "fit")["df"]
+    output$Degrees.Freedom <- lavaan::lavInspect(x, "fit")["df"]
   } else {
     convSamp <- which(!is.na(bootFits))[1]
     lavaanArgs$data <- bootSamples[[convSamp]]
 	lavaanlavaan <- function(...) { lavaan::lavaan(...) }
-    output$Degrees.Freedom <- inspect(do.call(lavaanlavaan, lavaanArgs), "fit")["df"]
+    output$Degrees.Freedom <- lavaan::lavInspect(do.call(lavaanlavaan, lavaanArgs), "fit")["df"]
   }
 
   ## calculate bootstrapped p-value

@@ -87,7 +87,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 		List <- c(list(model=syntax, data=data), list(...))
 		List$do.fit <- FALSE
 		outtemp <- do.call(lavaancfa, List)
-		covtemp <- outtemp@SampleStats@cov[[1]]
+		covtemp <- lavaan::lavInspect(outtemp, "sampstat")$cov
 		partemp <- lavaan::parTable(outtemp)
 		err <- try(startload <- factanal(factors=nf, covmat=covtemp)$loadings[], silent = TRUE)
 		if(is(err, "try-error")) stop("The starting values from the factanal function cannot be calculated. Please use start=FALSE instead.")
@@ -275,7 +275,7 @@ seStdLoadings <- function(rotate, object) {
 	phi <- rotate$Phi
 	if(is.null(phi)) phi <- diag(ncol(loading))
 
-	est <- object@Fit@est
+	est <- lavaan::parameterEstimates(object)$est
 	aux <- NULL
 	if(is(object, "lavaanStar")) {
 		aux <- object@auxNames
@@ -283,7 +283,7 @@ seStdLoadings <- function(rotate, object) {
 	# Standardized results
 	JAC1 <- lavaan::lav_func_jacobian_simple(func=stdRotatedLoadings, x=object@Fit@est, object=object, aux=aux, rotate = rotMat)
 		
-	LIST <- inspect(object, "list")
+	LIST <- lavaan::lavInspect(object, "list")
 	free.idx <- which(LIST$free > 0L)
 	m <- ncol(phi)
 	phi.idx <- which(LIST$op == "~~" & LIST$lhs != LIST$rhs & (LIST$lhs %in% paste0("factor", 1:m)))
@@ -359,7 +359,7 @@ seStdLoadings <- function(rotate, object) {
 	LIST$se[c(free.idx, phi.idx)] <- sqrt(diag(COV2))
 	tmp.se <- ifelse( LIST$se == 0.0, NA, LIST$se)
     lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
-	partable <- object@ParTable
+	partable <- parTable(object)
 	print(LIST)
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	matrix(LIST$se[idx], ncol=length(lv.names))

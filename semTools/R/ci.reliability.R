@@ -477,7 +477,7 @@ ci.reliability <- function(data = NULL, S = NULL, N = NULL, aux = NULL, type = N
 	} else {
 		try(fit <- lavaan::cfa(script, data = data, std.lv = TRUE, missing = "ml", se = "none"), silent = TRUE)
 	}
-	S <- lavaan::inspect(fit, "cov.ov")[varnames, varnames]
+	S <- lavaan::lavInspect(fit, "cov.ov")[varnames, varnames]
 	pe <- lavaan::parameterEstimates(fit)
 	N <- nrow(data)
 	if("fmi" %in% colnames(pe)) {
@@ -519,13 +519,13 @@ ci.reliability <- function(data = NULL, S = NULL, N = NULL, aux = NULL, type = N
 	if(is(e, "try-error")) {
 		converged <- FALSE
 	} else {
-		converged <- fit@Fit@converged
-		errorcheck <- diag(lavaan::inspect(fit, "se")$theta)
+		converged <- lavaan::lavInspect(fit, "converged")
+		errorcheck <- diag(lavaan::lavInspect(fit, "se")$theta)
 		if (se != "none" && any(errorcheck <= 0)) converged <- FALSE		
 	}
 	if (converged) {
-		loading <- unique(as.vector(lavaan::inspect(fit, "coef")$lambda))
-		error <- unique(diag(lavaan::inspect(fit, "se")$theta))
+		loading <- unique(as.vector(lavaan::lavInspect(fit, "coef")$lambda))
+		error <- unique(diag(lavaan::lavInspect(fit, "se")$theta))
 		pe <- lavaan::parameterEstimates(fit)
 		r <- which(pe[,"lhs"] == "relia")
 		u <- pe[which(pe[,"lhs"] == "loading"), "est"]
@@ -587,13 +587,13 @@ ci.reliability <- function(data = NULL, S = NULL, N = NULL, aux = NULL, type = N
 	if(is(e, "try-error")) {
 		converged <- TRUE
 	} else {
-		converged <- fit@Fit@converged
-		errorcheck <- diag(lavaan::inspect(fit, "se")$theta)
+		converged <- lavaan::lavInspect(fit, "converged")
+		errorcheck <- diag(lavaan::lavInspect(fit, "se")$theta)
 		if (se != "none" && any(errorcheck <= 0)) converged <- FALSE		
 	}
 	if (converged) {
-		loading <- unique(as.vector(lavaan::inspect(fit, "coef")$lambda))
-		error <- unique(diag(lavaan::inspect(fit, "se")$theta))
+		loading <- unique(as.vector(lavaan::lavInspect(fit, "coef")$lambda))
+		error <- unique(diag(lavaan::lavInspect(fit, "se")$theta))
 		pe <- lavaan::parameterEstimates(fit)
 		r <- which(pe[,"lhs"] == "relia")
 		u <- pe[which(pe[,"lhs"] == "loading"), "est"]
@@ -656,16 +656,16 @@ ci.reliability <- function(data = NULL, S = NULL, N = NULL, aux = NULL, type = N
 	model <- paste(model, loadingLine, "\n", factorLine)
 	error <- try(fit <- lavaan::cfa(model, data = dat, se = "none", ordered = varnames), silent = TRUE)
 	converged <- FALSE
-	if(!is(error, "try-error") && fit@Fit@converged) converged <- TRUE
+	if(!is(error, "try-error") && lavaan::lavInspect(fit, "converged")) converged <- TRUE
 	reliab <- NA
 	if(converged) {
-		param <- lavaan::inspect(fit, "coef")
+		param <- lavaan::lavInspect(fit, "coef")
 		ly <- param[["lambda"]]
 		ps <- param[["psi"]]
 		truevar <- ly%*%ps%*%t(ly)
 		threshold <- .getThreshold(fit)[[1]]
 		denom <- .polycorLavaan(fit, dat)[varnames, varnames]
-		invstdvar <- 1 / sqrt(diag(fit@Fit@Sigma.hat[[1]]))
+		invstdvar <- 1 / sqrt(diag(lavaan::lavInspect(fit, "cov.ov")))
 		polyr <- diag(invstdvar) %*% truevar %*% diag(invstdvar)
 		sumnum <- 0
 		addden <- 0
@@ -698,8 +698,8 @@ ci.reliability <- function(data = NULL, S = NULL, N = NULL, aux = NULL, type = N
 
 
 .polycorLavaan <- function(object, data) {
-	ngroups <- object@Data@ngroups
-	coef <- lavaan::inspect(object, "coef")
+	ngroups <- lavaan::lavInspect(object, "ngroups")
+	coef <- lavaan::lavInspect(object, "coef")
 	targettaunames <- NULL
 	if(ngroups == 1) {
 		targettaunames <- rownames(coef$tau)
@@ -716,15 +716,15 @@ ci.reliability <- function(data = NULL, S = NULL, N = NULL, aux = NULL, type = N
 	}
 	suppressWarnings(newobject <- .refit(script, data, varnames, object))
 	if(ngroups == 1) {
-		return(lavaan::inspect(newobject, "coef")$theta)
+		return(lavaan::lavInspect(newobject, "coef")$theta)
 	} else {
-		return(lapply(lavaan::inspect(newobject, "coef"), "[[", "theta"))
+		return(lapply(lavaan::lavInspect(newobject, "coef"), "[[", "theta"))
 	}
 }
 
 .getThreshold <- function(object) {
-	ngroups <- object@Data@ngroups
-	coef <- lavaan::inspect(object, "coef")
+	ngroups <- lavaan::lavInspect(object, "ngroups")
+	coef <- lavaan::lavInspect(object, "coef")
 	result <- NULL
 	if(ngroups == 1) {
 		targettaunames <- rownames(coef$tau)
@@ -745,7 +745,7 @@ ci.reliability <- function(data = NULL, S = NULL, N = NULL, aux = NULL, type = N
 
 
 .refit <- function(pt, data, vnames, object) {
-	previousCall <- object@call
+	previousCall <- as.call(lavaan::lavInspect(object, "call"))
 	args <- as.list(previousCall[-1])
 	args$model <- pt
 	args$data <- data

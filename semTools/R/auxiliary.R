@@ -32,7 +32,7 @@ setMethod("summary", "lavaanStar",
 function(object, fit.measures=FALSE, ...) {
 	getMethod("summary", "lavaan")(object, fit.measures=FALSE, ...)
 	if(fit.measures) {
-		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: inspect(object, what='fit').\n")
+		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: lavInspect(object, what='fit').\n")
 	}
 })
 	
@@ -60,11 +60,11 @@ auxiliary <- function(model, aux, fun, ...) {
 	args$missing <- "fiml"
 	
 	if(is(model, "lavaan")) {
-		if(!model@Options$meanstructure) stop("The lavaan fitted model must evaluate the meanstructure. Please re-fit the lavaan object again with 'meanstructure=TRUE'")
-		model <- model@ParTable
+		if(!lavaan::lavInspect(model, "options")$meanstructure) stop("The lavaan fitted model must evaluate the meanstructure. Please re-fit the lavaan object again with 'meanstructure=TRUE'")
+		model <- parTable(model)
 	} else if(!(is.list(model) && ("lhs" %in% names(model)))) {
 		fit <- do.call(fun, c(list(model=model, do.fit=FALSE), args))
-		model <- fit@ParTable
+		model <- parTable(fit)
 	}
 	model <- model[setdiff(1:length(model), which(names(model) == "start"))]
 
@@ -237,7 +237,7 @@ fitMeasuresLavaanStar <- function(object) {
 	notused <- capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit")))
 	result[c("baseline.chisq", "baseline.df", "baseline.pvalue")] <- object@nullfit[c("chisq", "df", "pvalue")]
 		
-    if(object@Options$test %in% c("satorra.bentler", "yuan.bentler", 
+    if(lavaan::lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler", 
                    "mean.var.adjusted", "scaled.shifted")) {
         scaled <- TRUE
     } else {
@@ -468,7 +468,7 @@ setMethod("summary", "lavaanStar",
 function(object, fit.measures=FALSE, ...) {
 	getMethod("summary", "lavaan")(object, fit.measures=FALSE, ...)
 	if(fit.measures) {
-		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: inspect(object, what='fit').\n")
+		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: lavInspect(object, what='fit').\n")
 	}
 })
 
@@ -483,8 +483,8 @@ function(object, ...) {
 		if(length(imputed) == 0) stop("The second object must come from multiple imputation.")
 		listlogl1 <- imputed[["indivlogl"]]
 		listlogl2 <- imputed2[["indivlogl"]]
-		df1 <- inspect(object, "fit")["df"]
-		df2 <- inspect(object2, "fit")["df"]
+		df1 <- lavaan::lavInspect(object, "fit")["df"]
+		df2 <- lavaan::lavInspect(object2, "fit")["df"]
 		if(df2 < df1) {
 			templogl <- listlogl1
 			listlogl1 <- listlogl2

@@ -15,16 +15,16 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   if("all" %in% fit.measures) fit.measures <- fit.choices
 
   # Extract fit indices information from lavaan object
-  fit <- inspect(object, "fit")
+  fit <- lavaan::lavInspect(object, "fit")
   # Get the number of variable
-  p <- length(object@Data@ov.names[[1]])
+  p <- length(lavaan::lavNames(object, type = "ov", group = 1))
   # Get the number of parameters
   nParam <- fit["npar"]
 	
   # Get number of observations
-  n <- object@SampleStats@ntotal
+  n <- lavaan::lavInspect(object, "ntotal")
   # Find the number of groups
-  ngroup <- object@Data@ngroups
+  ngroup <- lavaan::lavInspect(object, "ngroups")
   
   # Calculate -2*log(likelihood)
   f <- -2 * fit["logl"]
@@ -36,7 +36,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
     adjGammaHatValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHatValue)
     result["gammaHat"] <- gammaHatValue
     result["adjGammaHat"] <- adjGammaHatValue
-    if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
+    if(lavaan::lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
       gammaHatScaledValue <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
       adjGammaHatScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaledValue)
       result["gammaHat.scaled"] <- gammaHatScaledValue
@@ -45,7 +45,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   }
   if (length(grep("rmsea", fit.measures))) {
     result["baseline.rmsea"] <- nullRMSEA(object, silent = TRUE)
-    if(object@Options$test %in% c("satorra.bentler", "yuan.bentler")) {
+    if(lavaan::lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
       result["baseline.rmsea.scaled"] <- nullRMSEA(object, scaled = TRUE, silent = TRUE)
     }
   }
@@ -60,23 +60,23 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 
 nullRMSEA <- function (object, scaled = FALSE, silent = FALSE) { 
 	# return RMSEA of the null model, warn if it is lower than 0.158, because it makes the TLI/CLI hard to interpret
-	test <- object@Options$test 
+	test <- lavaan::lavInspect(object, "options")$test
 	
 	fits <- lavaan::fitMeasures(object)
-	N <- object@SampleStats@ntotal # sample size
+	N <- lavaan::lavInspect(object, "ntotal") # sample size
 	
 	X2 <- as.numeric ( fits['baseline.chisq'] ) # get baseline chisq
 	df <- as.numeric ( fits['baseline.df'] ) # get baseline df 
-	G <- object@Data@ngroups # number of groups
+	G <- lavaan::lavInspect(object, "ngroups") # number of groups
 	
 	### a simple rip from fit.measures.R in lavaan's codebase.
 	N.RMSEA <- max(N, X2*4) # Check with lavaan
         # RMSEA
 	if(df > 0) {
 		if(scaled) {
-			d <- sum(object@Fit@test[[2]]$trace.UGamma)
+			d <- sum(diag(lavaan::lavInspect(object, "UGamma")))
 		} 
-		if(object@Options$mimic %in% c("Mplus", "lavaan")) {
+		if(lavaan::lavInspect(object, "options")$mimic %in% c("Mplus", "lavaan")) {
 			GG <- 0
 			RMSEA <- sqrt( max( c((X2/N)/df - 1/(N-GG), 0) ) ) * sqrt(G)
 			if(scaled && test != "scaled.shifted") {

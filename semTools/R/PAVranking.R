@@ -12,55 +12,6 @@ PAVranking <- function(nPerPar, facPlc, nAlloc=100, parceloutput=0, syntaxA, syn
   options(max.print=1000000) 
   ### allow many tables to be outputted 
   
-## isImproperSolution function
-
-isProperSolution <- function(object) {
-
-    lavpartable <- object@ParTable
-    lavfit <- object@Fit
-    lavdata <- object@Data
-    lavmodel <- object@Model
-  
-
-       # 1. check for Heywood cases, negative (residual) variances, ...
-        var.idx <- which(lavpartable$op == "~~" &
-                         lavpartable$lhs == lavpartable$rhs)
-        if(length(var.idx) > 0L && any(lavfit@est[var.idx] < 0.0))
-            return(FALSE)
-
-        # 2. is cov.lv (PSI) positive definite?
-        if(length(lavaan::lavaanNames(lavpartable, type="lv.regular")) > 0L) {
-            ETA <- list(lavaan::lavInspect(object,"cov.lv"))
-            for(g in 1:lavdata@ngroups) {
-                eigvals <- eigen(ETA[[g]], symmetric=TRUE,
-                                 only.values=TRUE)$values
-                if(any(eigvals < -1 * .Machine$double.eps^(3/4)))
-                   return(FALSE)
-            }
-            
-            }
-        
-
-        # 3. is THETA positive definite (but only for numeric variables)
-        THETA <- list(lavaan::lavInspect(object,"theta"))
-        
-        for(g in 1:lavdata@ngroups) {
-                num.idx <- lavmodel@num.idx[[g]]
-                if(length(num.idx) > 0L) {
-                    eigvals <- eigen(THETA[[g]][unlist(num.idx),unlist(num.idx),drop=FALSE],
-                                     symmetric=TRUE,
-                                     only.values=TRUE)$values
-                    if(any(eigvals < -1 * .Machine$double.eps^(3/4))) {
-                       return(FALSE)
-                     }
-                }
-        }
- 
-        
-   TRUE
-
-}  
-  
   
 ##Create parceled datasets  
   
@@ -305,13 +256,13 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
     ## convert allocation matrix to dataframe for model estimation 
 	fit_A <- lavaan::sem(syntaxA, data=data_A, ...)
     ## estimate model in lavaan
-	if (inspect(fit_A, "converged")==TRUE){
+	if (lavaan::lavInspect(fit_A, "converged")==TRUE){
 	Converged_A[[i]] <- 1
 	} else Converged_A[[i]] <- 0
     ## determine whether or not each allocation converged
 	Param_A[[i]] <- lavaan::parameterEstimates(fit_A)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
     ## assign allocation parameter estimates to list
-	if (isProperSolution(fit_A)==TRUE & Converged_A[[i]]==1){
+	if (lavaan::lavInspect(fit_A, "post.check")==TRUE & Converged_A[[i]]==1){
 	ProperSolution_A[[i]] <- 1
 	} else ProperSolution_A[[i]] <- 0
 	## determine whether or not each allocation has proper solutions
@@ -482,13 +433,13 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
     ## convert allocation matrix to dataframe for model estimation 
     fit <- lavaan::sem(syntaxB, data=data, ...)
     ## estimate model in lavaan
-	if (inspect(fit, "converged")==TRUE){
+	if (lavaan::lavInspect(fit, "converged")==TRUE){
 	Converged[[i]] <- 1
 	} else Converged[[i]] <- 0
 	## determine whether or not each allocation converged
 	Param[[i]] <- lavaan::parameterEstimates(fit)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
     ## assign allocation parameter estimates to list
-    if (isProperSolution(fit)==TRUE & Converged[[i]]==1) {
+    if (lavaan::lavInspect(fit, "post.check")==TRUE & Converged[[i]]==1) {
 	ProperSolution[[i]] <- 1
 	} else ProperSolution[[i]] <- 0
 	## determine whether or not each allocation has proper solutions
