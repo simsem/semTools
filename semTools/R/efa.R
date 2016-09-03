@@ -123,11 +123,13 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 	}
 }
 
-stdLoad <- function(object) {
-	lambda <- inspect(object, "coef")$lambda
-	impcov <- lavaan::fitted.values(object)$cov
-	impsd <- sqrt(diag(diag(impcov)))
-	out <- solve(impsd) %*% lambda
+getLoad <- function(object, std = TRUE) {
+	out <- inspect(object, "coef")$lambda
+	if(std) {
+		impcov <- lavaan::fitted.values(object)$cov
+		impsd <- sqrt(diag(diag(impcov)))
+		out <- solve(impsd) %*% out
+	}
 	rownames(out) <- lavaan::lavNames(object@ParTable, "ov", group = 1)
 	if(is(object, "lavaanStar")) {
 		out <- out[!(rownames(out) %in% object@auxNames),]
@@ -140,10 +142,10 @@ orthRotate <- function(object, method="varimax", ...) {
 	requireNamespace("GPArotation")
 	if(!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
 	mc <- match.call()
-	initL <- stdLoad(object)
+	initL <- getLoad(object)
 	rotated <- GPArotation::GPForth(initL, method=method, ...)
 	rotateMat <- t(solve(rotated$Th))
-	LIST <- seStdLoadings(rotateMat, object)
+	LIST <- seStdLoadings(rotated, object)
 	orthogonal <- rotated$orthogonal
 	loading <- rotated$loadings
 	rotate <- rotated$Th
@@ -160,10 +162,10 @@ oblqRotate <- function(object, method="quartimin", ...) {
 	requireNamespace("GPArotation")
 	if(!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
 	mc <- match.call()
-	initL <- stdLoad(object)
+	initL <- getLoad(object)
 	rotated <- GPArotation::GPFoblq(initL, method=method, ...)
 	rotateMat <- t(solve(rotated$Th))
-	LIST <- seStdLoadings(rotateMat, object)
+	LIST <- seStdLoadings(rotated, object)
 	orthogonal <- rotated$orthogonal
 	loading <- rotated$loadings
 	rotate <- rotated$Th
@@ -181,14 +183,14 @@ funRotate <- function(object, fun, ...) {
 	requireNamespace("GPArotation")
 	if(!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
 	mc <- match.call()
-	initL <- stdLoad(object)
+	initL <- getLoad(object)
 	rotated <- do.call(fun, c(list(L = initL), list(...)))
 	rotateMat <- t(solve(rotated$Th))
-	LIST <- seStdLoadings(rotateMat, object)
+	gradRotate <- rotated$Gq
+	LIST <- seStdLoadings(rotated, object, gradRotate)
 	orthogonal <- rotated$orthogonal
 	loading <- rotated$loadings
 	rotate <- rotated$Th
-	gradRotate <- rotated$Gq
 	convergence <- rotated$convergence
 	method <- rotated$method
 	phi <- rotated$Phi
@@ -198,26 +200,64 @@ funRotate <- function(object, fun, ...) {
 	new("EFA", loading=loading, rotate=rotate, gradRotate=gradRotate, convergence=convergence, phi=phi, se=LIST, method=method, call=mc) 
 }
 
-rotateStdLoadings <- function(est, object, rotate=NULL, aux=NULL) {
+fillMult <- function(X, Y, fillrowx = 0, fillrowy = 0, fillcolx = 0, fillcoly = 0) {
+	tempX <- matrix(0, nrow = nrow(X) + fillrowx, ncol = ncol(X) + fillcolx)
+	tempY <- matrix(0, nrow = nrow(Y) + fillrowy, ncol = ncol(Y) + fillcoly)
+	tempX[1:nrow(X), 1:ncol(X)] <- X
+	tempY[1:nrow(Y), 1:ncol(Y)] <- Y
+	result <- tempX %*% tempY
+	result[1:nrow(X), 1:ncol(Y)]
+}
+
+stdRotatedLoadings <- function(est, object, aux=NULL, rotate=NULL) {
 	ov.names <- lavaan::lavNames(object@ParTable, "ov", group = 1)
     lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
-	OV <- sqrt(lavaan::lavTech(object, "vy")[[1]])[!(ov.names %in% aux)]
+	ind.names <- setdiff(ov.names, aux)
+
+	# Compute model-implied covariance matrix
 	partable <- object@ParTable
-	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
-	loading <- (solve(diag(OV)) %*% matrix(est[idx], ncol=length(lv.names))) %*% rotate
-	est[idx] <- as.vector(loading)
-	# Cannot find standard error for Phi because the values are fixed	
-	rv.idx <- which(partable$op == "~~" & partable$rhs %in% 
-		lv.names)
-	# phi <- diag(length(lv.names))
+	# LY
+	load.idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
+	loading <- matrix(est[load.idx], ncol=length(lv.names))
+	loading <- rbind(loading, matrix(0, length(aux), ncol(loading)))
+	# Nu
+	int.idx <- which(partable$op == "~1" & (partable$rhs == "") & (partable$lhs %in% ov.names))
+	intcept <- matrix(est[int.idx], ncol = 1)
+	
+	# Theta
+	th.idx <- which(partable$op == "~~" & (partable$rhs %in% ov.names) & (partable$lhs %in% ov.names))
+	theta <- matrix(0, length(ov.names), length(ov.names), dimnames = list(ov.names, ov.names))
+	for(i in th.idx) {
+		theta[partable$lhs[i], partable$rhs[i]] <- theta[partable$rhs[i], partable$lhs[i]] <- est[i]
+	}
+	OV <- loading %*% t(loading) + theta
+	invsd <- solve(sqrt(diag(diag(OV))))
+
+	requireNamespace("GPArotation")
+	if(!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
+	# Compute standardized results
+	loading <- invsd %*% loading 
+	obj <- GPArotation::GPFoblq(loading, method="geomin")
+	loading <- obj$loadings
+	rotMat <- t(solve(obj$Th))
+
+	# %*% rotate
+	est[load.idx] <- as.vector(loading[seq_along(ind.names),])
+	intcept <- invsd %*% intcept
+	est[int.idx] <- as.vector(intcept)
+	theta <- invsd %*% theta %*% invsd
+	rownames(theta) <- colnames(theta) <- ov.names
+	for(i in th.idx) {
+		est[i] <- theta[partable$lhs[i], partable$rhs[i]]
+	}
+	
+	# Put phi
+	rv.idx <- which(partable$op == "~~" & partable$rhs %in% lv.names)
 	templhs <- match(partable$lhs[rv.idx], lv.names)
 	temprhs <- match(partable$rhs[rv.idx], lv.names)
-	# tempval <- est[rv.idx]
-	# for(i in seq_along(tempval)) {
-		# phi[templhs[i], temprhs[i]] <- tempval[i]
-	# }
-	rotate2 <- t(solve(rotate))
-	phi <- t(rotate2) %*% rotate2
+	# rotate2 <- t(solve(rotate))
+	# phi <- t(rotate2) %*% rotate2
+	phi <- obj$Phi
 	for(i in seq_along(templhs)) {
 		est[rv.idx[i]] <- phi[templhs[i], temprhs[i]]
 	}
@@ -225,26 +265,102 @@ rotateStdLoadings <- function(est, object, rotate=NULL, aux=NULL) {
 }
 
 seStdLoadings <- function(rotate, object) {
+	# object <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
+	# initL <- getLoad(object)
+	# rotate <- GPArotation::GPFoblq(initL, method="oblimin")
+	
+	rotMat <- t(solve(rotate$Th))
+	gradient <- rotate$Gq
+	loading <- rotate$loadings
+	phi <- rotate$Phi
+	if(is.null(phi)) phi <- diag(ncol(loading))
+
 	est <- object@Fit@est
-	aux <- ""
+	aux <- NULL
 	if(is(object, "lavaanStar")) {
 		aux <- object@auxNames
 	}
-	JAC <- lavaan::lav_func_jacobian_simple(func=rotateStdLoadings, x=object@Fit@est, object=object, rotate=rotate, aux=aux)
+	# Standardized results
+	JAC1 <- lavaan::lav_func_jacobian_simple(func=stdRotatedLoadings, x=object@Fit@est, object=object, aux=aux, rotate = rotMat)
+		
 	LIST <- inspect(object, "list")
 	free.idx <- which(LIST$free > 0L)
-	LIST <- LIST[,c("lhs", "op", "rhs", "group")]
-	JAC <- JAC[free.idx,free.idx]
+	m <- ncol(phi)
+	phi.idx <- which(LIST$op == "~~" & LIST$lhs != LIST$rhs & (LIST$lhs %in% paste0("factor", 1:m)))
+	JAC1 <- JAC1[c(free.idx, phi.idx), free.idx]
 	VCOV <- as.matrix(lavaan::vcov(object, labels=FALSE))
 	if(object@Model@eq.constraints) {
-		JAC <- JAC %*% object@Model@eq.constraints.K
+		JAC1 <- JAC1 %*% object@Model@eq.constraints.K
 	}
-	COV <- JAC %*% VCOV %*% t(JAC)
+	COV1 <- JAC1 %*% VCOV %*% t(JAC1)
+	# I1 <- MASS::ginv(COV1)
+	browser()
+	# I1p <- matrix(0, nrow(I1) + length(phi.idx), ncol(I1) + length(phi.idx))
+	# I1p[1:nrow(I1), 1:ncol(I1)] <- I1
+	# phi.idx2 <- nrow(I1) + 1:length(phi.idx)
+	
+	
+	# p <- nrow(loading)
+	# dconlambda <- matrix(0, m^2 - m, p*m)
+	# gradphi <- gradient %*% solve(phi)
+	# lambgradphi <- t(loading) %*% gradphi
+	# lambphi <- loading %*% solve(phi)
+	# lamblamb <- t(loading) %*% loading
+	# runrow <- 1
+	# descript <- NULL
+	# for(u in 1:m) {
+		# for(v in setdiff(1:m, u)) {
+			# runcol <- 1
+			# for(r in 1:m) {
+				# for(i in 1:p) {
+					# mir <- (1 - 1/p) * sum(loading[i,]^2) + sum(loading[,r]^2)/p - loading[i,r]^2
+					# dur <- 0
+					# if(u == r) dur <- 1
+					# dconlambda[runrow, runcol] <- dur * gradphi[i, v] + 4 * mir * loading[i, u] * phi[r, v] + (8 - 8/p)*loading[i,r]*loading[i,u]*lambphi[i,v] + 8*loading[i,r]*lamblamb[u,r]*phi[r,v]/p - 8*loading[i,r]^2*loading[i,u]*phi[r,v]
+					# descript <- rbind(descript, c(runrow, runcol, u, v, i, r))
+					# runcol <- runcol + 1
+				# }
+			# }
+			# runrow <- runrow + 1
+		# }
+	# }
+	
+	# dconphi <- matrix(0, m^2 - m, m*(m-1)/2)
+	# runrow <- 1
+	# descript2 <- NULL
+	# for(u in 1:m) {
+		# for(v in setdiff(1:m, u)) {
+			# runcol <- 1
+			# for(x in 2:m) {
+				# for(y in 1:(x - 1)) {
+					# dux <- 0
+					# if(u == x) dux <- 1
+					# duy <- 0
+					# if(u == y) duy <- 1
+					# dconphi[runrow, runcol] <- -(dux * phi[y, v] + duy * phi[x, v]) * lambgradphi[u, u]
+					# descript2 <- rbind(descript2, c(runrow, runcol, u, v, x, y))
+					# runcol <- runcol + 1
+				# }
+			# }
+			# runrow <- runrow + 1
+		# }
+	# }
+	# I2 <- matrix(0, nrow(I1p) + m^2 - m, ncol(I1p) + m^2 - m)
+	# I2[1:nrow(I1p), 1:ncol(I1p)] <- I1p
+	# I2[lamb.idx, 1:(m^2 - m) + nrow(I1p)] <- t(dconlambda)
+	# I2[1:(m^2 - m) + nrow(I1p), lamb.idx] <- dconlambda
+	# I2[phi.idx2, 1:(m^2 - m) + nrow(I1p)] <- t(dconphi)
+	# I2[1:(m^2 - m) + nrow(I1p), phi.idx2] <- dconphi
+	# COV2 <- MASS::ginv(I2)[1:nrow(I1p), 1:ncol(I1p)]
+	
+	COV2 <- COV1
+	LIST <- LIST[,c("lhs", "op", "rhs", "group")]
 	LIST$se <- rep(NA, length(LIST$lhs))
-	LIST$se[free.idx] <- sqrt(diag(COV))
+	LIST$se[c(free.idx, phi.idx)] <- sqrt(diag(COV2))
 	tmp.se <- ifelse( LIST$se == 0.0, NA, LIST$se)
     lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
 	partable <- object@ParTable
+	print(LIST)
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	matrix(LIST$se[idx], ncol=length(lv.names))
 }

@@ -1,7 +1,7 @@
 \name{poolMAlloc}
 \alias{poolMAlloc}
 \title{
-	Pooled estimates and standard errors across M parcel-allocations: Combining sampling variability and parcel-allocation variability.
+Pooled estimates and standard errors across M parcel-allocations: Combining sampling variability and parcel-allocation variability.
 }
 \description{
 	This function employs an iterative algorithm to pick the number of random item-to-parcel allocations needed to meet user-defined stability criteria for a fitted structural equation model (SEM) (see "Details" below for more information). Pooled parameter and standard error estimates from this SEM can be outputted at this final selected number of allocations. Additionally, new indices (see Sterba & Rights, 2016) are outputted for assessing the relative contributions of parcel-allocation variability vs. sampling variability in each estimate. At each iteration, this function generates a given number of random item-to-parcel allocations using a modified version of the \code{\link{parcelAllocation}} function (Quick & Schoemann, 2012), fits a SEM to each allocation, pools results across allocations from that iteration, and then assesses whether stopping criteria are met. If stopping criteria are not met, the algorithm increments the number of allocations used (generating all new allocations).
