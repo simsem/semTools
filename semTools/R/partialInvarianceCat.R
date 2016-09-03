@@ -716,7 +716,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 }
 
 thetaImpliedTotalVar <- function(object) {
-	param <- lavTech(object, "coef")
+	param <- lavaan::lavTech(object, "coef")
 	ngroup <- lavaan::lavInspect(object, "ngroups")
 	name <- names(param)
 	ly <- param[name == "lambda"]
