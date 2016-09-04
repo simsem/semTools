@@ -178,15 +178,15 @@ setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
                 pvalue = pchisq(T.res, df = DF, lower.tail = FALSE))
   class(residual) <- c("lavaan.vector","numeric")
   ## scaled test statistic
-  chisq.naïve <- H0$scaled[["chisq.naïve"]] - H1$scaled[["chisq.naïve"]]
+  chisq.naive <- H0$scaled[["chisq.naive"]] - H1$scaled[["chisq.naive"]]
   cc <- (DF0*H0$scaled[["scaling.factor"]] - DF1*H1$scaled[["scaling.factor"]]) / DF
   if (cc < 0) {
     warning("Scaling factor is negative, so it was set to missing.")
     cc <- NA
   }
-  scaled <- c(chisq.naïve = chisq.naïve, scaling.factor = cc,
-              chisq.scaled = chisq.naïve / cc, DF = DF,
-              pvalue = pchisq(chisq.naïve / cc, df = DF, lower.tail = FALSE))
+  scaled <- c(chisq.naive = chisq.naive, scaling.factor = cc,
+              chisq.scaled = chisq.naive / cc, DF = DF,
+              pvalue = pchisq(chisq.naive / cc, df = DF, lower.tail = FALSE))
   class(scaled) <- c("lavaan.vector","numeric")
   ## return both statistics
   if (lavaan::lavInspect(object@saturated, "options")$se == "standard") {
@@ -352,7 +352,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   chisq <- lavaan::lavInspect(slot(object, SLOT), "fit")[["chisq"]]
   T.scaled <- cc * chisq
   pval.scaled <- pchisq(T.scaled, df = DF, lower.tail = FALSE)
-  scaled <- c(chisq.naïve = chisq, scaling.factor = 1 / cc,
+  scaled <- c(chisq.naive = chisq, scaling.factor = 1 / cc,
               chisq.scaled = T.scaled, df = DF, pvalue = pval.scaled)
   class(scaled) <- c("lavaan.vector","numeric")
 

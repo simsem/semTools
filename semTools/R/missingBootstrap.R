@@ -557,7 +557,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   ## fit model to bootstrap samples, save distribution of chi-squared test stat
   if (hasArg(x)) {
     ## grab defaults from lavaan object "x"
-    lavaanArgs$slotParTable <- parTable(x)
+    lavaanArgs$slotParTable <- lavaan::parTable(x)
     lavaanArgs$slotModel <- x@Model
     lavaanArgs$slotOptions <- lavaan::lavInspect(x, "options")
   } else {

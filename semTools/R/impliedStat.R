@@ -4,7 +4,7 @@
 ##----------------------------------------------------------------------------##
 
 impliedFactorCov <- function(object) {
-	param <- lavaan::lavInspect(object, "coef")
+	param <- lavaan::lavTech(object, "coef")
 	ngroup <- lavaan::lavInspect(object, "ngroups")
 	name <- names(param)
 	be <- param[name == "beta"]
@@ -30,7 +30,7 @@ impliedFactorCov <- function(object) {
 
 impliedFactorMean <- function(object) {
 	if(!lavaan::lavInspect(object, "options")$meanstructure) stop("This model does not estimate the mean structure.")
-	param <- lavaan::lavInspect(object, "coef")
+	param <- lavaan::lavTech(object, "coef")
 	ngroup <- lavaan::lavInspect(object, "ngroups")
 	name <- names(param)
 	be <- param[name == "beta"]

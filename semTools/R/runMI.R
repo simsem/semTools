@@ -93,15 +93,14 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 	comb.results <- miPoolVector(t(coefs),t(se), m)
 	
 	
-	template@Fit@est <- lavaan::parTable(template)$est <- comb.results$coef
-	template@Fit@se <- lavaan::parTable(template)$se <- comb.results$se
+	template@Fit@est <- template@ParTable$est <- comb.results$coef
+	template@Fit@se <- template@ParTable$se <- comb.results$se
 	template@Fit@x <- comb.results$coef[comb.results$se != 0]
 	template@Model <- imposeGLIST(template@Model, comb.results$coef, lavaan::parTable(template))
 
 	selectVCOV <- lavaan::partable(imputed.results.l[[1]])$free != 0
 	# VCOV
 	VCOVs <- sapply(imputed.results.l, function(x) vecsmat(vcov(x)))
-	
 	template@vcov$vcov <- vcovPool(t(coefs[selectVCOV, ]),t(VCOVs), m)
 	
 	fmi.results <- cbind(lavaan::parameterEstimates(template, remove.system.eq = FALSE, remove.eq = FALSE, remove.ineq = FALSE)[,1:3], group=lavaan::parTable(template)$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])
@@ -111,7 +110,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
   #if (df == 0) chi <- "none" # for saturated models, no model fit available
 	chi1 <- sapply(imputed.results.l, function(x) lavaan::lavInspect(x, "test")[[1]]$stat)
 
-	if(length(lavaan:lavNames(template, "ov.ord")) | (length(fit) > 1)) {
+	if(length(lavaan::lavNames(template, "ov.ord")) | (length(fit) > 1)) {
 		if(chi=="all") chi <- "lmrr"
 		if(chi %in% c("mplus", "mr")) {
 			stop("The 'mplus' or 'mr' method for pooling chi-square values is not available with categorical variables.")

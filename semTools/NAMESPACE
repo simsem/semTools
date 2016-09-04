@@ -38,7 +38,6 @@ export(
 	singleParamTest,
 	partialInvariance, partialInvarianceCat,
 	quark, combinequark,
-	spatialCorrect,
 	permuteMeasEq,
 	ci.reliability,
 	htmt

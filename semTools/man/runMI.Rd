@@ -79,6 +79,7 @@ Mauricio Garnier Villarreal (University of Kansas; \email{mgv@ku.edu})
 Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 }
 \examples{
+\dontrun{
 library(lavaan)
 
 HS.model <- ' visual  =~ x1 + x2 + x3
@@ -95,7 +96,6 @@ summary(out)
 inspect(out, "fit")
 inspect(out, "impute")
 
-\dontrun{
 ##Multiple group example
 HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
 out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")

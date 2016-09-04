@@ -54,7 +54,7 @@ x.within.y <- function(x, y, crit = crit) {
 
   ## fit model and inspect chi-squared
   suppressWarnings(try(myFit <- lavaan::lavaan(sample.cov = Sigma, sample.mean = Mu,
-                                       sample.nobs = N, slotParTable = parTable(y),
+                                       sample.nobs = N, slotParTable = lavaan::parTable(y),
                                        slotOptions = lavaan::lavInspect(y, "options"))))
   if(!lavaan::lavInspect(myFit, "converged")) return(NA) else {
     result <- lavaan::lavInspect(myFit, "fit")["chisq"] < crit

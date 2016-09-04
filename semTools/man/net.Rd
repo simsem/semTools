@@ -31,6 +31,7 @@ net(..., crit = .0001)
 Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence. \emph{Psychological Methods, 15}, 111-123. doi:10.1037/a0019625
 }
 \examples{
+\dontrun{
 m1 <- ' visual  =~ x1 + x2 + x3
 	textual =~ x4 + x5 + x6
 	speed   =~ x7 + x8 + x9 '
@@ -51,5 +52,6 @@ fit3 <- cfa(m3, data = HolzingerSwineford1939) # Nested in fit1 and fit1a
 tests <- net(fit1, fit1a, fit2, fit3)
 tests
 summary(tests)
+}
 }
 

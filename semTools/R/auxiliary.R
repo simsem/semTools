@@ -35,6 +35,18 @@ function(object, fit.measures=FALSE, ...) {
 		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: lavInspect(object, what='fit').\n")
 	}
 })
+
+setMethod("vcov", "lavaanStar",
+function(object, ...) {
+	result <- object@imputed
+	if(length(result) == 0) {
+		return(getMethod("vcov", "lavaan")(object, ...))
+	} else {
+		out <- object@vcov$vcov
+		rownames(out) <- colnames(out) <- lavaan::lav_partable_labels(lavaan::partable(object), type="free")
+		return(out)
+	}
+})
 	
 # auxiliary: Automatically accounts for auxiliary variable in full information maximum likelihood
 
@@ -61,10 +73,10 @@ auxiliary <- function(model, aux, fun, ...) {
 	
 	if(is(model, "lavaan")) {
 		if(!lavaan::lavInspect(model, "options")$meanstructure) stop("The lavaan fitted model must evaluate the meanstructure. Please re-fit the lavaan object again with 'meanstructure=TRUE'")
-		model <- parTable(model)
+		model <- lavaan::parTable(model)
 	} else if(!(is.list(model) && ("lhs" %in% names(model)))) {
 		fit <- do.call(fun, c(list(model=model, do.fit=FALSE), args))
-		model <- parTable(fit)
+		model <- lavaan::parTable(fit)
 	}
 	model <- model[setdiff(1:length(model), which(names(model) == "start"))]
 

@@ -53,6 +53,7 @@ findTotalVar <- function(lavaanObj) {
 	result <- list()
 	nGroups <- lavaan::lavInspect(lavaanObj, "ngroups")
 	cov.all <- lavaan::lavInspect(lavaanObj, "cov.all")
+	if(nGroups == 1) cov.all <- list(cov.all)
 	for(i in 1:nGroups) {
 		temp <- diag(cov.all[[i]])
 		names(temp) <- rownames(cov.all[[i]])

@@ -49,6 +49,7 @@ Savalei, V., \& Falk, C. F. (2014). Robust two-stage approach outperforms robust
     Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
+\dontrun{
 
 ## set some example data missing at random
 dat1 <- HolzingerSwineford1939
@@ -90,5 +91,5 @@ outc <- cfa.2stage(model = modc, data = dat1, aux = c("ageyr","agemo"),
 ## use the anova() method to test this constraint
 anova(out, outc)
 ## like for a single model, two corrected statistics are provided
-
+}
 }

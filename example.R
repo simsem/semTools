@@ -7,6 +7,9 @@
 # 	6. Fix spatial correction
 
 
+# install.packages("lavaan", repos="http://www.da.ugent.be", type="source")
+
+
 # moreFitIndices, longInvariance
 
 sourceDir <- function(path, trace = TRUE, ...) {
@@ -918,8 +921,6 @@ unrotated2 <- efaUnrotate(HolzingerSwineford1939, nf=2, varList=paste0("x", 1:9)
 unrotated3 <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9))
 anova(unrotated2, unrotated3)
 
-colnames(dat) <- varnames
-
 out2 <- fa(HolzingerSwineford1939[,paste0("x", 1:9)], nfactors = 2, fm = "ml", rotate = "none")
 out3 <- fa(HolzingerSwineford1939[,paste0("x", 1:9)], nfactors = 3, fm = "ml", rotate = "varimax")
 loadings(out2)
@@ -928,6 +929,7 @@ loadings(out2)
 
 
 orthRotate(unrotated3, method="varimax")
+oblqRotate(unrotated3)
 
 dat <- HolzingerSwineford1939[,paste0("x", 1:9)]
 miss <- matrix(rbinom(prod(dim(dat)), 1, 0.2), nrow(dat))
@@ -1096,48 +1098,54 @@ partialInvariance(models5, "scalar")
 ################################ Partial Invariance Cat Tests
 
 f <- rnorm(1000, 0, 1)
-u1 <- 0.9*f + rnorm(1000, 1, sqrt(0.19))
-u2 <- 0.8*f + rnorm(1000, 1, sqrt(0.36))
-u3 <- 0.6*f + rnorm(1000, 1, sqrt(0.64))
-u4 <- 0.7*f + rnorm(1000, 1, sqrt(0.51))
+u1 <- 0.9*f + rnorm(1000, 0, sqrt(0.19))
+u2 <- 0.8*f + rnorm(1000, 0, sqrt(0.36))
+u3 <- 0.6*f + rnorm(1000, 0, sqrt(0.64))
+u4 <- 0.7*f + rnorm(1000, 0, sqrt(0.51))
+u5 <- 0.7*f + rnorm(1000, 0, sqrt(0.51))
 u1 <- as.numeric(cut(u1, breaks = c(-Inf, 0, Inf)))
 u2 <- as.numeric(cut(u2, breaks = c(-Inf, 0.5, Inf)))
 u3 <- as.numeric(cut(u3, breaks = c(-Inf, 0, Inf)))
 u4 <- as.numeric(cut(u4, breaks = c(-Inf, -0.5, Inf)))
+u5 <- as.numeric(cut(u5, breaks = c(-Inf, 0, Inf)))
 g <- rep(c(1, 2), 500)
-dat2 <- data.frame(u1, u2, u3, u4, g)
+dat2 <- data.frame(u1, u2, u3, u4, u5, g)
 
 configural2 <- "
-f1 =~ NA*u1 + u2 + u3 + u4
+f1 =~ NA*u1 + u2 + u3 + u4 + u5
 u1 | c(t11, t11)*t1 
 u2 | c(t21, t21)*t1 
 u3 | c(t31, t31)*t1 
 u4 | c(t41, t41)*t1 
+u5 | c(t51, t51)*t1 
 f1 ~~ c(1, 1)*f1
 f1 ~ c(0, NA)*1
 u1 ~~ c(1, 1)*u1
 u2 ~~ c(1, NA)*u2
 u3 ~~ c(1, NA)*u3
 u4 ~~ c(1, NA)*u4
+u5 ~~ c(1, NA)*u5
 "
 
-outConfigural2 <- cfa(configural2, data = dat2, group = "g", parameterization="theta", estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4"))
+outConfigural2 <- cfa(configural2, data = dat2, group = "g", parameterization="theta", estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4", "u5"))
 
 weak2 <- "
-f1 =~ NA*u1 + c(f11, f11)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4
+f1 =~ NA*u1 + c(f11, f11)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4 + c(f51, f51)*u5
 u1 | c(t11, t11)*t1 
 u2 | c(t21, t21)*t1 
 u3 | c(t31, t31)*t1 
 u4 | c(t41, t41)*t1 
+u5 | c(t51, t51)*t1 
 f1 ~~ c(1, NA)*f1
 f1 ~ c(0, NA)*1
 u1 ~~ c(1, 1)*u1
 u2 ~~ c(1, NA)*u2
 u3 ~~ c(1, NA)*u3
 u4 ~~ c(1, NA)*u4
+u5 ~~ c(1, NA)*u5
 "
 
-outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization="theta", estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4"))
+outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization="theta", estimator="wlsmv", ordered = c("u1", "u2", "u3", "u4", "u5"))
 modelsCat <- list(fit.configural = outConfigural2, fit.loadings = outWeak2)
 
 partialInvarianceCat(modelsCat, type = "metric") 
@@ -1154,6 +1162,8 @@ modelsCat3 <- measurementInvarianceCat(model, data = datCat, group = "g", parame
 
 partialInvarianceCat(modelsCat2, type = "metric")
 partialInvarianceCat(modelsCat3, type = "metric")
+partialInvarianceCat(modelsCat2, type = "metric", free = "u2")
+partialInvarianceCat(modelsCat2, type = "metric", fix = "u3")
 
 partialInvarianceCat(modelsCat2, type = "scalar")
 partialInvarianceCat(modelsCat3, type = "scalar")
@@ -1200,56 +1210,6 @@ letter =~ letter.7 + letter.33 + letter.34 + letter.58
 '
 fit5 <- cfa(iq.model2, data=dat)
 maximalRelia(fit5)
-
-####################### Spatial Correction
-
-# A simple model where NDVI is determined
-# by nTot, temperature, and Wetness
-# and nTot is related to temperature
-borModel <- '
-  NDVI ~ nTot + T61 + Wet 
-  nTot ~ T61
-'
-
-borFit <- sem(borModel, data=semTools::boreal, meanstructure=T)
-
-residuals(borFit, "casewise")
-## @knitr residuals
-# residuals are key for the analysis
-borRes <- as.data.frame(residuals(borFit, "casewise"))
-
-
-summary(borFit, standardized=T)
-
-spatialCorrect(borFit, boreal$x, boreal$y)
-
-# create a correlation structure (exponential)
-str <- -0.1 # strength of autocorrelation, inv. proportional to str
-omega1 <- exp(str*distMat/100)
-# calculate correlation weights, and invert weights matrix
-weights <- chol(solve(omega1))
-weights_inv <- solve(weights)
-# create an autocorrelated random field
-set.seed(123321)
-library(MASS)
-error <- weights_inv %*% mvrnorm(dim(distMat)[1], rep(0, 3), diag(0.51, 3))
-
-f1 <- rnorm(533, 0, 1)
-f <- weights_inv %*% f1
-x1 <- 0.7*f + error[,1]
-x2 <- 0.7*f + error[,2]
-x3 <- 0.7*f + error[,3]
-x1[as.logical(rbinom(533, 1, 0.1)),] <- NA
-
-boreal2 <- data.frame(boreal, x1, x2, x3)
-
-facModel <- '
-  f =~ x1 + x2 + x3
-'
-
-#note meanstructure=T to obtain intercepts
-facFit <- cfa(facModel, data=boreal2, meanstructure=T, std.lv = TRUE, missing = "ML")
-spatialCorrect(facFit, boreal2$x, boreal2$y)
 
 
 #### ci.reliability

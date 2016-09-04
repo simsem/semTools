@@ -41,6 +41,7 @@ setMethod("show", signature(object = "EFA"), function(object) {
 	print(object@phi)
 	cat("\nMethod of rotation:\t")
 	cat(object@method, "\n")
+	print("The standard errors are close but do not match with other packages. Be mindful when using it.")
 }) 
 
 setMethod("summary", signature(object = "EFA"), function(object, suppress = 0.1, sort = TRUE) {
@@ -145,7 +146,7 @@ orthRotate <- function(object, method="varimax", ...) {
 	initL <- getLoad(object)
 	rotated <- GPArotation::GPForth(initL, method=method, ...)
 	rotateMat <- t(solve(rotated$Th))
-	LIST <- seStdLoadings(rotated, object)
+	LIST <- seStdLoadings(rotated, object, fun = GPArotation::GPForth, MoreArgs = c(method = method, list(...)))
 	orthogonal <- rotated$orthogonal
 	loading <- rotated$loadings
 	rotate <- rotated$Th
@@ -165,7 +166,7 @@ oblqRotate <- function(object, method="quartimin", ...) {
 	initL <- getLoad(object)
 	rotated <- GPArotation::GPFoblq(initL, method=method, ...)
 	rotateMat <- t(solve(rotated$Th))
-	LIST <- seStdLoadings(rotated, object)
+	LIST <- seStdLoadings(rotated, object, fun = GPArotation::GPFoblq, MoreArgs = c(method = method, list(...)))
 	orthogonal <- rotated$orthogonal
 	loading <- rotated$loadings
 	rotate <- rotated$Th
@@ -187,7 +188,7 @@ funRotate <- function(object, fun, ...) {
 	rotated <- do.call(fun, c(list(L = initL), list(...)))
 	rotateMat <- t(solve(rotated$Th))
 	gradRotate <- rotated$Gq
-	LIST <- seStdLoadings(rotated, object, gradRotate)
+	LIST <- seStdLoadings(rotated, object, fun = fun, MoreArgs = list(...))
 	orthogonal <- rotated$orthogonal
 	loading <- rotated$loadings
 	rotate <- rotated$Th
@@ -209,7 +210,7 @@ fillMult <- function(X, Y, fillrowx = 0, fillrowy = 0, fillcolx = 0, fillcoly = 
 	result[1:nrow(X), 1:ncol(Y)]
 }
 
-stdRotatedLoadings <- function(est, object, aux=NULL, rotate=NULL) {
+stdRotatedLoadings <- function(est, object, fun, aux=NULL, rotate=NULL, MoreArgs = NULL) {
 	ov.names <- lavaan::lavNames(object@ParTable, "ov", group = 1)
     lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
 	ind.names <- setdiff(ov.names, aux)
@@ -237,7 +238,10 @@ stdRotatedLoadings <- function(est, object, aux=NULL, rotate=NULL) {
 	if(!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
 	# Compute standardized results
 	loading <- invsd %*% loading 
-	obj <- GPArotation::GPFoblq(loading, method="geomin")
+	
+	obj <- do.call(fun, c(list(loading), MoreArgs))
+	
+	# GPArotation::GPFoblq(loading, method="geomin")
 	loading <- obj$loadings
 	rotMat <- t(solve(obj$Th))
 
@@ -258,13 +262,15 @@ stdRotatedLoadings <- function(est, object, aux=NULL, rotate=NULL) {
 	# rotate2 <- t(solve(rotate))
 	# phi <- t(rotate2) %*% rotate2
 	phi <- obj$Phi
-	for(i in seq_along(templhs)) {
-		est[rv.idx[i]] <- phi[templhs[i], temprhs[i]]
+	if(!is.null(phi)) {
+		for(i in seq_along(templhs)) {
+			est[rv.idx[i]] <- phi[templhs[i], temprhs[i]]
+		}
 	}
 	est
 }
 
-seStdLoadings <- function(rotate, object) {
+seStdLoadings <- function(rotate, object, fun, MoreArgs) {
 	# object <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
 	# initL <- getLoad(object)
 	# rotate <- GPArotation::GPFoblq(initL, method="oblimin")
@@ -281,7 +287,7 @@ seStdLoadings <- function(rotate, object) {
 		aux <- object@auxNames
 	}
 	# Standardized results
-	JAC1 <- lavaan::lav_func_jacobian_simple(func=stdRotatedLoadings, x=object@Fit@est, object=object, aux=aux, rotate = rotMat)
+	JAC1 <- lavaan::lav_func_jacobian_simple(func=stdRotatedLoadings, x=object@Fit@est, object=object, aux=aux, rotate = rotMat, fun = fun, MoreArgs = MoreArgs)
 		
 	LIST <- lavaan::lavInspect(object, "list")
 	free.idx <- which(LIST$free > 0L)
@@ -294,7 +300,6 @@ seStdLoadings <- function(rotate, object) {
 	}
 	COV1 <- JAC1 %*% VCOV %*% t(JAC1)
 	# I1 <- MASS::ginv(COV1)
-	browser()
 	# I1p <- matrix(0, nrow(I1) + length(phi.idx), ncol(I1) + length(phi.idx))
 	# I1p[1:nrow(I1), 1:ncol(I1)] <- I1
 	# phi.idx2 <- nrow(I1) + 1:length(phi.idx)
@@ -359,8 +364,7 @@ seStdLoadings <- function(rotate, object) {
 	LIST$se[c(free.idx, phi.idx)] <- sqrt(diag(COV2))
 	tmp.se <- ifelse( LIST$se == 0.0, NA, LIST$se)
     lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
-	partable <- parTable(object)
-	print(LIST)
+	partable <- lavaan::parTable(object)
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	matrix(LIST$se[idx], ncol=length(lv.names))
 }

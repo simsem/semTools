@@ -330,13 +330,13 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
     }
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::lavaan(data = d, slotParTable = parTable(null),
+      out.null <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(null),
                                  group = G, slotOptions = lavaan::lavInspect(null, "options"),
                                  group.label = lavaan::lavInspect(con, "group.label"))
     }
 
     ## fit constrained model, check for convergence
-    try(out0 <- lavaan::lavaan(data = d, slotParTable = parTable(con),
+    try(out0 <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(con),
                                group = G, slotOptions = lavaan::lavInspect(con, "options"),
                                group.label = lavaan::lavInspect(con, "group.label")))
     if (!exists("out0")) {
@@ -350,7 +350,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
 
     ## fit unconstrained model (unless NULL), check for convergence
     if (!is.null(uncon)) {
-      try(out1 <- lavaan::lavaan(data = d, slotParTable = parTable(uncon),
+      try(out1 <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(uncon),
                                  group = G, slotOptions = lavaan::lavInspect(uncon, "options"),
                                  group.label = lavaan::lavInspect(con, "group.label")))
       if (!exists("out1")) {
@@ -445,13 +445,13 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
 
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::lavaan(data = d, slotParTable = parTable(null),
+      out.null <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(null),
                                  group = G, slotOptions = lavaan::lavInspect(null, "options"),
                                  group.label = lavaan::lavInspect(con, "group.label"))
     }
 
     ## fit constrained model
-    try(out0 <- lavaan::lavaan(data = d, slotParTable = parTable(con),
+    try(out0 <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(con),
                                group = G, slotOptions = lavaan::lavInspect(con, "options"),
                                group.label = lavaan::lavInspect(con, "group.label")))
     ## check for convergence
