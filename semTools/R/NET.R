@@ -7,57 +7,46 @@ setClass("Net", representation(test = "matrix", df = "vector"))
 
 ## function to test whether model "x" is nested within model "y"
 x.within.y <- function(x, y, crit = crit) {
-  if (lavaan::lavInspect(x, "options")$estimator %in% c("WLS", "DWLS") | lavaan::lavInspect(y, "options")$estimator %in% c("WLS", "DWLS")) stop(
-    "The net() function is not available for categorical-data estimators.")
-  prepCov <- function(x, varNames) {
-    for (g in seq_along(x)) {
-      colnames(x[[g]]) <- varNames[[g]]
-      rownames(x[[g]]) <- varNames[[g]]
-    }
-    x
-  }
-  prepMu <- function(x, varNames) {
-    for (g in seq_along(x)) {
-      x[[g]] <- as.numeric(x[[g]])
-      names(x[[g]]) <- varNames[[g]]
-    }
-    x
-  }
-  ##############################################################################
-  if (lavaan::lavInspect(x, "options")$fixed.x | lavaan::lavInspect(y, "options")$fixed.x) {
+  if (length(c(lavaan::lavNames(x, "ov.ord"), lavaan::lavNames(y, "ov.ord"))))
+    stop("The net() function is not available for categorical-data estimators.")
+
+  exoX <- lavaan::lavInspect(x, "options")$fixed.x & length(lavaan::lavNames(x, "ov.x"))
+  exoY <- lavaan::lavInspect(y, "options")$fixed.x & length(lavaan::lavNames(y, "ov.x"))
+  if (exoX | exoY) {
     stop(c("The net() function does not work with exogenous variables.\n",
            "Fit the model again with 'fixed.x = FALSE'"))
   }
   ## variable names
   Xnames <- lavaan::lavNames(x)
   Ynames <- lavaan::lavNames(y)
-  if (identical(sort(Xnames), sort(Ynames))) {
-    varNames <- Xnames
-  } else {
+  if (!identical(sort(Xnames), sort(Ynames)))
     stop("Models do not contain the same variables")
-  }
 
   ## check that the analyzed data matches
-  xData <- do.call(rbind, lavaan::lavInspect(x, "data"))[ , rank(Xnames)]
-  yData <- do.call(rbind, lavaan::lavInspect(y, "data"))[ , rank(Xnames)]
+  xData <- lavaan::lavInspect(x, "data")
+  if (is.list(xData)) xData <- do.call(rbind, xData)
+  xData <- xData[ , rank(Xnames)]
+  yData <- lavaan::lavInspect(y, "data")
+  if (is.list(yData)) yData <- do.call(rbind, yData)
+  yData <- yData[ , rank(Ynames)]
   if (!identical(xData, yData)) stop("Models must apply to the same data")
   ##############################################################################
 
   ## check degrees of freedom support nesting structure
-  if (lavaan::lavInspect(x, "fit")["df"] < lavaan::lavInspect(y, "fit")["df"]) stop("
-      x cannot be nested within y because y is more restricted than x")
+  if (lavaan::lavInspect(x, "fit")["df"] < lavaan::lavInspect(y, "fit")["df"])
+    stop("x cannot be nested within y because y is more restricted than x")
 
   ## model-implied moments
-  Sigma <- prepCov(lavaan::lavInspect(x, "cov.ov"), varNames)
-  Mu <- prepMu(lavaan::lavInspect(x, "mean.ov"), varNames)
+  Sigma <- lavaan::lavInspect(x, "cov.ov")
+  Mu <- lavaan::lavInspect(x, "mean.ov")
   N <- lavaan::lavInspect(x, "nobs")
 
   ## fit model and inspect chi-squared
-  suppressWarnings(try(myFit <- lavaan::lavaan(sample.cov = Sigma, sample.mean = Mu,
-                                       sample.nobs = N, slotParTable = lavaan::parTable(y),
-                                       slotOptions = lavaan::lavInspect(y, "options"))))
-  if(!lavaan::lavInspect(myFit, "converged")) return(NA) else {
-    result <- lavaan::lavInspect(myFit, "fit")["chisq"] < crit
+
+  suppressWarnings(try(newFit <- update(y, data = NULL, sample.cov = Sigma,
+                                        sample.mean = Mu, sample.nobs = N)))
+  if(!lavaan::lavInspect(newFit, "converged")) return(NA) else {
+    result <- lavaan::lavInspect(newFit, "fit")["chisq"] < crit
     names(result) <- NULL
     if (lavaan::lavInspect(x, "fit")["df"] ==
         lavaan::lavInspect(y, "fit")["df"]) return(c(Equivalent = result))
