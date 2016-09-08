@@ -61,6 +61,8 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   varnames <- c(targetNames, aux)
   covstruc <- outer(varnames, varnames, function(x, y) paste(x, "~~", y))
   satArgs <- funArgs
+  satArgs$constraints <- NULL
+  satArgs$group.equal <- ""
   satArgs$model <- c(covstruc[lower.tri(covstruc, diag = TRUE)],
                      paste(varnames, "~ 1"))
   satFit <- do.call(lavaan::lavaan, satArgs)
