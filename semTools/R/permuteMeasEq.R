@@ -330,15 +330,11 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
     }
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(null),
-                                 group = G, slotOptions = lavaan::lavInspect(null, "options"),
-                                 group.label = lavaan::lavInspect(con, "group.label"))
+      out.null <- update(null, data = d, group.label = lavaan::lavInspect(con, "group.label"))
     }
 
     ## fit constrained model, check for convergence
-    try(out0 <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(con),
-                               group = G, slotOptions = lavaan::lavInspect(con, "options"),
-                               group.label = lavaan::lavInspect(con, "group.label")))
+    try(out0 <- update(con, data = d, group.label = lavaan::lavInspect(con, "group.label")))
     if (!exists("out0")) {
       nTries <- nTries + 1L
       next
@@ -350,9 +346,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
 
     ## fit unconstrained model (unless NULL), check for convergence
     if (!is.null(uncon)) {
-      try(out1 <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(uncon),
-                                 group = G, slotOptions = lavaan::lavInspect(uncon, "options"),
-                                 group.label = lavaan::lavInspect(con, "group.label")))
+      try(out1 <- update(uncon, data = d, group.label = lavaan::lavInspect(con, "group.label")))
       if (!exists("out1")) {
         nTries <- nTries + 1L
         next
@@ -445,15 +439,11 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
 
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(null),
-                                 group = G, slotOptions = lavaan::lavInspect(null, "options"),
-                                 group.label = lavaan::lavInspect(con, "group.label"))
+      out.null <- update(null, data = d, group.label = lavaan::lavInspect(con, "group.label"))
     }
 
     ## fit constrained model
-    try(out0 <- lavaan::lavaan(data = d, slotParTable = lavaan::parTable(con),
-                               group = G, slotOptions = lavaan::lavInspect(con, "options"),
-                               group.label = lavaan::lavInspect(con, "group.label")))
+    try(out0 <- update(con, data = d, group.label = lavaan::lavInspect(con, "group.label")))
     ## check for convergence
     if (!exists("out0")) {
       nTries <- nTries + 1L
@@ -561,8 +551,10 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
       y <- data.frame(as.data.frame(x), g, stringsAsFactors = FALSE)
       names(y) <- c(n, argList$G)
       y
-    }, x = lavaan::lavInspect(con, "data"), g = lavaan::lavInspect(con, "group.label"),
-    n = lavaan::lavNames(con, type = "ov"), SIMPLIFY = FALSE)
+    }, SIMPLIFY = FALSE,
+    x = lavaan::lavInspect(con, "data"), g = lavaan::lavInspect(con, "group.label"),
+    n = lavaan::lavNames(con, type = "ov",
+                         group = seq_along(lavaan::lavInspect(con, "group.label"))))
     argList$d <- do.call(rbind, dataList)
   } else {
     argList$d <- as.data.frame(lavaan::lavInspect(con, "data"))
@@ -655,7 +647,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
   } else extra.dist <- data.frame(NULL)
 
   ## save parameter table for show/summary methods
-  PT <- lavaan::parTable(con)
+  PT <- as.data.frame(lavaan::parTable(con))
   PT$par <- paste0(PT$lhs, PT$op, PT$rhs)
   if (length(lavaan::lavInspect(con, "group")))
     PT$group.label[PT$group > 0] <- lavaan::lavInspect(con, "group.label")[PT$group[PT$group > 0] ]
