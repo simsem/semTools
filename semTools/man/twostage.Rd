@@ -49,7 +49,6 @@ Savalei, V., \& Falk, C. F. (2014). Robust two-stage approach outperforms robust
     Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
-\dontrun{
 
 ## set some example data missing at random
 dat1 <- HolzingerSwineford1939
@@ -63,17 +62,16 @@ visual  =~ x1 + x2 + x3
 textual =~ x4 + x5 + x6
 speed   =~ x7 + x8 + x9
 '
-## use ageyr and agemo as auxiliary variables, and
-## request robust standard errors
-out <- cfa.2stage(model = model, data = dat1, aux = c("ageyr","agemo"),
-                  se = "robust.huber.white")
+## use ageyr and agemo as auxiliary variables
+out <- cfa.2stage(model = model, data = dat1, aux = c("ageyr","agemo"))
 
 ## two versions of a corrected chi-squared test results are shown
 out
 ## see Savalei & Bentler (2009) and Savalei & Falk (2014) for details
 
 ## the summary additionally provides the parameter estimates with corrected
-## standard errors, test statistics, and confidence intervals
+## standard errors, test statistics, and confidence intervals, along with
+## any other options that can be passed to parameterEstimates()
 summary(out, standardized = TRUE)
 
 
@@ -84,12 +82,11 @@ visual  =~ x1 + x2 + x3
 textual =~ x4 + x5 + x6
 speed   =~ x7 + a*x8 + a*x9
 '
-outc <- cfa.2stage(model = modc, data = dat1, aux = c("ageyr","agemo"),
-                   se = "robust.huber.white")
+outc <- cfa.2stage(model = modc, data = dat1, aux = c("ageyr","agemo"))
 
 
 ## use the anova() method to test this constraint
 anova(out, outc)
 ## like for a single model, two corrected statistics are provided
-}
+
 }

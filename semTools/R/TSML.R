@@ -151,6 +151,11 @@ setMethod("vcov", "twostage", function(object, baseline = FALSE) {
   bread <- MASS::ginv(t(MATS$delta) %*% meat) # FIXME: why not solve()?
   out <- bread %*% t(meat) %*% MATS$satACOV %*% meat %*% bread
   class(out) <- c("lavaan.matrix.symmetric","matrix")
+  if (baseline) {
+    names(out) <- names(coef(object))
+  } else {
+    names(out) <- names(lavaan::coef(object@baseline))
+  }
   out
 })
 
