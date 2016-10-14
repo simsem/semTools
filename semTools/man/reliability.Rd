@@ -35,7 +35,7 @@ The third coefficient omega (McDonald, 1999), which is sometimes referred to hie
 
 \deqn{ \omega_3 =\frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2} Var\left( \psi \right)}{\bold{1}^\prime \Sigma \bold{1}}, }
 
-where \eqn{\Sigma} is the observed covariance matrix. If the model fits the data well, the third coefficient omega will be similar to the \eqn{\omega_2}. Note that if there is a directional effect in the model, all coefficients omega will use the total factor variances, which is calculated by the \code{\link{impliedFactorCov}} function.
+where \eqn{\Sigma} is the observed covariance matrix. If the model fits the data well, the third coefficient omega will be similar to the \eqn{\omega_2}. Note that if there is a directional effect in the model, all coefficients omega will use the total factor variances, which is calculated by \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
 
 In conclusion, \eqn{\omega_1}, \eqn{\omega_2}, and \eqn{\omega_3} are different in the denominator. The denominator of the first formula assumes that a model is congeneric factor model where measurement errors are not correlated. The second formula is accounted for correlated measurement errors. However, these two formulas assume that the model-implied covariance matrix explains item relationships perfectly. The residuals are subject to sampling error. The third formula use observed covariance matrix instead of model-implied covariance matrix to calculate the observed total variance. This formula is the most conservative method in calculating coefficient omega.
 
