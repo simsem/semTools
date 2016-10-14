@@ -1,7 +1,8 @@
 Package: semTools
 Title: Useful Tools for Structural Equation Modeling
-Version: 0.4-13
-Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("aut", "cre"), email = "psunthud@gmail.com"), 
+Version: 0.4-14
+Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut", "cre"), email="TJorgensen314@gmail.com"),
+		person(given = "Sunthud", family = "Pornprasertmanit", role = "aut", email = "psunthud@gmail.com"), 
 		person(given = "Patrick", family = "Miller", role = "aut", email="pmille13@nd.edu"), 
 		person(given = "Alexander", family = "Schoemann", role = "aut", email="schoemanna@ecu.edu"),
 		person(given = "Yves", family = "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be"),
@@ -18,7 +19,6 @@ Authors@R: c(person(given = "Sunthud", family = "Pornprasertmanit", role = c("au
 		person(given = "Bell", family = "Clinton", role = "ctb", email="clintonbell@ku.edu"), 
 		person(given = "Pavel", family = "Panko", role = "ctb", email="pavel.panko@ttu.edu"),
 		person(given = "Edgar", family = "Merkle", role = "ctb", email="merklee@missouri.edu"),
-		person(given = "Terry", family = "Jorgensen", role = "ctb", email="TJorgensen314@gmail.com"),
 		person(given = "Steven", family = "Chesnut", role = "ctb", email="Steven.Chesnut@usm.edu"),
 		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu"), 
 		person(given = "Jason", family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"), 		
@@ -31,7 +31,8 @@ License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
-Author: Sunthud Pornprasertmanit [aut, cre],
+Author: Terrence D. Jorgensen [aut, cre],
+  Sunthud Pornprasertmanit [aut],
   Patrick Miller [aut],
   Alexander Schoemann [aut],
   Yves Rosseel [aut],
@@ -48,10 +49,9 @@ Author: Sunthud Pornprasertmanit [aut, cre],
   Bell Clinton [ctb],
   Pavel Panko [ctb],
   Edgar Merkle [ctb],
-  Terry Jorgensen [ctb],
   Steven Chesnut [ctb],
   Jarrett Byrnes [ctb], 
   Jason Rights [ctb],
   Ylenio Longo [ctb]
-Maintainer: Sunthud Pornprasertmanit <psunthud@gmail.com>
-Date/Publication: 2016-09-04
+Maintainer: Terrence D. Jorgensen <TJorgensen314@gmail.com>
+Date/Publication: 2016-10-14

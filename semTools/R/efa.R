@@ -1,3 +1,7 @@
+### Sunthud Pornprasertmanit
+### Last updated: 14 October 2016
+### run EFA model in lavaan
+
 setClass("EFA", representation(loading = "matrix", rotate="matrix", gradRotate="matrix", convergence="logical", phi="matrix", se = "matrix", method = "character", call="call"))
 
 printLoadings <- function(object, suppress = 0.1, sort=TRUE) {
@@ -125,7 +129,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 }
 
 getLoad <- function(object, std = TRUE) {
-	out <- inspect(object, "coef")$lambda
+	out <- inspect(object, "coef")$lambda  ## FIXME: can't just be lavInspect because it might be lavaanStar
 	if(std) {
 		impcov <- lavaan::fitted.values(object)$cov
 		impsd <- sqrt(diag(diag(impcov)))

@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 28 August 2016
+### Last updated: 14 October 2016
 ### semTools function to implement 2-stage ML
 
 setClass("twostage",
@@ -314,7 +314,7 @@ twostageMatrices <- function(object, baseline) {
 
   ## asymptotic information and covariance matrices of target model
   satACOV <- vcov(object@saturated)
-  satInfo <- solve(satACOV * nobs(object@saturated))
+  satInfo <- solve(satACOV * lavaan::nobs(object@saturated))
   ## all(round(acov*N, 8) == round(solve(info), 8))
   ## all(round(acov, 8) == round(solve(info)/N, 8))
   if (length(object@auxNames)) {
@@ -324,7 +324,7 @@ twostageMatrices <- function(object, baseline) {
   	infoAux <- satInfo[dimAux, dimAux]
   	infoAT <- satInfo[dimAux, dimTar]
   	satInfo <- infoTar - t(infoAT) %*% solve(infoAux) %*% infoAT
-  	satACOV <- solve(satInfo) / nobs(object@saturated)
+  	satACOV <- solve(satInfo) / lavaan::nobs(object@saturated)
   }
   list(delta = delta, H = H, satACOV = satACOV, satInfo = satInfo)
 }
@@ -335,7 +335,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   ## calculate model derivatives and complete-data information matrix
   MATS <- twostageMatrices(object, baseline)
   ## residual-based statistic (Savalei & Bentler, 2009, eq. 8)
-  N <- nobs(slot(object, SLOT))
+  N <- lavaan::nobs(slot(object, SLOT))
   nG <- lavaan::lavInspect(slot(object, SLOT), "ngroups")
   res <- residuals(slot(object, SLOT))
   if (nG == 1L) res <- list(res)

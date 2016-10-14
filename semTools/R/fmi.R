@@ -1,4 +1,5 @@
 ########### Mauricio Garnier Villarreal (mgv@ku.edu)
+### Last updated: 14 October 2016
 ######This function estimates the Fraction of Missing Information for the variance and mean of each variable in a list of multiple imputed data sets
 #### dat.imp is a list of the imputed data sets
 #### method is the model used for the estimation
@@ -32,7 +33,7 @@ fmi <- function(dat.imp, method="saturated", varnames=NULL, group=NULL, exclude=
     
   comb.results1 <- cfa.mi(par.tab, dat.imp, chi="none", meanstructure = TRUE, group = group)
   
-  comb.results <- inspect(comb.results1, "impute")[[2]]
+  comb.results <- inspect(comb.results1, "impute")[[2]]  ## FIXME: can't just be lavInspect because it might be lavaanStar
   
   comb.results <- data.frame(comb.results[,c("lhs","op","rhs","group")], 
                              round(lavaan::parameterEstimates(comb.results1)[,"est"], digits), 

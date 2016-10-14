@@ -1,10 +1,11 @@
-## Title: Automatically accounts for auxiliary variable in full information maximum likelihood
-## Author: Sunthud Pornprasertmanit
-# Description: Automatically accounts for auxiliary variable in full information maximum likelihood
+### Title: Automatically accounts for auxiliary variable in full information maximum likelihood
+### Author: Sunthud Pornprasertmanit
+### Last updated: 14 October 2016
+### Description: Automatically accounts for auxiliary variable in full information maximum likelihood
 
 setClass("lavaanStar", contains = "lavaan", representation(nullfit = "vector", imputed="list", imputedResults="list", auxNames="vector"), prototype(nullfit=c(chi=0,df=0), imputed=list(), imputedResults=list(), auxNames = ""))
 
-setMethod("inspect", "lavaanStar",
+setMethod("inspect", "lavaanStar",  ## FIXME: get rid of lavaanStar object
 function(object, what="free") {
 	what <- tolower(what)
 	if(what == "fit" ||
@@ -24,7 +25,7 @@ function(object, what="free") {
               what == "auxiliary") {
 		print(object@auxNames)
 	} else {
-		getMethod("inspect", "lavaan")(object, what=what)
+		getMethod("inspect", "lavaan")(object, what=what)  ## FIXME: don't set a new inspect method
 	}
 })
 
@@ -32,7 +33,7 @@ setMethod("summary", "lavaanStar",
 function(object, fit.measures=FALSE, ...) {
 	getMethod("summary", "lavaan")(object, fit.measures=FALSE, ...)
 	if(fit.measures) {
-		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: lavInspect(object, what='fit').\n")
+		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the function: lavInspect(object, what='fit').\n")
 	}
 })
 
@@ -246,7 +247,7 @@ nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
 
 
 fitMeasuresLavaanStar <- function(object) {
-	notused <- capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit")))
+	notused <- capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit"))) ## FIXME: don't set a new inspect method
 	result[c("baseline.chisq", "baseline.df", "baseline.pvalue")] <- object@nullfit[c("chisq", "df", "pvalue")]
 		
     if(lavaan::lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler", 
@@ -480,7 +481,7 @@ setMethod("summary", "lavaanStar",
 function(object, fit.measures=FALSE, ...) {
 	getMethod("summary", "lavaan")(object, fit.measures=FALSE, ...)
 	if(fit.measures) {
-		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the inspect function: lavInspect(object, what='fit').\n")
+		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the function: lavInspect(object, what='fit').\n")
 	}
 })
 
