@@ -100,7 +100,7 @@ runMI <- function(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
 
 	selectVCOV <- lavaan::partable(imputed.results.l[[1]])$free != 0
 	# VCOV
-	VCOVs <- sapply(imputed.results.l, function(x) vecsmat(vcov(x)))
+	VCOVs <- sapply(imputed.results.l, function(x) vecsmat(lavaan::vcov(x)))
 	template@vcov$vcov <- vcovPool(t(coefs[selectVCOV, ]),t(VCOVs), m)
 	
 	fmi.results <- cbind(lavaan::parameterEstimates(template, remove.system.eq = FALSE, remove.eq = FALSE, remove.ineq = FALSE)[,1:3], group=lavaan::parTable(template)$group, fmi1 = comb.results[[3]], fmi2 = comb.results[[4]])

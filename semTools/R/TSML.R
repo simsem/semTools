@@ -110,29 +110,29 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
 ## methods
 setMethod("coef", "twostage", function(object, type = c("free","user")) {
   type <- type[1]
-  coef(object@target, type = type)
+  lavaan::coef(object@target, type = type)
 })
 
 setMethod("fitted.values", "twostage",
           function(object, model = c("target","saturated","baseline"),
                    type = "moments", labels = TRUE) {
   model <- model[1]
-  fitted.values(slot(object, model), type = type, labels = labels)
+  lavaan::fitted.values(slot(object, model), type = type, labels = labels)
 })
 setMethod("fitted", "twostage",
           function(object, model = c("target","saturated","baseline"),
                    type = "moments", labels = TRUE) {
   model <- model[1]
-  fitted.values(slot(object, model), type = type, labels = labels)
+  lavaan::fitted.values(slot(object, model), type = type, labels = labels)
 })
 
 setMethod("residuals", "twostage", function(object, type = c("raw","cor","normalized","standardized")) {
   type <- type[1]
-  residuals(object@target, type = type)
+  lavaan::residuals(object@target, type = type)
 })
 setMethod("resid", "twostage", function(object, type = c("raw","cor","normalized","standardized")) {
   type <- type[1]
-  residuals(object@target, type = type)
+  lavaan::residuals(object@target, type = type)
 })
 
 setMethod("nobs", "twostage",
@@ -230,11 +230,11 @@ setMethod("summary", "twostage", function(object, ...) {
     PE$ci.upper[PT$free > 0] <- PE$est[PT$free > 0] + crit * PE$se[PT$free > 0]
   }
   if (dots$fmi) {
-    compVar <- diag(vcov(object@target))[PT$free] ## FIXME: need to re-fit model to model-implied moments from Stage 2?
-    # compFit <- update(object@target, sample.nobs = nobs(object@target),
-    #                   sample.cov = lavInspect(object@target, "cov.ov"),
-    #                   sample.mean = lavInspect(object@target, "mean.ov"))
-    # compVar <- diag(vcov(compFit))[PT$free]
+    compVar <- diag(lavaan::vcov(object@target))[PT$free] ## FIXME: need to re-fit model to model-implied moments from Stage 2?
+    # compFit <- lavaan::update(object@target, sample.nobs = lavaan::nobs(object@target),
+    #                           sample.cov = lavInspect(object@target, "cov.ov"),
+    #                           sample.mean = lavInspect(object@target, "mean.ov"))
+    # compVar <- diag(lavaan::vcov(compFit))[PT$free]
     missVar <- SEs^2
     PE$fmi[PT$free > 0] <- 1 - compVar / missVar
   }
@@ -313,7 +313,7 @@ twostageMatrices <- function(object, baseline) {
   H <- do.call(lavaan::lav_matrix_bdiag, H)
 
   ## asymptotic information and covariance matrices of target model
-  satACOV <- vcov(object@saturated)
+  satACOV <- lavaan::vcov(object@saturated)
   satInfo <- solve(satACOV * lavaan::nobs(object@saturated))
   ## all(round(acov*N, 8) == round(solve(info), 8))
   ## all(round(acov, 8) == round(solve(info)/N, 8))
@@ -337,7 +337,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   ## residual-based statistic (Savalei & Bentler, 2009, eq. 8)
   N <- lavaan::nobs(slot(object, SLOT))
   nG <- lavaan::lavInspect(slot(object, SLOT), "ngroups")
-  res <- residuals(slot(object, SLOT))
+  res <- lavaan::residuals(slot(object, SLOT))
   if (nG == 1L) res <- list(res)
   etilde <- do.call(c, lapply(res, function(x) c(lavaan::lav_matrix_vech(x$cov), x$mean)))
   ID <- MATS$satInfo %*% MATS$delta

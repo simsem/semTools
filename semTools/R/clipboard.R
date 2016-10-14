@@ -81,7 +81,7 @@ saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...)
 # object = lavaan object input
 copySummary <- function(object, file) {
 	# Capture the output of the lavaan class
-	outputText <- utils::capture.output(summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE))
+	outputText <- utils::capture.output(lavaan::summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE))
 
 	# Split the text by two spaces
 	outputText <- strsplit(outputText, "  ")

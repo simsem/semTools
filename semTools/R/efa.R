@@ -129,7 +129,7 @@ efaUnrotate <- function(data, nf, varList=NULL, start=TRUE, aux=NULL, ...) {
 }
 
 getLoad <- function(object, std = TRUE) {
-	out <- inspect(object, "coef")$lambda  ## FIXME: can't just be lavInspect because it might be lavaanStar
+	out <- lavaan::inspect(object, "coef")$lambda
 	if(std) {
 		impcov <- lavaan::fitted.values(object)$cov
 		impsd <- sqrt(diag(diag(impcov)))

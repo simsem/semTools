@@ -33,7 +33,7 @@ fmi <- function(dat.imp, method="saturated", varnames=NULL, group=NULL, exclude=
     
   comb.results1 <- cfa.mi(par.tab, dat.imp, chi="none", meanstructure = TRUE, group = group)
   
-  comb.results <- inspect(comb.results1, "impute")[[2]]  ## FIXME: can't just be lavInspect because it might be lavaanStar
+  comb.results <- inspect(comb.results1, "impute")[[2]]  ## FIXME: can't just be lavInspect because it is a lavaanStar
   
   comb.results <- data.frame(comb.results[,c("lhs","op","rhs","group")], 
                              round(lavaan::parameterEstimates(comb.results1)[,"est"], digits), 

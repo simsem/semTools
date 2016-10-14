@@ -43,8 +43,10 @@ x.within.y <- function(x, y, crit = crit) {
 
   ## fit model and check that chi-squared < crit
 
-  suppressWarnings(try(newFit <- update(y, data = NULL, sample.cov = Sigma,
-                                        sample.mean = Mu, sample.nobs = N)))
+  suppressWarnings(try(newFit <- lavaan::update(y, data = NULL,
+                                                sample.cov = Sigma,
+                                                sample.mean = Mu,
+                                                sample.nobs = N)))
   if(!lavaan::lavInspect(newFit, "converged")) return(NA) else {
     result <- lavaan::lavInspect(newFit, "fit")["chisq"] < crit
     names(result) <- NULL

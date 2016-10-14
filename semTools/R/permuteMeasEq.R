@@ -330,11 +330,11 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
     }
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- update(null, data = d, group.label = lavaan::lavInspect(con, "group.label"))
+      out.null <- lavaan::update(null, data = d, group.label = lavaan::lavInspect(con, "group.label"))
     }
 
     ## fit constrained model, check for convergence
-    try(out0 <- update(con, data = d, group.label = lavaan::lavInspect(con, "group.label")))
+    try(out0 <- lavaan::update(con, data = d, group.label = lavaan::lavInspect(con, "group.label")))
     if (!exists("out0")) {
       nTries <- nTries + 1L
       next
@@ -346,7 +346,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
 
     ## fit unconstrained model (unless NULL), check for convergence
     if (!is.null(uncon)) {
-      try(out1 <- update(uncon, data = d, group.label = lavaan::lavInspect(con, "group.label")))
+      try(out1 <- lavaan::update(uncon, data = d, group.label = lavaan::lavInspect(con, "group.label")))
       if (!exists("out1")) {
         nTries <- nTries + 1L
         next
@@ -439,11 +439,11 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
 
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- update(null, data = d, group.label = lavaan::lavInspect(con, "group.label"))
+      out.null <- lavaan::update(null, data = d, group.label = lavaan::lavInspect(con, "group.label"))
     }
 
     ## fit constrained model
-    try(out0 <- update(con, data = d, group.label = lavaan::lavInspect(con, "group.label")))
+    try(out0 <- lavaan::update(con, data = d, group.label = lavaan::lavInspect(con, "group.label")))
     ## check for convergence
     if (!exists("out0")) {
       nTries <- nTries + 1L
@@ -654,9 +654,9 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
 
   ## return observed results, permutation p values, and ANOVA results
   if (is.null(uncon)) {
-    delta <- anova(con)
+    delta <- lavaan::anova(con)
   } else {
-    delta <- anova(uncon, con)
+    delta <- lavaan::anova(uncon, con)
   }
   ANOVA <- sapply(delta[,c("Chisq diff","Df diff","Pr(>Chisq)")], function(x) x[2])
   out <- new("permuteMeasEq", PT = PT, modelType = modelType, ANOVA = ANOVA,

@@ -504,7 +504,7 @@ function(object, ...) {
 			listlogl2 <- templogl
 		}
 		dfdiff <- df2 - df1
-		anovaout <- mapply(anova, object@imputedResults, object2@imputedResults, SIMPLIFY = FALSE)
+		anovaout <- mapply(lavaan::anova, object@imputedResults, object2@imputedResults, SIMPLIFY = FALSE)
 		chidiff <- sapply(anovaout, function(u) u[2, "Chisq diff"])
 		dfdiff2 <- mean(sapply(anovaout, function(u) u[2, "Df diff"]))
 		fit.altcc <- mean(chidiff)

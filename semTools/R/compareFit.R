@@ -1,3 +1,7 @@
+### Sunthud Pornprasertmanit
+### Last updated: 14 October 2016
+
+
 setClass("FitDiff", representation(name = "vector", nested = "data.frame", ordernested = "vector", fit="data.frame"))
 
 isNested <- function(object) length(object@ordernested) > 1 || !is.na(object@ordernested)
@@ -74,7 +78,7 @@ saveFileFitDiff <- function(object, filewrite, what="summary", tableFormat=FALSE
 		write.table(out2, file=filetemplate, sep="\t", quote=FALSE, row.names=FALSE)
 		close(filetemplate)
 	} else {
-		write(paste(capture.output(summary(object)), collapse="\n"), file=filewrite)
+		write(paste(capture.output(lavaan::summary(object)), collapse="\n"), file=filewrite)
 	}
 }
 
@@ -145,7 +149,7 @@ compareFit <- function(..., nested = TRUE) {
 		for(i in seq_along(modsA)) {
 			fitA <- modsA[[i]]
 			fitB <- modsB[[i]]
-			fitDiff <- anova(fitA, fitB)
+			fitDiff <- lavaan::anova(fitA, fitB)
 			cfidiff <- c(cfidiff, lavaan::fitMeasures(fitA)["cfi"] - lavaan::fitMeasures(fitB)["cfi"])
 			chisqdiff <- c(chisqdiff, fitDiff["Chisq diff"][2, 1])
 			dfdiff <- c(dfdiff, fitDiff["Df diff"][2, 1])

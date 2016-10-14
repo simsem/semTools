@@ -1604,7 +1604,7 @@ if(ng>1){
 #      return(parTable)
 	fit <- lavaan::lavaan(model=parTable,data=data$ra,sample.cov=data$cm,sample.mean=data$me,estimator=estimator,sample.nobs=n,...)
 	  if(silent==F){
-		summary(fit, standardized=TRUE, fit.measures=TRUE)
+		lavaan::summary(fit, standardized=TRUE, fit.measures=TRUE)
 		invisible(fit)
 	  }else{
 		return(fit)

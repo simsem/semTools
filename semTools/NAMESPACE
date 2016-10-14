@@ -1,5 +1,5 @@
 importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
-importFrom("lavaan", summary, inspect, anova, vcov, update)
+importFrom("lavaan", inspect)
 importFrom("stats", 
            cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, uniroot, lm, pnorm, pf, var, fitted.values, nobs, residuals, dist, ptukey, dchisq, na.omit, qf, pt, qt)
 importFrom("utils", 
@@ -10,35 +10,34 @@ exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
 exportMethods(hist)
 export(
 	measurementInvariance, longInvariance, measurementInvarianceCat,
+	partialInvariance, partialInvarianceCat,
 	moreFitIndices, miPowerFit, nullRMSEA, 
 	skew, kurtosis, mardiaSkew, mardiaKurtosis, 
 	orthogonalize, 
 	runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi, fmi,
+	auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary, lavaan.auxiliary, 
+	twostage, cfa.2stage, sem.2stage, growth.2stage, lavaan.2stage,
 	plotRMSEApower, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, SSpower,
 	findRMSEApowernested, findRMSEAsamplesizenested, plotRMSEApowernested,
 	parcelAllocation, PAVranking, poolMAlloc, 
 	monteCarloMed, 
+	htmt,
 	splitSample, mvrnonnorm,
 	indProd, 
 	residualCovariate, 
 	probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC, 
 	plotProbe, 
 	clipboard, saveFile, 
-	auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary, lavaan.auxiliary, 
-	twostage, cfa.2stage, sem.2stage, growth.2stage, lavaan.2stage,
 	loadingFromAlpha, 
-	reliability, reliabilityL2, maximalRelia,
 	tukeySEM,
-	nullMx, saturateMx, fitMeasuresMx, standardizeMx,
 	lisrel2lavaan,
 	wald, imposeStart,
 	compareFit,
 	efaUnrotate, orthRotate, oblqRotate, funRotate,
-	kd, bsBootMiss, net,
+	kd, bsBootMiss, net, permuteMeasEq,
 	singleParamTest,
-	partialInvariance, partialInvarianceCat,
 	quark, combinequark,
-	permuteMeasEq,
 	ci.reliability,
-	htmt
+	reliability, reliabilityL2, maximalRelia,
+	nullMx, saturateMx, fitMeasuresMx, standardizeMx
 )
