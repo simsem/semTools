@@ -7,7 +7,9 @@
 \alias{vcov,twostage-method}
 \alias{coef,twostage-method}
 \alias{fitted.values,twostage-method}
+\alias{fitted,twostage-method}
 \alias{residuals,twostage-method}
+\alias{resid,twostage-method}
 \alias{nobs,twostage-method}
 \title{
 	Class for the Results of 2-Stage Maximum Likelihood (TSML) Estimation for Missing Data
