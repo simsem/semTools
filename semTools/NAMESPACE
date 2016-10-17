@@ -1,43 +1,64 @@
+## Last updated: 15 October 2016
+
 importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
 importFrom("lavaan", inspect)
-importFrom("stats", 
+importFrom("stats",
            cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, uniroot, lm, pnorm, pf, var, fitted.values, nobs, residuals, dist, ptukey, dchisq, na.omit, qf, pt, qt)
-importFrom("utils", 
+importFrom("utils",
            capture.output, write.table, combn, read.table, read.csv, setTxtProgressBar, txtProgressBar)
 importFrom("graphics", hist, plot, par, abline, lines, legend)
 
 exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
-exportMethods(hist)
+exportMethods(show, summary, hist, anova, vcov, coef, fitted.values, residuals, nobs)
+
+## ORGANIZE BY AUTHOR(S) OF EACH FUNCTION
 export(
-	measurementInvariance, longInvariance, measurementInvarianceCat,
-	partialInvariance, partialInvarianceCat,
-	moreFitIndices, miPowerFit, nullRMSEA, 
-	skew, kurtosis, mardiaSkew, mardiaKurtosis, 
-	orthogonalize, 
-	runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi, fmi,
-	auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary, lavaan.auxiliary, 
-	twostage, cfa.2stage, sem.2stage, growth.2stage, lavaan.2stage,
-	plotRMSEApower, plotRMSEAdist, findRMSEApower, findRMSEAsamplesize, SSpower,
-	findRMSEApowernested, findRMSEAsamplesizenested, plotRMSEApowernested,
-	parcelAllocation, PAVranking, poolMAlloc, 
-	monteCarloMed, 
-	htmt,
-	splitSample, mvrnonnorm,
-	indProd, 
-	residualCovariate, 
-	probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC, 
-	plotProbe, 
-	clipboard, saveFile, 
-	loadingFromAlpha, 
-	tukeySEM,
-	lisrel2lavaan,
-	wald, imposeStart,
-	compareFit,
+	## Sunthud
+	auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary, lavaan.auxiliary,
+	clipboard, saveFile, compareFit,
 	efaUnrotate, orthRotate, oblqRotate, funRotate,
-	kd, bsBootMiss, net, permuteMeasEq,
-	singleParamTest,
+	imposeStart, loadingFromAlpha,
+	skew, kurtosis, mardiaSkew, mardiaKurtosis,
+	residualCovariate,
+	singleParamTest, wald,
+	miPowerFit,
+	plotRMSEAdist, findRMSEApower, findRMSEAsamplesize,
+	plotProbe,
+	probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC,
+	reliabilityL2, maximalRelia, ci.reliability,
+	partialInvariance, partialInvarianceCat,
+	## Sunthud with Bell Clinton and Pavel Panko
+	findRMSEApowernested, findRMSEAsamplesizenested, plotRMSEApowernested,
+	## Sunthud with Alex
+	indProd, orthogonalize,
+	## Sunthud with Yves Rosseel
+	measurementInvariance, longInvariance, measurementInvarianceCat,
+	reliability, mvrnonnorm,
+	## Alex
+	plotRMSEApower, SSpower, tukeySEM,
+	## Alex with Corbin (and James Selig)
+	monteCarloMed, parcelAllocation,
+	## Jason D. Rights
+	PAVranking, poolMAlloc,
+	## Terrence
+	bsBootMiss, net, chisqSmallN, permuteMeasEq,
+	twostage, cfa.2stage, sem.2stage, growth.2stage, lavaan.2stage,
+	## Mauricio
+  fmi,
+	## Ed Merkle
+	kd,
+	## Corbin Quick
+	lisrel2lavaan, splitSample,
+	## Steven R. Chesnut
 	quark, combinequark,
-	ci.reliability,
-	reliability, reliabilityL2, maximalRelia,
+	## Ylenio Longo
+	htmt,
+	## Ruben Arslan
+	nullRMSEA,
+	## Alex, Patrick, Sunthud, Mijke, Alexander Robitzsch, Craig Enders, Mauricio, Yves
+	runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi,
+	## Sunthud, Terrence, Aaron, Ruben Arslan, Yves
+	moreFitIndices,
+
 	nullMx, saturateMx, fitMeasuresMx, standardizeMx
 )

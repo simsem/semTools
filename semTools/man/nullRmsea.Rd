@@ -15,21 +15,21 @@ nullRMSEA(object, scaled = FALSE, silent=FALSE)
   \item{silent}{If \code{TRUE}, do not print anything on the screen.}
 }
 \details{
-RMSEA of the null model is calculated similar to the formula provided in the \code{lavaan} package. The standard formula of RMSEA is 
+RMSEA of the null model is calculated similar to the formula provided in the \code{lavaan} package. The standard formula of RMSEA is
 
 \deqn{ RMSEA =\sqrt{\frac{\chi^{2}}{N \times df} - \frac{1}{N}} \times \sqrt{G} }
 
-where \eqn{\chi^{2}} is the chi-square test statistic value of the target model, \eqn{N} is the total sample size, \eqn{df} is the degree of freedom of the hypothesized model, \eqn{G} is the number of groups. Kenny proposed in his website that 
+where \eqn{\chi^{2}} is the chi-square test statistic value of the target model, \eqn{N} is the total sample size, \eqn{df} is the degree of freedom of the hypothesized model, \eqn{G} is the number of groups. Kenny proposed in his website that
 
 "A reasonable rule of thumb is to examine the RMSEA for the null model and make sure that is no smaller than 0.158. An RMSEA for the model of 0.05 and a TLI of .90, implies that the RMSEA of the null model is 0.158.  If the RMSEA for the null model is less than 0.158, an incremental measure of fit may not be that informative."
 
-See \url{http://davidakenny.net/cm/fit.htm}. 
+See \url{http://davidakenny.net/cm/fit.htm}.
 }
 \value{
 	A value of RMSEA of the null model. This value is hidden. Users may be assigned the output of this function to any object for further usage.
 }
 \references{
-Kenny, D. A., Kaniskan, B.,  & McCoach, D. B. (2011).  \emph{The performance of RMSEA in models with small degrees of freedom.} Unpublished paper, University of Connecticut.
+Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The performance of RMSEA in models with small degrees of freedom. \emph{Sociological Methods Research, 44}(3), 486-507. doi:10.1177/0049124114543236
 }
 \author{
 	Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
@@ -37,7 +37,7 @@ Kenny, D. A., Kaniskan, B.,  & McCoach, D. B. (2011).  \emph{The performance of 
 \seealso{
 	\itemize{
 		\item \code{\link{miPowerFit}} For the modification indices and their power approach for model fit evaluation
-		\item \code{\link{moreFitIndices}} For other fit indices 
+		\item \code{\link{moreFitIndices}} For other fit indices
 	}
 }
 \examples{
