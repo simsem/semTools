@@ -4,6 +4,7 @@
 \alias{inspect,lavaanStar-method}
 \alias{summary,lavaanStar-method}
 \alias{anova,lavaanStar-method}
+\alias{vcov,lavaanStar-method}
 
 \title{Class For Representing A (Fitted) Latent Variable Model with Additional Elements}
 \description{This is the \code{lavaan} class that contains additional information about the fit values from the null model. Some functions are adjusted according to the change.}

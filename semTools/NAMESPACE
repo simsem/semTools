@@ -9,7 +9,7 @@ importFrom("utils",
 importFrom("graphics", hist, plot, par, abline, lines, legend)
 
 exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
-exportMethods(show, summary, hist, anova, vcov, coef, fitted.values, residuals, nobs)
+exportMethods(show, summary, hist, anova, vcov, coef, fitted, fitted.values, resid, residuals, nobs)
 
 ## ORGANIZE BY AUTHOR(S) OF EACH FUNCTION
 export(
