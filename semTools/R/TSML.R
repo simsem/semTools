@@ -208,15 +208,15 @@ setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
 setMethod("show", "twostage", function(object) {
   ## show chi-squared test results
   cat("Chi-squared test(s) results, ADJUSTED for missing data:\n\n")
-  anova(object)
+  semTools::anova(object)
   cat("\n\nChi-squared test results, UNADJUSTED for missing data:\n\n")
-  show(object@target)
+  lavaan::show(object@target)
   invisible(object)
 })
 
 setMethod("summary", "twostage", function(object, ...) {
   ## show chi-squared test results AND estimates
-  show(object)
+  semTools::show(object)
   cat("\n\nParameter Estimates, with SEs (and tests/CIs) ADJUSTED for missing data:\n\n")
   dots <- list(...)
   if (!"fmi" %in% names(dots)) dots$fmi <- FALSE
