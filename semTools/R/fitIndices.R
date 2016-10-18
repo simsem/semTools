@@ -169,8 +169,8 @@ chisqSmallN <- function(fit0, fit1 = NULL, ...) {
   if (is.null(fit1)) {
     scaled <- lavaan::lavInspect(fit0, "options")$test %in%
       c("satorra.bentler","yuan.bentler","mean.var.adjusted","scaled.shifted")
-    chi <- lavaan::fitMeasures(fit0, if (scaled) "chisq.scaled" else "chisq")
-    DF <- lavaan::fitMeasures(fit0, "df")
+    chi <- lavaan::fitMeasures(fit0)[[if (scaled) "chisq.scaled" else "chisq"]]
+    DF <- lavaan::fitMeasures(fit0)[["df"]]
   } else {
     AOV <- lavaan::lavTestLRT(fit0, fit1, ...)
     chi <- AOV[["Chisq diff"]][2]
