@@ -144,6 +144,7 @@ setMethod("nobs", "twostage",
 })
 
 setMethod("vcov", "twostage", function(object, baseline = FALSE) {
+  SLOT <- if (baseline) "baseline" else "target"
   ## calculate model derivatives and complete-data information matrix
   MATS <- twostageMatrices(object, baseline)
   meat <- MATS$H %*% MATS$delta
@@ -151,10 +152,11 @@ setMethod("vcov", "twostage", function(object, baseline = FALSE) {
   out <- bread %*% t(meat) %*% MATS$satACOV %*% meat %*% bread
   class(out) <- c("lavaan.matrix.symmetric","matrix")
   if (baseline) {
-    names(out) <- names(coef(object))
+    rownames(out) <- names(getMethod("coef", "lavaan")(object@baseline))
   } else {
-    names(out) <- names(lavaan::coef(object@baseline))
+    rownames(out) <- names(getMethod("coef", "twostage")(object))
   }
+  colnames(out) <- rownames(out)
   out
 })
 
@@ -224,7 +226,7 @@ setMethod("summary", "twostage", function(object, ...) {
   PT <- lavaan::parTable(object@target)
   PT <- PT[PT$group > 0, ]
   PE <- do.call(lavaan::parameterEstimates, c(dots, object = object@target))
-  SEs <- sqrt(diag(vcov(object)))
+  SEs <- sqrt(diag(getMethod("vcov", "twostage")(object)))
   PE$se[PT$free > 0] <- SEs[PT$free]
   PE$z[PT$free > 0] <- PE$est[PT$free > 0] / PE$se[PT$free > 0]
   PE$pvalue[PT$free > 0] <- pnorm(abs(PE$z[PT$free > 0]), lower.tail = FALSE)*2
