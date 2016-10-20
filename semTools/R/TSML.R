@@ -209,7 +209,7 @@ setMethod("show", "twostage", function(object) {
   cat("Chi-squared test(s) results, ADJUSTED for missing data:\n\n")
   getMethod("anova", "twostage")(object)
   cat("\n\nChi-squared test results, UNADJUSTED for missing data:\n\n")
-  lavaan::show(object@target)
+  show(object@target)
   invisible(object)
 })
 
