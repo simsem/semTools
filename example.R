@@ -10,8 +10,6 @@
 # install.packages("lavaan", repos="http://www.da.ugent.be", type="source")
 
 
-# moreFitIndices, longInvariance
-
 sourceDir <- function(path, trace = TRUE, ...) {
      for (nm in list.files(path, pattern = "\\.[RrSsQq]$")) {
 		if(nm != "AllClass.R" & nm != "AllGenerics.R") {
@@ -30,10 +28,6 @@ sourceDirData <- function(path, trace = TRUE) {
 	}
 }
 
-# Model diagnosis for local misfits
-
-#get
-#assign
 #dir <- "C:/Users/User/Dropbox/semTools/semTools/R"
 #dir <- "C:/Users/User/simsem_backup/simsem/R/"
 library(lavaan)

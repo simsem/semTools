@@ -1,4 +1,4 @@
-## Last updated: 17 October 2016
+## Last updated: 20 October 2016
 
 importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
 importFrom("lavaan", inspect)
