@@ -144,7 +144,6 @@ setMethod("nobs", "twostage",
 })
 
 setMethod("vcov", "twostage", function(object, baseline = FALSE) {
-  SLOT <- if (baseline) "baseline" else "target"
   ## calculate model derivatives and complete-data information matrix
   MATS <- twostageMatrices(object, baseline)
   meat <- MATS$H %*% MATS$delta
@@ -208,7 +207,7 @@ setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
 setMethod("show", "twostage", function(object) {
   ## show chi-squared test results
   cat("Chi-squared test(s) results, ADJUSTED for missing data:\n\n")
-  semTools::anova(object)
+  getMethod("anova", "twostage")(object)
   cat("\n\nChi-squared test results, UNADJUSTED for missing data:\n\n")
   lavaan::show(object@target)
   invisible(object)
@@ -216,7 +215,7 @@ setMethod("show", "twostage", function(object) {
 
 setMethod("summary", "twostage", function(object, ...) {
   ## show chi-squared test results AND estimates
-  semTools::show(object)
+  getMethod("show", "twostage")(object)
   cat("\n\nParameter Estimates, with SEs (and tests/CIs) ADJUSTED for missing data:\n\n")
   dots <- list(...)
   if (!"fmi" %in% names(dots)) dots$fmi <- FALSE
