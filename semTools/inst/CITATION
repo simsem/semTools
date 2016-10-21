@@ -2,7 +2,7 @@ citHeader("We think that the development of the package is a collaborative work.
 
 year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
 vers <- paste("R package version", meta$Version)
-url <- "https://cran.r-project.org/web/packages/semTools/index.html"
+url <- "https://CRAN.R-project.org/package=semTools"
 
 citEntry(entry = "Manual",
   title        = "{semTools}: Useful tools for structural equation modeling",
