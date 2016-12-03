@@ -1,14 +1,19 @@
-measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FALSE,
+### Terrence D. Jorgensen
+### Last updated: 3 December 2016
+### automate measurement invariance tests for categorical indicators
+
+measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
                                    fit.measures = "default",
                                    method = "satorra.bentler.2001") {
 	List <- list(...)
 	lavaancfa <- function(...) { lavaan::cfa(...) }
 	lavaanlavaan <- function(...) { lavaan::lavaan(...) }
-	if(!is.null(List$parameterization) && tolower(List$parameterization) != "theta") warning("The parameterization is set to 'theta' by default.")
+	if (!is.null(List$parameterization) && tolower(List$parameterization) != "theta")
+	  warning("The parameterization is set to 'theta' by default.")
 	List$parameterization <- "theta"
 
 	# Find the number of groups
-	if(is.null(List$group)) stop("Please specify the group variable")
+	if (is.null(List$group)) stop("Please specify the group variable")
 
 	# Get the lavaan parameter table
 	template <- do.call(lavaancfa, c(List, do.fit=FALSE))
@@ -21,11 +26,13 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	sampstat <- lavaan::lavInspect(template, "samp")[[1]]
 	meanname <- names(sampstat$mean)
 	thname <- names(sampstat$th)
-	if(any(is.na(charmatch(meanname, thname)))) stop("Some variables in your model are not identified as categorical.")
+	if (any(is.na(charmatch(meanname, thname))))
+	  stop("Some variables in your model are not identified as categorical.")
 
 	varList <- lavaanParTable$rhs[lavaanParTable$op == "=~"]
 	facName <- lavaanParTable$lhs[(lavaanParTable$op == "=~") & (lavaanParTable$rhs %in% varList)]
-	if(length(unique(sapply(facName, function(x) length(x)))) > 1) stop("The numbers of variables in each element are not equal.")
+	if (length(unique(sapply(facName, function(x) length(x)))) > 1)
+	  stop("The numbers of variables in each element are not equal.")
 	varList <- unique(varList)
 	facName <- unique(facName)
 
@@ -33,7 +40,8 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	groupParTable <- split(lavaanParTable, lavaanParTable$group)
 	group1pt <- groupParTable[[1]]
 	groupParTable <- lapply(groupParTable, "[", c("lhs", "op", "rhs"))
-	if(!multipleAllEqualList(lapply(groupParTable, function(x) sapply(x, "[", x$op == "=~")))) stop("Factor configuration is not the same across groups")
+	if (!multipleAllEqualList(lapply(groupParTable, function(x) sapply(x, "[", x$op == "=~"))))
+	  stop("Factor configuration is not the same across groups")
 
 	# Extract the number of thresholds
 	numThreshold <- table(sapply(group1pt, "[", group1pt$op == "|")[,"lhs"])
@@ -45,7 +53,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	# Find marker variables
 	marker <- rep(NA, length(factorRep))
 	numThresholdMarker <- rep(NA, length(factorRep))
-	for(i in seq_along(factorRep)) {
+	for (i in seq_along(factorRep)) {
 		temp <- sapply(group1pt, "[", group1pt$rhs %in% factorRep[[i]] & group1pt$op == "=~" & group1pt$lhs == names(factorRep)[i])
 		marker[i] <- temp[!is.na(temp[,"ustart"]), "rhs"]
 		numThresholdMarker[i] <- numThreshold[marker[i]]
@@ -56,51 +64,51 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	constraintSecondThreshold <- constraintSecondThreshold[!is.na(constraintSecondThreshold)]
 			# Find the marker variable of each facto
 
-	for(i in names(numThreshold)) {
+	for (i in names(numThreshold)) {
 		lavaanParTable <- constrainParTable(lavaanParTable, i, "|", "t1", 1:ngroups)
 	}
 
-	if(length(constraintSecondThreshold) > 0) {
-		for(i in constraintSecondThreshold) {
+	if (length(constraintSecondThreshold) > 0) {
+		for (i in constraintSecondThreshold) {
 			lavaanParTable <- constrainParTable(lavaanParTable, i, "|", "t2", 1:ngroups)
 		}
 	}
 
 	# Group 1
-	for(i in facName) {
+	for (i in facName) {
 		lavaanParTable <- fixParTable(lavaanParTable, i, "~1", "", 1, 0) # Fix factor means as 0
-		if(std.lv) {
+		if (std.lv) {
 			lavaanParTable <- fixParTable(lavaanParTable, i, "~~", i, 1, 1)
 		} else {
 			lavaanParTable <- freeParTable(lavaanParTable, i, "~~", i, 1, NA) # Free factor variances
 		}
 		# Assuming that all factor covariances are freeParTable
 	}
-	for(i in varList) {
+	for (i in varList) {
 		lavaanParTable <- fixParTable(lavaanParTable, i, "~~", i, 1, 1)
 	}
 
 	# Other groups
-	for(k in 2:ngroups) {
-		for(i in facName) {
+	for (k in 2:ngroups) {
+		for (i in facName) {
 			lavaanParTable <- freeParTable(lavaanParTable, i, "~1", "", k, NA)
-			if(std.lv) {
+			if (std.lv) {
 				lavaanParTable <- fixParTable(lavaanParTable, i, "~~", i, k, 1)
 			} else {
 				lavaanParTable <- freeParTable(lavaanParTable, i, "~~", i, k, NA)
 			}
 		}
-		for(i in varList) {
+		for (i in varList) {
 			lavaanParTable <- freeParTable(lavaanParTable, i, "~~", i, k, NA)
 		}
 		# Fix the indicator variances of marker variables with two categories as 1
-		for(i in seq_along(marker)) {
-			if(numThresholdMarker[i] == 1)  lavaanParTable <- fixParTable(lavaanParTable, marker[i], "~~", marker[i], k, 1)
+		for (i in seq_along(marker)) {
+			if (numThresholdMarker[i] == 1)  lavaanParTable <- fixParTable(lavaanParTable, marker[i], "~~", marker[i], k, 1)
 		}
 	}
 
-	if(std.lv) {
-		for(i in seq_along(factorRep)) {
+	if (std.lv) {
+		for (i in seq_along(factorRep)) {
 			lavaanParTable <- freeParTable(lavaanParTable, names(factorRep)[i], "=~", marker[i], 1:ngroups, NA)
 		}
 	}
@@ -112,18 +120,18 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	# Create the parameter table for metric invariance
 	ptMetric <- lavaanParTable
 
-	for(i in seq_along(factorRep)) {
+	for (i in seq_along(factorRep)) {
 		varwithin <- factorRep[[i]]
-		if(!std.lv) {
+		if (!std.lv) {
 			varwithin <- setdiff(varwithin, marker[i])
 		}
-		for(j in seq_along(varwithin)) {
+		for (j in seq_along(varwithin)) {
 			ptMetric <- constrainParTable(ptMetric, names(factorRep)[i], "=~", varwithin[j], 1:ngroups)
 		}
 	}
-	if(std.lv) {
-		for(k in 2:ngroups) {
-			for(i in facName) {
+	if (std.lv) {
+		for (k in 2:ngroups) {
+			for (i in facName) {
 				ptMetric <- freeParTable(ptMetric, i, "~~", i, k, NA)
 			}
 		}
@@ -138,9 +146,9 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	nonMarker <- setdiff(names(numThreshold), marker)
 	nonDichoMarker <- numThreshold[which(numThreshold[nonMarker] > 1)]
 	scalar <- length(nonDichoMarker) > 0
-	if(scalar) {
+	if (scalar) {
 		ptScalar <- ptMetric
-		for(i in seq_along(numThreshold)) {
+		for (i in seq_along(numThreshold)) {
 			thresholdName <- paste0("t", 1:numThreshold[i])
 			for(j in seq_along(thresholdName)) {
 				ptScalar <- constrainParTable(ptScalar, names(numThreshold)[i], "|", thresholdName[j], 1:ngroups)
@@ -150,16 +158,16 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 		ListScalar$model <- ptScalar
 		fitScalar <- do.call(lavaanlavaan, ListScalar)
 		ptMeans <- ptStrict <- ptScalar
-	}
+	} else fitScalar <- NULL
 
 
 	fitStrict <- NULL
 	# Create the parameter table for strict invariance if specified
-	if(strict) {
-		ptStrict <- ptScalar
-		for(k in 2:ngroups) {
+	if (strict) {
+	  if (scalar) ptStrict <- ptScalar
+		for (k in 2:ngroups) {
 			# Constrain measurement error variances
-			for(i in varList) {
+			for (i in varList) {
 				ptStrict <- fixParTable(ptStrict, i, "~~", i, k, 1)
 			}
 		}
@@ -172,17 +180,19 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict=FALSE, quiet=FA
 	# Create the parameter table for mean equality
 
 	# Constrain factor means to be equal
-	for(k in 2:ngroups) {
+	for (k in 2:ngroups) {
 		ptMeans <- fixParTable(ptMeans, facName, "~1", "", k, ustart = 0)
 	}
 	ListMeans <- List
 	ListMeans$model <- ptMeans
 	fitMeans <- do.call(lavaanlavaan, ListMeans)
 
-	FIT <- invisible(list(fit.configural = fitConfigural, fit.loadings = fitMetric, fit.thresholds = fitScalar, fit.residuals = fitStrict, fit.means = fitMeans))
+	FIT <- invisible(list(fit.configural = fitConfigural, fit.loadings = fitMetric,
+	                      fit.thresholds = fitScalar, fit.residuals = fitStrict,
+	                      fit.means = fitMeans))
 	FIT <- FIT[!sapply(FIT, is.null)]
 
-	if(!quiet) {
+	if (!quiet) {
         printInvarianceResult(FIT, fit.measures, method)
     }
 

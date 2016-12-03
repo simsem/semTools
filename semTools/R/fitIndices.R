@@ -55,7 +55,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
     }
   }
   if(!is.na(f)) {
-    if("aic.smallN" %in% fit.measures) result["aic.smallN"] <- f + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
+    if("aic.smallN" %in% fit.measures) result["aic.smallN"] <- fit[["aic"]] + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
     if("bic.priorN" %in% fit.measures) result["bic.priorN"] <- f + log(1 + n/nPrior) * nParam
     if("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(n)) * nParam
     if("sic" %in% fit.measures) result["sic"] <- sic(f, object)
