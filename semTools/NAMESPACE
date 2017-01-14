@@ -1,9 +1,9 @@
-## Last updated: 20 October 2016
+## Last updated: 14 January 2017
 
 importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
 importFrom("lavaan", inspect)
 importFrom("stats",
-           cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, uniroot, lm, pnorm, pf, var, fitted.values, nobs, residuals, resid, dist, ptukey, dchisq, na.omit, qf, pt, qt, anova, vcov)
+           cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, lm, pnorm, pf, var, fitted.values, nobs, residuals, resid, dist, ptukey, dchisq, na.omit, qf, pt, qt, anova, vcov)
 importFrom("utils",
            capture.output, write.table, combn, read.table, read.csv, setTxtProgressBar, txtProgressBar)
 importFrom("graphics", hist, plot, par, abline, lines, legend)
@@ -58,7 +58,5 @@ export(
   ## Alex, Patrick, Sunthud, Mijke, Alexander Robitzsch, Craig Enders, Mauricio, Yves
   runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi,
   ## Sunthud, Terrence, Aaron, Ruben Arslan, Yves
-  moreFitIndices,
-
-  nullMx, saturateMx, fitMeasuresMx, standardizeMx
+  moreFitIndices
 )
