@@ -75,7 +75,7 @@ Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 Mijke Rhemtulla (University of Amsterdam; \email{M.T.Rhemtulla@uva.nl})
 Alexander Robitzsch (Federal Institute for Education Research, Innovation, and Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
 Craig Enders (Arizona State University; \email{Craig.Enders@asu.edu})
-Mauricio Garnier Villarreal (University of Kansas; \email{mgv@ku.edu})
+Mauricio Garnier Villarreal (University of Kansas; \email{mauricio.garniervillarreal@marquette.edu})
 Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 }
 \examples{

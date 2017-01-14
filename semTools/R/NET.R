@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 October 2016
+### Last updated: 14 January 2017
 ### semTools function for Nesting and Equivalence Testing
 
 setClass("Net", representation(test = "matrix", df = "vector"))
@@ -23,13 +23,13 @@ x.within.y <- function(x, y, crit = crit) {
     stop("Models do not contain the same variables")
 
   ## check that the analyzed data matches
-  xData <- lavaan::lavInspect(x, "data")
-  if (is.list(xData)) xData <- do.call(rbind, xData)
-  xData <- xData[ , rank(Xnames)]
-  yData <- lavaan::lavInspect(y, "data")
-  if (is.list(yData)) yData <- do.call(rbind, yData)
-  yData <- yData[ , rank(Ynames)]
-  if (!identical(xData, yData)) stop("Models must apply to the same data")
+  # xData <- lavaan::lavInspect(x, "data")
+  # if (is.list(xData)) xData <- do.call(rbind, xData)
+  # xData <- xData[ , rank(Xnames)]
+  # yData <- lavaan::lavInspect(y, "data")
+  # if (is.list(yData)) yData <- do.call(rbind, yData)
+  # yData <- yData[ , rank(Ynames)]
+  # if (!identical(xData, yData)) stop("Models must apply to the same data")
   ##############################################################################
 
   ## check degrees of freedom support nesting structure
@@ -114,13 +114,7 @@ net <- function(..., crit = .0001) {
       }
     }
   }
-
-    # class(nestMat) <- c("Net", class(nestMat))
-  # attr(nestMat, "df") <- orderedDFs
-    out <- new("Net",
-               test         = nestMat,
-               df       = orderedDFs
-              )
+  out <- new("Net", test = nestMat, df = orderedDFs)
   out
 }
 
@@ -132,11 +126,10 @@ function(object) {
     cat("
      If cell [R, C] is TRUE, the model in row R is nested within column C.
 
-     If cell [R, C] is TRUE and the models have the same degrees of freedom,
-     they are equivalent models.  See Bentler & Satorra (2010) for details.
+     If the models also have the same degrees of freedom, they are equivalent.
 
-     If cell [R, C] is NA, then the model in column C did not converge when
-     fit to the implied means and covariance matrix from the model in row R.
+     NA indicates the model in column C did not converge when fit to the
+     implied means and covariance matrix from the model in row R.
 
      The hidden diagonal is TRUE because any model is equivalent to itself.
      The upper triangle is hidden because for models with the same degrees
