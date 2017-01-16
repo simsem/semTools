@@ -1,22 +1,35 @@
-mvrnonnorm <- function(n, mu, Sigma, skewness = NULL, kurtosis = NULL, empirical = FALSE) {
-    p <- length(mu)
-    if (!all(dim(Sigma) == c(p, p))) stop("incompatible arguments")
-    eS <- eigen(Sigma, symmetric = TRUE)
-    ev <- eS$values
-    if (!all(ev >= -1e-06 * abs(ev[1L]))) 
-        stop("'Sigma' is not positive definite")
-	X <- NULL
-	if(is.null(skewness) && is.null(kurtosis)) {
-		X <- MASS::mvrnorm(n=n, mu=mu, Sigma=Sigma, empirical = empirical)
-	} else {
-		if(empirical) warnings("The empirical argument does not work when the Vale and Maurelli's method is used.")
-		if(is.null(skewness)) skewness <- rep(0, p)
-		if(is.null(kurtosis)) kurtosis <- rep(0, p)
-		Z <- ValeMaurelli1983copied(n = n, COR = cov2cor(Sigma), skewness = skewness, kurtosis = kurtosis)
-		TMP <- scale(Z, center = FALSE, scale = 1/sqrt(diag(Sigma)))[,,drop=FALSE]
-		X <- sweep(TMP, MARGIN=2, STATS=mu, FUN="+")
-	}	
-	X
+### Yves Rosseel, Sunthud Pornprasertmanit, & Terrence D. Jorgensen
+### Last updated: 16 January 2017
+
+mvrnonnorm <- function(n, mu, Sigma, skewness = NULL,
+                       kurtosis = NULL, empirical = FALSE) {
+  ## number of variables
+  p <- length(mu)
+  if (!all(dim(Sigma) == c(p, p))) stop("incompatible arguments")
+  ## save variable names, if they exist
+  varnames <- names(mu)
+  if (is.null(varnames)) varnames <- rownames(Sigma)
+  if (is.null(varnames)) varnames <- colnames(Sigma)
+  ## check for NPD
+  eS <- eigen(Sigma, symmetric = TRUE)
+  ev <- eS$values
+  if (!all(ev >= -1e-06 * abs(ev[1L])))
+    stop("'Sigma' is not positive definite")
+  ## simulate X <- NULL
+  if (is.null(skewness) && is.null(kurtosis)) {
+    X <- MASS::mvrnorm(n = n, mu = mu, Sigma = Sigma, empirical = empirical)
+  } else {
+    if (empirical) warning(c("The empirical argument does not work when the ",
+                             "Vale and Maurelli's method is used."))
+    if (is.null(skewness)) skewness <- rep(0, p)
+    if (is.null(kurtosis)) kurtosis <- rep(0, p)
+    Z <- ValeMaurelli1983copied(n = n, COR = cov2cor(Sigma),
+                                skewness = skewness, kurtosis = kurtosis)
+    TMP <- scale(Z, center = FALSE, scale = 1/sqrt(diag(Sigma)))[ , , drop = FALSE]
+    X <- sweep(TMP, MARGIN = 2, STATS = mu, FUN = "+")
+  }
+  colnames(X) <- varnames
+  X
 }
 
 # Copied from lavaan package
@@ -122,3 +135,4 @@ ValeMaurelli1983copied <- function(n=100L, COR, skewness, kurtosis, debug = FALS
 
     X
 }
+
