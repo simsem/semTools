@@ -5,10 +5,10 @@
 \alias{growth.auxiliary}
 \alias{lavaan.auxiliary}
 \title{
-	Analyzing data with full-information maximum likelihood with auxiliary variables
+	Implement Saturated Correlates with FIML
 }
 \description{
-	Analyzing data with full-information maximum likelihood with auxiliary variables. The techniques used to account for auxiliary variables are both extra-dependent-variables and saturated-correlates approaches (Enders, 2008). The extra-dependent-variables approach is used for all single variables in the model (such as covariates or single-indicator dependent varaible) For variables that are belong to a multiple-indicator factor, the saturated-correlates approach is used. Note that all covariates are treated as endogenous varaibles in this model (fixed.x = FALSE) so multivariate normality is assumed for the covariates. CAUTION: (1) this function will automatically change the missing data handling method to full-information maximum likelihood and (2) this function is still not applicable for categorical variables (because the maximum likelhood method is not available in lavaan for estimating models with categorical variables currently).
+	Automatically add auxiliary variables to a lavaan model when using full information maximum likelihood (FIML) to handle missing data
 }
 \usage{
 auxiliary(model, aux, fun, ...)
@@ -19,102 +19,81 @@ lavaan.auxiliary(model, aux, ...)
 }
 \arguments{
   \item{model}{
-	The \code{lavaan} object, the parameter table, or lavaan script. If the \code{lavaan} object is provided, the \code{lavaan} object must be evaluated with mean structure.
+	The analysis model can be specified with 1 of 2 objects:
+   \enumerate{
+     \item  lavaan \code{\link[lavaan]{model.syntax}} specifying a hypothesized
+            model \emph{without} mention of auxiliary variables in \code{aux}
+     \item  a parameter table, as returned by \code{\link[lavaan]{parTable}},
+            specifying the target model \emph{without} auxiliary variables.
+            This option requires these columns (and silently ignores all others):
+            \code{c("lhs","op","rhs","user","group","free","label","plabel","start")}
+   }
+}
+  \item{data}{
+	\code{data.frame} that includes auxiliary variables as well as any observed variables in the \code{model}
 }
   \item{aux}{
-	The list of auxiliary variable
+	\code{character}. Names of auxiliary variables to add to \code{model}
   }
   \item{fun}{
-	The character of the function name used in running lavaan model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}). 
+	\code{character}. Name of a specific lavaan function used to fit \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"}, \code{"sem"}, or \code{"growth"}). Only required for \code{auxiliary}.
   }
   \item{\dots}{
-	The additional arguments in the \code{\link[lavaan]{lavaan}} function.
+	additional arguments to pass to \code{\link[lavaan]{lavaan}}
   }
 }
+\details{
+These functions are wrappers around the corresponding lavaan functions.
+You can use them the same way you use \code{\link[lavaan]{lavaan}}, but you
+\emph{must} pass your full \code{data.frame} to the \code{data} argument.
+Because the saturated-correlates approaches (Enders, 2008) treates exogenous
+variables as random, \code{fixed.x} must be set to \code{FALSE}. Because FIML
+requires continuous data (although nonnormality corrections can still be requested),
+no variables in the model nor auxiliary variables specified in \code{aux}
+can be declared as \code{ordered}.
+}
 \value{
-	The \code{\linkS4class{lavaanStar}} object which contains the original \code{lavaan} object and the additional values of the null model, which need to be adjusted to account for auxiliary variables.
+	a fitted \code{\linkS4class[lavaan]{lavaan}} object.  Additional
+   information is stored as a \code{list} in the \code{@external} slot:
+   \itemize{
+     \item \code{$baseline.model}. a fitted \code{\linkS4class[lavaan]{lavaan}}
+           object. Results of fitting an appropriate independence model for
+           the calculation of incremental fit indices (e.g., CFI, TLI) in
+           which the auxiliary variables remain saturated, so only the target
+           variables are constrained to be orthogonal. See \strong{Examples} for how
+           to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
+     \item \code{$aux}. The character vector of auxiliary variable names.
+   }
 }
 \references{
-Enders, C. K. (2008). A note of the use of missing auxiliary variables in full information maximum likelihood-based structural equation models. \emph{Structural Equation Modeling, 15}, 434-448.
-}
-\seealso{
-	\code{\linkS4class{lavaanStar}}
+Enders, C. K. (2008). A note on the use of missing auxiliary variables in full information maximum likelihood-based structural equation models. \emph{Structural Equation Modeling, 15}(3), 434-448. doi:10.1080/10705510802154307
 }
 \author{
-    Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+    Terrence D. Jorgensen (University of Amsterdam; \email{T.D.Jorgensen@uva.nl})
 }
 \examples{
-# Example of confirmatory factor analysis
+dat1 <- lavaan::HolzingerSwineford1939
+set.seed(12345)
+dat1$z <- rnorm(nrow(dat1))
+dat1$x5 <- ifelse(dat1$z < quantile(dat1$z, .3), NA, dat1$x5)
+dat1$x9 <- ifelse(dat1$z > quantile(dat1$z, .8), NA, dat1$x9)
 
-HS.model <- ' visual  =~ x1 + x2 + x3
-              textual =~ x4 + x5 + x6
-              speed   =~ x7 + x8 + x9 '
-			  
-dat <- data.frame(HolzingerSwineford1939, z=rnorm(nrow(HolzingerSwineford1939), 0, 1))
-			  
-fit <- cfa(HS.model, data=dat, meanstructure=TRUE) 
-fitaux <- auxiliary(HS.model, aux="z", data=dat, fun="cfa") # Use lavaan script
-fitaux <- cfa.auxiliary(fit, aux="z", data=dat) # Use lavaan output
+targetModel <- "
+  visual  =~ x1 + x2 + x3
+  textual =~ x4 + x5 + x6
+  speed   =~ x7 + x8 + x9
+"
 
-# Example of multiple groups confirmatory factor analysis
+## works just like cfa(), but with an extra "aux" argument
+fitaux1 <- cfa.auxiliary(targetModel, data = dat1, aux = "z",
+                         missing = "fiml", estimator = "mlr")
 
-fitgroup <- cfa(HS.model, data=dat, group="school", meanstructure=TRUE)
-fitgroupaux <- cfa.auxiliary(fitgroup, aux="z", data=dat, group="school")
+## with multiple auxiliary variables and multiple groups
+fitaux2 <- cfa.auxiliary(targetModel, data = dat1, aux = c("z","ageyr","grade"),
+                         group = "school", group.equal = "loadings")
 
-\dontrun{
-# Example of path analysis
-
-mod <- ' x5 ~ x4
-x4 ~ x3
-x3 ~ x1 + x2'
-
-fitpath <- sem(mod, data=dat, fixed.x=FALSE, meanstructure=TRUE) # fixed.x must be FALSE
-fitpathaux <- sem.auxiliary(fitpath, aux="z", data=dat)
-
-# Example of full structural equation modeling
-
-dat2 <- data.frame(PoliticalDemocracy, z=rnorm(nrow(PoliticalDemocracy), 0, 1))
-model <- ' 
-     ind60 =~ x1 + x2 + x3
-     dem60 =~ y1 + a*y2 + b*y3 + c*y4
-     dem65 =~ y5 + a*y6 + b*y7 + c*y8
-
-    dem60 ~ ind60
-    dem65 ~ ind60 + dem60
-
-    y1 ~~ y5
-    y2 ~~ y4 + y6
-    y3 ~~ y7
-    y4 ~~ y8
-    y6 ~~ y8
-'
-fitsem <- sem(model, data=dat2, meanstructure=TRUE)
-fitsemaux <- sem.auxiliary(fitsem, aux="z", data=dat2, meanstructure=TRUE)
-
-# Example of covariate at the factor level
-
-HS.model.cov <- ' visual  =~ x1 + x2 + x3
-              textual =~ x4 + x5 + x6
-             speed   =~ x7 + x8 + x9 
-			  visual ~ sex
-			  textual ~ sex
-			  speed ~ sex'
-	  
-fitcov <- cfa(HS.model.cov, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
-fitcovaux <- cfa.auxiliary(fitcov, aux="z", data=dat)
-
-# Example of  Endogenous variable with single indicator 
-HS.model.cov2 <- ' visual  =~ x1 + x2 + x3
-              textual =~ x4 + x5 + x6
-              x7 ~ visual + textual'
- 	  
-fitcov2 <- sem(HS.model.cov2, data=dat, fixed.x=FALSE, meanstructure=TRUE) 
-fitcov2aux <- sem.auxiliary(fitcov2, aux="z", data=dat)
-
-# Multiple auxiliary variables
-HS.model2 <- ' visual  =~ x1 + x2 + x3
-              speed   =~ x7 + x8 + x9'
-fit <- cfa(HS.model2, data=HolzingerSwineford1939)
-fitaux <- cfa.auxiliary(HS.model2, data=HolzingerSwineford1939, aux=c("x4", "x5")) 
-}
+## calculate correct incremental fit indices (e.g., CFI, TLI) using
+## the internally stored baseline model
+fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
+            baseline.model = fitaux2@external$baseline.model)
 }

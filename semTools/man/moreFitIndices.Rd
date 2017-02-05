@@ -27,17 +27,17 @@ Adjusted Gamma Hat (adjGammaHat; West, Taylor, & Wu, 2012) is a global fit index
 
 where \eqn{K} is the number of groups (please refer to Dudgeon, 2004 for the multiple-group adjustment for agfi*).
 
-Corrected Akaike Information Criterion (aic.smallN; Burnham & Anderson, 2003) is the corrected version of aic for small sample size:
+Corrected Akaike Information Criterion (aic.smallN; Burnham & Anderson, 2003) is a corrected version of AIC for small sample size, often abbreviated AICc:
 
-\deqn{ aic.smallN = f + \frac{2k(k + 1)}{N - k - 1},}
+\deqn{ aic.smallN = AIC + \frac{2k(k + 1)}{N - k - 1},}
 
-where \eqn{f} is the minimized discrepancy function, which is the product of the log likelihood and -2, and \eqn{k} is the number of parameters in the target model.
+where \eqn{AIC} is the original AIC: \eqn{-2 \times LL + 2k} (where \eqn{k} = the number of estimated parameters in the target model). Note that AICc is a small-sample correction derived for univariate regression models, so it is probably \emph{not} appropriate for comparing SEMs.
 
-Corrected Bayesian Information Criterion (bic.priorN; Kuha, 2004) is similar to bic but explicitly specifying the sample size on which the prior is based (\eqn{N_{prior}}).
+Corrected Bayesian Information Criterion (bic.priorN; Kuha, 2004) is similar to BIC but explicitly specifying the sample size on which the prior is based (\eqn{N_{prior}}).
 
 \deqn{ bic.priorN = f + k\log{(1 + N/N_{prior})},}
 
-Stochastic information criterion (sic; Preacher, 2006) is similar to aic or bic. This index will account for model complexity in the model's function form, in addition to the number of free parameters. This index will be provided only when the chi-squared value is not scaled. The sic can be computed by
+Stochastic information criterion (SIC; Preacher, 2006) is similar to AIC or BIC. This index will account for model complexity in the model's function form, in addition to the number of free parameters. This index will be provided only when the chi-squared value is not scaled. The SIC can be computed by
 
 \deqn{ sic = \frac{1}{2}\left(f - \log{\det{I(\hat{\theta})}}\right),}
 
@@ -47,7 +47,7 @@ Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for model
 
 \deqn{ hqc = f + 2k\log{(\log{N})},}
 
-Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit indices using the scaled chi-square values are also provided. 
+Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit indices using the scaled chi-square values are also provided.
 
 See \code{\link{nullRMSEA}} for the further details of the computation of RMSEA of the null model.
 }

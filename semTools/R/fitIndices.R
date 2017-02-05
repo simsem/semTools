@@ -120,7 +120,7 @@ nullRMSEA <- function (object, scaled = FALSE, silent = FALSE) {
 sic <- function(f, lresults = NULL) {
 
   E.inv <- lavaan::lavTech(lresults, "inverted.information")
-  if(inherits(E.inv, "try-error")) {
+  if (inherits(E.inv, "try-error")) {
     return(as.numeric(NA))
   }
   E <- MASS::ginv(E.inv) * lavaan::nobs(lresults)

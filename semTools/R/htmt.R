@@ -1,55 +1,65 @@
-### HTMT function
-#Written by Ylenio Longo
+### Ylenio Longo
+### Last updated:
 
-htmt <- function(data, model, ...){
-	R <- lavaan::lavCor(object = data, ...)
-	R <- abs(R) #this helps avoid errors
-    diag(R) <- NA
-    m <- lavaan::lavaanify(model)
-    m <- m[m$op%in% "=~",]
-    
-    ##variable names for each scale / factor
-    factors <- unique(m$lhs)
-    var <- list()
-    for(i in 1:length(factors)){
-        var[[i]] <- m$rhs[which(m$lhs %in% factors[i])]
+htmt <- function (model, data = NULL, sample.cov = NULL, missing = "listwise",
+                  ordered = NULL, absolute = TRUE) {
+  model <- lavaan::lavaanify(model)
+  model <- model[model$op %in% "=~", ]
+  factors <- unique(model$lhs)
+  nf <- length(factors)
+  var <- list()
+  for (i in 1:nf) {
+    var[[i]] <- model$rhs[which(model$lhs %in% factors[i])]
+  }
+  varnames <- c(unlist(var))
+  if(!is.null(data)) { # if data
+    if(any(! varnames %in% colnames(data))) {
+      absent.vars <- which(! varnames %in% colnames(data))
+      stop("Missing observed variables in the dataset: ",
+           paste(varnames[absent.vars], collapse = " "))
     }
-    var
-    
-    ##mean correlation within scales
-    m.cor.w <- list()
-    for(i in 1:length(factors)){
-        m.cor.w[[i]] <-  mean(R[var[[i]],var[[i]]], na.rm=TRUE)
+    data <- data[ , c(varnames)]
+    R <- lavaan::lavCor(data, missing = missing, ordered = ordered)
+    rownames(R) <- names(data)
+    colnames(R) <- names(data)
+  } else {
+    if (any(! varnames %in% colnames(sample.cov))) {
+      absent.vars <- which(! varnames %in% colnames(sample.cov))
+      stop("Missing observed variables in the covariance or correlation matrix: ",
+           paste(varnames[absent.vars], collapse = " "))
     }
-    m.cor.w <- as.numeric(m.cor.w)
-    m.cor.w
-    
-    ##geometric mean correlations within scale pairs
-    #all possible correlation combinations
-    comb <- expand.grid(1:length(factors), 1:length(factors))
-    g <- list() 
-    for(i in 1:nrow(comb)){
-        g[[i]] <- sqrt(m.cor.w[comb[i,2]]*m.cor.w[comb[i,1]])
+    diagR <- diag(sample.cov)
+    if (max(diagR) != 1 & min(diagR) != 1) { #if covariance matrix
+      R <- cov2cor(sample.cov[varnames, varnames])
+    } else { # if correlation matrix
+      R <- sample.cov[varnames, varnames]
     }
-    g <- as.numeric(g)
-    g #geometric mean results
-    
-    paste(comb[,2], comb[,1])
-    
-    ##mean correlations among items across scales
-    m.cor.a <- list()
-    for(i in 1:nrow(comb)){
-        m.cor.a[[i]] <-  mean(R[var[[comb[i,2]]],  var[[comb[i,1]]]], na.rm=TRUE)
-    }
-    m.cor.a <- as.numeric(m.cor.a)
-    m.cor.a
-    
-    ##htmt values
-    outhtmt <- m.cor.a / g 
-    
-    ##results
-    res <- matrix(outhtmt, nrow=length(factors), ncol=length(factors), dimnames=list(factors))
-    colnames(res) <- factors
-	class(res) <- c("lavaan.matrix.symmetric", "matrix")
-    res
+  }
+  if (absolute) {
+    R <- abs(R)
+  }
+  diag(R) <- NA
+  m.cor.w <- list()
+  for (i in 1:nf) {
+    m.cor.w[[i]] <- mean(R[var[[i]], var[[i]]], na.rm = TRUE)
+  }
+  m.cor.w <- as.numeric(m.cor.w)
+  comb <- expand.grid(1:nf, 1:nf)
+  g <- list()
+  for (i in 1:nrow(comb)) {
+    g[[i]] <- sqrt(m.cor.w[comb[i, 2]] * m.cor.w[comb[i, 1]])
+  }
+  g <- as.numeric(g)
+  paste(comb[, 2], comb[, 1])
+  m.cor.a <- list()
+  for (i in 1:nrow(comb)) {
+    m.cor.a[[i]] <- mean(R[var[[comb[i, 2]]],
+                           var[[comb[i, 1]]]], na.rm = TRUE)
+  }
+  m.cor.a <- as.numeric(m.cor.a)
+  outhtmt <- m.cor.a / g
+  res <- matrix(outhtmt, nrow = nf, ncol = nf, dimnames = list(factors))
+  colnames(res) <- factors
+  class(res) <- c("lavaan.matrix.symmetric", "matrix")
+  res
 }

@@ -1,158 +1,237 @@
-### Title: Automatically accounts for auxiliary variable in full information maximum likelihood
-### Author: Sunthud Pornprasertmanit
-### Last updated: 17 October 2016
-### Description: Automatically accounts for auxiliary variable in full information maximum likelihood
+### Terrence D. Jorgensen
+### Last updated: 2 February 2017
+### new auxiliary function does NOT create a lavaanStar-class instance
 
-setClass("lavaanStar", contains = "lavaan", representation(nullfit = "vector", imputed="list", imputedResults="list", auxNames="vector"), prototype(nullfit=c(chi=0,df=0), imputed=list(), imputedResults=list(), auxNames = ""))
+#' Implement Saturated Correlates with FIML
+#'
+#' Automatically add auxiliary variables to a lavaan model when using full
+#' information maximum likelihood (FIML) to handle missing data
+#'
+#' These functions are wrappers around the corresponding lavaan functions.
+#' You can use them the same way you use \code{\link[lavaan]{lavaan}}, but you
+#' \emph{must} pass your full \code{data.frame} to the \code{data} argument.
+#' Because the saturated-correlates approaches (Enders, 2008) treates exogenous
+#' variables as random, \code{fixed.x} must be set to \code{FALSE}. Because FIML
+#' requires continuous data (although nonnormality corrections can still be
+#' requested), no variables in the model nor auxiliary variables specified in
+#' \code{aux} can be declared as \code{ordered}.
+#'
+#' @aliases auxiliary lavaan.auxiliary cfa.auxiliary sem.auxiliary growth.auxiliary
+#'
+#' @param model The analysis model can be specified with 1 of 2 objects:
+#'   \enumerate{
+#'     \item  lavaan \code{\link[lavaan]{model.syntax}} specifying a hypothesized
+#'            model \emph{without} mention of auxiliary variables in \code{aux}
+#'     \item  a parameter table, as returned by \code{\link[lavaan]{parTable}},
+#'            specifying the target model \emph{without} auxiliary variables.
+#'            This option requires these columns (and silently ignores all others):
+#'            \code{c("lhs","op","rhs","user","group","free","label","plabel","start")}
+#'   }
+#' @param data \code{data.frame} that includes auxiliary variables as well as
+#'   any observed variables in the \code{model}
+#' @param aux \code{character}. Names of auxiliary variables to add to \code{model}
+#' @param fun \code{character}. Name of a specific lavaan function used to fit
+#'   \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
+#'   \code{"sem"}, or \code{"growth"}). Only required for \code{auxiliary}.
+#' @param ... additional arguments to pass to \code{\link[lavaan]{lavaan}}.
+#'
+#' @author
+#' Terrence D. Jorgensen (University of Amsterdam; \email{T.D.Jorgensen@uva.nl})
+#'
+#' @references Enders, C. K. (2008). A note on the use of missing auxiliary
+#'   variables in full information maximum likelihood-based structural equation
+#'   models. \emph{Structural Equation Modeling, 15}(3), 434-448.
+#'   doi:10.1080/10705510802154307
+#'
+#' @return a fitted \code{\linkS4class[lavaan]{lavaan}} object.  Additional
+#'   information is stored as a \code{list} in the \code{\@external} slot:
+#'   \itemize{
+#'     \item \code{baseline.model}. a fitted \code{\linkS4class[lavaan]{lavaan}}
+#'           object. Results of fitting an appropriate independence model for
+#'           the calculation of incremental fit indices (e.g., CFI, TLI) in
+#'           which the auxiliary variables remain saturated, so only the target
+#'           variables are constrained to be orthogonal. See Examples for how
+#'           to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
+#'     \item \code{aux}. The character vector of auxiliary variable names.
+#'   }
+#'
+#' @examples
+#' dat1 <- lavaan::HolzingerSwineford1939
+#' set.seed(12345)
+#' dat1$z <- rnorm(nrow(dat1))
+#' dat1$x5 <- ifelse(dat1$z < quantile(dat1$z, .3), NA, dat1$x5)
+#' dat1$x9 <- ifelse(dat1$z > quantile(dat1$z, .8), NA, dat1$x9)
+#'
+#' targetModel <- "
+#'   visual  =~ x1 + x2 + x3
+#'   textual =~ x4 + x5 + x6
+#'   speed   =~ x7 + x8 + x9
+#' "
+#'
+#' ## works just like cfa(), but with an extra "aux" argument
+#' fitaux1 <- cfa.auxiliary(targetModel, data = dat1, aux = "z",
+#'                          missing = "fiml", estimator = "mlr")
+#'
+#' ## with multiple auxiliary variables and multiple groups
+#' fitaux2 <- cfa.auxiliary(targetModel, data = dat1, aux = c("z","ageyr","grade"),
+#'                          group = "school", group.equal = "loadings")
+#'
+#' ## calculate correct incremental fit indices (e.g., CFI, TLI) using
+#' ## the internally stored baseline model
+#' fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
+#'             baseline.model = fitaux2@external$baseline.model)
 
-setMethod("inspect", "lavaanStar",  ## FIXME: get rid of lavaanStar object
-function(object, what="free") {
-	what <- tolower(what)
-	if(what == "fit" ||
-              what == "fitmeasures" ||
-              what == "fit.measures" ||
-              what == "fit.indices") {
-		fitMeasuresLavaanStar(object)
-	} else if(what == "imputed" ||
-              what == "impute") {
-		result <- object@imputed
-		if(length(result) > 0) {
-			return(result)
-		} else {
-			stop("This method did not made by multiple imputation.")
-		}
-	} else if(what == "aux" ||
-              what == "auxiliary") {
-		print(object@auxNames)
-	} else {
-		getMethod("inspect", "lavaan")(object, what=what)  ## FIXME: don't set a new inspect method
-	}
-})
 
-setMethod("summary", "lavaanStar",
-function(object, fit.measures=FALSE, ...) {
-	getMethod("summary", "lavaan")(object, fit.measures=FALSE, ...)
-	if(fit.measures) {
-		cat("Because the original method to find the baseline model does not work, \nplease do not use any fit measures relying on baseline model, including CFI and TLI. \nTo find the correct one, please use the function: lavInspect(object, what='fit').\n")
-	}
-})
+auxiliary <- function(model, data, aux, fun, ...) {
+  lavArgs <- list(...)
+  if (is.null(data))
+    stop("Please provide a data.frame that includes modeled and auxiliary variables")
+  if (!all(sapply(data[aux], function(x) class(x[1]) %in% c("numeric","integer"))))
+    stop("missing = 'FIML' is unavailable for categorical data")
 
-setMethod("anova", signature(object = "lavaanStar"),
-function(object, ...) {
-	imputed <- object@imputed
-	if(length(imputed) > 0) {
-		dots <- list(...)
-		if(length(dots) > 1) stop("Multiple Imputed Results: Cannot compare more than two objects")
-		object2 <- dots[[1]]
-		imputed2 <- object2@imputed
-		if(length(imputed) == 0) stop("The second object must come from multiple imputation.")
-		listlogl1 <- imputed[["indivlogl"]]
-		listlogl2 <- imputed2[["indivlogl"]]
-		df1 <- lavaan::lavInspect(object, "fit")["df"]
-		df2 <- lavaan::lavInspect(object2, "fit")["df"]
-		if(df2 < df1) {
-			templogl <- listlogl1
-			listlogl1 <- listlogl2
-			listlogl2 <- templogl
-		}
-		dfdiff <- df2 - df1
-		anovaout <- mapply(lavaan::anova, object@imputedResults, object2@imputedResults, SIMPLIFY = FALSE)
-		chidiff <- sapply(anovaout, function(u) u[2, "Chisq diff"])
-		dfdiff2 <- mean(sapply(anovaout, function(u) u[2, "Df diff"]))
-		fit.altcc <- mean(chidiff)
-		naive <- c(fit.altcc, dfdiff2, 1 - pchisq(fit.altcc, dfdiff2))
-		names(naive) <- c("chisq", "df", "pvalue")	
-		lmrr <- lmrrPooledChi(chidiff, dfdiff2)
-		mr <- NULL
-		mplus <- NULL
-		if(!is.null(listlogl1[["loglmod"]]) | !is.null(listlogl2[["loglmod"]])) {
-			logl1 <- listlogl1[["loglmod"]]
-			logl2 <- listlogl2[["loglmod"]]
-			chimean <- mean((logl1 - logl2)*2)
-			m <- length(logl1)
-			ariv <- ((m+1)/((m-1)*dfdiff))*(fit.altcc-chimean)
+  ## Easiest scenario: model is a character string
+  if (is.character(model)) {
+    varnames <- lavaan::lavNames(lavaanify(model), type = "ov")
+    if (length(intersect(varnames, aux))) stop('modeled variable declared as auxiliary')
+    ## concatenate saturated auxiliaries
+    covstruc <- outer(aux, aux, function(x, y) paste(x, "~~", y))
+    lavArgs$model <- c(model, paste(aux, "~ 1"),
+                       covstruc[lower.tri(covstruc, diag = TRUE)],
+                       outer(aux, varnames, function(x, y) paste(x, "~~", y)))
+    lavArgs$data <- data
+    lavArgs$fixed.x <- FALSE
+    lavArgs$missing <- "fiml"
+    lavArgs$meanstructure <- TRUE
+    lavArgs$ordered <- NULL
+    result <- do.call(fun, lavArgs)
+    ## specify, fit, and attach an appropriate independence model
+    baseArgs <- list()
+    baseArgs$data                <- data
+    baseArgs$group               <- lavArgs$group
+    baseArgs$group.label         <- lavArgs$group.label
+    baseArgs$cluster             <- lavArgs$cluster
+    baseArgs$sample.cov.rescale  <- lavArgs$sample.cov.rescale
+    baseArgs$information         <- lavArgs$information
+    baseArgs$se                  <- lavArgs$se
+    baseArgs$test                <- lavArgs$test
+    baseArgs$bootstrap           <- lavArgs$bootstrap
+    baseArgs$control             <- lavArgs$control
+    baseArgs$optim.method        <- lavArgs$optim.method
+    baseArgs$model <- c(paste(varnames, "~~", varnames),
+                        paste(varnames, "~ 1"), paste(aux, "~ 1"),
+                        covstruc[lower.tri(covstruc, diag = TRUE)],
+                        outer(aux, varnames, function(x, y) paste(x, "~~", y)))
+    result@external$baseline.model <- do.call(lavaan::lavaan, baseArgs)
+    result@external$aux <- aux
+    return(result)
+  }
 
-			mplus <- mplusPooledChi(chimean, dfdiff, ariv)
-			mr <- mrPooledChi(chimean, m, dfdiff, ariv)
-		}
-		result <- list(naive = naive, lmrr = lmrr, mr = mr, mplus = mplus)
-		return(result)
-	} else {
-		return(getMethod("anova", "lavaan")(object, ...))
-	}
-})
+  ## otherwise, only accept a lavaan object or parameter table
+  PTcols <- c("lhs","op","rhs","user","group","free","label","plabel","start")
 
-setMethod("vcov", "lavaanStar",
-function(object, ...) {
-	result <- object@imputed
-	if(length(result) == 0) {
-		return(getMethod("vcov", "lavaan")(object, ...))
-	} else {
-		out <- object@vcov$vcov
-		rownames(out) <- colnames(out) <- lavaan::lav_partable_labels(lavaan::partable(object), type="free")
-		return(out)
-	}
-})
-	
-# auxiliary: Automatically accounts for auxiliary variable in full information maximum likelihood
+	if (is.list(model)) {
+	  if (any(model$exo == 1))
+	    stop("All exogenous variables (covariates) must be treated as endogenous",
+	         " by the 'auxiliary' function. Please set 'fixed.x = FALSE'")
+	  missingCols <- setdiff(PTcols, names(model))
+	  if (length(missingCols)) stop("If the 'model' argument is a parameter table",
+	                                " it must also include these columns: \n",
+	                                paste(missingCols, collapse = ", "))
+	  PT <- as.data.frame(model)[PTcols]
+	} else stop("The 'model' argument must be a character vector of lavaan",
+	            " syntax or a parameter table")
 
-cfa.auxiliary <- function(model, aux, ...) {
-	auxiliary(model = model, aux = aux, fun = "cfa", ...)
+  ## separately store rows with constraints or user-defined parameters
+  conRows <- PT$op %in% c("==","<",">",":=")
+  if (any(conRows)) {
+    CON <- PT[  conRows, ]
+    PT <-  PT[ !conRows, ]
+  } else CON <- data.frame(NULL)
+
+  ## variable names
+	varnames <- lavaan::lavNames(PT, type = "ov")
+	if (length(intersect(varnames, aux))) stop('modeled variable declared as auxiliary')
+
+	## specify a saturated model for auxiliaries
+	covstruc <- outer(aux, aux, function(x, y) paste(x, "~~", y))
+	satMod <- c(covstruc[lower.tri(covstruc, diag = TRUE)], paste(aux, "~ 1"), # among auxiliaries
+	            outer(aux, varnames, function(x, y) paste(x, "~~", y)))        # between aux and targets
+	satPT <- lavaan::lavaanify(satMod,
+	                           ngroups = max(PT$group))[c("lhs","op","rhs","group")]
+
+	## after omitting duplicates, check number of added parameters, add columns
+	mergedPT <- suppressWarnings({
+	  lavaan::lav_partable_merge(PT, satPT, remove.duplicated = TRUE)
+	})
+	nAuxPar <- nrow(mergedPT) - nrow(PT)
+	newRows <- 1L:nAuxPar + nrow(PT)
+	mergedPT$user[newRows] <- 1L # FIXME: if they are listed as constraints (2L), could that omit them from being printed?
+	mergedPT$free[newRows] <- 1L:nAuxPar + max(PT$free)
+	mergedPT$label[newRows] <- ""
+	mergedPT$plabel[newRows] <- paste0(".p", 1L:nAuxPar + nrow(PT), ".")
+	## calculate sample moments as starting values (recycle over groups)
+	auxCov <- cov(data[aux], use = "pairwise.complete.obs")
+	auxM <- colMeans(data[aux], na.rm = TRUE)
+	auxTarget <- cov(data[c(aux, varnames)],
+	                 use = "pairwise.complete.obs")[aux, varnames]
+	## match order of parameters in syntax above
+	mergedPT$start[newRows] <- c(auxCov[lower.tri(auxCov, diag = TRUE)],
+	                             auxM, as.numeric(auxTarget))
+	finalPT <- lavaan::lav_partable_complete(rbind(mergedPT, CON))
+
+  lavArgs$model <- finalPT
+  lavArgs$data <- data
+  lavArgs$fixed.x <- FALSE
+  lavArgs$missing <- "fiml"
+  lavArgs$meanstructure <- TRUE
+  lavArgs$ordered <- NULL
+  result <- do.call(fun, lavArgs)
+
+  ## specify, fit, and attach an appropriate independence model
+  baseArgs <- list()
+  baseArgs$model                 <- lavaan::lav_partable_complete(satPT)
+  baseArgs$data                  <- data
+  baseArgs$group                 <- lavArgs$group
+  baseArgs$group.label           <- lavArgs$group.label
+  baseArgs$cluster               <- lavArgs$cluster
+  baseArgs$sample.cov.rescale    <- lavArgs$sample.cov.rescale
+  baseArgs$information           <- lavArgs$information
+  baseArgs$se                    <- lavArgs$se
+  baseArgs$test                  <- lavArgs$test
+  baseArgs$bootstrap             <- lavArgs$bootstrap
+  baseArgs$control               <- lavArgs$control
+  baseArgs$optim.method          <- lavArgs$optim.method
+  result@external$baseline.model <- do.call(lavaan::lavaan, baseArgs)
+  result@external$aux <- aux
+
+	result
 }
 
-sem.auxiliary <- function(model, aux, ...) {
-	auxiliary(model = model, aux = aux, fun = "sem", ...)
+lavaan.auxiliary <- function(model, data, aux, ...) {
+	auxiliary(model = model, data = data, aux = aux, fun = "lavaan", ...)
 }
 
-growth.auxiliary <- function(model, aux, ...) {
-	auxiliary(model = model, aux = aux, fun = "growth", ...)
+cfa.auxiliary <- function(model, data, aux, ...) {
+	auxiliary(model = model, data = data, aux = aux, fun = "cfa", ...)
 }
 
-lavaan.auxiliary <- function(model, aux, ...) {
-	auxiliary(model = model, aux = aux, fun = "lavaan", ...)
+sem.auxiliary <- function(model, data, aux, ...) {
+	auxiliary(model = model, data = data, aux = aux, fun = "sem", ...)
 }
 
-auxiliary <- function(model, aux, fun, ...) {
-	args <- list(...)
-	args$fixed.x <- FALSE
-	args$missing <- "fiml"
-	
-	if(is(model, "lavaan")) {
-		if(!lavaan::lavInspect(model, "options")$meanstructure) stop("The lavaan fitted model must evaluate the meanstructure. Please re-fit the lavaan object again with 'meanstructure=TRUE'")
-		model <- lavaan::parTable(model)
-	} else if(!(is.list(model) && ("lhs" %in% names(model)))) {
-		fit <- do.call(fun, c(list(model=model, do.fit=FALSE), args))
-		model <- lavaan::parTable(fit)
-	}
-	model <- model[setdiff(1:length(model), which(names(model) == "start"))]
-
-	if(any(model$exo == 1)) {
-		stop("All exogenous variables (covariates) must be treated as endogenous variables by the 'auxiliary' function (fixed.x = FALSE).")
-	}
-
-	auxResult <- craftAuxParTable(model = model, aux = aux, ...)
-	if(checkOrdered(args$data, auxResult$indName, ...)) {
-		stop("The analysis model or the analysis data have ordered categorical variables. The auxiliary variable feature is not available for the models for categorical variables with the weighted least square approach.")
-	}
-	
-	args$model <- auxResult$model
-	result <- do.call(fun, args)
-	
-	codeNull <- nullAuxiliary(aux, auxResult$indName, NULL, any(model$op == "~1"), max(model$group))
-	resultNull <- lavaan::lavaan(codeNull, ...)
-	result <- as(result, "lavaanStar")
-	fit <- lavaan::fitMeasures(resultNull)
-	name <- names(fit)
-	fit <- as.vector(fit)
-	names(fit) <- name
-	result@nullfit <- fit
-	result@auxNames <- aux
-	return(result)
+growth.auxiliary <- function(model, data, aux, ...) {
+	auxiliary(model = model, data = data, aux = aux, fun = "growth", ...)
 }
+
+
+
+#################################################################
+## After enough time passes, delete everything below this line ##
+#################################################################
 
 checkOrdered <- function(dat, varnames, ...) {
 	ord <- list(...)$ordered
-	if(is.null(ord)) { 
+	if(is.null(ord)) {
 		ord <- FALSE
 	} else {
 		ord <- TRUE
@@ -233,7 +312,7 @@ attachPT <- function(pt, lhs, op, rhs, ngroups, symmetric=FALSE, exo=FALSE, fixe
 	} else {
 		element <- cbind(lhs, rhs)
 	}
-	if(symmetric) { 
+	if(symmetric) {
 		if(useUpper) {
 			element <- element[as.vector(upper.tri(diag(length(lhs)), diag=diag)),]
 		} else {
@@ -283,7 +362,7 @@ nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
 	pt <- attachPT(pt, indName, "~~", aux, ngroups)
 	if(meanstructure) pt <- attachPT(pt, aux, "~1", "", ngroups)
 	if(!is.null(covName) && length(covName) != 0) {
-		pt <- attachPT(pt, aux, "~~", covName, ngroups)	
+		pt <- attachPT(pt, aux, "~~", covName, ngroups)
 		pt <- attachPT(pt, covName, "~~", covName, ngroups, symmetric=TRUE, useUpper=TRUE)
 		if(meanstructure) pt <- attachPT(pt, covName, "~1", "", ngroups)
 	}
@@ -294,23 +373,23 @@ nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
 fitMeasuresLavaanStar <- function(object) {
 	notused <- capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit"))) ## FIXME: don't set a new inspect method
 	result[c("baseline.chisq", "baseline.df", "baseline.pvalue")] <- object@nullfit[c("chisq", "df", "pvalue")]
-		
-    if(lavaan::lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler", 
+
+    if(lavaan::lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler",
                    "mean.var.adjusted", "scaled.shifted")) {
         scaled <- TRUE
     } else {
         scaled <- FALSE
     }
-    
+
 	if(scaled) {
 		result[c("baseline.chisq.scaled", "baseline.df.scaled", "baseline.pvalue.scaled", "baseline.chisq.scaling.factor")] <- object@nullfit[c("chisq.scaled", "df.scaled", "pvalue.scaled", "chisq.scaling.factor")]
 	}
-	
+
 	X2.null <- object@nullfit["chisq"]
 	df.null <- object@nullfit["df"]
 	X2 <- result["chisq"]
 	df <- result["df"]
-	
+
 	if(df.null == 0) {
 		result["cfi"] <- NA
 		result["tli"] <- NA
@@ -331,7 +410,7 @@ fitMeasuresLavaanStar <- function(object) {
 				result["cfi"] <- 1 - t1/t2
 			}
 		}
-		
+
 		# TLI
 		if("tli" %in% names(result)) {
 			if(df > 0) {
@@ -366,7 +445,7 @@ fitMeasuresLavaanStar <- function(object) {
 			}
 			result["rfi"] <- RLI
 		}
-		
+
 		# NFI
 		if("nfi" %in% names(result)) {
 			t1 <- X2.null - X2
@@ -374,7 +453,7 @@ fitMeasuresLavaanStar <- function(object) {
 			NFI <- t1/t2
 			result["nfi"] <- NFI
 		}
-		
+
 		# PNFI
 		if("pnfi" %in% names(result)) {
 			t1 <- X2.null - X2
@@ -382,7 +461,7 @@ fitMeasuresLavaanStar <- function(object) {
 			PNFI <- (df/df.null) * t1/t2
 			result["pnfi"] <- PNFI
 		}
-		
+
 		# IFI
 		if("ifi" %in% names(result)) {
 			t1 <- X2.null - X2
@@ -394,7 +473,7 @@ fitMeasuresLavaanStar <- function(object) {
 			}
 			result["ifi"] <- IFI
 		}
-		
+
 		# RNI
 		if("rni" %in% names(result)) {
 			t1 <- X2 - df
@@ -409,13 +488,13 @@ fitMeasuresLavaanStar <- function(object) {
 			result["rni"] <- RNI
 		}
 	}
-	
+
 	if(scaled) {
 		X2.scaled <- result["chisq.scaled"]
 		df.scaled <- result["df.scaled"]
 		X2.null.scaled <- object@nullfit["chisq.scaled"]
 		df.null.scaled <- object@nullfit["df.scaled"]
-		
+
 		if(df.null.scaled == 0) {
 			result["cfi.scaled"] <- NA
 			result["tli.scaled"] <- result["nnfi.scaled"] <- NA
@@ -435,7 +514,7 @@ fitMeasuresLavaanStar <- function(object) {
 					result["cfi.scaled"] <- 1 - t1/t2
 				}
 			}
-			
+
 			if("tli.scaled" %in% names(result)) {
 				if(df > 0) {
 					t1 <- X2.null.scaled/df.null.scaled - X2.scaled/df.scaled
@@ -450,7 +529,7 @@ fitMeasuresLavaanStar <- function(object) {
 				}
 				result["tli.scaled"] <- result["nnfi.scaled"] <- TLI
 			}
-			
+
 			if("rfi.scaled" %in% names(result)) {
 				if(df > 0) {
 					t1 <- X2.null.scaled/df.null.scaled - X2.scaled/df.scaled
@@ -465,21 +544,21 @@ fitMeasuresLavaanStar <- function(object) {
 				}
 				result["rfi.scaled"] <- RLI
 			}
-			
+
 			if("nfi.scaled" %in% names(result)) {
 				t1 <- X2.null.scaled - X2.scaled
 				t2 <- X2.null.scaled
 				NFI <- t1/t2
 				result["nfi.scaled"] <- NFI
 			}
-			
+
 			if("pnfi.scaled" %in% names(result)) {
 				t1 <- X2.null.scaled - X2.scaled
 				t2 <- X2.null.scaled
 				PNFI <- (df/df.null) * t1/t2
 				result["pnfi.scaled"] <- PNFI
 			}
-			
+
 			if("ifi.scaled" %in% names(result)) {
 				t1 <- X2.null.scaled - X2.scaled
 				t2 <- X2.null.scaled
@@ -490,7 +569,7 @@ fitMeasuresLavaanStar <- function(object) {
 				}
 				result["ifi.scaled"] <- IFI
 			}
-			
+
 			if("rni.scaled" %in% names(result)) {
 				t1 <- X2.scaled - df.scaled
 				t2 <- X2.null.scaled - df.null.scaled
@@ -503,8 +582,8 @@ fitMeasuresLavaanStar <- function(object) {
 				result["rni.scaled"] <- RNI
 			}
 		}
-	} 
-	
+	}
+
 	#logl
 	imputed <- object@imputed
 	if(length(imputed) > 0) {
@@ -518,7 +597,7 @@ fitMeasuresLavaanStar <- function(object) {
 		result["bic2"] <- -2*loglikval["logl"] + npar*log(N.star)
 		result <- result[-which("fmin" == names(result))]
 	}
-	result	
+	result
 }
 
 

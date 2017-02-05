@@ -4,27 +4,37 @@
 	Assessing Discriminant Validity using Heterotrait-Monotrait Ratio
 }
 \description{
-	This function assesses discriminant validity through the heterotrait-monotrait ratio (HTMT) of the correlations (Henseler, Ringlet & Sarstedt, 2015). Specifically, it assesses the average correlation among indicators across constructs (i.e. heterotrait-heteromethod correlations), relative to the average correlation among indicators within the same construct (i.e. monotrait-heteromethod correlations). The resulting HTMT values are interpreted as estimates of inter-construct correlations. Absolute values of the correlations are used to calculate the HTMT matrix.
+	This function assesses discriminant validity through the heterotrait-monotrait ratio (HTMT) of the correlations (Henseler, Ringlet & Sarstedt, 2015). Specifically, it assesses the average correlation among indicators across constructs (i.e. heterotrait-heteromethod correlations), relative to the average correlation among indicators within the same construct (i.e. monotrait-heteromethod correlations). The resulting HTMT values are interpreted as estimates of inter-construct correlations. Absolute values of the correlations are recommended to calculate the HTMT matrix. Correlations are estimated using the lavCor function in the lavaan package.
 }
 \usage{
-htmt(data, model, ...)
+htmt(model, data = NULL, sample.cov = NULL, missing = "listwise",
+     ordered = NULL, absolute = TRUE)
 }
 \arguments{
-  \item{data}{
-	A desired data set
-}
   \item{model}{
-	lavaan syntax of a confirmatory factor analysis model where at least two factors are required to indicate indicators measuring the same construct.
+	lavaan \link[lavaan]{model.syntax} of a confirmatory factor analysis model where at least two factors are required for indicators measuring the same construct.
   }
-  \item{\dots}{
-	Other arguments shown in \link[lavaan]{lavCor}
-  }
+  \item{data}{
+	A \code{data.frame} or data \code{matrix}
+}
+  \item{sample.cov}{
+	A covariance or correlation matrix can be used, instead of \code{data}, to estimate the HTMT values.
+}
+  \item{missing}{
+	If "listwise", cases with missing values are removed listwise from the data frame. If "direct" or "ml" or "fiml" and the estimator is maximum likelihood, an EM algorithm is used to estimate the unrestricted covariance matrix (and mean vector). If "pairwise", pairwise deletion is used. If "default", the value is set depending on the estimator and the mimic option (see details in \link[lavaan]{lavCor}).
+}
+  \item{ordered}{
+	Character vector. Only used if object is a \code{data.frame}. Treat these variables as ordered (ordinal) variables. Importantly, all other variables will be treated as numeric (unless \code{is.ordered == TRUE} in \code{data}). (see also \link[lavaan]{lavCor})
+}
+  \item{absolute}{
+	logical. Whether HTMT values should be estimated based on absolute correlations (recommended and default is \code{TRUE})
+}
 }
 \value{
-	A matrix showing HTMT values (i.e., discriminant validity) between each pair of factors.
+	A matrix showing HTMT values (i.e., discriminant validity) between each pair of factors
 }
 \references{
-Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for assessing discriminant validity in variance-based structural equation modeling. \emph{Journal of the Academy of Marketing Science, 43}, 115-135.
+Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for assessing discriminant validity in variance-based structural equation modeling. \emph{Journal of the Academy of Marketing Science, 43}, 115-135. doi:10.1007/s11747-014-0403-8
 }
 \author{
 	Ylenio Longo (University of Nottingham; \email{yleniolongo@gmail.com})
@@ -35,5 +45,5 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               speed   =~ x7 + x8 + x9 '
 
 dat <- HolzingerSwineford1939[, paste0("x", 1:9)]
-htmt(dat, HS.model)
+htmt(HS.model, dat)
 }

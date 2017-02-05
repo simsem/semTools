@@ -1,6 +1,6 @@
 Package: semTools
 Title: Useful Tools for Structural Equation Modeling
-Version: 0.4-14.1
+Version: 0.4-14.2
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut", "cre"), email="TJorgensen314@gmail.com"),
 		person(given = "Sunthud", family = "Pornprasertmanit", role = "aut", email = "psunthud@gmail.com"), 
 		person(given = "Patrick", family = "Miller", role = "aut", email="pmille13@nd.edu"), 
@@ -25,7 +25,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com") 		
 		)
 Description: Provides useful tools for structural equation modeling packages. 
-Depends: R(>= 3.1.0), methods, lavaan(>= 0.5-22), utils, stats, graphics
+Depends: R(>= 3.3.2), methods, lavaan(>= 0.5-23), utils, stats, graphics
 Suggests: MASS, parallel, Amelia, mice, foreign, OpenMx(>= 2.0.0), GPArotation, mnormt, boot
 License: GPL (>= 2)
 LazyData: yes
@@ -54,4 +54,4 @@ Author: Terrence D. Jorgensen [aut, cre],
   Jason Rights [ctb],
   Ylenio Longo [ctb]
 Maintainer: Terrence D. Jorgensen <TJorgensen314@gmail.com>
-Date/Publication: 2017-01-15
+Date/Publication: 2017-02-05

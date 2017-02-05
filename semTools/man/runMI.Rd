@@ -1,161 +1,158 @@
 \name{runMI}
 \alias{runMI}
+\alias{lavaan.mi}
 \alias{cfa.mi}
 \alias{sem.mi}
 \alias{growth.mi}
-\alias{lavaan.mi}
 \title{
-Multiply impute and analyze data using lavaan
+Fit a lavaan Model to Multiple Imputed Data Sets
 }
 \description{
-This function takes data with missing observations, multiple imputes the data, runs a SEM using lavaan and combines the results using Rubin's rules. Note that parameter estimates and standard errors are pooled by the Rubin's (1987) rule. The chi-square statistics and the related fit indices are pooled by the method described in \code{"chi"} argument. SRMR is calculated based on the average model-implied means and covariance matrices across imputations.
+This function fits a lavaan model to a list of imputed data sets, and can also implement multiple imputation for a single \code{data.frame} with missing observations, using either the Amelia package or the mice package.
 }
 \usage{
-runMI(model, data, m, miArgs=list(), chi="all", miPackage="Amelia", 
-	seed=12345, fun, nullModel = NULL, includeImproper = FALSE, ...) 
-cfa.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
-	seed=12345, nullModel = NULL, includeImproper = FALSE, ...)
-sem.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all",  
-	seed=12345, nullModel = NULL, includeImproper = FALSE, ...)
-growth.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
-	seed=12345, nullModel = NULL, includeImproper = FALSE, ...)
-lavaan.mi(model, data, m, miArgs=list(), miPackage="Amelia", chi="all", 
-	seed=12345, nullModel = NULL, includeImproper = FALSE, ...)
+runMI(model, data, fun = "lavaan", ...,
+      m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+lavaan.mi(model, data, ...,
+          m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+cfa.mi(model, data, ...,
+       m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+sem.mi(model, data, ...,
+       m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+growth.mi(model, data, ...,
+          m, miArgs = list(), miPackage = "Amelia", seed = 12345)
 }
 \arguments{
   \item{model}{
-lavaan syntax for the model to be analyzed. 
+	The analysis model can be specified using lavaan \code{\link[lavaan]{model.syntax}} or parameter table (as returned by \code{\link[lavaan]{parTable}}).
 }
   \item{data}{
-Data frame with missing observations or a list of data frames where each data frame is one imputed data set (for imputed data generated outside of the function). If a list of data frames is supplied, then other options can be left at the default.
-}
-  \item{m}{
-Number of imputations wanted.
-}
-  \item{miArgs}{
-Addition arguments for the multiple-imputation function. The arguments should be put in a list (see example below).
-}
- \item{miPackage}{
-Package to be used for imputation. Currently these functions only support \code{"Amelia"} or \code{"mice"} for imputation. 
-}
- \item{chi}{
-The method to combine the chi-square. Can be one of the following: \code{"mr"} for the method proposed for Meng & Rubin (1992), \code{"mplus"} for the method used in Mplus (Asparouhov & Muthen, 2010), \code{"lmrr"} for the method proposed by Li, Meng, Raghunathan, & Rubin (1991),  \code{"all"} to show the three methods in the output, and \code{"none"} to not pool any chi-square values. The default is \code{"all"}. 
-}
- \item{seed}{
-	Random number seed to be used in imputations.
-}
- \item{nullModel}{
-lavaan syntax for the null model. If not specified, the default null model from lavaan is used.
-}
- \item{includeImproper}{
-If \code{TRUE}, the function will combine the results with improper solutions to get the combined solution.
+A \code{data.frame} with missing observations, or a \code{list} of imputed data sets (if data are imputed already). If \code{runMI} has already been called, then imputed data sets are stored in the \code{@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object from which the same imputed data will be used for additional analyses.
 }
  \item{fun}{
-	The character of the function name used in running lavaan model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}). 
+	\code{character}. Name of a specific lavaan function used to fit \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"}, \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
 }
- \item{...}{
-	Other arguments to be passed to the specified lavaan function (\code{"cfa"}, \code{"sem"}, \code{"growth"}, \code{"lavaan"}).
+  \item{\dots}{
+	additional arguments to pass to \code{\link[lavaan]{lavaan}}
+}
+  \item{m}{
+\code{integer}. Request the number of imputations. Ignored if \code{data} is already a \code{list} of imputed data sets or a \code{lavaan.mi} object.
+}
+  \item{miArgs}{
+Addition arguments for the multiple-imputation function (\code{miPackage}). The arguments should be put in a list (see example below). Ignored if \code{data} is already a \code{list} of imputed data sets or a \code{lavaan.mi} object.
+}
+  \item{miPackage}{
+Package to be used for imputation. Currently these functions only support \code{"Amelia"} or \code{"mice"} for imputation. Ignored if \code{data} is already a \code{list} of imputed data sets or a \code{lavaan.mi} object.
+}
+  \item{seed}{
+	Random number seed to be set before imputing the data. Ignored if \code{data} is already a \code{list} of imputed data sets or a \code{lavaan.mi} object.
 }
 }
 \value{
-	The \code{\linkS4class{lavaanStar}} object which contains the original \code{lavaan} object (where the appropriate parameter estimates, appropriate standard errors, and chi-squares are filled), the additional fit-index values of the null model, which need to be adjusted to multiple datasets, and the information from pooling multiple results.
+	A \code{\linkS4class{lavaan.mi}} object
 }
 \references{
-Asparouhov T. & Muthen B. (2010).\emph{Chi-Square Statistics with Multiple Imputation}. Technical Report. www.statmodel.com. 
+Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY: Guilford.
 
-Li, K.H., Meng, X.-L., Raghunathan, T.E. and Rubin, D.B. (1991). Significance Levels From Repeated p-values with Multiply-Imputed Data. \emph{Statistica Sinica, 1}, 65-92.
-
-Meng, X.L. & Rubin, D.B. (1992). Performing likelihood ratio tests with multiply-imputed data sets. \emph{Biometrika, 79}, 103 - 111.
-
-Rubin, D.B. (1987) \emph{Multiple Imputation for Nonresponse in Surveys.} J. Wiley & Sons, New York.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}. New York, NY: Wiley.
 }
-\author{Alexander M. Schoemann (East Carolina University;  \email{schoemanna@ecu.edu})
-Patrick Miller (University of Notre Dame; \email{pmille13@nd.edu})
-Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
-Mijke Rhemtulla (University of Amsterdam; \email{M.T.Rhemtulla@uva.nl})
-Alexander Robitzsch (Federal Institute for Education Research, Innovation, and Development of the Austrian School System, Salzburg, Austria; \email{a.robitzsch@bifie.at})
-Craig Enders (Arizona State University; \email{Craig.Enders@asu.edu})
-Mauricio Garnier Villarreal (University of Kansas; \email{mauricio.garniervillarreal@marquette.edu})
-Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+\author{
+  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
 \dontrun{
-library(lavaan)
 
-HS.model <- ' visual  =~ x1 + x2 + x3
-              textual =~ x4 + x5 + x6
-              speed   =~ x7 + x8 + x9 '
+## impose missing data for example
+set.seed(12345)
+HSMiss <- HolzingerSwineford1939[ , paste("x", 1:9, sep = "")]
+HSMiss$x5 <- ifelse(HSMiss$x1 <= quantile(HSMiss$x1, .3), NA, HSMiss$x5)
+HSMiss$x9 <- ifelse(is.na(HSMiss$x5), NA, HSMiss$x9)
+HSMiss$school <- HolzingerSwineford1939$school
 
-HSMiss <- HolzingerSwineford1939[,paste("x", 1:9, sep="")]
-randomMiss <- rbinom(prod(dim(HSMiss)), 1, 0.1)
-randomMiss <- matrix(as.logical(randomMiss), nrow=nrow(HSMiss))
-HSMiss[randomMiss] <- NA
+## specify model
+HS.model <- '
+visual  =~ x1 + x2 + x3
+textual =~ x4 + x5 + x6
+speed   =~ x7 + x8 + x9
+'
 
-out <- cfa.mi(HS.model, data=HSMiss, m = 3, chi="all")
-summary(out)
-inspect(out, "fit")
-inspect(out, "impute")
+## impute data within runMI...
+out1 <- cfa.mi(HS.model, data = HSMiss, m = 20, seed = 12345,
+               miArgs = list(noms = "school"))
 
-##Multiple group example
-HSMiss2 <- cbind(HSMiss, school = HolzingerSwineford1939[,"school"])
-out2 <- cfa.mi(HS.model, data=HSMiss2, m = 3, miArgs=list(noms="school"), chi="MR", group="school")
-summary(out2)
-inspect(out2, "fit")
-inspect(out2, "impute")
-
-##Example using previously imputed data with runMI
+## ... or impute missing data first
 library(Amelia)
+set.seed(12345)
+HS.amelia <- amelia(HSMiss, m = 20, noms = "school")
+imps <- HS.amelia$imputations
+out2 <- cfa.mi(HS.model, data = imps, m = 20, seed = 12345,
+               miArgs = list(noms = "school"))
 
-modsim <- '
-f1 =~ 0.7*y1+0.7*y2+0.7*y3
-f2 =~ 0.7*y4+0.7*y5+0.7*y6
-f3 =~ 0.7*y7+0.7*y8+0.7*y9'
+## same results (using the same seed results in the same imputations)
+cbind(impute.within = coef(out1), impute.first = coef(out2))
 
-mod <- '
-f1 =~ y1+y2+y3
-f2 =~ y4+y5+y6
-f3 =~ y7+y8+y9'
+summary(out1)
+summary(out1, ci = FALSE, fmi = TRUE, add.attributes = FALSE)
+summary(out1, ci = FALSE, stand = TRUE, rsq = TRUE)
 
-datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE, 
-	std.lv=TRUE, sample.nobs=c(200,200))
-randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
-randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
-datsim[randomMiss2] <- NA
-datsimMI <- amelia(datsim,m=3, noms="group")
+## model fit. D3 includes information criteria
+anova(out1)
+anova(out1, test = "D2", indices = TRUE) # request D2 and fit indices
 
-out3 <- runMI(mod, data=datsimMI$imputations, chi="LMRR", group="group", fun="cfa")
-summary(out3)
-inspect(out3, "fit")
-inspect(out3, "impute")
 
-# Categorical variables
+
+## fit multigroup model without invariance constraints
+mgfit1 <- cfa.mi(HS.model, data = imps, estimator = "mlm", group = "school")
+## add invariance constraints, and use previous fit as "data"
+mgfit0 <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm", group = "school",
+                 group.equal = c("loadings","intercepts"))
+
+## compare fit (scaled likelihood ratio test)
+anova(mgfit0, h1 = mgfit1)
+
+## correlation residuals
+resid(mgfit0, type = "cor.bentler")
+
+
+## use D1 to test a parametrically nested model (whether latent means are ==)
+anova(mgfit0, test = "D1", constraints = '
+      .p70. == 0
+      .p71. == 0
+      .p72. == 0')
+
+
+
+## Categorical variables
 popModel <- "
-f1 =~ 0.6*y1 + 0.6*y2 + 0.6*y3 + 0.6*y4
-y1 ~*~ 1*y1
-y2 ~*~ 1*y2
-y3 ~*~ 1*y3
-y4 ~*~ 1*y4
-f1 ~~ 1*f1
-y1 | 0.5*t1
-y2 | 0.25*t1
-y3 | 0*t1
-y4 | -0.5*t1
+  f1 =~ 0.6*y1 + 0.6*y2 + 0.6*y3 + 0.6*y4
+  y1 ~*~ 1*y1
+  y2 ~*~ 1*y2
+  y3 ~*~ 1*y3
+  y4 ~*~ 1*y4
+  f1 ~~ 1*f1
+  y1 | 0.5*t1
+  y2 | 0.25*t1
+  y3 | 0*t1
+  y4 | -0.5*t1
 "
 analyzeModel <- "
-f1 =~ y1 + y2 + y3 + y4
-y1 ~*~ 1*y1
-y2 ~*~ 1*y2
-y3 ~*~ 1*y3
-y4 ~*~ 1*y4
+  f1 =~ y1 + y2 + y3 + y4
+  y1 ~*~ 1*y1
+  y2 ~*~ 1*y2
+  y3 ~*~ 1*y3
+  y4 ~*~ 1*y4
 "
+set.seed(12345)
 dat <- simulateData(popModel, sample.nobs  = 200L)
-miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)), nrow(dat), ncol(dat))
+miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)),
+                   nrow(dat), ncol(dat))
 dat[miss.pat] <- NA
-out5 <- cfa.mi(analyzeModel, data=dat, ordered=paste0("y", 1:4), m = 3, 
-	miArgs=list(ords = c("y1", "y2", "y3", "y4")))
-summary(out5)
-inspect(out5, "fit")
-inspect(out5, "impute")
+
+catout <- cfa.mi(analyzeModel, data = dat, ordered = paste0("y", 1:4),
+                 m = 3,	miArgs = list(ords = c("y1", "y2", "y3", "y4")))
+
+summary(catout) # standardized/R-squared not yet available for categorical data
+anova(catout, indices = "all") # note the scaled versions of indices, too
 
 }
 }

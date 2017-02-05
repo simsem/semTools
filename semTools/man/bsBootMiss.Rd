@@ -42,7 +42,7 @@ bsBootMiss(x, transformation = 2, nBoot = 500, model, rawData,
 	Optional character string specifying the name of the grouping variable in \code{rawData} if \code{x} is not provided.
   }
   \item{ChiSquared}{
-	Optional. The model-implied mean vector if \code{x} is not provided.
+	Optional. The model's chi-squared test statistic if \code{x} is not provided.
   }
   \item{EMcov}{
 	Optional, if \code{x} is not provided. The EM (or Two-Stage ML) estimated covariance matrix used to speed up Transformation 2 algorithm.

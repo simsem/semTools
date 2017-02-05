@@ -1,20 +1,18 @@
-## Last updated: 14 January 2017
+## Last updated: 5 February 2017
 
 importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
-importFrom("lavaan", inspect)
 importFrom("stats",
            cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, lm, pnorm, pf, var, fitted.values, nobs, residuals, resid, dist, ptukey, dchisq, na.omit, qf, pt, qt, anova, vcov)
 importFrom("utils",
            capture.output, write.table, combn, read.table, read.csv, setTxtProgressBar, txtProgressBar)
 importFrom("graphics", hist, plot, par, abline, lines, legend)
 
-exportClasses(lavaanStar, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
+exportClasses(lavaan.mi, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
 exportMethods(show, summary, hist, anova, vcov, coef, fitted, fitted.values, resid, residuals, nobs)
 
 ## ORGANIZE BY AUTHOR(S) OF EACH FUNCTION
 export(
   ## Sunthud
-  auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary, lavaan.auxiliary,
   clipboard, saveFile, compareFit,
   efaUnrotate, orthRotate, oblqRotate, funRotate,
   imposeStart, loadingFromAlpha,
@@ -42,8 +40,10 @@ export(
   PAVranking, poolMAlloc,
   ## Terrence
   bsBootMiss, net, chisqSmallN, permuteMeasEq,
-  twostage, cfa.2stage, sem.2stage, growth.2stage, lavaan.2stage,
-  ## Mauricio
+  twostage, lavaan.2stage, cfa.2stage, sem.2stage, growth.2stage,
+  runMI, lavaan.mi, cfa.mi, sem.mi, growth.mi,
+  auxiliary, lavaan.auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary,
+  ## Mauricio & Terrence
   fmi,
   ## Ed Merkle
   kd,
@@ -52,11 +52,9 @@ export(
   ## Steven R. Chesnut
   quark, combinequark,
   ## Ylenio Longo
-  htmt,
+  htmt, efa.ekc,
   ## Ruben Arslan
   nullRMSEA,
-  ## Alex, Patrick, Sunthud, Mijke, Alexander Robitzsch, Craig Enders, Mauricio, Yves
-  runMI, cfa.mi, sem.mi, growth.mi, lavaan.mi,
   ## Sunthud, Terrence, Aaron, Ruben Arslan, Yves
   moreFitIndices
 )

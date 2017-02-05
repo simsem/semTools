@@ -30,7 +30,7 @@ fmi(data, method = "saturated", group = NULL, ords = NULL,
   character. Optional vector of variable names to exclude from the analysis.
 }
  \item{fewImps}{
-	logical. If \code{TRUE} (default), use the estimate of FMI that applies a correction to the estimated between-imputation variance. Recommended when there are few imputations; makes little difference when there are many imputations.
+	logical. If \code{TRUE} (default), use the estimate of FMI that applies a correction to the estimated between-imputation variance. Recommended when there are few imputations; makes little difference when there are many imputations. Ignored when \code{data} is not a list of imputed data sets.
 }
 }
 \details{
