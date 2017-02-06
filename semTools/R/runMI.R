@@ -244,6 +244,7 @@ setMethod("summary", "lavaan.mi", function(object, se = TRUE, ci = TRUE, level =
     attr(PE, "information") <- lavaan::lavListInspect(object, "options")$information
     attr(PE, "se") <- lavaan::lavListInspect(object, "options")$se
     attr(PE, "group.label") <- lavaan::lavListInspect(object, "group.label")
+    attr(x, "missing") <- lavaan::lavListInspect(object, "options")$missing
     cat(messPool)
     if (fmi) cat("\n", messFMI, sep = "")
   } else {

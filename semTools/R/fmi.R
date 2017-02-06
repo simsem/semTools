@@ -52,12 +52,12 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     if(nG == 1L) comb.results$group <- 1L
     group.label <- lavaan::lavInspect(fit, "group.label")
   } else {
-    fit <- lavaan.mi(model, data, chi = "none", group = group, ordered = ordvars, auto.th = TRUE)
-    comb.results <- inspect(fit, "impute")$fractionMissing  ## FIXME: can't just be lavInspect because it is a lavaanStar
-    comb.results$est <- lavaan::parameterEstimates(fit)$est
-    nG <- inspect(fit, "ngroups")                           ## FIXME: can't just be lavInspect because it is a lavaanStar
+    fit <- lavaan.mi(model, data, group = group, ordered = ordvars, auto.th = TRUE)
+    comb.results <- getMethod("summary","lavaan.mi")(fit, fmi = TRUE, ci = FALSE,
+                                                     add.attributes = FALSE)
+    nG <- lavaan::lavListInspect(fit, "ngroups")
     if(nG == 1L) comb.results$group <- 1L
-    group.label <- inspect(fit, "group.label")              ## FIXME: can't just be lavInspect because it is a lavaanStar
+    group.label <- lavaan::lavListInspect(fit, "group.label")
     if (fewImps) {
       comb.results["fmi1"] <- NULL
       names(comb.results)[names(comb.results) == "fmi2"] <- "fmi"
@@ -65,6 +65,7 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
       comb.results["fmi2"] <- NULL
       names(comb.results)[names(comb.results) == "fmi1"] <- "fmi"
     }
+    for (i in c("t","df","pvalue","riv")) comb.results[i] <- NULL
   }
 
   ## Variances from null model, if applicable
@@ -80,11 +81,25 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     } else results <- list()
   } else {
     ## covariances from saturated model, including polychorics (if applicable)
-    if (nG == 1L) {
-      covmat <- list(inspect(fit, "coef")$theta)                     ## FIXME: can't just be lavInspect because it is a lavaanStar
+    if (fiml) {
+      covmat <- lavaan::lavInspect(fit, "theta")
+      if (nG == 1L) covmat <- list(covmat)
     } else {
-      covmat <- lapply(inspect(fit, "coef"), function(x) x$theta)    ## FIXME: can't just be lavInspect because it is a lavaanStar
+      useImps <- sapply(fit@convergence, "[[", "converged")
+      m <- sum(useImps)
+      if (nG == 1L) {
+        ThetaList <- lapply(fit@coefList[useImps], function(x) x$theta)
+        covmat <- list(Reduce("+", ThetaList) / m)
+      } else {
+        covmat <- list()
+        for (i in group.label) {
+          groupList <- lapply(fit@coefList[useImps],"[[", i)
+          ThetaList <- lapply(groupList, function(x) x$theta)
+          covmat[[i]] <- Reduce("+", ThetaList) / m
+        }
+      }
     }
+
     fmimat <- covmat
     covars <- comb.results[comb.results$op == "~~", c("lhs","rhs","group","est","fmi")]
     for (i in 1:nG) {

@@ -50,7 +50,7 @@ See the \code{\link{runMI}} function for details. Wrapper functions include \cod
   }
 }
 \references{
-Asparouhov, T., & Muthen, B. (2010).\emph{Chi-square statistics with multiple imputation}. Technical Report. Retrieved from \url{www.statmodel.com}
+Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics with multiple imputation}. Technical Report. Retrieved from \url{www.statmodel.com}
 
 Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY: Guilford.
 

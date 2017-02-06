@@ -85,8 +85,7 @@ library(Amelia)
 set.seed(12345)
 HS.amelia <- amelia(HSMiss, m = 20, noms = "school")
 imps <- HS.amelia$imputations
-out2 <- cfa.mi(HS.model, data = imps, m = 20, seed = 12345,
-               miArgs = list(noms = "school"))
+out2 <- cfa.mi(HS.model, data = imps)
 
 ## same results (using the same seed results in the same imputations)
 cbind(impute.within = coef(out1), impute.first = coef(out2))
