@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 February 2017
+### Last updated: 23 February 2017
 ### source code for new runMI, extending lavaanList class instead of lavaanStar
 
 cfa.mi <- function(model, data, ...,
@@ -1095,19 +1095,22 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
   }
 
   getSRMR <- function(object, type) {
+    vv <- lavaan::lavNames(object, type = "ov.num")
     R <- getMethod("resid", "lavaan.mi")(object, type = type)
     index <- if (type == "raw") "cov" else "cor"
     if (nG > 1L) {
       RR <- list()
       for (g in 1:nG) {
-        RR[[g]] <- R[[g]][[index]][lower.tri(R[[g]][[index]], diag = TRUE)]^2
+        RR[[g]] <- c(R[[g]][[index]][lower.tri(R[[g]][[index]], diag = FALSE)]^2,
+                     diag(R[[g]][[index]])[vv]^2)
       }
-    } else RR <- R[[index]][lower.tri(R[[index]], diag = TRUE)]^2
+    } else RR <- c(R[[index]][lower.tri(R[[index]], diag = FALSE)]^2,
+                   diag(R[[index]])[vv]^2)
 
     if (lavaan::lavListInspect(object, "meanstructure")) {
       if (nG > 1L) {
-        for (g in 1:nG) RR[[g]] <- c(RR[[g]], R[[g]]$mean^2)
-      } else RR <- c(RR, R$mean^2)
+        for (g in 1:nG) RR[[g]] <- c(RR[[g]], R[[g]]$mean[vv]^2)
+      } else RR <- c(RR, R$mean[vv]^2)
     }
 
     SS <- if (nG > 1L) sqrt(sapply(RR, mean)) else sqrt(mean(RR))
@@ -1120,62 +1123,107 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
   }
 
   class(out) <- c("lavaan.vector","numeric")
-  out # in future, accept more than 2 models and arrange sequentially by DF
+  out # FIXME: in future, accept more than 2 models, arrange sequentially by DF
 })
 
-fitted.lavaan.mi <- function(object) {
-  ## function to apply to each group's list of coef matrices
-  FUNC <- function(lst, means = FALSE, m = m) {
-    LambdaList <- lapply(lst, function(x) x$lambda)
-    BetaList <- lapply(lst, function(x) x$beta)
-    PsiList <- lapply(lst, function(x) x$psi)
-    ThetaList <- lapply(lst, function(x) x$theta)
-    NuList <- lapply(lst, function(x) x$nu)
-    AlphaList <- lapply(lst, function(x) x$alpha) ### FIXME: update to include Gamma & Ksi for fixed.x
-    ## average each matrix across imputations
-    meanLambda <- Reduce("+", LambdaList) / m
-    meanBeta <- Reduce("+", BetaList) / m
-    meanPsi <- Reduce("+", PsiList) / m
-    meanTheta <- Reduce("+", ThetaList) / m
-    p <- nrow(meanLambda)
-    nFac <- ncol(meanLambda)
-    if (nFac > 0L) {
-      if (length(meanBeta)) {
-        IDEN <- diag(nrow = nFac)
-        SigmaHat_mean <- meanLambda %*% solve(IDEN - meanBeta) %*% meanPsi %*%
-          t(solve(IDEN - meanBeta)) %*% t(meanLambda) + meanTheta
-        dimnames(SigmaHat_mean) <- list(rownames(meanLambda), rownames(meanLambda))
-      } else SigmaHat_mean <- meanLambda %*% meanPsi %*% t(meanLambda) + meanTheta
-    } else SigmaHat_mean <- meanTheta
-    ## repeat for means
-    if (means) {
-      meanNu <- Reduce("+", NuList) / m
-      meanAlpha <- Reduce("+", AlphaList) / m
-      MuHat_mean <- if (length(meanBeta)) {
-        meanNu + meanLambda %*% solve(IDEN - meanBeta) %*% meanAlpha
-      } else meanNu
-      MuHat_mean <- MuHat_mean[ , 1]
-    } else {
-      MuHat_mean <- rep(0, p)
-      names(MuHat_mean) <- rownames(meanLambda)
+
+## function to pool each group's list of sample stats
+sampstat.lavaan.mi <- function(lst, means = FALSE, categ = FALSE, m = m) {
+  ## average sample stats across imputations
+  out <- list(cov = Reduce("+", lapply(lst, "[[", "cov")) / m)
+  if (means) out$mean <- Reduce("+", lapply(lst, "[[", "mean")) / m
+  if (categ) out$th <- Reduce("+", lapply(lst, "[[", "th")) / m
+  out
+}
+## function to calculate one group's model-implied moments at mean(coefs)
+implied.lavaan.mi <- function(lst, obs, means = FALSE, categ = FALSE, m = m) {
+  LambdaList <- lapply(lst, function(x) x$lambda)
+  BetaList <- lapply(lst, function(x) x$beta)
+  PsiList <- lapply(lst, function(x) x$psi)
+  ThetaList <- lapply(lst, function(x) x$theta)
+  NuList <- lapply(lst, function(x) x$nu)
+  AlphaList <- lapply(lst, function(x) x$alpha)
+  ## average each matrix across imputations
+  meanLambda <- Reduce("+", LambdaList) / m
+  meanBeta <- Reduce("+", BetaList) / m
+  meanPsi <- Reduce("+", PsiList) / m
+  meanTheta <- Reduce("+", ThetaList) / m
+  p <- nrow(meanLambda)
+  nFac <- ncol(meanLambda)
+  if (nFac > 0L) {
+    if (length(meanBeta)) {
+      IDEN <- diag(nrow = nFac)
+      SigmaHat_mean <- meanLambda %*% solve(IDEN - meanBeta) %*% meanPsi %*%
+        t(solve(IDEN - meanBeta)) %*% t(meanLambda) + meanTheta
+      dimnames(SigmaHat_mean) <- list(rownames(meanLambda), rownames(meanLambda))
+    } else SigmaHat_mean <- meanLambda %*% meanPsi %*% t(meanLambda) + meanTheta
+  } else SigmaHat_mean <- meanTheta
+  ## categorical data?
+  if (categ) {
+    DeltaList <- lapply(lst, function(x) x$delta)
+    meanDelta <- Reduce("+", DeltaList) / m # FIXME: Using average results in nonzero diagonal residuals
+    if (length(meanDelta)) {
+      DELTA <- diag(meanDelta[,1L], nrow = nrow(meanDelta))
+      dimnames(DELTA) <- dimnames(SigmaHat_mean)
+      SigmaHat_mean <- DELTA %*% SigmaHat_mean %*% DELTA
     }
-    class(MuHat_mean) <- c("lavaan.vector","numeric")
-    ## FIXME: check for categorical data, update calculations
-    list(cov = SigmaHat_mean, mean = MuHat_mean)
   }
+
+  ## repeat for means
+  if (means) {
+    meanNu <- Reduce("+", NuList) / m
+    meanAlpha <- Reduce("+", AlphaList) / m
+    MuHat_mean <- if (length(meanBeta)) {
+      meanNu + meanLambda %*% solve(IDEN - meanBeta) %*% meanAlpha
+    } else meanNu
+    MuHat_mean <- MuHat_mean[ , 1]
+  } else {
+    MuHat_mean <- rep(0, p)
+    names(MuHat_mean) <- rownames(meanLambda)
+  }
+  class(MuHat_mean) <- c("lavaan.vector","numeric")
+
+  out <- list(cov = SigmaHat_mean, mean = MuHat_mean)
+
+  ## Add thresholds, if applicable
+  if (categ) {
+    obsTH <- sampstat.lavaan.mi(lst = obs, means = means, categ = categ, m = m)$th
+    thNames <- sapply(strsplit(names(obsTH), split = "\\|t"), "[", 1)
+    ordNames <- unique(thNames)
+    ordMeans <- do.call(c, lapply(ordNames, function(i) {
+      rep(MuHat_mean[i], times = sum(i %in% thNames))
+    }))
+    if (length(meanDelta)) {
+      DELTA.diag <- diag(DELTA)
+      DELTA.star.diag <- do.call(c, lapply(ordNames, function(i) {
+        rep(DELTA.diag[i], times = sum(i %in% thNames))
+      }))
+    } else DELTA.star.diag <- rep(1, length(obsTH))
+    out$th <- (obsTH - ordMeans) * DELTA.star.diag
+  }
+  out
+}
+fitted.lavaan.mi <- function(object) {
   ## @coefList is (for each imputation) output from lavInspect(object, "coef")
   useImps <- sapply(object@convergence, "[[", "converged")
   m <- sum(useImps)
   meanstructure <- lavaan::lavListInspect(object, "meanstructure")
+  categ <- lavaan::lavListInspect(object, "categorical")
   nG <- lavaan::lavListInspect(object, "ngroups")
   if (nG == 1L) {
-    out <- FUNC(lst = object@coefList[useImps], means = meanstructure, m = m)
+    out <- implied.lavaan.mi(lst = object@coefList[useImps],
+                             obs = object@SampleStatsList[useImps],
+                             means = meanstructure, m = m, categ = categ)
   } else {
     ## IDEA: add argument to coef method for lavaanList (assemble from coef vector?)
     out <- list()
     for (g in lavaan::lavListInspect(object, "group.label")) {
-      out[[g]] <- FUNC(lst = lapply(object@coefList[useImps], "[[", g),
-                       means = meanstructure, m = m)
+      if (categ) {
+        sampstats <- lapply(object@SampleStatsList[useImps], "[[", g)
+      } else sampstats <- NULL
+      out[[g]] <- implied.lavaan.mi(lst = lapply(object@coefList[useImps], "[[", g),
+                                    obs = sampstats, means = meanstructure,
+                                    m = m, categ = categ)
     }
   }
   out
@@ -1183,48 +1231,54 @@ fitted.lavaan.mi <- function(object) {
 setMethod("fitted", "lavaan.mi", fitted.lavaan.mi)
 setMethod("fitted.values", "lavaan.mi", fitted.lavaan.mi)
 
-resid.lavaan.mi <- function(object, type = c("raw","cor")) {
-  ## function to apply to each group's list of sample stats
-  FUNC <- function(Observed, Implied, type, means = FALSE, m) {
-    ## average sample stats across imputations
-    S_mean <- Reduce("+", lapply(Observed, "[[", "cov")) / m
-    if (means) M_mean <- Reduce("+", lapply(Observed, "[[", "mean")) / m
+## function to calculate residuals for one group
+gp.resid.lavaan.mi <- function(Observed, Implied, type, means = FALSE,
+                               categ = FALSE, m) {
+  obsMats <- sampstat.lavaan.mi(Observed, means = means, categ = categ, m = m)
+  ## average sample stats across imputations
+  S_mean <- obsMats$cov
+  if (means) M_mean <- obsMats$mean
+  if (categ) Th_mean <- obsMats$th
 
-    if (type == "raw") {
-      out <- list(cov = S_mean - Implied$cov)
-      if (means) out$mean <- M_mean - Implied$mean else {
-        out$mean <- rep(0, nrow(out$cov))
-        names(out$mean) <- rownames(out$cov)
-      }
-      return(out)
-    } else if (type == "cor.bollen") {
-      out <- list(cor = cov2cor(S_mean) - cov2cor(Implied$cov))
-      if (!means) {
-        out$mean <- rep(0, nrow(out$cor))
-        names(out$mean) <- rownames(out$cor)
-      } else {
-        std.obs.M <- M_mean / sqrt(diag(S_mean))
-        std.mod.M <- Implied$mean / sqrt(diag(Implied$cov))
-        out$mean <- std.obs.M - std.mod.M
-      }
-    } else if (type == "cor.bentler") {
-      SDs <- diag(sqrt(diag(S_mean)))
-      dimnames(SDs) <- dimnames(S_mean)
-      out <- list(cor = solve(SDs) %*% (S_mean - Implied$cov) %*% solve(SDs))
-      class(out$cor) <- c("lavaan.matrix.symmetric","matrix")
-      if (!means) {
-        out$mean <- rep(0, nrow(out$cor))
-        names(out$mean) <- rownames(out$cor)
-      } else out$mean <- (M_mean - Implied$mean) / diag(SDs)
-    } else stop("argument 'type' must be 'raw', 'cor', 'cor.bollen', ",
-                "or 'cor.bentler'.")
-    out
-  }
+  if (type == "raw") {
+    out <- list(cov = S_mean - Implied$cov)
+    if (means) out$mean <- M_mean - Implied$mean else {
+      out$mean <- rep(0, nrow(out$cov))
+      names(out$mean) <- rownames(out$cov)
+    }
+    if (categ) out$th <- Th_mean - Implied$th
+    return(out)
+  } else if (type == "cor.bollen") {
+    out <- list(cor = cov2cor(S_mean) - cov2cor(Implied$cov))
+    if (!means) {
+      out$mean <- rep(0, nrow(out$cor))
+      names(out$mean) <- rownames(out$cor)
+    } else {
+      std.obs.M <- M_mean / sqrt(diag(S_mean))
+      std.mod.M <- Implied$mean / sqrt(diag(Implied$cov))
+      out$mean <- std.obs.M - std.mod.M
+    }
+  } else if (type == "cor.bentler") {
+    SDs <- diag(sqrt(diag(S_mean)))
+    dimnames(SDs) <- dimnames(S_mean)
+    out <- list(cor = solve(SDs) %*% (S_mean - Implied$cov) %*% solve(SDs))
+    class(out$cor) <- c("lavaan.matrix.symmetric","matrix")
+    if (!means) {
+      out$mean <- rep(0, nrow(out$cor))
+      names(out$mean) <- rownames(out$cor)
+    } else out$mean <- (M_mean - Implied$mean) / diag(SDs)
+  } else stop("argument 'type' must be 'raw', 'cor', 'cor.bollen', ",
+              "or 'cor.bentler'.")
+  if (categ) out$th <- Th_mean - Implied$th
+  out
+}
+resid.lavaan.mi <- function(object, type = c("raw","cor")) {
   ## @SampleStatsList is (for each imputation) output from:
   ##    getSampStats <- function(obj) lavaan::lavInspect(obj, "sampstat")
   useImps <- sapply(object@convergence, "[[", "converged")
   m <- sum(useImps)
   meanstructure <- lavaan::lavListInspect(object, "meanstructure")
+  categ <- lavaan::lavListInspect(object, "categorical")
   type <- tolower(type[1])
   ## check for type = "cor" ("cor.bollen") or "cor.bentler"
   if (type == "cor") type <- "cor.bollen"
@@ -1237,13 +1291,14 @@ resid.lavaan.mi <- function(object, type = c("raw","cor")) {
     if (is.null(group.label)) group.label <- 1:length(Implied)
     out <- list()
     for (g in group.label) {
-      out[[g]] <- FUNC(Observed = lapply(object@SampleStatsList[useImps], "[[", g),
-                       Implied = Implied[[g]], type = type,
-                       means = meanstructure, m = m)
+      out[[g]] <- gp.resid.lavaan.mi(Observed = lapply(object@SampleStatsList[useImps], "[[", g),
+                                     Implied = Implied[[g]], type = type,
+                                     means = meanstructure, m = m, categ = categ)
     }
   } else {
-    out <- FUNC(Observed = object@SampleStatsList[useImps], Implied = Implied,
-                type = type, means = meanstructure, m = m)
+    out <- gp.resid.lavaan.mi(Observed = object@SampleStatsList[useImps],
+                              Implied = Implied, type = type,
+                              means = meanstructure, m = m, categ = categ)
   }
   out
 }

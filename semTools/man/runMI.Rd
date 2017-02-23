@@ -122,8 +122,8 @@ anova(mgfit0, test = "D1", constraints = '
 
 
 ## Categorical variables
-popModel <- "
-  f1 =~ 0.6*y1 + 0.6*y2 + 0.6*y3 + 0.6*y4
+popModel <- '
+  f1 =~ 0.5*y1 + 0.6*y2 + 0.7*y3 + 0.8*y4
   y1 ~*~ 1*y1
   y2 ~*~ 1*y2
   y3 ~*~ 1*y3
@@ -133,14 +133,8 @@ popModel <- "
   y2 | 0.25*t1
   y3 | 0*t1
   y4 | -0.5*t1
-"
-analyzeModel <- "
-  f1 =~ y1 + y2 + y3 + y4
-  y1 ~*~ 1*y1
-  y2 ~*~ 1*y2
-  y3 ~*~ 1*y3
-  y4 ~*~ 1*y4
-"
+'
+analyzeModel <- ' f1 =~ y1 + y2 + y3 + y4 '
 set.seed(12345)
 dat <- simulateData(popModel, sample.nobs  = 200L)
 miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)),
@@ -149,8 +143,7 @@ dat[miss.pat] <- NA
 
 catout <- cfa.mi(analyzeModel, data = dat, ordered = paste0("y", 1:4),
                  m = 3,	miArgs = list(ords = c("y1", "y2", "y3", "y4")))
-
-summary(catout) # standardized/R-squared not yet available for categorical data
+summary(catout)
 anova(catout, indices = "all") # note the scaled versions of indices, too
 
 }
