@@ -123,7 +123,7 @@ SSpower(powerModel = modelA2, mu = mu, Sigma = Sigma,
 \author{
 Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 
-Terrence D. Jorgensen (University of Amsterdam; \email{T.D.Jorgensen@uva.nl})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \references{
 Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio

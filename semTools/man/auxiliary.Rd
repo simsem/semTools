@@ -69,7 +69,7 @@ can be declared as \code{ordered}.
 Enders, C. K. (2008). A note on the use of missing auxiliary variables in full information maximum likelihood-based structural equation models. \emph{Structural Equation Modeling, 15}(3), 434-448. doi:10.1080/10705510802154307
 }
 \author{
-    Terrence D. Jorgensen (University of Amsterdam; \email{T.D.Jorgensen@uva.nl})
+    Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
 dat1 <- lavaan::HolzingerSwineford1939
