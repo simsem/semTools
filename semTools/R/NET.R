@@ -10,8 +10,8 @@ x.within.y <- function(x, y, crit = crit) {
   if (length(c(lavaan::lavNames(x, "ov.ord"), lavaan::lavNames(y, "ov.ord"))))
     stop("The net() function is not available for categorical-data estimators.")
 
-  exoX <- lavaan::lavInspect(x, "options")$fixed.x & length(lavaan::lavNames(x, "ov.x"))
-  exoY <- lavaan::lavInspect(y, "options")$fixed.x & length(lavaan::lavNames(y, "ov.x"))
+  exoX <- lavInspect(x, "options")$fixed.x & length(lavaan::lavNames(x, "ov.x"))
+  exoY <- lavInspect(y, "options")$fixed.x & length(lavaan::lavNames(y, "ov.x"))
   if (exoX | exoY) {
     stop(c("The net() function does not work with exogenous variables.\n",
            "Fit the model again with 'fixed.x = FALSE'"))
@@ -23,23 +23,23 @@ x.within.y <- function(x, y, crit = crit) {
     stop("Models do not contain the same variables")
 
   ## check that the analyzed data matches
-  # xData <- lavaan::lavInspect(x, "data")
+  # xData <- lavInspect(x, "data")
   # if (is.list(xData)) xData <- do.call(rbind, xData)
   # xData <- xData[ , rank(Xnames)]
-  # yData <- lavaan::lavInspect(y, "data")
+  # yData <- lavInspect(y, "data")
   # if (is.list(yData)) yData <- do.call(rbind, yData)
   # yData <- yData[ , rank(Ynames)]
   # if (!identical(xData, yData)) stop("Models must apply to the same data")
   ##############################################################################
 
   ## check degrees of freedom support nesting structure
-  if (lavaan::lavInspect(x, "fit")["df"] < lavaan::lavInspect(y, "fit")["df"])
+  if (lavInspect(x, "fit")["df"] < lavInspect(y, "fit")["df"])
     stop("x cannot be nested within y because y is more restricted than x")
 
   ## model-implied moments
-  Sigma <- lavaan::lavInspect(x, "cov.ov")
-  Mu <- lavaan::lavInspect(x, "mean.ov")
-  N <- lavaan::lavInspect(x, "nobs")
+  Sigma <- lavInspect(x, "cov.ov")
+  Mu <- lavInspect(x, "mean.ov")
+  N <- lavInspect(x, "nobs")
 
   ## fit model and check that chi-squared < crit
 
@@ -47,11 +47,11 @@ x.within.y <- function(x, y, crit = crit) {
                                                 sample.cov = Sigma,
                                                 sample.mean = Mu,
                                                 sample.nobs = N)))
-  if(!lavaan::lavInspect(newFit, "converged")) return(NA) else {
-    result <- lavaan::lavInspect(newFit, "fit")["chisq"] < crit
+  if(!lavInspect(newFit, "converged")) return(NA) else {
+    result <- lavInspect(newFit, "fit")["chisq"] < crit
     names(result) <- NULL
-    if (lavaan::lavInspect(x, "fit")["df"] ==
-        lavaan::lavInspect(y, "fit")["df"]) return(c(Equivalent = result))
+    if (lavInspect(x, "fit")["df"] ==
+        lavInspect(y, "fit")["df"]) return(c(Equivalent = result))
   }
   c(Nested = result)
 }
@@ -71,11 +71,11 @@ net <- function(..., crit = .0001) {
   }
 
   ## check whether any models include categorical outcomes
-  catMod <- sapply(fitList, function(x) lavaan::lavInspect(x, "options")$categorical)
+  catMod <- sapply(fitList, function(x) lavInspect(x, "options")$categorical)
   if (any(catMod)) stop("This method only applies to continuous outcomes.")
 
   ## get degrees of freedom for each model
-  DFs <- sapply(fitList, function(x) lavaan::lavInspect(x, "fit")["df"])
+  DFs <- sapply(fitList, function(x) lavInspect(x, "fit")["df"])
 
   ## name according to named objects, with DF in parentheses
   fitNames <- names(fitList)

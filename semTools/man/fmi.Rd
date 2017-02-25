@@ -8,7 +8,7 @@ Fraction of Missing Information.
 }
 \usage{
 fmi(data, method = "saturated", group = NULL, ords = NULL,
-    varnames = NULL, exclude = NULL, fewImps = TRUE)
+    varnames = NULL, exclude = NULL, fewImps = FALSE)
 }
 \arguments{
   \item{data}{
@@ -30,7 +30,7 @@ fmi(data, method = "saturated", group = NULL, ords = NULL,
   character. Optional vector of variable names to exclude from the analysis.
 }
  \item{fewImps}{
-	logical. If \code{TRUE} (default), use the estimate of FMI that applies a correction to the estimated between-imputation variance. Recommended when there are few imputations; makes little difference when there are many imputations. Ignored when \code{data} is not a list of imputed data sets.
+	logical. If \code{TRUE}, use the estimate of FMI that applies a correction to the estimated between-imputation variance. Recommended when there are few imputations; makes little difference when there are many imputations. Ignored when \code{data} is not a list of imputed data sets.
 }
 }
 \details{
@@ -57,37 +57,29 @@ Wagner, J. (2010). The fraction of missing information as a tool for monitoring 
   Terrence Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
-library(Amelia)
-library(lavaan)
-
-## specify population and simulate a data set
-modsim <- '
-f1 =~ 0.7*y1+0.7*y2+0.7*y3
-f2 =~ 0.7*y4+0.7*y5+0.7*y6
-f3 =~ 0.7*y7+0.7*y8+0.7*y9
-'
-datsim <- simulateData(modsim,model.type="cfa", meanstructure=TRUE,
-                       std.lv=TRUE, sample.nobs=c(200,200))
-
-## impose missing values
-randomMiss2 <- rbinom(prod(dim(datsim)), 1, 0.1)
-randomMiss2 <- matrix(as.logical(randomMiss2), nrow=nrow(datsim))
-randomMiss2[,10] <- FALSE
-datsim[randomMiss2] <- NA
+HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
+                                      "ageyr","agemo","school")]
+set.seed(12345)
+HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
+age <- HSMiss$ageyr + HSMiss$agemo/12
+HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
 
 ## calculate FMI (using FIML, provide partially observed data set)
-(out1 <- fmi(datsim, exclude = "group"))
-(out2 <- fmi(datsim, exclude = "group", method = "null"))
-(out3 <- fmi(datsim, varnames = c("y1","y2","y3","y4")))
-(out4 <- fmi(datsim, group = "group"))
+(out1 <- fmi(HSMiss, exclude = "school"))
+(out2 <- fmi(HSMiss, exclude = "school", method = "null"))
+(out3 <- fmi(HSMiss, varnames = c("x5","x6","x7","x8","x9")))
+(out4 <- fmi(HSMiss, group = "school"))
 
 ## ordered-categorical data
 data(datCat)
 lapply(datCat, class)
 ## impose missing values
-for (i in 1:8) datCat[sample(1:nrow(datCat), size = .2*nrow(datCat)), i] <- NA
+set.seed(123)
+for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
 ## impute data m = 3 times
-impout <- amelia(datCat, m = 3, noms = "g", ords = paste0("u", 1:8))
+library(Amelia)
+set.seed(456)
+impout <- amelia(datCat, m = 3, noms = "g", ords = paste0("u", 1:8), p2s = FALSE)
 imps <- impout$imputations
 ## calculate FMI, using list of imputed data sets
 fmi(imps, group = "g")

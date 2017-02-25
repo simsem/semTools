@@ -23,7 +23,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE, quiet 
 	ngroups <- max(lavaanParTable$group)
 
 	# Check whether all variables are categorical
-	sampstat <- lavaan::lavInspect(template, "samp")[[1]]
+	sampstat <- lavInspect(template, "samp")[[1]]
 	meanname <- names(sampstat$mean)
 	thname <- names(sampstat$th)
 	if (any(is.na(charmatch(meanname, thname))))

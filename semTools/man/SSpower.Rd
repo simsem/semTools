@@ -53,10 +53,8 @@ one nonzero parameter to an incorrect value. Note the number in the
 \code{nparam} argument.
 }
 \examples{
-library(lavaan)
-
 ## Specify population values. Note every paramter has a fixed value.
-model <- '
+modelP <- '
   f1 =~ .7*V1 + .7*V2 + .7*V3 + .7*V4
   f2 =~ .7*V5 + .7*V6 + .7*V7 + .7*V8
   f1 ~~ .3*f2
@@ -93,7 +91,7 @@ plot(x = Ns, y = Power, type = "l", xlab = "Sample Size")
 
 ## Specify second population to calculate power for multigroup model
 
-popMoments1 <- lavaan::fitted(do.call("cfa", list(model = modelP)))
+popMoments1 <- fitted(cfa(modelP))
 modelP2 <- '
   f1 =~ .7*V1 + .7*V2 + .7*V3 + .7*V4
   f2 =~ .7*V5 + .7*V6 + .7*V7 + .7*V8
@@ -109,7 +107,7 @@ modelP2 <- '
   V7 ~~ .51*V7
   V8 ~~ .51*V8
 '
-popMoments2 <- lavaan::fitted(do.call("cfa", list(model = modelP2)))
+popMoments2 <- fitted(cfa(modelP2))
 modelA2 <- '
   f1 =~ V1 + V2 + V3 + V4
   f2 =~ V5 + V6 + V7 + V8
@@ -120,14 +118,13 @@ Sigma <- list(popMoments1$cov, popMoments2$cov)
 SSpower(powerModel = modelA2, mu = mu, Sigma = Sigma,
         n = c(60, 65), nparam = 2)
 }
-\author{
-Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
-
-Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
-}
 \references{
 Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
  test in covariance structure analysis. \emph{Psychometrika, 50}, 83-90.
  doi:10.1007/BF02294150
 }
+\author{
+Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+}

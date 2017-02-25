@@ -11,11 +11,11 @@
 	Automatically add auxiliary variables to a lavaan model when using full information maximum likelihood (FIML) to handle missing data
 }
 \usage{
-auxiliary(model, aux, fun, ...)
-lavaan.auxiliary(model, aux, ...)
-cfa.auxiliary(model, aux, ...)
-sem.auxiliary(model, aux, ...)
-growth.auxiliary(model, aux, ...)
+auxiliary(model, data, aux, fun, ...)
+lavaan.auxiliary(model, data, aux, ...)
+cfa.auxiliary(model, data, aux, ...)
+sem.auxiliary(model, data, aux, ...)
+growth.auxiliary(model, data, aux, ...)
 }
 \arguments{
   \item{model}{
@@ -72,28 +72,26 @@ Enders, C. K. (2008). A note on the use of missing auxiliary variables in full i
     Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
-dat1 <- lavaan::HolzingerSwineford1939
+HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
+                                      "ageyr","agemo","school")]
 set.seed(12345)
-dat1$z <- rnorm(nrow(dat1))
-dat1$x5 <- ifelse(dat1$z < quantile(dat1$z, .3), NA, dat1$x5)
-dat1$x9 <- ifelse(dat1$z > quantile(dat1$z, .8), NA, dat1$x9)
+HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
+age <- HSMiss$ageyr + HSMiss$agemo/12
+HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
 
-targetModel <- "
+## specify CFA model from lavaan's ?cfa help page
+HS.model <- '
   visual  =~ x1 + x2 + x3
   textual =~ x4 + x5 + x6
   speed   =~ x7 + x8 + x9
-"
+'
 
 ## works just like cfa(), but with an extra "aux" argument
-fitaux1 <- cfa.auxiliary(targetModel, data = dat1, aux = "z",
+fitaux1 <- cfa.auxiliary(HS.model, data = HSMiss, aux = c("ageyr","agemo"),
                          missing = "fiml", estimator = "mlr")
 
-## with multiple auxiliary variables and multiple groups
-fitaux2 <- cfa.auxiliary(targetModel, data = dat1, aux = c("z","ageyr","grade"),
+## example with multiple groups
+fitaux2 <- cfa.auxiliary(HS.model, data = HSMiss, aux = c("ageyr","agemo"),
                          group = "school", group.equal = "loadings")
 
-## calculate correct incremental fit indices (e.g., CFI, TLI) using
-## the internally stored baseline model
-fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
-            baseline.model = fitaux2@external$baseline.model)
 }

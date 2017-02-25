@@ -60,20 +60,19 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}. New 
   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \examples{
-\dontrun{
-
 ## impose missing data for example
+HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
+                                      "ageyr","agemo","school")]
 set.seed(12345)
-HSMiss <- HolzingerSwineford1939[ , paste("x", 1:9, sep = "")]
-HSMiss$x5 <- ifelse(HSMiss$x1 <= quantile(HSMiss$x1, .3), NA, HSMiss$x5)
-HSMiss$x9 <- ifelse(is.na(HSMiss$x5), NA, HSMiss$x9)
-HSMiss$school <- HolzingerSwineford1939$school
+HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
+age <- HSMiss$ageyr + HSMiss$agemo/12
+HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
 
-## specify model
+## specify CFA model from lavaan's ?cfa help page
 HS.model <- '
-visual  =~ x1 + x2 + x3
-textual =~ x4 + x5 + x6
-speed   =~ x7 + x8 + x9
+  visual  =~ x1 + x2 + x3
+  textual =~ x4 + x5 + x6
+  speed   =~ x7 + x8 + x9
 '
 
 ## impute data within runMI...
@@ -83,7 +82,7 @@ out1 <- cfa.mi(HS.model, data = HSMiss, m = 20, seed = 12345,
 ## ... or impute missing data first
 library(Amelia)
 set.seed(12345)
-HS.amelia <- amelia(HSMiss, m = 20, noms = "school")
+HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
 imps <- HS.amelia$imputations
 out2 <- cfa.mi(HS.model, data = imps)
 
@@ -121,30 +120,17 @@ anova(mgfit0, test = "D1", constraints = '
 
 
 
-## Categorical variables
-popModel <- '
-  f1 =~ 0.5*y1 + 0.6*y2 + 0.7*y3 + 0.8*y4
-  y1 ~*~ 1*y1
-  y2 ~*~ 1*y2
-  y3 ~*~ 1*y3
-  y4 ~*~ 1*y4
-  f1 ~~ 1*f1
-  y1 | 0.5*t1
-  y2 | 0.25*t1
-  y3 | 0*t1
-  y4 | -0.5*t1
-'
-analyzeModel <- ' f1 =~ y1 + y2 + y3 + y4 '
-set.seed(12345)
-dat <- simulateData(popModel, sample.nobs  = 200L)
-miss.pat <- matrix(as.logical(rbinom(prod(dim(dat)), 1, 0.2)),
-                   nrow(dat), ncol(dat))
-dat[miss.pat] <- NA
+## ordered-categorical data
+data(datCat)
+lapply(datCat, class)
+## impose missing values
+set.seed(123)
+for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
 
-catout <- cfa.mi(analyzeModel, data = dat, ordered = paste0("y", 1:4),
-                 m = 3,	miArgs = list(ords = c("y1", "y2", "y3", "y4")))
+catout <- cfa.mi(' f =~ u1 + u2 + u3 + u4 ', data = datCat,
+                 m = 3, seed = 456,
+                 miArgs = list(ords = paste0("u", 1:8), noms = "g"))
 summary(catout)
 anova(catout, indices = "all") # note the scaled versions of indices, too
 
-}
 }

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 February 2017
+### Last updated: 25 February 2017
 ### new auxiliary function does NOT create a lavaanStar-class instance
 
 #' Implement Saturated Correlates with FIML
@@ -84,14 +84,16 @@
 
 auxiliary <- function(model, data, aux, fun, ...) {
   lavArgs <- list(...)
-  if (is.null(data))
+  if (missing(aux))
+    stop("Please provide a character vector with names of auxiliary variables")
+  if (missing(data))
     stop("Please provide a data.frame that includes modeled and auxiliary variables")
   if (!all(sapply(data[aux], function(x) class(x[1]) %in% c("numeric","integer"))))
     stop("missing = 'FIML' is unavailable for categorical data")
 
   ## Easiest scenario: model is a character string
   if (is.character(model)) {
-    varnames <- lavaan::lavNames(lavaanify(model), type = "ov")
+    varnames <- lavaan::lavNames(lavaan::lavaanify(model), type = "ov")
     if (length(intersect(varnames, aux))) stop('modeled variable declared as auxiliary')
     ## concatenate saturated auxiliaries
     covstruc <- outer(aux, aux, function(x, y) paste(x, "~~", y))
@@ -177,6 +179,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	## match order of parameters in syntax above
 	mergedPT$start[newRows] <- c(auxCov[lower.tri(auxCov, diag = TRUE)],
 	                             auxM, as.numeric(auxTarget))
+	mergedPT$block <- NULL
 	finalPT <- lavaan::lav_partable_complete(rbind(mergedPT, CON))
 
   lavArgs$model <- finalPT
@@ -374,8 +377,8 @@ fitMeasuresLavaanStar <- function(object) {
 	notused <- capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit"))) ## FIXME: don't set a new inspect method
 	result[c("baseline.chisq", "baseline.df", "baseline.pvalue")] <- object@nullfit[c("chisq", "df", "pvalue")]
 
-    if(lavaan::lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler",
-                   "mean.var.adjusted", "scaled.shifted")) {
+    if(lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler",
+                                                 "mean.var.adjusted", "scaled.shifted")) {
         scaled <- TRUE
     } else {
         scaled <- FALSE

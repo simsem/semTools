@@ -32,7 +32,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
   if (!fixedCall$modelType %in% c("mgcfa","mimic","long"))
     stop('modelType must be one of c("mgcfa","mimic","long")')
   if (fixedCall$modelType == "long") stop('modelType "long" is not yet available.')
-  if (fixedCall$modelType == "mgcfa" && lavaan::lavInspect(con, "ngroups") == 1L)
+  if (fixedCall$modelType == "mgcfa" && lavInspect(con, "ngroups") == 1L)
     stop('modelType = "mgcfa" applies only to multigroup models.')
   if (fixedCall$modelType == "mimic") {
     uncon <- NULL
@@ -119,7 +119,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
     if (class(null) != "lavaan") stop(notLavaan)
   }
 
-  ############ FIXME: check that lavaan::lavInspect(con, "options")$conditional.x = FALSE (find defaults for continuous/ordered indicators)
+  ############ FIXME: check that lavInspect(con, "options")$conditional.x = FALSE (find defaults for continuous/ordered indicators)
   if (!is.null(fixedCall$param)) {
     ## Temporarily warn about testing thresholds without necessary constraints.   FIXME: check for binary indicators
     if ("thresholds" %in% fixedCall$param | any(grepl("\\|", fixedCall$param))) {
@@ -173,17 +173,17 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
     fixedCall$AFIs <- "chisq"
     AFIs <- "chisq"
   }
-  if ("ecvi" %in% AFIs & lavaan::lavInspect(con, "ngroups") > 1L)
+  if ("ecvi" %in% AFIs & lavInspect(con, "ngroups") > 1L)
     stop("ECVI is not available for multigroup models.")
 
   ## check estimators
-  leastSq <- grepl("LS", lavaan::lavInspect(con, "options")$estimator)
+  leastSq <- grepl("LS", lavInspect(con, "options")$estimator)
   if (!is.null(uncon)) {
-    if (uncon@Options$estimator != lavaan::lavInspect(con, "options")$estimator)
+    if (uncon@Options$estimator != lavInspect(con, "options")$estimator)
       stop("Models must be fit using same estimator.")
   }
   if (!is.null(null)) {
-    if (lavaan::lavInspect(null, "options")$estimator != lavaan::lavInspect(con, "options")$estimator)
+    if (lavInspect(null, "options")$estimator != lavInspect(con, "options")$estimator)
       stop("Models must be fit using same estimator.")
   }
 
@@ -216,7 +216,7 @@ getAFIs <- function(...) {
 
   AFI1 <- list()
   AFI0 <- list()
-  leastSq <- grepl("LS", lavaan::lavInspect(dots$con, "options")$estimator)
+  leastSq <- grepl("LS", lavInspect(dots$con, "options")$estimator)
   ## check validity of user-specified AFIs, save output
   if (!is.null(dots$AFIs)) {
     IC <- grep("ic|logl", dots$AFIs, value = TRUE)
@@ -330,28 +330,28 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
     }
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::update(null, data = d, group.label = lavaan::lavInspect(con, "group.label"))
+      out.null <- lavaan::update(null, data = d, group.label = lavInspect(con, "group.label"))
     }
 
     ## fit constrained model, check for convergence
-    try(out0 <- lavaan::update(con, data = d, group.label = lavaan::lavInspect(con, "group.label")))
+    try(out0 <- lavaan::update(con, data = d, group.label = lavInspect(con, "group.label")))
     if (!exists("out0")) {
       nTries <- nTries + 1L
       next
     }
-    if (!lavaan::lavInspect(out0, "converged")) {
+    if (!lavInspect(out0, "converged")) {
       nTries <- nTries + 1L
       next
     }
 
     ## fit unconstrained model (unless NULL), check for convergence
     if (!is.null(uncon)) {
-      try(out1 <- lavaan::update(uncon, data = d, group.label = lavaan::lavInspect(con, "group.label")))
+      try(out1 <- lavaan::update(uncon, data = d, group.label = lavInspect(con, "group.label")))
       if (!exists("out1")) {
         nTries <- nTries + 1L
         next
       }
-      if (!lavaan::lavInspect(out1, "converged")) {
+      if (!lavInspect(out1, "converged")) {
         nTries <- nTries + 1L
         next
       }
@@ -409,7 +409,7 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
   while (nTries <= maxNonconv) {
     ## permute covariate(s) within each group
     if (length(G)) {
-      for (gg in lavaan::lavInspect(con, "group.label")) {
+      for (gg in lavInspect(con, "group.label")) {
         dG <- d[ d[[G]] == gg, ]
         N <- nrow(dG)
         newd <- dG[sample(1:N, N), covariates, drop = FALSE]
@@ -439,17 +439,17 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
 
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::update(null, data = d, group.label = lavaan::lavInspect(con, "group.label"))
+      out.null <- lavaan::update(null, data = d, group.label = lavInspect(con, "group.label"))
     }
 
     ## fit constrained model
-    try(out0 <- lavaan::update(con, data = d, group.label = lavaan::lavInspect(con, "group.label")))
+    try(out0 <- lavaan::update(con, data = d, group.label = lavInspect(con, "group.label")))
     ## check for convergence
     if (!exists("out0")) {
       nTries <- nTries + 1L
       next
     }
-    if (!lavaan::lavInspect(out0, "converged")) {
+    if (!lavInspect(out0, "converged")) {
       nTries <- nTries + 1L
       next
     }
@@ -540,7 +540,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
   ######################### PREP DATA ##############################
   argList <- fullCall[c("con","uncon","null","param","freeParam","covariates",
                         "AFIs","moreAFIs","maxSparse","maxNonconv","warn","iseed")]
-  argList$G <- lavaan::lavInspect(con, "group")
+  argList$G <- lavInspect(con, "group")
     ## check for categorical variables
     # catVars <- lavaan::lavNames(con, type = "ov.ord")
     # numVars <- lavaan::lavNames(con, type = "ov.num")
@@ -552,12 +552,12 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
       names(y) <- c(n, argList$G)
       y
     }, SIMPLIFY = FALSE,
-    x = lavaan::lavInspect(con, "data"), g = lavaan::lavInspect(con, "group.label"),
+    x = lavInspect(con, "data"), g = lavInspect(con, "group.label"),
     n = lavaan::lavNames(con, type = "ov",
-                         group = seq_along(lavaan::lavInspect(con, "group.label"))))
+                         group = seq_along(lavInspect(con, "group.label"))))
     argList$d <- do.call(rbind, dataList)
   } else {
-    argList$d <- as.data.frame(lavaan::lavInspect(con, "data"))
+    argList$d <- as.data.frame(lavInspect(con, "data"))
     names(argList$d) <- lavaan::lavNames(con, type = "ov")
   }
   ## check that covariates are actual variables
@@ -649,8 +649,8 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
   ## save parameter table for show/summary methods
   PT <- as.data.frame(lavaan::parTable(con))
   PT$par <- paste0(PT$lhs, PT$op, PT$rhs)
-  if (length(lavaan::lavInspect(con, "group")))
-    PT$group.label[PT$group > 0] <- lavaan::lavInspect(con, "group.label")[PT$group[PT$group > 0] ]
+  if (length(lavInspect(con, "group")))
+    PT$group.label[PT$group > 0] <- lavInspect(con, "group.label")[PT$group[PT$group > 0] ]
 
   ## return observed results, permutation p values, and ANOVA results
   if (is.null(uncon)) {

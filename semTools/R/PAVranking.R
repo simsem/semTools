@@ -256,13 +256,13 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
     ## convert allocation matrix to dataframe for model estimation 
 	fit_A <- lavaan::sem(syntaxA, data=data_A, ...)
     ## estimate model in lavaan
-	if (lavaan::lavInspect(fit_A, "converged")==TRUE){
+	if (lavInspect(fit_A, "converged")==TRUE){
 	Converged_A[[i]] <- 1
 	} else Converged_A[[i]] <- 0
     ## determine whether or not each allocation converged
 	Param_A[[i]] <- lavaan::parameterEstimates(fit_A)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
     ## assign allocation parameter estimates to list
-	if (lavaan::lavInspect(fit_A, "post.check")==TRUE & Converged_A[[i]]==1){
+	if (lavInspect(fit_A, "post.check")==TRUE & Converged_A[[i]]==1){
 	ProperSolution_A[[i]] <- 1
 	} else ProperSolution_A[[i]] <- 0
 	## determine whether or not each allocation has proper solutions
@@ -433,13 +433,13 @@ if(as.vector(regexpr("/",parceloutput))!=-1){
     ## convert allocation matrix to dataframe for model estimation 
     fit <- lavaan::sem(syntaxB, data=data, ...)
     ## estimate model in lavaan
-	if (lavaan::lavInspect(fit, "converged")==TRUE){
+	if (lavInspect(fit, "converged")==TRUE){
 	Converged[[i]] <- 1
 	} else Converged[[i]] <- 0
 	## determine whether or not each allocation converged
 	Param[[i]] <- lavaan::parameterEstimates(fit)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
     ## assign allocation parameter estimates to list
-    if (lavaan::lavInspect(fit, "post.check")==TRUE & Converged[[i]]==1) {
+    if (lavInspect(fit, "post.check")==TRUE & Converged[[i]]==1) {
 	ProperSolution[[i]] <- 1
 	} else ProperSolution[[i]] <- 0
 	## determine whether or not each allocation has proper solutions

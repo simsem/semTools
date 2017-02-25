@@ -1,7 +1,7 @@
 # miPowerFit: Evaluate model fit by Satorra, Saris, & van der Weld (2009) method
 
 miPowerFit <- function(lavaanObj, stdLoad=0.4, cor=0.1, stdBeta=0.1, intcept=0.2, stdDelta=NULL, delta=NULL, cilevel=0.90) {
-	mi <- lavaan::lavInspect(lavaanObj, "mi")
+	mi <- lavInspect(lavaanObj, "mi")
 	mi <- mi[mi$op != "==",]
 	sigma <- mi[,"epc"] / sqrt(mi[,"mi"])
 	if(is.null(delta)) {
@@ -51,8 +51,8 @@ totalFacVar <- function(beta, psi) {
 
 findTotalVar <- function(lavaanObj) {
 	result <- list()
-	nGroups <- lavaan::lavInspect(lavaanObj, "ngroups")
-	cov.all <- lavaan::lavInspect(lavaanObj, "cov.all")
+	nGroups <- lavInspect(lavaanObj, "ngroups")
+	cov.all <- lavInspect(lavaanObj, "cov.all")
 	if(nGroups == 1) cov.all <- list(cov.all)
 	for(i in 1:nGroups) {
 		temp <- diag(cov.all[[i]])

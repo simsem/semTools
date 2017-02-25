@@ -7,7 +7,7 @@
 	Class For Rotated Results from EFA
 }
 \description{
-	This class contains the results of rotated exploratory factor analysis 
+	This class contains the results of rotated exploratory factor analysis
 }
 \section{Objects from the Class}{
 	Objects can be created via the \code{\link{orthRotate}} or \code{\link{oblqRotate}} function.
@@ -26,7 +26,7 @@
 }
 \section{methods}{
   \itemize{
-	\item \code{summary} The \code{summary} function shows the detailed results of the rotated solution. This function has two arguments: \code{suppress} and \code{sort}. The \code{suppress} argument is used to not show the standardized loading values that less than the specified value. The default is 0.1. The \code{sort} is used to sort the factor loadings by the sizes of factor loadings in each factor. The default is \code{TRUE}.  
+	\item \code{summary} The \code{summary} function shows the detailed results of the rotated solution. This function has two arguments: \code{suppress} and \code{sort}. The \code{suppress} argument is used to not show the standardized loading values that less than the specified value. The default is 0.1. The \code{sort} is used to sort the factor loadings by the sizes of factor loadings in each factor. The default is \code{TRUE}.
   }
 }
 \seealso{
@@ -36,12 +36,12 @@
     Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
-library(lavaan)
-unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
-summary(unrotated, std=TRUE)
-inspect(unrotated, "std")
+unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
+                         varList = paste0("x", 1:9), estimator = "mlr")
+summary(unrotated, std = TRUE)
+lavInspect(unrotated, "std")
 
 # Rotated by Quartimin
-rotated <- oblqRotate(unrotated, method="quartimin")
+rotated <- oblqRotate(unrotated, method = "quartimin")
 summary(rotated)
 }

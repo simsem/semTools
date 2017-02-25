@@ -68,7 +68,7 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   satFit <- do.call(lavaan::lavaan, satArgs)
 
   ## check for robust estimators
-  opts <- lavaan::lavInspect(satFit, "options")
+  opts <- lavInspect(satFit, "options")
   if (!opts$se %in% c("standard","robust.huber.white"))
     stop(c("Two-Stage estimation requires either se = 'standard' for ",
            "multivariate normal data or se = 'robust.huber.white' to ",
@@ -78,9 +78,9 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   ## fit target model to saturated estimates
   targetArgs <- funArgs
   targetArgs$data <- NULL
-  targetArgs$sample.cov <- lavaan::lavInspect(satFit, "cov.ov")
-  targetArgs$sample.mean <- lavaan::lavInspect(satFit, "mean.ov")
-  targetArgs$sample.nobs <- lavaan::lavInspect(satFit, "nobs")
+  targetArgs$sample.cov <- lavInspect(satFit, "cov.ov")
+  targetArgs$sample.mean <- lavInspect(satFit, "mean.ov")
+  targetArgs$sample.nobs <- lavInspect(satFit, "nobs")
   targetArgs$se <- "standard"
   targetArgs$sample.cov.rescale <- TRUE
   targetFit <- do.call(fun, targetArgs)
@@ -140,7 +140,7 @@ setMethod("nobs", "twostage",
                                     "patterns","coverage")) {
   type <- type[1]
   if (type == "n.per.group") type <- "nobs"
-  lavaan::lavInspect(object@saturated, what = type)
+  lavInspect(object@saturated, what = type)
 })
 
 setMethod("vcov", "twostage", function(object, baseline = FALSE) {
@@ -197,7 +197,7 @@ setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
               pvalue = pchisq(chisq.naive / cc, df = DF, lower.tail = FALSE))
   class(scaled) <- c("lavaan.vector","numeric")
   ## return both statistics
-  if (lavaan::lavInspect(object@saturated, "options")$se == "standard") {
+  if (lavInspect(object@saturated, "options")$se == "standard") {
     cat("Difference test for Browne (1984) residual-based statistics:\n\n")
     print(residual)
   }
@@ -255,7 +255,7 @@ twostageMatrices <- function(object, baseline) {
   nG <- max(PTsat$group)
   isMG <- nG > 1L
   ## model derivatives
-  delta <- lavaan::lavInspect(slot(object, SLOT), "delta")
+  delta <- lavInspect(slot(object, SLOT), "delta")
   if (!isMG) delta <- list(delta)
   for (g in 1:nG) {
     covparams <- grep(pattern = "~~", x = rownames(delta[[g]]))
@@ -266,8 +266,8 @@ twostageMatrices <- function(object, baseline) {
   delta <- do.call(rbind, delta)
 
   ## extract estimated moments from saturated model, and number of moments
-  satSigma <- lavaan::lavInspect(object@saturated, "cov.ov")
-  satMu <- lavaan::lavInspect(object@saturated, "mean.ov")
+  satSigma <- lavInspect(object@saturated, "cov.ov")
+  satMu <- lavInspect(object@saturated, "mean.ov")
   if (!isMG) {
     satSigma <- list(satSigma)
     satMu <- list(satMu)
@@ -283,8 +283,8 @@ twostageMatrices <- function(object, baseline) {
   p <- length(satMu[[1]])
   pStar <- p*(p + 1) / 2
   ## extract model-implied moments
-  muHat <- lavaan::lavInspect(slot(object, SLOT), "mean.ov")
-  sigmaHat <- lavaan::lavInspect(slot(object, SLOT), "cov.ov")
+  muHat <- lavInspect(slot(object, SLOT), "mean.ov")
+  sigmaHat <- lavInspect(slot(object, SLOT), "cov.ov")
   if (!isMG) {
     sigmaHat <- list(sigmaHat)
     muHat <- list(muHat)
@@ -299,7 +299,7 @@ twostageMatrices <- function(object, baseline) {
   H <- list()
   for (g in 1:nG) H[[g]] <- matrix(0, (pStar + p), (pStar + p))
 
-  if (lavaan::lavInspect(slot(object, SLOT), "options")$estimator == "expected") {
+  if (lavInspect(slot(object, SLOT), "options")$estimator == "expected") {
     for (g in 1:nG) {
       H[[g]][1:pStar, 1:pStar] <- .5*lavaan::lav_matrix_duplication_pre_post(shinv[[g]] %x% shinv[[g]])
       H[[g]][(pStar + 1):(pStar + p), (pStar + 1):(pStar + p)] <- shinv[[g]]
@@ -342,13 +342,13 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   MATS <- twostageMatrices(object, baseline)
   ## residual-based statistic (Savalei & Bentler, 2009, eq. 8)
   N <- lavaan::nobs(slot(object, SLOT))
-  nG <- lavaan::lavInspect(slot(object, SLOT), "ngroups")
+  nG <- lavInspect(slot(object, SLOT), "ngroups")
   res <- lavaan::residuals(slot(object, SLOT))
   if (nG == 1L) res <- list(res)
   etilde <- do.call(c, lapply(res, function(x) c(lavaan::lav_matrix_vech(x$cov), x$mean)))
   ID <- MATS$satInfo %*% MATS$delta
   T.res <- N*t(etilde) %*% (MATS$satInfo - ID %*% MASS::ginv(t(MATS$delta) %*% ID) %*% t(ID)) %*% etilde # FIXME: why not solve()?
-  DF <- lavaan::lavInspect(slot(object, SLOT), "fit")[["df"]]
+  DF <- lavInspect(slot(object, SLOT), "fit")[["df"]]
   pval.res <- pchisq(T.res, df = DF, lower.tail = FALSE)
   residual <- c(chisq = T.res, df = DF, pvalue = pval.res)
   class(residual) <- c("lavaan.vector","numeric")
@@ -357,7 +357,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   meat <- MATS$H %*% MATS$delta
   bread <- MASS::ginv(t(MATS$delta) %*% meat) # FIXME: why not solve()?
   cc <- DF / sum(diag(MATS$satACOV %*% (MATS$H - meat %*% bread %*% t(meat))))
-  chisq <- lavaan::lavInspect(slot(object, SLOT), "fit")[["chisq"]]
+  chisq <- lavInspect(slot(object, SLOT), "fit")[["chisq"]]
   T.scaled <- cc * chisq
   pval.scaled <- pchisq(T.scaled, df = DF, lower.tail = FALSE)
   scaled <- c(chisq.naive = chisq, scaling.factor = 1 / cc,
@@ -366,7 +366,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
 
   ## return both statistics
   if (print) {
-    if (lavaan::lavInspect(object@saturated, "options")$se == "standard") {
+    if (lavInspect(object@saturated, "options")$se == "standard") {
       cat("Browne (1984) residual-based test statistic:\n\n")
       print(residual)
     }

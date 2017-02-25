@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 14 January 2017
+### Last updated: 25 February 2017
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -12,7 +12,7 @@
 ## exclude = variable names to exclude from the analysis
 ## fewImps = If TRUE, apply small-M correction to between-imps variance
 fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
-                varnames = NULL, exclude = NULL, fewImps = TRUE) {
+                varnames = NULL, exclude = NULL, fewImps = FALSE) {
   fiml <- is.data.frame(data)
   ## check for single data set or list of imputed data sets
   data1 <- if (fiml) data else data[[1]]
@@ -48,16 +48,16 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     fit <- lavaan::lavaan(model, data = data, missing = "fiml", group = group)
     comb.results <- lavaan::parameterEstimates(fit, fmi = TRUE, zstat = FALSE,
                                                pvalue = FALSE, ci = FALSE)
-    nG <- lavaan::lavInspect(fit, "ngroups")
+    nG <- lavInspect(fit, "ngroups")
     if(nG == 1L) comb.results$group <- 1L
-    group.label <- lavaan::lavInspect(fit, "group.label")
+    group.label <- lavInspect(fit, "group.label")
   } else {
     fit <- lavaan.mi(model, data, group = group, ordered = ordvars, auto.th = TRUE)
     comb.results <- getMethod("summary","lavaan.mi")(fit, fmi = TRUE, ci = FALSE,
                                                      add.attributes = FALSE)
-    nG <- lavaan::lavListInspect(fit, "ngroups")
+    nG <- lavListInspect(fit, "ngroups")
     if(nG == 1L) comb.results$group <- 1L
-    group.label <- lavaan::lavListInspect(fit, "group.label")
+    group.label <- lavListInspect(fit, "group.label")
     if (fewImps) {
       comb.results["fmi1"] <- NULL
       names(comb.results)[names(comb.results) == "fmi2"] <- "fmi"
@@ -82,7 +82,7 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
   } else {
     ## covariances from saturated model, including polychorics (if applicable)
     if (fiml) {
-      covmat <- lavaan::lavInspect(fit, "theta")
+      covmat <- lavInspect(fit, "theta")
       if (nG == 1L) covmat <- list(covmat)
     } else {
       useImps <- sapply(fit@convergence, "[[", "converged")

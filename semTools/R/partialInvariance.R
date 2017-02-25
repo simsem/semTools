@@ -91,9 +91,9 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 	names(fixIntceptFac) <- names(facList)
 
 	ngroups <- max(pt0$group)
-	neach <- lavaan::lavInspect(fit0, "nobs")
-	groupvar <- lavaan::lavInspect(fit0, "group")
-	grouplab <- lavaan::lavInspect(fit0, "group.label")
+	neach <- lavInspect(fit0, "nobs")
+	groupvar <- lavInspect(fit0, "group")
+	grouplab <- lavInspect(fit0, "group.label")
 	if(!is.numeric(refgroup)) refgroup <- which(refgroup == grouplab)
 	grouporder <- 1:ngroups
 	grouporder <- c(refgroup, setdiff(grouporder, refgroup))
@@ -172,7 +172,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		obsmean <- sapply(lavaan::lavInspect(fit0, "sampstat"), "[[", "mean")
+		obsmean <- sapply(lavInspect(fit0, "sampstat"), "[[", "mean")
 		obsmean <- obsmean[,grouporder]
 		obsdiff <- obsmean[,2:ngroups, drop = FALSE] - matrix(obsmean[,1], nrow(obsmean), ngroups - 1)
 		obsdiff <- obsdiff[varfree, , drop = FALSE]
@@ -393,7 +393,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		obsmean <- sapply(lavaan::lavInspect(fit0, "sampstat"), "[[", "mean")
+		obsmean <- sapply(lavInspect(fit0, "sampstat"), "[[", "mean")
 		obsmean <- obsmean[,grouporder]
 		obsdiff <- obsmean[,2:ngroups, drop = FALSE] - matrix(obsmean[,1], nrow(obsmean), ngroups - 1)
 		obsdiff <- obsdiff[varfree, , drop = FALSE]

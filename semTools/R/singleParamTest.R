@@ -131,7 +131,7 @@ paramNameFromPt <- function(pt) {
 
 refit <- function(pt, object, resetstart = TRUE) {
 	if(resetstart && "start" %in% names(pt)) pt <- pt[-which("start" == names(pt))]
-	previousCall <- lavaan::lavInspect(object, "call")
+	previousCall <- lavInspect(object, "call")
 	args <- previousCall[-1]
 	args$model <- pt
 	funcall <- as.character(previousCall[[1]])

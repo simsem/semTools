@@ -339,13 +339,13 @@ if(Maxv > 0){
     ## convert allocation matrix to dataframe for model estimation 
     fit <- lavaan::sem(syntax, control=list(iter.max=100), data=data_parcel, ...)
     ## estimate model in lavaan
-	if (lavaan::lavInspect(fit, "converged")==TRUE){
+	if (lavInspect(fit, "converged")==TRUE){
 	Converged[[i]] <- 1
 	} else Converged[[i]] <- 0
 	## determine whether or not each allocation converged
     Param[[i]] <- lavaan::parameterEstimates(fit)[,c("lhs","op","rhs","est","se","z","pvalue","ci.lower","ci.upper")]
     ## assign allocation parameter estimates to list
-    if (lavaan::lavInspect(fit, "post.check") & Converged[[i]] == 1) {
+    if (lavInspect(fit, "post.check") & Converged[[i]] == 1) {
 	ProperSolution[[i]] <- 1
 	} else ProperSolution[[i]] <- 0
 	## determine whether or not each allocation has proper solutions

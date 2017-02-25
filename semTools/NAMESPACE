@@ -1,14 +1,19 @@
-## Last updated: 5 February 2017
+## Last updated: 25 February 2017
 
-importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
 importFrom("stats",
-           cov, nlminb, rnorm, runif, cov2cor, qnorm, sd, quantile, qchisq, fitted, cor, pchisq, factanal, coef, lm, pnorm, pf, var, fitted.values, nobs, residuals, resid, dist, ptukey, dchisq, na.omit, qf, pt, qt, anova, vcov)
+           sd, var, cov, cor, cov2cor,
+           rnorm, pnorm, qnorm, qf, pf, pt, qt, runif, qchisq, pchisq, dchisq, ptukey,
+           lm, quantile, dist, na.omit, nlminb, uniroot, factanal,
+           nobs, residuals, resid, fitted, fitted.values, coef, anova, vcov)
+importFrom("methods", show, is, new, slot, as, hasArg, getMethod)
 importFrom("utils",
-           capture.output, write.table, combn, read.table, read.csv, setTxtProgressBar, txtProgressBar)
+           capture.output, combn, write.table, read.table, read.csv,
+           setTxtProgressBar, txtProgressBar)
 importFrom("graphics", hist, plot, par, abline, lines, legend)
+importFrom("lavaan", lavInspect, lavListInspect)
 
-exportClasses(lavaan.mi, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
-exportMethods(show, summary, hist, anova, vcov, coef, fitted, fitted.values, resid, residuals, nobs)
+#exportClasses(lavaan.mi, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
+#exportMethods(show, summary, hist, anova, vcov, coef, resid, residuals, nobs)
 
 ## ORGANIZE BY AUTHOR(S) OF EACH FUNCTION
 export(

@@ -3,13 +3,14 @@
 ### Last updated: 14 October 2016
 ### Description: Copy or print each aspect of the lavaan object into a clipboard or a file
 
-# Clipboard: copy each aspect of the lavaan object into a clipboard; this function will be compatible with lavaan::lavInspect
-clipboard <- function(object, what="summary", ...) {
-	if(.Platform$OS.type == "windows") {
+# Clipboard: copy each aspect of the lavaan object into a clipboard; this
+# function will be compatible with lavInspect
+clipboard <- function(object, what = "summary", ...) {
+	if (.Platform$OS.type == "windows") {
 		saveFile(object, file="clipboard-128", what=what, tableFormat=TRUE, ...)
 		cat("File saved in the clipboard; please paste it in any program you wish.\n")
 	} else {
-		if(system("pbcopy", ignore.stderr = TRUE) == 0) {
+		if (system("pbcopy", ignore.stderr = TRUE) == 0) {
 			saveFile(object, file=pipe("pbcopy", "w"), what=what, tableFormat=TRUE, ...)
 			cat("File saved in the clipboard; please paste it in any program you wish. If you cannot paste it, it is okay because this function works for some computers, which I still have no explanation currently. Please consider using the 'saveFile' function instead.\n")
 		} else if (system("xclip -version", ignore.stderr = TRUE) == 0) {
@@ -21,12 +22,13 @@ clipboard <- function(object, what="summary", ...) {
 	}
 }
 
-# saveFile: save each aspect of the lavaan object into a file; this function will be compatible with lavaan::lavInspect
+# saveFile: save each aspect of the lavaan object into a file; this function
+# will be compatible with lavInspect
 saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 	# Check whether the object is in the lavaan class
-	if(is(object, "lavaan")) {
+	if (is(object, "lavaan")) {
 		saveFileLavaan(object, file, what=what, tableFormat=tableFormat, ...)
-	} else if(is(object, "FitDiff")) {
+	} else if (is(object, "FitDiff")) {
 		saveFileFitDiff(object, file, what=what, tableFormat=tableFormat)
 	} else {
 		stop("The object must be in the `lavaan' output or the output from the compareFit function.")
@@ -34,31 +36,31 @@ saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 }
 
 saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...) {
-	if(length(what) > 1) {
+	if (length(what) > 1) {
         stop("`what' arguments contains multiple arguments; only one is allowed")
-    } 
+    }
     # be case insensitive
     what <- tolower(what)
-	
-	if(what == "summary") {
-		if(tableFormat) {
+
+	if (what == "summary") {
+		if (tableFormat) {
 			copySummary(object, file=file)
 		} else {
 			write(paste(capture.output(summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE)), collapse="\n"), file=file)
 		}
 	} else if (what == "mifit") {
-		if(tableFormat) {
+		if (tableFormat) {
 			write.table(miPowerFit(object, ...), file=file, sep="\t", row.names=FALSE, col.names=TRUE)
 		} else {
 			write(paste(capture.output(miPowerFit(object, ...)), collapse="\n"), file=file)
 		}
 	} else {
-		target <- lavaan::lavInspect(object, what=what)
-		if(tableFormat) {
-			if(is(target, "lavaan.data.frame") || is(target, "data.frame")) {
+		target <- lavInspect(object, what=what)
+		if (tableFormat) {
+			if (is(target, "lavaan.data.frame") || is(target, "data.frame")) {
 				utils::write.table(target, file=file, sep="\t", row.names=FALSE, col.names=TRUE)
 			} else if (is(target, "list")) {
-				if(is(target[[1]], "list")) {
+				if (is(target[[1]], "list")) {
 					target <- lapply(target, listToDataFrame)
 					target <- mapply(function(x, y) rbind(rep("", ncol(y)), c(x, rep("", ncol(y) - 1)), y), names(target), target, SIMPLIFY=FALSE)
 					target <- do.call(rbind, target)
@@ -85,7 +87,7 @@ copySummary <- function(object, file) {
 
 	# Split the text by two spaces
 	outputText <- strsplit(outputText, "  ")
-	
+
 	# Trim and delete the "" elements
 	outputText <- lapply(outputText, function(x) x[x != ""])
 	outputText <- lapply(outputText, trim)
@@ -102,15 +104,15 @@ copySummary <- function(object, file) {
 	numcol <- 7
 	test <- set2[-grep("Estimate", set2)]
 	test <- test[sapply(test, length) >=2]
-	if(any(sapply(test, function(x) is.na(suppressWarnings(as.numeric(x[2])))))) numcol <- numcol + 1
+	if (any(sapply(test, function(x) is.na(suppressWarnings(as.numeric(x[2])))))) numcol <- numcol + 1
 
 	# A function to parse the fit-measures output
 	set1Parse <- function(x, numcol) {
-		if(length(x) == 0) { 
+		if (length(x) == 0) {
 			return(rep("", numcol))
-		} else if(length(x) == 1) {
+		} else if (length(x) == 1) {
 			return(c(x, rep("", numcol - 1)))
-		} else if((length(x) >= 2) & (length(x) <= numcol)) {
+		} else if ((length(x) >= 2) & (length(x) <= numcol)) {
 			return(c(x[1], rep("", numcol - length(x)), x[2:length(x)]))
 		} else {
 			stop("Cannot parse text")
@@ -120,26 +122,26 @@ copySummary <- function(object, file) {
 
 	# A function to parse the parameter-estimates output
 	set2Parse <- function(x, numcol) {
-		if(length(x) == 0) return(rep("", numcol))
-		if(any(grepl("Estimate", x))) return(c(rep("", numcol-length(x)), x))
-		if(length(x) == 1) {
+		if (length(x) == 0) return(rep("", numcol))
+		if (any(grepl("Estimate", x))) return(c(rep("", numcol-length(x)), x))
+		if (length(x) == 1) {
 			return(c(x, rep("", numcol-1)))
 		} else {
 			group1 <- x[1]
 			group2 <- x[2:length(x)]
-			if(is.na(suppressWarnings(as.numeric(x[2])))) {
+			if (is.na(suppressWarnings(as.numeric(x[2])))) {
 				group1 <- x[1:2]
 				group2 <- x[3:length(x)]
 			} else if (numcol == 8) {
 				group1 <- c(group1, "")
 			}
-			if(length(group2) == 1) {
+			if (length(group2) == 1) {
 				group2 <- c(group2, rep("", 6 - length(group2)))
-			} else if(length(group2) == 4) {
+			} else if (length(group2) == 4) {
 				group2 <- c(group2, rep("", 6 - length(group2)))
 			} else {
 				group2 <- c(group2[1], rep("", 6 - length(group2)), group2[2:length(group2)])
-			} 
+			}
 			return(c(group1, group2))
 		}
 	}
@@ -147,11 +149,11 @@ copySummary <- function(object, file) {
 
 	# A function to parse the r-squared output
 	set3Parse <- function(x, numcol) {
-		if(length(x) == 0) { 
+		if (length(x) == 0) {
 			return(rep("", numcol))
 		} else {
 			return(c(x, rep("", numcol - length(x))))
-		} 
+		}
 	}
 	set3 <- t(sapply(set3, set3Parse, numcol))
 
@@ -169,16 +171,16 @@ trim <- function(object) {
 # listToDataFrame: Change a list with multiple elements into a single data.frame
 listToDataFrame <- function(object) {
 	name <- names(object)
-	
+
 	# Count the maximum number of column (+1 is for the column for row name)
 	numcol <- max(sapply(object, function(x) ifelse(is(x, "lavaan.matrix") || is(x, "lavaan.matrix.symmetric") || is(x, "matrix") || is(x, "data.frame"), return(ncol(x)), return(1)))) + 1
-	
+
 	# Change all objects in the list into a data.frame with the specified column
 	target <- lapply(object, niceDataFrame, numcol)
-	
+
 	# Paste the name of each object into each data.frame
 	target <- mapply(function(x, y) rbind(rep("", ncol(y)), c(x, rep("", ncol(y) - 1)), y), name, target, SIMPLIFY=FALSE)
-	
+
 	# Combine into a single data.frame
 	target <- do.call(rbind, target)
 	target[-1,]
@@ -187,10 +189,10 @@ listToDataFrame <- function(object) {
 # niceDataFrame: Change an object into a data.frame with a specified number of columns and the row and column names are included in the data.frame
 niceDataFrame <- function(object, numcol) {
 	temp <- NULL
-	if(is(object, "lavaan.matrix.symmetric")) {
+	if (is(object, "lavaan.matrix.symmetric")) {
 		# save only the lower diagonal of the symmetric matrix
 		temp <- matrix("", nrow(object), ncol(object))
-		for(i in 1:nrow(object)) {
+		for (i in 1:nrow(object)) {
 			temp[i, 1:i] <- object[i, 1:i]
 		}
 	} else if (is(object, "data.frame") || is(object, "matrix") || is(object, "lavaan.matrix")) {
@@ -203,15 +205,15 @@ niceDataFrame <- function(object, numcol) {
 	} else {
 		stop("The 'niceDataFrame' function has a bug. Please contact the developer.")
 	}
-	
+
 	# Transform into the result with a specified number of columns, excluding the row name
 	result <- matrix("", nrow(temp), numcol - 1)
-	
+
 	# Parse the column names
 	result[,1:ncol(temp)] <- temp
 	firstRow <- colnames(object)
 	ifelse(is.null(firstRow), firstRow <- rep("", ncol(result)), firstRow <- c(firstRow, rep("", numcol - length(firstRow) - 1)))
-	
+
 	# Parse the row names
 	result <- rbind(firstRow, result)
 	firstCol <- rownames(object)

@@ -119,9 +119,9 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 	names(fixIntceptFac) <- names(facList)
 	
 	ngroups <- max(pt0$group)
-	neach <- lavaan::lavInspect(fit0, "nobs")
-	groupvar <- lavaan::lavInspect(fit0, "group")
-	grouplab <- lavaan::lavInspect(fit0, "group.label")
+	neach <- lavInspect(fit0, "nobs")
+	groupvar <- lavInspect(fit0, "group")
+	grouplab <- lavInspect(fit0, "group.label")
 	if(!is.numeric(refgroup)) refgroup <- which(refgroup == grouplab)
 	grouporder <- 1:ngroups
 	grouporder <- c(refgroup, setdiff(grouporder, refgroup))
@@ -716,15 +716,15 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 }
 
 thetaImpliedTotalVar <- function(object) {
-	param <- lavaan::lavInspect(object, "coef")
-	ngroup <- lavaan::lavInspect(object, "ngroups")
+	param <- lavInspect(object, "coef")
+	ngroup <- lavInspect(object, "ngroups")
 	name <- names(param)
 	if(ngroup == 1) {
 		ly <- param[name == "lambda"]
 	} else {
 		ly <- lapply(param, "[[", "lambda")
 	}
-	ps <- lavaan::lavInspect(object, "cov.lv")
+	ps <- lavInspect(object, "cov.lv")
 	if(ngroup == 1) ps <- list(ps)
 	if(ngroup == 1) {
 		te <- param[name == "theta"]

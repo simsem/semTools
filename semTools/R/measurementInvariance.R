@@ -116,7 +116,7 @@ printInvarianceResult <- function(FIT, fit.measures, method) {
 
 	if(length(fit.measures) == 1L && fit.measures == "default") {
 		# scaled test statistic?
-		if(length(lavaan::lavInspect(FIT[[1]], "test")) > 1L) {
+		if(length(lavInspect(FIT[[1]], "test")) > 1L) {
 			fit.measures <- c("cfi.scaled", "rmsea.scaled")
 		} else {
 			fit.measures <- c("cfi", "rmsea")

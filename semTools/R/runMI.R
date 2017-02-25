@@ -75,22 +75,22 @@ runMI <- function(model, data, fun = "lavaan", ...,
 
   ## Function to get custom output for lavaan.mi object
   getOutput <- function(obj) {
-    converged <- lavaan::lavInspect(obj, "converged")
+    converged <- lavInspect(obj, "converged")
     if (converged) {
       se <- lavaan::parTable(obj)$se
       se.test <- all(!is.na(se)) & all(se >= 0) & any(se != 0)
-      if (lavaan::lavInspect(obj, "ngroups") == 1L) {
-        Heywood.lv <- det(lavaan::lavInspect(obj, "cov.lv")) > 0
-        Heywood.ov <- det(lavaan::lavInspect(obj, "theta")) > 0
+      if (lavInspect(obj, "ngroups") == 1L) {
+        Heywood.lv <- det(lavInspect(obj, "cov.lv")) > 0
+        Heywood.ov <- det(lavInspect(obj, "theta")) > 0
       } else {
-        Heywood.lv <- all(sapply(lavaan::lavInspect(obj, "cov.lv"), det) > 0)
-        Heywood.ov <- all(sapply(lavaan::lavInspect(obj, "theta"), det) > 0)
+        Heywood.lv <- all(sapply(lavInspect(obj, "cov.lv"), det) > 0)
+        Heywood.ov <- all(sapply(lavInspect(obj, "theta"), det) > 0)
       }
     } else {
       se.test <- Heywood.lv <- Heywood.ov <- NA
     }
-    list(sampstat = lavaan::lavInspect(obj, "sampstat"),
-         coefMats = lavaan::lavInspect(obj, "coef"),
+    list(sampstat = lavInspect(obj, "sampstat"),
+         coefMats = lavInspect(obj, "coef"),
          GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all
          converged = converged, SE = se.test,
          Heywood.lv = Heywood.lv, Heywood.ov = Heywood.ov)
@@ -196,7 +196,7 @@ setMethod("summary", "lavaan.mi", function(object, se = TRUE, ci = TRUE, level =
   STDs <- !(PT$op %in% c("==","<",">"))
   PE$est <- rowMeans(sapply(object@ParTableList, "[[", i = "est"))
 
-  if (lavaan::lavListInspect(object, "options")$se == "none") {
+  if (lavListInspect(object, "options")$se == "none") {
     warning('pooled variances and tests unavailable when se="none" is requested')
     se <- FALSE
   }
@@ -267,10 +267,10 @@ setMethod("summary", "lavaan.mi", function(object, se = TRUE, ci = TRUE, level =
     PE$label <- PT$label
     PE$exo <- 0L # because PT$exo must be when !fixed.x
     class(PE) <- c("lavaan.parameterEstimates","lavaan.data.frame","data.frame")
-    attr(PE, "information") <- lavaan::lavListInspect(object, "options")$information
-    attr(PE, "se") <- lavaan::lavListInspect(object, "options")$se
-    attr(PE, "group.label") <- lavaan::lavListInspect(object, "group.label")
-    attr(PE, "missing") <- lavaan::lavListInspect(object, "options")$missing
+    attr(PE, "information") <- lavListInspect(object, "options")$information
+    attr(PE, "se") <- lavListInspect(object, "options")$se
+    attr(PE, "group.label") <- lavListInspect(object, "group.label")
+    attr(PE, "missing") <- lavListInspect(object, "options")$missing
     cat(messPool)
     if (fmi) cat("\n", messFMI, sep = "")
   } else {
@@ -305,9 +305,9 @@ setMethod("summary", "lavaan.mi", function(object, se = TRUE, ci = TRUE, level =
 })
 
 setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
-  if (total) return(lavaan::lavListInspect(object, "ntotal"))
-  N <- lavaan::lavListInspect(object, "norig")
-  if (length(N) > 1L) names(N) <- lavaan::lavListInspect(object, "group.label")
+  if (total) return(lavListInspect(object, "ntotal"))
+  N <- lavListInspect(object, "norig")
+  if (length(N) > 1L) names(N) <- lavListInspect(object, "group.label")
   N
 })
 
@@ -331,7 +331,7 @@ setMethod("coef", "lavaan.mi", function(object, type = "free", labels = TRUE) {
 })
 
 setMethod("vcov", "lavaan.mi", function(object, type = c("pooled","between","within")) {
-  if (lavaan::lavListInspect(object, "options")$se == "none") {
+  if (lavListInspect(object, "options")$se == "none") {
     warning('requested se="none", so only between-imputation (co)variance can',
             ' be computed')
     type <- "between"
@@ -496,23 +496,23 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE,
   if (is.null(h1)) {
     PT <- lavaan::parTable(object)
     out <- c(out, npar = max(PT$free) - sum(PT$op == "=="),
-             ntotal = lavaan::lavListInspect(object, "ntotal"))
+             ntotal = lavListInspect(object, "ntotal"))
   }
 
   class(out) <- c("lavaan.vector","numeric")
   out
 }
 getLLs <- function(object) {
-  meanstructure <- lavaan::lavListInspect(object, "meanstructure")
-  nG <- lavaan::lavListInspect(object, "ngroups")
-  group <- lavaan::lavListInspect(object, "group")
+  meanstructure <- lavListInspect(object, "meanstructure")
+  nG <- lavListInspect(object, "ngroups")
+  group <- lavListInspect(object, "group")
   useImps <- sapply(object@convergence, "[[", i = "converged")
   nImps <- sum(useImps)
   m <- length(useImps)
   implied <- getMethod("fitted", "lavaan.mi")(object)
   ## Multiple groups?
   if (nG > 1L) {
-    group.label <- lavaan::lavListInspect(object, "group.label")
+    group.label <- lavListInspect(object, "group.label")
     varnames <- lavaan::lavNames(object, group = 1:nG) # in case order differs?
     names(varnames) <- group.label
     S <- lapply(implied, "[[", i = "cov")
@@ -556,9 +556,9 @@ getLLs <- function(object) {
   LL
 }
 D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
-  N <- lavaan::lavListInspect(object, "ntotal")
-  nG <- lavaan::lavListInspect(object, "ngroups")
-  group <- lavaan::lavListInspect(object, "group")
+  N <- lavListInspect(object, "ntotal")
+  nG <- lavListInspect(object, "ngroups")
+  group <- lavListInspect(object, "group")
   useImps <- sapply(object@convergence, "[[", i = "converged")
   nImps <- sum(useImps)
   m <- length(object@testList)
@@ -578,10 +578,10 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
     ## calculate log-likelihood under saturated model as alternative (H1)
     LL1 <- numeric(length = m)
     if (nG > 1L) {
-      group.label <- lavaan::lavListInspect(object, "group.label")
+      group.label <- lavListInspect(object, "group.label")
       varnames <- lavaan::lavNames(object, group = 1:nG) # in case order changes?
       names(varnames) <- group.label
-      Ns <- lavaan::lavListInspect(object, "nobs") # group sample sizes
+      Ns <- lavListInspect(object, "nobs") # group sample sizes
       names(Ns) <- group.label
       S1 <- M1 <- list()
       for (g in group.label) {
@@ -591,7 +591,7 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
         M1[[g]] <- Reduce("+", lapply(lapply(object@SampleStatsList[useImps],
                                              "[[", i = g),  # Group g's list of means
                                       "[[", i = "mean")) / nImps # average them
-        if (lavaan::lavListInspect(object, "options")$sample.cov.rescale) {
+        if (lavListInspect(object, "options")$sample.cov.rescale) {
           S1[[g]] <- S1[[g]] * (Ns[g] - 1) / Ns[g]
         }
       }
@@ -611,7 +611,7 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
     } else {
       varnames <- lavaan::lavNames(object)
       S1 <- Reduce("+", lapply(object@SampleStatsList[useImps], "[[", i = "cov")) / nImps
-      if (lavaan::lavListInspect(object, "options")$sample.cov.rescale) S1 <- S1 * (N - 1) / N
+      if (lavListInspect(object, "options")$sample.cov.rescale) S1 <- S1 * (N - 1) / N
       M1 <- Reduce("+", lapply(object@SampleStatsList[useImps], "[[", i = "mean")) / nImps
       for (i in 1:m) {
         if (!useImps[i]) next
@@ -652,8 +652,8 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   if (is.null(h1)) {
     PT <- lavaan::parTable(object)
     npar <- max(PT$free) - sum(PT$op == "==")
-    if (lavaan::lavListInspect(object, "options")$sample.cov.rescale) N <- N - nG
-    out <- c(out, npar = npar, ntotal = lavaan::lavListInspect(object, "ntotal"),
+    if (lavListInspect(object, "options")$sample.cov.rescale) N <- N - nG
+    out <- c(out, npar = npar, ntotal = lavListInspect(object, "ntotal"),
              logl = mean(LL0), unrestricted.logl = mean(LL1),
              aic = -2*mean(LL0) + 2*npar, bic = -2*mean(LL0) + npar*log(N),
              bic2 = -2*mean(LL0) + npar*log((N + 2) / 24))
@@ -667,7 +667,7 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
 }
 robustify <- function(ChiSq, object, h1 = NULL) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
-  scaleshift <- lavaan::lavListInspect(object, "options")$test == "scaled.shifted"
+  scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
 
   d0 <- mean(sapply(object@testList[useImps], function(x) x[[2]][["df"]]))
   c0 <- mean(sapply(object@testList[useImps],
@@ -720,15 +720,15 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
     if (!asymptotic) asymptotic <- TRUE ## FIXME: until W can be inverted with eq. constraints
     out <- D1(object = object, constraints = constraints, asymptotic = asymptotic)
     message('D1 (Wald test) calculated using pooled "',
-            lavaan::lavListInspect(object, "options")$se,
+            lavListInspect(object, "options")$se,
             '" asymptotic covariance matrix of model parameters')
     return(out)
   }
 
   ## check for robust
-  robust <- lavaan::lavListInspect(object, "options")$test != "standard"
+  robust <- lavListInspect(object, "options")$test != "standard"
   if (robust) asymptotic <- TRUE
-  scaleshift <- lavaan::lavListInspect(object, "options")$test == "scaled.shifted"
+  scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
   if (scaleshift & !is.null(h1)) stop("Robust correction unavailable for model",
                                       " comparison when test = 'scaled.shifted'")
   ################### FIXME: unless possible to mimic DIFFTEST behavior?
@@ -751,14 +751,14 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
   if (moreFit & any(indices %in% incremental)) {
     if (is.null(baseline)) {
       PTb <- lavaan::lav_partable_independence(lavdata = object@Data,
-                         lavoptions = lavaan::lavListInspect(object, "options"))
+                         lavoptions = lavListInspect(object, "options"))
       baseFit <- runMI(model = PTb, data = object@DataList[useImps],
-                       group = lavaan::lavListInspect(object, "group"),
+                       group = lavListInspect(object, "group"),
                        se = "none", # to save time
-                       test = lavaan::lavListInspect(object, "options")$test,
-                       estimator = lavaan::lavListInspect(object, "options")$estimator,
-                       ordered = lavaan::lavListInspect(object, "ordered"),
-                       parameterization = lavaan::lavListInspect(object,
+                       test = lavListInspect(object, "options")$test,
+                       estimator = lavListInspect(object, "options")$estimator,
+                       ordered = lavListInspect(object, "ordered"),
+                       parameterization = lavListInspect(object,
                                                                  "parameterization"))
     } else if (!is(baseline, "lavaan.mi")) {
       stop('User-supplied baseline model must be "lavaan.mi" class fit',
@@ -795,7 +795,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
   }
   if (tolower(test[1]) %in% c("mr","meng.rubin","likelihood","lrt")) test <- "D3"
   if (tolower(test[1]) %in% c("lmrr","li.et.al","pooled.wald")) test <- "D2"
-  if (toupper(test[1]) == "D3" & !lavaan::lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
+  if (toupper(test[1]) == "D3" & !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
     message('"D3" only available using maximum likelihood estimation. ',
             'Changed test to "D2".')
     test <- "D2"
@@ -803,7 +803,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
   ## calculate pooled test
   if (toupper(test[1]) == "D3") {
     ## check estimator
-    if (lavaan::lavListInspect(object, "options")$estimator != "ML")
+    if (lavListInspect(object, "options")$estimator != "ML")
       stop("D3 is only available using ML estimation")
     out <- D3(object = object, h1 = h1, asymptotic = asymptotic)
     if (any(indices %in% incremental)) baseOut <- D3(baseFit, asymptotic = TRUE)
@@ -827,7 +827,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
     out <- robustify(ChiSq = out, object, h1)
     if (scaleshift) {
       extraWarn <- ' and shift parameter'
-    } else if (lavaan::lavListInspect(object, "options")$test == "mean.var.adjusted") {
+    } else if (lavListInspect(object, "options")$test == "mean.var.adjusted") {
       extraWarn <- ' and degrees of freedom'
     } else extraWarn <- ''
     message('Robust corrections are made to the naive (pooled) chi-squared',
@@ -880,7 +880,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
         out["cfi.scaled"] <- 1
       } else out["cfi.scaled"] <- 1 - t1/t2
       ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (lavaan::lavListInspect(object, "options")$test %in%
+      if (lavListInspect(object, "options")$test %in%
           c("satorra.bentler","yuan.bentler")) {
         t1 <- max(X2 - ch*DF, 0)
         t2 <- max(X2 - ch*DF, bX2 - cb*bDF, 0)
@@ -906,7 +906,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
         out["rni.scaled"] <- NA
       } else out["rni.scaled"] <- 1 - t1/t2
       ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (lavaan::lavListInspect(object, "options")$test %in%
+      if (lavListInspect(object, "options")$test %in%
           c("satorra.bentler","yuan.bentler")) {
         t1 <- X2 - ch*DF
         t2 <- bX2 - cb*bDF
@@ -934,7 +934,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
         out["tli.scaled"] <- out["nnfi.scaled"] <- 1
       }
       ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (lavaan::lavListInspect(object, "options")$test %in%
+      if (lavListInspect(object, "options")$test %in%
           c("satorra.bentler","yuan.bentler")) {
         t1 <- (X2 - ch*DF)*bDF
         t2 <- (bX2 - cb*bDF)*DF
@@ -993,12 +993,12 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
     }
   }
 
-  N <- lavaan::lavListInspect(object, "ntotal")
-  Ns <- lavaan::lavListInspect(object, "nobs")
-  nG <- lavaan::lavListInspect(object, "ngroups")
+  N <- lavListInspect(object, "ntotal")
+  Ns <- lavListInspect(object, "nobs")
+  nG <- lavListInspect(object, "ngroups")
   nVars <- length(lavaan::lavNames(object))
-  if (!(lavaan::lavListInspect(object, "options")$likelihood == "normal" |
-        lavaan::lavListInspect(object, "options")$estimator %in% c("ML","PML","FML"))) {
+  if (!(lavListInspect(object, "options")$likelihood == "normal" |
+        lavListInspect(object, "options")$estimator %in% c("ML","PML","FML"))) {
     N <- N - nG
     Ns <- Ns - 1
   }
@@ -1136,14 +1136,14 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
     } else RR <- c(R[[index]][lower.tri(R[[index]], diag = FALSE)]^2,
                    diag(R[[index]])[vv]^2)
 
-    if (lavaan::lavListInspect(object, "meanstructure")) {
+    if (lavListInspect(object, "meanstructure")) {
       if (nG > 1L) {
         for (g in 1:nG) RR[[g]] <- c(RR[[g]], R[[g]]$mean[vv]^2)
       } else RR <- c(RR, R$mean[vv]^2)
     }
 
     SS <- if (nG > 1L) sqrt(sapply(RR, mean)) else sqrt(mean(RR))
-    as.numeric( (lavaan::lavListInspect(object, "nobs") %*% SS) / lavaan::lavListInspect(object, "ntotal") )
+    as.numeric( (lavListInspect(object, "nobs") %*% SS) / lavListInspect(object, "ntotal") )
   }
   if("rmr" %in% indices) out["rmr"] <- getSRMR(object, type = "raw")
   if("srmr" %in% indices) {
@@ -1166,9 +1166,9 @@ sampstat.lavaan.mi <- function(lst, means = FALSE, categ = FALSE, m = m) {
 fitted.lavaan.mi <- function(object) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
-  meanstructure <- lavaan::lavListInspect(object, "meanstructure")
-  categ <- lavaan::lavListInspect(object, "categorical")
-  nG <- lavaan::lavListInspect(object, "ngroups")
+  meanstructure <- lavListInspect(object, "meanstructure")
+  categ <- lavListInspect(object, "categorical")
+  nG <- lavListInspect(object, "ngroups")
   ov.names <- lavaan::lavNames(object)
 
   est <- getMethod("coef", "lavaan.mi")(object)
@@ -1176,7 +1176,7 @@ fitted.lavaan.mi <- function(object) {
                                                                     x = est))
   out <- list()
   if (nG > 1L) {
-    group.label <- lavaan::lavListInspect(object, "group.label")
+    group.label <- lavListInspect(object, "group.label")
     for (i in seq_along(imp)) names(imp[[i]]) <- group.label
     for (g in group.label) {
       out[[g]]$cov <- imp$cov[[g]]
@@ -1262,20 +1262,20 @@ gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
 }
 resid.lavaan.mi <- function(object, type = c("raw","cor")) {
   ## @SampleStatsList is (for each imputation) output from:
-  ##    getSampStats <- function(obj) lavaan::lavInspect(obj, "sampstat")
+  ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
-  rescale <- lavaan::lavListInspect(object, "options")$sample.cov.rescale
-  meanstructure <- lavaan::lavListInspect(object, "meanstructure")
-  categ <- lavaan::lavListInspect(object, "categorical")
+  rescale <- lavListInspect(object, "options")$sample.cov.rescale
+  meanstructure <- lavListInspect(object, "meanstructure")
+  categ <- lavListInspect(object, "categorical")
   type <- tolower(type[1])
   ## check for type = "cor" ("cor.bollen") or "cor.bentler"
   if (type == "cor") type <- "cor.bollen"
   ## model-implied moments, already pooled
   Implied <- getMethod("fitted", "lavaan.mi")(object)
   ## Calculate residuals
-  nG <- lavaan::lavListInspect(object, "ngroups")
-  N <- lavaan::lavListInspect(object, "nobs")
+  nG <- lavListInspect(object, "ngroups")
+  N <- lavListInspect(object, "nobs")
   if (nG > 1L) {
     group.label <- names(Implied)
     if (is.null(group.label)) group.label <- 1:length(Implied) else names(N) <- group.label

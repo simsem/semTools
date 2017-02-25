@@ -57,10 +57,8 @@
 #'  doi:10.1007/BF02294150
 #'
 #' @examples
-#' library(lavaan)
-#'
 #' ## Specify population values. Note every paramter has a fixed value.
-#' model <- '
+#' modelP <- '
 #'   f1 =~ .7*V1 + .7*V2 + .7*V3 + .7*V4
 #'   f2 =~ .7*V5 + .7*V6 + .7*V7 + .7*V8
 #'   f1 ~~ .3*f2
@@ -97,7 +95,7 @@
 #'
 #' ## Specify second population to calculate power for multigroup model
 #'
-#' popMoments1 <- lavaan::fitted(do.call("cfa", list(model = modelP)))
+#' popMoments1 <- fitted(cfa(modelP))
 #' modelP2 <- '
 #'   f1 =~ .7*V1 + .7*V2 + .7*V3 + .7*V4
 #'   f2 =~ .7*V5 + .7*V6 + .7*V7 + .7*V8
@@ -113,7 +111,7 @@
 #'   V7 ~~ .51*V7
 #'   V8 ~~ .51*V8
 #' '
-#' popMoments2 <- lavaan::fitted(do.call("cfa", list(model = modelP2)))
+#' popMoments2 <- fitted(cfa(modelP2))
 #' modelA2 <- '
 #'   f1 =~ V1 + V2 + V3 + V4
 #'   f2 =~ V5 + V6 + V7 + V8
