@@ -200,7 +200,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
   PE <- PT[ , c("lhs","op","rhs","block","group")]
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">"))
-  PE$est <- rowMeans(sapply(object@ParTableList, "[[", i = "est"))
+  browser()
+  PE$est <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "est"))
 
   if (lavListInspect(object, "options")$se == "none") {
     warning('pooled variances and tests unavailable when se="none" is requested')
@@ -218,8 +219,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                                        VCOV = getMethod("vcov","lavaan.mi")(object))
     PE$t[free] <- PE$est[free] / PE$se[free]
     ## calculate df for t test
-    W <- rowMeans(sapply(object@ParTableList, "[[", i = "se")^2)
-    B <- apply(sapply(object@ParTableList, "[[", i = "est"), 1, var)
+    W <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "se")^2)
+    B <- apply(sapply(object@ParTableList[useImps], "[[", i = "est"), 1, var)
     Bm <- B + B/m
     Tot <- W + Bm
     ## can't do finite-sample correction because Wald z tests have no df (see Enders, 2010, p. 231, eq. 8.13 & 8.14)
