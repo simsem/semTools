@@ -189,9 +189,10 @@ setMethod("show", "lavaan.mi", function(object) {
 
   object
 })
-setMethod("summary", "lavaan.mi", function(object, se = TRUE, ci = TRUE, level = .95,
-                                           standardized = FALSE, rsquare = FALSE,
-                                           fmi = FALSE, add.attributes = TRUE) {
+
+summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
+                              standardized = FALSE, rsquare = FALSE,
+                              fmi = FALSE, add.attributes = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   ## extract parameter table with attributes for printing
@@ -307,7 +308,8 @@ setMethod("summary", "lavaan.mi", function(object, se = TRUE, ci = TRUE, level =
   if (!add.attributes) PE <- PE[!(PE$op %in% c("==","<",">")), ]
   rownames(PE) <- NULL
   PE
-})
+}
+setMethod("summary", "lavaan.mi", summary.lavaan.mi)
 
 setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
   if (total) return(lavListInspect(object, "ntotal"))
