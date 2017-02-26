@@ -121,7 +121,7 @@ efaUnrotate <- function(data, nf, varList = NULL, start = TRUE, aux = NULL, ...)
 		List$do.fit <- FALSE
 		outtemp <- do.call("cfa", List)
 		covtemp <- lavInspect(outtemp, "sampstat")$cov
-		partemp <- lavaan::parTable(outtemp)
+		partemp <- parTable(outtemp)
 		err <- try(startload <- factanal(factors = nf, covmat = covtemp)$loadings[],
 		           silent = TRUE)
 		if (is(err, "try-error")) stop("The starting values from the factanal",
@@ -381,7 +381,7 @@ seStdLoadings <- function(rotate, object, fun, MoreArgs) {
 	LIST$se[c(free.idx, phi.idx)] <- sqrt(diag(COV2))
 	tmp.se <- ifelse( LIST$se == 0.0, NA, LIST$se)
   lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
-	partable <- lavaan::parTable(object)
+	partable <- parTable(object)
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	matrix(LIST$se[idx], ncol = length(lv.names))
 }

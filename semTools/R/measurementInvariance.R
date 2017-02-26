@@ -13,7 +13,7 @@ measurementInvariance <- measurementinvariance <- function(..., std.lv = FALSE,
 	configural <- dotdotdot
 	configural$group.equal <- ""
 	template <- do.call(lavaancfa, configural)
-	pttemplate <- lavaan::partable(template)
+	pttemplate <- parTable(template)
 	varnames <- unique(pttemplate$rhs[pttemplate$op == "=~"])
 	facnames <- unique(pttemplate$lhs[(pttemplate$op == "=~") & (pttemplate$rhs %in% varnames)])
 	ngroups <- max(pttemplate$group)

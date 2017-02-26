@@ -17,7 +17,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE, quiet 
 
 	# Get the lavaan parameter table
 	template <- do.call(lavaancfa, c(List, do.fit=FALSE))
-	lavaanParTable <- lavaan::parTable(template)
+	lavaanParTable <- parTable(template)
 
 	# Find the number of groups
 	ngroups <- max(lavaanParTable$group)

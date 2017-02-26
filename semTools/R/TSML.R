@@ -223,7 +223,7 @@ setMethod("summary", "twostage", function(object, ...) {
   if (!"fmi" %in% names(dots)) dots$fmi <- FALSE
   if (!"ci" %in% names(dots)) dots$ci <- TRUE
   if (!"level" %in% names(dots)) dots$level <- .95
-  PT <- lavaan::parTable(object@target)
+  PT <- parTable(object@target)
   PT <- PT[PT$group > 0, ]
   PE <- do.call(lavaan::parameterEstimates, c(dots, object = object@target))
   SEs <- sqrt(diag(getMethod("vcov", "twostage")(object)))
@@ -251,7 +251,7 @@ setMethod("summary", "twostage", function(object, ...) {
 twostageMatrices <- function(object, baseline) {
   SLOT <- if (baseline) "baseline" else "target"
   ## extract parameter table to isolate estimates by group
-  PTsat <- lavaan::parTable(object@saturated)
+  PTsat <- parTable(object@saturated)
   nG <- max(PTsat$group)
   isMG <- nG > 1L
   ## model derivatives

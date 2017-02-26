@@ -10,7 +10,7 @@ importFrom("utils",
            capture.output, combn, write.table, read.table, read.csv,
            setTxtProgressBar, txtProgressBar)
 importFrom("graphics", hist, plot, par, abline, lines, legend)
-importFrom("lavaan", lavInspect, lavListInspect)
+importFrom("lavaan", lavInspect, lavListInspect, parTable)
 
 #exportClasses(lavaan.mi, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
 #exportMethods(show, summary, hist, anova, vcov, coef, resid, residuals, nobs)

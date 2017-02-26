@@ -77,7 +77,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
   getOutput <- function(obj) {
     converged <- lavInspect(obj, "converged")
     if (converged) {
-      se <- lavaan::parTable(obj)$se
+      se <- parTable(obj)$se
       se.test <- all(!is.na(se)) & all(se >= 0) & any(se != 0)
       if (lavInspect(obj, "ngroups") == 1L) {
         Heywood.lv <- det(lavInspect(obj, "cov.lv")) > 0
@@ -190,7 +190,7 @@ setMethod("summary", "lavaan.mi", function(object, se = TRUE, ci = TRUE, level =
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   ## extract parameter table with attributes for printing
-  PT <- lavaan::parTable(object)
+  PT <- parTable(object)
   PE <- PT[ , c("lhs","op","rhs","block","group")]
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">"))
@@ -313,7 +313,7 @@ setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
 
 setMethod("coef", "lavaan.mi", function(object, type = "free", labels = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
-  PT <- lavaan::parTable(object)
+  PT <- parTable(object)
   if(type == "user" || type == "all") {
     type <- "user"
     idx <- 1:length(PT$lhs)
@@ -336,7 +336,7 @@ setMethod("vcov", "lavaan.mi", function(object, type = c("pooled","between","wit
             ' be computed')
     type <- "between"
   }
-  PT <- lavaan::parTable(object)
+  PT <- parTable(object)
   npar <- max(PT$free) - sum(PT$op == "==")
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
@@ -383,7 +383,7 @@ D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) 
   if (is.null(constraints) || nchar(constraints) == 0L) stop("constraints are empty")
 
   # remove == constraints from parTable, save as list
-  PT <- lavaan::parTable(object)
+  PT <- parTable(object)
   partable <- as.list(PT[PT$op != "==", ])
   if (sum(PT$op == "==") > 0L) {
     message("When the unrestricted model already has equality constraints,",
@@ -494,7 +494,7 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE,
              pvalue = pf(test.stat, df1 = DF, df2 = v3, lower.tail = FALSE))
   }
   if (is.null(h1)) {
-    PT <- lavaan::parTable(object)
+    PT <- parTable(object)
     out <- c(out, npar = max(PT$free) - sum(PT$op == "=="),
              ntotal = lavListInspect(object, "ntotal"))
   }
@@ -650,7 +650,7 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   }
   ## add log-likelihood and AIC/BIC for target model
   if (is.null(h1)) {
-    PT <- lavaan::parTable(object)
+    PT <- parTable(object)
     npar <- max(PT$free) - sum(PT$op == "==")
     if (lavListInspect(object, "options")$sample.cov.rescale) N <- N - nG
     out <- c(out, npar = npar, ntotal = lavListInspect(object, "ntotal"),

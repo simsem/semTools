@@ -58,8 +58,8 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, 
 	} else {
 		stop("Please specify the correct type of measurement invariance. See the help page.")
 	}
-	pt1 <- lavaan::partable(fit1)
-	pt0 <- lavaan::partable(fit0)
+	pt1 <- parTable(fit1)
+	pt0 <- parTable(fit0)
 	pt0$start <- pt0$est <- pt0$se <- NULL
 	pt1$start <- pt1$est <- pt1$se <- NULL
 	pt1$label[substr(pt1$label, 1, 1) == "." & substr(pt1$label, nchar(pt1$label), nchar(pt1$label)) == "."] <- ""

@@ -129,7 +129,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
     ## collect parameter types for "mgcfa"
     if (fixedCall$modelType != "mimic") {
       ## save all estimates from constrained model
-      PT <- lavaan::parTable(con)[ , c("lhs","op","rhs","group","plabel")]
+      PT <- parTable(con)[ , c("lhs","op","rhs","group","plabel")]
       ## extract parameters of interest
       paramTypes <- c("loadings","intercepts","thresholds","residuals","means",
                       "residual.covariances","lv.variances","lv.covariances")
@@ -261,7 +261,7 @@ getMIs <- function(...) {
 
   if (dots$modelType == "mgcfa") {
     ## save all estimates from constrained model
-    PT <- lavaan::parTable(dots$con)[ , c("lhs","op","rhs","group","plabel")]
+    PT <- parTable(dots$con)[ , c("lhs","op","rhs","group","plabel")]
     ## extract parameters of interest
     params <- PT[paste0(PT$lhs, PT$op, PT$rhs) %in% dots$param, ]
     ## return modification indices for specified constraints (param)
@@ -647,7 +647,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
   } else extra.dist <- data.frame(NULL)
 
   ## save parameter table for show/summary methods
-  PT <- as.data.frame(lavaan::parTable(con))
+  PT <- as.data.frame(parTable(con))
   PT$par <- paste0(PT$lhs, PT$op, PT$rhs)
   if (length(lavInspect(con, "group")))
     PT$group.label[PT$group > 0] <- lavInspect(con, "group.label")[PT$group[PT$group > 0] ]

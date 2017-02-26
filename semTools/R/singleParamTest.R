@@ -8,8 +8,8 @@ singleParamTest <- function(model1, model2, return.fit = FALSE, method = "satorr
         fit1 <- model1
     }
 	# fit0 = Nested model, fit1 = Parent model
-	pt1 <- lavaan::partable(fit1)
-	pt0 <- lavaan::partable(fit0)
+	pt1 <- parTable(fit1)
+	pt0 <- parTable(fit0)
 	namept1 <- paramNameFromPt(pt1)
 	namept0 <- paramNameFromPt(pt0)
 
