@@ -164,10 +164,18 @@ setClass("lavaan.mi", contains = "lavaanList",
 
 setMethod("show", "lavaan.mi", function(object) {
   nData <- object@meta$ndat
-  nConverged <- sum(do.call(c, lapply(object@convergence, "[", "converged")))
-  SE <- do.call(c, lapply(object@convergence, "[", "SE"))
-  Heywood.ov <- do.call(c, lapply(object@convergence, "[", "Heywood.ov"))
-  Heywood.lv <- do.call(c, lapply(object@convergence, "[", "Heywood.lv"))
+
+  useImps <- sapply(object@convergence, "[[", i = "converged")
+  nConverged <- sum(useImps)
+
+  SE <- sapply(object@convergence, "[[", "SE")
+  SE[is.na(SE)] <- FALSE
+
+  Heywood.ov <- sapply(object@convergence, "[[", "Heywood.ov")
+  Heywood.ov[is.na(Heywood.ov)] <- FALSE
+
+  Heywood.lv <- sapply(object@convergence, "[[", "Heywood.lv")
+  Heywood.lv[is.na(Heywood.lv)] <- FALSE
 
   cat('lavaan.mi object based on ', nData, ' imputed data sets. \n',
       'See class?lavaan.mi help page for available methods. \n\n',
@@ -200,7 +208,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
   PE <- PT[ , c("lhs","op","rhs","block","group")]
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">"))
-  browser()
+
   PE$est <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "est"))
 
   if (lavListInspect(object, "options")$se == "none") {
@@ -351,6 +359,8 @@ setMethod("vcov", "lavaan.mi", function(object, type = c("pooled","between","wit
   type <- tolower(type[1])
 
   useSE <- sapply(object@convergence, "[[", i = "SE")
+  useSE[is.na(useSE)] <- FALSE
+
   coefList <- lapply(object@ParTableList[useImps], "[[", i = "est")
   B <- cov(do.call(rbind, coefList)[ , PT$free > 0L & !duplicated(PT$free)])
   class(B) <- c("lavaan.matrix.symmetric","matrix")

@@ -128,13 +128,25 @@ auxiliary <- function(model, data, aux, fun, ...) {
     return(result)
   }
 
-  ## otherwise, only accept a lavaan object or parameter table
+  ## otherwise, only accept a parameter table
   PTcols <- c("lhs","op","rhs","user","group","free","label","plabel","start")
 
 	if (is.list(model)) {
 	  if (any(model$exo == 1))
 	    stop("All exogenous variables (covariates) must be treated as endogenous",
 	         " by the 'auxiliary' function. Please set 'fixed.x = FALSE'")
+
+	  if (is.null(model$start)) {
+	    startArgs <- lavArgs
+	    startArgs$model <- model
+	    startArgs$data <- data
+	    startArgs$fixed.x <- FALSE
+	    startArgs$missing <- "fiml"
+	    startArgs$meanstructure <- TRUE
+	    startArgs$do.fit <- FALSE
+	    model$start <- parTable(do.call(fun, startArgs))$start
+	  }
+
 	  missingCols <- setdiff(PTcols, names(model))
 	  if (length(missingCols)) stop("If the 'model' argument is a parameter table",
 	                                " it must also include these columns: \n",
