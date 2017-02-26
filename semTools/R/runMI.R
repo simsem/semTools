@@ -80,11 +80,11 @@ runMI <- function(model, data, fun = "lavaan", ...,
       se <- parTable(obj)$se
       se.test <- all(!is.na(se)) & all(se >= 0) & any(se != 0)
       if (lavInspect(obj, "ngroups") == 1L) {
-        Heywood.lv <- det(lavInspect(obj, "cov.lv")) > 0
-        Heywood.ov <- det(lavInspect(obj, "theta")) > 0
+        Heywood.lv <- det(lavInspect(obj, "cov.lv")) <= 0
+        Heywood.ov <- det(lavInspect(obj, "theta")) <= 0
       } else {
-        Heywood.lv <- all(sapply(lavInspect(obj, "cov.lv"), det) > 0)
-        Heywood.ov <- all(sapply(lavInspect(obj, "theta"), det) > 0)
+        Heywood.lv <- !all(sapply(lavInspect(obj, "cov.lv"), det) > 0)
+        Heywood.ov <- !all(sapply(lavInspect(obj, "theta"), det) > 0)
       }
     } else {
       se.test <- Heywood.lv <- Heywood.ov <- NA
@@ -181,9 +181,9 @@ setMethod("show", "lavaan.mi", function(object) {
                     'imputations. It may be necessary to reimpute the data',
                     'with some restrictions imposed. \n\n')
 
-  if (!all(Heywood.ov & Heywood.lv))
+  if (any(Heywood.ov | Heywood.lv))
     cat('Heywood cases detected for data set(s)',
-        paste(which(!Heywood.ov | !Heywood.lv), collapse = ", "),
+        paste(which(Heywood.ov | Heywood.lv), collapse = ", "),
         '\nThese are not necessarily a cause for concern, unless a pooled',
         'estimate is also a Heywood case. \n\n')
 
