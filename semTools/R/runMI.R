@@ -114,6 +114,11 @@ runMI <- function(model, data, fun = "lavaan", ...,
   fit@imputeCall <- imputeCall
   convList <- lapply(fit@funList, "[", i = c("converged","SE",
                                              "Heywood.lv","Heywood.ov"))
+  nonConv <- which(sapply(convList, is.null))
+  if (length(nonConv)) for (i in nonConv) {
+    convList[[i]] <- list(converged = FALSE, SE = NA, Heywood.lv = NA, Heywood.ov = NA)
+  }
+
   fit@convergence <- lapply(convList, function(x) do.call(c, x))
   conv <- which(sapply(fit@convergence, "[", i = "converged"))
   if (length(conv)) {
@@ -314,10 +319,10 @@ setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
 setMethod("coef", "lavaan.mi", function(object, type = "free", labels = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   PT <- parTable(object)
-  if(type == "user" || type == "all") {
+  if (type == "user" || type == "all") {
     type <- "user"
     idx <- 1:length(PT$lhs)
-  } else if(type == "free") {
+  } else if (type == "free") {
     ## FIXME: duplicated leftover from old way of handling EQ constraints?
     idx <- which(PT$free > 0L & !duplicated(PT$free))
   }
@@ -325,7 +330,7 @@ setMethod("coef", "lavaan.mi", function(object, type = "free", labels = TRUE) {
   coefList <- lapply(object@ParTableList[useImps], "[[", i = "est")
   out <- colMeans(do.call(rbind, coefList))[idx]
   ## attach names, set class
-  if(labels) names(out) <- lavaan::lav_partable_labels(PT, type = type)
+  if (labels) names(out) <- lavaan::lav_partable_labels(PT, type = type)
   class(out) <- c("lavaan.vector","numeric")
   out
 })
