@@ -7,10 +7,11 @@ Pooled estimates and standard errors across M parcel-allocations: Combining samp
 	This function employs an iterative algorithm to pick the number of random item-to-parcel allocations needed to meet user-defined stability criteria for a fitted structural equation model (SEM) (see "Details" below for more information). Pooled parameter and standard error estimates from this SEM can be outputted at this final selected number of allocations. Additionally, new indices (see Sterba & Rights, 2016) are outputted for assessing the relative contributions of parcel-allocation variability vs. sampling variability in each estimate. At each iteration, this function generates a given number of random item-to-parcel allocations using a modified version of the \code{\link{parcelAllocation}} function (Quick & Schoemann, 2012), fits a SEM to each allocation, pools results across allocations from that iteration, and then assesses whether stopping criteria are met. If stopping criteria are not met, the algorithm increments the number of allocations used (generating all new allocations).
 }
 \usage{
-poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0, 
-   parceloutput=0, syntax, dataset, stopProp, stopValue,
-   selectParam = NULL, double = FALSE, checkConv = FALSE, 
-   names = 'default', leaveout = 0, useTotalAlloc=FALSE, ...)
+poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
+           parceloutput = NULL, syntax, dataset, stopProp, stopValue,
+           selectParam = NULL, indices = "default", double = FALSE,
+           checkConv = FALSE, names = "default", leaveout = 0,
+           useTotalAlloc = FALSE, ...)
 }
 \arguments{
   \item{nPerPar}{
@@ -20,10 +21,10 @@ poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
 	A list of vectors, each corresponding to a factor, specifying the item indicators of that factor (whether included in parceling or not). Either variable names or column numbers. Variables not listed will not be modeled or included in output datasets.
   }
   \item{nAllocStart}{
-	The number of random allocations of items to parcels to generate in the first iteration of the algorithm. 
+	The number of random allocations of items to parcels to generate in the first iteration of the algorithm.
   }
   \item{nAllocAdd}{
-	The number of allocations to add with each iteration of the algorithm. Note that if only one iteration is desired, \code{nAllocAdd} can be set to 0 and results will be output for \code{nAllocStart} allocations only. 
+	The number of allocations to add with each iteration of the algorithm. Note that if only one iteration is desired, \code{nAllocAdd} can be set to 0 and results will be output for \code{nAllocStart} allocations only.
   }
   \item{syntax}{
 	lavaan syntax that defines the model.
@@ -32,7 +33,7 @@ poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
 	 Item-level dataset
   }
   \item{parceloutput}{
-	(Optional) folder where \emph{M} (the final selected number of allocations) parceled data sets will be outputted from the iteration where the algorithm met stopping criteria. (Note for Windows users: file path must be specified using forward slashes).
+	Optional \code{character}. Path (folder/directory) where \emph{M} (the final selected number of allocations) parceled data sets will be outputted from the iteration where the algorithm met stopping criteria. Note for Windows users: file path must be specified using forward slashes (\code{/}), not backslashes (\code{\\}). See \code{\link[base]{path.expand}} for details.  If \code{NULL} (default), nothing is saved to disk.
   }
   \item{stopProp}{
 	Value used in defining stopping criteria of the algorithm (\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of change (in any pooled parameter or pooled standard error estimate listed in \code{selectParam}) that is allowable from one iteration of the algorithm to the next. That is, change in pooled estimates and pooled standard errors from one iteration to the next must all be less than (\code{stopProp}) x (value from former iteration). Note that \code{stopValue} can override this criterion (see below). Also note that values less than .01 are unlikely to lead to more substantively meaningful precision. Also note that if only \code{stopValue} is a desired criterion, \code{stopProp} can be set to 0.
@@ -42,6 +43,9 @@ poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
   }
   \item{selectParam}{
 	(Optional) A list of the pooled parameters to be used in defining stopping criteria (i.e., \code{stopProp} and \code{stopValue}). These parameters should appear in the order they are listed in the lavaan syntax. By default, all pooled parameters are used. Note that \code{selectParam} should only contain freely-estimated parameters. In one example from Sterba and Rights (2016) \code{selectParam} included all free parameters except item intercepts and in another example \code{selectParam} included only structural parameters.
+  }
+  \item{indices}{
+	Optional \code{character} vector indicating the names of available \code{\link[lavaan]{fitMeasures}} to be included in the output. The first and second elements should be a chi-squared test statistic and its associated degrees of freedom, both of which will be added if missing. If \code{"default"}, the indices will be \code{c("chisq", "df", "cfi", "tli", "rmsea","srmr")}. If a robust test statistic is requested (see \code{\link[lavaan]{lavOptions}}), \code{c("chisq","df")} will be replaced by \code{c("chisq.scaled","df.scaled")}. For the output to include both the naive and robust test statistics, \code{indices} should include both, but put the scaled test statistics first, as in \code{indices = c("chisq.scaled", "df.scaled", "chisq", "df")}
   }
   \item{double}{
 	(Optional) If set to \code{TRUE}, requires stopping criteria (\code{stopProp} and \code{stopValue}) to be met for all parameters (in \code{selectParam}) for two consecutive iterations of the algorithm. By default, this is set to \code{FALSE}, meaning stopping criteria need only be met at one iteration of the algorithm.
@@ -59,15 +63,15 @@ poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
 	(Optional) If set to TRUE, function will output pooled estimates and standard errors from 10 iterations post-convergence.
   }
   \item{\dots}{
-	Additional arguments to be passed to \code{\link[lavaan]{lavaan}} 
+	Additional arguments to be passed to \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
   }
 }
 \details{
-This is a modified version of \code{\link{parcelAllocation}}. It implements a new algorithm for choosing the number of allocations (\emph{M}), (described in Sterba & Rights (2016)), newly pools parameter estimate and standard error results across these \emph{M} allocations, and produces indices for assessing the relative contributions of parcel-allocation variability vs. sampling variability in each estimate. This function randomly generates a given number (\code{nAllocStart}) of item-to-parcel allocations, fits a SEM to each allocation, and then increments the number of allocations used (by \code{nAllocAdd}) until the pooled parameter estimates and pooled standard errors fulfill stopping criteria (\code{stopProp} and \code{stopValue}, defined above). Results from the model that was fit to the \emph{M} allocations are outputted. 
+This is a modified version of \code{\link{parcelAllocation}}. It implements a new algorithm for choosing the number of allocations (\emph{M}), (described in Sterba & Rights (2016)), newly pools parameter estimate and standard error results across these \emph{M} allocations, and produces indices for assessing the relative contributions of parcel-allocation variability vs. sampling variability in each estimate. This function randomly generates a given number (\code{nAllocStart}) of item-to-parcel allocations, fits a SEM to each allocation, and then increments the number of allocations used (by \code{nAllocAdd}) until the pooled parameter estimates and pooled standard errors fulfill stopping criteria (\code{stopProp} and \code{stopValue}, defined above). Results from the model that was fit to the \emph{M} allocations are outputted.
 
 Additionally, this function newly outputs the proportion of allocations with solutions that converged (using a maximum likelihood estimator) as well as the proportion of allocations with solutions that were converged and proper. The converged and proper solutions among the final \emph{M} allocations are used in computing pooled results. The original parcelAllocation function could not be employed if any allocations yielded nonconverged solutions.
 
-For further details on the benefits of the random allocation of items to parcels, see Sterba (2011) and Sterba and MacCallum (2010). 
+For further details on the benefits of the random allocation of items to parcels, see Sterba (2011) and Sterba and MacCallum (2010).
 
 Additionally, after each iteration of the algorithm, information useful in monitoring the algorithm is outputted. The number of allocations used at that iteration, the proportion of pooled parameter estimates meeting stopping criteria at the previous iteration, the proportion of pooled standard errors meeting stopping criteria at the previous iteration, and the runtime of that iteration are outputted. When stopping criteria are satisfied, the full set of results are outputted.
 }
@@ -91,12 +95,12 @@ Sterba, S. K. & Rights, J. D. (2016). Accounting for parcel-allocation variabili
 }
 \author{
     Jason D. Rights (Vanderbilt University; \email{jason.d.rights@vanderbilt.edu})
-	
-	The author would also like to credit Corbin Quick and Alexander Schoemann for providing the original parcelAllocation function on which this function is based. 
+
+	The author would also like to credit Corbin Quick and Alexander Schoemann for providing the original parcelAllocation function on which this function is based.
 }
 \examples{
 \dontrun{
-## Lavaan syntax: A 2 Correlated 
+## Lavaan syntax: A 2 Correlated
 ## factor CFA model to be fit to parceled data
 
 parmodel <- '
@@ -107,8 +111,8 @@ parmodel <- '
    p3f1 ~ 1
    p1f2 ~ 1
    p2f2 ~ 1
-   p3f2 ~ 1 
-   p1f1 ~~ p1f1 
+   p3f2 ~ 1
+   p1f1 ~~ p1f1
    p2f1 ~~ p2f1
    p3f1 ~~ p3f1
    p1f2 ~~ p1f2
@@ -120,16 +124,16 @@ parmodel <- '
 '
 
 ##specify items for each factor
-f1name <- colnames(simParcel)[1:9]  
+f1name <- colnames(simParcel)[1:9]
 f2name <- colnames(simParcel)[10:18]
 
 ##run function
-poolMAlloc(nPerPar=list(c(3,3,3),c(3,3,3)), 
-  facPlc=list(f1name,f2name), nAllocStart=10, 
-  nAllocAdd=10, syntax=parmodel, 
-  dataset=simParcel, stopProp=.03, 
-  stopValue=.03, selectParam=c(1:6,13:18,21), 
-  names=list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"), 
+poolMAlloc(nPerPar=list(c(3,3,3),c(3,3,3)),
+  facPlc=list(f1name,f2name), nAllocStart=10,
+  nAllocAdd=10, syntax=parmodel,
+  dataset=simParcel, stopProp=.03,
+  stopValue=.03, selectParam=c(1:6,13:18,21),
+  names=list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"),
   double=FALSE, useTotalAlloc=FALSE)
 }
 }

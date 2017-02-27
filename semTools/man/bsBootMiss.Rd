@@ -72,7 +72,7 @@ bsBootMiss(x, transformation = 2, nBoot = 500, model, rawData,
 	Logical. Indicating whether to display a progress bar while fitting models to bootstrap samples.
   }
   \item{\dots}{
-	The additional arguments in the \code{\link[lavaan]{lavaan}} function.
+	The additional arguments in the \code{\link[lavaan]{lavaan}} function. See also \code{\link[lavaan]{lavOptions}}
   }
 }
 \value{

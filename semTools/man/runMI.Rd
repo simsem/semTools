@@ -33,7 +33,7 @@ A \code{data.frame} with missing observations, or a \code{list} of imputed data 
 	\code{character}. Name of a specific lavaan function used to fit \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"}, \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
 }
   \item{\dots}{
-	additional arguments to pass to \code{\link[lavaan]{lavaan}}
+	additional arguments to pass to \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
 }
   \item{m}{
 \code{integer}. Request the number of imputations. Ignored if \code{data} is already a \code{list} of imputed data sets or a \code{lavaan.mi} object.

@@ -39,7 +39,7 @@ growth.auxiliary(model, data, aux, ...)
 	\code{character}. Name of a specific lavaan function used to fit \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"}, \code{"sem"}, or \code{"growth"}). Only required for \code{auxiliary}.
   }
   \item{\dots}{
-	additional arguments to pass to \code{\link[lavaan]{lavaan}}
+	additional arguments to pass to \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
   }
 }
 \details{

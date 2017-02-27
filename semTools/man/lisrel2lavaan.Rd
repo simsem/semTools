@@ -20,7 +20,7 @@ lisrel2lavaan(filename = NULL, analyze = TRUE, silent = FALSE, ...)
 	Logical. If false (default) the data will be analyzed and output displayed. If true, a fit object will be returned and summary output will not be displayed. 
 }
   \item{\dots}{ 
-	Additional arguments to be passed to \code{\link[lavaan]{lavaan}}.
+	Additional arguments to be passed to \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
 }
 }
 \value{

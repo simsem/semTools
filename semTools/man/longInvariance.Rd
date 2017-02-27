@@ -29,7 +29,7 @@ fit.measures = "default", method = "satorra.bentler.2001", ...)
 	\item{quiet}{If \code{TRUE}, a summary is printed out containing an overview of the different models that are fitted, together with some model comparison tests.}
 	\item{fit.measures}{Fit measures used to calculate the differences between nested models.}
 	\item{method}{The method used to calculate likelihood ratio test. See \code{\link[lavaan]{lavTestLRT}} for available options}
-	\item{...}{Additional arguments in the \code{\link[lavaan]{lavaan}} function.}
+	\item{...}{Additional arguments in the \code{\link[lavaan]{lavaan}} function. See also \code{\link[lavaan]{lavOptions}}}
 }
 \details{
 If \code{strict = FALSE}, the following four models are tested in order:

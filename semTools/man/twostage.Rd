@@ -21,7 +21,7 @@ lavaan.2stage(..., aux = NULL, baseline.model = NULL)
 }
 \arguments{
   \item{\dots}{
-	Arguments passed to the \code{\link[lavaan]{lavaan}} function specified in the \code{fun} argument.  At a minimum, the user must supply the first two named arguments to \code{\link[lavaan]{lavaan}} (i.e., \code{model} and \code{data}).
+	Arguments passed to the \code{\link[lavaan]{lavaan}} function specified in the \code{fun} argument.  See also \code{\link[lavaan]{lavOptions}}.  At a minimum, the user must supply the first two named arguments to \code{\link[lavaan]{lavaan}} (i.e., \code{model} and \code{data}).
   }
   \item{aux}{
 	An optional character vector naming auxiliary variable(s) in \code{data}

@@ -43,7 +43,7 @@ PAVranking(nPerPar, facPlc, nAlloc=100, parceloutput = 0,
 	(Optional) A vector of variables to be left out of randomized parceling. Either variable names or column numbers are allowed.
   }
   \item{\dots}{
-	Additional arguments to be passed to \code{\link[lavaan]{lavaan}} 
+	Additional arguments to be passed to \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
   }
 }
 \details{
