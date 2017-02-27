@@ -151,7 +151,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	  if (length(missingCols)) stop("If the 'model' argument is a parameter table",
 	                                " it must also include these columns: \n",
 	                                paste(missingCols, collapse = ", "))
-	  PT <- as.data.frame(model)[PTcols]
+	  PT <- as.data.frame(model, stringsAsFactors = FALSE)[PTcols]
 	} else stop("The 'model' argument must be a character vector of lavaan",
 	            " syntax or a parameter table")
 
@@ -163,7 +163,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
   } else CON <- data.frame(NULL)
 
   ## variable names
-	varnames <- lavaan::lavNames(PT, type = "ov")
+  varnames <- lavaan::lavNames(PT, type = "ov")
 	if (length(intersect(varnames, aux))) stop('modeled variable declared as auxiliary')
 
 	## specify a saturated model for auxiliaries
