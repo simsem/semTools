@@ -1,4 +1,4 @@
-## Last updated: 25 February 2017
+## Last updated: 27 February 2017
 
 importFrom("stats",
            sd, var, cov, cor, cov2cor,
