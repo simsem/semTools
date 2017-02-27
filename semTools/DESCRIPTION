@@ -25,7 +25,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com") 		
 		)
 Description: Provides useful tools for structural equation modeling. 
-Depends: R(>= 3.3.2), methods, lavaan(>= 0.5-23), utils, stats, graphics
+Depends: R(>= 3.3), methods, lavaan(>= 0.5-23), utils, stats, graphics
 Suggests: MASS, parallel, Amelia, mice, foreign, GPArotation, mnormt, boot
 License: GPL (>= 2)
 LazyData: yes
