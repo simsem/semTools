@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 February 2017
+### Last updated: 1 March 2017
 ### source code for new runMI, extending lavaanList class instead of lavaanStar
 
 cfa.mi <- function(model, data, ...,
@@ -154,8 +154,24 @@ runMI <- function(model, data, fun = "lavaan", ...,
 #############
 
 ## create s4 class for result object
-setClass("lavaan.mi", contains = "lavaanList",
+setClass("lavaan.mi", contains = "lavaanList", #FIXME: next version of lavaan will export lavaanList class
          slots = c(coefList = "list",   # coefficients in matrix format
+                   ## borrow definitions from lavaanList
+                   # call            = "call",     # matched call
+                   # Options         = "list",     # lavOptions
+                   # ParTable        = "list",
+                   # pta             = "list",
+                   # Data            = "lavData",  # from first dataset (ngroups!)
+                   # Model           = "lavModel", # based on first dataset
+                   # meta            = "list",
+                   # ParTableList    = "list",
+                   # DataList        = "list",
+                   # SampleStatsList = "list",
+                   # vcovList        = "list",
+                   # testList        = "list",
+                   # impliedList     = "list",
+                   # funList         = "list",
+
                    GLIST = "list",      # list of pooled coefs in GLIST format
                    seed = "integer",    # seed set before running imputations
                    imputeCall = "list", # store call from imputation, if used

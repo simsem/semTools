@@ -698,6 +698,17 @@ findFactor <- function(var, facList) {
 	facinvar[match(unlist(tempfac), var)]
 }
 
+## Terry moved here from wald.R so that wald() could be removed (redundant with lavaan::lavTestWald)
+## FIXME: Update WaldConstraint to rely on lavaan::lavTestWald instead
+waldContrast <- function(object, contrast) {
+  beta <- lavaan::coef(object)
+  acov <- lavaan::vcov(object)
+  chisq <- t(contrast %*% beta) %*%  solve(contrast %*% as.matrix(acov) %*% t(contrast)) %*% (contrast %*% beta)
+  df <- nrow(contrast)
+  p <- pchisq(chisq, df, lower.tail=FALSE)
+  c(chisq = chisq, df = df, p = p)
+}
+
 waldConstraint <- function(fit, pt, mat, ...) {
 	dotdotdot <- list(...)
 	overallMat <- NULL

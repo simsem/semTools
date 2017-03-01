@@ -1,4 +1,4 @@
-## Last updated: 27 February 2017
+## Last updated: 1 March 2017
 
 importFrom("stats",
            sd, var, cov, cor, cov2cor,
@@ -11,6 +11,7 @@ importFrom("utils",
            setTxtProgressBar, txtProgressBar)
 importFrom("graphics", hist, plot, par, abline, lines, legend)
 importFrom("lavaan", lavInspect, lavListInspect, parTable)
+importClassesFrom("lavaan", lavaanList)
 
 #exportClasses(lavaan.mi, FitDiff, EFA, Net, BootMiss, permuteMeasEq, twostage)
 #exportMethods(show, summary, hist, anova, vcov, coef, resid, residuals, nobs)
@@ -23,7 +24,7 @@ export(
   imposeStart, loadingFromAlpha,
   skew, kurtosis, mardiaSkew, mardiaKurtosis,
   residualCovariate,
-  singleParamTest, wald,
+  singleParamTest, ############################################################# wald,
   miPowerFit,
   plotRMSEAdist, findRMSEApower, findRMSEAsamplesize,
   plotProbe,
