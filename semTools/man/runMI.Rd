@@ -33,7 +33,7 @@ A \code{data.frame} with missing observations, or a \code{list} of imputed data 
 	\code{character}. Name of a specific lavaan function used to fit \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"}, \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
 }
   \item{\dots}{
-	additional arguments to pass to \code{\link[lavaan]{lavaan}} or \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}. Note that \code{lavaanList} provides parallel computing options, as well as a \code{FUN} argument so the user can extract custom output after the model is fitted to each imputed data set (see \strong{Examples}).  TIP: If a custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested, the user-supplied function should explicitly call \code{library} or use \code{\link[base]{"::"}} for any functions not part of the base distribution.
+	additional arguments to pass to \code{\link[lavaan]{lavaan}} or \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}. Note that \code{lavaanList} provides parallel computing options, as well as a \code{FUN} argument so the user can extract custom output after the model is fitted to each imputed data set (see \strong{Examples}).  TIP: If a custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested, the user-supplied function should explicitly call \code{library} or use \code{\link[base]{::}} for any functions not part of the base distribution.
 }
   \item{m}{
 \code{integer}. Request the number of imputations. Ignored if \code{data} is already a \code{list} of imputed data sets or a \code{lavaan.mi} object.
