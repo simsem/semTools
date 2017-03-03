@@ -1,6 +1,7 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 March 2017
-### source code for new runMI, extending lavaanList class instead of lavaanStar
+### Last updated: 3 March 2017
+### runMI creates lavaan.mi instead of lavaanStar,
+### extending lavaanList class instead of lavaan class
 
 cfa.mi <- function(model, data, ...,
                    m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
@@ -75,22 +76,22 @@ runMI <- function(model, data, fun = "lavaan", ...,
 
   ## Function to get custom output for lavaan.mi object
   getOutput <- function(obj) {
-    converged <- lavInspect(obj, "converged")
+    converged <- lavaan::lavInspect(obj, "converged")
     if (converged) {
-      se <- parTable(obj)$se
+      se <- lavaan::parTable(obj)$se
       se.test <- all(!is.na(se)) & all(se >= 0) & any(se != 0)
-      if (lavInspect(obj, "ngroups") == 1L) {
-        Heywood.lv <- det(lavInspect(obj, "cov.lv")) <= 0
-        Heywood.ov <- det(lavInspect(obj, "theta")) <= 0
+      if (lavaan::lavInspect(obj, "ngroups") == 1L) {
+        Heywood.lv <- det(lavaan::lavInspect(obj, "cov.lv")) <= 0
+        Heywood.ov <- det(lavaan::lavInspect(obj, "theta")) <= 0
       } else {
-        Heywood.lv <- !all(sapply(lavInspect(obj, "cov.lv"), det) > 0)
-        Heywood.ov <- !all(sapply(lavInspect(obj, "theta"), det) > 0)
+        Heywood.lv <- !all(sapply(lavaan::lavInspect(obj, "cov.lv"), det) > 0)
+        Heywood.ov <- !all(sapply(lavaan::lavInspect(obj, "theta"), det) > 0)
       }
     } else {
       se.test <- Heywood.lv <- Heywood.ov <- NA
     }
-    list(sampstat = lavInspect(obj, "sampstat"),
-         coefMats = lavInspect(obj, "coef"),
+    list(sampstat = lavaan::lavInspect(obj, "sampstat"),
+         coefMats = lavaan::lavInspect(obj, "coef"),
          GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all
          converged = converged, SE = se.test,
          Heywood.lv = Heywood.lv, Heywood.ov = Heywood.ov)
@@ -102,7 +103,18 @@ runMI <- function(model, data, fun = "lavaan", ...,
                       cmd = fun)
   lavListCall <- c(lavListCall, dots)
   lavListCall$store.slots <- c("partable","vcov","test")
-  lavListCall$FUN <- getOutput
+  lavListCall$FUN <- if (is.null(dots$FUN)) getOutput else function(obj) {
+    temp1 <- getOutput(obj)
+    temp2 <- dots$FUN(obj)
+    if (!is.list(temp2)) temp2 <- list(userFUN1 = temp2)
+    if (is.null(names(temp2))) names(temp2) <- paste0("userFUN", 1:length(temp2))
+    duplicatedNames <- which(sapply(names(temp2), function(x) {
+      x %in% c("sampstat","coefMats","converged",
+               "SE","Heywood.lv","Heywood.ov","GLIST")
+    }))
+    for (i in duplicatedNames) names(temp2)[i] <- paste0("userFUN", i)
+    c(temp1, temp2)
+  }
   fit <- eval(as.call(lavListCall))
   ## Store custom @DataList and @SampleStatsList
   fit@SampleStatsList <- lapply(fit@funList, "[[", i = "sampstat")
@@ -137,12 +149,19 @@ runMI <- function(model, data, fun = "lavaan", ...,
 
   ## keep any remaining funList slots (if allowing users to supply custom FUN)
   funNames <- names(fit@funList[[1]])
-  keepNames <- funNames[ ! funNames %in% c("sampstat","coefMats","converged",
-                                           "SE","Heywood.lv","Heywood.ov","GLIST")]
-  fit@funList <- if (length(keepNames)) {
-    lapply(fit@funList, "[[", i = keepNames) # FIXME: add user FUN to list as "other"?
-    #lapply(fit@funList, "[[", i = "other")
-  } else list()
+  keepIndex <- which(!sapply(funNames, function(x) {
+    x %in% c("sampstat","coefMats","converged",
+             "SE","Heywood.lv","Heywood.ov","GLIST")
+  }))
+  if (length(keepIndex)) {
+    fit@funList <- lapply(fit@funList, "[", i = keepIndex)
+    if (length(keepIndex) > 1L) {
+      keepNames <- funNames[keepIndex]
+      noNames <- which(keepNames == "")
+      for (i in seq_along(noNames)) keepNames[ noNames[i] ] <- paste0("userFUN", i)
+      fit@funList <- lapply(fit@funList, "names<-", value = keepNames)
+    }
+  } else fit@funList <- list()
 
   fit@ParTable$start <- getMethod("coef", "lavaan.mi")(fit, type = "user", labels = FALSE)
   fit
@@ -154,29 +173,12 @@ runMI <- function(model, data, fun = "lavaan", ...,
 #############
 
 ## create s4 class for result object
-setClass("lavaan.mi", contains = "lavaanList", #FIXME: next version of lavaan will export lavaanList class
-         slots = c(coefList = "list",   # coefficients in matrix format
-                   ## borrow definitions from lavaanList
-                   # call            = "call",     # matched call
-                   # Options         = "list",     # lavOptions
-                   # ParTable        = "list",
-                   # pta             = "list",
-                   # Data            = "lavData",  # from first dataset (ngroups!)
-                   # Model           = "lavModel", # based on first dataset
-                   # meta            = "list",
-                   # ParTableList    = "list",
-                   # DataList        = "list",
-                   # SampleStatsList = "list",
-                   # vcovList        = "list",
-                   # testList        = "list",
-                   # impliedList     = "list",
-                   # funList         = "list",
-
-                   GLIST = "list",      # list of pooled coefs in GLIST format
-                   seed = "integer",    # seed set before running imputations
-                   imputeCall = "list", # store call from imputation, if used
+setClass("lavaan.mi", contains = "lavaanList",
+         slots = c(coefList = "list",     # coefficients in matrix format
+                   GLIST = "list",        # list of pooled coefs in GLIST format
+                   seed = "integer",      # seed set before running imputations
+                   imputeCall = "list"  , # store call from imputation, if used
                    convergence = "list")) # also check SEs and Heywood cases
-## lavaan.mi replaces lavaanStar
 
 setMethod("show", "lavaan.mi", function(object) {
   nData <- object@meta$ndat

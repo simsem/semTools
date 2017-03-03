@@ -33,7 +33,7 @@ A \code{data.frame} with missing observations, or a \code{list} of imputed data 
 	\code{character}. Name of a specific lavaan function used to fit \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"}, \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
 }
   \item{\dots}{
-	additional arguments to pass to \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
+	additional arguments to pass to \code{\link[lavaan]{lavaan}} or \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}. Note that \code{lavaanList} provides parallel computing options, as well as a \code{FUN} argument so the user can extract custom output after the model is fitted to each imputed data set (see \strong{Examples}).  TIP: If a custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested, the user-supplied function should explicitly call \code{library} or use \code{\link[base]{"::"}} for any functions not part of the base distribution.
 }
   \item{m}{
 \code{integer}. Request the number of imputations. Ignored if \code{data} is already a \code{list} of imputed data sets or a \code{lavaan.mi} object.
@@ -59,7 +59,7 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}. New 
 \author{
   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
-\examples{
+\examples{ \dontrun{
 ## impose missing data for example
 HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
                                       "ageyr","agemo","school")]
@@ -129,8 +129,17 @@ for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
 
 catout <- cfa.mi(' f =~ u1 + u2 + u3 + u4 ', data = datCat,
                  m = 3, seed = 456,
-                 miArgs = list(ords = paste0("u", 1:8), noms = "g"))
+                 miArgs = list(ords = paste0("u", 1:8), noms = "g"),
+                 FUN = function(fit) {
+                   list(wrmr = lavaan::fitMeasures(fit, "wrmr"),
+                        zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
+                 })
 summary(catout)
 anova(catout, indices = "all") # note the scaled versions of indices, too
 
-}
+## extract custom output
+sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
+catout@funList[[1]]$zeroCells # zero-cell tables for first imputation
+catout@funList[[2]]$zeroCells # zero-cell tables for second imputation ...
+
+} }
