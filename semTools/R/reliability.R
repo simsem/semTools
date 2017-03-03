@@ -4,7 +4,7 @@
 ##----------------------------------------------------------------------------##
 
 reliability <- function(object) {
-	param <- lavInspect(object, "coef")
+	param <- lavInspect(object, "est")
 	ngroup <- lavInspect(object, "ngroups")
 	name <- names(param)
 	if (ngroup == 1L) {
@@ -127,7 +127,7 @@ reliability <- function(object) {
 computeAlpha <- function(S, k) k/(k - 1) * (1.0 - sum(diag(S)) / sum(S))
 
 reliabilityL2 <- function(object, secondFactor) {
-	param <- lavInspect(object, "coef")
+	param <- lavInspect(object, "est")
 	ngroup <- lavInspect(object, "ngroups")
 	name <- names(param)
 	if (ngroup == 1L) {
@@ -238,7 +238,7 @@ p2 <- function(t1, t2, r) {
 
 polycorLavaan <- function(object) {
 	ngroups <- lavInspect(object, "ngroups")
-	coef <- lavInspect(object, "coef")
+	coef <- lavInspect(object, "est")
 	targettaunames <- NULL
 	if (ngroups == 1L) {
 		targettaunames <- rownames(coef$tau)
@@ -255,14 +255,14 @@ polycorLavaan <- function(object) {
 	}
 	newobject <- refit(script, object)
 	if (ngroups == 1L) {
-		return(lavInspect(newobject, "coef")$theta)
+		return(lavInspect(newobject, "est")$theta)
 	}
-	lapply(lavInspect(newobject, "coef"), "[[", "theta")
+	lapply(lavInspect(newobject, "est"), "[[", "theta")
 }
 
 getThreshold <- function(object) {
 	ngroups <- lavInspect(object, "ngroups")
-	coef <- lavInspect(object, "coef")
+	coef <- lavInspect(object, "est")
 	result <- NULL
 	if (ngroups == 1L) {
 		targettaunames <- rownames(coef$tau)
@@ -336,7 +336,7 @@ calcMaximalReliaCat <- function(polyr, threshold, denom, nitem, varnames) {
 }
 
 maximalRelia <- function(object) {
-	param <- lavInspect(object, "coef")
+	param <- lavInspect(object, "est")
 	ngroup <- lavInspect(object, "ngroups")
 	name <- names(param)
 	if (ngroup == 1L) {

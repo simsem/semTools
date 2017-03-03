@@ -91,7 +91,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
       se.test <- Heywood.lv <- Heywood.ov <- NA
     }
     list(sampstat = lavaan::lavInspect(obj, "sampstat"),
-         coefMats = lavaan::lavInspect(obj, "coef"),
+         coefMats = lavaan::lavInspect(obj, "est"),
          GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all
          converged = converged, SE = se.test,
          Heywood.lv = Heywood.lv, Heywood.ov = Heywood.ov)

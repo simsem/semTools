@@ -1,10 +1,10 @@
 # Wald stat did not show up
 
-partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, poolvar = TRUE, p.adjust = "none", return.fit = FALSE, method = "satorra.bentler.2001") { 
+partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 1, poolvar = TRUE, p.adjust = "none", return.fit = FALSE, method = "satorra.bentler.2001") {
 	# model <- ' f1 =~ u1 + u2 + u3 + u4
 			   # f2 =~ u5 + u6 + u7 + u8'
 
-	# modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta", 
+	# modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta",
 		# estimator="wlsmv", strict = TRUE)
 	# fit <- modelsCat2
 	# type <- "weak"
@@ -41,12 +41,12 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		if("fit.residuals" %in% names(fit)) {
 			fit0 <- fit$fit.residuals
 			if("fit.thresholds" %in% names(fit)) {
-				fit1 <- fit$fit.thresholds			
+				fit1 <- fit$fit.thresholds
 			} else if ("fit.loadings" %in% names(fit)) {
-				fit1 <- fit$fit.loadings			
+				fit1 <- fit$fit.loadings
 			} else {
 				stop("The element named either 'fit.thresholds' or 'fit.loadings' is needed in the 'fit' argument")
-			}			
+			}
 		} else {
 			stop("The element named 'fit.residuals' is needed in the 'fit' argument")
 		}
@@ -55,11 +55,11 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		if("fit.means" %in% names(fit)) {
 			fit0 <- fit$fit.means
 			if("fit.residuals" %in% names(fit)) {
-				fit1 <- fit$fit.residuals			
+				fit1 <- fit$fit.residuals
 			} else if ("fit.thresholds" %in% names(fit)) {
-				fit1 <- fit$fit.thresholds			
+				fit1 <- fit$fit.thresholds
 			} else if ("fit.loadings" %in% names(fit)) {
-				fit1 <- fit$fit.loadings			
+				fit1 <- fit$fit.loadings
 			} else {
 				stop("The element named either 'fit.residuals', 'fit.thresholds', or 'fit.loadings' is needed in the 'fit' argument")
 			}
@@ -73,7 +73,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 	pt0 <- parTable(fit0)
 	pt0$start <- pt0$est <- pt0$se <- NULL
 	pt1$start <- pt1$est <- pt1$se <- NULL
-	
+
 	pt1$label[substr(pt1$label, 1, 1) == "." & substr(pt1$label, nchar(pt1$label), nchar(pt1$label)) == "."] <- ""
 	pt0$label[substr(pt0$label, 1, 1) == "." & substr(pt0$label, nchar(pt0$label), nchar(pt0$label)) == "."] <- ""
 	namept1 <- paramNameFromPt(pt1)
@@ -95,17 +95,17 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		fixLoadingFac[[i]] <- pt1$rhs[select]
 	}
 	names(fixLoadingFac) <- names(facList)
-	
+
 	# Find the number of thresholds
 	# Check whether the factor configuration is the same across gorups
-	
+
 	conParTable <- lapply(pt1, "[", pt1$op == "==")
 	group1pt <- lapply(pt1, "[", pt1$group != 1)
-	
+
 	numThreshold <- table(sapply(group1pt, "[", group1pt$op == "|")[,"lhs"])
 	plabelthres <- split(group1pt$plabel[group1pt$op == "|"], group1pt$lhs[group1pt$op == "|"])
-	numFixedThreshold <- sapply(lapply(plabelthres, function(vec) !is.na(match(vec, conParTable$lhs)) | !is.na(match(vec, conParTable$rhs))), sum)[names(numThreshold)]  
-	
+	numFixedThreshold <- sapply(lapply(plabelthres, function(vec) !is.na(match(vec, conParTable$lhs)) | !is.na(match(vec, conParTable$rhs))), sum)[names(numThreshold)]
+
 	#numFixedThreshold <- table(sapply(group1pt, "[", group1pt$op == "|" & group1pt$eq.id != 0)[,"lhs"])
 	fixIntceptFac <- list()
 	for(i in seq_along(facList)) {
@@ -117,7 +117,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		}
 	}
 	names(fixIntceptFac) <- names(facList)
-	
+
 	ngroups <- max(pt0$group)
 	neach <- lavInspect(fit0, "nobs")
 	groupvar <- lavInspect(fit0, "group")
@@ -136,10 +136,10 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 	}
 	result <- fixCon <- freeCon <- NULL
 	estimates <- NULL
-	listFreeCon <- listFixCon <- list()	
+	listFreeCon <- listFixCon <- list()
 	beta <- lavaan::coef(fit1)
 	beta0 <- lavaan::coef(fit0)
-	waldMat <- matrix(0, ngroups - 1, length(beta))	
+	waldMat <- matrix(0, ngroups - 1, length(beta))
 	if(numType == 1) {
 		if(!is.null(free) | !is.null(fix)) {
 			if(!is.null(fix)) {
@@ -148,7 +148,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				for(i in seq_along(fix)) {
 					if(dup[i]) {
 						pt0 <- constrainParTable(pt0, facinfix[i], "=~", fix[i], 1:ngroups)
-						pt1 <- constrainParTable(pt1, facinfix[i], "=~", fix[i], 1:ngroups)					
+						pt1 <- constrainParTable(pt1, facinfix[i], "=~", fix[i], 1:ngroups)
 					} else {
 						oldmarker <- fixLoadingFac[[facinfix[i]]]
 						if(length(oldmarker) > 0) {
@@ -166,7 +166,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 							}
 						} else {
 							pt0 <- constrainParTable(pt0, facinfix[i], "=~", fix[i], 1:ngroups)
-							pt1 <- constrainParTable(pt1, facinfix[i], "=~", fix[i], 1:ngroups)					
+							pt1 <- constrainParTable(pt1, facinfix[i], "=~", fix[i], 1:ngroups)
 						}
 					}
 				}
@@ -219,7 +219,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		indexfixvar <- which((pt1$rhs %in% varinfixvar) & (pt1$op == "=~") & (pt1$group == 1))
 		varnonfixvar <- setdiff(varfree, varinfixvar)
 		indexnonfixvar <- setdiff(index, indexfixvar)
-		
+
 		pos <- 1
 		for(i in seq_along(indexfixvar)) {
 			runnum <- indexfixvar[i]
@@ -325,7 +325,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[c(indexfixvar, indexnonfixvar)]
 		estimates <- cbind(estimates, stdestimates, esstd, esz)
-		result <- cbind(freeCon, fixCon, waldCon)		
+		result <- cbind(freeCon, fixCon, waldCon)
 	} else if (numType == 2) {
 		if(!is.null(free) | !is.null(fix)) {
 			if(!is.null(fix)) {
@@ -337,7 +337,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 						if(dup[i]) {
 							for(s in 2:numfixthres) {
 								pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)
-								pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)	
+								pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)
 							}
 						} else {
 							oldmarker <- fixIntceptFac[[facinfix[i]]]
@@ -346,23 +346,23 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 								if(oldmarker == fix[i]) {
 									for(s in 2:numfixthres) {
 										pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)
-										pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)			
-									}	
+										pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)
+									}
 								} else {
 									for(r in 2:numoldthres) {
-										pt1 <- freeParTable(pt1, oldmarker, "|", paste0("t", r), 1:ngroups)									
+										pt1 <- freeParTable(pt1, oldmarker, "|", paste0("t", r), 1:ngroups)
 									}
 									for(s in 2:numfixthres) {
-										pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)		
-										pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)	
-									}	
+										pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)
+										pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)
+									}
 									fixIntceptFac[[facinfix[i]]] <- fix[i]
 								}
 							} else {
 								for(s in 2:numfixthres) {
 									pt0 <- constrainParTable(pt0, fix[i], "|", paste0("t", s), 1:ngroups)
-									pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)			
-								}				
+									pt1 <- constrainParTable(pt1, fix[i], "|", paste0("t", s), 1:ngroups)
+								}
 							}
 						}
 					}
@@ -383,14 +383,14 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 						pt1 <- constrainParTable(pt1, candidatemarker, "|", "t2", 1:ngroups)
 						for(s in 2:numfixthres) {
 							pt0 <- freeParTable(pt0, free[i], "|", paste0("t", s), 1:ngroups)
-							pt1 <- freeParTable(pt1, free[i], "|", paste0("t", s), 1:ngroups)			
-						}	
+							pt1 <- freeParTable(pt1, free[i], "|", paste0("t", s), 1:ngroups)
+						}
 						fixIntceptFac[[facinfix[i]]] <- candidatemarker
 					} else {
 						for(s in 2:numfixthres) {
 							pt0 <- freeParTable(pt0, free[i], "|", paste0("t", s), 1:ngroups)
-							pt1 <- freeParTable(pt1, free[i], "|", paste0("t", s), 1:ngroups)			
-						}	
+							pt1 <- freeParTable(pt1, free[i], "|", paste0("t", s), 1:ngroups)
+						}
 					}
 				}
 			}
@@ -424,7 +424,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		varinfixvar <- unlist(facList[facinfix])
 		varinfixvar <- setdiff(varinfixvar, setdiff(varinfixvar, varfree))
 		varnonfixvar <- setdiff(varfree, varinfixvar)
-		
+
 		pos <- 1
 		for(i in seq_along(varinfixvar)) {
 			temp <- pt1
@@ -443,7 +443,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
 				temp0 <- freeParTable(temp0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1:ngroups)
 				estimates[pos, s - 1] <- getValue(pt0, beta0, pt0$lhs[runnum], pt0$op[runnum], pt0$rhs[runnum], 1)
-			}			
+			}
 			tryresult0 <- try(tempfit0 <- refit(temp0, fit0), silent = TRUE)
 			if(!is(tryresult0, "try-error")) {
 				compresult0 <- try(modelcomp0 <- lavaan::lavTestLRT(tempfit0, fit0, method = method), silent = TRUE)
@@ -480,8 +480,8 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				numcandidatethres <- numThreshold[candidatemarker]
 				newparent <- constrainParTable(pt1, candidatemarker, "|", "t2", 1:ngroups)
 				for(s in 2:numcandidatethres) {
-					newparent <- freeParTable(newparent, varnonfixvar[i], "|", paste0("t", s), 1:ngroups)		
-				}	
+					newparent <- freeParTable(newparent, varnonfixvar[i], "|", paste0("t", s), 1:ngroups)
+				}
 				temp <- newparent
 				for(s in 2:numThreshold[varnonfixvar[i]]) {
 					runnum <- which((newparent$lhs == varnonfixvar[i]) & (newparent$op == "|") & (newparent$rhs == paste0("t", s)) & (newparent$group == 1))
@@ -520,7 +520,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 				waldCon[pos,] <- do.call(waldConstraint, args)
 			}
 			listFixCon <- c(listFixCon, tryresult)
-			
+
 			temp0 <- pt0
 			for(s in 2:numThreshold[varnonfixvar[i]]) {
 				runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
@@ -551,13 +551,13 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- paste0(c(varinfixvar, varnonfixvar), "|")
 		estimates <- cbind(estimates, stdestimates, esstd)
-		result <- cbind(freeCon, fixCon, waldCon)		
+		result <- cbind(freeCon, fixCon, waldCon)
 	} else if (numType == 3) {
 		if(!is.null(free) | !is.null(fix)) {
 			if(!is.null(fix)) {
 				for(i in seq_along(fix)) {
 					pt0 <- constrainParTable(pt0, fix[i], "~~", fix[i], 1:ngroups)
-					pt1 <- constrainParTable(pt1, fix[i], "~~", fix[i], 1:ngroups)					
+					pt1 <- constrainParTable(pt1, fix[i], "~~", fix[i], 1:ngroups)
 				}
 			}
 			if(!is.null(free)) {
@@ -626,14 +626,14 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[index]
 		estimates <- cbind(estimates, stdestimates, esstd, esz)
-		result <- cbind(freeCon, fixCon, waldCon)		
+		result <- cbind(freeCon, fixCon, waldCon)
 	} else if (numType == 4) {
 		varfree <- facnames
 		if(!is.null(free) | !is.null(fix)) {
 			if(!is.null(fix)) {
 				for(i in seq_along(fix)) {
 					pt0 <- constrainParTable(pt0, fix[i], "~1", "", 1:ngroups)
-					pt1 <- constrainParTable(pt1, fix[i], "~1", "", 1:ngroups)					
+					pt1 <- constrainParTable(pt1, fix[i], "~1", "", 1:ngroups)
 				}
 			}
 			if(!is.null(free)) {
@@ -706,7 +706,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 		waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
 		rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[index]
 		estimates <- cbind(estimates, stdestimates, esstd)
-		result <- cbind(freeCon, fixCon, waldCon)			
+		result <- cbind(freeCon, fixCon, waldCon)
 	}
 	if(return.fit) {
 		return(invisible(list(estimates = estimates, results = result, models = list(free = listFreeCon, fix = listFixCon, nested = fit0, parent = fit1))))
@@ -716,7 +716,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 }
 
 thetaImpliedTotalVar <- function(object) {
-	param <- lavInspect(object, "coef")
+	param <- lavInspect(object, "est")
 	ngroup <- lavInspect(object, "ngroups")
 	name <- names(param)
 	if(ngroup == 1) {

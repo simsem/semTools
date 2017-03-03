@@ -137,7 +137,7 @@ efaUnrotate <- function(data, nf, varList = NULL, start = TRUE, aux = NULL, ...)
 }
 
 getLoad <- function(object, std = TRUE) {
-	out <- lavInspect(object, "coef")$lambda
+	out <- lavInspect(object, "est")$lambda
 	if (std) {
 		impcov <- lavaan::fitted.values(object)$cov
 		impsd <- sqrt(diag(diag(impcov)))
@@ -157,10 +157,10 @@ orthRotate <- function(object, method = "varimax", ...) {
 	mc <- match.call()
 	initL <- getLoad(object)
 	rotated <- GPArotation::GPForth(initL, method=method, ...)
-	rotateMat <- t(solve(rotated$Th))
+	# rotateMat <- t(solve(rotated$Th)) # defined but never used
 	LIST <- seStdLoadings(rotated, object, fun = GPArotation::GPForth,
 	                      MoreArgs = c(method = method, list(...)))
-	orthogonal <- rotated$orthogonal
+	# orthogonal <- rotated$orthogonal # define but never used
 	loading <- rotated$loadings
 	rotate <- rotated$Th
 	gradRotate <- rotated$Gq
@@ -179,10 +179,10 @@ oblqRotate <- function(object, method = "quartimin", ...) {
 	mc <- match.call()
 	initL <- getLoad(object)
 	rotated <- GPArotation::GPFoblq(initL, method = method, ...)
-	rotateMat <- t(solve(rotated$Th))
+	# rotateMat <- t(solve(rotated$Th)) # defined but never used
 	LIST <- seStdLoadings(rotated, object, fun = GPArotation::GPFoblq,
 	                      MoreArgs = c(method = method, list(...)))
-	orthogonal <- rotated$orthogonal
+	# orthogonal <- rotated$orthogonal # defined but never used
 	loading <- rotated$loadings
 	rotate <- rotated$Th
 	gradRotate <- rotated$Gq
@@ -202,10 +202,10 @@ funRotate <- function(object, fun, ...) {
 	mc <- match.call()
 	initL <- getLoad(object)
 	rotated <- do.call(fun, c(list(L = initL), list(...)))
-	rotateMat <- t(solve(rotated$Th))
+	# rotateMat <- t(solve(rotated$Th)) # defined but never used
 	gradRotate <- rotated$Gq
 	LIST <- seStdLoadings(rotated, object, fun = fun, MoreArgs = list(...))
-	orthogonal <- rotated$orthogonal
+	# orthogonal <- rotated$orthogonal # defined but never used
 	loading <- rotated$loadings
 	rotate <- rotated$Th
 	convergence <- rotated$convergence
