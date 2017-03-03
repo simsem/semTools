@@ -6,7 +6,7 @@
 	Implement orthogonal or oblique rotation
 }
 \description{
-These functions will implement orthogonal or oblique rotation on standardized factor loadings from a lavaan output. 
+These functions will implement orthogonal or oblique rotation on standardized factor loadings from a lavaan output.
 }
 \usage{
 orthRotate(object, method="varimax", ...)
@@ -28,7 +28,7 @@ funRotate(object, fun, ...)
 }
 }
 \details{
-	These functions will rotate the unrotated standardized factor loadings by orthogonal rotation using the \code{\link[GPArotation]{GPForth}} function or oblique rotation using the \code{\link[GPArotation]{GPFoblq}} function the \code{GPArotation} package. The resulting rotation matrix will be used to calculate standard errors of the rotated standardized factor loading by delta method by numerically computing the Jacobian matrix by the \code{lavJacobianD} function in the \code{lavaan} package. 
+	These functions will rotate the unrotated standardized factor loadings by orthogonal rotation using the \code{\link[GPArotation]{GPForth}} function or oblique rotation using the \code{\link[GPArotation]{GPFoblq}} function the \code{GPArotation} package. The resulting rotation matrix will be used to calculate standard errors of the rotated standardized factor loading by delta method by numerically computing the Jacobian matrix by the \code{lavJacobianD} function in the \code{lavaan} package.
 }
 \value{
 	An \code{linkS4class{EFA}} object that saves the rotated EFA solution.
@@ -37,24 +37,23 @@ funRotate(object, fun, ...)
     Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
 \examples{
-library(lavaan)
+\dontrun{
 
 unrotated <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
 
 # Orthogonal varimax
-out.varimax <- orthRotate(unrotated, method="varimax")
-summary(out.varimax, sort=FALSE, suppress=0.3)
+out.varimax <- orthRotate(unrotated, method = "varimax")
+summary(out.varimax, sort = FALSE, suppress = 0.3)
 
 # Orthogonal Quartimin
-orthRotate(unrotated, method="quartimin")
+orthRotate(unrotated, method = "quartimin")
 
 # Oblique Quartimin
-oblqRotate(unrotated, method="quartimin")
+oblqRotate(unrotated, method = "quartimin")
 
 # Geomin
-oblqRotate(unrotated, method="geomin")
+oblqRotate(unrotated, method = "geomin")
 
-\dontrun{
 # Target rotation
 library(GPArotation)
 target <- matrix(0, 9, 3)
@@ -63,6 +62,6 @@ target[4:6, 2] <- NA
 target[7:9, 3] <- NA
 colnames(target) <- c("factor1", "factor2", "factor3")
 # This function works with GPArotation version 2012.3-1
-funRotate(unrotated, fun="targetQ", Target=target) 
+funRotate(unrotated, fun = "targetQ", Target = target)
 }
 }

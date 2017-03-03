@@ -70,6 +70,7 @@ HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
 (out3 <- fmi(HSMiss, varnames = c("x5","x6","x7","x8","x9")))
 (out4 <- fmi(HSMiss, group = "school"))
 
+\dontrun{
 ## ordered-categorical data
 data(datCat)
 lapply(datCat, class)
@@ -83,4 +84,5 @@ impout <- amelia(datCat, m = 3, noms = "g", ords = paste0("u", 1:8), p2s = FALSE
 imps <- impout$imputations
 ## calculate FMI, using list of imputed data sets
 fmi(imps, group = "g")
+}
 }
