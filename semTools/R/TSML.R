@@ -82,7 +82,7 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   targetArgs$sample.mean <- lavInspect(satFit, "mean.ov")
   targetArgs$sample.nobs <- lavInspect(satFit, "nobs")
   targetArgs$se <- "standard"
-  targetArgs$sample.cov.rescale <- TRUE
+  targetArgs$sample.cov.rescale <- FALSE
   targetFit <- do.call(fun, targetArgs)
 
   ## STAGE 0:
