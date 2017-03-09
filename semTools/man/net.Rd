@@ -28,7 +28,7 @@ net(..., crit = .0001)
     Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \references{
-Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence. \emph{Psychological Methods, 15}, 111-123. doi:10.1037/a0019625
+Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence. \emph{Psychological Methods, 15}(2), 111-123. doi:10.1037/a0019625
 }
 \examples{
 \dontrun{
