@@ -400,9 +400,10 @@ setMethod("vcov", "lavaan.mi", function(object, type = c("pooled","between","wit
             ' matrix is therefore based on different imputed data sets.')
 
   ## check whether equality constraints prevent inversion of W
-  if (max(PT$free) == npar) {
+  inv.W <- try(solve(W), silent = TRUE)
+  if (class(inv.W) != "try-error") {
     ## relative increase in variance due to missing data
-    r <- (1 + 1/m)/npar * sum(diag(B %*% solve(W))) # Enders (2010, p. 235) eqs. 8.20-21
+    r <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
     Total <- (1 + r) * W # FIXME: asked Yves for a hack, says it can't be inverted back to infoMat
   } else {
     ## less reliable, but constraints prevent inversion of W
