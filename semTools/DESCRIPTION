@@ -1,6 +1,6 @@
 Package: semTools
 Title: Useful Tools for Structural Equation Modeling
-Version: 0.4-15.901
+Version: 0.4-15.902
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com"),
 		person(given = "Sunthud", family = "Pornprasertmanit", role = "aut", email = "psunthud@gmail.com"), 
 		person(given = "Patrick", family = "Miller", role = "aut", email="pmille13@nd.edu"), 
@@ -54,5 +54,5 @@ Author: Terrence D. Jorgensen [aut, cre],
   Jason Rights [ctb],
   Ylenio Longo [ctb]
 Maintainer: Terrence D. Jorgensen <TJorgensen314@gmail.com>
-Date/Publication: 2017-03-10
+Date/Publication: 2017-03-18
 RoxygenNote: 6.0.1

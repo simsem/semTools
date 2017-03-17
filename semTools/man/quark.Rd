@@ -4,31 +4,34 @@
 Quark
 }
 \description{
-The \code{quark} function provides researchers with the ability to calculate and include component scores calculated by taking into account the variance in the original dataset and all of the interaction and polynomial effects of the data in the dataset.  
+The \code{quark} function provides researchers with the ability to calculate and include component scores calculated by taking into account the variance in the original dataset and all of the interaction and polynomial effects of the data in the dataset.
 }
 \usage{
-quark(data, id, order = 1, silent = FALSE)
+quark(data, id, order = 1, silent = FALSE, ...)
 }
 
 \arguments{
   \item{data}{
-  The data frame is a required component for \code{quark}.  In order for \code{quark} to process a data frame, it must not contain any factors or text-based variables.  All variables must be in numeric format. Identifiers and dates can be left in the data; however, they will need to be identified under the \code{id} argument.  
+  The data frame is a required component for \code{quark}.  In order for \code{quark} to process a data frame, it must not contain any factors or text-based variables.  All variables must be in numeric format. Identifiers and dates can be left in the data; however, they will need to be identified under the \code{id} argument.
   }
   \item{id}{
-  Identifiers and dates within the dataset will need to be acknowledged as \code{quark} cannot process these.  Be acknowledging the the identifiers and dates as a vector of column numbers or variable names, \code{quark} will remove them from the data temporarily to complete its main processes.  Among many potential issues of not acknowledging identifiers and dates are issues involved with imputation, product and polynomial effects, and principal component analysis.  
+  Identifiers and dates within the dataset will need to be acknowledged as \code{quark} cannot process these.  By acknowledging the identifiers and dates as a vector of column numbers or variable names, \code{quark} will remove them from the data temporarily to complete its main processes.  Among many potential issues of not acknowledging identifiers and dates are issues involved with imputation, product and polynomial effects, and principal component analysis.
   }
   \item{order}{
-  Order is an optional argument provided by quark that can be used when the imputation procedures in mice fails.  Under some circumstances, mice cannot calculate missing values due to issues with extreme missingness.  Should an error present itself stating a failure due to not having any columns selected, incorporate the argument order=2 into the quark function in order to reorder the imputation method procedure.  Otherwise, the order is defaulted to 1.  Example to rerun quark after imputation failure, quark.list <- quark(data=yourdataframe,id=vectorofIDs,order=2).
+  Order is an optional argument provided by quark that can be used when the imputation procedures in mice fail.  Under some circumstances, mice cannot calculate missing values due to issues with extreme missingness.  Should an error present itself stating a failure due to not having any columns selected, incorporate the argument order=2 into the quark function in order to reorder the imputation method procedure.  Otherwise, the order is defaulted to 1.  Example to rerun quark after imputation failure, quark.list <- quark(data=yourdataframe,id=vectorofIDs,order=2).
   }
   \item{silent}{
   If \code{FALSE}, the details of the \code{quark} process are printed.
+  }
+  \item{\dots}{
+	additional arguments to pass to \code{\link[mice]{mice}}.
   }
 }
 \details{
 The \code{quark} function calculates these component scores by first filling in the data via means of multiple imputation methods and then expanding the dataset by aggregating the non-overlapping interaction effects between variables by calculating the mean of the interactions and polynomial effects.  The multiple imputation methods include one of iterative sampling and group mean substitution and multiple imputation using a polytomous regression algorithm (mice). During the expansion process, the dataset is expanded to three times its normal size (in width). The first third of the dataset contains all of the original data post imputation, the second third contains the means of the polynomial effects (squares and cubes), and the final third contains the means of the non-overlapping interaction effects. A full principal componenent analysis is conducted and the individual components are retained. The subsequent \code{\link{combinequark}} function provides researchers the control in determining how many components to extract and retain. The function returns the dataset as submitted (with missing values) and the component scores as requested for a more accurate multiple imputation in subsequent steps.
 }
 \value{
-The output value from using the quark function is a list. It will return a list with 7 components.  
+The output value from using the quark function is a list. It will return a list with 7 components.
 \item{ID Columns}{Is a vector of the identifier columns entered when running quark.}
 \item{ID Variables}{Is a subset of the dataset that contains the identifiers as acknowledged when running quark.}
 \item{Used Data}{Is a matrix / dataframe of the data provided by user as the basis for quark to process.}
@@ -38,17 +41,22 @@ The output value from using the quark function is a list. It will return a list 
 \item{Percent Variance Explained}{Is a vector of the percent variance explained with each column of principal components.}
 }
 \references{
-Howard, W. J., Little, T. D., & Rhemtulla, M. (in press). Using principal component analysis (PCA) to obtain auxiliary variables for missing data estimation in large data sets. \emph{Multivariate Behavioral Research}.
+Howard, W. J., Rhemtulla, M., & Little, T. D. (2015). Using Principal Components as Auxiliary Variables in Missing Data Estimation. \emph{Multivariate Behavioral Research, 50}(3), 285-299. doi:10.1080/00273171.2014.999267
 }
 \author{
-Steven R. Chesnut  (University of Southern Mississippi; \email{Steven.Chesnut@usm.edu}), Danny Squire (Texas Tech University). The PCA code is copied and modified from the \code{FactoMineR} package. The function to print correlation matrix is copied from the \code{psych} package.
+Steven R. Chesnut  (University of Southern Mississippi; \email{Steven.Chesnut@usm.edu})
+
+Danny Squire (Texas Tech University)
+
+Terrence D. Jorgensen (University of Amsterdam)
+
+The PCA code is copied and modified from the \code{FactoMineR} package.
 }
 \seealso{
 \code{\link{combinequark}}
 }
 \examples{
 set.seed(123321)
-library(lavaan)
 
 dat <- HolzingerSwineford1939[,7:15]
 misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
