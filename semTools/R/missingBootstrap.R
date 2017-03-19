@@ -151,7 +151,7 @@ trans2 <- function(dat, Sigma, Mu, EMcov) {
   Mjs <- vector("list", J)
 
   ## Create Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
-  Dup <- lavaan::duplicationMatrix(p)
+  Dup <- lavaan::lav_matrix_duplication(p)
   Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
 
   ## step through each MD pattern, populate Hjs and Mjs
@@ -383,9 +383,16 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
 
   ## If a lavaan object is supplied, the extracted values for rawData, Sigma, Mu,
   ## EMcov, and EMmeans will override any user-supplied arguments.
+  nG <- lavInspect(x, "ngroups")
   if (hasArg(x)) {
-    rawData <- lapply(lavInspect(x, "data"), as.data.frame)
-    for (g in seq_along(rawData)) colnames(rawData[[g]]) <- lavaan::lavNames(x)
+    if (nG == 1L) {
+      rawData <- list(as.data.frame(lavInspect(x, "data")))
+    } else rawData <- lapply(lavInspect(x, "data"), as.data.frame)
+    for (g in seq_along(rawData)) {
+      colnames(rawData[[g]]) <- lavaan::lavNames(x)
+      checkAllMissing <- apply(rawData[[g]], 1, function(x) all(is.na(x)))
+      if (any(checkAllMissing)) rawData[[g]] <- rawData[[g]][!checkAllMissing, ]
+    }
     ChiSquared <- lavInspect(x, "fit")[c("chisq", "chisq.scaled")]
     ChiSquared <- ifelse(is.na(ChiSquared[2]), ChiSquared[1], ChiSquared[2])
     group <- lavInspect(x, "group")
@@ -395,29 +402,33 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     Sigma <- lavInspect(x, "cov.ov")
     Mu <- lavInspect(x, "mean.ov")
     EMcov <- lavInspect(x, "sampstat")$cov
+    if (nG == 1L) {
+      Sigma <- list(Sigma)
+      Mu <- list(Mu)
+      EMcov <- list(EMcov)
+    }
   } else {
   ## If no lavaan object is supplied, check that required arguments are.
     suppliedData <- c(hasArg(rawData), hasArg(Sigma), hasArg(Mu))
     if (!all(suppliedData)) {
-      stop("Without a lavaan fitted object, user must supply raw data and model-implied moments.")
+      stop("Without a lavaan fitted object, user must supply raw data and",
+           " model-implied moments.")
     }
     if (!hasArg(model) & !(transDataOnly | bootSamplesOnly)) {
-      stop("Without model syntax or fitted lavaan object, user can only
-       call this function to save transformed data or bootstrapped samples.")
+      stop("Without model syntax or fitted lavaan object, user can only call",
+           " this function to save transformed data or bootstrapped samples.")
     }
     if (!hasArg(ChiSquared) & !(transDataOnly | bootSamplesOnly)) {
-      stop("Without a fitted lavaan object or ChiSquared argument,
-       user can only call this function to save transformed data,
-       bootstrapped samples, or bootstrapped chi-squared values.")
+      stop("Without a fitted lavaan object or ChiSquared argument, user can",
+           " only call this function to save transformed data, bootstrapped",
+           " samples, or bootstrapped chi-squared values.")
     }
     if (!any(c(transDataOnly, bootSamplesOnly))) {
       if (!is.numeric(ChiSquared)) stop("The \"ChiSquared\" argument must be numeric.")
     }
 
     ## If user supplies one-group data & moments, convert to lists.
-    if (class(rawData) == "data.frame") {
-      rawData <- list(rawData)
-    }
+    if (class(rawData) == "data.frame") rawData <- list(rawData)
     if (class(rawData) != "list") {
       stop("The \"rawData\" argument must be a data.frame or list of data frames.")
     } else {
@@ -431,7 +442,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
       EMcov <- vector("list", length(Sigma))
     } else {
       if (class(EMcov) == "matrix") EMcov <- list(EMcov)
-    ## check EMcov is symmetric and dimensions match Sigma
+      ## check EMcov is symmetric and dimensions match Sigma
       for (g in seq_along(EMcov)) {
         if (!isSymmetric(EMcov[[g]])) stop("EMcov in group ", g, " not symmetric.")
         unequalDim <- !all(dim(EMcov[[g]]) == dim(Sigma[[g]]))
@@ -488,7 +499,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
       for (i in seq_along(patt)) myTransDat[[g]][myRows[[i]], ] <- transDatList[[i]]
     } else {
       tStart <- Sys.time()
-      myTransDat[[g]] <- SavaleiYuan(dat = rawData[[g]],vSigma = Sigma[[g]],
+      myTransDat[[g]] <- SavaleiYuan(dat = rawData[[g]], Sigma = Sigma[[g]],
                                      Mu = Mu[[g]], EMcov = EMcov[[g]])
       output$timeTrans <- Sys.time() - tStart
     }
@@ -557,7 +568,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   ## fit model to bootstrap samples, save distribution of chi-squared test stat
   if (hasArg(x)) {
     ## grab defaults from lavaan object "x"
-    lavaanArgs$slotParTable <- parTable(x)
+    lavaanArgs$slotParTable <- as.list(parTable(x))
     lavaanArgs$slotModel <- x@Model
     lavaanArgs$slotOptions <- lavInspect(x, "options")
   } else {
