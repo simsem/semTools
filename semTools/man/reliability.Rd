@@ -29,7 +29,7 @@ The second coefficient omega (Bentler, 1972, 2009) can be calculated by
 
 \deqn{ \omega_2 = \frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2} Var\left( \psi \right)}{\bold{1}^\prime \hat{\Sigma} \bold{1}}, }
 
-where \eqn{\hat{\Sigma}} is the model-implied covariance matrix, and \eqn{\bold{1}} is the \eqn{k}-dimensional vector of 1. The first and the second coefficients omega will have different values if there are dual loadings (or the existence of method factors). The first coefficient omega can be viewed as the reliability controlling for the other factors (like partial eta-squared in ANOVA). The second coefficient omega can be viewed as the unconditional reliability (like eta-squared in ANOVA).
+where \eqn{\hat{\Sigma}} is the model-implied covariance matrix, and \eqn{\bold{1}} is the \eqn{k}-dimensional vector of 1. The first and the second coefficients omega will have the same value when the model has simple structure, but different values when there are (for example) cross-loadings or method factors. The first coefficient omega can be viewed as the reliability controlling for the other factors (like \eqn{\eta^2_partial} in ANOVA). The second coefficient omega can be viewed as the unconditional reliability (like \eqn{\eta^2} in ANOVA).
 
 The third coefficient omega (McDonald, 1999), which is sometimes referred to hierarchical omega, can be calculated by
 
@@ -37,7 +37,7 @@ The third coefficient omega (McDonald, 1999), which is sometimes referred to hie
 
 where \eqn{\Sigma} is the observed covariance matrix. If the model fits the data well, the third coefficient omega will be similar to the \eqn{\omega_2}. Note that if there is a directional effect in the model, all coefficients omega will use the total factor variances, which is calculated by \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
 
-In conclusion, \eqn{\omega_1}, \eqn{\omega_2}, and \eqn{\omega_3} are different in the denominator. The denominator of the first formula assumes that a model is congeneric factor model where measurement errors are not correlated. The second formula is accounted for correlated measurement errors. However, these two formulas assume that the model-implied covariance matrix explains item relationships perfectly. The residuals are subject to sampling error. The third formula use observed covariance matrix instead of model-implied covariance matrix to calculate the observed total variance. This formula is the most conservative method in calculating coefficient omega.
+In conclusion, \eqn{\omega_1}, \eqn{\omega_2}, and \eqn{\omega_3} are different in the denominator. The denominator of the first formula assumes that a model is congeneric factor model where measurement errors are not correlated. The second formula accounts for correlated measurement errors. However, these two formulas assume that the model-implied covariance matrix explains item relationships perfectly. The residuals are subject to sampling error. The third formula use observed covariance matrix instead of model-implied covariance matrix to calculate the observed total variance. This formula is the most conservative method in calculating coefficient omega.
 
 The average variance extracted (AVE) can be calculated by
 
@@ -45,9 +45,9 @@ The average variance extracted (AVE) can be calculated by
 
 Note that this formula is modified from Fornell & Larcker (1981) in the case that factor variances are not 1. The proposed formula from Fornell & Larcker (1981) assumes that the factor variances are 1. Note that AVE will not be provided for factors consisting of items with dual loadings. AVE is the property of items but not the property of factors.
 
-Regarding to categorical items, coefficient alpha and AVE are calculated based on polychoric correlations. The coefficient alpha from this function may be not the same as the standard alpha calculation for categorical items. Researchers may check the \code{alpha} function in the \code{psych} package for the standard coefficient alpha calculation.
+Regarding categorical indicators, coefficient alpha and AVE are calculated based on polychoric correlations. The coefficient alpha from this function may be not the same as the standard alpha calculation for categorical items. Researchers may check the \code{alpha} function in the \code{psych} package for the standard coefficient alpha calculation.
 
-Item thresholds are not accounted for. Coefficient omega for categorical items, however, is calculated by accounting for both item covariances and item thresholds using Green and Yang's (2009, formula 21) approach. Three types of coefficient omega indicate different methods to calculate item total variances. The original formula from Green and Yang is equivalent to \eqn{\omega_3} in this function.
+Item thresholds are not accounted for. Coefficient omega for categorical items, however, is calculated by accounting for both item covariances and item thresholds using Green and Yang's (2009, formula 21) approach. Three types of coefficient omega indicate different methods to calculate item total variances. The original formula from Green and Yang is equivalent to \eqn{\omega_3} in this function. Green and Yang did not propose a method for calculating reliability with a mixture of categorical and continuous indicators, and we are currently unaware of an appropriate method.  Therefore, when \code{reliability} detects both categorical and continuous indicators in the model, an error is returned. If the categorical indicators load on a different factor(s) than continuous indicators, then reliability can be calculated separately for those scales by fitting separate models and submitting each to the \code{reliability} function.
 }
 \value{
 	Reliability values (coefficient alpha, coefficients omega, average variance extracted) of each factor in each group

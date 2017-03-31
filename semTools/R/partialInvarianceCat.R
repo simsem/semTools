@@ -716,24 +716,27 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL, refgroup = 
 }
 
 thetaImpliedTotalVar <- function(object) {
-	param <- lavInspect(object, "est")
-	ngroup <- lavInspect(object, "ngroups")
-	name <- names(param)
-	if(ngroup == 1) {
-		ly <- param[name == "lambda"]
-	} else {
-		ly <- lapply(param, "[[", "lambda")
-	}
-	ps <- lavInspect(object, "cov.lv")
-	if(ngroup == 1) ps <- list(ps)
-	if(ngroup == 1) {
-		te <- param[name == "theta"]
-	} else {
-		te <- lapply(param, "[[", "theta")
-	}
-	result <- list()
-	for(i in 1:ngroup) {
-		result[[i]] <- ly[[i]]%*%ps[[i]]%*%t(ly[[i]]) + te[[i]]
-	}
-	result
+	# param <- lavInspect(object, "est")
+	# ngroup <- lavInspect(object, "ngroups")
+	# name <- names(param)
+	# if(ngroup == 1) {
+	# 	ly <- param[name == "lambda"]
+	# } else {
+	# 	ly <- lapply(param, "[[", "lambda")
+	# }
+	# ps <- lavInspect(object, "cov.lv")
+	# if(ngroup == 1) ps <- list(ps)
+	# if(ngroup == 1) {
+	# 	te <- param[name == "theta"]
+	# } else {
+	# 	te <- lapply(param, "[[", "theta")
+	# }
+	# result <- list()
+	# for(i in 1:ngroup) {
+	# 	result[[i]] <- ly[[i]] %*% ps[[i]] %*% t(ly[[i]]) + te[[i]]
+	# }
+	# result
+  if (lavInspect(object, "ngroups") == 1L) return(list(lavInspect(object, "cov.ov")))
+  lavInspect(object, "cov.ov")
 }
+## FIXME: Why is this even necessary?  Did Sunthud not know implied Sigma is available?

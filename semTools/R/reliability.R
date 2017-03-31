@@ -6,6 +6,7 @@
 reliability <- function(object) {
 	param <- lavInspect(object, "est")
 	ngroup <- lavInspect(object, "ngroups")
+	categorical <- length(lavNames(object, "ov.ord"))
 	name <- names(param)
 	if (ngroup == 1L) {
 		ly <- param[name == "lambda"]
@@ -20,32 +21,19 @@ reliability <- function(object) {
 		te <- lapply(param, "[[", "theta")
 	}
 	SigmaHat <- lavInspect(object, "cov.ov")
-	if (ngroup == 1L) {
-	  SigmaHat <- list(SigmaHat)
-		tau <- param[name == "tau"]
-	} else {
-		tau <- lapply(param, "[[", "tau")
-	}
-	implied <- lavaan::fitted.values(object)[name = "cov"]
-	categorical <- (length(tau) > 0) && !is.null(tau[[1]])
+	if (ngroup == 1L) SigmaHat <- list(SigmaHat)
 	threshold <- NULL
 	if (ngroup == 1L) {
     S <- list(lavInspect(object, "sampstat")$cov)
 	} else {
 		S <- lapply(lavInspect(object, "sampstat"), function(x) x$cov)
 	}
-	if (categorical) {
-		polycor <- polycorLavaan(object)
-		if (ngroup == 1L) polycor <- list(polycor)
-		S <- lapply(polycor, function(x) x[rownames(ly[[1]]), rownames(ly[[1]])])
-		threshold <- getThreshold(object)
-		SigmaHat <- thetaImpliedTotalVar(object)
-	}
+	if (categorical) threshold <- getThreshold(object)
 	flag <- FALSE
 	result <- list()
 	for (i in 1:ngroup) {
 		common <- (apply(ly[[i]], 2, sum)^2) * diag(ps[[i]])
-		truevar <- ly[[i]]%*%ps[[i]]%*%t(ly[[i]])
+		truevar <- ly[[i]] %*% ps[[i]] %*% t(ly[[i]])
 		error <- rep(NA, length(common))
 		alpha <- rep(NA, length(common))
 		total <- rep(NA, length(common))
@@ -209,22 +197,22 @@ omegaCat <- function(truevar, implied, threshold, denom) {
 	sumnum <- 0
 	addden <- 0
 	for (j in 1:nitem) {
-	for (jp in 1:nitem) {
-		sumprobn2 <- 0
-		addprobn2 <- 0
-		t1 <- threshold[[j]]
-		t2 <- threshold[[jp]]
-		for (c in 1:length(t1)) {
-		for (cp in 1:length(t2)) {
-			sumprobn2 <- sumprobn2 + p2(t1[c], t2[cp], polyr[j, jp])
-			addprobn2 <- addprobn2 + p2(t1[c], t2[cp], denom[j, jp])
-		}
-		}
-		sumprobn1 <- sum(pnorm(t1))
-		sumprobn1p <- sum(pnorm(t2))
-		sumnum <- sumnum + (sumprobn2 - sumprobn1 * sumprobn1p)
-		addden <- addden + (addprobn2 - sumprobn1 * sumprobn1p)
-	}
+  	for (jp in 1:nitem) {
+  		sumprobn2 <- 0
+  		addprobn2 <- 0
+  		t1 <- threshold[[j]]
+  		t2 <- threshold[[jp]]
+  		for (c in 1:length(t1)) {
+    		for (cp in 1:length(t2)) {
+    			sumprobn2 <- sumprobn2 + p2(t1[c], t2[cp], polyr[j, jp])
+    			addprobn2 <- addprobn2 + p2(t1[c], t2[cp], denom[j, jp])
+    		}
+  		}
+  		sumprobn1 <- sum(pnorm(t1))
+  		sumprobn1p <- sum(pnorm(t2))
+  		sumnum <- sumnum + (sumprobn2 - sumprobn1 * sumprobn1p)
+  		addden <- addden + (addprobn2 - sumprobn1 * sumprobn1p)
+  	}
 	}
 	reliab <- sumnum / addden
 	reliab
@@ -236,29 +224,31 @@ p2 <- function(t1, t2, r) {
 }
 
 
-polycorLavaan <- function(object) {
-	ngroups <- lavInspect(object, "ngroups")
-	coef <- lavInspect(object, "est")
-	targettaunames <- NULL
-	if (ngroups == 1L) {
-		targettaunames <- rownames(coef$tau)
-	} else {
-		targettaunames <- rownames(coef[[1]]$tau)
-	}
-	barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
-	varnames <- unique(apply(data.frame(targettaunames, barpos - 1), 1, function(x) substr(x[1], 1, x[2])))
-	script <- ""
-	for (i in 2:length(varnames)) {
-		temp <- paste0(varnames[1:(i - 1)], collapse = " + ")
-		temp <- paste0(varnames[i], "~~", temp, "\n")
-		script <- paste(script, temp)
-	}
-	newobject <- refit(script, object)
-	if (ngroups == 1L) {
-		return(lavInspect(newobject, "est")$theta)
-	}
-	lapply(lavInspect(newobject, "est"), "[[", "theta")
-}
+# polycorLavaan <- function(object) {
+# 	ngroups <- lavInspect(object, "ngroups")
+# 	coef <- lavInspect(object, "est")
+# 	targettaunames <- NULL
+# 	if (ngroups == 1L) {
+# 		targettaunames <- rownames(coef$tau)
+# 	} else {
+# 		targettaunames <- rownames(coef[[1]]$tau)
+# 	}
+# 	barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
+# 	varnames <- unique(apply(data.frame(targettaunames, barpos - 1), MARGIN = 1,
+# 	                         FUN = function(x) substr(x[1], 1, x[2])))
+# 	if (length(varnames))
+# 	script <- ""
+# 	for (i in 2:length(varnames)) {
+# 		temp <- paste0(varnames[1:(i - 1)], collapse = " + ")
+# 		temp <- paste0(varnames[i], "~~", temp, "\n")
+# 		script <- paste(script, temp)
+# 	}
+# 	newobject <- refit(script, object)
+# 	if (ngroups == 1L) {
+# 		return(lavInspect(newobject, "est")$theta)
+# 	}
+# 	lapply(lavInspect(newobject, "est"), "[[", "theta")
+# }
 
 getThreshold <- function(object) {
 	ngroups <- lavInspect(object, "ngroups")
@@ -338,6 +328,7 @@ calcMaximalReliaCat <- function(polyr, threshold, denom, nitem, varnames) {
 maximalRelia <- function(object) {
 	param <- lavInspect(object, "est")
 	ngroup <- lavInspect(object, "ngroups")
+	categorical <- length(lavNames(object, "ov.ord"))
 	name <- names(param)
 	if (ngroup == 1L) {
 		ly <- param[name == "lambda"]
@@ -353,22 +344,10 @@ maximalRelia <- function(object) {
   } else {
     S <- lapply(lavInspect(object, "sampstat"), function(x) x$cov)
   }
-	if (ngroup == 1) {
-		tau <- param[name = "tau"]
-	} else {
-		tau <- lapply(param, "[[", "tau")
-	}
-	categorical <- length(tau) > 0 && !is.null(tau[[1]])
 	threshold <- NULL
 	result <- list()
-	if (categorical) {
-		polycor <- polycorLavaan(object)
-		if (ngroup == 1L) polycor <- list(polycor)
-		S <- lapply(polycor, function(x) x[rownames(ly[[1]]), rownames(ly[[1]])])
-		threshold <- getThreshold(object) # change to lavInspect(object, "th")?
-		                                  ## No, it is a list per item, rather than a single vector
-		SigmaHat <- thetaImpliedTotalVar(object)
-	}
+	if (categorical) threshold <- getThreshold(object) # change to lavInspect(object, "th")?
+		                            ## No, it is a list per item, rather than a single vector
 	for (i in 1:ngroup) {
 		truevar <- ly[[i]] %*% ps[[i]] %*% t(ly[[i]])
 		varnames <- colnames(truevar)
