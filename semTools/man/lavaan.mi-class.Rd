@@ -26,7 +26,7 @@ See the \code{\link{runMI}} function for details. Wrapper functions include \cod
     \item{\code{vcovList}:}{See \code{\linkS4class{lavaanList}}.}
     \item{\code{testList}:}{See \code{\linkS4class{lavaanList}}.}
     Additional slots, not part of \code{lavaanList} class:
-    \item{\code{coefList}:}{List of output from \code{\link[lavaan]{lavInspect}(fit, "coef")} applied to each fitted model.}
+    \item{\code{coefList}:}{List of output from \code{\link[lavaan]{lavInspect}(fit, "est")} applied to each fitted model.}
 
     \item{\code{seed}:}{\code{integer} used to set the random number seed if \code{\link{runMI}} was used to impute missing data.}
     \item{\code{imputeCall}:}{\code{list}: the call used to impute the data (or empty if data were imputed before calling \code{\link{runMI}}).}

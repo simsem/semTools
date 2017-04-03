@@ -1,14 +1,49 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 February 2016
+### Last updated: 3 April 2017
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
-setClass("BootMiss", representation(time = "list", transData = "data.frame", bootDist = "vector", origChi = "numeric", df = "numeric", bootP="numeric"))
 
+## ----------------------------
+## "BootMiss" Class and Methods
+## ----------------------------
 
-#########################################
-## Define methods for class "BootMiss" ##
-#########################################
+#' Class For the Results of Bollen-Stine Bootstrap with Incomplete Data
+#'
+#' This class contains the results of Bollen-Stine bootstrap with missing data.
+#'
+#'
+#' @name BootMiss-class
+#' @aliases BootMiss-class show,BootMiss-method summary,BootMiss-method
+#' hist,BootMiss-method
+#' @docType class
+#' @section Objects from the Class: Objects can be created via the
+#' \code{\link{bsBootMiss}} function.
+#' @slot time A list containing 2 \code{difftime} objects (\code{transform}
+#'  and \code{fit}), indicating the time elapsed for data transformation and
+#'  for fitting the model to bootstrap data sets, respectively.
+#' @slot transData Transformed data
+#' @slot bootDist The vector of \eqn{chi^2} values from bootstrap data sets
+#'  fitted by the target model
+#' @slot origChi The \eqn{chi^2} value from the original data set
+#' @slot df The degree of freedom of the model
+#' @slot bootP The \emph{p} value comparing the original \eqn{chi^2} with the
+#'  bootstrap distribution
+#' @author Terrence D. Jorgensen (University of Amsterdam;
+#' \email{TJorgensen314@@gmail.com})
+#' @seealso \code{\link{bsBootMiss}}
+#' @examples
+#'
+#' # See the example from the bsBootMiss function
+#'
+setClass("BootMiss", representation(time = "list",
+                                    transData = "data.frame",
+                                    bootDist = "vector",
+                                    origChi = "numeric",
+                                    df = "numeric",
+                                    bootP = "numeric"))
 
+#' @rdname BootMiss-class
+#' @aliases show,BootMiss-method
 setMethod("show", "BootMiss",
 function(object) {
   cat("Chi-Squared = ", object@origChi, "\nDegrees of Freedom = ",
@@ -20,6 +55,8 @@ function(object) {
   invisible(object)
 })
 
+#' @rdname BootMiss-class
+#' @aliases summary,BootMiss-method
 setMethod("summary", "BootMiss",
 function(object) {
   cat("Time elapsed to transform the data:\n")
@@ -36,6 +73,19 @@ function(object) {
   invisible(object)
 })
 
+#' @rdname BootMiss-class
+#' @aliases hist,BootMiss-method
+#' @param object,x object of class \code{BootMiss}
+#' @param alpha alpha level used to draw confidence limits
+#' @param nd number of digits to display
+#' @param printLegent \code{logical}. If \code{TRUE} (default), a legend will
+#'  be printed with the histogram
+#' @param legendArgs \code{list} of arguments passed to the
+#'  \code{\link[graphics]{legend}} function.  The default argument is a list
+#'  placing the legend at the top-left of the figure.
+#' @return The \code{hist} method returns a list of \code{length == 2},
+#'  containing the arguments for the call to \code{hist} and the arguments
+#'  to the call for \code{legend}, respectively.
 setMethod("hist", "BootMiss",
 function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
          legendArgs = list(x = "topleft")) {
@@ -98,272 +148,130 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
   invisible(list(hist = histArgs, legend = legendArgs))
 })
 
-## Function to execute Transformation 1 on a single missing-data pattern
-trans1 <- function(MDpattern, rowMissPatt, dat, Sigma, Mu) {
-  myRows <- which(rowMissPatt == MDpattern)
-  X <- apply(dat[myRows, ], 2, scale, scale = FALSE)
-  observed <- !is.na(X[1, ])
-  Xreduced <- X[ , observed]
-  Mreduced <- as.numeric(Mu[observed])
-  SigmaChol <- chol(Sigma[observed, observed])
-  S <- t(Xreduced) %*% Xreduced / nrow(X)
-  Areduced <- t(SigmaChol) %*% t(solve(chol(S)))
-  Yreduced <- t(Areduced %*% t(Xreduced) + Mreduced)
-  Y <- replace(X, !is.na(X), Yreduced)
-  Y
-}
-
-## Function to execute Transformation 2 on a single group
-trans2 <- function(dat, Sigma, Mu, EMcov) {
-  ## Computing Function of A (eq. 12), whose root is desired
-  eq12 <- function(A) {
-    ga <- rep(0, pStar)
-    for (j in 1:J) {
-      Tj <- Mjs[[j]] %*% A %*% Hjs[[j]] %*% A %*% Mjs[[j]] - Mjs[[j]]
-      ga <- ga + Njs[j] * Dupinv %*% c(Tj) # same as vech(Tj)
-    }
-    ga
-  }
-
-  ## Computing Derivative of Function of A (eq. 13)
-  eq13 <- function(A) {
-    deriv12 <- matrix(0, nrow = pStar, ncol = pStar)
-    for (j in 1:J) {
-      Tj1 <- Mjs[[j]] %*% A %*% Hjs[[j]]
-      deriv12 <- deriv12 + 2*Njs[j]*Dupinv %*% kronecker(Tj1, Mjs[[j]]) %*% Dup
-    }
-    deriv12
-  }
-
-  ## get missing data patterns
-  R <- ifelse(is.na(dat), 1, 0)
-  rowMissPatt <- apply(R, 1, function(x) paste(x, collapse = ""))
-  MDpattern <- unique(rowMissPatt)
-  ## sample size within each MD pattern
-  Njs <- sapply(MDpattern, function(patt) sum(rowMissPatt == patt))
-  J <- length(MDpattern) # number of MD patterns
-  p <- ncol(dat) # number of variables in model
-  pStar <- p*(p + 1) / 2  # number of nonredundant covariance elements
-
-  ## create empty lists for each MD pattern
-  Xjs <- vector("list", J)
-  Hjs <- vector("list", J)
-  Mjs <- vector("list", J)
-
-  ## Create Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
-  Dup <- lavaan::lav_matrix_duplication(p)
-  Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
-
-  ## step through each MD pattern, populate Hjs and Mjs
-  for (j in 1:J) {
-    Xjs[[j]] <- apply(dat[rowMissPatt == MDpattern[j], ], 2, scale, scale = FALSE)
-    if (!is.matrix(Xjs[[j]])) Xjs[[j]] <- t(Xjs[[j]])
-    observed <- !is.na(Xjs[[j]][1, ])
-    Sj <- t(Xjs[[j]]) %*% Xjs[[j]] / Njs[j]
-    Hjs[[j]] <- replace(Sj, is.na(Sj), 0)
-    Mjs[[j]] <- replace(Sj, !is.na(Sj), solve(Sigma[observed, observed]))
-    Mjs[[j]] <- replace(Mjs[[j]], is.na(Mjs[[j]]), 0)
-  }
-
-  ## Compute starting Values for A
-  if (is.null(EMcov)) {
-    A <- diag(p)
-  } else {
-    EMeig <- eigen(EMcov)
-    EMrti <- EMeig$vectors %*% diag(1 / sqrt(EMeig$values)) %*% t(EMeig$vectors)
-    Sigeig <- eigen(Sigma)
-    Sigrt <- Sigeig$vectors %*% diag(sqrt(Sigeig$values)) %*% t(Sigeig$vectors)
-    B <- Sigrt %*% EMrti
-    A <- .5*(B + t(B))
-  }
-
-  ## Newton Algorithm for finding root (eq. 14)
-  crit <- .1
-  a <- c(A)
-  fA <- eq12(A)
-  while (crit > 1e-11) {
-    dvecF <- eq13(A)
-    a <- a - Dup %*% solve(dvecF) %*% fA
-    A <- matrix(a, ncol = p)
-    fA <- eq12(A)
-    crit <- max(abs(fA))
-  }
-
-  ## Transform dataset X to dataset Y
-  Yjs <- Xjs
-  for (j in 1:J) {
-    observed <- !is.na(Xjs[[j]][1, ])
-    XjReduced <- Xjs[[j]][ , observed, drop = FALSE]
-    Aj <- A[observed, observed, drop = FALSE]
-    Mj <- as.numeric(Mu[observed])
-    Yj <- t(Aj %*% t(XjReduced) + Mj)
-    Yjs[[j]] <- replace(Yjs[[j]], !is.na(Yjs[[j]]), Yj)
-  }
-  Y <- as.data.frame(do.call("rbind", Yjs))
-  colnames(Y) <- colnames(dat)
-  Y
-}
 
 
-## Function to execute Transformation 3 on a single group -- TRANSFORMATION DOES NOT RETURN CH-SQ = 0
-trans3 <- function(dat, Sigma, Mu, EMcov) {
-  # Computing Saturated Means as a Function of A (eq. B1 in Appendix B)
-  mut <- function(A) {
-    M <- matrix(0, ncol = 1, nrow = p)
-    for (j in 1:J) {
-      M <- M + Njs[[j]] * Mjs[[j]] %*% A %*% Ybarjs[[j]]
-    }
-    Mjtoti %*% M
-  }
+## --------------------
+## Constructor Function
+## --------------------
 
-  # Computing Function of A (eq. 18) whose root is desired
-  eq18 <- function(A) {
-    ga <- rep(0, pStar)
-    mutilda <- mut(A)
-    for (j in 1:J) {
-      Tj <- Mjs[[j]] %*% A %*% Hjs[[j]] %*% A %*% Mjs[[j]] - Mjs[[j]]
-      dif <- A %*% Ybarjs[[j]] - mutilda
-      middle <- dif %*% t(dif)
-      Tjnew <- Tj + Mjs[[j]] %*% middle %*% Mjs[[j]]
-      ga <- ga + Njs[j] * Dupinv %*% c(Tjnew)
-    }
-    ga
-  }
-
-  # Computing Derivative of Function eq. 18
-  deriv18 <- function(A) {
-    d18 <- matrix(0, nrow = pStar, ncol = pStar)
-    for (j in 1:J) {
-      Tj1 <- Mjs[[j]] %*% A %*% Hjs[[j]]
-      mutilda <- mut(A)
-      dif <- A %*% Ybarjs[[j]] - mutilda
-      Tj2 <- Mjs[[j]] %*% dif %*% t(Ybarjs[[j]])
-      Tj3 <- kronecker(Mjs[[j]] %*% dif, Mjs[[j]]) %*% Mjtoti %*% Tj3add
-      d18 <- d18 + 2*Njs[j]*Dupinv %*% ((kronecker((Tj1 + Tj2), Mjs[[j]])) - Tj3) %*% Dup
-    }
-    d18
-  }
-
-  ## get missing data patterns
-  R <- ifelse(is.na(dat), 1, 0)
-  rowMissPatt <- apply(R, 1, function(x) paste(x, collapse = ""))
-  MDpattern <- unique(rowMissPatt)
-  ## sample size within each MD pattern
-  Njs <- sapply(MDpattern, function(patt) sum(rowMissPatt == patt))
-  J <- length(MDpattern) # number of MD patterns
-  p <- ncol(dat) # number of variables in model
-  pStar <- p*(p + 1) / 2  # number of nonredundant covariance elements
-
-  ## create empty lists for each MD pattern
-  Xjs <- vector("list", J)
-  Ybarjs <- vector("list", J)
-  Hjs <- vector("list", J)
-  Mjs <- vector("list", J)
-  Mjtot <- matrix(0, ncol = p, nrow = p)
-  Tj3add <- matrix(0, nrow = p, ncol = p * p)
-
-  ## Create Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
-  Dup <- lavaan::duplicationMatrix(p)
-  Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
-
-  ## step through each MD pattern, populate Hjs and Mjs
-  for (j in 1:J) {
-    Xjs[[j]] <- apply(dat[rowMissPatt == MDpattern[j], ], 2, scale, scale = FALSE)
-    if (!is.matrix(Xjs[[j]])) Xjs[[j]] <- t(Xjs[[j]])
-    observed <- !is.na(Xjs[[j]][1, ])
-    pj <- p - sum(observed)
-    means <- colMeans(dat[rowMissPatt == MDpattern[j], ])
-    Ybarjs[[j]] <- replace(means, is.na(means), 0)
-    Sj <- t(Xjs[[j]]) %*% Xjs[[j]] / Njs[j]
-    Hjs[[j]] <- replace(Sj, is.na(Sj), 0)
-    Mjs[[j]] <- replace(Sj, !is.na(Sj), solve(Sigma[observed, observed]))
-    Mjs[[j]] <- replace(Mjs[[j]], is.na(Mjs[[j]]), 0)
-    Mjtot <- Mjtot + Njs[[j]] * Mjs[[j]]
-    Tj3add <- Tj3add + Njs[[j]] * kronecker(t(Ybarjs[[j]]), Mjs[[j]])
-  }
-  Mjtoti <- solve(Mjtot)
-
-  ## Compute starting Values for A
-  if (is.null(EMcov)) {
-    A <- diag(p)
-  } else {
-    EMeig <- eigen(EMcov)
-    EMrti <- EMeig$vectors %*% diag(1 / sqrt(EMeig$values)) %*% t(EMeig$vectors)
-    Sigeig <- eigen(Sigma)
-    Sigrt <- Sigeig$vectors %*% diag(sqrt(Sigeig$values)) %*% t(Sigeig$vectors)
-    B <- Sigrt %*% EMrti
-    A <- .5*(B + t(B))
-  }
-
-  ## Newton Algorithm for finding root (eq. 14)
-  crit <- .1
-  a <- c(A)
-  fA <- eq18(A)
-  while (crit > 1e-11) {
-    dvecF <- deriv18(A)
-    a <- a - Dup %*% solve(dvecF) %*% fA
-    A <- matrix(a, ncol = p)
-    fA <- eq18(A)
-    crit <- max(abs(fA))
-  }
-
-  ## Transform dataset X to dataset Y (Z in the paper, eqs. 15-16)
-  Yjs <- Xjs
-  for (j in 1:J) {
-    observed <- !is.na(Xjs[[j]][1, ])
-    XjReduced <- Xjs[[j]][ , observed, drop = FALSE]
-    Aj <- A[observed, observed, drop = FALSE]
-    Mj <- as.numeric((Mu - mut(A))[observed])
-    Yj <- t(Aj %*% t(XjReduced) + Mj)
-    Yjs[[j]] <- replace(Yjs[[j]], !is.na(Yjs[[j]]), Yj)
-  }
-  Y <- as.data.frame(do.call("rbind", Yjs))
-  colnames(Y) <- colnames(dat)
-  Y
-}
-
-
-## Get a single bootstrapped sample from the transformed data.  If there are
-## multiple groups, bootstrapping occurs independently within each group, and
-## a single data frame is returned.  A new column is added to indicate group
-## membership, which will be ignored in a single-group analysis.
-getBootSample <- function(groupDat, group, group.label) {
-  bootSamp <- list()
-  for (g in seq_along(groupDat)) {
-    dat <- groupDat[[g]]
-    dat[ , group] <- group.label[g]
-    bootSamp[[g]] <- dat[sample(1:nrow(dat), nrow(dat), replace = TRUE), ]
-  }
-  do.call("rbind", bootSamp)
-}
-
-## fit the model to a single bootstrapped sample and return chi-squared
-fitBootSample <- function(dat, args, suppress) {
-  args$data <- dat
-  lavaanlavaan <- function(...) { lavaan::lavaan(...) }
-  if (suppress) {
-    fit <- suppressWarnings(do.call(lavaanlavaan, args))
-  } else {
-    fit <- do.call(lavaanlavaan, args)
-  }
-  if (!exists("fit")) return(c(chisq = NA))
-  if (lavInspect(fit, "converged")) {
-    chisq <- lavInspect(fit, "fit")[c("chisq", "chisq.scaled")]
-  } else {
-    chisq <- NA
-  }
-  if (is.na(chisq[2])) return(chisq[1]) else return(chisq[2])
-}
-
-
-
-## overall function to apply any of the above functions
+#' Bollen-Stine Bootstrap with the Existence of Missing Data
+#'
+#' Implement the Bollen and Stine's (1992) Bootstrap when missing observations
+#' exist. The implemented method is proposed by Savalei and Yuan (2009). This
+#' can be used in two ways. The first and easiest option is to fit the model to
+#' incomplete data in \code{lavaan} using the FIML estimator, then pass that
+#' \code{lavaan} object to \code{bsBootMiss}.
+#'
+#' The second is designed for users of other software packages (e.g., LISREL,
+#' EQS, Amos, or Mplus). Users can import their data, \eqn{\chi^2} value, and
+#' model-implied moments from another package, and they have the option of
+#' saving (or writing to a file) either the transformed data or bootstrapped
+#' samples of that data, which can be analyzed in other programs. In order to
+#' analyze the bootstrapped samples and return a \emph{p} value, users of other
+#' programs must still specify their model using lavaan syntax.
+#'
+#'
+#' @param x A target \code{lavaan} object used in the Bollen-Stine bootstrap
+#' @param transformation The transformation methods in Savalei and Yuan (2009).
+#' There are three methods in the article, but only the first two are currently
+#' implemented here.  Use \code{transformation = 1} when there are few missing
+#' data patterns, each of which has a large size, such as in a
+#' planned-missing-data design.  Use \code{transformation = 2} when there are
+#' more missing data patterns. The currently unavailable
+#' \code{transformation = 3} would be used when several missing data patterns
+#' have n = 1.
+#' @param nBoot The number of bootstrap samples.
+#' @param model Optional. The target model if \code{x} is not provided.
+#' @param rawData Optional. The target raw data set if \code{x} is not
+#'  provided.
+#' @param Sigma Optional. The model-implied covariance matrix if \code{x} is
+#'  not provided.
+#' @param Mu Optional. The model-implied mean vector if \code{x} is not
+#'  provided.
+#' @param group Optional character string specifying the name of the grouping
+#'  variable in \code{rawData} if \code{x} is not provided.
+#' @param ChiSquared Optional. The model's \eqn{\chi^2} test statistic if
+#'  \code{x} is not provided.
+#' @param EMcov Optional, if \code{x} is not provided. The EM (or Two-Stage ML)
+#' estimated covariance matrix used to speed up Transformation 2 algorithm.
+#' @param transDataOnly Logical. If \code{TRUE}, the result will provide the
+#' transformed data only.
+#' @param writeTransData Logical. If \code{TRUE}, the transformed data set is
+#' written to a text file, \code{transDataOnly} is set to \code{TRUE}, and the
+#' transformed data is returned invisibly.
+#' @param bootSamplesOnly Logical. If \code{TRUE}, the result will provide
+#' bootstrap data sets only.
+#' @param writeBootData Logical. If \code{TRUE}, the stacked bootstrap data
+#' sets are written to a text file, \code{bootSamplesOnly} is set to
+#' \code{TRUE}, and the list of bootstrap data sets are returned invisibly.
+#' @param writeArgs Optional \code{list}. If \code{writeBootData = TRUE} or
+#' \code{writeBootData = TRUE}, user can pass arguments to the
+#' \code{\link[utils]{write.table}} function as a list.  Some default values
+#' are provided: \code{file} = "bootstrappedSamples.dat", \code{row.names} =
+#' \code{FALSE}, and \code{na} = "-999", but the user can override all of these
+#' by providing other values for those arguments in the \code{writeArgs} list.
+#' @param seed The seed number used in randomly drawing bootstrap samples.
+#' @param suppressWarn Logical. If \code{TRUE}, warnings from \code{lavaan}
+#' function will be suppressed when fitting the model to each bootstrap sample.
+#' @param showProgress Logical. Indicating whether to display a progress bar
+#' while fitting models to bootstrap samples.
+#' @param \dots The additional arguments in the \code{\link[lavaan]{lavaan}}
+#' function. See also \code{\link[lavaan]{lavOptions}}
+#' @return As a default, this function returns a \code{\linkS4class{BootMiss}}
+#' object containing the results of the bootstrap samples. Use \code{show},
+#' \code{summary}, or \code{hist} to examine the results. Optionally, the
+#' transformed data set is returned if \code{transDataOnly = TRUE}. Optionally,
+#' the bootstrap data sets are returned if \code{bootSamplesOnly = TRUE}.
+#' @author Terrence D. Jorgensen (University of Amsterdam;
+#' \email{TJorgensen314@@gmail.com})
+#'
+#' Syntax for transformations borrowed from http://www2.psych.ubc.ca/~vsavalei/
+#' @seealso \code{\linkS4class{BootMiss}}
+#' @references
+#'
+#' Bollen, K. A., & Stine, R. A. (1992). Bootstrapping goodness-of-fit measures
+#' in structural equation models. \emph{Sociological Methods &
+#' Research, 21}(2), 205-229. doi:10.1177/0049124192021002004
+#'
+#' Savalei, V., & Yuan, K.-H. (2009). On the model-based bootstrap with missing
+#' data: Obtaining a p-value for a test of exact fit. \emph{Multivariate
+#' Behavioral Research, 44}(6), 741-763. doi:10.1080/00273170903333590
+#' @examples
+#'
+#' \dontrun{
+#' dat1 <- HolzingerSwineford1939
+#' dat1$x5 <- ifelse(dat1$x1 <= quantile(dat1$x1, .3), NA, dat1$x5)
+#' dat1$x9 <- ifelse(is.na(dat1$x5), NA, dat1$x9)
+#'
+#' targetModel <- "
+#' visual  =~ x1 + x2 + x3
+#' textual =~ x4 + x5 + x6
+#' speed   =~ x7 + x8 + x9
+#' "
+#' targetFit <- sem(targetModel, dat1, meanstructure = TRUE, std.lv = TRUE,
+#'                  missing = "fiml", group = "school")
+#' summary(targetFit, fit = TRUE, standardized = TRUE)
+#'
+#' # The number of bootstrap samples should be much higher.
+#' temp <- bsBootMiss(targetFit, transformation = 1, nBoot = 10, seed = 31415)
+#'
+#' temp
+#' summary(temp)
+#' hist(temp)
+#' hist(temp, printLegend = FALSE) # suppress the legend
+#' ## user can specify alpha level (default: alpha = 0.05), and the number of
+#' ## digits to display (default: nd = 2).  Pass other arguments to hist(...),
+#' ## or a list of arguments to legend() via "legendArgs"
+#' hist(temp, alpha = .01, nd = 3, xlab = "something else", breaks = 25,
+#'      legendArgs = list("bottomleft", box.lty = 2))
+#' }
+#'
 bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
-                             Sigma, Mu, group, ChiSquared, EMcov,
-                             writeTransData = FALSE, transDataOnly = FALSE,
-                             writeBootData = FALSE, bootSamplesOnly = FALSE,
-                             writeArgs, seed = NULL, suppressWarn = TRUE,
-                             showProgress = TRUE, ...) {
+                       Sigma, Mu, group, ChiSquared, EMcov,
+                       writeTransData = FALSE, transDataOnly = FALSE,
+                       writeBootData = FALSE, bootSamplesOnly = FALSE,
+                       writeArgs, seed = NULL, suppressWarn = TRUE,
+                       showProgress = TRUE, ...) {
   if(writeTransData) transDataOnly <- TRUE
   if(writeBootData) bootSamplesOnly <- TRUE
 
@@ -628,5 +536,267 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   finalResult <- new("BootMiss", time = list(transform = output$timeTrans, fit = output$timeFit), transData = output$Transformed.Data, bootDist = output$Bootstrapped.Distribution, origChi = output$Original.ChiSquared, df = output$Degrees.Freedom, bootP = output$Bootstrapped.p.Value)
 
   finalResult
+}
+
+
+## ----------------
+## Hidden Functions
+## ----------------
+
+## Function to execute Transformation 1 on a single missing-data pattern
+trans1 <- function(MDpattern, rowMissPatt, dat, Sigma, Mu) {
+  myRows <- which(rowMissPatt == MDpattern)
+  X <- apply(dat[myRows, ], 2, scale, scale = FALSE)
+  observed <- !is.na(X[1, ])
+  Xreduced <- X[ , observed]
+  Mreduced <- as.numeric(Mu[observed])
+  SigmaChol <- chol(Sigma[observed, observed])
+  S <- t(Xreduced) %*% Xreduced / nrow(X)
+  Areduced <- t(SigmaChol) %*% t(solve(chol(S)))
+  Yreduced <- t(Areduced %*% t(Xreduced) + Mreduced)
+  Y <- replace(X, !is.na(X), Yreduced)
+  Y
+}
+
+## Function to execute Transformation 2 on a single group
+trans2 <- function(dat, Sigma, Mu, EMcov) {
+  ## Computing Function of A (eq. 12), whose root is desired
+  eq12 <- function(A) {
+    ga <- rep(0, pStar)
+    for (j in 1:J) {
+      Tj <- Mjs[[j]] %*% A %*% Hjs[[j]] %*% A %*% Mjs[[j]] - Mjs[[j]]
+      ga <- ga + Njs[j] * Dupinv %*% c(Tj) # same as vech(Tj)
+    }
+    ga
+  }
+
+  ## Computing Derivative of Function of A (eq. 13)
+  eq13 <- function(A) {
+    deriv12 <- matrix(0, nrow = pStar, ncol = pStar)
+    for (j in 1:J) {
+      Tj1 <- Mjs[[j]] %*% A %*% Hjs[[j]]
+      deriv12 <- deriv12 + 2*Njs[j]*Dupinv %*% kronecker(Tj1, Mjs[[j]]) %*% Dup
+    }
+    deriv12
+  }
+
+  ## get missing data patterns
+  R <- ifelse(is.na(dat), 1, 0)
+  rowMissPatt <- apply(R, 1, function(x) paste(x, collapse = ""))
+  MDpattern <- unique(rowMissPatt)
+  ## sample size within each MD pattern
+  Njs <- sapply(MDpattern, function(patt) sum(rowMissPatt == patt))
+  J <- length(MDpattern) # number of MD patterns
+  p <- ncol(dat) # number of variables in model
+  pStar <- p*(p + 1) / 2  # number of nonredundant covariance elements
+
+  ## create empty lists for each MD pattern
+  Xjs <- vector("list", J)
+  Hjs <- vector("list", J)
+  Mjs <- vector("list", J)
+
+  ## Create Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
+  Dup <- lavaan::lav_matrix_duplication(p)
+  Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
+
+  ## step through each MD pattern, populate Hjs and Mjs
+  for (j in 1:J) {
+    Xjs[[j]] <- apply(dat[rowMissPatt == MDpattern[j], ], 2, scale, scale = FALSE)
+    if (!is.matrix(Xjs[[j]])) Xjs[[j]] <- t(Xjs[[j]])
+    observed <- !is.na(Xjs[[j]][1, ])
+    Sj <- t(Xjs[[j]]) %*% Xjs[[j]] / Njs[j]
+    Hjs[[j]] <- replace(Sj, is.na(Sj), 0)
+    Mjs[[j]] <- replace(Sj, !is.na(Sj), solve(Sigma[observed, observed]))
+    Mjs[[j]] <- replace(Mjs[[j]], is.na(Mjs[[j]]), 0)
+  }
+
+  ## Compute starting Values for A
+  if (is.null(EMcov)) {
+    A <- diag(p)
+  } else {
+    EMeig <- eigen(EMcov)
+    EMrti <- EMeig$vectors %*% diag(1 / sqrt(EMeig$values)) %*% t(EMeig$vectors)
+    Sigeig <- eigen(Sigma)
+    Sigrt <- Sigeig$vectors %*% diag(sqrt(Sigeig$values)) %*% t(Sigeig$vectors)
+    B <- Sigrt %*% EMrti
+    A <- .5*(B + t(B))
+  }
+
+  ## Newton Algorithm for finding root (eq. 14)
+  crit <- .1
+  a <- c(A)
+  fA <- eq12(A)
+  while (crit > 1e-11) {
+    dvecF <- eq13(A)
+    a <- a - Dup %*% solve(dvecF) %*% fA
+    A <- matrix(a, ncol = p)
+    fA <- eq12(A)
+    crit <- max(abs(fA))
+  }
+
+  ## Transform dataset X to dataset Y
+  Yjs <- Xjs
+  for (j in 1:J) {
+    observed <- !is.na(Xjs[[j]][1, ])
+    XjReduced <- Xjs[[j]][ , observed, drop = FALSE]
+    Aj <- A[observed, observed, drop = FALSE]
+    Mj <- as.numeric(Mu[observed])
+    Yj <- t(Aj %*% t(XjReduced) + Mj)
+    Yjs[[j]] <- replace(Yjs[[j]], !is.na(Yjs[[j]]), Yj)
+  }
+  Y <- as.data.frame(do.call("rbind", Yjs))
+  colnames(Y) <- colnames(dat)
+  Y
+}
+
+
+## Function to execute Transformation 3 on a single group -- TRANSFORMATION DOES NOT RETURN CH-SQ = 0
+trans3 <- function(dat, Sigma, Mu, EMcov) {
+  # Computing Saturated Means as a Function of A (eq. B1 in Appendix B)
+  mut <- function(A) {
+    M <- matrix(0, ncol = 1, nrow = p)
+    for (j in 1:J) {
+      M <- M + Njs[[j]] * Mjs[[j]] %*% A %*% Ybarjs[[j]]
+    }
+    Mjtoti %*% M
+  }
+
+  # Computing Function of A (eq. 18) whose root is desired
+  eq18 <- function(A) {
+    ga <- rep(0, pStar)
+    mutilda <- mut(A)
+    for (j in 1:J) {
+      Tj <- Mjs[[j]] %*% A %*% Hjs[[j]] %*% A %*% Mjs[[j]] - Mjs[[j]]
+      dif <- A %*% Ybarjs[[j]] - mutilda
+      middle <- dif %*% t(dif)
+      Tjnew <- Tj + Mjs[[j]] %*% middle %*% Mjs[[j]]
+      ga <- ga + Njs[j] * Dupinv %*% c(Tjnew)
+    }
+    ga
+  }
+
+  # Computing Derivative of Function eq. 18
+  deriv18 <- function(A) {
+    d18 <- matrix(0, nrow = pStar, ncol = pStar)
+    for (j in 1:J) {
+      Tj1 <- Mjs[[j]] %*% A %*% Hjs[[j]]
+      mutilda <- mut(A)
+      dif <- A %*% Ybarjs[[j]] - mutilda
+      Tj2 <- Mjs[[j]] %*% dif %*% t(Ybarjs[[j]])
+      Tj3 <- kronecker(Mjs[[j]] %*% dif, Mjs[[j]]) %*% Mjtoti %*% Tj3add
+      d18 <- d18 + 2*Njs[j]*Dupinv %*% ((kronecker((Tj1 + Tj2), Mjs[[j]])) - Tj3) %*% Dup
+    }
+    d18
+  }
+
+  ## get missing data patterns
+  R <- ifelse(is.na(dat), 1, 0)
+  rowMissPatt <- apply(R, 1, function(x) paste(x, collapse = ""))
+  MDpattern <- unique(rowMissPatt)
+  ## sample size within each MD pattern
+  Njs <- sapply(MDpattern, function(patt) sum(rowMissPatt == patt))
+  J <- length(MDpattern) # number of MD patterns
+  p <- ncol(dat) # number of variables in model
+  pStar <- p*(p + 1) / 2  # number of nonredundant covariance elements
+
+  ## create empty lists for each MD pattern
+  Xjs <- vector("list", J)
+  Ybarjs <- vector("list", J)
+  Hjs <- vector("list", J)
+  Mjs <- vector("list", J)
+  Mjtot <- matrix(0, ncol = p, nrow = p)
+  Tj3add <- matrix(0, nrow = p, ncol = p * p)
+
+  ## Create Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
+  Dup <- lavaan::duplicationMatrix(p)
+  Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
+
+  ## step through each MD pattern, populate Hjs and Mjs
+  for (j in 1:J) {
+    Xjs[[j]] <- apply(dat[rowMissPatt == MDpattern[j], ], 2, scale, scale = FALSE)
+    if (!is.matrix(Xjs[[j]])) Xjs[[j]] <- t(Xjs[[j]])
+    observed <- !is.na(Xjs[[j]][1, ])
+    pj <- p - sum(observed)
+    means <- colMeans(dat[rowMissPatt == MDpattern[j], ])
+    Ybarjs[[j]] <- replace(means, is.na(means), 0)
+    Sj <- t(Xjs[[j]]) %*% Xjs[[j]] / Njs[j]
+    Hjs[[j]] <- replace(Sj, is.na(Sj), 0)
+    Mjs[[j]] <- replace(Sj, !is.na(Sj), solve(Sigma[observed, observed]))
+    Mjs[[j]] <- replace(Mjs[[j]], is.na(Mjs[[j]]), 0)
+    Mjtot <- Mjtot + Njs[[j]] * Mjs[[j]]
+    Tj3add <- Tj3add + Njs[[j]] * kronecker(t(Ybarjs[[j]]), Mjs[[j]])
+  }
+  Mjtoti <- solve(Mjtot)
+
+  ## Compute starting Values for A
+  if (is.null(EMcov)) {
+    A <- diag(p)
+  } else {
+    EMeig <- eigen(EMcov)
+    EMrti <- EMeig$vectors %*% diag(1 / sqrt(EMeig$values)) %*% t(EMeig$vectors)
+    Sigeig <- eigen(Sigma)
+    Sigrt <- Sigeig$vectors %*% diag(sqrt(Sigeig$values)) %*% t(Sigeig$vectors)
+    B <- Sigrt %*% EMrti
+    A <- .5*(B + t(B))
+  }
+
+  ## Newton Algorithm for finding root (eq. 14)
+  crit <- .1
+  a <- c(A)
+  fA <- eq18(A)
+  while (crit > 1e-11) {
+    dvecF <- deriv18(A)
+    a <- a - Dup %*% solve(dvecF) %*% fA
+    A <- matrix(a, ncol = p)
+    fA <- eq18(A)
+    crit <- max(abs(fA))
+  }
+
+  ## Transform dataset X to dataset Y (Z in the paper, eqs. 15-16)
+  Yjs <- Xjs
+  for (j in 1:J) {
+    observed <- !is.na(Xjs[[j]][1, ])
+    XjReduced <- Xjs[[j]][ , observed, drop = FALSE]
+    Aj <- A[observed, observed, drop = FALSE]
+    Mj <- as.numeric((Mu - mut(A))[observed])
+    Yj <- t(Aj %*% t(XjReduced) + Mj)
+    Yjs[[j]] <- replace(Yjs[[j]], !is.na(Yjs[[j]]), Yj)
+  }
+  Y <- as.data.frame(do.call("rbind", Yjs))
+  colnames(Y) <- colnames(dat)
+  Y
+}
+
+
+## Get a single bootstrapped sample from the transformed data.  If there are
+## multiple groups, bootstrapping occurs independently within each group, and
+## a single data frame is returned.  A new column is added to indicate group
+## membership, which will be ignored in a single-group analysis.
+getBootSample <- function(groupDat, group, group.label) {
+  bootSamp <- list()
+  for (g in seq_along(groupDat)) {
+    dat <- groupDat[[g]]
+    dat[ , group] <- group.label[g]
+    bootSamp[[g]] <- dat[sample(1:nrow(dat), nrow(dat), replace = TRUE), ]
+  }
+  do.call("rbind", bootSamp)
+}
+
+## fit the model to a single bootstrapped sample and return chi-squared
+fitBootSample <- function(dat, args, suppress) {
+  args$data <- dat
+  lavaanlavaan <- function(...) { lavaan::lavaan(...) }
+  if (suppress) {
+    fit <- suppressWarnings(do.call(lavaanlavaan, args))
+  } else {
+    fit <- do.call(lavaanlavaan, args)
+  }
+  if (!exists("fit")) return(c(chisq = NA))
+  if (lavInspect(fit, "converged")) {
+    chisq <- lavInspect(fit, "fit")[c("chisq", "chisq.scaled")]
+  } else {
+    chisq <- NA
+  }
+  if (is.na(chisq[2])) return(chisq[1]) else return(chisq[2])
 }
 

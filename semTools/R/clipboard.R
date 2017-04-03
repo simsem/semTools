@@ -1,10 +1,84 @@
-### Title: Copy or save each aspect of the lavaan object into a clipboard or a file
-### Author: Sunthud Pornprasertmanit
-### Last updated: 14 October 2016
-### Description: Copy or print each aspect of the lavaan object into a clipboard or a file
+### Sunthud Pornprasertmanit
+### Last updated: 31 March 2017
+### Copy or save each aspect of the lavaan object into a clipboard or a file
 
-# Clipboard: copy each aspect of the lavaan object into a clipboard; this
-# function will be compatible with lavInspect
+
+#' Copy or save the result of \code{lavaan} or \code{FitDiff} objects into a
+#' clipboard or a file
+#'
+#' Copy or save the result of \code{lavaan} or \code{\linkS4class{FitDiff}}
+#' object into a clipboard or a file. From the clipboard, users may paste the
+#' result into the Microsoft Excel or spreadsheet application to create a table
+#' of the output.
+#'
+#'
+#' @aliases clipboard saveFile
+#' @param object The \code{lavaan} or \code{\linkS4class{FitDiff}} object
+#' @param what The attributes of the \code{lavaan} object to be copied in the
+#' clipboard. \code{"summary"} is to copy the screen provided from the
+#' \code{summary} function. \code{"mifit"} is to copy the result from the
+#' \code{\link{miPowerFit}} function. Other attributes listed in the
+#' \code{inspect} method in the \link[lavaan]{lavaan-class} could also be used,
+#' such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and so on.
+#' For the The \code{\linkS4class{FitDiff}} object, this argument is not active
+#' yet.
+#' @param file A file name used for saving the result
+#' @param tableFormat If \code{TRUE}, save the result in the table format using
+#' tabs for seperation. Otherwise, save the result as the output screen printed
+#' in the R console.
+#' @param \dots Additional argument listed in the \code{\link{miPowerFit}}
+#' function (for \code{lavaan} object only).
+#' @return The resulting output will be saved into a clipboard or a file. If
+#' using the \code{clipboard} function, users may paste it in the other
+#' applications.
+#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#' @examples
+#'
+#' \dontrun{
+#' library(lavaan)
+#' HW.model <- ' visual  =~ x1 + c1*x2 + x3
+#'               textual =~ x4 + c1*x5 + x6
+#'                speed   =~ x7 + x8 + x9 '
+#'
+#' fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
+#'
+#' # Copy the summary of the lavaan object
+#' clipboard(fit)
+#'
+#' # Copy the modification indices and the model fit from the miPowerFit function
+#' clipboard(fit, "mifit")
+#'
+#' # Copy the parameter estimates
+#' clipboard(fit, "coef")
+#'
+#' # Copy the standard errors
+#' clipboard(fit, "se")
+#'
+#' # Copy the sample statistics
+#' clipboard(fit, "samp")
+#'
+#' # Copy the fit measures
+#' clipboard(fit, "fit")
+#'
+#' # Save the summary of the lavaan object
+#' saveFile(fit, "out.txt")
+#'
+#' # Save the modification indices and the model fit from the miPowerFit function
+#' saveFile(fit, "out.txt", "mifit")
+#'
+#' # Save the parameter estimates
+#' saveFile(fit, "out.txt", "coef")
+#'
+#' # Save the standard errors
+#' saveFile(fit, "out.txt", "se")
+#'
+#' # Save the sample statistics
+#' saveFile(fit, "out.txt", "samp")
+#'
+#' # Save the fit measures
+#' saveFile(fit, "out.txt", "fit")
+#' }
+#'
 clipboard <- function(object, what = "summary", ...) {
 	if (.Platform$OS.type == "windows") {
 		saveFile(object, file="clipboard-128", what=what, tableFormat=TRUE, ...)
@@ -22,8 +96,7 @@ clipboard <- function(object, what = "summary", ...) {
 	}
 }
 
-# saveFile: save each aspect of the lavaan object into a file; this function
-# will be compatible with lavInspect
+#' @rdname clipboard
 saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 	# Check whether the object is in the lavaan class
 	if (is(object, "lavaan")) {
@@ -34,6 +107,12 @@ saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 		stop("The object must be in the `lavaan' output or the output from the compareFit function.")
 	}
 }
+
+
+
+## ----------------
+## Hidden functions
+## ----------------
 
 saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 	if (length(what) > 1) {

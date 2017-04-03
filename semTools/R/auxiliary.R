@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 February 2017
+### Last updated: 31 March 2017
 ### new auxiliary function does NOT create a lavaanStar-class instance
 
 #' Implement Saturated Correlates with FIML
@@ -80,6 +80,7 @@
 #' ## the internally stored baseline model
 #' fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
 #'             baseline.model = fitaux2@external$baseline.model)
+#'
 
 
 auxiliary <- function(model, data, aux, fun, ...) {
