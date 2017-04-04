@@ -1,178 +1,158 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 March 2017
+### Last updated: 4 April 2017
 ### runMI creates lavaan.mi instead of lavaanStar,
 ### extending lavaanList class instead of lavaan class
 
-cfa.mi <- function(model, data, ...,
-                   m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
-  runMI(model = model, data = data, fun = "cfa", ...,
-        m = m, miArgs = miArgs, miPackage = miPackage, seed = seed)
-}
-
-sem.mi <- function(model, data, ...,
-                   m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
-  runMI(model = model, data = data, fun = "sem", ...,
-        m = m, miArgs = miArgs, miPackage = miPackage, seed = seed)
-}
-
-growth.mi <- function(model, data, ...,
-                      m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
-  runMI(model = model, data = data, fun = "growth", ...,
-        m = m, miArgs = miArgs, miPackage = miPackage, seed = seed)
-}
-
-lavaan.mi <- function(model, data, ...,
-                      m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
-  runMI(model = model, data = data, fun = "lavaan", ...,
-        m = m, miArgs = miArgs, miPackage = miPackage, seed = seed)
-}
-
-runMI <- function(model, data, fun = "lavaan", ...,
-                  m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
-  dots <- list(...)
-  if (!is.null(dots$fixed.x)) {
-    if (dots$fixed.x) warning('fixed.x set to FALSE')
-  }
-  if (!is.null(dots$conditional.x)) {
-    if (dots$conditional.x) warning('conditional.x set to FALSE')
-  }
-  dots$fixed.x <- dots$conditional.x <- FALSE
-
-  seed <- as.integer(seed[1])
-  ## Create (or acknowledge) list of imputed data sets
-  imputedData <- NULL
-  if (is.data.frame(data)) {
-    if (miPackage[1] == "Amelia") {
-      requireNamespace("Amelia")
-      if (!"package:Amelia" %in% search()) attachNamespace("Amelia")
-      imputeCall <- c(list(Amelia::amelia, x = data, m = m, p2s = 0), miArgs)
-      set.seed(seed)
-      imputedData <- unclass(eval(as.call(imputeCall))$imputations)
-    } else if (miPackage[1] == "mice") {
-      requireNamespace("mice")
-      if (!"package:mice" %in% search()) attachNamespace("mice")
-      imputeCall <- c(list(mice::mice, data = data, m = m, diagnostics = FALSE,
-                         printFlag = FALSE), miArgs)
-      set.seed(seed)
-      miceOut <- eval(as.call(imputeCall))
-      imputedData <- list()
-      for (i in 1:m) {
-        imputedData[[i]] <- mice::complete(x = miceOut, action = i, include = FALSE)
-      }
-    } else stop("Currently runMI only supports imputation by Amelia or mice")
-  } else if (is.list(data)) {
-    seed <- integer(length = 0)
-    imputeCall <- list()
-    imputedData <- data
-    m <- length(data)
-    class(imputedData) <- "list" # override inheritance (e.g., "mi" if Amelia)
-  } else if (is(data, "lavaan.mi")) {
-    seed <- data@seed
-    imputeCall <- data@imputeCall
-    imputedData <- data@DataList
-    m <- length(imputedData)
-  } else stop("data is not a valid input type: a partially observed data.frame,",
-              " a list of imputed data.frames, or previous lavaan.mi object")
-
-  ## Function to get custom output for lavaan.mi object
-  getOutput <- function(obj) {
-    converged <- lavaan::lavInspect(obj, "converged")
-    if (converged) {
-      se <- lavaan::parTable(obj)$se
-      se.test <- all(!is.na(se)) & all(se >= 0) & any(se != 0)
-      if (lavaan::lavInspect(obj, "ngroups") == 1L) {
-        Heywood.lv <- det(lavaan::lavInspect(obj, "cov.lv")) <= 0
-        Heywood.ov <- det(lavaan::lavInspect(obj, "theta")) <= 0
-      } else {
-        Heywood.lv <- !all(sapply(lavaan::lavInspect(obj, "cov.lv"), det) > 0)
-        Heywood.ov <- !all(sapply(lavaan::lavInspect(obj, "theta"), det) > 0)
-      }
-    } else {
-      se.test <- Heywood.lv <- Heywood.ov <- NA
-    }
-    list(sampstat = lavaan::lavInspect(obj, "sampstat"),
-         coefMats = lavaan::lavInspect(obj, "est"),
-         GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all
-         converged = converged, SE = se.test,
-         Heywood.lv = Heywood.lv, Heywood.ov = Heywood.ov)
-  }
-  ## FIXME: in case of user-supplied FUN for lavaanList, combine with getOutput
-
-  ## fit model using lavaanList
-  lavListCall <- list(lavaan::lavaanList, model = model, dataList = imputedData,
-                      cmd = fun)
-  lavListCall <- c(lavListCall, dots)
-  lavListCall$store.slots <- c("partable","vcov","test")
-  lavListCall$FUN <- if (is.null(dots$FUN)) getOutput else function(obj) {
-    temp1 <- getOutput(obj)
-    temp2 <- dots$FUN(obj)
-    if (!is.list(temp2)) temp2 <- list(userFUN1 = temp2)
-    if (is.null(names(temp2))) names(temp2) <- paste0("userFUN", 1:length(temp2))
-    duplicatedNames <- which(sapply(names(temp2), function(x) {
-      x %in% c("sampstat","coefMats","converged",
-               "SE","Heywood.lv","Heywood.ov","GLIST")
-    }))
-    for (i in duplicatedNames) names(temp2)[i] <- paste0("userFUN", i)
-    c(temp1, temp2)
-  }
-  fit <- eval(as.call(lavListCall))
-  ## Store custom @DataList and @SampleStatsList
-  fit@SampleStatsList <- lapply(fit@funList, "[[", i = "sampstat")
-  fit@DataList <- imputedData
-  ## assign class and add new slots
-  fit <- as(fit, "lavaan.mi")
-  fit@coefList <- lapply(fit@funList, "[[", i = "coefMats")
-  fit@seed <- seed
-  fit@imputeCall <- imputeCall
-  convList <- lapply(fit@funList, "[", i = c("converged","SE",
-                                             "Heywood.lv","Heywood.ov"))
-  nonConv <- which(sapply(convList, is.null))
-  if (length(nonConv)) for (i in nonConv) {
-    convList[[i]] <- list(converged = FALSE, SE = NA, Heywood.lv = NA, Heywood.ov = NA)
-  }
-
-  fit@convergence <- lapply(convList, function(x) do.call(c, x))
-  conv <- which(sapply(fit@convergence, "[", i = "converged"))
-  if (length(conv)) {
-    firstConv <- conv[1]
-    fit@GLIST <- list()
-    ## loop over GLIST elements
-    for (mat in seq_along(fit@funList[[firstConv]][["GLIST"]])) {
-      matList <- lapply(fit@funList[conv], function(x) x$GLIST[[mat]])
-      fit@GLIST[[mat]] <- Reduce("+", matList) / length(matList)
-    }
-    names(fit@GLIST) <- names(fit@funList[[firstConv]][["GLIST"]])
-  } else {
-    fit@GLIST <- list()
-    warning('The model did not converge for any imputed data sets.')
-  }
-
-  ## keep any remaining funList slots (if allowing users to supply custom FUN)
-  funNames <- names(fit@funList[[1]])
-  keepIndex <- which(!sapply(funNames, function(x) {
-    x %in% c("sampstat","coefMats","converged",
-             "SE","Heywood.lv","Heywood.ov","GLIST")
-  }))
-  if (length(keepIndex)) {
-    fit@funList <- lapply(fit@funList, "[", i = keepIndex)
-    if (length(keepIndex) > 1L) {
-      keepNames <- funNames[keepIndex]
-      noNames <- which(keepNames == "")
-      for (i in seq_along(noNames)) keepNames[ noNames[i] ] <- paste0("userFUN", i)
-      fit@funList <- lapply(fit@funList, "names<-", value = keepNames)
-    }
-  } else fit@funList <- list()
-
-  fit@ParTable$start <- getMethod("coef", "lavaan.mi")(fit, type = "user", labels = FALSE)
-  fit
-}
 
 
-#############
-## Methods ##
-#############
+## -----------------
+## Class and Methods
+## -----------------
 
-## create s4 class for result object
+#' Class for a lavaan Model Fitted to Multiple Imputations
+#' 
+#' This class extends the \code{\linkS4class{lavaanList}} class, created by
+#' fitting a lavaan model to a list of data sets. In this case, the list of
+#' data sets are multiple imputations of missing data.
+#' 
+#' 
+#' @name lavaan.mi-class
+#' @aliases lavaan.mi-class show,lavaan.mi-method summary,lavaan.mi-method
+#' anova,lavaan.mi-method nobs,lavaan.mi-method coef,lavaan.mi-method
+#' vcov,lavaan.mi-method fitted,lavaan.mi-method fitted.values,lavaan.mi-method
+#' residuals,lavaan.mi-method resid,lavaan.mi-method
+#' @docType class
+#' @slot lavaanList_slots All slots from \code{\linkS4class{lavaanList}} are
+#'  available, but \code{\link{runMI}} only populates a subset of the list 
+#'  slots, some of them with custom information:
+#' @slot DataList The \code{list} of imputed data sets
+#' @slot SampleStatsList List of output from
+#'  \code{\link[lavaan]{lavInspect}(fit, "sampstat")} applied to each fitted
+#'  model
+#' @slot ParTableList See \code{\linkS4class{lavaanList}}
+#' @slot vcovList See \code{\linkS4class{lavaanList}}
+#' @slot ParTableList See \code{\linkS4class{lavaanList}}
+#' @slot testList \code{list} of estimated coefficients in matrix format (one
+#'  per imputation)
+#' @slot GLIST pooled \code{list} of coefficients in GLIST format
+#' @slot seed \code{integer} seed set before running imputations
+#' @slot imputeCall call from imputation (if used) stored as a \code{list} of
+#'  arguments
+#' @slot convergence \code{list} of \code{logical} vectors indicating whether,
+#'  for each imputed data set, (1) the model converged on a solution, (2)
+#'  \emph{SE}s could be calculated, (3) the (residual) covariance matrix of
+#'  latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the residual
+#'  covariance matrix of observed variables (\eqn{\Theta}) is
+#'  non-positive-definite.
+#' 
+#' @return
+#' \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE)}:
+#'  See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
+#'  averaged across imputed data sets; see Rubin, 1987).}
+#' \item{vcov}{\code{signature(object = "lavaan.mi",
+#'  type = c("pooled","between","within"))}: Returns the pooled covariance
+#'  matrix of parameter estimates (\code{type = "pooled"}, the default), the 
+#'  within-imputations covariance matrix (\code{type = "within"}), or the 
+#'  between-imputations covariance matrix (\code{type = "between"}). See Enders 
+#'  (2010, ch. 8) for details.}
+#' \item{fitted.values}{\code{signature(object = "lavaan.mi")}: See
+#'  \code{\linkS4class{lavaan}}. Returns model-implied moments, evaluated at the
+#'  pooled point estimates.}
+#' \item{fitted}{\code{signature(object = "lavaan.mi")}:
+#'   alias for \code{fitted.values}}
+#' \item{residuals}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
+#'  See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns 
+#'  the difference between the model-implied moments from \code{fitted.values} 
+#'  and the pooled observed moments (i.e., averaged across imputed data sets). 
+#'  Standardized residuals are also available, using Bollen's 
+#'  (\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's 
+#'  (\code{type = "cor.bentler"}) formulas.}
+#' \item{resid}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
+#'  alias for \code{residuals}}
+#' \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
+#'  the total (default) sample size or a vector of group sample sizes 
+#'  (\code{total = FALSE}).}
+#' \item{anova}{\code{signature(object = "lavaan.mi", h1 = NULL,
+#'   test = c("D3","D2","D1"), asymptotic = FALSE, constraints = NULL,
+#'   indices = FALSE, baseline = NULL)}: Returns a test of model fit, or a test
+#'   of the difference in fit between nested models if \code{h1} is another
+#'   \code{lavaan.mi} object, assuming \code{object} is nested in \code{h1}. If
+#'   \code{asymptotic}, the returned test statistic will follow a \eqn{\chi^2}
+#'   distribution in sufficiently large samples; otherwise, it will follow an
+#'   \emph{F} distribution. If a robust test statistic is detected in the 
+#'   \code{object} results (it is assumed the same was requested in \code{h1},
+#'   if provided), then \code{asymptotic} will be set to \code{TRUE} and the 
+#'   pooled test statistic will be scaled using the average scaling factor (and 
+#'   average shift parameter or \emph{df}, if applicable) across imputations.
+#'   
+#'   The default test (\code{"D3"}, or any of \code{"mr", "Meng.Rubin",
+#'   "likelihood", "LRT"}) is a pooled likeliehood-ratio test (see Enders, 2010,
+#'   ch. 8); \code{test = "mplus"} implies \code{"D3"} and \code{asymptotic =
+#'   TRUE} (see Asparouhov & Muthen, 2010). When using a non-likelihood 
+#'   estimator (e.g., DWLS for categorical outcomes), \code{"D3"} is not 
+#'   available, so the default is changed to \code{"D2"} (alias can be any of 
+#'   \code{"lmrr", "Li.et.al", "pooled.wald"}), which returns a pooled test 
+#'   statistic. \code{"D1"} is a Wald test calculated for constraints on the 
+#'   pooled point estimates, using the pooled covariance matrix of parameter 
+#'   estimates; see \code{\link[lavaan]{lavTestWald}} for details. \code{h1} is 
+#'   ignored when \code{test = "D1"}, and \code{constraints} is ignored when 
+#'   \code{test != "D1"}.
+#'   
+#'   When \code{indices = TRUE} and \code{is.null(h1)}, popular indices of 
+#'   approximate fit (CFI, TLI/NNFI, RMSEA with CI, and SRMR) will be returned 
+#'   for \code{object}; see \code{\link[lavaan]{fitMeasures}} for details. 
+#'   Specific indices can be requested with a \code{character} vector (any of 
+#'   \code{"mfi", "rmsea", "gammaHat", "rmr", "srmr", "cfi", "tli", "nnfi", 
+#'   "rfi", "nfi", "pnfi", "ifi", "rni"}), or all available indices will be 
+#'   returned if \code{indices = "all"}. A custom user-specified \code{baseline}
+#'   model, fit using \code{runMI}, can be used to calculate incremental fit 
+#'   indices (e.g., CFI, TLI). If \code{is.null(baseline)}, the default 
+#'   independence model will be used.}
+#' 
+#' \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
+#'  convergence rates and estimation problems (if applicable) across imputed 
+#'  data sets.}
+#' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = TRUE,
+#'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE, 
+#'  add.attributes = TRUE)}: see \code{\link[lavaan]{parameterEstimates}} for 
+#'  details. By default, \code{summary} returns pooled point and \emph{SE} 
+#'  estimates, along with \emph{t} test statistics and associated \emph{df} and 
+#'  \emph{p} value, and 95\% CI (control using the \code{ci} and \code{level} 
+#'  arguments). Standardized solution(s) can also be requested by name 
+#'  (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
+#'  \emph{R}-squared for endogenous variables can be requested, as well as the 
+#'  Fraction Missing Information (FMI) for parameter estimates. By default, the 
+#'  output will appear like \code{lavaan}'s \code{summary} output, but if 
+#'  \code{add.attributes = FALSE}, the returned \code{data.frame} will resemble 
+#'  the \code{parameterEstimates} output.}
+#' 
+#' @section Objects from the Class: See the \code{\link{runMI}} function for
+#' details. Wrapper functions include \code{\link{lavaan.mi}},
+#' \code{\link{cfa.mi}}, \code{\link{sem.mi}}, and \code{\link{growth.mi}}.
+#' @author Terrence D. Jorgensen (University of Amsterdam;
+#' \email{TJorgensen314@@gmail.com})
+#' @references Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
+#' with multiple imputation}. Technical Report. Retrieved from
+#' \url{www.statmodel.com}
+#' 
+#' Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
+#' Guilford.
+#' 
+#' Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+#' Significance levels from repeated p-values with multiply-imputed data.
+#' \emph{Statistica Sinica, 1}(1), 65-92. Retrieved from
+#' \url{http://www.jstor.org/stable/24303994}
+#' 
+#' Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
+#' multiply-imputed data sets. \emph{Biometrika, 79}(1), 103-111. Retrieved
+#' from \url{http://www.jstor.org/stable/2337151}
+#' 
+#' Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+#' New York, NY: Wiley.
+#' @examples
+#' 
+#' ## See ?runMI help page
+#' 
 setClass("lavaan.mi", contains = "lavaanList",
          slots = c(coefList = "list",     # coefficients in matrix format
                    GLIST = "list",        # list of pooled coefs in GLIST format
@@ -180,6 +160,10 @@ setClass("lavaan.mi", contains = "lavaanList",
                    imputeCall = "list"  , # store call from imputation, if used
                    convergence = "list")) # also check SEs and Heywood cases
 
+
+
+#' @name lavaan.mi-class
+#' @aliases show,lavaan.mi-method
 setMethod("show", "lavaan.mi", function(object) {
   nData <- object@meta$ndat
 
@@ -215,6 +199,8 @@ setMethod("show", "lavaan.mi", function(object) {
 
   object
 })
+
+
 
 summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
@@ -336,8 +322,14 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
   rownames(PE) <- NULL
   PE
 }
+#' @name lavaan.mi-class
+#' @aliases summary,lavaan.mi-method
 setMethod("summary", "lavaan.mi", summary.lavaan.mi)
 
+
+
+#' @name lavaan.mi-class
+#' @aliases nobs,lavaan.mi-method
 setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
   if (total) return(lavListInspect(object, "ntotal"))
   N <- lavListInspect(object, "norig")
@@ -345,7 +337,9 @@ setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
   N
 })
 
-setMethod("coef", "lavaan.mi", function(object, type = "free", labels = TRUE) {
+
+
+coef.lavaan.mi <- function(object, type = "free", labels = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   PT <- parTable(object)
   if (type == "user" || type == "all") {
@@ -362,9 +356,14 @@ setMethod("coef", "lavaan.mi", function(object, type = "free", labels = TRUE) {
   if (labels) names(out) <- lavaan::lav_partable_labels(PT, type = type)
   class(out) <- c("lavaan.vector","numeric")
   out
-})
+}
+#' @name lavaan.mi-class
+#' @aliases coef,lavaan.mi-method
+setMethod("coef", "lavaan.mi", coef.lavaan.mi)
 
-setMethod("vcov", "lavaan.mi", function(object, type = c("pooled","between","within")) {
+
+
+vcov.lavaan.mi <- function(object, type = c("pooled","between","within")) {
   if (lavListInspect(object, "options")$se == "none") {
     warning('requested se="none", so only between-imputation (co)variance can',
             ' be computed')
@@ -375,30 +374,30 @@ setMethod("vcov", "lavaan.mi", function(object, type = c("pooled","between","wit
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   type <- tolower(type[1])
-
+  
   useSE <- sapply(object@convergence, "[[", i = "SE")
   useSE[is.na(useSE)] <- FALSE
-
+  
   coefList <- lapply(object@ParTableList[useImps], "[[", i = "est")
   B <- cov(do.call(rbind, coefList)[ , PT$free > 0L & !duplicated(PT$free)])
   class(B) <- c("lavaan.matrix.symmetric","matrix")
   rownames(B) <- colnames(B) <- lavaan::lav_partable_labels(PT, type = "free")
   if (type == "between") return(B)
-
+  
   W <- Reduce("+", lapply(object@vcovList[useSE], function(x) x$vcov)) / sum(useSE)
   class(W) <- c("lavaan.matrix.symmetric","matrix")
   dimnames(W) <- dimnames(B)
   if (type == "within") {
     return(W)
   } else if (type != "pooled") stop("'", type, "' is not a valid option for 'type'")
-
+  
   if (!all(useImps == useSE))
     warning('Between-imputation covariance matrix based on estimated parameters',
             ' from ', m, ' converged solutions, but the mean within-imputation',
             ' covariance matrix based on ', sum(useSE), ' solutions for which',
             ' standard errors could be calculated.  Pooled total covariance',
             ' matrix is therefore based on different imputed data sets.')
-
+  
   ## check whether equality constraints prevent inversion of W
   inv.W <- try(solve(W), silent = TRUE)
   if (class(inv.W) != "try-error") {
@@ -411,10 +410,14 @@ setMethod("vcov", "lavaan.mi", function(object, type = c("pooled","between","wit
   }
   ## return pooled variance
   Total
-})
+}
+#' @name lavaan.mi-class
+#' @aliases vcov,lavaan.mi-method
+setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
 
-## "borrowed" lavTestWald()
+
 D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) {
+  ## "borrowed" lavTestWald()
   nImps <- sum(sapply(object@convergence, "[[", i = "converged"))
   if (nImps == 1L) stop("model did not converge on any imputations")
   if (is.null(constraints) || nchar(constraints) == 0L) stop("constraints are empty")
@@ -742,16 +745,18 @@ robustify <- function(ChiSq, object, h1 = NULL) {
   }
   ChiSq
 }
-setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
-                                         test = c("D3","D2","D1"),
-                                         asymptotic = FALSE, constraints = NULL,
-                                         indices = FALSE, baseline = NULL) {
+#' @name lavaan.mi-class
+#' @aliases anova,lavaan.mi-method
+anova.lavaan.mi <- function(object, h1 = NULL,
+                            test = c("D3","D2","D1"),
+                            asymptotic = FALSE, constraints = NULL,
+                            indices = FALSE, baseline = NULL) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   nImps <- sum(useImps)
   ## check class
   if (!is(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
   if (!is.null(h1) & !is(object, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
-
+  
   ## Everything else obsolete if test = "D1"
   if (toupper(test[1]) == "D1") {
     if (!asymptotic) asymptotic <- TRUE ## FIXME: until W can be inverted with eq. constraints
@@ -761,7 +766,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
             '" asymptotic covariance matrix of model parameters')
     return(out)
   }
-
+  
   ## check for robust
   robust <- lavListInspect(object, "options")$test != "standard"
   if (robust) asymptotic <- TRUE
@@ -769,8 +774,8 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
   if (scaleshift & !is.null(h1)) stop("Robust correction unavailable for model",
                                       " comparison when test = 'scaled.shifted'")
   ################### FIXME: unless possible to mimic DIFFTEST behavior?
-
-
+  
+  
   ## check request for fit indices
   incremental <- c("cfi","tli","nnfi","rfi","nfi","pnfi","ifi","rni")
   if (is.logical(indices)) {
@@ -788,7 +793,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
   if (moreFit & any(indices %in% incremental)) {
     if (is.null(baseline)) {
       PTb <- lavaan::lav_partable_independence(lavdata = object@Data,
-                         lavoptions = lavListInspect(object, "options"))
+                                               lavoptions = lavListInspect(object, "options"))
       baseFit <- runMI(model = PTb, data = object@DataList[useImps],
                        group = lavListInspect(object, "group"),
                        se = "none", # to save time
@@ -796,7 +801,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
                        estimator = lavListInspect(object, "options")$estimator,
                        ordered = lavListInspect(object, "ordered"),
                        parameterization = lavListInspect(object,
-                                                                 "parameterization"))
+                                                         "parameterization"))
     } else if (!is(baseline, "lavaan.mi")) {
       stop('User-supplied baseline model must be "lavaan.mi" class fit',
            ' to the same imputed data')
@@ -805,7 +810,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
     if (!all(baseImps)) warning('baseline model did not converge for data set(s): ',
                                 which(useImps)[!baseImps])
   }
-
+  
   ## check DF
   DF0 <- object@testList[[ which(useImps)[1] ]][[1]][["df"]]
   if (!is.null(h1)) {
@@ -824,7 +829,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
   } else DF <- DF0
   if (DF == 0) indices <- moreFit <- FALSE # arbitrary perfect fit, no indices
   if (moreFit) asymptotic <- TRUE
-
+  
   ## check test options, backward compatibility?
   if (tolower(test[1]) == "mplus") {
     test <- "D3"
@@ -858,7 +863,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
       return(out)
     }
   }
-
+  
   ## add robust statistics
   if (robust) {
     out <- robustify(ChiSq = out, object, h1)
@@ -871,7 +876,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
             ' test statistic using the mean scaling factor', extraWarn,
             ' across ', nImps, ' imputations for which the model converged. \n')
   }
-
+  
   ## add fit indices for single model
   if (moreFit) {
     X2 <- out[["chisq"]]
@@ -1029,7 +1034,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
       } else out["ifi.scaled"] <- t1/t2
     }
   }
-
+  
   N <- lavListInspect(object, "ntotal")
   Ns <- lavListInspect(object, "nobs")
   nG <- lavListInspect(object, "ngroups")
@@ -1039,19 +1044,19 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
     N <- N - nG
     Ns <- Ns - 1
   }
-
+  
   if ("mfi" %in% indices) {
     out["mfi"] <- exp(-0.5 * (X2 - DF) / N)
   }
-
+  
   if ("rmsea" %in% indices) {
     N.RMSEA <- max(N, X2*4) # FIXME: good strategy??
-
+    
     if (is.na(X2) || is.na(DF)) {
       out["rmsea"] <- as.numeric(NA)
     } else if (DF > 0) {
       getLambda <- function(lambda, chi, df, p) pchisq(chi, df, ncp=lambda) - p
-
+      
       out["rmsea"] <- sqrt( max(0, (X2/N)/DF - 1/N) ) * sqrt(nG)
       ## lower confidence limit
       if (getLambda(0, X2, DF, .95) < 0.0) out["rmsea.ci.lower"] <- 0 else {
@@ -1072,7 +1077,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
       ## p value
       out["rmsea.pvalue"] <- pchisq(X2, DF, ncp = N*DF*0.05^2/nG,
                                     lower.tail = FALSE)
-
+      
       ## Scaled versions (naive and robust)
       if (robust & !scaleshift) {
         ## naive
@@ -1080,7 +1085,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
         ## lower confidence limit
         if (DF.sc < 1 | getLambda(0, X2, DF.sc, .95) < 0.0) {
           out["rmsea.ci.lower.scaled"] <- 0
-         } else {
+        } else {
           lambda.l <- try(uniroot(f = getLambda, chi = X2, df = DF.sc, p = .95,
                                   lower = 0, upper = X2)$root, silent = TRUE)
           if (inherits(lambda.l, "try-error")) lambda.l <- NA
@@ -1098,7 +1103,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
         ## p value
         out["rmsea.pvalue.scaled"] <- pchisq(X2, DF.sc, ncp = N*DF.sc*0.05^2/nG,
                                              lower.tail = FALSE)
-
+        
         if (object@Options$test %in% c("satorra.bentler","yuan.bentler")) {
           ## robust
           out["rmsea.robust"] <- sqrt( max(0, (X2/N)/DF - ch/N ) ) * sqrt(nG)
@@ -1150,7 +1155,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
       }
     }
   }
-
+  
   if ("gammaHat" %in% indices) {
     out["gammaHat"] <- nVars / (nVars + 2*((X2 - DF) / N))
     out["adjGammaHat"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF) * (1 - out["gammaHat"])
@@ -1159,7 +1164,7 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
       out["adjGammaHat.scaled"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF.sc) * (1 - out["gammaHat.scaled"])
     }
   }
-
+  
   getSRMR <- function(object, type) {
     vv <- lavaan::lavNames(object, type = "ov.num")
     R <- getMethod("resid", "lavaan.mi")(object, type = type)
@@ -1172,13 +1177,13 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
       }
     } else RR <- c(R[[index]][lower.tri(R[[index]], diag = FALSE)]^2,
                    diag(R[[index]])[vv]^2)
-
+    
     if (lavListInspect(object, "meanstructure")) {
       if (nG > 1L) {
         for (g in 1:nG) RR[[g]] <- c(RR[[g]], R[[g]]$mean[vv]^2)
       } else RR <- c(RR, R$mean[vv]^2)
     }
-
+    
     SS <- if (nG > 1L) sqrt(sapply(RR, mean)) else sqrt(mean(RR))
     as.numeric( (lavListInspect(object, "nobs") %*% SS) / lavListInspect(object, "ntotal") )
   }
@@ -1187,10 +1192,13 @@ setMethod("anova", "lavaan.mi", function(object, h1 = NULL,
     out["srmr_bollen"] <- getSRMR(object, type = "cor.bollen")
     out["srmr_bentler"] <- getSRMR(object, type = "cor.bentler")
   }
-
+  
   class(out) <- c("lavaan.vector","numeric")
   out # FIXME: in future, accept more than 2 models, arrange sequentially by DF
-})
+}
+setMethod("anova", "lavaan.mi", anova.lavaan.mi)
+
+
 
 ## function to pool each group's list of sample stats
 sampstat.lavaan.mi <- function(lst, means = FALSE, categ = FALSE, m = m) {
@@ -1253,8 +1261,14 @@ fitted.lavaan.mi <- function(object) {
   }
   out
 }
+#' @name lavaan.mi-class
+#' @aliases fitted,lavaan.mi-method
 setMethod("fitted", "lavaan.mi", fitted.lavaan.mi)
+#' @name lavaan.mi-class
+#' @aliases fitted.values,lavaan.mi-method
 setMethod("fitted.values", "lavaan.mi", fitted.lavaan.mi)
+
+
 
 ## function to calculate residuals for one group
 gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
@@ -1331,7 +1345,320 @@ resid.lavaan.mi <- function(object, type = c("raw","cor")) {
   }
   out
 }
+#' @name lavaan.mi-class
+#' @aliases residuals,lavaan.mi-method
 setMethod("residuals", "lavaan.mi", resid.lavaan.mi)
+#' @name lavaan.mi-class
+#' @aliases resid,lavaan.mi-method
 setMethod("resid", "lavaan.mi", resid.lavaan.mi)
 
+
+
+## ---------------------
+## Constructor Functions
+## ---------------------
+
+
+#' Fit a lavaan Model to Multiple Imputed Data Sets
+#' 
+#' This function fits a lavaan model to a list of imputed data sets, and can
+#' also implement multiple imputation for a single \code{data.frame} with
+#' missing observations, using either the Amelia package or the mice package.
+#' 
+#' 
+#' @aliases runMI lavaan.mi cfa.mi sem.mi growth.mi
+#' @param model The analysis model can be specified using lavaan
+#' \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
+#' \code{\link[lavaan]{parTable}}).
+#' @param data A \code{data.frame} with missing observations, or a \code{list}
+#' of imputed data sets (if data are imputed already). If \code{runMI} has
+#' already been called, then imputed data sets are stored in the
+#' \code{@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
+#' from which the same imputed data will be used for additional analyses.
+#' @param fun \code{character}. Name of a specific lavaan function used to fit
+#' \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
+#' \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
+#' @param \dots additional arguments to pass to \code{\link[lavaan]{lavaan}} or
+#' \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
+#' Note that \code{lavaanList} provides parallel computing options, as well as
+#' a \code{FUN} argument so the user can extract custom output after the model
+#' is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
+#' custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
+#' the user-supplied function should explicitly call \code{library} or use
+#' \code{\link[base]{::}} for any functions not part of the base distribution.
+#' @param m \code{integer}. Request the number of imputations. Ignored if
+#' \code{data} is already a \code{list} of imputed data sets or a
+#' \code{lavaan.mi} object.
+#' @param miArgs Addition arguments for the multiple-imputation function
+#' (\code{miPackage}). The arguments should be put in a list (see example
+#' below). Ignored if \code{data} is already a \code{list} of imputed data sets
+#' or a \code{lavaan.mi} object.
+#' @param miPackage Package to be used for imputation. Currently these
+#' functions only support \code{"Amelia"} or \code{"mice"} for imputation.
+#' Ignored if \code{data} is already a \code{list} of imputed data sets or a
+#' \code{lavaan.mi} object.
+#' @param seed \code{integer}. Random number seed to be set before imputing the
+#'  data. Ignored if \code{data} is already a \code{list} of imputed data sets 
+#'  or a \code{lavaan.mi} object.
+#' @return A \code{\linkS4class{lavaan.mi}} object
+#' @author Terrence D. Jorgensen (University of Amsterdam;
+#' \email{TJorgensen314@@gmail.com})
+#' @references Enders, C. K. (2010). \emph{Applied missing data analysis}. New
+#' York, NY: Guilford.
+#' 
+#' Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+#' New York, NY: Wiley.
+#' @examples
+#'  \dontrun{
+#' ## impose missing data for example
+#' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
+#'                                       "ageyr","agemo","school")]
+#' set.seed(12345)
+#' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
+#' age <- HSMiss$ageyr + HSMiss$agemo/12
+#' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
+#' 
+#' ## specify CFA model from lavaan's ?cfa help page
+#' HS.model <- '
+#'   visual  =~ x1 + x2 + x3
+#'   textual =~ x4 + x5 + x6
+#'   speed   =~ x7 + x8 + x9
+#' '
+#' 
+#' ## impute data within runMI...
+#' out1 <- cfa.mi(HS.model, data = HSMiss, m = 20, seed = 12345,
+#'                miArgs = list(noms = "school"))
+#' 
+#' ## ... or impute missing data first
+#' library(Amelia)
+#' set.seed(12345)
+#' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
+#' imps <- HS.amelia$imputations
+#' out2 <- cfa.mi(HS.model, data = imps)
+#' 
+#' ## same results (using the same seed results in the same imputations)
+#' cbind(impute.within = coef(out1), impute.first = coef(out2))
+#' 
+#' summary(out1)
+#' summary(out1, ci = FALSE, fmi = TRUE, add.attributes = FALSE)
+#' summary(out1, ci = FALSE, stand = TRUE, rsq = TRUE)
+#' 
+#' ## model fit. D3 includes information criteria
+#' anova(out1)
+#' anova(out1, test = "D2", indices = TRUE) # request D2 and fit indices
+#' 
+#' 
+#' 
+#' ## fit multigroup model without invariance constraints
+#' mgfit1 <- cfa.mi(HS.model, data = imps, estimator = "mlm", group = "school")
+#' ## add invariance constraints, and use previous fit as "data"
+#' mgfit0 <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm", group = "school",
+#'                  group.equal = c("loadings","intercepts"))
+#' 
+#' ## compare fit (scaled likelihood ratio test)
+#' anova(mgfit0, h1 = mgfit1)
+#' 
+#' ## correlation residuals
+#' resid(mgfit0, type = "cor.bentler")
+#' 
+#' 
+#' ## use D1 to test a parametrically nested model (whether latent means are ==)
+#' anova(mgfit0, test = "D1", constraints = '
+#'       .p70. == 0
+#'       .p71. == 0
+#'       .p72. == 0')
+#' 
+#' 
+#' 
+#' ## ordered-categorical data
+#' data(datCat)
+#' lapply(datCat, class)
+#' ## impose missing values
+#' set.seed(123)
+#' for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
+#' 
+#' catout <- cfa.mi(' f =~ u1 + u2 + u3 + u4 ', data = datCat,
+#'                  m = 3, seed = 456,
+#'                  miArgs = list(ords = paste0("u", 1:8), noms = "g"),
+#'                  FUN = function(fit) {
+#'                    list(wrmr = lavaan::fitMeasures(fit, "wrmr"),
+#'                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
+#'                  })
+#' summary(catout)
+#' anova(catout, indices = "all") # note the scaled versions of indices, too
+#' 
+#' ## extract custom output
+#' sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
+#' catout@funList[[1]]$zeroCells # zero-cell tables for first imputation
+#' catout@funList[[2]]$zeroCells # zero-cell tables for second imputation ...
+#' 
+#' } 
+#' 
+runMI <- function(model, data, fun = "lavaan", ...,
+                  m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
+  dots <- list(...)
+  if (!is.null(dots$fixed.x)) {
+    if (dots$fixed.x) warning('fixed.x set to FALSE')
+  }
+  if (!is.null(dots$conditional.x)) {
+    if (dots$conditional.x) warning('conditional.x set to FALSE')
+  }
+  dots$fixed.x <- dots$conditional.x <- FALSE
+  
+  seed <- as.integer(seed[1])
+  ## Create (or acknowledge) list of imputed data sets
+  imputedData <- NULL
+  if (is.data.frame(data)) {
+    if (miPackage[1] == "Amelia") {
+      requireNamespace("Amelia")
+      if (!"package:Amelia" %in% search()) attachNamespace("Amelia")
+      imputeCall <- c(list(Amelia::amelia, x = data, m = m, p2s = 0), miArgs)
+      set.seed(seed)
+      imputedData <- unclass(eval(as.call(imputeCall))$imputations)
+    } else if (miPackage[1] == "mice") {
+      requireNamespace("mice")
+      if (!"package:mice" %in% search()) attachNamespace("mice")
+      imputeCall <- c(list(mice::mice, data = data, m = m, diagnostics = FALSE,
+                           printFlag = FALSE), miArgs)
+      set.seed(seed)
+      miceOut <- eval(as.call(imputeCall))
+      imputedData <- list()
+      for (i in 1:m) {
+        imputedData[[i]] <- mice::complete(x = miceOut, action = i, include = FALSE)
+      }
+    } else stop("Currently runMI only supports imputation by Amelia or mice")
+  } else if (is.list(data)) {
+    seed <- integer(length = 0)
+    imputeCall <- list()
+    imputedData <- data
+    m <- length(data)
+    class(imputedData) <- "list" # override inheritance (e.g., "mi" if Amelia)
+  } else if (is(data, "lavaan.mi")) {
+    seed <- data@seed
+    imputeCall <- data@imputeCall
+    imputedData <- data@DataList
+    m <- length(imputedData)
+  } else stop("data is not a valid input type: a partially observed data.frame,",
+              " a list of imputed data.frames, or previous lavaan.mi object")
+  
+  ## Function to get custom output for lavaan.mi object
+  getOutput <- function(obj) {
+    converged <- lavaan::lavInspect(obj, "converged")
+    if (converged) {
+      se <- lavaan::parTable(obj)$se
+      se.test <- all(!is.na(se)) & all(se >= 0) & any(se != 0)
+      if (lavaan::lavInspect(obj, "ngroups") == 1L) {
+        Heywood.lv <- det(lavaan::lavInspect(obj, "cov.lv")) <= 0
+        Heywood.ov <- det(lavaan::lavInspect(obj, "theta")) <= 0
+      } else {
+        Heywood.lv <- !all(sapply(lavaan::lavInspect(obj, "cov.lv"), det) > 0)
+        Heywood.ov <- !all(sapply(lavaan::lavInspect(obj, "theta"), det) > 0)
+      }
+    } else {
+      se.test <- Heywood.lv <- Heywood.ov <- NA
+    }
+    list(sampstat = lavaan::lavInspect(obj, "sampstat"),
+         coefMats = lavaan::lavInspect(obj, "est"),
+         GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all
+         converged = converged, SE = se.test,
+         Heywood.lv = Heywood.lv, Heywood.ov = Heywood.ov)
+  }
+  ## FIXME: in case of user-supplied FUN for lavaanList, combine with getOutput
+  
+  ## fit model using lavaanList
+  lavListCall <- list(lavaan::lavaanList, model = model, dataList = imputedData,
+                      cmd = fun)
+  lavListCall <- c(lavListCall, dots)
+  lavListCall$store.slots <- c("partable","vcov","test")
+  lavListCall$FUN <- if (is.null(dots$FUN)) getOutput else function(obj) {
+    temp1 <- getOutput(obj)
+    temp2 <- dots$FUN(obj)
+    if (!is.list(temp2)) temp2 <- list(userFUN1 = temp2)
+    if (is.null(names(temp2))) names(temp2) <- paste0("userFUN", 1:length(temp2))
+    duplicatedNames <- which(sapply(names(temp2), function(x) {
+      x %in% c("sampstat","coefMats","converged",
+               "SE","Heywood.lv","Heywood.ov","GLIST")
+    }))
+    for (i in duplicatedNames) names(temp2)[i] <- paste0("userFUN", i)
+    c(temp1, temp2)
+  }
+  fit <- eval(as.call(lavListCall))
+  ## Store custom @DataList and @SampleStatsList
+  fit@SampleStatsList <- lapply(fit@funList, "[[", i = "sampstat")
+  fit@DataList <- imputedData
+  ## assign class and add new slots
+  fit <- as(fit, "lavaan.mi")
+  fit@coefList <- lapply(fit@funList, "[[", i = "coefMats")
+  fit@seed <- seed
+  fit@imputeCall <- imputeCall
+  convList <- lapply(fit@funList, "[", i = c("converged","SE",
+                                             "Heywood.lv","Heywood.ov"))
+  nonConv <- which(sapply(convList, is.null))
+  if (length(nonConv)) for (i in nonConv) {
+    convList[[i]] <- list(converged = FALSE, SE = NA, Heywood.lv = NA, Heywood.ov = NA)
+  }
+  
+  fit@convergence <- lapply(convList, function(x) do.call(c, x))
+  conv <- which(sapply(fit@convergence, "[", i = "converged"))
+  if (length(conv)) {
+    firstConv <- conv[1]
+    fit@GLIST <- list()
+    ## loop over GLIST elements
+    for (mat in seq_along(fit@funList[[firstConv]][["GLIST"]])) {
+      matList <- lapply(fit@funList[conv], function(x) x$GLIST[[mat]])
+      fit@GLIST[[mat]] <- Reduce("+", matList) / length(matList)
+    }
+    names(fit@GLIST) <- names(fit@funList[[firstConv]][["GLIST"]])
+  } else {
+    fit@GLIST <- list()
+    warning('The model did not converge for any imputed data sets.')
+  }
+  
+  ## keep any remaining funList slots (if allowing users to supply custom FUN)
+  funNames <- names(fit@funList[[1]])
+  keepIndex <- which(!sapply(funNames, function(x) {
+    x %in% c("sampstat","coefMats","converged",
+             "SE","Heywood.lv","Heywood.ov","GLIST")
+  }))
+  if (length(keepIndex)) {
+    fit@funList <- lapply(fit@funList, "[", i = keepIndex)
+    if (length(keepIndex) > 1L) {
+      keepNames <- funNames[keepIndex]
+      noNames <- which(keepNames == "")
+      for (i in seq_along(noNames)) keepNames[ noNames[i] ] <- paste0("userFUN", i)
+      fit@funList <- lapply(fit@funList, "names<-", value = keepNames)
+    }
+  } else fit@funList <- list()
+  
+  fit@ParTable$start <- getMethod("coef", "lavaan.mi")(fit, type = "user", labels = FALSE)
+  fit
+}
+
+#' @rdname runMI
+lavaan.mi <- function(model, data, ...,
+                      m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
+  runMI(model = model, data = data, fun = "lavaan", ...,
+        m = m, miArgs = miArgs, miPackage = miPackage, seed = seed)
+}
+
+#' @rdname runMI
+cfa.mi <- function(model, data, ...,
+                   m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
+  runMI(model = model, data = data, fun = "cfa", ...,
+        m = m, miArgs = miArgs, miPackage = miPackage, seed = seed)
+}
+
+#' @rdname runMI
+sem.mi <- function(model, data, ...,
+                   m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
+  runMI(model = model, data = data, fun = "sem", ...,
+        m = m, miArgs = miArgs, miPackage = miPackage, seed = seed)
+}
+
+#' @rdname runMI
+growth.mi <- function(model, data, ...,
+                      m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
+  runMI(model = model, data = data, fun = "growth", ...,
+        m = m, miArgs = miArgs, miPackage = miPackage, seed = seed)
+}
 

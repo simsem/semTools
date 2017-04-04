@@ -44,10 +44,8 @@
 #' used when the imputation procedures in mice fail.  Under some circumstances,
 #' mice cannot calculate missing values due to issues with extreme missingness.
 #' Should an error present itself stating a failure due to not having any
-#' columns selected, incorporate the argument order=2 into the quark function
-#' in order to reorder the imputation method procedure.  Otherwise, the order
-#' is defaulted to 1.  Example to rerun quark after imputation failure:
-#' \code{quark.list <- quark(data = yourdataframe, id = vectorofIDs, order = 2)}
+#' columns selected, set the argument \code{order = 2} in order to reorder the
+#' imputation method procedure.  Otherwise, use the default \code{order = 1}.
 #' @param silent If \code{FALSE}, the details of the \code{quark} process are
 #' printed.
 #' @param \dots additional arguments to pass to \code{\link[mice]{mice}}.
@@ -93,6 +91,9 @@
 #' quark.list <- quark(data = dat, id = c(1, 2))
 #' 
 #' final.data <- combinequark(quark = quark.list, percent = 80)
+#' 
+#' ## Example to rerun quark after imputation failure:
+#' quark.list <- quark(data = dat, id = c(1, 2), order = 2)
 #' 
 quark <- function(data, id, order = 1, silent = FALSE, ...){
   if(!is.data.frame(data) && !is.matrix(data)) {
