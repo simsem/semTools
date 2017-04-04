@@ -1,62 +1,153 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 January 2017
-### semTools function for Nesting and Equivalence Testing
+### Last updated: 4 April 2017
+### semTools functions for Nesting and Equivalence Testing
 
+
+## -----------------
+## Class and Methods
+## -----------------
+
+#' Class For the Result of Nesting and Equivalence Testing
+#' 
+#' This class contains the results of nesting and equivalence testing among
+#' multiple models
+#' 
+#' 
+#' @name Net-class
+#' @aliases Net-class show,Net-method summary,Net-method
+#' @docType class
+#' @slot test Logical \code{matrix} indicating nesting/equivalence among models
+#' @slot df The degrees of freedom of tested models
+#' @section Objects from the Class: Objects can be created via the
+#' \code{\link{net}} function.
+#' @return The \code{show} method displays the logical matrix of test results,
+#'  and the \code{summary} method is used to describe the results in narrative.
+#'  In either case, the original \code{object} is invisibly returned.
+#' @author Terrence D. Jorgensen (University of Amsterdam;
+#' \email{TJorgensen314@@gmail.com})
+#' @seealso \code{\link{net}}
+#' @examples
+#' 
+#' # See the example in the net function.
+#' 
 setClass("Net", representation(test = "matrix", df = "vector"))
 
 
-## function to test whether model "x" is nested within model "y"
-x.within.y <- function(x, y, crit = crit) {
-  if (length(c(lavaan::lavNames(x, "ov.ord"), lavaan::lavNames(y, "ov.ord"))))
-    stop("The net() function is not available for categorical-data estimators.")
-
-  exoX <- lavInspect(x, "options")$fixed.x & length(lavaan::lavNames(x, "ov.x"))
-  exoY <- lavInspect(y, "options")$fixed.x & length(lavaan::lavNames(y, "ov.x"))
-  if (exoX | exoY) {
-    stop(c("The net() function does not work with exogenous variables.\n",
-           "Fit the model again with 'fixed.x = FALSE'"))
+#' @rdname Net-class
+#' @aliases show,Net-method
+setMethod("show", "Net",
+function(object) {
+  if (length(object@test)) {
+    m <- as.matrix(unclass(object@test))
+    m[upper.tri(m, diag = TRUE)] <- ""
+    cat("
+        If cell [R, C] is TRUE, the model in row R is nested within column C.
+        
+        If the models also have the same degrees of freedom, they are equivalent.
+        
+        NA indicates the model in column C did not converge when fit to the
+        implied means and covariance matrix from the model in row R.
+        
+        The hidden diagonal is TRUE because any model is equivalent to itself.
+        The upper triangle is hidden because for models with the same degrees
+        of freedom, cell [C, R] == cell [R, C].  For all models with different
+        degrees of freedom, the upper diagonal is all FALSE because models with
+        fewer degrees of freedom (i.e., more parameters) cannot be nested
+        within models with more degrees of freedom (i.e., fewer parameters).
+        \n")
+    print(m, quote = FALSE)
+  } else {
+    cat(data.class(object@test), "(0)\n", sep = "")
   }
-  ## variable names
-  Xnames <- lavaan::lavNames(x)
-  Ynames <- lavaan::lavNames(y)
-  if (!identical(sort(Xnames), sort(Ynames)))
-    stop("Models do not contain the same variables")
+  invisible(object)
+})
 
-  ## check that the analyzed data matches
-  # xData <- lavInspect(x, "data")
-  # if (is.list(xData)) xData <- do.call(rbind, xData)
-  # xData <- xData[ , rank(Xnames)]
-  # yData <- lavInspect(y, "data")
-  # if (is.list(yData)) yData <- do.call(rbind, yData)
-  # yData <- yData[ , rank(Ynames)]
-  # if (!identical(xData, yData)) stop("Models must apply to the same data")
-  ##############################################################################
 
-  ## check degrees of freedom support nesting structure
-  if (lavInspect(x, "fit")["df"] < lavInspect(y, "fit")["df"])
-    stop("x cannot be nested within y because y is more restricted than x")
-
-  ## model-implied moments
-  Sigma <- lavInspect(x, "cov.ov")
-  Mu <- lavInspect(x, "mean.ov")
-  N <- lavInspect(x, "nobs")
-
-  ## fit model and check that chi-squared < crit
-
-  suppressWarnings(try(newFit <- lavaan::update(y, data = NULL,
-                                                sample.cov = Sigma,
-                                                sample.mean = Mu,
-                                                sample.nobs = N)))
-  if(!lavInspect(newFit, "converged")) return(NA) else {
-    result <- lavInspect(newFit, "fit")["chisq"] < crit
-    names(result) <- NULL
-    if (lavInspect(x, "fit")["df"] ==
-        lavInspect(y, "fit")["df"]) return(c(Equivalent = result))
+#' @rdname Net-class
+#' @aliases summary,Net-method
+setMethod("summary", "Net",
+function(object) {
+  DFs <- object@df
+  x <- object@test
+  mods <- colnames(x)
+  for (R in 2:nrow(x)) {
+    for (C in (R - 1):1) {
+      ## if model didn't converge (logical value is missing), go to next iteration
+      if (is.na(x[R, C])) next
+      ## if the models are not nested, go to next iteration
+      if (!x[R, C]) next
+      ## choose message based on whether models are equivalent or nested
+      if (identical(DFs[R], DFs[C])) {
+        rel <- "equivalent to"
+      } else {
+        rel <- "nested within"
+      }
+      cat("Model \"", mods[R], "\" is ", rel, " model \"", mods[C], "\"\n", sep = "")
+    }
   }
-  c(Nested = result)
-}
+  invisible(object)
+})
 
-## generic function that utilizes "x.within.y" to test a set of models
+
+
+## --------------------
+## Constructor Function
+## --------------------
+
+#' Nesting and Equivalence Testing
+#' 
+#' This test examines whether models are nested or equivalent based on Bentler
+#' and Satorra's (2010) procedure.
+#' 
+#' The concept of nesting/equivalence should be the same regardless of
+#' estimation method. However, the particular method of testing
+#' nesting/equivalence (as described in Bentler & Satorra, 2010) employed by
+#' the net function analyzes summary statistics (model-implied means and
+#' covariance matrices, not raw data). In the case of robust methods like MLR,
+#' the raw data is only utilized for the robust adjustment to SE and chi-sq,
+#' and the net function only checks the unadjusted chi-sq for the purposes of
+#' testing nesting/equivalence.  This method does not apply to models that
+#' estimate thresholds for categorical data, so an error message will be issued
+#' if such a model is provided.
+#' 
+#' @param \dots The \code{lavaan} objects used for test of nesting and
+#' equivalence
+#' @param crit The upper-bound criterion for testing the equivalence of models.
+#' Models are considered nested (or equivalent) if the difference between their
+#' chi-squared fit statistics is less than this criterion.
+#' @return The \linkS4class{Net} object representing the outputs for nesting
+#' and equivalent testing, including a logical matrix of test results and a
+#' vector of degrees of freedom for each model.
+#' @author Terrence D. Jorgensen (University of Amsterdam;
+#' \email{TJorgensen314@@gmail.com})
+#' @references Bentler, P. M., & Satorra, A. (2010). Testing model nesting and
+#' equivalence. \emph{Psychological Methods, 15}(2), 111-123.
+#' doi:10.1037/a0019625
+#' @examples
+#' 
+#' \dontrun{
+#' m1 <- ' visual  =~ x1 + x2 + x3
+#' 	       textual =~ x4 + x5 + x6
+#' 	       speed   =~ x7 + x8 + x9 '
+#' 
+#' 
+#' m2 <- ' f1  =~ x1 + x2 + x3 + x4
+#' 	       f2 =~ x5 + x6 + x7 + x8 + x9 '
+#' 
+#' m3 <- ' visual  =~ x1 + x2 + x3
+#' 	       textual =~ eq*x4 + eq*x5 + eq*x6
+#' 	       speed   =~ x7 + x8 + x9 '
+#' 
+#' fit1 <- cfa(m1, data = HolzingerSwineford1939)
+#' fit1a <- cfa(m1, data = HolzingerSwineford1939, std.lv = TRUE) # Equivalent to fit1
+#' fit2 <- cfa(m2, data = HolzingerSwineford1939) # Not equivalent to or nested in fit1
+#' fit3 <- cfa(m3, data = HolzingerSwineford1939) # Nested in fit1 and fit1a
+#' 
+#' tests <- net(fit1, fit1a, fit2, fit3)
+#' tests
+#' summary(tests)
+#' }
+#' 
 net <- function(..., crit = .0001) {
   ## put fitted objects in a list
   fitList <- list(...)
@@ -118,54 +209,59 @@ net <- function(..., crit = .0001) {
   out
 }
 
-setMethod("show", "Net",
-function(object) {
-  if (length(object@test)) {
-    m <- as.matrix(unclass(object@test))
-    m[upper.tri(m, diag = TRUE)] <- ""
-    cat("
-     If cell [R, C] is TRUE, the model in row R is nested within column C.
 
-     If the models also have the same degrees of freedom, they are equivalent.
+## --------------------------------------------------------------------
+## Hidden Function to test whether model "x" is nested within model "y"
+## --------------------------------------------------------------------
 
-     NA indicates the model in column C did not converge when fit to the
-     implied means and covariance matrix from the model in row R.
-
-     The hidden diagonal is TRUE because any model is equivalent to itself.
-     The upper triangle is hidden because for models with the same degrees
-     of freedom, cell [C, R] == cell [R, C].  For all models with different
-     degrees of freedom, the upper diagonal is all FALSE because models with
-     fewer degrees of freedom (i.e., more parameters) cannot be nested
-     within models with more degrees of freedom (i.e., fewer parameters).
-     \n")
-    print(m, quote = FALSE)
-  } else {
-    cat(data.class(object@test), "(0)\n", sep = "")
+x.within.y <- function(x, y, crit = crit) {
+  if (length(c(lavaan::lavNames(x, "ov.ord"), lavaan::lavNames(y, "ov.ord"))))
+    stop("The net() function is not available for categorical-data estimators.")
+  
+  exoX <- lavInspect(x, "options")$fixed.x & length(lavaan::lavNames(x, "ov.x"))
+  exoY <- lavInspect(y, "options")$fixed.x & length(lavaan::lavNames(y, "ov.x"))
+  if (exoX | exoY) {
+    stop(c("The net() function does not work with exogenous variables.\n",
+           "Fit the model again with 'fixed.x = FALSE'"))
   }
-  invisible(object)
-})
-
-
-setMethod("summary", "Net",
-function(object) {
-  DFs <- object@df
-  x <- object@test
-  mods <- colnames(x)
-  for (R in 2:nrow(x)) {
-    for (C in (R - 1):1) {
-      ## if model didn't converge (logical value is missing), go to next iteration
-      if (is.na(x[R, C])) next
-      ## if the models are not nested, go to next iteration
-      if (!x[R, C]) next
-      ## choose message based on whether models are equivalent or nested
-      if (identical(DFs[R], DFs[C])) {
-        rel <- "equivalent to"
-      } else {
-        rel <- "nested within"
-      }
-      cat("Model \"", mods[R], "\" is ", rel, " model \"", mods[C], "\"\n", sep = "")
-    }
+  ## variable names
+  Xnames <- lavaan::lavNames(x)
+  Ynames <- lavaan::lavNames(y)
+  if (!identical(sort(Xnames), sort(Ynames)))
+    stop("Models do not contain the same variables")
+  
+  ## check that the analyzed data matches
+  # xData <- lavInspect(x, "data")
+  # if (is.list(xData)) xData <- do.call(rbind, xData)
+  # xData <- xData[ , rank(Xnames)]
+  # yData <- lavInspect(y, "data")
+  # if (is.list(yData)) yData <- do.call(rbind, yData)
+  # yData <- yData[ , rank(Ynames)]
+  # if (!identical(xData, yData)) stop("Models must apply to the same data")
+  ##############################################################################
+  
+  ## check degrees of freedom support nesting structure
+  if (lavInspect(x, "fit")["df"] < lavInspect(y, "fit")["df"])
+    stop("x cannot be nested within y because y is more restricted than x")
+  
+  ## model-implied moments
+  Sigma <- lavInspect(x, "cov.ov")
+  Mu <- lavInspect(x, "mean.ov")
+  N <- lavInspect(x, "nobs")
+  
+  ## fit model and check that chi-squared < crit
+  
+  suppressWarnings(try(newFit <- lavaan::update(y, data = NULL,
+                                                sample.cov = Sigma,
+                                                sample.mean = Mu,
+                                                sample.nobs = N)))
+  if(!lavInspect(newFit, "converged")) return(NA) else {
+    result <- lavInspect(newFit, "fit")["chisq"] < crit
+    names(result) <- NULL
+    if (lavInspect(x, "fit")["df"] ==
+        lavInspect(y, "fit")["df"]) return(c(Equivalent = result))
   }
-  invisible(object)
-})
+  c(Nested = result)
+}
+
 

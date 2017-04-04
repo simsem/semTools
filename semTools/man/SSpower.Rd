@@ -12,12 +12,12 @@ SSpower(powerModel, n, nparam, popModel, mu, Sigma, fun = "cfa",
 be analyzed. This syntax should constrain at least one nonzero parameter
 to 0 (or another number).}
 
-\item{n}{integer. Sample size used in power calculation, or a vector of
-sample sizes if analyzing a multigroup model. If
+\item{n}{\code{integer}. Sample size used in power calculation, or a vector
+of sample sizes if analyzing a multigroup model. If
 \code{length(n) < length(Sigma)} when \code{Sigma} is a list, \code{n} will
 be recycled.}
 
-\item{nparam}{integer. Number of invalid constraints in \code{powerModel}.}
+\item{nparam}{\code{integer}. Number of invalid constraints in \code{powerModel}.}
 
 \item{popModel}{lavaan \code{\link[lavaan]{model.syntax}} specifying the
 data-generating model. This syntax should specify values for all nonzero
@@ -117,6 +117,7 @@ mu <- list(popMoments1$mean, popMoments2$mean)
 Sigma <- list(popMoments1$cov, popMoments2$cov)
 SSpower(powerModel = modelA2, mu = mu, Sigma = Sigma,
         n = c(60, 65), nparam = 2)
+
 }
 \references{
 Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio

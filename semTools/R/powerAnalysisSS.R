@@ -1,5 +1,5 @@
 ### Alexander M. Schoemann & Terrence D. Jorgensen
-### Last updated: 15 January 2017
+### Last updated: 4 April 2017
 ### Function to apply Satorra & Saris method for chi-squared power analysis
 
 
@@ -25,11 +25,11 @@
 #' @param powerModel lavaan \code{\link[lavaan]{model.syntax}} for the model to
 #'   be analyzed. This syntax should constrain at least one nonzero parameter
 #'   to 0 (or another number).
-#' @param n integer. Sample size used in power calculation, or a vector of
-#'   sample sizes if analyzing a multigroup model. If
+#' @param n \code{integer}. Sample size used in power calculation, or a vector
+#'   of sample sizes if analyzing a multigroup model. If
 #'   \code{length(n) < length(Sigma)} when \code{Sigma} is a list, \code{n} will
 #'   be recycled.
-#' @param nparam integer. Number of invalid constraints in \code{powerModel}.
+#' @param nparam \code{integer}. Number of invalid constraints in \code{powerModel}.
 #' @param popModel lavaan \code{\link[lavaan]{model.syntax}} specifying the
 #'   data-generating model. This syntax should specify values for all nonzero
 #'   paramters in the model. If \code{length(n) > 1}, the same population
@@ -52,7 +52,8 @@
 #'
 #' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 #'
-#' @references Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
+#' @references
+#'  Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
 #'  test in covariance structure analysis. \emph{Psychometrika, 50}, 83-90.
 #'  doi:10.1007/BF02294150
 #'
@@ -121,6 +122,7 @@
 #' Sigma <- list(popMoments1$cov, popMoments2$cov)
 #' SSpower(powerModel = modelA2, mu = mu, Sigma = Sigma,
 #'         n = c(60, 65), nparam = 2)
+#' 
 SSpower <- function(powerModel, n, nparam, popModel, mu, Sigma,
                     fun = "cfa", alpha = .05, ...) {
   if (missing(Sigma)) {

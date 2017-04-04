@@ -78,7 +78,7 @@ function(object) {
 #' @param object,x object of class \code{BootMiss}
 #' @param alpha alpha level used to draw confidence limits
 #' @param nd number of digits to display
-#' @param printLegent \code{logical}. If \code{TRUE} (default), a legend will
+#' @param printLegend \code{logical}. If \code{TRUE} (default), a legend will
 #'  be printed with the histogram
 #' @param legendArgs \code{list} of arguments passed to the
 #'  \code{\link[graphics]{legend}} function.  The default argument is a list

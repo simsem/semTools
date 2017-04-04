@@ -1,6 +1,44 @@
 ### Yves Rosseel, Sunthud Pornprasertmanit, & Terrence D. Jorgensen
-### Last updated: 16 January 2017
+### Last updated: 3 April 2017
 
+
+#' Generate Non-normal Data using Vale and Maurelli (1983) method
+#' 
+#' Generate Non-normal Data using Vale and Maurelli (1983) method. The function
+#' is designed to be as similar as the popular \code{mvrnorm} function in the
+#' \code{MASS} package. The codes are copied from \code{mvrnorm} function in
+#' the \code{MASS} package for argument checking and \code{lavaan} package for
+#' data generation using Vale and Maurelli (1983) method.
+#' 
+#' 
+#' @param n Sample size
+#' @param mu A mean vector. If elements are named, those will be used as
+#' variable names in the returned data matrix.
+#' @param Sigma A positive-definite symmetric matrix specifying the covariance
+#' matrix of the variables. If rows or columns are named (and \code{mu} is
+#' unnamed), those will be used as variable names in the returned data matrix.
+#' @param skewness A vector of skewness of the variables
+#' @param kurtosis A vector of excessive kurtosis of the variables
+#' @param empirical If \code{TRUE}, \code{mu} and \code{Sigma} specify the
+#' empirical rather than population mean and covariance matrix
+#' @return A data matrix
+#' @author The original function is the \code{\link[lavaan]{simulateData}}
+#' function written by Yves Rosseel in the \code{lavaan} package. The function
+#' is adjusted for a convenient usage by Sunthud Pornprasertmanit
+#' (\email{psunthud@@gmail.com}). Terrence D. Jorgensen added the feature to
+#' retain variable names from \code{mu} or \code{Sigma}.
+#' @references Vale, C. D. & Maurelli, V. A. (1983) Simulating multivariate
+#' nonormal distributions. \emph{Psychometrika, 48}, 465-471.
+#' @examples
+#' 
+#' set.seed(123)
+#' mvrnonnorm(20, c(1, 2), matrix(c(10, 2, 2, 5), 2, 2),
+#' 	skewness = c(5, 2), kurtosis = c(3, 3))
+#' ## again, with variable names specified in mu
+#' set.seed(123)
+#' mvrnonnorm(20, c(a = 1, b = 2), matrix(c(10, 2, 2, 5), 2, 2),
+#' 	skewness = c(5, 2), kurtosis = c(3, 3))
+#' 
 mvrnonnorm <- function(n, mu, Sigma, skewness = NULL,
                        kurtosis = NULL, empirical = FALSE) {
   ## number of variables
@@ -32,8 +70,9 @@ mvrnonnorm <- function(n, mu, Sigma, skewness = NULL,
   X
 }
 
-# Copied from lavaan package
-ValeMaurelli1983copied <- function(n=100L, COR, skewness, kurtosis, debug = FALSE) {
+## Copied from lavaan package
+ValeMaurelli1983copied <- function(n = 100L, COR, skewness, kurtosis,
+                                   debug = FALSE) {
 
     fleishman1978_abcd <- function(skewness, kurtosis) {
         system.function <- function(x, skewness, kurtosis) {

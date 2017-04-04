@@ -1,23 +1,45 @@
-# Power analysis for nested model comparison
+### Sunthud Pornprasertmanit, Bell Clinton, Pavel Panko
+### Last updated 4 April 2017
 
-# Note: Model0 = Null hypothesis
-#		Model1 = Alternative hypothesis
-#		ModelA = More-restricted models (higher df; higher RMSEA)
-#		ModelB = Less-restricted models (lower df; lower RMSEA)
 
-# findRMSEApowernested
-# Find the proportion of the samples from the alternative pair of RMSEAs in nested model comparison rejected by the cutoff dervied from the null pair of RMSEAs in nested model comparison
-# rmsea0A: The H0 baseline RMSEA
-# rmsea0B: The H0 alternative RMSEA (trivial misfit)
-# rmsea1A: The H1 baseline RMSEA
-# rmsea1B: The H1 alternative RMSEA (target misfit to be rejected)
-# n: sample size
-# dfA: degree of freedom of the more-restricted model
-# dfB: degree of freedom of the less-restricted model
-# alpha: The alpha level
-# group: The number of group in calculating RMSEA
-# Return power
-
+#' Find power given a sample size in nested model comparison
+#' 
+#' Find the sample size that the power in rejection the samples from the
+#' alternative pair of RMSEA is just over the specified power.
+#' 
+#' 
+#' @param rmsea0A The \eqn{H_0} baseline RMSEA
+#' @param rmsea0B The \eqn{H_0} alternative RMSEA (trivial misfit)
+#' @param rmsea1A The \eqn{H_1} baseline RMSEA
+#' @param rmsea1B The \eqn{H_1} alternative RMSEA (target misfit to be rejected)
+#' @param dfA degree of freedom of the more-restricted model
+#' @param dfB degree of freedom of the less-restricted model
+#' @param n Sample size
+#' @param alpha The alpha level
+#' @param group The number of group in calculating RMSEA
+#' @author Bell Clinton
+#' 
+#' Pavel Panko (Texas Tech University; \email{pavel.panko@@ttu.edu})
+#' 
+#' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#' @seealso \itemize{
+#'  \item \code{\link{plotRMSEApowernested}} to plot the statistical power for
+#'   nested model comparison based on population RMSEA given the sample size 
+#'  \item \code{\link{findRMSEAsamplesizenested}} to find the minium sample
+#'   size for a given statistical power in nested model comparison based on 
+#'   population RMSEA
+#' }
+#' @references 
+#' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
+#' differences between nested covariance structure models: Power analysis and
+#' null hypotheses. \emph{Psychological Methods, 11}(1), 19-35.
+#' doi:10.1037/1082-989X.11.1.19
+#' @examples
+#' 
+#' findRMSEApowernested(rmsea0A = 0.06, rmsea0B = 0.05, rmsea1A = 0.08, 
+#'                      rmsea1B = 0.05, dfA = 22, dfB = 20, n = 200,
+#'                      alpha = 0.05, group = 1)
+#' 
 findRMSEApowernested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1B = NULL, dfA, dfB, n, alpha = 0.05, group = 1) {
   if(is.null(rmsea0A)) rmsea0A <- 0
   if(is.null(rmsea0B)) rmsea0B <- 0
@@ -37,33 +59,49 @@ findRMSEApowernested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1
   Power
 }
 
-test.findRMSEApowernested <- function() {
-	alpha <- 0.05
-	rmsea0A <- 0.06
-	rmsea0B <- 0.05
-	rmsea1A <- 0.08
-	rmsea1B <- 0.05
-	dfA <- 22
-	dfB <- 20
-	n <- 200
-	group <- 1
-	findRMSEApowernested(rmsea0A, rmsea0B, rmsea1A, rmsea1B, dfA, dfB, n, alpha, group)
-}
 
-# findRMSEAsamplesizenested
-# Find the sample size that the power in rejection the samples from the alternative pair of RMSEA is just over the specified power
-# rmsea0A: The H0 baseline RMSEA
-# rmsea0B: The H0 alternative RMSEA (trivial misfit)
-# rmsea1A: The H1 baseline RMSEA
-# rmsea1B: The H1 alternative RMSEA (target misfit to be rejected)
-# dfA: degree of freedom of the more-restricted model
-# dfB: degree of freedom of the less-restricted model
-# power: The desired statistical power
-# alpha: The alpha level
-# group: The number of group in calculating RMSEA
-# Return The estimated sample size
 
-findRMSEAsamplesizenested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1B = NULL, dfA, dfB, power=0.80, alpha=.05, group=1) {
+#' Find sample size given a power in nested model comparison
+#' 
+#' Find the sample size that the power in rejection the samples from the
+#' alternative pair of RMSEA is just over the specified power.
+#' 
+#' 
+#' @param rmsea0A The \eqn{H_0} baseline RMSEA
+#' @param rmsea0B The \eqn{H_0} alternative RMSEA (trivial misfit)
+#' @param rmsea1A The \eqn{H_1} baseline RMSEA
+#' @param rmsea1B The \eqn{H_1} alternative RMSEA (target misfit to be rejected)
+#' @param dfA degree of freedom of the more-restricted model.
+#' @param dfB degree of freedom of the less-restricted model.
+#' @param power The desired statistical power.
+#' @param alpha The alpha level.
+#' @param group The number of group in calculating RMSEA.
+#' @author Bell Clinton
+#' 
+#' Pavel Panko (Texas Tech University; \email{pavel.panko@@ttu.edu})
+#' 
+#' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#' 
+#' @seealso \itemize{
+#'  \item \code{\link{plotRMSEApowernested}} to plot the statistical power for
+#'   nested model comparison based on population RMSEA given the sample size
+#'  \item \code{\link{findRMSEApowernested}} to find the power for a given
+#'   sample size in nested model comparison based on population RMSEA
+#' }
+#' @references 
+#' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
+#' differences between nested covariance structure models: Power analysis and
+#' null hypotheses. \emph{Psychological Methods, 11}(1), 19-35.
+#' doi:10.1037/1082-989X.11.1.19
+#' @examples
+#' 
+#' findRMSEAsamplesizenested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, 
+#'                           rmsea1B = 0.05, dfA = 22, dfB = 20, power = 0.80,
+#'                           alpha = .05, group = 1) 
+#' 
+findRMSEAsamplesizenested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A,
+                                      rmsea1B = NULL, dfA, dfB, power = 0.80,
+                                      alpha = .05, group = 1) {
 	if(is.null(rmsea0A)) rmsea0A <- 0
 	if(is.null(rmsea0B)) rmsea0B <- 0
 	if(is.null(rmsea1B)) rmsea1B <- rmsea0B
@@ -89,44 +127,55 @@ findRMSEAsamplesizenested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, r
 	}
 }
 
-test.findRMSEAsamplesizenested <- function() {
-	alpha <- 0.05
-	rmseaA <- 0.06
-	rmseaB <- 0.05
-	da <- 22
-	db <- 20
-	powd <- 0.8
-	G <- 1
-	findRMSEAsamplesizenested(rmsea0A = 0, rmsea0B = 0, rmsea1A = rmseaA, rmsea1B = rmseaB, da, db, power=0.80, alpha=.05, group=1) 
-}
 
-# plotRMSEApowernested
-#Plot power of nested model RMSEA over a range of possible sample sizes
-# rmsea0A: The H0 baseline RMSEA
-# rmsea0B: The H0 alternative RMSEA (trivial misfit)
-# rmsea1A: The H1 baseline RMSEA
-# rmsea1B: The H1 alternative RMSEA (target misfit to be rejected)
-# dfA: degree of freedom of the more-restricted model
-# dfB: degree of freedom of the less-restricted model
-# nlow: Lower bound of sample size
-# nhigh: Upper bound of sample size
-# steps: Step size
-# alpha: The alpha level
-# group: The number of group in calculating RMSEA
-# ...: Additional parameters for graphs
-# Return plot of power
 
-plotRMSEApowernested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1B = NULL, dfA, dfB, nlow, nhigh, steps=1, alpha=.05, group=1, ...){ 
+#' Plot power of nested model RMSEA
+#' 
+#' Plot power of nested model RMSEA over a range of possible sample sizes.
+#' 
+#' 
+#' @param rmsea0A The \eqn{H_0} baseline RMSEA
+#' @param rmsea0B The \eqn{H_0} alternative RMSEA (trivial misfit)
+#' @param rmsea1A The \eqn{H_1} baseline RMSEA
+#' @param rmsea1B The \eqn{H_1} alternative RMSEA (target misfit to be rejected)
+#' @param dfA degree of freedom of the more-restricted model
+#' @param dfB degree of freedom of the less-restricted model
+#' @param nlow Lower bound of sample size
+#' @param nhigh Upper bound of sample size
+#' @param steps Step size
+#' @param alpha The alpha level
+#' @param group The number of group in calculating RMSEA
+#' @param \dots The additional arguments for the plot function.
+#' @author Bell Clinton
+#' 
+#' Pavel Panko (Texas Tech University; \email{pavel.panko@@ttu.edu})
+#' 
+#' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#' 
+#' @seealso \itemize{
+#'  \item \code{\link{findRMSEApowernested}} to find the power for a given
+#'   sample size in nested model comparison based on population RMSEA 
+#'  \item \code{\link{findRMSEAsamplesizenested}} to find the minium sample
+#'   size for a given statistical power in nested model comparison based on
+#'   population RMSEA
+#' }
+#' @references 
+#' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
+#' differences between nested covariance structure models: Power analysis and
+#' null hypotheses. \emph{Psychological Methods, 11}(1), 19-35.
+#' doi:10.1037/1082-989X.11.1.19
+#' @examples
+#' 
+#' plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06,
+#'                      rmsea1B = 0.05, dfA = 22, dfB = 20, nlow = 50,
+#'                      nhigh = 500, steps = 1, alpha = .05, group = 1)  
+#' 
+plotRMSEApowernested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A,
+                                 rmsea1B = NULL, dfA, dfB, nlow, nhigh,
+                                 steps = 1, alpha = .05, group = 1, ...){ 
 	nseq <- seq(nlow,nhigh, by=steps)
 	pow1 <- findRMSEApowernested(rmsea0A = rmsea0A, rmsea0B = rmsea0B, rmsea1A = rmsea1A, rmsea1B = rmsea1B, dfA = dfA, dfB = dfB, n = nseq, alpha = alpha, group = group)
 	plot(nseq, pow1, xlab="Sample Size", ylab="Power", main="Compute Power for Nested RMSEA", type="l", ...)
 }
 
-test.plotRMSEApowernested <- function() {
-	alpha <- 0.05
-	rmseaA <- 0.06
-	rmseaB <- 0.05
-	da <- 22
-	db <- 20
-	plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = rmseaA, rmsea1B = rmseaB, da, db, nlow=50, nhigh=500, steps=1, alpha=.05, group=1)  
-}
+

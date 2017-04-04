@@ -25,12 +25,12 @@
 
 \item{nd}{number of digits to display}
 
+\item{printLegend}{\code{logical}. If \code{TRUE} (default), a legend will
+be printed with the histogram}
+
 \item{legendArgs}{\code{list} of arguments passed to the
 \code{\link[graphics]{legend}} function.  The default argument is a list
 placing the legend at the top-left of the figure.}
-
-\item{printLegent}{\code{logical}. If \code{TRUE} (default), a legend will
-be printed with the histogram}
 }
 \value{
 The \code{hist} method returns a list of \code{length == 2},
