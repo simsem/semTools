@@ -1,6 +1,7 @@
 Package: semTools
-Title: Useful Tools for Structural Equation Modeling
 Version: 0.4-15.903
+Title: Useful Tools for Structural Equation Modeling
+Description: Provides useful tools for structural equation modeling. 
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com"),
 		person(given = "Sunthud", family = "Pornprasertmanit", role = "aut", email = "psunthud@gmail.com"), 
 		person(given = "Patrick", family = "Miller", role = "aut", email="pmille13@nd.edu"), 
@@ -24,35 +25,13 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Jason", family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"), 		
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com") 		
 		)
-Description: Provides useful tools for structural equation modeling. 
-Depends: R(>= 3.3), methods, lavaan(>= 0.6), utils, stats, graphics
-Suggests: MASS, parallel, Amelia, mice, foreign, GPArotation, mnormt, boot
+Depends: R(>= 3.3), utils, stats, graphics
+Imports: methods, lavaan(>= 0.6)
+Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt
 License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
-Author: Terrence D. Jorgensen [aut, cre],
-  Sunthud Pornprasertmanit [aut],
-  Patrick Miller [aut],
-  Alexander Schoemann [aut],
-  Yves Rosseel [aut],
-  Corbin Quick [ctb],
-  Mauricio Garnier-Villarreal [ctb],
-  James Selig [ctb],
-  Aaron Boulton [ctb],
-  Kristopher Preacher [ctb],
-  Donna Coffman [ctb],
-  Mijke Rhemtulla [ctb],
-  Alexander Robitzsch [ctb],
-  Craig Enders [ctb],
-  Ruber Arslan [ctb],
-  Bell Clinton [ctb],
-  Pavel Panko [ctb],
-  Edgar Merkle [ctb],
-  Steven Chesnut [ctb],
-  Jarrett Byrnes [ctb], 
-  Jason Rights [ctb],
-  Ylenio Longo [ctb]
-Maintainer: Terrence D. Jorgensen <TJorgensen314@gmail.com>
+BugReports: https://github.com/simsem/semTools/issues
 Date/Publication: 2017-03-19
 RoxygenNote: 6.0.1
