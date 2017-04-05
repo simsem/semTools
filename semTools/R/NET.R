@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 4 April 2017
+### Last updated: 5 April 2017
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -110,6 +110,7 @@ function(object) {
 #' estimate thresholds for categorical data, so an error message will be issued
 #' if such a model is provided.
 #' 
+#' @importFrom lavaan lavInspect
 #' @param \dots The \code{lavaan} objects used for test of nesting and
 #' equivalence
 #' @param crit The upper-bound criterion for testing the equivalence of models.
@@ -214,6 +215,7 @@ net <- function(..., crit = .0001) {
 ## Hidden Function to test whether model "x" is nested within model "y"
 ## --------------------------------------------------------------------
 
+#' @importFrom lavaan lavInspect
 x.within.y <- function(x, y, crit = crit) {
   if (length(c(lavaan::lavNames(x, "ov.ord"), lavaan::lavNames(y, "ov.ord"))))
     stop("The net() function is not available for categorical-data estimators.")

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 4 April 2017
+### Last updated: 5 April 2017
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -449,6 +449,8 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' argument is used to preserve the order of groups seen in \code{con} when
 #' permuting the data.
 #' 
+#' 
+#' @importFrom lavaan lavInspect parTable
 #' @param nPermute An integer indicating the number of random permutations used
 #' to form empirical distributions under the null hypothesis.
 #' @param modelType A character string indicating type of model employed:
@@ -1017,6 +1019,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
 
 
 ## function to check validity of arguments to permuteMeasEq()
+#' @importFrom lavaan lavInspect parTable
 checkPermArgs <- function(nPermute, modelType, con, uncon, null,
                           param, freeParam, covariates, AFIs, moreAFIs,
                           maxSparse, maxNonconv, showProgress, warn,
@@ -1207,6 +1210,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
 
 
 ## function to extract fit measures
+#' @importFrom lavaan lavInspect
 getAFIs <- function(...) {
   dots <- list(...)
   
@@ -1252,6 +1256,7 @@ getAFIs <- function(...) {
 }
 
 ## Function to extract modification indices for equality constraints
+#' @importFrom lavaan parTable
 getMIs <- function(...) {
   dots <- list(...)
   
@@ -1276,6 +1281,7 @@ getMIs <- function(...) {
 }
 
 ## Functions to find delta-AFIs & maximum modification index in one permutation
+#' @importFrom lavaan lavInspect
 permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
                               covariates, AFIs, moreAFIs, maxSparse, maxNonconv,
                               iseed, warn, extra = NULL, datafun = NULL) {
@@ -1391,6 +1397,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
        n.nonConverged = nTries - 1L, n.Sparse = nSparse)
 }
 
+#' @importFrom lavaan lavInspect
 permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
                               covariates, AFIs, moreAFIs, maxSparse, maxNonconv,
                               iseed, warn, extra = NULL, datafun = NULL) {

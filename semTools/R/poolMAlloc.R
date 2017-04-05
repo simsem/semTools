@@ -3,7 +3,7 @@
 ### - based on research from/with Sonya Sterba
 ### - adapted from parcelAllocation() by Corbin Quick and Alexander Schoemann
 ### - additional "indices" argument added by Terrence D. Jorgensen
-### Last updated: 4 April 2017
+### Last updated: 5 April 2017
 
 
 #' Pooled estimates and standard errors across M parcel-allocations: Combining
@@ -55,6 +55,7 @@
 #' runtime of that iteration are outputted. When stopping criteria are
 #' satisfied, the full set of results are outputted.
 #' 
+#' @importFrom lavaan lavInspect
 #' @param nPerPar A list in which each element is a vector, corresponding to
 #' each factor, indicating sizes of parcels. If variables are left out of
 #' parceling, they should not be accounted for here (i.e., there should not be

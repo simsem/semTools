@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit , Yves Rosseel 
-### Last updated: 4 April 2017
+### Last updated: 5 April 2017
 
 
 
@@ -99,6 +99,8 @@
 #' can be calculated separately for those scales by fitting separate models and
 #' submitting each to the \code{reliability} function.
 #' 
+#' 
+#' @importFrom lavaan lavInspect
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @return Reliability values (coefficient alpha, coefficients omega, average
@@ -322,6 +324,8 @@ reliability <- function(object) {
 #' observed variables, the observed variables will be counted as first-order
 #' factors.
 #' 
+#' 
+#' @importFrom lavaan lavInspect
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions that has a
 #' second-order factor
@@ -477,6 +481,8 @@ reliabilityL2 <- function(object, secondFactor) {
 #' where \eqn{\rho^*_{ij}} is a polychoric correlation between Items \eqn{i}
 #' and \eqn{j}.
 #' 
+#' 
+#' @importFrom lavaan lavInspect
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @return Maximal reliability values of each group. The maximal-reliability
@@ -616,6 +622,7 @@ p2 <- function(t1, t2, r) {
 # 	lapply(lavInspect(newobject, "est"), "[[", "theta")
 # }
 
+#' @importFrom lavaan lavInspect
 getThreshold <- function(object) {
 	ngroups <- lavInspect(object, "ngroups")
 	coef <- lavInspect(object, "est")

@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 4 April 2017
+### Last updated: 5 April 2017
 
 
 #' Partial Measurement Invariance Testing Across Groups
@@ -85,6 +85,7 @@
 #' parameters are provided in the vignettes by running
 #' \code{vignette("partialInvariance")}.
 #' 
+#' @importFrom lavaan lavInspect parTable
 #' @aliases partialInvariance partialInvarianceCat
 #' @param fit A list of models for invariance testing. Each model should be
 #' assigned by appropriate names (see details). The result from
@@ -956,6 +957,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1,
 }
 
 
+#' @importFrom lavaan lavInspect parTable
 #' @rdname partialInvariance
 partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
                                  refgroup = 1, poolvar = TRUE,
@@ -1722,13 +1724,14 @@ waldContrast <- function(object, contrast) {
   c(chisq = chisq, df = df, p = p)
 }
 
+#' @importFrom lavaan parTable
 waldConstraint <- function(fit, pt, mat, ...) {
 	dotdotdot <- list(...)
 	overallMat <- NULL
 	for(i in seq_along(dotdotdot)) {
 		target <- dotdotdot[[i]]
 		tempMat <- mat
-		element <- apply(target, 1, matchElement, parTable=pt)
+		element <- apply(target, 1, matchElement, parTable = pt)
 		freeIndex  <- pt$free[element]
 		tempMat[,freeIndex[1]] <- -1
 		for(m in 2:length(freeIndex)) {
@@ -1752,6 +1755,7 @@ deltacfi <- function(parent, nested) lavaan::fitmeasures(nested)["cfi"] - lavaan
 
 ## For categorical.    FIXME: Why is this even necessary?
 ##                            Did Sunthud not know implied Sigma is available?
+#' @importFrom lavaan lavInspect
 thetaImpliedTotalVar <- function(object) {
   # param <- lavInspect(object, "est")
   # ngroup <- lavInspect(object, "ngroups")

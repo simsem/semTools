@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 4 April 2017
+### Last updated: 5 April 2017
 
 
 
@@ -48,6 +48,8 @@
 #' 
 #' Wald statistic is used for test statistic.
 #' 
+#' 
+#' @importFrom lavaan lavInspect
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' first-order factor will be listed first. The last name must be the name
@@ -244,6 +246,8 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' covariance matrix among parameter estimates) has been computed. See the
 #' \code{\link{probe2WayMC}} for further details.
 #' 
+#' 
+#' @importFrom lavaan lavInspect
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' first-order factor will be listed first. The last name must be the name
@@ -529,6 +533,8 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' 
 #' Wald statistic is used for test statistic.
 #' 
+#' 
+#' @importFrom lavaan lavInspect
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' three first-order factors will be listed first. Then the second-order
@@ -755,6 +761,8 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' covariance matrix among parameter estimates) has been computed See the
 #' \code{\link{probe3WayMC}} for further details.
 #' 
+#' 
+#' @importFrom lavaan lavInspect
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' three first-order factors will be listed first. Then the second-order
@@ -1355,7 +1363,11 @@ var3NormProd <- function(m, s) {
 # colLine = the color of each line
 # legendMain = the title of the legend
 # legendVal = the description of each line representing in the plot
-plotSingleProbe <- function(estSlope, estIntercept=NULL, xlim, xlab="Indepedent Variable", ylab="Dependent Variable", main=NULL, colLine="black", legendMain=NULL, legendVal=NULL, ...) {
+plotSingleProbe <- function(estSlope, estIntercept = NULL, xlim,
+                            xlab = "Indepedent Variable",
+                            ylab = "Dependent Variable", main = NULL,
+                            colLine = "black", legendMain = NULL,
+                            legendVal = NULL, ...) {
 	if(is.null(estIntercept)) estIntercept <- rep(0, length(estSlope))
 	if(length(colLine) == 1) colLine <- rep(colLine, length(estSlope))
 	lower <- estIntercept + (xlim[1] * estSlope)

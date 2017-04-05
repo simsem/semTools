@@ -1,5 +1,5 @@
 ### Jason D. Rights
-### Last updated: 4 April 2017
+### Last updated: 5 April 2017
 
 
 #' Parcel-Allocation Variability in Model Ranking
@@ -43,6 +43,8 @@
 #' figure margins too large,"} user may need to increase size of the plot
 #' window and rerun.
 #' 
+#' 
+#' @importFrom lavaan lavInspect
 #' @param nPerPar A list in which each element is a vector, corresponding to
 #' each factor, indicating sizes of parcels. If variables are left out of
 #' parceling, they should not be accounted for here (i.e., there should not be
