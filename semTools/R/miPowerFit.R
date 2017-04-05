@@ -37,6 +37,7 @@
 #' misspecification, the decision is inconclusive.
 #'
 #' @aliases miPowerFit miPowerFit
+#' @importFrom lavaan lavInspect
 #' @param lavaanObj The lavaan model object used to evaluate model fit
 #' @param stdLoad The amount of standardized factor loading that one would like
 #' to be detected (rejected). The default value is 0.4, which is suggested by
@@ -227,6 +228,7 @@ totalFacVar <- function(beta, psi) {
 
 # findTotalVar: find the total indicator and factor variances
 
+#' @importFrom lavaan lavInspect
 findTotalVar <- function(lavaanObj) {
 	result <- list()
 	nGroups <- lavInspect(lavaanObj, "ngroups")

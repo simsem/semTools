@@ -71,6 +71,7 @@
 #' See \code{\link{nullRMSEA}} for the further details of the computation of
 #' RMSEA of the null model.
 #'
+#' @importFrom lavaan lavInspect
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param fit.measures Additional fit measures to be calculated. All additional
@@ -208,6 +209,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 #'
 #' See \url{http://davidakenny.net/cm/fit.htm}.
 #'
+#' @importFrom lavaan lavInspect
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param scaled If \code{TRUE}, calculate the null model from the scaled test.
@@ -323,6 +325,7 @@ sic <- function(f, lresults = NULL) {
 #' where \eqn{N} is the sample size when using normal likelihood, or \eqn{N -
 #' 1} when using \code{likelihood = 'wishart'}.
 #'
+#' @importFrom lavaan lavInspect
 #' @param fit0 The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param fit1 Optional additional \linkS4class{lavaan} model, in which

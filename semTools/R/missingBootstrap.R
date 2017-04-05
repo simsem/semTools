@@ -171,6 +171,7 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 #' programs must still specify their model using lavaan syntax.
 #'
 #'
+#' @importFrom lavaan lavInspect parTable
 #' @param x A target \code{lavaan} object used in the Bollen-Stine bootstrap
 #' @param transformation The transformation methods in Savalei and Yuan (2009).
 #' There are three methods in the article, but only the first two are currently
@@ -783,6 +784,7 @@ getBootSample <- function(groupDat, group, group.label) {
 }
 
 ## fit the model to a single bootstrapped sample and return chi-squared
+#' @importFrom lavaan lavInspect
 fitBootSample <- function(dat, args, suppress) {
   args$data <- dat
   lavaanlavaan <- function(...) { lavaan::lavaan(...) }

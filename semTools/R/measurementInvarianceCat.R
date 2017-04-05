@@ -33,6 +33,7 @@
 #' See the further details of scale identification and different
 #' parameterization in Millsap and Yun-Tein (2004).
 #'
+#' @importFrom lavaan lavInspect parTable
 #' @param ... The same arguments as for any lavaan model.  See
 #' \code{\link{cfa}} for more information.
 #' @param std.lv If \code{TRUE}, the fixed-factor method of scale

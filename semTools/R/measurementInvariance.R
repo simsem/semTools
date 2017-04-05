@@ -42,6 +42,7 @@
 #' or Yuan-Bentler test statistic), a special version of the \eqn{\Delta\chi^2}
 #' test is used as described in \url{http://www.statmodel.com/chidiff.shtml}
 #'
+#' @importFrom lavaan parTable
 #' @aliases measurementInvariance measurementinvariance
 #' @param ... The same arguments as for any lavaan model.  See
 #' \code{\link{cfa}} for more information.
@@ -192,6 +193,7 @@ measurementInvariance <- measurementinvariance <-
 ## Hidden Functions
 ## ----------------
 
+#' @importFrom lavaan lavInspect
 printInvarianceResult <- function(FIT, fit.measures, method) {
 	# compare models
 	NAMES <- names(FIT); names(FIT) <- NULL

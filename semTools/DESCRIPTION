@@ -13,7 +13,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Aaron", family = "Boulton", role = "ctb", email="aboulton@email.unc.edu"),
 		person(given = "Kristopher", family = "Preacher", role = "ctb", email="kris.preacher@vanderbilt.edu"), 
 		person(given = "Donna", family = "Coffman", role = "ctb", email="dlc30@psu.edu"), 
-		person(given = "Mijke", family = "Rhemtulla", role = "ctb", email="M.T.Rhemtulla@uva.nl"), 
+		person(given = "Mijke", family = "Rhemtulla", role = "ctb", email="mrhemtulla@ucdavis.edu"), 
 		person(given = "Alexander", family = "Robitzsch", role = "ctb", email="a.robitzsch@bifie.at"), 
 		person(given = "Craig", family = "Enders", role = "ctb", email="Craig.Enders@asu.edu"),
 		person(given = "Ruber", family = "Arslan", role = "ctb", email="rubenarslan@gmail.com"),
@@ -22,7 +22,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Edgar", family = "Merkle", role = "ctb", email="merklee@missouri.edu"),
 		person(given = "Steven", family = "Chesnut", role = "ctb", email="Steven.Chesnut@usm.edu"),
 		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu"), 
-		person(given = "Jason", family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"), 		
+		person(given = c("Jason","D."), family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"), 		
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com") 		
 		)
 Depends: R(>= 3.3), utils, stats, graphics

@@ -17,6 +17,7 @@
 #' 
 #' 
 #' @name lavaan.mi-class
+#' @importClassesFrom lavaan lavaanList
 #' @aliases lavaan.mi-class show,lavaan.mi-method summary,lavaan.mi-method
 #' anova,lavaan.mi-method nobs,lavaan.mi-method coef,lavaan.mi-method
 #' vcov,lavaan.mi-method fitted,lavaan.mi-method fitted.values,lavaan.mi-method
@@ -201,7 +202,7 @@ setMethod("show", "lavaan.mi", function(object) {
 })
 
 
-
+#' @importFrom lavaan lavListInspect parTable
 summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
                               fmi = FALSE, add.attributes = TRUE) {
@@ -327,9 +328,9 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
 setMethod("summary", "lavaan.mi", summary.lavaan.mi)
 
 
-
 #' @name lavaan.mi-class
 #' @aliases nobs,lavaan.mi-method
+#' @importFrom lavaan lavListInspect
 setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
   if (total) return(lavListInspect(object, "ntotal"))
   N <- lavListInspect(object, "norig")
@@ -339,6 +340,7 @@ setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
 
 
 
+#' @importFrom lavaan parTable
 coef.lavaan.mi <- function(object, type = "free", labels = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   PT <- parTable(object)
@@ -363,6 +365,7 @@ setMethod("coef", "lavaan.mi", coef.lavaan.mi)
 
 
 
+#' @importFrom lavaan lavListInspect parTable
 vcov.lavaan.mi <- function(object, type = c("pooled","between","within")) {
   if (lavListInspect(object, "options")$se == "none") {
     warning('requested se="none", so only between-imputation (co)variance can',
@@ -416,6 +419,7 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within")) {
 setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
 
 
+#' @importFrom lavaan parTable
 D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) {
   ## "borrowed" lavTestWald()
   nImps <- sum(sapply(object@convergence, "[[", i = "converged"))
@@ -501,6 +505,7 @@ D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) 
   class(out) <- c("lavaan.vector","numeric")
   out
 }
+#' @importFrom lavaan lavListInspect parTable
 D2 <- function(object, h1 = NULL, asymptotic = FALSE,
                robust = FALSE, scaleshift = FALSE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -542,6 +547,7 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE,
   class(out) <- c("lavaan.vector","numeric")
   out
 }
+#' @importFrom lavaan lavListInspect
 getLLs <- function(object) {
   meanstructure <- lavListInspect(object, "meanstructure")
   nG <- lavListInspect(object, "ngroups")
@@ -595,6 +601,7 @@ getLLs <- function(object) {
   }
   LL
 }
+#' @importFrom lavaan lavListInspect parTable
 D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   N <- lavListInspect(object, "ntotal")
   nG <- lavListInspect(object, "ngroups")
@@ -705,6 +712,7 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   class(out) <- c("lavaan.vector","numeric")
   out
 }
+#' @importFrom lavaan lavListInspect
 robustify <- function(ChiSq, object, h1 = NULL) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
@@ -747,6 +755,7 @@ robustify <- function(ChiSq, object, h1 = NULL) {
 }
 #' @name lavaan.mi-class
 #' @aliases anova,lavaan.mi-method
+#' @importFrom lavaan lavListInspect
 anova.lavaan.mi <- function(object, h1 = NULL,
                             test = c("D3","D2","D1"),
                             asymptotic = FALSE, constraints = NULL,
@@ -1208,6 +1217,7 @@ sampstat.lavaan.mi <- function(lst, means = FALSE, categ = FALSE, m = m) {
   if (categ) out$th <- Reduce("+", lapply(lst, "[[", i = "th")) / m
   out
 }
+#' @importFrom lavaan lavListInspect
 fitted.lavaan.mi <- function(object) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
@@ -1311,6 +1321,7 @@ gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
   if (categ) out$th <- Th_mean - Implied$th
   out
 }
+#' @importFrom lavaan lavListInspect
 resid.lavaan.mi <- function(object, type = c("raw","cor")) {
   ## @SampleStatsList is (for each imputation) output from:
   ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
@@ -1367,6 +1378,7 @@ setMethod("resid", "lavaan.mi", resid.lavaan.mi)
 #' 
 #' 
 #' @aliases runMI lavaan.mi cfa.mi sem.mi growth.mi
+#' @importFrom lavaan lavInspect parTable
 #' @param model The analysis model can be specified using lavaan
 #' \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
 #' \code{\link[lavaan]{parTable}}).

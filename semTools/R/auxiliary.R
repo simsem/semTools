@@ -17,6 +17,7 @@
 #' \code{aux} can be declared as \code{ordered}.
 #'
 #' @aliases auxiliary lavaan.auxiliary cfa.auxiliary sem.auxiliary growth.auxiliary
+#' @importFrom lavaan lavInspect parTable
 #'
 #' @param model The analysis model can be specified with 1 of 2 objects:
 #'   \enumerate{
@@ -81,8 +82,6 @@
 #' fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
 #'             baseline.model = fitaux2@external$baseline.model)
 #'
-
-
 auxiliary <- function(model, data, aux, fun, ...) {
   lavArgs <- list(...)
   if (missing(aux))
@@ -223,18 +222,26 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	result
 }
 
+#' @rdname auxiliary
+#' @aliases lavaan.auxiliary
 lavaan.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "lavaan", ...)
 }
 
+#' @rdname auxiliary
+#' @aliases cfa.auxiliary
 cfa.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "cfa", ...)
 }
 
+#' @rdname auxiliary
+#' @aliases sem.auxiliary
 sem.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "sem", ...)
 }
 
+#' @rdname auxiliary
+#' @aliases growth.auxiliary
 growth.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "growth", ...)
 }
@@ -384,7 +391,6 @@ nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
 	}
 	return(pt)
 }
-
 
 fitMeasuresLavaanStar <- function(object) {
 	notused <- capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit"))) ## FIXME: don't set a new inspect method

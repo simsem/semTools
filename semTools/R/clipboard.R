@@ -114,6 +114,7 @@ saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 ## Hidden functions
 ## ----------------
 
+#' @importFrom lavaan lavInspect
 saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 	if (length(what) > 1) {
         stop("`what' arguments contains multiple arguments; only one is allowed")

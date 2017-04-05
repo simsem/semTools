@@ -23,6 +23,7 @@
 #' \eqn{\chi^2}, diagonal weighted least squares for ordinal indicators, or
 #' full-information maximum likelihood (FIML).
 #'
+#' @importFrom lavaan lavInspect parTable
 #' @param data A target \code{data.frame}
 #' @param nf The desired number of factors
 #' @param varList Target observed variables. If not specified, all variables in
@@ -380,6 +381,7 @@ testLoadings <- function(object, level = 0.95) {
   out
 }
 
+#' @importFrom lavaan lavInspect
 getLoad <- function(object, std = TRUE) {
 	out <- lavInspect(object, "est")$lambda
 	if (std) {
@@ -463,6 +465,7 @@ stdRotatedLoadings <- function(est, object, fun, aux = NULL, rotate = NULL, More
 	est
 }
 
+#' @importFrom lavaan lavInspect parTable
 seStdLoadings <- function(rotate, object, fun, MoreArgs) {
 	# object <- efaUnrotate(HolzingerSwineford1939, nf=3, varList=paste0("x", 1:9), estimator="mlr")
 	# initL <- getLoad(object)

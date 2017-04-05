@@ -207,7 +207,7 @@ singleParamTest <- function(model1, model2, return.fit = FALSE,
 paramNameFromPt <- function(pt) {
 	ngroups <- max(pt$group)
 	result <- NULL
-	if(ngroups == 1) {
+	if (ngroups == 1) {
 		result <- paste0(pt$lhs, pt$op, pt$rhs)
 	} else {
 		grouplab <- paste0(".g", pt$group)
@@ -221,8 +221,9 @@ paramNameFromPt <- function(pt) {
 	result
 }
 
+#' @importFrom lavaan lavInspect
 refit <- function(pt, object, resetstart = TRUE) {
-	if(resetstart && "start" %in% names(pt)) pt <- pt[-which("start" == names(pt))]
+	if (resetstart && "start" %in% names(pt)) pt <- pt[-which("start" == names(pt))]
 	previousCall <- lavInspect(object, "call")
 	args <- previousCall[-1]
 	args$model <- pt

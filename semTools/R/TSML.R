@@ -109,6 +109,7 @@ setMethod("show", "twostage", function(object) {
 
 #' @rdname twostage-class
 #' @aliases summary,twostage-method
+#' @importFrom lavaan parTable
 setMethod("summary", "twostage", function(object, ...) {
   ## show chi-squared test results AND estimates
   getMethod("show", "twostage")(object)
@@ -143,6 +144,7 @@ setMethod("summary", "twostage", function(object, ...) {
 
 
 ## (hidden) function utilized by vcov and anova methods
+#' @importFrom lavaan lavInspect parTable
 twostageMatrices <- function(object, baseline) {
   SLOT <- if (baseline) "baseline" else "target"
   ## extract parameter table to isolate estimates by group
@@ -231,6 +233,7 @@ twostageMatrices <- function(object, baseline) {
 }
 
 ## (hidden?) function utilized by anova method to test 1 or 2 models
+#' @importFrom lavaan lavInspect
 twostageLRT <- function(object, baseline, print = FALSE) {
   SLOT <- if (baseline) "baseline" else "target"
   ## calculate model derivatives and complete-data information matrix
@@ -273,6 +276,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
 
 #' @rdname twostage-class
 #' @aliases anova,twostage-method
+#' @importFrom lavaan lavInspect
 setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
   if (is.null(h1)) {
     return(twostageLRT(object, baseline, print = TRUE))
@@ -321,6 +325,7 @@ setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
 
 #' @rdname twostage-class
 #' @aliases nobs,twostage-method
+#' @importFrom lavaan lavInspect
 setMethod("nobs", "twostage",
 function(object, type = c("ntotal","ngroups","n.per.group","norig",
                           "patterns","coverage")) {
@@ -436,6 +441,7 @@ setMethod("resid", "twostage",
 #' 
 #' 
 #' @aliases twostage cfa.2stage sem.2stage growth.2stage lavaan.2stage
+#' @importFrom lavaan lavInspect
 #' @param \dots Arguments passed to the \code{\link[lavaan]{lavaan}} function
 #' specified in the \code{fun} argument.  See also
 #' \code{\link[lavaan]{lavOptions}}.  At a minimum, the user must supply the
