@@ -242,9 +242,7 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
   }
 
   StartTimeFull <- proc.time()
-  if (is.character(dataset)) {
-    dataset <- read.csv(dataset)
-  }
+  if (is.character(dataset)) dataset <- utils::read.csv(dataset)
   if (indices[1] == "default") indices <- c("chisq", "df", "cfi", "tli", "rmsea","srmr")
   ## make sure chi-squared and df are the first and second elements
   requestedChiSq <- grep(pattern = "chisq", indices, value = TRUE)
@@ -704,14 +702,14 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
     replist <- matrix(NA, nAllocOutput, 1)
     for (i in 1:(nAllocOutput)) {
       colnames(AllocationsOutput[[i]]) <- names
-      write.table(AllocationsOutput[[i]],
-                  file = paste(parceloutput, "/parcelruns", i, ".dat", sep = ""),
-                  row.names = FALSE, col.names = TRUE)
+      utils::write.table(AllocationsOutput[[i]],
+                         file = paste(parceloutput, "/parcelruns", i, ".dat", sep = ""),
+                         row.names = FALSE, col.names = TRUE)
       replist[i, 1] <- paste("parcelruns", i, ".dat", sep = "")
     }
-    write.table(replist, paste(parceloutput, "/parcelrunsreplist.dat",
-                               sep = ""), quote = FALSE, row.names = FALSE,
-                col.names = FALSE)
+    utils:: write.table(replist, paste(parceloutput, "/parcelrunsreplist.dat",
+                                       sep = ""), quote = FALSE, row.names = FALSE,
+                        col.names = FALSE)
   }
   if (useTotalAlloc == TRUE) {
     ParmnTotal <- ParamTotal[[1]]

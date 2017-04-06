@@ -90,7 +90,7 @@
 #' 
 parcelAllocation <- function(nPerPar, facPlc, nAlloc = 100, syntax, dataset,
                              names = "default", leaveout = 0, ...) {
-  if (is.character(dataset)) dataset <- read.csv(dataset)
+  if (is.character(dataset)) dataset <- utils::read.csv(dataset)
   dataset <- as.matrix(dataset)
   
   if (nAlloc < 2) stop("Minimum of two allocations required.")
@@ -300,13 +300,13 @@ parcelAllocation <- function(nPerPar, facPlc, nAlloc = 100, syntax, dataset,
       } else {
         colnames(Allocations[[i]]) <- NULL
       }
-      write.table(Allocations[[i]],
-                  paste(syntax, "parcelruns", i, ".dat", sep = ""), 
-                  row.names = FALSE, col.names = TRUE)
+      utils::write.table(Allocations[[i]],
+                         paste(syntax, "parcelruns", i, ".dat", sep = ""),
+                         row.names = FALSE, col.names = TRUE)
       replist[i, 1] <- paste("parcelrun", i, ".dat", sep = "")
     }
-    write.table(replist, paste(syntax, "parcelrunsreplist.dat", sep = ""),
-                quote = FALSE, row.names = FALSE, col.names = FALSE)
+    utils::write.table(replist, paste(syntax, "parcelrunsreplist.dat", sep = ""),
+                       quote = FALSE, row.names = FALSE, col.names = FALSE)
   } else {
     
     Param <- list()

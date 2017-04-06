@@ -1269,7 +1269,7 @@ expect3NormProd <- function(m, s) {
 # s = the covariance matrix of all variates
 expect4NormProd <- function(m, s) {
 	first <- prod(m)
-	com <- combn(1:4, 2)
+	com <- utils::combn(1:4, 2)
 	forSecond <- function(draw, meanval, covval, index) {
 		draw2 <- setdiff(index, draw)
 		prod(meanval[draw2]) * covval[draw[1], draw[2]]
@@ -1292,17 +1292,17 @@ expect4NormProd <- function(m, s) {
 # s = the covariance matrix of all variates
 expect5NormProd <- function(m, s) {
 	first <- prod(m)
-	com <- combn(1:5, 2)
+	com <- utils::combn(1:5, 2)
 	forSecond <- function(draw, meanval, covval, index) {
 		draw2 <- setdiff(index, draw)
 		prod(meanval[draw2]) * covval[draw[1], draw[2]]
 	}
 	second <- sum(apply(com, 2, forSecond, meanval=m, covval=s, index=1:5))
 
-	com2 <- combn(1:5, 4)
+	com2 <- utils::combn(1:5, 4)
 	forThirdOuter <- function(index, m, s, indexall) {
 		targetMean <- m[setdiff(indexall, index)]
-		cominner <- combn(index, 2)[,1:3] #select only first three terms containing the first element only
+		cominner <- utils::combn(index, 2)[,1:3] #select only first three terms containing the first element only
 		forThirdInner <- function(draw, covval, index) {
 			draw2 <- setdiff(index, draw)
 			covval[draw[1], draw[2]] * covval[draw2[1], draw2[2]]
@@ -1333,7 +1333,7 @@ var2NormProd <- function(m, s) {
 # m = the mean of each normal variate
 # s = the covariance matrix of all variates
 var3NormProd <- function(m, s) {
-	com <- combn(1:3, 2)
+	com <- utils::combn(1:3, 2)
 	forFirst <- function(draw, meanval, covval, index) {
 		# draw = 2, 3; draw2 = 1
 		draw2 <- setdiff(index, draw)

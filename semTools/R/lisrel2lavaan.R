@@ -16,6 +16,7 @@
 #' standard LISREL data importation.
 #'
 #'
+#' @importFrom utils read.table read.csv
 #' @param filename Filename of the LISREL syntax file. If the \code{filename}
 #' arguement is not specified, the user will be prompted with a file browser
 #' with which LISREL syntax file can be selected (recommended).

@@ -492,14 +492,14 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
   }
   ## run bootstrap fits
   if (showProgress) {
-    mypb <- txtProgressBar(min = 1, max = nBoot, initial = 1, char = "=",
-                           width = 50, style = 3, file = "")
+    mypb <- utils::txtProgressBar(min = 1, max = nBoot, initial = 1, char = "=",
+                                  width = 50, style = 3, file = "")
     bootFits <- numeric()
     tStart <- Sys.time()
     for (j in 1:nBoot) {
       bootFits[j] <- fitBootSample(bootSamples[[j]], args = lavaanArgs,
                                    suppress = suppressWarn)
-      setTxtProgressBar(mypb, j)
+      utils::setTxtProgressBar(mypb, j)
     }
     close(mypb)
     output$timeFit <- Sys.time() - tStart

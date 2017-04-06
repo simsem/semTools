@@ -126,13 +126,13 @@ saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...)
 		if (tableFormat) {
 			copySummary(object, file=file)
 		} else {
-			write(paste(capture.output(summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE)), collapse="\n"), file=file)
+			write(paste(utils::capture.output(summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE)), collapse="\n"), file=file)
 		}
 	} else if (what == "mifit") {
 		if (tableFormat) {
-			write.table(miPowerFit(object, ...), file=file, sep="\t", row.names=FALSE, col.names=TRUE)
+		  utils::write.table(miPowerFit(object, ...), file=file, sep="\t", row.names=FALSE, col.names=TRUE)
 		} else {
-			write(paste(capture.output(miPowerFit(object, ...)), collapse="\n"), file=file)
+			write(paste(utils::capture.output(miPowerFit(object, ...)), collapse="\n"), file=file)
 		}
 	} else {
 		target <- lavInspect(object, what=what)

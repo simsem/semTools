@@ -914,13 +914,13 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
   ###################### PERMUTED RESULTS ###########################
   ## permute and return distributions of (delta)AFIs, largest MI, and extras
   if (showProgress) {
-    mypb <- txtProgressBar(min = 1, max = nPermute, initial = 1, char = "=",
-                           width = 50, style = 3, file = "")
+    mypb <- utils::txtProgressBar(min = 1, max = nPermute, initial = 1,
+                                  char = "=", width = 50, style = 3, file = "")
     permuDist <- list()
     for (j in 1:nPermute) {
       permuDist[[j]] <- do.call(paste("permuteOnce", modelType, sep = "."),
                                 args = c(argList, i = j))
-      setTxtProgressBar(mypb, j)
+      utils::setTxtProgressBar(mypb, j)
     }
     close(mypb)
   } else if (parallelType == "multicore") {

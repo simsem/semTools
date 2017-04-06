@@ -78,19 +78,19 @@ splitSample <- function(dataset, path = "default", div = 2,
     type <- temp[[1]][2]
     name <- temp[[1]][1]
     if (type == "dat") {
-      if (is.numeric(as.matrix(read.table(file, nrows = 1))) == FALSE) {
-        data <- as.matrix(read.table(file, header = TRUE))
+      if (is.numeric(as.matrix(utils::read.table(file, nrows = 1))) == FALSE) {
+        data <- as.matrix(utils::read.table(file, header = TRUE))
         hea = TRUE
       } else {
-        data <- as.matrix(read.table(file))
+        data <- as.matrix(utils::read.table(file))
       }
     }
     if (type == "csv") {
-      if (is.numeric(as.matrix(read.table(file, nrows = 1))) == FALSE) {
-        data <- as.matrix(read.csv(file, header = TRUE))
+      if (is.numeric(as.matrix(utils::read.table(file, nrows = 1))) == FALSE) {
+        data <- as.matrix(utils::read.csv(file, header = TRUE))
         hea = TRUE
       } else {
-        data <- as.matrix(read.csv(file))
+        data <- as.matrix(utils::read.csv(file))
       }
     }
   } else {
@@ -131,16 +131,19 @@ splitSample <- function(dataset, path = "default", div = 2,
     } else {
       for (i in 1:div) {
         if (type == "dat") {
-          write.table(dataL[[i]], paste(path, name, "_s", i, ".dat", sep = ""), 
-                      sep = "  ", row.names = FALSE, col.names = hea)
+          utils::write.table(dataL[[i]],
+                             paste(path, name, "_s", i, ".dat", sep = ""),
+                             sep = "  ", row.names = FALSE, col.names = hea)
         }
         if (type == "csv") {
-          write.table(dataL[[i]], paste(path, name, "_s", i, ".csv", sep = ""), 
-                      sep = ",", row.names = FALSE, col.names = hea)
+          utils::write.table(dataL[[i]],
+                             paste(path, name, "_s", i, ".csv", sep = ""),
+                             sep = ",", row.names = FALSE, col.names = hea)
         }
         if (type == "default") {
-          write.table(dataL[[i]], paste(path, name, "_s", i, ".dat", sep = ""), 
-                      sep = "  ", row.names = FALSE, col.names = hea)
+          utils::write.table(dataL[[i]],
+                             paste(path, name, "_s", i, ".dat", sep = ""),
+                             sep = "  ", row.names = FALSE, col.names = hea)
         }
       }
     }

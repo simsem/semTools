@@ -117,16 +117,16 @@ saveFileFitDiff <- function(object, filewrite, what = "summary",
 			cat("Nested Model Comparison\n\n", file=filetemplate)
 			out <- getNestedTable(object)
 			out <- data.frame(model.diff = rownames(out), out)
-			write.table(out, file=filetemplate, sep="\t", quote=FALSE, row.names=FALSE)
+			utils::write.table(out, file=filetemplate, sep="\t", quote=FALSE, row.names=FALSE)
 			cat("\n\n", file=filetemplate)
 		}
 		out2 <- getFitSummary(object, fit.measures)
 		out2 <- data.frame(model = object@name, out2)
 		cat("Fit Indices Summaries\n\n", file=filetemplate)
-		write.table(out2, file=filetemplate, sep="\t", quote=FALSE, row.names=FALSE)
+		utils::write.table(out2, file=filetemplate, sep="\t", quote=FALSE, row.names=FALSE)
 		close(filetemplate)
 	} else {
-		write(paste(capture.output(lavaan::summary(object)), collapse="\n"), file=filewrite)
+		write(paste(utils::capture.output(lavaan::summary(object)), collapse="\n"), file=filewrite)
 	}
 }
 

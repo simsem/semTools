@@ -393,7 +393,7 @@ nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
 }
 
 fitMeasuresLavaanStar <- function(object) {
-	notused <- capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit"))) ## FIXME: don't set a new inspect method
+	notused <- utils::capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit"))) ## FIXME: don't set a new inspect method
 	result[c("baseline.chisq", "baseline.df", "baseline.pvalue")] <- object@nullfit[c("chisq", "df", "pvalue")]
 
     if(lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler",

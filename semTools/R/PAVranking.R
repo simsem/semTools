@@ -231,8 +231,7 @@ PAVranking <- function(nPerPar, facPlc, nAlloc = 100, parceloutput = 0, syntaxA,
   options(max.print = 1e+06)
   
   ## Create parceled datasets
-  if (is.character(dataset)) 
-    dataset <- read.csv(dataset)
+  if (is.character(dataset)) dataset <- utils::read.csv(dataset)
   dataset <- as.matrix(dataset)
   
   if (nAlloc < 2) 
@@ -431,12 +430,14 @@ PAVranking <- function(nPerPar, facPlc, nAlloc = 100, parceloutput = 0, syntaxA,
     for (i in 1:nAlloc) {
       ## if (is.na(names)==TRUE) names <- matrix(NA,nrow(
       colnames(Allocations[[i]]) <- names
-      write.table(Allocations[[i]], paste(parceloutput, "/parcelruns", i, ".dat", 
-                                          sep = ""), row.names = FALSE, col.names = TRUE)
+      utils::write.table(Allocations[[i]], paste(parceloutput, "/parcelruns", i,
+                                                 ".dat", sep = ""),
+                         row.names = FALSE, col.names = TRUE)
       replist[i, 1] <- paste("parcelruns", i, ".dat", sep = "")
     }
-    write.table(replist, paste(parceloutput, "/parcelrunsreplist.dat", sep = ""), 
-                quote = FALSE, row.names = FALSE, col.names = FALSE)
+    utils::write.table(replist, paste(parceloutput, "/parcelrunsreplist.dat",
+                                      sep = ""),
+                       quote = FALSE, row.names = FALSE, col.names = FALSE)
   }
   
   
