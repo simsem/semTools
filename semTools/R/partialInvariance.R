@@ -1715,6 +1715,7 @@ findFactor <- function(var, facList) {
 
 ## Terry moved here from wald.R so that wald() could be removed (redundant with lavaan::lavTestWald)
 ## FIXME: Update WaldConstraint to rely on lavaan::lavTestWald instead
+#' @importFrom stats pchisq
 waldContrast <- function(object, contrast) {
   beta <- lavaan::coef(object)
   acov <- lavaan::vcov(object)

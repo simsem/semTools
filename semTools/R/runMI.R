@@ -202,6 +202,7 @@ setMethod("show", "lavaan.mi", function(object) {
 })
 
 
+#' @importFrom stats pt qt
 #' @importFrom lavaan lavListInspect parTable
 summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
@@ -420,6 +421,7 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within")) {
 setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
 
 
+#' @importFrom stats pf pchisq
 #' @importFrom lavaan parTable
 D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) {
   ## "borrowed" lavTestWald()
@@ -506,7 +508,7 @@ D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) 
   class(out) <- c("lavaan.vector","numeric")
   out
 }
-#' @importFrom stats var
+#' @importFrom stats var pf pchisq
 #' @importFrom lavaan lavListInspect parTable
 D2 <- function(object, h1 = NULL, asymptotic = FALSE,
                robust = FALSE, scaleshift = FALSE) {
@@ -603,6 +605,7 @@ getLLs <- function(object) {
   }
   LL
 }
+#' @importFrom stats pf pchisq
 #' @importFrom lavaan lavListInspect parTable
 D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   N <- lavListInspect(object, "ntotal")
@@ -714,6 +717,7 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   class(out) <- c("lavaan.vector","numeric")
   out
 }
+#' @importFrom stats pchisq
 #' @importFrom lavaan lavListInspect
 robustify <- function(ChiSq, object, h1 = NULL) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -757,6 +761,7 @@ robustify <- function(ChiSq, object, h1 = NULL) {
 }
 #' @name lavaan.mi-class
 #' @aliases anova,lavaan.mi-method
+#' @importFrom stats pchisq
 #' @importFrom lavaan lavListInspect
 anova.lavaan.mi <- function(object, h1 = NULL,
                             test = c("D3","D2","D1"),

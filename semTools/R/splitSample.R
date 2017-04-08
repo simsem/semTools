@@ -16,6 +16,9 @@
 #' dataframe). If input is an R object and path is default, output data sets
 #' will be returned as a list object.
 #' 
+#' 
+#' @importFrom stats runif
+#' 
 #' @param dataset The original data set to be divided. Can be a file path to a
 #' *.csv or *.dat file (headers will automatically be detected) or an R object
 #' (matrix or dataframe). (Windows users: file path must be specified using

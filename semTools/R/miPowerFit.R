@@ -38,7 +38,7 @@
 #'
 #' @aliases miPowerFit miPowerFit
 #' @importFrom lavaan lavInspect
-#' @importFrom stats qnorm
+#' @importFrom stats qnorm qchisq pchisq
 #' 
 #' @param lavaanObj The lavaan model object used to evaluate model fit
 #' @param stdLoad The amount of standardized factor loading that one would like

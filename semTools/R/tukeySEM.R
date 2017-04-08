@@ -15,6 +15,9 @@
 #' Tukey's WSD test from Maxwell & Delaney (2004), that allows variances and
 #' sample sizes to differ across groups.
 #' 
+#' 
+#' @importFrom stats ptukey
+#' 
 #' @param m1 Mean of group 1.
 #' @param m2 Mean of group 2.
 #' @param var1 Variance of group 1.

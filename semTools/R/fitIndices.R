@@ -325,7 +325,10 @@ sic <- function(f, lresults = NULL) {
 #' where \eqn{N} is the sample size when using normal likelihood, or \eqn{N -
 #' 1} when using \code{likelihood = 'wishart'}.
 #'
+#'
 #' @importFrom lavaan lavInspect
+#' @importFrom stats pchisq
+#' 
 #' @param fit0 The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param fit1 Optional additional \linkS4class{lavaan} model, in which

@@ -44,8 +44,9 @@
 #' window and rerun.
 #' 
 #' 
-#' @importFrom stats sd
+#' @importFrom stats sd runif pchisq
 #' @importFrom lavaan lavInspect
+#' 
 #' @param nPerPar A list in which each element is a vector, corresponding to
 #' each factor, indicating sizes of parcels. If variables are left out of
 #' parceling, they should not be accounted for here (i.e., there should not be
@@ -601,10 +602,8 @@ PAVranking <- function(nPerPar, facPlc, nAlloc = 100, parceloutput = 0, syntaxA,
     ## create empty list for Chi-square significance
     
     for (i in 1:nAlloc) {
-      
       pChisq_A[[i]] <- (1 - pchisq(Fitsd_A[1, i], Fitsd_A[2, i]))
       ## calculate p-value for each Chi-square
-      
       if (is.na(pChisq_A[[i]]) == FALSE & pChisq_A[[i]] < 0.05) {
         sigChisq_A[[i]] <- 1
       } else sigChisq_A[[i]] <- 0

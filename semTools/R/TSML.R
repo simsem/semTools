@@ -234,6 +234,7 @@ twostageMatrices <- function(object, baseline) {
 }
 
 ## (hidden?) function utilized by anova method to test 1 or 2 models
+#' @importFrom stats pchisq
 #' @importFrom lavaan lavInspect
 twostageLRT <- function(object, baseline, print = FALSE) {
   SLOT <- if (baseline) "baseline" else "target"

@@ -22,6 +22,9 @@
 #' one nonzero parameter to an incorrect value. Note the number in the
 #' \code{nparam} argument.
 #'
+#'
+#' @importFrom stats qchisq pchisq
+#' 
 #' @param powerModel lavaan \code{\link[lavaan]{model.syntax}} for the model to
 #'   be analyzed. This syntax should constrain at least one nonzero parameter
 #'   to 0 (or another number).

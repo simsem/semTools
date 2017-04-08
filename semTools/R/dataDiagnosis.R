@@ -150,7 +150,7 @@ kurtosis <- function(object, population = FALSE) {
 #' distribution with \eqn{d(d + 1)(d + 2)/6} degrees of freedom.
 #'
 #'
-#' @importFrom stats cov
+#' @importFrom stats cov pchisq
 #' 
 #' @param dat The target matrix or data frame with multiple variables
 #' @param use Missing data handling method from the \code{\link[stats]{cov}}

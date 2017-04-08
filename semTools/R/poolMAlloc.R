@@ -55,7 +55,7 @@
 #' runtime of that iteration are outputted. When stopping criteria are
 #' satisfied, the full set of results are outputted.
 #' 
-#' @importFrom stats sd pnorm
+#' @importFrom stats sd pnorm pt qt runif pchisq
 #' @importFrom lavaan lavInspect
 #' 
 #' @param nPerPar A list in which each element is a vector, corresponding to

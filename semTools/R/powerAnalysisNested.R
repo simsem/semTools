@@ -8,6 +8,8 @@
 #' alternative pair of RMSEA is just over the specified power.
 #' 
 #' 
+#' @importFrom stats qchisq pchisq
+#' 
 #' @param rmsea0A The \eqn{H_0} baseline RMSEA
 #' @param rmsea0B The \eqn{H_0} alternative RMSEA (trivial misfit)
 #' @param rmsea1A The \eqn{H_1} baseline RMSEA

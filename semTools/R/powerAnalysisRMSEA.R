@@ -14,6 +14,9 @@
 #' proceeding.  A web version of this function is available at:
 #' \url{http://quantpsy.org/rmsea/rmseaplot.htm}.
 #' 
+#' 
+#' @importFrom stats qchisq pchisq
+#' 
 #' @param rmsea0 Null RMSEA
 #' @param rmseaA Alternative RMSEA
 #' @param df Model degrees of freedom
@@ -116,6 +119,9 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 #' where \eqn{\chi^2} is the \eqn{\chi^2} value obtained from the noncentral
 #' \eqn{\chi^2} distribution.
 #' 
+#' 
+#' @importFrom stats qchisq
+#' 
 #' @param rmsea The vector of RMSEA values to be plotted
 #' @param n Sample size of a dataset
 #' @param df Model degrees of freedom
@@ -155,19 +161,26 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
                           rmseaScale = TRUE, group = 1) {
 	graph <- cbind(rmsea, df)
-	ncp <- apply(graph, 1, function(x, n, group) ((n - 1) * x[2] * (x[1]^2))/group, n=n, group=group)
+	ncp <- apply(graph, MARGIN = 1,
+	             FUN = function(x, n, group) ((n - 1) * x[2] * (x[1]^2))/group,
+	             n = n, group = group)
 	graph <- cbind(graph, ncp)
 	dens <- lapply(as.list(data.frame(t(graph))), function(x) findDensity("chisq", df = x[2], ncp=x[3])) 
-	if(rmseaScale) dens <- lapply(dens, function(x, df, n, group) { x[,1] <- (x[,1] - df)/(n-1); x[(x[,1] < 0),1] <- 0; x[,1] <- sqrt(group) * sqrt(x[,1]/df); return(x) }, df=df, n=n, group=group)
+	if (rmseaScale) dens <- lapply(dens, function(x, df, n, group) { x[,1] <- (x[,1] - df)/(n-1); x[(x[,1] < 0),1] <- 0; x[,1] <- sqrt(group) * sqrt(x[,1]/df); return(x) }, df=df, n=n, group=group)
 	cutoff <- NULL
-	if(!is.null(ptile)) { 
-		cutoff <- qchisq(ptile, df=graph[1, 2], ncp=graph[1, 3])
-		if(rmseaScale) cutoff <- sqrt(group) * sqrt((cutoff - df)/(df * (n - 1)))
+	if (!is.null(ptile)) { 
+		cutoff <- qchisq(ptile, df = graph[1, 2], ncp = graph[1, 3])
+		if (rmseaScale) cutoff <- sqrt(group) * sqrt((cutoff - df)/(df * (n - 1)))
 	}
-	if(is.null(caption)) caption <- sapply(graph[,1], function(x) paste("Population RMSEA = ", format(x, digits=3), sep="")) 
-	plotOverlapDensity(dens, cutoff, caption, xlab=ifelse(rmseaScale, "RMSEA", "Chi-Square"), ylab="Density")
+	if (is.null(caption)) caption <- sapply(graph[,1],
+	                                        function(x) paste("Population RMSEA = ",
+	                                                          format(x, digits = 3),
+	                                                          sep = "")) 
+	plotOverlapDensity(dens, cutoff, caption, ylab = "Density",
+	                   xlab = ifelse(rmseaScale, "RMSEA", "Chi-Square"))
 	equal0 <- sapply(dens, function(x) x[,1] == 0) 
-	if(any(equal0)) warning("The density at RMSEA = 0 cannot be trusted because the plots are truncated.")
+	if (any(equal0)) warning("The density at RMSEA = 0 cannot be trusted",
+	                         " because the plots are truncated.")
 }
 
 
@@ -188,6 +201,9 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 #' \code{rmseaA} is less than \code{rmsea0}, the test of not-close fit is used
 #' and the critical region is in the left hand side of the null sampling
 #' distribution (MacCallum, Browne, & Suguwara, 1996).
+#' 
+#' 
+#' @importFrom stats qchisq pchisq
 #' 
 #' @param rmsea0 Null RMSEA
 #' @param rmseaA Alternative RMSEA
@@ -317,18 +333,18 @@ findDensity <- function(dist, ...) {
 # vline: Vertical line in the graph
 # caption: The name of each density line 
 # ...: Additional argument of the plot function
-plotOverlapDensity <- function(dat, vline = NULL, caption=NULL, ...) {
-  if(!is.list(dat)) {
+plotOverlapDensity <- function(dat, vline = NULL, caption = NULL, ...) {
+  if (!is.list(dat)) {
     temp <- list()
     temp[[1]] <- dat
     dat <- temp
   }
   stack <- do.call(rbind, dat)
   lim <- apply(stack, 2, function(x) c(min(x), max(x)))
-  plot(stack, xlim=lim[,1], ylim=lim[,2], type="n", ...)
-  for(i in 1:length(dat)) lines(dat[[i]], col = i, lwd=1.5)
-  for(i in 1:length(vline)) abline(v = vline[i], lwd=1.5)
-  if(!is.null(caption))
+  plot(stack, xlim = lim[,1], ylim = lim[,2], type = "n", ...)
+  for (i in 1:length(dat)) lines(dat[[i]], col = i, lwd = 1.5)
+  for (i in 1:length(vline)) abline(v = vline[i], lwd = 1.5)
+  if (!is.null(caption))
     legend(0.50 * (lim[2,1] - lim[1,1]) + lim[1,1], 0.99 * (lim[2,2] - lim[1,2]) + lim[1,2], caption, col=1:length(dat), lty=1)
 }
 
