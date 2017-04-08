@@ -222,6 +222,7 @@
 #'            names = list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"))
 #' }
 #' 
+#' @export
 PAVranking <- function(nPerPar, facPlc, nAlloc = 100, parceloutput = 0, syntaxA, syntaxB, 
                        dataset, names = NULL, leaveout = 0, seed = NA, ...) {
   if (is.null(names)) 

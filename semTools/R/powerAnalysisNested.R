@@ -42,6 +42,7 @@
 #'                      rmsea1B = 0.05, dfA = 22, dfB = 20, n = 200,
 #'                      alpha = 0.05, group = 1)
 #' 
+#' @export
 findRMSEApowernested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1B = NULL, dfA, dfB, n, alpha = 0.05, group = 1) {
   if(is.null(rmsea0A)) rmsea0A <- 0
   if(is.null(rmsea0B)) rmsea0B <- 0
@@ -101,6 +102,7 @@ findRMSEApowernested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1
 #'                           rmsea1B = 0.05, dfA = 22, dfB = 20, power = 0.80,
 #'                           alpha = .05, group = 1) 
 #' 
+#' @export
 findRMSEAsamplesizenested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A,
                                       rmsea1B = NULL, dfA, dfB, power = 0.80,
                                       alpha = .05, group = 1) {
@@ -172,6 +174,7 @@ findRMSEAsamplesizenested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A,
 #'                      rmsea1B = 0.05, dfA = 22, dfB = 20, nlow = 50,
 #'                      nhigh = 500, steps = 1, alpha = .05, group = 1)  
 #' 
+#' @export
 plotRMSEApowernested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A,
                                  rmsea1B = NULL, dfA, dfB, nlow, nhigh,
                                  steps = 1, alpha = .05, group = 1, ...){ 

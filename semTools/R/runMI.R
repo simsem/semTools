@@ -165,6 +165,7 @@ setClass("lavaan.mi", contains = "lavaanList",
 
 #' @name lavaan.mi-class
 #' @aliases show,lavaan.mi-method
+#' @export
 setMethod("show", "lavaan.mi", function(object) {
   nData <- object@meta$ndat
 
@@ -326,12 +327,14 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
 }
 #' @name lavaan.mi-class
 #' @aliases summary,lavaan.mi-method
+#' @export
 setMethod("summary", "lavaan.mi", summary.lavaan.mi)
 
 
 #' @name lavaan.mi-class
 #' @aliases nobs,lavaan.mi-method
 #' @importFrom lavaan lavListInspect
+#' @export
 setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
   if (total) return(lavListInspect(object, "ntotal"))
   N <- lavListInspect(object, "norig")
@@ -362,6 +365,7 @@ coef.lavaan.mi <- function(object, type = "free", labels = TRUE) {
 }
 #' @name lavaan.mi-class
 #' @aliases coef,lavaan.mi-method
+#' @export
 setMethod("coef", "lavaan.mi", coef.lavaan.mi)
 
 
@@ -418,6 +422,7 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within")) {
 }
 #' @name lavaan.mi-class
 #' @aliases vcov,lavaan.mi-method
+#' @export
 setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
 
 
@@ -763,6 +768,7 @@ robustify <- function(ChiSq, object, h1 = NULL) {
 #' @aliases anova,lavaan.mi-method
 #' @importFrom stats pchisq uniroot
 #' @importFrom lavaan lavListInspect
+#' @export
 anova.lavaan.mi <- function(object, h1 = NULL,
                             test = c("D3","D2","D1"),
                             asymptotic = FALSE, constraints = NULL,
@@ -1280,9 +1286,11 @@ fitted.lavaan.mi <- function(object) {
 }
 #' @name lavaan.mi-class
 #' @aliases fitted,lavaan.mi-method
+#' @export
 setMethod("fitted", "lavaan.mi", fitted.lavaan.mi)
 #' @name lavaan.mi-class
 #' @aliases fitted.values,lavaan.mi-method
+#' @export
 setMethod("fitted.values", "lavaan.mi", fitted.lavaan.mi)
 
 
@@ -1366,9 +1374,11 @@ resid.lavaan.mi <- function(object, type = c("raw","cor")) {
 }
 #' @name lavaan.mi-class
 #' @aliases residuals,lavaan.mi-method
+#' @export
 setMethod("residuals", "lavaan.mi", resid.lavaan.mi)
 #' @name lavaan.mi-class
 #' @aliases resid,lavaan.mi-method
+#' @export
 setMethod("resid", "lavaan.mi", resid.lavaan.mi)
 
 
@@ -1387,6 +1397,7 @@ setMethod("resid", "lavaan.mi", resid.lavaan.mi)
 #' 
 #' @aliases runMI lavaan.mi cfa.mi sem.mi growth.mi
 #' @importFrom lavaan lavInspect parTable
+#' 
 #' @param model The analysis model can be specified using lavaan
 #' \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
 #' \code{\link[lavaan]{parTable}}).
@@ -1514,6 +1525,7 @@ setMethod("resid", "lavaan.mi", resid.lavaan.mi)
 #' 
 #' } 
 #' 
+#' @export
 runMI <- function(model, data, fun = "lavaan", ...,
                   m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
   dots <- list(...)
@@ -1655,6 +1667,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
 }
 
 #' @rdname runMI
+#' @export
 lavaan.mi <- function(model, data, ...,
                       m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
   runMI(model = model, data = data, fun = "lavaan", ...,
@@ -1662,6 +1675,7 @@ lavaan.mi <- function(model, data, ...,
 }
 
 #' @rdname runMI
+#' @export
 cfa.mi <- function(model, data, ...,
                    m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
   runMI(model = model, data = data, fun = "cfa", ...,
@@ -1669,6 +1683,7 @@ cfa.mi <- function(model, data, ...,
 }
 
 #' @rdname runMI
+#' @export
 sem.mi <- function(model, data, ...,
                    m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
   runMI(model = model, data = data, fun = "sem", ...,
@@ -1676,6 +1691,7 @@ sem.mi <- function(model, data, ...,
 }
 
 #' @rdname runMI
+#' @export
 growth.mi <- function(model, data, ...,
                       m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
   runMI(model = model, data = data, fun = "growth", ...,

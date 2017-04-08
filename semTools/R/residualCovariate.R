@@ -29,6 +29,7 @@
 #' 
 #' dat <- residualCovariate(attitude, 2:7, 1)
 #' 
+#' @export
 residualCovariate <- function(data, targetVar, covVar) {
     x <- as.list(match.call())
     cov <- eval(x$covVar)

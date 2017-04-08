@@ -137,6 +137,7 @@
 #'                             "f3", "f2", c(-1, 0, 1))
 #' result2wayMC
 #' 
+#' @export
 probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 	# Check whether modVar is correct
 	if(is.character(modVar)) {
@@ -340,6 +341,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 #'                             "f3", "f2", c(-1, 0, 1))
 #' result2wayRC
 #' 
+#' @export
 probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 	# Check whether modVar is correct
 	if(is.character(modVar)) {
@@ -647,6 +649,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #'                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 #' result3wayMC
 #' 
+#' @export
 probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	# Check whether modVar is correct
 	if(is.character(modVar)) {
@@ -893,6 +896,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #'                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 #' result3wayRC
 #' 
+#' @export
 probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	# Check whether modVar is correct
 	if(is.character(modVar)) {
@@ -1190,6 +1194,7 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #'                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 #' plotProbe(result3wayMC, xlim = c(-2, 2))
 #' 
+#' @export
 plotProbe <- function(object, xlim, xlab = "Indepedent Variable",
                       ylab = "Dependent Variable",  ...) {
   if (length(xlim) != 2)  stop("The x-limit should be specified as a numeric",

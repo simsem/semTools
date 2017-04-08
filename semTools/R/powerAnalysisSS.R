@@ -126,6 +126,7 @@
 #' SSpower(powerModel = modelA2, mu = mu, Sigma = Sigma,
 #'         n = c(60, 65), nparam = 2)
 #' 
+#' @export
 SSpower <- function(powerModel, n, nparam, popModel, mu, Sigma,
                     fun = "cfa", alpha = .05, ...) {
   if (missing(Sigma)) {

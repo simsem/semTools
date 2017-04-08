@@ -41,6 +41,7 @@
 #' mvrnonnorm(20, c(a = 1, b = 2), matrix(c(10, 2, 2, 5), 2, 2),
 #' 	skewness = c(5, 2), kurtosis = c(3, 3))
 #' 
+#' @export
 mvrnonnorm <- function(n, mu, Sigma, skewness = NULL,
                        kurtosis = NULL, empirical = FALSE) {
   ## number of variables
@@ -71,6 +72,11 @@ mvrnonnorm <- function(n, mu, Sigma, skewness = NULL,
   colnames(X) <- varnames
   X
 }
+
+
+## ----------------
+## Hidden Functions
+## ----------------
 
 ## Copied from lavaan package
 #' @importFrom stats nlminb

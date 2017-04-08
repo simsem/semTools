@@ -161,6 +161,7 @@
 #' fit2 <- sem(model, data = PoliticalDemocracy, meanstructure = TRUE)
 #' miPowerFit(fit2, stdLoad = 0.3, cor = 0.2, stdBeta = 0.2, intcept = 0.5)
 #'
+#' @export
 miPowerFit <- function(lavaanObj, stdLoad = 0.4, cor = 0.1, stdBeta = 0.1,
                        intcept = 0.2, stdDelta = NULL, delta = NULL,
                        cilevel = 0.90) {

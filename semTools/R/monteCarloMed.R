@@ -129,6 +129,7 @@
 #' monteCarloMed(med, coef1 = aparam, coef2 = b1param,
 #'               coef3 = b2param, ACM = AC)
 #' 
+#' @export
 monteCarloMed <- function(expression, ..., ACM = NULL, object = NULL,
                           rep = 20000, CI = 95, plot = FALSE,
                           outputValues = FALSE) {

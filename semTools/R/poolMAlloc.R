@@ -233,6 +233,7 @@
 #'            double = FALSE, useTotalAlloc = FALSE)
 #' }
 #' 
+#' @export
 poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
                        parceloutput = NULL, syntax, dataset, stopProp, stopValue,
                        selectParam = NULL, indices = "default", double = FALSE,

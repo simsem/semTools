@@ -95,6 +95,7 @@
 #' ## Example to rerun quark after imputation failure:
 #' quark.list <- quark(data = dat, id = c(1, 2), order = 2)
 #' 
+#' @export
 quark <- function(data, id, order = 1, silent = FALSE, ...){
   if(!is.data.frame(data) && !is.matrix(data)) {
     stop("Inappropriate data file provided.")
@@ -157,6 +158,7 @@ quark <- function(data, id, order = 1, silent = FALSE, ...){
 #' 
 #' final.data <- combinequark(quark = quark.list, percent = 80)
 #' 
+#' @export
 combinequark <- function(quark, percent) {
   data <- cbind(quark$ID_Vars, quark$Used_Data)
   pct <- quark$Prin_Components_Prcnt

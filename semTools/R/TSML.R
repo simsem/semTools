@@ -97,6 +97,7 @@ setClass("twostage",
 
 #' @rdname twostage-class
 #' @aliases show,twostage-method
+#' @export
 setMethod("show", "twostage", function(object) {
   ## show chi-squared test results
   cat("Chi-squared test(s) results, ADJUSTED for missing data:\n\n")
@@ -111,6 +112,7 @@ setMethod("show", "twostage", function(object) {
 #' @aliases summary,twostage-method
 #' @importFrom stats pnorm qnorm
 #' @importFrom lavaan parTable
+#' @export
 setMethod("summary", "twostage", function(object, ...) {
   ## show chi-squared test results AND estimates
   getMethod("show", "twostage")(object)
@@ -279,6 +281,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
 #' @rdname twostage-class
 #' @aliases anova,twostage-method
 #' @importFrom lavaan lavInspect
+#' @export
 setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
   if (is.null(h1)) {
     return(twostageLRT(object, baseline, print = TRUE))
@@ -328,6 +331,7 @@ setMethod("anova", "twostage", function(object, h1 = NULL, baseline = FALSE) {
 #' @rdname twostage-class
 #' @aliases nobs,twostage-method
 #' @importFrom lavaan lavInspect
+#' @export
 setMethod("nobs", "twostage",
 function(object, type = c("ntotal","ngroups","n.per.group","norig",
                           "patterns","coverage")) {
@@ -339,6 +343,7 @@ function(object, type = c("ntotal","ngroups","n.per.group","norig",
 
 #' @rdname twostage-class
 #' @aliases coef,twostage-method
+#' @export
 setMethod("coef", "twostage", function(object, type = c("free","user")) {
   type <- type[1]
   lavaan::coef(object@target, type = type)
@@ -347,6 +352,7 @@ setMethod("coef", "twostage", function(object, type = c("free","user")) {
 
 #' @rdname twostage-class
 #' @aliases vcov,twostage-method
+#' @export
 setMethod("vcov", "twostage", function(object, baseline = FALSE) {
   SLOT <- if (baseline) "baseline" else "target"
   ## calculate model derivatives and complete-data information matrix
@@ -367,6 +373,7 @@ setMethod("vcov", "twostage", function(object, baseline = FALSE) {
 
 #' @rdname twostage-class
 #' @aliases fitted.values,twostage-method
+#' @export
 setMethod("fitted.values", "twostage",
           function(object, model = c("target","saturated","baseline"),
                    type = "moments", labels = TRUE) {
@@ -376,6 +383,7 @@ setMethod("fitted.values", "twostage",
 
 #' @rdname twostage-class
 #' @aliases fitted,twostage-method
+#' @export
 setMethod("fitted", "twostage",
           function(object, model = c("target","saturated","baseline"),
                    type = "moments", labels = TRUE) {
@@ -386,6 +394,7 @@ setMethod("fitted", "twostage",
 
 #' @rdname twostage-class
 #' @aliases residuals,twostage-method
+#' @export
 setMethod("residuals", "twostage",
           function(object, type = c("raw","cor","normalized","standardized")) {
   type <- type[1]
@@ -394,6 +403,7 @@ setMethod("residuals", "twostage",
 
 #' @rdname twostage-class
 #' @aliases resid,twostage-method
+#' @export
 setMethod("resid", "twostage",
           function(object, type = c("raw","cor","normalized","standardized")) {
   type <- type[1]
@@ -444,6 +454,7 @@ setMethod("resid", "twostage",
 #' 
 #' @aliases twostage cfa.2stage sem.2stage growth.2stage lavaan.2stage
 #' @importFrom lavaan lavInspect
+#' 
 #' @param \dots Arguments passed to the \code{\link[lavaan]{lavaan}} function
 #' specified in the \code{fun} argument.  See also
 #' \code{\link[lavaan]{lavOptions}}.  At a minimum, the user must supply the
@@ -524,6 +535,7 @@ setMethod("resid", "twostage",
 #' anova(out, outc)
 #' ## like for a single model, two corrected statistics are provided
 #' 
+#' @export
 twostage <- function(..., aux, fun, baseline.model = NULL) {
   if (all(aux == "")) aux <- NULL
   dots <- list(...)
@@ -611,21 +623,25 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
 
 
 #' @rdname twostage
+#' @export
 lavaan.2stage <- function(..., aux = NULL, baseline.model = NULL) {
   twostage(..., aux = aux, fun = "lavaan", baseline.model = baseline.model)
 }
 
 #' @rdname twostage
+#' @export
 cfa.2stage <- function(..., aux = NULL, baseline.model = NULL) {
   twostage(..., aux = aux, fun = "cfa", baseline.model = baseline.model)
 }
 
 #' @rdname twostage
+#' @export
 sem.2stage <- function(..., aux = NULL, baseline.model = NULL) {
   twostage(..., aux = aux, fun = "sem", baseline.model = baseline.model)
 }
 
 #' @rdname twostage
+#' @export
 growth.2stage <- function(..., aux = NULL, baseline.model = NULL) {
   twostage(..., aux = aux, fun = "growth", baseline.model = baseline.model)
 }

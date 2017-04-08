@@ -54,6 +54,7 @@
 #' ## compare group 2 and group 3
 #' tukeySEM(3.96, 2.94, 0.62, 1.07, 465, 64, 3)
 #' 
+#' @export
 tukeySEM <- function(m1, m2, var1, var2, n1, n2, ng) {
   qNum <- abs(m1 - m2)
   qDenom <- sqrt(((var1/n1) + (var2/n2))/2)

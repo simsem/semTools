@@ -154,6 +154,7 @@
 #' fit <- cfa(HS.model, data = HolzingerSwineford1939)
 #' reliability(fit)
 #' 
+#' @export
 reliability <- function(object) {
 	param <- lavInspect(object, "est")
 	ngroup <- lavInspect(object, "ngroups")
@@ -326,6 +327,7 @@ reliability <- function(object) {
 #' 
 #' 
 #' @importFrom lavaan lavInspect
+#' 
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions that has a
 #' second-order factor
@@ -348,6 +350,7 @@ reliability <- function(object) {
 #' reliability(fit6) # Should provide a warning for the endogenous variables
 #' reliabilityL2(fit6, "higher")
 #' 
+#' @export
 reliabilityL2 <- function(object, secondFactor) {
 	param <- lavInspect(object, "est")
 	ngroup <- lavInspect(object, "ngroups")
@@ -483,6 +486,7 @@ reliabilityL2 <- function(object, secondFactor) {
 #' 
 #' 
 #' @importFrom lavaan lavInspect
+#' 
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @return Maximal reliability values of each group. The maximal-reliability
@@ -508,6 +512,7 @@ reliabilityL2 <- function(object, secondFactor) {
 #' mr <- maximalRelia(fit)
 #' attr(mr, "weight")
 #' 
+#' @export
 maximalRelia <- function(object) {
   param <- lavInspect(object, "est")
   ngroup <- lavInspect(object, "ngroups")

@@ -124,6 +124,7 @@ setClass("permuteMeasEq", slots = c(PT = "data.frame",
 
 #' @rdname permuteMeasEq-class
 #' @aliases show,permuteMeasEq-method
+#' @export
 setMethod("show", "permuteMeasEq", function(object) {
   ## print warning if there are nonConverged permutations
   if (object@n.Permutations != object@n.Converged) {
@@ -144,6 +145,7 @@ setMethod("show", "permuteMeasEq", function(object) {
 
 #' @rdname permuteMeasEq-class
 #' @aliases summary,permuteMeasEq-method
+#' @export
 setMethod("summary", "permuteMeasEq", function(object, alpha = .05, nd = 3,
                                                extra = FALSE) {
   ## print warning if there are nonConverged permutations
@@ -256,6 +258,7 @@ summ.mimic <- function(object, alpha) {
 #' @param legendArgs \code{list} of arguments passed to the
 #'  \code{\link[graphics]{legend}} function.  The default argument is a list
 #'  placing the legend at the top-left of the figure.
+#' @export
 setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
                                             printLegend = TRUE,
                                             legendArgs = list(x = "topleft")) {
@@ -452,6 +455,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' 
 #' 
 #' @importFrom lavaan lavInspect parTable
+#' 
 #' @param nPermute An integer indicating the number of random permutations used
 #' to form empirical distributions under the null hypothesis.
 #' @param modelType A character string indicating type of model employed:
@@ -833,6 +837,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' 
 #' }
 #' 
+#' @export
 permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
                           con, uncon = NULL, null = NULL,
                           param = NULL, freeParam = NULL, covariates = NULL,

@@ -83,6 +83,7 @@
 #' ## frees the factor means in Group 2. Users may try to compare 
 #' ## strong (Model 3) and means invariance models by this function.
 #' 
+#' @export
 singleParamTest <- function(model1, model2, return.fit = FALSE,
                             method = "satorra.bentler.2001") {
 	# Check nested models without any swaps

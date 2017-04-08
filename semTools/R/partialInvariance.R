@@ -262,6 +262,7 @@
 #' partialInvarianceCat(modelsCat2, type = "scalar")	
 #' }
 #' 
+#' @export
 partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1,
                               poolvar = TRUE, p.adjust = "none", fbound = 2,
                               return.fit = FALSE, method = "satorra.bentler.2001") {
@@ -959,6 +960,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1,
 
 #' @importFrom lavaan lavInspect parTable
 #' @rdname partialInvariance
+#' @export
 partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
                                  refgroup = 1, poolvar = TRUE,
                                  p.adjust = "none", return.fit = FALSE,

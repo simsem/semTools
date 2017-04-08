@@ -35,6 +35,7 @@ setClass("Net", representation(test = "matrix", df = "vector"))
 
 #' @rdname Net-class
 #' @aliases show,Net-method
+#' @export
 setMethod("show", "Net",
 function(object) {
   if (length(object@test)) {
@@ -65,6 +66,7 @@ function(object) {
 
 #' @rdname Net-class
 #' @aliases summary,Net-method
+#' @export
 setMethod("summary", "Net",
 function(object) {
   DFs <- object@df
@@ -110,7 +112,9 @@ function(object) {
 #' estimate thresholds for categorical data, so an error message will be issued
 #' if such a model is provided.
 #' 
+#' 
 #' @importFrom lavaan lavInspect
+#' 
 #' @param \dots The \code{lavaan} objects used for test of nesting and
 #' equivalence
 #' @param crit The upper-bound criterion for testing the equivalence of models.
@@ -149,6 +153,7 @@ function(object) {
 #' summary(tests)
 #' }
 #' 
+#' @export
 net <- function(..., crit = .0001) {
   ## put fitted objects in a list
   fitList <- list(...)

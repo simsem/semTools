@@ -63,6 +63,7 @@
 #' #### Output saved to "C:/Users/Default/Desktop/" in *.dat format
 #' #### Names are "splitdata_s1.dat" and "splitdata_s2.dat"
 #' 
+#' @export
 splitSample <- function(dataset, path = "default", div = 2,
                         type = "default", name = "splitSample") {
   

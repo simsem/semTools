@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 4 April 2017
+### Last updated: 8 April 2017
 ### package documentation, along with convenience documentation (e.g., imports)
 
 

@@ -45,6 +45,7 @@ setClass("BootMiss", representation(time = "list",
 #' @rdname BootMiss-class
 #' @aliases show,BootMiss-method
 #' @importFrom stats pchisq
+#' @export
 setMethod("show", "BootMiss",
 function(object) {
   cat("Chi-Squared = ", object@origChi, "\nDegrees of Freedom = ",
@@ -59,6 +60,7 @@ function(object) {
 #' @rdname BootMiss-class
 #' @aliases summary,BootMiss-method
 #' @importFrom stats var
+#' @export
 setMethod("summary", "BootMiss",
 function(object) {
   cat("Time elapsed to transform the data:\n")
@@ -89,6 +91,7 @@ function(object) {
 #' @return The \code{hist} method returns a list of \code{length == 2},
 #'  containing the arguments for the call to \code{hist} and the arguments
 #'  to the call for \code{legend}, respectively.
+#' @export
 setMethod("hist", "BootMiss",
 function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
          legendArgs = list(x = "topleft")) {
@@ -270,6 +273,7 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 #'      legendArgs = list("bottomleft", box.lty = 2))
 #' }
 #'
+#' @export
 bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
                        Sigma, Mu, group, ChiSquared, EMcov,
                        writeTransData = FALSE, transDataOnly = FALSE,

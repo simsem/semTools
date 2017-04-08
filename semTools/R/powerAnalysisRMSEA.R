@@ -75,6 +75,7 @@
 #' plotRMSEApower(rmsea0 = .025, rmseaA = .075, df = 23,
 #'                nlow = 100, nhigh = 500, steps = 10)
 #' 
+#' @export
 plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
                            alpha = .05, group = 1, ...) { 
 	pow1 <- 0
@@ -158,6 +159,7 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 #' plotRMSEAdist(c(.05, .08), n = 200, df = 20, ptile = .95, rmseaScale = TRUE)
 #' plotRMSEAdist(c(.05, .01), n = 200, df = 20, ptile = .05, rmseaScale = FALSE)
 #' 
+#' @export
 plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
                           rmseaScale = TRUE, group = 1) {
 	graph <- cbind(rmsea, df)
@@ -228,6 +230,7 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 #' 
 #' findRMSEApower(rmsea0 = .05, rmseaA = .08, df = 20, n = 200)
 #' 
+#' @export
 findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 	ncp0 <- ((n-1)*df*rmsea0^2)/group
 	ncpa <- ((n-1)*df*rmseaA^2)/group
@@ -280,6 +283,7 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 #' 
 #' findRMSEAsamplesize(rmsea0 = .05, rmseaA = .08, df = 20, power = 0.80)
 #' 
+#' @export
 findRMSEAsamplesize <- function(rmsea0, rmseaA, df, power = 0.80,
                                 alpha = .05, group = 1) {
 	n <- 5:500
