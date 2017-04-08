@@ -18,7 +18,7 @@
 #'
 #' @aliases auxiliary lavaan.auxiliary cfa.auxiliary sem.auxiliary growth.auxiliary
 #' @importFrom lavaan lavInspect parTable
-#' @importFrom stats cov
+#' @importFrom stats cov quantile
 #'
 #' @param model The analysis model can be specified with 1 of 2 objects:
 #'   \enumerate{

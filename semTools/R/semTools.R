@@ -48,4 +48,7 @@ NULL
 NULL
 
 
+#' @importFrom stats nobs residuals resid fitted fitted.values coef anova vcov
+NULL
+
 

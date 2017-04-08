@@ -73,6 +73,7 @@ mvrnonnorm <- function(n, mu, Sigma, skewness = NULL,
 }
 
 ## Copied from lavaan package
+#' @importFrom stats nlminb
 ValeMaurelli1983copied <- function(n = 100L, COR, skewness, kurtosis,
                                    debug = FALSE) {
 
@@ -87,10 +88,9 @@ ValeMaurelli1983copied <- function(n = 100L, COR, skewness, kurtosis,
             sum(eq^2) ## SS
         }
 
-        out <- nlminb(start=c(1,0,0), objective=system.function,
-                      scale=10,
-                      control=list(trace=0),
-                      skewness=skewness, kurtosis=kurtosis)
+        out <- nlminb(start = c(1, 0, 0), objective = system.function,
+                      scale = 10, control = list(trace = 0),
+                      skewness = skewness, kurtosis = kurtosis)
         if(out$convergence != 0) warning("no convergence")
         b. <- out$par[1L]; c. <- out$par[2L]; d. <- out$par[3L]; a. <- -c.
         c(a.,b.,c.,d.)

@@ -675,7 +675,7 @@ invGeneralReliaCat <- function(w, polyr, threshold, denom, nitem) {
 	1 - (t(w) %*% upper %*% w) / (t(w) %*% lower %*% w)
 }
 
-
+#' @importFrom stats nlminb
 calcMaximalRelia <- function(truevar, totalvar, varnames) {
 	start <- rep(1, nrow(truevar))
 	out <- nlminb(start, invGeneralRelia, truevar = truevar, totalvar = totalvar)
@@ -688,6 +688,7 @@ calcMaximalRelia <- function(truevar, totalvar, varnames) {
 	result
 }
 
+#' @importFrom stats nlminb
 calcMaximalReliaCat <- function(polyr, threshold, denom, nitem, varnames) {
 	start <- rep(1, nrow(polyr))
 	out <- nlminb(start, invGeneralReliaCat, polyr = polyr, threshold = threshold, denom = denom, nitem = nitem)

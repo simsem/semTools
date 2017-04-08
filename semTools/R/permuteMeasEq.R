@@ -240,7 +240,7 @@ summ.mimic <- function(object, alpha) {
 
 #' @rdname permuteMeasEq-class
 #' @aliases hist,permuteMeasEq-method
-#' @importFrom stats qchisq dchisq
+#' @importFrom stats qchisq dchisq quantile
 #' @param object,x object of class \code{permuteMeasEq}
 #' @param AFI \code{character} indicating the fit measure whose permutation
 #'  distribution should be plotted

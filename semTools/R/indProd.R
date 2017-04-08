@@ -13,6 +13,8 @@
 #'
 #'
 #' @aliases indProd orthogonalize
+#' @importFrom stats lm
+#' 
 #' @param data The desired data to be transformed.
 #' @param var1 Names or indices of the variables loaded on the first factor
 #' @param var2 Names or indices of the variables loaded on the second factor

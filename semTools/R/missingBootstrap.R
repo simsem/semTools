@@ -77,7 +77,7 @@ function(object) {
 
 #' @rdname BootMiss-class
 #' @aliases hist,BootMiss-method
-#' @importFrom stats qchisq dchisq
+#' @importFrom stats qchisq dchisq quantile
 #' @param object,x object of class \code{BootMiss}
 #' @param alpha alpha level used to draw confidence limits
 #' @param nd number of digits to display

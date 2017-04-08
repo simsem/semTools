@@ -10,6 +10,8 @@
 #' Pornprasertmanit, Schoemann, & Little, 2013).
 #' 
 #' 
+#' @importFrom stats lm
+#' 
 #' @param data The desired data to be transformed.
 #' @param targetVar Varible names or the position of indicators that users wish
 #' to be residual centered (as dependent variables)

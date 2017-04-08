@@ -24,6 +24,8 @@
 #' full-information maximum likelihood (FIML).
 #'
 #' @importFrom lavaan lavInspect parTable
+#' @importFrom stats factanal
+#' 
 #' @param data A target \code{data.frame}
 #' @param nf The desired number of factors
 #' @param varList Target observed variables. If not specified, all variables in

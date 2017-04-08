@@ -31,6 +31,9 @@
 #'   print the ACM to the screen
 #' }
 #' 
+#' 
+#' @importFrom stats quantile
+#' 
 #' @param expression A character scalar representing the computation of an
 #' indirect effect. Different parameters in the expression should have
 #' different alphanumeric values. Expressions can use either addition (+) or

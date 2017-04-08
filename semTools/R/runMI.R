@@ -761,7 +761,7 @@ robustify <- function(ChiSq, object, h1 = NULL) {
 }
 #' @name lavaan.mi-class
 #' @aliases anova,lavaan.mi-method
-#' @importFrom stats pchisq
+#' @importFrom stats pchisq uniroot
 #' @importFrom lavaan lavListInspect
 anova.lavaan.mi <- function(object, h1 = NULL,
                             test = c("D3","D2","D1"),
