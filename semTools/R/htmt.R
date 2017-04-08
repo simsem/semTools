@@ -15,6 +15,8 @@
 #' package.
 #'
 #'
+#' @importFrom stats cov2cor
+#'
 #' @param model lavaan \link[lavaan]{model.syntax} of a confirmatory factor
 #' analysis model where at least two factors are required for indicators
 #' measuring the same construct.

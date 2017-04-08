@@ -109,6 +109,7 @@ setMethod("show", "twostage", function(object) {
 
 #' @rdname twostage-class
 #' @aliases summary,twostage-method
+#' @importFrom stats pnorm qnorm
 #' @importFrom lavaan parTable
 setMethod("summary", "twostage", function(object, ...) {
   ## show chi-squared test results AND estimates

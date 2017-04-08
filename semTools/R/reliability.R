@@ -559,6 +559,7 @@ maximalRelia <- function(object) {
 
 computeAlpha <- function(S, k) k/(k - 1) * (1.0 - sum(diag(S)) / sum(S))
 
+#' @importFrom stats cov2cor pnorm
 omegaCat <- function(truevar, implied, threshold, denom) {
 	# denom could be polychoric correlation, model-implied correlation, or model-implied without error correlation
 	polyc <- truevar
@@ -648,6 +649,7 @@ invGeneralRelia <- function(w, truevar, totalvar) {
 	1 - (t(w) %*% truevar %*% w) / (t(w) %*% totalvar %*% w)
 }
 
+#' @importFrom stats pnorm
 invGeneralReliaCat <- function(w, polyr, threshold, denom, nitem) {
 	# denom could be polychoric correlation, model-implied correlation, or model-implied without error correlation
 	upper <- matrix(NA, nitem, nitem)

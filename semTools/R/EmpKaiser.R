@@ -15,6 +15,8 @@
 #' > 1) is printed above the output.
 #'
 #'
+#' @importFrom stats cov cov2cor
+#' 
 #' @param data A \code{data.frame} or data \code{matrix} containing columns of
 #' variables to be factor-analyzed.
 #' @param sample.cov A covariance or correlation matrix can be used, instead of

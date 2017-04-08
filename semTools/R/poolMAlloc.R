@@ -55,7 +55,9 @@
 #' runtime of that iteration are outputted. When stopping criteria are
 #' satisfied, the full set of results are outputted.
 #' 
+#' @importFrom stats sd pnorm
 #' @importFrom lavaan lavInspect
+#' 
 #' @param nPerPar A list in which each element is a vector, corresponding to
 #' each factor, indicating sizes of parcels. If variables are left out of
 #' parceling, they should not be accounted for here (i.e., there should not be

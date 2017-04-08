@@ -361,6 +361,7 @@ printLoadings <- function(object, suppress = 0.1, sort = TRUE) {
   as.data.frame(loadingText)
 }
 
+#' @importFrom stats pnorm qnorm
 testLoadings <- function(object, level = 0.95) {
   se <- object@se
   loading <- object@loading

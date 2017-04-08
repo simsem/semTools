@@ -44,6 +44,7 @@
 #' window and rerun.
 #' 
 #' 
+#' @importFrom stats sd
 #' @importFrom lavaan lavInspect
 #' @param nPerPar A list in which each element is a vector, corresponding to
 #' each factor, indicating sizes of parcels. If variables are left out of
@@ -944,7 +945,8 @@ PAVranking <- function(nPerPar, facPlc, nAlloc = 100, parceloutput = 0, syntaxA,
     ## calc average LRT
     
     LRTsum <- cbind(AvgLRT_AB, lrtestd_AB[2, 3], sd(lrchisq_AB, na.rm = TRUE), 
-                    max(lrchisq_AB), min(lrchisq_AB), max(lrchisq_AB) - min(lrchisq_AB), Prolrsig_AB)
+                    max(lrchisq_AB), min(lrchisq_AB),
+                    max(lrchisq_AB) - min(lrchisq_AB), Prolrsig_AB)
     colnames(LRTsum) <- c("Avg LRT", "df", "S.D.", "MAX", "MIN", "Range", "% Sig")
     ## calculate LRT distribution statistics
     

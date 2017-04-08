@@ -38,6 +38,8 @@
 #'
 #' @aliases miPowerFit miPowerFit
 #' @importFrom lavaan lavInspect
+#' @importFrom stats qnorm
+#' 
 #' @param lavaanObj The lavaan model object used to evaluate model fit
 #' @param stdLoad The amount of standardized factor loading that one would like
 #' to be detected (rejected). The default value is 0.4, which is suggested by

@@ -365,6 +365,7 @@ setMethod("coef", "lavaan.mi", coef.lavaan.mi)
 
 
 
+#' @importFrom stats cov
 #' @importFrom lavaan lavListInspect parTable
 vcov.lavaan.mi <- function(object, type = c("pooled","between","within")) {
   if (lavListInspect(object, "options")$se == "none") {
@@ -505,6 +506,7 @@ D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) 
   class(out) <- c("lavaan.vector","numeric")
   out
 }
+#' @importFrom stats var
 #' @importFrom lavaan lavListInspect parTable
 D2 <- function(object, h1 = NULL, asymptotic = FALSE,
                robust = FALSE, scaleshift = FALSE) {
@@ -1281,6 +1283,7 @@ setMethod("fitted.values", "lavaan.mi", fitted.lavaan.mi)
 
 
 ## function to calculate residuals for one group
+#' @importFrom stats cov2cor
 gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
                                means = FALSE, categ = FALSE, m) {
   obsMats <- sampstat.lavaan.mi(Observed, means = means, categ = categ, m = m)

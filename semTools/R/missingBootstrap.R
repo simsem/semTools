@@ -57,6 +57,7 @@ function(object) {
 
 #' @rdname BootMiss-class
 #' @aliases summary,BootMiss-method
+#' @importFrom stats var
 setMethod("summary", "BootMiss",
 function(object) {
   cat("Time elapsed to transform the data:\n")

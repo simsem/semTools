@@ -11,6 +11,8 @@
 #' data generation using Vale and Maurelli (1983) method.
 #' 
 #' 
+#' @importFrom stats cov2cor
+#' 
 #' @param n Sample size
 #' @param mu A mean vector. If elements are named, those will be used as
 #' variable names in the returned data matrix.

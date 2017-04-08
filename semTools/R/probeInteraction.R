@@ -50,6 +50,8 @@
 #' 
 #' 
 #' @importFrom lavaan lavInspect
+#' @importFrom stats pnorm
+#' 
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' first-order factor will be listed first. The last name must be the name
@@ -248,6 +250,8 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' 
 #' 
 #' @importFrom lavaan lavInspect
+#' @importFrom stats pnorm
+#' 
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' first-order factor will be listed first. The last name must be the name
@@ -535,6 +539,8 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' 
 #' 
 #' @importFrom lavaan lavInspect
+#' @importFrom stats pnorm
+#' 
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' three first-order factors will be listed first. Then the second-order
@@ -763,6 +769,8 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' 
 #' 
 #' @importFrom lavaan lavInspect
+#' @importFrom stats pnorm
+#' 
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' three first-order factors will be listed first. Then the second-order

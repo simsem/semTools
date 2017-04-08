@@ -17,6 +17,7 @@
 #' output. For further details on the benefits of the random allocation of
 #' itesm to parcels see Sterba (2011) and Sterba and MccCallum (2010).
 #' 
+#' @importFrom stats sd
 #' @param nPerPar A list in which each element is a vector corresponding to
 #' each factor indicating sizes of parcels. If variables are left out of
 #' parceling, they should not be accounted for here (there should NOT be

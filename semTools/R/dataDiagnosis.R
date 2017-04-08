@@ -27,6 +27,9 @@
 #'
 #' where \eqn{N} is the sample size.
 #'
+#'
+#' @importFrom stats pnorm
+#' 
 #' @param object A vector used to find a skewness
 #' @param population \code{TRUE} to compute the parameter formula. \code{FALSE}
 #' to compute the sample statistic formula.
@@ -89,6 +92,9 @@ skew <- function(object, population = FALSE) {
 #'
 #' where \eqn{N} is the sample size.
 #'
+#'
+#' @importFrom stats pnorm
+#' 
 #' @param object A vector used to find a excessive kurtosis
 #' @param population \code{TRUE} to compute the parameter formula. \code{FALSE}
 #' to compute the sample statistic formula.
@@ -143,6 +149,9 @@ kurtosis <- function(object, population = FALSE) {
 #' \eqn{\frac{n}{6}b_{1,d}} is asymptotically distributed as \eqn{\chi^2}
 #' distribution with \eqn{d(d + 1)(d + 2)/6} degrees of freedom.
 #'
+#'
+#' @importFrom stats cov
+#' 
 #' @param dat The target matrix or data frame with multiple variables
 #' @param use Missing data handling method from the \code{\link[stats]{cov}}
 #' function.
@@ -199,6 +208,9 @@ mardiaSkew <- function(dat, use = "everything") {
 #' \eqn{b_{2,d}} is asymptotically distributed as normal distribution with the
 #' mean of \eqn{d(d + 2)} and variance of \eqn{8d(d + 2)/n}.
 #'
+#'
+#' @importFrom stats cov pnorm
+#' 
 #' @param dat The target matrix or data frame with multiple variables
 #' @param use Missing data handling method from the \code{\link[stats]{cov}}
 #' function.

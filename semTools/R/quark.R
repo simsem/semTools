@@ -190,6 +190,7 @@ imputequark <- function(data, order, silent = FALSE, ...){
   return(data)
 }
 
+#' @importFrom stats cor
 gImp <- function(data, silent = FALSE) {
   imputed_data <- data
   num_adds <- vector(length = ncol(data)) # number of columns combined into one for averaging.
