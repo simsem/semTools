@@ -4,7 +4,7 @@
 \name{dat3way}
 \alias{dat3way}
 \title{Simulated Dataset to Demonstrate Three-way Latent Interaction}
-\format{A data frame with 500 observations of 12 variables.
+\format{A \code{data.frame} with 500 observations of 12 variables.
 \describe{
 \item{x1}{The first indicator of the first independent factor}
 \item{x2}{The second indicator of the first independent factor}

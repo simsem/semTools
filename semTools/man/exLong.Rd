@@ -4,7 +4,7 @@
 \name{exLong}
 \alias{exLong}
 \title{Simulated Data set to Demonstrate Longitudinal Measurement Invariance}
-\format{A data frame with 200 observations of 10 variables.
+\format{A \code{data.frame} with 200 observations of 10 variables.
 \describe{
 \item{sex}{Sex of respondents}
 \item{y1t1}{Indicator 1 in Time 1}

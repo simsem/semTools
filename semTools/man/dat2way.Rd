@@ -4,7 +4,7 @@
 \name{dat2way}
 \alias{dat2way}
 \title{Simulated Dataset to Demonstrate Two-way Latent Interaction}
-\format{A data frame with 500 observations of 9 variables.
+\format{A \code{data.frame} with 500 observations of 9 variables.
 \describe{
 \item{x1}{The first indicator of the first independent factor}
 \item{x2}{The second indicator of the first independent factor}

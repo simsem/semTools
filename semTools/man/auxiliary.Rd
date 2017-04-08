@@ -6,9 +6,21 @@
 \alias{cfa.auxiliary}
 \alias{sem.auxiliary}
 \alias{growth.auxiliary}
+\alias{lavaan.auxiliary}
+\alias{cfa.auxiliary}
+\alias{sem.auxiliary}
+\alias{growth.auxiliary}
 \title{Implement Saturated Correlates with FIML}
 \usage{
 auxiliary(model, data, aux, fun, ...)
+
+lavaan.auxiliary(model, data, aux, ...)
+
+cfa.auxiliary(model, data, aux, ...)
+
+sem.auxiliary(model, data, aux, ...)
+
+growth.auxiliary(model, data, aux, ...)
 }
 \arguments{
 \item{model}{The analysis model can be specified with 1 of 2 objects:
@@ -84,7 +96,6 @@ fitaux2 <- cfa.auxiliary(targetModel, data = dat1, aux = c("z","ageyr","grade"),
 ## the internally stored baseline model
 fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
             baseline.model = fitaux2@external$baseline.model)
-
 }
 \references{
 Enders, C. K. (2008). A note on the use of missing auxiliary

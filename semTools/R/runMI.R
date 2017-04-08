@@ -768,7 +768,6 @@ robustify <- function(ChiSq, object, h1 = NULL) {
 #' @aliases anova,lavaan.mi-method
 #' @importFrom stats pchisq uniroot
 #' @importFrom lavaan lavListInspect
-#' @export
 anova.lavaan.mi <- function(object, h1 = NULL,
                             test = c("D3","D2","D1"),
                             asymptotic = FALSE, constraints = NULL,
@@ -1218,6 +1217,7 @@ anova.lavaan.mi <- function(object, h1 = NULL,
   class(out) <- c("lavaan.vector","numeric")
   out # FIXME: in future, accept more than 2 models, arrange sequentially by DF
 }
+#' @export
 setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 
 

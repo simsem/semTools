@@ -4,7 +4,7 @@
 \name{datCat}
 \alias{datCat}
 \title{Simulated Data set to Demonstrate Categorical Measurement Invariance}
-\format{A data frame with 200 observations of 9 variables. 
+\format{A \code{data.frame} with 200 observations of 9 variables. 
 \describe{
 \item{g}{Sex of respondents}
 \item{u1}{Indicator 1}
