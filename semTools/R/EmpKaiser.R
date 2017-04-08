@@ -74,6 +74,7 @@
 #' (x1 <- efa.ekc(sample.cov = myCovMat, sample.nobs = N, plot = FALSE))
 #' (x2 <- efa.ekc(sample.cov = myCorMat, sample.nobs = N, plot = FALSE))
 #'
+#' @export
 efa.ekc <- function(data = NULL, sample.cov = NULL, sample.nobs = NULL,
                     missing = "default", ordered = NULL, plot = TRUE) {
   ## if data

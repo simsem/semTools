@@ -136,6 +136,7 @@
 #' model3time <- imposeStart(model2time, lavaan(weak3time, data = exLong))
 #' summary(model3time)
 #'
+#' @export
 imposeStart <- function(out, expr, silent = TRUE) {
 	if(!is(out, "lavaan")) stop("The first argument of the function must be a lavaan output.")
 	template2 <- template <- substitute(expr)

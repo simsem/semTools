@@ -19,7 +19,9 @@
 #' model gives more reliable estimates, so it could also help to request a
 #' subset of variables from a large data set.
 #'
+#'
 #' @importFrom lavaan lavListInspect lavInspect
+#' 
 #' @param data Either a single \code{data.frame} with incomplete observations,
 #' or a \code{list} of imputed data sets.
 #' @param method character. If \code{"saturated"} or \code{"sat"} (default),
@@ -102,6 +104,7 @@
 #' fmi(imps, group = "g")
 #' }
 #'
+#' @export
 fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
                 varnames = NULL, exclude = NULL, fewImps = FALSE) {
   fiml <- is.data.frame(data)

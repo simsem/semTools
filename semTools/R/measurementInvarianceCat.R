@@ -34,6 +34,7 @@
 #' parameterization in Millsap and Yun-Tein (2004).
 #'
 #' @importFrom lavaan lavInspect parTable
+#' 
 #' @param ... The same arguments as for any lavaan model.  See
 #' \code{\link{cfa}} for more information.
 #' @param std.lv If \code{TRUE}, the fixed-factor method of scale
@@ -69,6 +70,7 @@
 #'                          ordered = c("u1", "u2", "u3", "u4"))
 #' }
 #'
+#' @export
 measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
                                      quiet = FALSE, fit.measures = "default",
                                      method = "satorra.bentler.2001") {

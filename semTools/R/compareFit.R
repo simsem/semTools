@@ -52,6 +52,7 @@ setClass("FitDiff", representation(name = "vector",
                                    fit = "data.frame"))
 
 #' @rdname FitDiff-class
+#' @export
 setMethod("show", signature(object = "FitDiff"), function(object) {
     summary(object)
 })
@@ -63,6 +64,7 @@ setMethod("show", signature(object = "FitDiff"), function(object) {
 #'  fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli",
 #'  "rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit measures
 #'  will be returned.
+#' @export
 setMethod("summary", signature(object = "FitDiff"),
           function(object, fit.measures = "default") {
   if (isNested(object)) {
@@ -173,6 +175,7 @@ saveFileFitDiff <- function(object, filewrite, what = "summary",
 #'                              group = "school", quiet = TRUE)
 #' compareFit(out)
 #'
+#' @export
 compareFit <- function(..., nested = TRUE) {
 	arg <- match.call()
 	mods <- input <- list(...)

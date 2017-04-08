@@ -53,6 +53,7 @@
 #'                   z = rnorm(nrow(HolzingerSwineford1939), 0, 1))
 #' unrotated2 <- efaUnrotate(dat, nf = 2, varList = paste0("x", 1:9), aux = "z")
 #'
+#' @export
 efaUnrotate <- function(data, nf, varList = NULL,
                         start = TRUE, aux = NULL, ...) {
   if (is.null(varList)) varList <- colnames(data)
@@ -168,6 +169,7 @@ setClass("EFA", representation(loading = "matrix",
 
 #' @rdname EFA-class
 #' @aliases show,EFA-method
+#' @export
 setMethod("show", signature(object = "EFA"), function(object) {
 	cat("Standardized Rotated Factor Loadings\n")
 	print(printLoadings(object))
@@ -186,6 +188,7 @@ setMethod("show", signature(object = "EFA"), function(object) {
 #'  will not be printed to the screen
 #' @param sort \code{logical}. If \code{TRUE} (default), factor loadings will
 #'  be sorted by their size in the console output
+#' @export
 setMethod("summary", signature(object = "EFA"),
           function(object, suppress = 0.1, sort = TRUE) {
 	cat("Standardized Rotated Factor Loadings\n")
@@ -265,6 +268,7 @@ setMethod("summary", signature(object = "EFA"),
 #' funRotate(unrotated, fun = "targetQ", Target = target)
 #' }
 #'
+#' @export
 orthRotate <- function(object, method = "varimax", ...) {
 	requireNamespace("GPArotation")
 	if (!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
@@ -290,6 +294,7 @@ orthRotate <- function(object, method = "varimax", ...) {
 
 
 #' @rdname rotate
+#' @export
 oblqRotate <- function(object, method = "quartimin", ...) {
 	requireNamespace("GPArotation")
 	if (!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
@@ -315,6 +320,7 @@ oblqRotate <- function(object, method = "quartimin", ...) {
 
 
 #' @rdname rotate
+#' @export
 funRotate <- function(object, fun, ...) {
 	stopifnot(is.character(fun))
 	requireNamespace("GPArotation")

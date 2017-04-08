@@ -51,6 +51,7 @@
 #'
 #' skew(1:5)
 #'
+#' @export
 skew <- function(object, population = FALSE) {
 	if(any(is.na(object))) {
 		object <- object[!is.na(object)]
@@ -115,6 +116,7 @@ skew <- function(object, population = FALSE) {
 #'
 #' kurtosis(1:5)
 #'
+#' @export
 kurtosis <- function(object, population = FALSE) {
 	if(any(is.na(object))) {
 		object <- object[!is.na(object)]
@@ -172,6 +174,7 @@ kurtosis <- function(object, population = FALSE) {
 #' library(lavaan)
 #' mardiaSkew(HolzingerSwineford1939[ , paste0("x", 1:9)])
 #'
+#' @export
 mardiaSkew <- function(dat, use = "everything") {
 	centeredDat <- scale(dat, center=TRUE, scale=FALSE)
 	invS <- solve(cov(dat, use = use))
@@ -231,6 +234,7 @@ mardiaSkew <- function(dat, use = "everything") {
 #' library(lavaan)
 #' mardiaKurtosis(HolzingerSwineford1939[ , paste0("x", 1:9)])
 #'
+#' @export
 mardiaKurtosis <- function(dat, use = "everything") {
 	centeredDat <- scale(dat, center=TRUE, scale=FALSE)
 	invS <- solve(cov(dat, use = use))

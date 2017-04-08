@@ -79,6 +79,7 @@
 #' saveFile(fit, "out.txt", "fit")
 #' }
 #'
+#' @export
 clipboard <- function(object, what = "summary", ...) {
 	if (.Platform$OS.type == "windows") {
 		saveFile(object, file="clipboard-128", what=what, tableFormat=TRUE, ...)
@@ -97,6 +98,7 @@ clipboard <- function(object, what = "summary", ...) {
 }
 
 #' @rdname clipboard
+#' @export
 saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 	# Check whether the object is in the lavaan class
 	if (is(object, "lavaan")) {

@@ -82,7 +82,7 @@
 #' ## the internally stored baseline model
 #' fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
 #'             baseline.model = fitaux2@external$baseline.model)
-#'
+#' @export
 auxiliary <- function(model, data, aux, fun, ...) {
   lavArgs <- list(...)
   if (missing(aux))
@@ -225,24 +225,28 @@ auxiliary <- function(model, data, aux, fun, ...) {
 
 #' @rdname auxiliary
 #' @aliases lavaan.auxiliary
+#' @export
 lavaan.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "lavaan", ...)
 }
 
 #' @rdname auxiliary
 #' @aliases cfa.auxiliary
+#' @export
 cfa.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "cfa", ...)
 }
 
 #' @rdname auxiliary
 #' @aliases sem.auxiliary
+#' @export
 sem.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "sem", ...)
 }
 
 #' @rdname auxiliary
 #' @aliases growth.auxiliary
+#' @export
 growth.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "growth", ...)
 }

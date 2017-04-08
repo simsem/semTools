@@ -52,6 +52,7 @@
 #' dat <- HolzingerSwineford1939[, paste0("x", 1:9)]
 #' htmt(HS.model, dat)
 #'
+#' @export
 htmt <- function (model, data = NULL, sample.cov = NULL, missing = "listwise",
                   ordered = NULL, absolute = TRUE) {
   model <- lavaan::lavaanify(model)

@@ -111,6 +111,7 @@
 #'                varList = constrainedVar, data = exLong, group = "sex",
 #' 	              group.equal = c("loadings", "intercepts"))
 #'
+#' @export
 longInvariance <- function(model, varList, auto = "all", constrainAuto = FALSE, fixed.x = TRUE, std.lv = FALSE, group=NULL, group.equal="", group.partial="", warn=TRUE, debug=FALSE, strict = FALSE, quiet = FALSE, fit.measures = "default", method = "satorra.bentler.2001", ...) {
 
 	List <- list(...)

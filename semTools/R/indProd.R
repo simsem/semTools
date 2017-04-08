@@ -82,6 +82,7 @@
 #'                 match = FALSE, meanC = TRUE, residualC = TRUE,
 #'                 doubleMC = TRUE)
 #'
+#' @export
 indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
                     residualC = FALSE, doubleMC = TRUE, namesProd = NULL) {
   # Get all variable names
@@ -253,6 +254,7 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
 }
 
 #' @rdname indProd
+#' @export
 orthogonalize <- function(data, var1, var2, var3 = NULL,
                           match = TRUE, namesProd = NULL) {
   indProd(data = data, var1 = var1, var2 = var2, var3 = var3,

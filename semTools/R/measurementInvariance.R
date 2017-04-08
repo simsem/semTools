@@ -77,6 +77,7 @@
 #' measurementInvariance(HW.model, data = HolzingerSwineford1939,
 #'                       group = "school", fit.measures = c("cfi","aic"))
 #'
+#' @export
 measurementInvariance <- measurementinvariance <-
   function(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
            fit.measures = "default", method = "satorra.bentler.2001") {

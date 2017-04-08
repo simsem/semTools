@@ -110,8 +110,10 @@
 #' }
 #'
 #' @rdname package-deprecated
+#' @export
 lisrel2lavaan <- function(filename = NULL, analyze = TRUE, silent = FALSE, ...) {
-
+  message("The lisrel2lavaan function is deprecated, and it will cease to be",
+          " included in future versions of semTools.")
   ## if filename == null, prompt user with file browser
 
   if (is.null(filename)) {

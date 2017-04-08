@@ -69,6 +69,7 @@
 #' ## Generate data of size 300 where covmat is the population covariance matrix
 #' rawdat2 <- kd(covmat, 300)
 #'
+#' @export
 kd <- function(covmat, n, type=c("exact","sample")) {
   type <- match.arg(type)
 

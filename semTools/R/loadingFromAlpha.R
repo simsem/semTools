@@ -16,6 +16,7 @@
 #'
 #' loadingFromAlpha(0.8, 4)
 #'
+#' @export
 loadingFromAlpha <- function(alpha, ni) {
     denominator <- ni - ((ni - 1) * alpha)
     result <- sqrt(alpha/denominator)

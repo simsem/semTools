@@ -71,7 +71,9 @@
 #' See \code{\link{nullRMSEA}} for the further details of the computation of
 #' RMSEA of the null model.
 #'
+#'
 #' @importFrom lavaan lavInspect
+#' 
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param fit.measures Additional fit measures to be calculated. All additional
@@ -128,6 +130,7 @@
 #' fit2 <- cfa(HS.model, data = HolzingerSwineford1939, estimator = "mlr")
 #' moreFitIndices(fit2)
 #'
+#' @export
 moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   ## check for validity of user-specified "fit.measures" argument
   fit.choices <- c("gammaHat","adjGammaHat","baseline.rmsea",
@@ -209,7 +212,9 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 #'
 #' See \url{http://davidakenny.net/cm/fit.htm}.
 #'
+#'
 #' @importFrom lavaan lavInspect
+#' 
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param scaled If \code{TRUE}, calculate the null model from the scaled test.
@@ -234,6 +239,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 #' fit <- cfa(HS.model, data = HolzingerSwineford1939)
 #' nullRMSEA(fit)
 #'
+#' @export
 nullRMSEA <- function (object, scaled = FALSE, silent = FALSE) {
 	# return RMSEA of the null model, warn if it is lower than 0.158, because it makes the TLI/CLI hard to interpret
 	test <- lavInspect(object, "options")$test
@@ -363,6 +369,7 @@ sic <- function(f, lresults = NULL) {
 #' ## compare 2 models
 #' chisqSmallN(fit1, fit0)
 #'
+#' @export
 chisqSmallN <- function(fit0, fit1 = NULL, ...) {
   ## if there are 2 models, order them by DF
   if (!is.null(fit1)) {
