@@ -66,7 +66,7 @@ Ignored if \code{data} is already a \code{list} of imputed data sets or a
 \code{lavaan.mi} object.}
 
 \item{seed}{\code{integer}. Random number seed to be set before imputing the
-data. Ignored if \code{data} is already a \code{list} of imputed data sets 
+data. Ignored if \code{data} is already a \code{list} of imputed data sets
 or a \code{lavaan.mi} object.}
 }
 \value{
@@ -161,7 +161,7 @@ sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
 catout@funList[[1]]$zeroCells # zero-cell tables for first imputation
 catout@funList[[2]]$zeroCells # zero-cell tables for second imputation ...
 
-} 
+}
 
 }
 \references{

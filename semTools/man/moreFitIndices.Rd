@@ -18,16 +18,16 @@ to compute BIC*.}
 }
 \value{
 \enumerate{
- \item gammaHat Gamma Hat
- \item adjGammaHat Adjusted Gamma Hat
- \item baseline.rmsea RMSEA of the Baseline (Null) Model
- \item aic.smallN Corrected (for small sample size) Akaike Information Criterion
- \item bic.priorN Bayesian Information Criterion with specified prior sample size
- \item sic Stochastic Information Criterion
- \item hqc Hannan-Quinn Information Criterion
- \item gammaHat.scaled Gamma Hat using scaled \eqn{\chi^2}
- \item adjGammaHat.scaled Adjusted Gamma Hat using scaled \eqn{\chi^2}
- \item baseline.rmsea.scaled RMSEA of the Baseline (Null) Model using scaled \eqn{\chi^2}
+ \item \code{gammaHat}: Gamma Hat
+ \item \code{adjGammaHat}: Adjusted Gamma Hat
+ \item \code{baseline.rmsea}: RMSEA of the Baseline (Null) Model
+ \item \code{aic.smallN}: Corrected (for small sample size) Akaike Information Criterion
+ \item \code{bic.priorN}: Bayesian Information Criterion with specified prior sample size
+ \item \code{sic}: Stochastic Information Criterion
+ \item \code{hqc}: Hannan-Quinn Information Criterion
+ \item \code{gammaHat.scaled}: Gamma Hat using scaled \eqn{\chi^2}
+ \item \code{adjGammaHat.scaled}: Adjusted Gamma Hat using scaled \eqn{\chi^2}
+ \item \code{baseline.rmsea.scaled}: RMSEA of the Baseline (Null) Model using scaled \eqn{\chi^2}
 }
 }
 \description{
@@ -133,10 +133,13 @@ indices and their power approach for model fit evaluation \item
 \code{\link{nullRMSEA}} For RMSEA of the null model }
 }
 \author{
-Sunthud Pornprasertmanit (\email{psunthud@gmail.com}) Terrence
-Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com}) Aaron
-Boulton (University of North Carolina, Chapel Hill;
-\email{aboulton@email.unc.edu}) Ruben Arslan (Humboldt-University of
-Berlin, \email{rubenarslan@gmail.com}) Yves Rosseel (Ghent University;
-\email{Yves.Rosseel@UGent.be})
+Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+
+Aaron Boulton (University of North Carolina, Chapel Hill; \email{aboulton@email.unc.edu})
+
+Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
+
+Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 }

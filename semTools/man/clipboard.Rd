@@ -9,7 +9,8 @@ clipboard or a file}
 \usage{
 clipboard(object, what = "summary", ...)
 
-saveFile(object, file, what = "summary", tableFormat = FALSE, ...)
+saveFile(object, file, what = "summary", tableFormat = FALSE,
+  fit.measures = "default", writeArgs = list(), ...)
 }
 \arguments{
 \item{object}{The \code{lavaan} or \code{\linkS4class{FitDiff}} object}
@@ -29,13 +30,20 @@ function (for \code{lavaan} object only).}
 \item{file}{A file name used for saving the result}
 
 \item{tableFormat}{If \code{TRUE}, save the result in the table format using
-tabs for seperation. Otherwise, save the result as the output screen printed
-in the R console.}
+tabs for seperation. Otherwise, save the result as the output screen
+printed in the R console.}
+
+\item{fit.measures}{\code{character} vector specifying names of fit measures
+returned by \code{\link[lavaan]{fitMeasures}} to be copied/saved.  Only
+relevant if \code{object} is class \code{\linkS4class{FitDiff}}.}
+
+\item{writeArgs}{\code{list} of additional arguments to be passed to
+\code{\link[utils]{write.table}}}
 }
 \value{
 The resulting output will be saved into a clipboard or a file. If
-using the \code{clipboard} function, users may paste it in the other
-applications.
+  using the \code{clipboard} function, users may paste it in the other
+  applications.
 }
 \description{
 Copy or save the result of \code{lavaan} or \code{\linkS4class{FitDiff}}
@@ -93,4 +101,6 @@ saveFile(fit, "out.txt", "fit")
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+ Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

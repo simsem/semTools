@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 3 April 2017
+### Last updated: 11 April 2017
 ### source code for compareFit() function and FitDiff class
 
 
@@ -91,9 +91,9 @@ getNestedTable <- function(object) {
 }
 
 getFitSummary <- function(object, fit.measures = "default") {
-	if(is.null(fit.measures)) fit.measures <- "all"
-	if(length(fit.measures) == 1) {
-		if(fit.measures == "default") {
+	if (is.null(fit.measures)) fit.measures <- "all"
+	if (length(fit.measures) == 1) {
+		if (fit.measures == "default") {
 			fit.measures <- c("chisq", "df", "pvalue", "cfi", "tli", "rmsea", "srmr", "aic", "bic")
 		} else if (fit.measures == "all") {
 			fit.measures <- colnames(object@fit)
@@ -101,34 +101,45 @@ getFitSummary <- function(object, fit.measures = "default") {
 	}
 	fitTab <- object@fit
 	orderThing <- rep(NA, ncol(fitTab))
-	orderThing[colnames(fitTab) %in% c("rmsea", "aic", "bic", "bic2", "srmr", "srmr_nomean", "rmr", "rmr_nomean", "ecvi")] <- TRUE
-	orderThing[colnames(fitTab) %in% c("pvalue", "cfi", "tli", "nnfi", "rfi", "nfi", "pnfi", "ifi", "rni", "cn_05", "cn_01", "gfi", "agfi", "pgfi", "mfi")] <- FALSE
+	orderThing[colnames(fitTab) %in% c("rmsea","aic","bic","bic2","srmr","rmr",
+	                                   "srmr_nomean","rmr_nomean","ecvi")] <- TRUE
+	orderThing[colnames(fitTab) %in% c("pvalue","cfi","tli","nnfi","rfi","nfi",
+	                                   "pnfi","ifi","rni","cn_05","cn_01","gfi",
+	                                   "agfi","pgfi","mfi")] <- FALSE
 	isDF <- rep(FALSE, ncol(fitTab))
 	isDF[grep("df", colnames(fitTab))] <- TRUE
-	suppressWarnings(fitTab <- as.data.frame(mapply(tagDagger, fitTab, orderThing, is.df=isDF)))
+	suppressWarnings(fitTab <- as.data.frame(mapply(tagDagger, fitTab, orderThing, is.df = isDF)))
 	rownames(fitTab) <- object@name
-	fitTab[,colnames(fitTab) %in% fit.measures]
+	fitTab[ , colnames(fitTab) %in% fit.measures]
 }
 
-## method for clipboard / saveFile
-saveFileFitDiff <- function(object, filewrite, what = "summary",
-                            tableFormat = FALSE, fit.measures = "default") {
-	if(tableFormat) {
-		filetemplate <- file(filewrite, 'w')
-		if(isNested(object)) {
-			cat("Nested Model Comparison\n\n", file=filetemplate)
+## "method" for saveFile() function (see "clipboard.R")
+saveFileFitDiff <- function(object, file, what = "summary",
+                            tableFormat = FALSE, fit.measures = "default",
+                            writeArgs = list()) {
+	if (tableFormat) {
+	  writeArgs$file <- file
+	  writeArgs$append <- TRUE
+	  if (is.null(writeArgs$sep)) writeArgs$sep <- "\t"
+		if (is.null(writeArgs$quote)) writeArgs$quote <- FALSE
+		if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
+
+		if (isNested(object)) {
+			cat("Nested Model Comparison\n\n", file = file, append = TRUE)
 			out <- getNestedTable(object)
 			out <- data.frame(model.diff = rownames(out), out)
-			utils::write.table(out, file=filetemplate, sep="\t", quote=FALSE, row.names=FALSE)
-			cat("\n\n", file=filetemplate)
+  		writeArgs$x <- out
+			do.call("write.table", writeArgs)
+			cat("\n\n", file = file, append = TRUE)
 		}
 		out2 <- getFitSummary(object, fit.measures)
 		out2 <- data.frame(model = object@name, out2)
-		cat("Fit Indices Summaries\n\n", file=filetemplate)
-		utils::write.table(out2, file=filetemplate, sep="\t", quote=FALSE, row.names=FALSE)
-		close(filetemplate)
+		cat("Fit Indices Summaries\n\n", file = file, append = TRUE)
+		writeArgs$x <- out2
+		do.call("write.table", writeArgs)
 	} else {
-		write(paste(utils::capture.output(lavaan::summary(object)), collapse="\n"), file=filewrite)
+		write(paste(utils::capture.output(lavaan::summary(object)),
+		            collapse = "\n"), file = file)
 	}
 }
 

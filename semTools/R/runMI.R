@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 4 April 2017
+### Last updated: 11 April 2017
 ### runMI creates lavaan.mi instead of lavaanStar,
 ### extending lavaanList class instead of lavaan class
 
@@ -876,8 +876,6 @@ robustify <- function(ChiSq, object, h1 = NULL) {
   }
   ChiSq
 }
-#' @name lavaan.mi-class
-#' @aliases anova,lavaan.mi-method
 #' @importFrom stats pchisq uniroot
 #' @importFrom lavaan lavListInspect
 anova.lavaan.mi <- function(object, h1 = NULL,
@@ -1329,6 +1327,8 @@ anova.lavaan.mi <- function(object, h1 = NULL,
   class(out) <- c("lavaan.vector","numeric")
   out # FIXME: in future, accept more than 2 models, arrange sequentially by DF
 }
+#' @name lavaan.mi-class
+#' @aliases anova,lavaan.mi-method
 #' @export
 setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 

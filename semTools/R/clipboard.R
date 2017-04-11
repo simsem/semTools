@@ -1,5 +1,5 @@
-### Sunthud Pornprasertmanit
-### Last updated: 31 March 2017
+### Sunthud Pornprasertmanit & Terrence D. Jorgensen
+### Last updated: 11 April 2017
 ### Copy or save each aspect of the lavaan object into a clipboard or a file
 
 
@@ -24,14 +24,22 @@
 #' yet.
 #' @param file A file name used for saving the result
 #' @param tableFormat If \code{TRUE}, save the result in the table format using
-#' tabs for seperation. Otherwise, save the result as the output screen printed
-#' in the R console.
+#'   tabs for seperation. Otherwise, save the result as the output screen
+#'   printed in the R console.
+#' @param fit.measures \code{character} vector specifying names of fit measures
+#'   returned by \code{\link[lavaan]{fitMeasures}} to be copied/saved.  Only
+#'   relevant if \code{object} is class \code{\linkS4class{FitDiff}}.
+#' @param writeArgs \code{list} of additional arguments to be passed to
+#'   \code{\link[utils]{write.table}}
 #' @param \dots Additional argument listed in the \code{\link{miPowerFit}}
-#' function (for \code{lavaan} object only).
+#'   function (for \code{lavaan} object only).
 #' @return The resulting output will be saved into a clipboard or a file. If
-#' using the \code{clipboard} function, users may paste it in the other
-#' applications.
-#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#'   using the \code{clipboard} function, users may paste it in the other
+#'   applications.
+#' @author
+#'  Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#'
+#'  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 #' @examples
 #'
 #' \dontrun{
@@ -99,14 +107,18 @@ clipboard <- function(object, what = "summary", ...) {
 
 #' @rdname clipboard
 #' @export
-saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
+saveFile <- function(object, file, what = "summary", tableFormat = FALSE,
+                     fit.measures = "default", writeArgs = list(), ...) {
 	# Check whether the object is in the lavaan class
 	if (is(object, "lavaan")) {
-		saveFileLavaan(object, file, what=what, tableFormat=tableFormat, ...)
+		saveFileLavaan(object, file, what = what, tableFormat = tableFormat,
+		               writeArgs = writeArgs, ...)
 	} else if (is(object, "FitDiff")) {
-		saveFileFitDiff(object, file, what=what, tableFormat=tableFormat)
+		saveFileFitDiff(object, file, what = what, tableFormat = tableFormat,
+		                fit.measures = fit.measures, writeArgs = writeArgs)
 	} else {
-		stop("The object must be in the `lavaan' output or the output from the compareFit function.")
+		stop("The object must be in the `lavaan' output or the",
+		     " output from the compareFit function.")
 	}
 }
 
@@ -117,53 +129,70 @@ saveFile <- function(object, file, what="summary", tableFormat=FALSE, ...) {
 ## ----------------
 
 #' @importFrom lavaan lavInspect
-saveFileLavaan <- function(object, file, what="summary", tableFormat=FALSE, ...) {
-	if (length(what) > 1) {
-        stop("`what' arguments contains multiple arguments; only one is allowed")
-    }
-    # be case insensitive
-    what <- tolower(what)
+saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
+                           writeArgs = list(), ...) {
+	if (length(what) > 1) message("only the first `what' option is used")
+  # be case insensitive
+  what <- tolower(what[1])
+
+  writeArgs$file <- file
+  if (is.null(writeArgs$sep)) writeArgs$sep <- "\t"
+  if (is.null(writeArgs$quote)) writeArgs$quote <- FALSE
 
 	if (what == "summary") {
 		if (tableFormat) {
-			copySummary(object, file=file)
+			copySummary(object, file = file, writeArgs = writeArgs)
 		} else {
-			write(paste(utils::capture.output(summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE)), collapse="\n"), file=file)
+			write(paste(utils::capture.output(summary(object, rsquare = TRUE, fit = TRUE,
+			                                          standardize = TRUE)),
+			            collapse = "\n"), file = file)
 		}
 	} else if (what == "mifit") {
 		if (tableFormat) {
-		  utils::write.table(miPowerFit(object, ...), file=file, sep="\t", row.names=FALSE, col.names=TRUE)
+		  writeArgs$x <- miPowerFit(object, ...)
+		  if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
+		  if (is.null(writeArgs$col.names)) writeArgs$col.names <- TRUE
 		} else {
-			write(paste(utils::capture.output(miPowerFit(object, ...)), collapse="\n"), file=file)
+			write(paste(utils::capture.output(miPowerFit(object, ...)),
+			            collapse = "\n"), file = file)
 		}
 	} else {
 		target <- lavInspect(object, what=what)
 		if (tableFormat) {
 			if (is(target, "lavaan.data.frame") || is(target, "data.frame")) {
-				utils::write.table(target, file=file, sep="\t", row.names=FALSE, col.names=TRUE)
+			  writeArgs$x <- target
+			  if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
+			  if (is.null(writeArgs$col.names)) writeArgs$col.names <- TRUE
 			} else if (is(target, "list")) {
 				if (is(target[[1]], "list")) {
 					target <- lapply(target, listToDataFrame)
-					target <- mapply(function(x, y) rbind(rep("", ncol(y)), c(x, rep("", ncol(y) - 1)), y), names(target), target, SIMPLIFY=FALSE)
-					target <- do.call(rbind, target)
-					utils::write.table(target[-1,], file=file, sep="\t", row.names=FALSE, col.names=FALSE)
+					target <- mapply(function(x, y) rbind(rep("", ncol(y)), c(x, rep("", ncol(y) - 1)), y),
+					                 names(target), target, SIMPLIFY = FALSE)
+					writeArgs$x <- do.call(rbind, target)
+					if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
+					if (is.null(writeArgs$col.names)) writeArgs$col.names <- FALSE
 				} else {
-					target <- listToDataFrame(target)
-					utils::write.table(target, file=file, sep="\t", row.names=FALSE, col.names=FALSE)
+					writeArgs$x <- listToDataFrame(target)
+					if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
+					if (is.null(writeArgs$col.names)) writeArgs$col.names <- FALSE
 				}
 			} else {
-				utils::write.table(target, file=file, sep="\t", row.names=TRUE, col.names=TRUE)
+			  writeArgs$x <- target
+			  if (is.null(writeArgs$row.names)) writeArgs$row.names <- TRUE
+			  if (is.null(writeArgs$col.names)) writeArgs$col.names <- TRUE
 			}
 		} else {
-			write(paste(utils::capture.output(target), collapse="\n"), file=file)
+			write(paste(utils::capture.output(target), collapse = "\n"), file = file)
 		}
 	}
+  do.call("write.table", writeArgs)
 }
 
 
-# copySummary: copy the summary of the lavaan object into the clipboard and potentially be useful if users paste it into the excel application
+# copySummary: copy the summary of the lavaan object into the clipboard and
+# potentially be useful if users paste it into the Excel application
 # object = lavaan object input
-copySummary <- function(object, file) {
+copySummary <- function(object, file, writeArgs = list()) {
 	# Capture the output of the lavaan class
 	outputText <- utils::capture.output(lavaan::summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE))
 
@@ -185,7 +214,7 @@ copySummary <- function(object, file) {
 	# Assign the number of columns in the resulting data frame and check whether the output contains any labels
 	numcol <- 7
 	test <- set2[-grep("Estimate", set2)]
-	test <- test[sapply(test, length) >=2]
+	test <- test[sapply(test, length) >= 2]
 	if (any(sapply(test, function(x) is.na(suppressWarnings(as.numeric(x[2])))))) numcol <- numcol + 1
 
 	# A function to parse the fit-measures output
@@ -240,7 +269,13 @@ copySummary <- function(object, file) {
 	set3 <- t(sapply(set3, set3Parse, numcol))
 
 	# Copy the output into the clipboard
-	utils::write.table(rbind(set1, set2, set3), file=file, sep="\t", row.names=FALSE, col.names=FALSE)
+	writeArgs$x <- rbind(set1, set2, set3)
+	writeArgs$file <- file
+	if (is.null(writeArgs$quote)) writeArgs$quote <- FALSE
+	if (is.null(writeArgs$sep)) writeArgs$sep <- "\t"
+	if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
+	if (is.null(writeArgs$col.names)) writeArgs$col.names <- FALSE
+	do.call("write.table", writeArgs)
 }
 
 # trim function from the R.oo package
