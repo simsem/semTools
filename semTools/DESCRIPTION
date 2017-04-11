@@ -25,8 +25,8 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = c("Jason","D."), family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"), 		
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com") 		
 		)
-Depends: R(>= 3.3), utils, stats, graphics
-Imports: methods, lavaan(>= 0.6)
+Depends: R(>= 3.3), utils, stats, graphics, lavaan(>= 0.6)
+Imports: methods
 Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt
 License: GPL (>= 2)
 LazyData: yes
