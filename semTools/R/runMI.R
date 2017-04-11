@@ -588,9 +588,28 @@ getLLs <- function(object) {
       names(LLg) <- group.label
       dd <- object@DataList[[i]]
       for (g in group.label) {
+        ## check NPD
         if (any(eigen(S[[g]])$values <= 0))
           return(paste("the model-implied covariance matrix of observed",
                        "variables was non-positive definite in group", sQuote(g)))
+        ## check symmetry
+        if (max(abs(S[[g]] - t(S[[g]]))) > .Machine$double.eps) {
+          places <- 15
+          while (places >= 3) {
+            temp <- round(S[[g]], places)
+            if (max(abs(temp - t(temp))) > .Machine$double.eps) {
+              places <- places - 1
+            } else {
+              message("The model-implied covariance matrix of observed",
+                      " variables in group ", sQuote(g), " needed to be rounded to ",
+                      places, " decimal places in order to pass a test for",
+                      " symmetry before calculating log-likelihoods.  This",
+                      " is probably nothing to worry about.\n")
+              S[[g]] <- temp
+            }
+          }
+        }
+        ## calculate log-likelihoods, if S passed above tests
         LLg[g] <- sum(apply(as.matrix(dd[ dd[,group] == g, varnames[[g]]]),
                             MARGIN = 1, FUN = mnormt::dmnorm, log = TRUE,
                             mean = M[[g]], varcov = unclass(S[[g]])))
@@ -600,9 +619,28 @@ getLLs <- function(object) {
   } else {
     varnames <- lavaan::lavNames(object)
     S <- implied$cov
+    ## check NPD
     if (any(eigen(S)$values <= 0))
       return(paste("the model-implied covariance matrix of observed",
                    "variables was non-positive definite"))
+    ## check symmetry
+    if (max(abs(S - t(S))) > .Machine$double.eps) {
+      places <- 15
+      while (places >= 3) {
+        temp <- round(S, places)
+        if (max(abs(temp - t(temp))) > .Machine$double.eps) {
+          places <- places - 1
+        } else {
+          message("The model-implied covariance matrix of observed",
+                  " variables needed to be rounded to ",
+                  places, " decimal places in order to pass a test for",
+                  " symmetry before calculating log-likelihoods.  This",
+                  " is probably nothing to worry about.\n")
+          S <- temp
+        }
+      }
+    }
+
     M <- if (meanstructure) implied$mean else {
       Reduce("+", lapply(object@SampleStatsList[useImps], "[[", i = "mean")) / nImps
     }
@@ -681,7 +719,24 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
                  " group ", sQuote(g), ". Log-likelihoods therefore cannot be",
                  " computed, so the D3 statistic is unavailable.  Use the D2",
                  " statistic with caution, as Type I error rates could be too",
-                 " low or too high (Enders, 2010, ch. 8).")
+                 " low or too high (Enders, 2010, ch. 8).\n")
+          if (max(abs(S1[[g]] - t(S1[[g]]))) > .Machine$double.eps) {
+            places <- 15
+            while (places >= 3) {
+              temp <- round(S1[[g]], places)
+              if (max(abs(temp - t(temp))) > .Machine$double.eps) {
+                places <- places - 1
+              } else {
+                message("The pooled saturated-model estimates (i.e., averaging",
+                        " the observed covariance matrices across imputations)",
+                        " in group ", sQuote(g), " needed to be rounded to ",
+                        places, " decimal places in order to pass a test for",
+                        " symmetry before calculating log-likelihoods.  This",
+                        " is probably nothing to worry about.\n")
+                S1[[g]] <- temp
+              }
+            }
+          }
           LL1g[g] <- sum(apply(as.matrix(dd[ dd[,group] == g, varnames[[g]]]),
                                MARGIN = 1, FUN = mnormt::dmnorm, log = TRUE,
                                mean = M1[[g]], varcov = unclass(S1[[g]])))
@@ -698,7 +753,24 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
              " matrix of observed variables was non-positive definite. Log-",
              "likelihoods therefore cannot be computed, so the D3 statistic",
              " is unavailable.  Use the D2 statistic with caution, as Type I",
-             " error rates could be too low or too high (Enders, 2010, ch. 8).")
+             " error rates could be too low or too high (Enders, 2010, ch. 8).\n")
+      if (max(abs(S1 - t(S1))) > .Machine$double.eps) {
+        places <- 15
+        while (places >= 3) {
+          temp <- round(S1, places)
+          if (max(abs(temp - t(temp))) > .Machine$double.eps) {
+            places <- places - 1
+          } else {
+            message("The pooled saturated-model estimates (i.e., averaging",
+                    " the observed covariance matrices across imputations)",
+                    " needed to be rounded to ",
+                    places, " decimal places in order to pass a test for",
+                    " symmetry before calculating log-likelihoods.  This",
+                    " is probably nothing to worry about.\n")
+            S1 <- temp
+          }
+        }
+      }
 
       M1 <- Reduce("+", lapply(object@SampleStatsList[useImps], "[[", i = "mean")) / nImps
       for (i in 1:m) {
