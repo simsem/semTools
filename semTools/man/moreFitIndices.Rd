@@ -17,15 +17,18 @@ fit measures are calculated by default}
 to compute BIC*.}
 }
 \value{
-\enumerate{ \itemgammaHat Gamma Hat \itemadjGammaHat Adjusted Gamma
-Hat \itembaseline.rmsea RMSEA of the Baseline (Null) Model \itemaic.smallN
-Corrected (for small sample size) Akaike Information Criterion
-\itembic.priorN Bayesian Information Criterion with specifying the prior
-sample size \itemsic Stochastic Information Criterion \itemhqc Hannan-Quinn
-Information Criterion \itemgammaHat.scaled Gamma Hat using Scaled Chi-square
-\itemadjGammaHat.scaled Adjusted Gamma Hat using Scaled Chi-square
-\itembaseline.rmsea.scaled RMSEA of the Baseline (Null) Model using Scaled
-Chi-square }
+\enumerate{
+ \item gammaHat Gamma Hat
+ \item adjGammaHat Adjusted Gamma Hat
+ \item baseline.rmsea RMSEA of the Baseline (Null) Model
+ \item aic.smallN Corrected (for small sample size) Akaike Information Criterion
+ \item bic.priorN Bayesian Information Criterion with specified prior sample size
+ \item sic Stochastic Information Criterion
+ \item hqc Hannan-Quinn Information Criterion
+ \item gammaHat.scaled Gamma Hat using scaled \eqn{\chi^2}
+ \item adjGammaHat.scaled Adjusted Gamma Hat using scaled \eqn{\chi^2}
+ \item baseline.rmsea.scaled RMSEA of the Baseline (Null) Model using scaled \eqn{\chi^2}
+}
 }
 \description{
 Calculate more fit indices that are not already provided in lavaan.

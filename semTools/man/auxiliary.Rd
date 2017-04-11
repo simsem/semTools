@@ -45,10 +45,10 @@ any observed variables in the \code{model}}
 \item{...}{additional arguments to pass to \code{\link[lavaan]{lavaan}}.}
 }
 \value{
-a fitted \code{\linkS4class[lavaan]{lavaan}} object.  Additional
+a fitted \code{\linkS4class{lavaan}} object.  Additional
   information is stored as a \code{list} in the \code{\@external} slot:
   \itemize{
-    \item \code{baseline.model}. a fitted \code{\linkS4class[lavaan]{lavaan}}
+    \item \code{baseline.model}. a fitted \code{\linkS4class{lavaan}}
           object. Results of fitting an appropriate independence model for
           the calculation of incremental fit indices (e.g., CFI, TLI) in
           which the auxiliary variables remain saturated, so only the target

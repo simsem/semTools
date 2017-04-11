@@ -73,31 +73,39 @@
 #'
 #'
 #' @importFrom lavaan lavInspect
-#' 
+#'
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param fit.measures Additional fit measures to be calculated. All additional
 #' fit measures are calculated by default
 #' @param nPrior The sample size on which prior is based. This argument is used
 #' to compute BIC*.
-#' @return \enumerate{ \itemgammaHat Gamma Hat \itemadjGammaHat Adjusted Gamma
-#' Hat \itembaseline.rmsea RMSEA of the Baseline (Null) Model \itemaic.smallN
-#' Corrected (for small sample size) Akaike Information Criterion
-#' \itembic.priorN Bayesian Information Criterion with specifying the prior
-#' sample size \itemsic Stochastic Information Criterion \itemhqc Hannan-Quinn
-#' Information Criterion \itemgammaHat.scaled Gamma Hat using Scaled Chi-square
-#' \itemadjGammaHat.scaled Adjusted Gamma Hat using Scaled Chi-square
-#' \itembaseline.rmsea.scaled RMSEA of the Baseline (Null) Model using Scaled
-#' Chi-square }
-#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com}) Terrence
-#' Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com}) Aaron
-#' Boulton (University of North Carolina, Chapel Hill;
-#' \email{aboulton@@email.unc.edu}) Ruben Arslan (Humboldt-University of
-#' Berlin, \email{rubenarslan@@gmail.com}) Yves Rosseel (Ghent University;
-#' \email{Yves.Rosseel@@UGent.be})
+#' @return \enumerate{
+#'  \item \code{gammaHat}: Gamma Hat
+#'  \item \code{adjGammaHat}: Adjusted Gamma Hat
+#'  \item \code{baseline.rmsea}: RMSEA of the Baseline (Null) Model
+#'  \item \code{aic.smallN}: Corrected (for small sample size) Akaike Information Criterion
+#'  \item \code{bic.priorN}: Bayesian Information Criterion with specified prior sample size
+#'  \item \code{sic}: Stochastic Information Criterion
+#'  \item \code{hqc}: Hannan-Quinn Information Criterion
+#'  \item \code{gammaHat.scaled}: Gamma Hat using scaled \eqn{\chi^2}
+#'  \item \code{adjGammaHat.scaled}: Adjusted Gamma Hat using scaled \eqn{\chi^2}
+#'  \item \code{baseline.rmsea.scaled}: RMSEA of the Baseline (Null) Model using scaled \eqn{\chi^2}
+#' }
+#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#'
+#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+#'
+#' Aaron Boulton (University of North Carolina, Chapel Hill; \email{aboulton@@email.unc.edu})
+#'
+#' Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@@gmail.com})
+#'
+#' Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
+#'
 #' @seealso \itemize{ \item \code{\link{miPowerFit}} For the modification
 #' indices and their power approach for model fit evaluation \item
 #' \code{\link{nullRMSEA}} For RMSEA of the null model }
+#'
 #' @references Burnham, K., & Anderson, D. (2003). \emph{Model selection and
 #' multimodel inference: A practical-theoretic approach}. New York, NY:
 #' Springer-Verlag.
@@ -214,7 +222,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 #'
 #'
 #' @importFrom lavaan lavInspect
-#' 
+#'
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param scaled If \code{TRUE}, calculate the null model from the scaled test.
@@ -334,7 +342,7 @@ sic <- function(f, lresults = NULL) {
 #'
 #' @importFrom lavaan lavInspect
 #' @importFrom stats pchisq
-#' 
+#'
 #' @param fit0 The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @param fit1 Optional additional \linkS4class{lavaan} model, in which
