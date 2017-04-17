@@ -599,13 +599,16 @@ getLLs <- function(object) {
             temp <- round(S[[g]], places)
             if (max(abs(temp - t(temp))) > .Machine$double.eps) {
               places <- places - 1
+              next
             } else {
-              message("The model-implied covariance matrix of observed",
+              warning("The model-implied covariance matrix of observed",
                       " variables in group ", sQuote(g), " needed to be rounded to ",
                       places, " decimal places in order to pass a test for",
                       " symmetry before calculating log-likelihoods.  This",
                       " is probably nothing to worry about.\n")
               S[[g]] <- temp
+              places <- 0
+              break
             }
           }
         }
@@ -630,13 +633,16 @@ getLLs <- function(object) {
         temp <- round(S, places)
         if (max(abs(temp - t(temp))) > .Machine$double.eps) {
           places <- places - 1
+          next
         } else {
-          message("The model-implied covariance matrix of observed",
+          warning("The model-implied covariance matrix of observed",
                   " variables needed to be rounded to ",
                   places, " decimal places in order to pass a test for",
                   " symmetry before calculating log-likelihoods.  This",
                   " is probably nothing to worry about.\n")
           S <- temp
+          places <- 0
+          break
         }
       }
     }
@@ -726,14 +732,17 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
               temp <- round(S1[[g]], places)
               if (max(abs(temp - t(temp))) > .Machine$double.eps) {
                 places <- places - 1
+                next
               } else {
-                message("The pooled saturated-model estimates (i.e., averaging",
+                warning("The pooled saturated-model estimates (i.e., averaging",
                         " the observed covariance matrices across imputations)",
                         " in group ", sQuote(g), " needed to be rounded to ",
                         places, " decimal places in order to pass a test for",
                         " symmetry before calculating log-likelihoods.  This",
                         " is probably nothing to worry about.\n")
                 S1[[g]] <- temp
+                places <- 0
+                break
               }
             }
           }
@@ -760,14 +769,17 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
           temp <- round(S1, places)
           if (max(abs(temp - t(temp))) > .Machine$double.eps) {
             places <- places - 1
+            next
           } else {
-            message("The pooled saturated-model estimates (i.e., averaging",
+            warning("The pooled saturated-model estimates (i.e., averaging",
                     " the observed covariance matrices across imputations)",
                     " needed to be rounded to ",
                     places, " decimal places in order to pass a test for",
                     " symmetry before calculating log-likelihoods.  This",
                     " is probably nothing to worry about.\n")
             S1 <- temp
+            places <- 0
+            break
           }
         }
       }
