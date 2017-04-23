@@ -3,16 +3,16 @@
 
 
 #' Partial Measurement Invariance Testing Across Groups
-#' 
+#'
 #' This test will provide partial invariance testing by (a) freeing a parameter
 #' one-by-one from nested model and compare with the original nested model or
 #' (b) fixing (or constraining) a parameter one-by-one from the parent model
 #' and compare with the original parent model. This function only works with
 #' congeneric models. The \code{partialInvariance} is used for continuous
 #' variable. The \code{partialInvarianceCat} is used for categorical variables.
-#' 
+#'
 #' There are four types of partial invariance testing:
-#' 
+#'
 #' \itemize{
 #'  \item Partial weak invariance. The model named 'fit.configural'
 #' from the list of models is compared with the model named 'fit.loadings'.
@@ -53,7 +53,7 @@
 #' list of models must have the names of "fit.means" and either
 #' "fit.residuals", "fit.intercepts", "fit.thresholds", or "fit.loadings".
 #' Users may use "means" or "mean" in the \code{type} argument. }
-#' 
+#'
 #' Two types of comparisons are used in this function:
 #' \enumerate{
 #' \item \code{free}: The nested model is used as a template. Then, one
@@ -62,29 +62,29 @@
 #' differences between two models. The likelihood-ratio test and the difference
 #' in CFI are provided.
 #' \item \code{fix}: The parent model is used as a template. Then, one parameter
-#' indicating the differences between two models is fixed or constrained to be 
-#' equal to other parameters. The new model is then compared with the parent 
-#' model. This process is repeated for all differences between two models. The 
+#' indicating the differences between two models is fixed or constrained to be
+#' equal to other parameters. The new model is then compared with the parent
+#' model. This process is repeated for all differences between two models. The
 #' likelihood-ratio test and the difference in CFI are provided.
-#' \item \code{wald}: This method is similar to the \code{fix} method. However, 
-#' instead of building a new model and compare them with likelihood-ratio test, 
-#' multivariate wald test is used to compare equality between parameter 
+#' \item \code{wald}: This method is similar to the \code{fix} method. However,
+#' instead of building a new model and compare them with likelihood-ratio test,
+#' multivariate wald test is used to compare equality between parameter
 #' estimates. See \code{\link[lavaan]{lavTestWald}} for further details. Note
-#' that if any rows of the contrast cannot be summed to 0, the Wald test is not 
-#' provided, such as comparing two means where one of the means is fixed as 0. 
-#' This test statistic is not as accurate as likelihood-ratio test provided in 
+#' that if any rows of the contrast cannot be summed to 0, the Wald test is not
+#' provided, such as comparing two means where one of the means is fixed as 0.
+#' This test statistic is not as accurate as likelihood-ratio test provided in
 #' \code{fix}. I provide it here in case that likelihood-ratio test fails to
 #' converge.
 #' }
-#' 
+#'
 #' Note that this function does not adjust for the inflated Type I error rate
 #' from multiple tests. The degree of freedom of all tests would be the number
 #' of groups minus 1.
-#' 
+#'
 #' The details of standardized estimates and the effect size used for each
 #' parameters are provided in the vignettes by running
 #' \code{vignette("partialInvariance")}.
-#' 
+#'
 #' @importFrom lavaan lavInspect parTable
 #' @aliases partialInvariance partialInvarianceCat
 #' @param fit A list of models for invariance testing. Each model should be
@@ -114,37 +114,37 @@
 #' @param return.fit Return the submodels fitted by this function
 #' @param method The method used to calculate likelihood ratio test. See
 #' \code{\link[lavaan]{lavTestLRT}} for available options
-#' 
+#'
 #' @return A list of results are provided. The list will consists of at least
 #' two elements:
 #' \enumerate{
 #'  \item \code{estimates}: The results of parameter estimates including pooled
 #'   estimates (\code{poolest}), the estimates for each group, standardized
-#'   estimates for each group (\code{std}), the difference in standardized 
-#'   values, and the effect size statistic (\emph{q} for factor loading 
-#'   difference and \emph{h} for error variance difference). See the details of 
+#'   estimates for each group (\code{std}), the difference in standardized
+#'   values, and the effect size statistic (\emph{q} for factor loading
+#'   difference and \emph{h} for error variance difference). See the details of
 #'   this effect size statistic by running \code{vignette("partialInvariance")}.
-#'   In the \code{partialInvariance} function, the additional effect statistics 
-#'   proposed by Millsap and Olivera-Aguilar (2012) are provided. For factor 
-#'   loading, the additional outputs are the observed mean difference 
-#'   (\code{diff_mean}), the mean difference if factor scores are low 
-#'   (\code{low_fscore}), and the mean difference if factor scores are high 
+#'   In the \code{partialInvariance} function, the additional effect statistics
+#'   proposed by Millsap and Olivera-Aguilar (2012) are provided. For factor
+#'   loading, the additional outputs are the observed mean difference
+#'   (\code{diff_mean}), the mean difference if factor scores are low
+#'   (\code{low_fscore}), and the mean difference if factor scores are high
 #'   (\code{high_fscore}). The low factor score is calculated by (a) finding the
 #'   factor scores that its \emph{z} score equals -\code{bound} (the default is
-#'   \eqn{-2}) from all groups and (b) picking the minimum value among the 
-#'   factor scores. The high factor score is calculated by (a) finding the 
-#'   factor scores that its \emph{z} score equals \code{bound} (default = 2) 
-#'   from all groups and (b) picking the maximum value among the factor scores. 
-#'   For measurement intercepts, the additional outputs are the observed means 
-#'   difference (\code{diff_mean}) and the proportion of the differences in the 
+#'   \eqn{-2}) from all groups and (b) picking the minimum value among the
+#'   factor scores. The high factor score is calculated by (a) finding the
+#'   factor scores that its \emph{z} score equals \code{bound} (default = 2)
+#'   from all groups and (b) picking the maximum value among the factor scores.
+#'   For measurement intercepts, the additional outputs are the observed means
+#'   difference (\code{diff_mean}) and the proportion of the differences in the
 #'   intercepts over the observed means differences (\code{propdiff}). For error
-#'   variances, the additional outputs are the proportion of the difference in 
+#'   variances, the additional outputs are the proportion of the difference in
 #'   error variances over the difference in observed variances (\code{propdiff}).
-#'  \item \code{results}: Statistical tests as well as the change in CFI are 
+#'  \item \code{results}: Statistical tests as well as the change in CFI are
 #'   provided. \eqn{\chi^2} and \emph{p} value are provided for all methods.
-#'  \item \code{models}: The submodels used in the \code{free} and \code{fix} 
-#'   methods, as well as the nested and parent models. The nested and parent 
-#'   models will be changed from the original models if \code{free} or 
+#'  \item \code{models}: The submodels used in the \code{free} and \code{fix}
+#'   methods, as well as the nested and parent models. The nested and parent
+#'   models will be changed from the original models if \code{free} or
 #'   \code{fit} arguments are specified.
 #' }
 #' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -157,46 +157,46 @@
 #' (Ed.), \emph{Handbook of structural equation modeling} (pp. 380-392). New
 #' York, NY: Guilford.
 #' @examples
-#' 
+#'
 #' ## Conduct weak invariance testing manually by using fixed-factor
 #' ## method of scale identification
-#' 
+#'
 #' library(lavaan)
-#' 
+#'
 #' conf <- "
 #' f1 =~ NA*x1 + x2 + x3
 #' f2 =~ NA*x4 + x5 + x6
 #' f1 ~~ c(1, 1)*f1
 #' f2 ~~ c(1, 1)*f2
 #' "
-#' 
+#'
 #' weak <- "
 #' f1 =~ NA*x1 + x2 + x3
 #' f2 =~ NA*x4 + x5 + x6
 #' f1 ~~ c(1, NA)*f1
 #' f2 ~~ c(1, NA)*f2
 #' "
-#' 
+#'
 #' configural <- cfa(conf, data = HolzingerSwineford1939, std.lv = TRUE, group="school")
 #' weak <- cfa(weak, data = HolzingerSwineford1939, group="school", group.equal="loadings")
 #' models <- list(fit.configural = configural, fit.loadings = weak)
 #' partialInvariance(models, "metric")
-#' 
+#'
 #' \dontrun{
 #' partialInvariance(models, "metric", free = "x5") # "x5" is free across groups in advance
 #' partialInvariance(models, "metric", fix = "x4") # "x4" is fixed across groups in advance
-#' 
+#'
 #' ## Use the result from the measurementInvariance function
 #' HW.model <- ' visual =~ x1 + x2 + x3
 #'               textual =~ x4 + x5 + x6
 #'               speed =~ x7 + x8 + x9 '
-#' 
+#'
 #' models2 <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
 #' partialInvariance(models2, "scalar")
-#' 
+#'
 #' ## Conduct weak invariance testing manually by using fixed-factor
 #' ## method of scale identification for dichotomous variables
-#' 
+#'
 #' f <- rnorm(1000, 0, 1)
 #' u1 <- 0.9*f + rnorm(1000, 1, sqrt(0.19))
 #' u2 <- 0.8*f + rnorm(1000, 1, sqrt(0.36))
@@ -208,13 +208,13 @@
 #' u4 <- as.numeric(cut(u4, breaks = c(-Inf, -0.5, Inf)))
 #' g <- rep(c(1, 2), 500)
 #' dat2 <- data.frame(u1, u2, u3, u4, g)
-#' 
+#'
 #' configural2 <- "
 #' f1 =~ NA*u1 + u2 + u3 + u4
-#' u1 | c(t11, t11)*t1 
-#' u2 | c(t21, t21)*t1 
-#' u3 | c(t31, t31)*t1 
-#' u4 | c(t41, t41)*t1 
+#' u1 | c(t11, t11)*t1
+#' u2 | c(t21, t21)*t1
+#' u3 | c(t31, t31)*t1
+#' u4 | c(t41, t41)*t1
 #' f1 ~~ c(1, 1)*f1
 #' f1 ~ c(0, NA)*1
 #' u1 ~~ c(1, 1)*u1
@@ -222,17 +222,17 @@
 #' u3 ~~ c(1, NA)*u3
 #' u4 ~~ c(1, NA)*u4
 #' "
-#' 
+#'
 #' outConfigural2 <- cfa(configural2, data = dat2, group = "g",
 #'                       parameterization = "theta", estimator = "wlsmv",
 #'                       ordered = c("u1", "u2", "u3", "u4"))
-#' 
+#'
 #' weak2 <- "
 #' f1 =~ NA*u1 + c(f11, f11)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4
-#' u1 | c(t11, t11)*t1 
-#' u2 | c(t21, t21)*t1 
-#' u3 | c(t31, t31)*t1 
-#' u4 | c(t41, t41)*t1 
+#' u1 | c(t11, t11)*t1
+#' u2 | c(t21, t21)*t1
+#' u3 | c(t31, t31)*t1
+#' u4 | c(t41, t41)*t1
 #' f1 ~~ c(1, NA)*f1
 #' f1 ~ c(0, NA)*1
 #' u1 ~~ c(1, 1)*u1
@@ -240,28 +240,28 @@
 #' u3 ~~ c(1, NA)*u3
 #' u4 ~~ c(1, NA)*u4
 #' "
-#' 
+#'
 #' outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization = "theta",
 #'                 estimator = "wlsmv", ordered = c("u1", "u2", "u3", "u4"))
-#' modelsCat <- list(configural = outConfigural2, metric = outWeak2)
-#' 
-#' partialInvarianceCat(modelsCat, type = "metric") 
-#' 
-#' partialInvarianceCat(modelsCat, type = "metric", free = "u2") 
-#' partialInvarianceCat(modelsCat, type = "metric", fix = "u3") 
-#' 
+#' modelsCat <- list(fit.configural = outConfigural2, fit.loadings = outWeak2)
+#'
+#' partialInvarianceCat(modelsCat, type = "metric")
+#'
+#' partialInvarianceCat(modelsCat, type = "metric", free = "u2")
+#' partialInvarianceCat(modelsCat, type = "metric", fix = "u3")
+#'
 #' ## Use the result from the measurementInvarianceCat function
-#' 
+#'
 #' model <- ' f1 =~ u1 + u2 + u3 + u4
 #'            f2 =~ u5 + u6 + u7 + u8'
-#' 
-#' modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", 
+#'
+#' modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g",
 #' 	                                      parameterization = "theta",
 #' 	                                      estimator = "wlsmv", strict = TRUE)
-#' 	
-#' partialInvarianceCat(modelsCat2, type = "scalar")	
+#'
+#' partialInvarianceCat(modelsCat2, type = "scalar")
 #' }
-#' 
+#'
 #' @export
 partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1,
                               poolvar = TRUE, p.adjust = "none", fbound = 2,
@@ -967,7 +967,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
                                  method = "satorra.bentler.2001") {
   # model <- ' f1 =~ u1 + u2 + u3 + u4
   # f2 =~ u5 + u6 + u7 + u8'
-  
+
   # modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta",
   # estimator="wlsmv", strict = TRUE)
   # fit <- modelsCat2
@@ -979,7 +979,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
   # p.adjust <- "none"
   # return.fit <- FALSE
   # method = "satorra.bentler.2001"
-  
+
   type <- tolower(type)
   numType <- 1
   fit1 <- fit0 <- NULL
@@ -1042,7 +1042,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
   pt0 <- parTable(fit0)
   pt0$start <- pt0$est <- pt0$se <- NULL
   pt1$start <- pt1$est <- pt1$se <- NULL
-  
+
   pt1$label[substr(pt1$label, 1, 1) == "." & substr(pt1$label, nchar(pt1$label),
                                                     nchar(pt1$label)) == "."] <- ""
   pt0$label[substr(pt0$label, 1, 1) == "." & substr(pt0$label, nchar(pt0$label),
@@ -1069,17 +1069,17 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
     fixLoadingFac[[i]] <- pt1$rhs[select]
   }
   names(fixLoadingFac) <- names(facList)
-  
+
   # Find the number of thresholds
   # Check whether the factor configuration is the same across gorups
-  
+
   conParTable <- lapply(pt1, "[", pt1$op == "==")
   group1pt <- lapply(pt1, "[", pt1$group != 1)
-  
+
   numThreshold <- table(sapply(group1pt, "[", group1pt$op == "|")[,"lhs"])
   plabelthres <- split(group1pt$plabel[group1pt$op == "|"], group1pt$lhs[group1pt$op == "|"])
   numFixedThreshold <- sapply(lapply(plabelthres, function(vec) !is.na(match(vec, conParTable$lhs)) | !is.na(match(vec, conParTable$rhs))), sum)[names(numThreshold)]
-  
+
   #numFixedThreshold <- table(sapply(group1pt, "[", group1pt$op == "|" & group1pt$eq.id != 0)[,"lhs"])
   fixIntceptFac <- list()
   for (i in seq_along(facList)) {
@@ -1091,7 +1091,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
     }
   }
   names(fixIntceptFac) <- names(facList)
-  
+
   ngroups <- max(pt0$group)
   neach <- lavInspect(fit0, "nobs")
   groupvar <- lavInspect(fit0, "group")
@@ -1103,7 +1103,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
   complab <- paste(grouplaborder[2:ngroups], "vs.", grouplaborder[1])
   if (ngroups <= 1) stop("Well, the number of groups is 1. Measurement",
                          " invariance across 'groups' cannot be done.")
-  
+
   if (numType == 4) {
     if (!all(c(free, fix) %in% facnames))
       stop("'free' and 'fix' arguments should consist of factor names because",
@@ -1177,7 +1177,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
       waldMat <- matrix(0, ngroups - 1, length(beta))
       varfree <- setdiff(varfree, c(free, fix))
     }
-    
+
     estimates <- matrix(NA, length(varfree), ngroups + 1)
     stdestimates <- matrix(NA, length(varfree), ngroups)
     colnames(estimates) <- c("poolest", paste0("load:", grouplab))
@@ -1197,7 +1197,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
     indexfixvar <- which((pt1$rhs %in% varinfixvar) & (pt1$op == "=~") & (pt1$group == 1))
     varnonfixvar <- setdiff(varfree, varinfixvar)
     indexnonfixvar <- setdiff(index, indexfixvar)
-    
+
     pos <- 1
     for (i in seq_along(indexfixvar)) {
       runnum <- indexfixvar[i]
@@ -1239,7 +1239,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
       waldCon[pos,] <- waldConstraint(fit1, pt1, waldMat, cbind(pt1$lhs[runnum], pt1$op[runnum], pt1$rhs[runnum], 1:ngroups))
       pos <- pos + 1
     }
-    
+
     facinvarfree <- findFactor(varnonfixvar, facList)
     for (i in seq_along(indexnonfixvar)) {
       runnum <- indexnonfixvar[i]
@@ -1308,7 +1308,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
     freeCon[,3] <- stats::p.adjust(freeCon[,3], p.adjust)
     fixCon[,3] <- stats::p.adjust(fixCon[,3], p.adjust)
     waldCon[,3] <- stats::p.adjust(waldCon[,3], p.adjust)
-    
+
     rownames(fixCon) <- names(listFixCon) <- rownames(freeCon) <- names(listFreeCon) <- rownames(waldCon) <- rownames(estimates) <- namept1[c(indexfixvar, indexnonfixvar)]
     estimates <- cbind(estimates, stdestimates, esstd, esz)
     result <- cbind(freeCon, fixCon, waldCon)
@@ -1389,7 +1389,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
       waldMat <- matrix(0, ngroups - 1, length(beta))
       varfree <- setdiff(varfree, c(free, fix))
     }
-    
+
     maxcolumns <- max(numThreshold[varfree]) - 1
     tname <- paste0("t", 2:(maxcolumns + 1))
     estimates <- matrix(NA, length(varfree), (ngroups * length(tname)) + length(tname))
@@ -1405,12 +1405,12 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
     colnames(fixCon) <- c("fix.chi", "fix.df", "fix.p", "fix.cfi")
     colnames(freeCon) <- c("free.chi", "free.df", "free.p", "free.cfi")
     colnames(waldCon) <- c("wald.chi", "wald.df", "wald.p")
-    
+
     facinfix <- findFactor(fix, facList)
     varinfixvar <- unlist(facList[facinfix])
     varinfixvar <- setdiff(varinfixvar, setdiff(varinfixvar, varfree))
     varnonfixvar <- setdiff(varfree, varinfixvar)
-    
+
     pos <- 1
     for (i in seq_along(varinfixvar)) {
       temp <- pt1
@@ -1455,7 +1455,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
       waldCon[pos,] <- do.call(waldConstraint, args)
       pos <- pos + 1
     }
-    
+
     facinvarfree <- findFactor(varnonfixvar, facList)
     for (i in seq_along(varnonfixvar)) {
       # Need to change marker variable if fixed
@@ -1506,7 +1506,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
         waldCon[pos,] <- do.call(waldConstraint, args)
       }
       listFixCon <- c(listFixCon, tryresult)
-      
+
       temp0 <- pt0
       for (s in 2:numThreshold[varnonfixvar[i]]) {
         runnum <- which((pt0$lhs == varfree[i]) & (pt0$op == "|") & (pt0$rhs == paste0("t", s)) & (pt0$group == 1))
@@ -1561,7 +1561,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
       waldMat <- matrix(0, ngroups - 1, length(beta))
       varfree <- setdiff(varfree, c(free, fix))
     }
-    
+
     estimates <- matrix(NA, length(varfree), ngroups + 1)
     stdestimates <- matrix(NA, length(varfree), ngroups)
     colnames(estimates) <- c("poolest", paste0("errvar:", grouplab))
@@ -1640,7 +1640,7 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
       waldMat <- matrix(0, ngroups - 1, length(beta))
       varfree <- setdiff(varfree, c(free, fix))
     }
-    
+
     estimates <- matrix(NA, length(varfree), ngroups + 1)
     stdestimates <- matrix(NA, length(varfree), ngroups)
     colnames(estimates) <- c("poolest", paste0("mean:", grouplab))
