@@ -6,10 +6,10 @@
 \alias{semTools-package}
 \title{semTools: Useful Tools for Structural Equation Modeling}
 \description{
-The \code{semTools} package provides many miscellaneous functions that are
+The \pkg{semTools} package provides many miscellaneous functions that are
 useful for statistical analysis involving SEM in R.  Many functions extend
 the funtionality of the \pkg{lavaan} package.  Some sets of functions in
-\code{semTools} correspond to the same theme. We call such a collection of
+\pkg{semTools} correspond to the same theme. We call such a collection of
 functions a \emph{suite}. Our suites include:
 \itemize{
 \item{Model Fit Evaluation:
@@ -18,14 +18,14 @@ functions a \emph{suite}. Our suites include:
   \code{\link{singleParamTest}},
   \code{\link{miPowerFit}}, and
   \code{\link{chisqSmallN}}}
-\item{Measurement Invariance: 
+\item{Measurement Invariance:
   \code{\link{measurementInvariance}},
   \code{\link{measurementInvarianceCat}},
   \code{\link{longInvariance}},
   \code{\link{partialInvariance}},
   \code{\link{partialInvarianceCat}}, and
   \code{\link{permuteMeasEq}}}
-\item{Power Analysis: 
+\item{Power Analysis:
   \code{\link{SSpower}},
   \code{\link{findRMSEApower}},
   \code{\link{plotRMSEApower}},
@@ -51,16 +51,16 @@ functions a \emph{suite}. Our suites include:
   \code{\link{probe3WayRC}}, and
   \code{\link{plotProbe}}}
 \item{Exploratory Factor Analysis (EFA):
-  \code{\link{efaUnrotate}},
   \code{\link{efa.ekc}},
+  \code{\link{efaUnrotate}},
   \code{\link{orthRotate}},
   \code{\link{oblqRotate}}, and
   \code{\link{funRotate}}}
-\item{Reliability of a Composite Score:
+\item{Reliability Estimation:
   \code{\link{reliability}},
-  \code{\link{reliabiltyL2}}, and 
+  \code{\link{reliabiltyL2}}, and
   \code{\link{maximalRelia}}}
-\item{Parcelling:
+\item{Parceling:
   \code{\link{parcelAllocation}},
   \code{\link{PAVranking}}, and
   \code{\link{poolMAlloc}}}
@@ -74,8 +74,8 @@ functions a \emph{suite}. Our suites include:
 All users of R (or SEM) are invited to submit functions or ideas for
 functions by contacting the maintainer, Terrence Jorgensen
 (\email{TJorgensen314@gmail.com}). Contributors are encouraged to use
-\code{Roxygen} comments to document their contributed code, which is 
-consistent with the rest of \code{semTools}.  Read the vignette from the
+\code{Roxygen} comments to document their contributed code, which is
+consistent with the rest of \pkg{semTools}.  Read the vignette from the
 \pkg{roxygen2} package for details:
 \code{vignette("rd", package = "roxygen2")}
 }

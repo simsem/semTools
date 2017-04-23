@@ -58,31 +58,31 @@ two elements:
 \enumerate{
  \item \code{estimates}: The results of parameter estimates including pooled
   estimates (\code{poolest}), the estimates for each group, standardized
-  estimates for each group (\code{std}), the difference in standardized 
-  values, and the effect size statistic (\emph{q} for factor loading 
-  difference and \emph{h} for error variance difference). See the details of 
+  estimates for each group (\code{std}), the difference in standardized
+  values, and the effect size statistic (\emph{q} for factor loading
+  difference and \emph{h} for error variance difference). See the details of
   this effect size statistic by running \code{vignette("partialInvariance")}.
-  In the \code{partialInvariance} function, the additional effect statistics 
-  proposed by Millsap and Olivera-Aguilar (2012) are provided. For factor 
-  loading, the additional outputs are the observed mean difference 
-  (\code{diff_mean}), the mean difference if factor scores are low 
-  (\code{low_fscore}), and the mean difference if factor scores are high 
+  In the \code{partialInvariance} function, the additional effect statistics
+  proposed by Millsap and Olivera-Aguilar (2012) are provided. For factor
+  loading, the additional outputs are the observed mean difference
+  (\code{diff_mean}), the mean difference if factor scores are low
+  (\code{low_fscore}), and the mean difference if factor scores are high
   (\code{high_fscore}). The low factor score is calculated by (a) finding the
   factor scores that its \emph{z} score equals -\code{bound} (the default is
-  \eqn{-2}) from all groups and (b) picking the minimum value among the 
-  factor scores. The high factor score is calculated by (a) finding the 
-  factor scores that its \emph{z} score equals \code{bound} (default = 2) 
-  from all groups and (b) picking the maximum value among the factor scores. 
-  For measurement intercepts, the additional outputs are the observed means 
-  difference (\code{diff_mean}) and the proportion of the differences in the 
+  \eqn{-2}) from all groups and (b) picking the minimum value among the
+  factor scores. The high factor score is calculated by (a) finding the
+  factor scores that its \emph{z} score equals \code{bound} (default = 2)
+  from all groups and (b) picking the maximum value among the factor scores.
+  For measurement intercepts, the additional outputs are the observed means
+  difference (\code{diff_mean}) and the proportion of the differences in the
   intercepts over the observed means differences (\code{propdiff}). For error
-  variances, the additional outputs are the proportion of the difference in 
+  variances, the additional outputs are the proportion of the difference in
   error variances over the difference in observed variances (\code{propdiff}).
- \item \code{results}: Statistical tests as well as the change in CFI are 
+ \item \code{results}: Statistical tests as well as the change in CFI are
   provided. \eqn{\chi^2} and \emph{p} value are provided for all methods.
- \item \code{models}: The submodels used in the \code{free} and \code{fix} 
-  methods, as well as the nested and parent models. The nested and parent 
-  models will be changed from the original models if \code{free} or 
+ \item \code{models}: The submodels used in the \code{free} and \code{fix}
+  methods, as well as the nested and parent models. The nested and parent
+  models will be changed from the original models if \code{free} or
   \code{fit} arguments are specified.
 }
 }
@@ -146,17 +146,17 @@ model is compared with the nested model. This process is repeated for all
 differences between two models. The likelihood-ratio test and the difference
 in CFI are provided.
 \item \code{fix}: The parent model is used as a template. Then, one parameter
-indicating the differences between two models is fixed or constrained to be 
-equal to other parameters. The new model is then compared with the parent 
-model. This process is repeated for all differences between two models. The 
+indicating the differences between two models is fixed or constrained to be
+equal to other parameters. The new model is then compared with the parent
+model. This process is repeated for all differences between two models. The
 likelihood-ratio test and the difference in CFI are provided.
-\item \code{wald}: This method is similar to the \code{fix} method. However, 
-instead of building a new model and compare them with likelihood-ratio test, 
-multivariate wald test is used to compare equality between parameter 
+\item \code{wald}: This method is similar to the \code{fix} method. However,
+instead of building a new model and compare them with likelihood-ratio test,
+multivariate wald test is used to compare equality between parameter
 estimates. See \code{\link[lavaan]{lavTestWald}} for further details. Note
-that if any rows of the contrast cannot be summed to 0, the Wald test is not 
-provided, such as comparing two means where one of the means is fixed as 0. 
-This test statistic is not as accurate as likelihood-ratio test provided in 
+that if any rows of the contrast cannot be summed to 0, the Wald test is not
+provided, such as comparing two means where one of the means is fixed as 0.
+This test statistic is not as accurate as likelihood-ratio test provided in
 \code{fix}. I provide it here in case that likelihood-ratio test fails to
 converge.
 }
@@ -224,10 +224,10 @@ dat2 <- data.frame(u1, u2, u3, u4, g)
 
 configural2 <- "
 f1 =~ NA*u1 + u2 + u3 + u4
-u1 | c(t11, t11)*t1 
-u2 | c(t21, t21)*t1 
-u3 | c(t31, t31)*t1 
-u4 | c(t41, t41)*t1 
+u1 | c(t11, t11)*t1
+u2 | c(t21, t21)*t1
+u3 | c(t31, t31)*t1
+u4 | c(t41, t41)*t1
 f1 ~~ c(1, 1)*f1
 f1 ~ c(0, NA)*1
 u1 ~~ c(1, 1)*u1
@@ -242,10 +242,10 @@ outConfigural2 <- cfa(configural2, data = dat2, group = "g",
 
 weak2 <- "
 f1 =~ NA*u1 + c(f11, f11)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4
-u1 | c(t11, t11)*t1 
-u2 | c(t21, t21)*t1 
-u3 | c(t31, t31)*t1 
-u4 | c(t41, t41)*t1 
+u1 | c(t11, t11)*t1
+u2 | c(t21, t21)*t1
+u3 | c(t31, t31)*t1
+u4 | c(t41, t41)*t1
 f1 ~~ c(1, NA)*f1
 f1 ~ c(0, NA)*1
 u1 ~~ c(1, 1)*u1
@@ -256,23 +256,23 @@ u4 ~~ c(1, NA)*u4
 
 outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization = "theta",
                 estimator = "wlsmv", ordered = c("u1", "u2", "u3", "u4"))
-modelsCat <- list(configural = outConfigural2, metric = outWeak2)
+modelsCat <- list(fit.configural = outConfigural2, fit.loadings = outWeak2)
 
-partialInvarianceCat(modelsCat, type = "metric") 
+partialInvarianceCat(modelsCat, type = "metric")
 
-partialInvarianceCat(modelsCat, type = "metric", free = "u2") 
-partialInvarianceCat(modelsCat, type = "metric", fix = "u3") 
+partialInvarianceCat(modelsCat, type = "metric", free = "u2")
+partialInvarianceCat(modelsCat, type = "metric", fix = "u3")
 
 ## Use the result from the measurementInvarianceCat function
 
 model <- ' f1 =~ u1 + u2 + u3 + u4
            f2 =~ u5 + u6 + u7 + u8'
 
-modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", 
+modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g",
 	                                      parameterization = "theta",
 	                                      estimator = "wlsmv", strict = TRUE)
-	
-partialInvarianceCat(modelsCat2, type = "scalar")	
+
+partialInvarianceCat(modelsCat2, type = "scalar")
 }
 
 }
