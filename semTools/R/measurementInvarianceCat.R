@@ -34,7 +34,7 @@
 #' parameterization in Millsap and Yun-Tein (2004).
 #'
 #' @importFrom lavaan lavInspect parTable
-#' 
+#'
 #' @param ... The same arguments as for any lavaan model.  See
 #' \code{\link{cfa}} for more information.
 #' @param std.lv If \code{TRUE}, the fixed-factor method of scale
@@ -50,8 +50,11 @@
 #' @param method The method used to calculate likelihood ratio test. See
 #' \code{\link[lavaan]{lavTestLRT}} for available options
 #' @return Invisibly, all model fits in the sequence are returned as a list.
-#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com}) Yves Rosseel
-#' (Ghent University; \email{Yves.Rosseel@@UGent.be})
+#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#'
+#'  Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
+#'
+#'  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 #' @seealso \code{\link{measurementInvariance}} for measurement invariance for
 #' continuous variables; \code{\link{longInvariance}} For the measurement
 #' invariance test within person with continuous variables;
@@ -85,7 +88,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
 	if (is.null(List$group)) stop("Please specify the group variable")
 
 	# Get the lavaan parameter table
-	template <- do.call(lavaancfa, c(List, do.fit=FALSE))
+	template <- do.call(lavaancfa, c(List, do.fit = FALSE))
 	lavaanParTable <- parTable(template)
 
 	# Find the number of groups
@@ -184,7 +187,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
 	# Fit configural invariance
 	ListConfigural <- List
 	ListConfigural$model <- lavaanParTable
-	fitConfigural <- do.call(lavaanlavaan, ListConfigural)
+	fitConfigural <- try(do.call(lavaanlavaan, ListConfigural), silent = TRUE)
 
 	# Create the parameter table for metric invariance
 	ptMetric <- lavaanParTable
@@ -208,7 +211,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
 
 	ListMetric <- List
 	ListMetric$model <- ptMetric
-	fitMetric <- do.call(lavaanlavaan, ListMetric)
+	fitMetric <- try(do.call(lavaanlavaan, ListMetric), silent = TRUE)
 
 	ptMeans <- ptStrict <- ptMetric
 
@@ -225,7 +228,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
 		}
 		ListScalar <- List
 		ListScalar$model <- ptScalar
-		fitScalar <- do.call(lavaanlavaan, ListScalar)
+		fitScalar <- try(do.call(lavaanlavaan, ListScalar), silent = TRUE)
 		ptMeans <- ptStrict <- ptScalar
 	} else fitScalar <- NULL
 
@@ -242,7 +245,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
 		}
 		ListStrict <- List
 		ListStrict$model <- ptStrict
-		fitStrict <- do.call(lavaanlavaan, ListStrict)
+		fitStrict <- try(do.call(lavaanlavaan, ListStrict), silent = TRUE)
 		ptMeans <- ptStrict
 	}
 
@@ -254,7 +257,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
 	}
 	ListMeans <- List
 	ListMeans$model <- ptMeans
-	fitMeans <- do.call(lavaanlavaan, ListMeans)
+	fitMeans <- try(do.call(lavaanlavaan, ListMeans), silent = TRUE)
 
 	FIT <- invisible(list(fit.configural = fitConfigural, fit.loadings = fitMetric,
 	                      fit.thresholds = fitScalar, fit.residuals = fitStrict,
@@ -275,35 +278,35 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
 ## ----------------
 
 multipleAllEqual <- function(...) {
-    obj <- list(...)
-    multipleAllEqualList(obj)
+  obj <- list(...)
+  multipleAllEqualList(obj)
 }
 
 multipleAllEqualList <- function(obj) {
-    for (i in 2:length(obj)) {
-        for (j in 1:(i - 1)) {
-            temp <- isTRUE(all.equal(obj[[i]], obj[[j]]))
-            if (!temp)
-                return(FALSE)
-        }
+  for (i in 2:length(obj)) {
+    for (j in 1:(i - 1)) {
+      temp <- isTRUE(all.equal(obj[[i]], obj[[j]]))
+      if (!temp)
+        return(FALSE)
     }
-    return(TRUE)
+  }
+  return(TRUE)
 }
 
 multipleAnyEqual <- function(...) {
-    obj <- list(...)
-    multipleAnyEqualList(obj)
+  obj <- list(...)
+  multipleAnyEqualList(obj)
 }
 
 multipleAnyEqualList <- function(obj) {
-    for (i in 2:length(obj)) {
-        for (j in 1:(i - 1)) {
-            temp <- isTRUE(all.equal(obj[[i]], obj[[j]]))
-            if (temp)
-                return(TRUE)
-        }
+  for (i in 2:length(obj)) {
+    for (j in 1:(i - 1)) {
+      temp <- isTRUE(all.equal(obj[[i]], obj[[j]]))
+      if (temp)
+        return(TRUE)
     }
-    return(FALSE)
+  }
+  return(FALSE)
 }
 
 

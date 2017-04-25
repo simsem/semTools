@@ -59,8 +59,11 @@
 #' @param method The method used to calculate likelihood ratio test. See
 #' \code{\link[lavaan]{lavTestLRT}} for available options
 #' @return Invisibly, all model fits in the sequence are returned as a list.
-#' @author Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be});
+#' @author Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
+#'
 #' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#'
+#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 #' @seealso \code{\link{longInvariance}} for the measurement invariance test
 #' within person; \code{partialInvariance} for the automated function for
 #' finding partial invariance models
@@ -93,7 +96,8 @@ measurementInvariance <- measurementinvariance <-
 
 	configural <- dotdotdot
 	configural$group.equal <- ""
-	template <- do.call(lavaancfa, configural)
+	template <- try(do.call(lavaancfa, configural), silent = TRUE)
+	if (class(template) == "try-error") stop('Configural model did not converge.')
 	pttemplate <- parTable(template)
 	varnames <- unique(pttemplate$rhs[pttemplate$op == "=~"])
 	facnames <- unique(pttemplate$lhs[(pttemplate$op == "=~") & (pttemplate$rhs %in% varnames)])
@@ -110,7 +114,7 @@ measurementInvariance <- measurementinvariance <-
 			pttemplate <- freeParTable(pttemplate, pttemplate$lhs[i], "=~",
 			                           pttemplate$rhs[i], pttemplate$group[i])
 		}
-		res$fit.configural <- refit(pttemplate, template)
+		res$fit.configural <- try(do.call(pttemplate, template), silent = TRUE)
 	} else {
 		res$fit.configural <- template
 	}
@@ -125,62 +129,68 @@ measurementInvariance <- measurementinvariance <-
 		for (i in facnames) {
 			pttemplate <- freeParTable(pttemplate, i, "~~", i, 2:ngroups)
 		}
-		res$fit.loadings <- refit(pttemplate, template)
+		res$fit.loadings <- try(do.call(pttemplate, template), silent = TRUE)
 	} else {
 		loadings <- dotdotdot
 		loadings$group.equal <- c("loadings")
-		res$fit.loadings <- do.call("cfa", loadings)
+		res$fit.loadings <- try(do.call("cfa", loadings), silent = TRUE)
 	}
 
   ## fix loadings + intercepts across groups
 	if (std.lv) {
-		findintcepts <- which(pttemplate$op == "~1" & pttemplate$lhs %in% varnames & pttemplate$free != 0 & pttemplate$group == 1)
+		findintcepts <- which(pttemplate$op == "~1" & pttemplate$lhs %in% varnames &
+		                        pttemplate$free != 0 & pttemplate$group == 1)
 		for (i in findintcepts) {
-			pttemplate <- constrainParTable(pttemplate, pttemplate$lhs[i], "~1", "", 1:ngroups)
+			pttemplate <- constrainParTable(pttemplate,
+			                                pttemplate$lhs[i], "~1", "", 1:ngroups)
 		}
 		for (i in facnames) {
 			pttemplate <- freeParTable(pttemplate, i, "~1", "", 2:ngroups)
 		}
-		res$fit.intercepts <- refit(pttemplate, template)
+		res$fit.intercepts <- try(do.call(pttemplate, template), silent = TRUE)
 	} else {
 		intercepts <- dotdotdot
 		intercepts$group.equal <- c("loadings", "intercepts")
-		res$fit.intercepts <- do.call(lavaancfa, intercepts)
+		res$fit.intercepts <- try(do.call(lavaancfa, intercepts), silent = TRUE)
 	}
 
   if (strict) {
 		if (std.lv) {
-			findresiduals <- which(pttemplate$op == "~~" & pttemplate$lhs %in% varnames & pttemplate$rhs == pttemplate$lhs & pttemplate$free != 0 & pttemplate$group == 1)
+			findresiduals <- which(pttemplate$op == "~~" &
+			                         pttemplate$lhs %in% varnames &
+			                         pttemplate$rhs == pttemplate$lhs &
+			                         pttemplate$free != 0 & pttemplate$group == 1)
 			for (i in findresiduals) {
-				pttemplate <- constrainParTable(pttemplate, pttemplate$lhs[i], "~~", pttemplate$rhs[i], 1:ngroups)
+				pttemplate <- constrainParTable(pttemplate, pttemplate$lhs[i], "~~",
+				                                pttemplate$rhs[i], 1:ngroups)
 			}
-			res$fit.residuals <- refit(pttemplate, template)
+			res$fit.residuals <- try(do.call(pttemplate, template), silent = TRUE)
 			for (i in facnames) {
 				pttemplate <- fixParTable(pttemplate, i, "~1", "", 1:ngroups, 0)
 			}
-			res$fit.means <- refit(pttemplate, template)
+			res$fit.means <- try(do.call(pttemplate, template), silent = TRUE)
 		} else {
 			# fix loadings + intercepts + residuals
 			residuals <- dotdotdot
 			residuals$group.equal <- c("loadings", "intercepts", "residuals")
-			res$fit.residuals <- do.call(lavaancfa, residuals)
+			res$fit.residuals <- try(do.call(lavaancfa, residuals), silent = TRUE)
 
 			# fix loadings + residuals + intercepts + means
 			means <- dotdotdot
 			means$group.equal <- c("loadings", "intercepts", "residuals", "means")
-			res$fit.means <- do.call(lavaancfa, means)
+			res$fit.means <- try(do.call(lavaancfa, means), silent = TRUE)
 		}
   } else {
 		if (std.lv) {
 			for (i in facnames) {
 				pttemplate <- fixParTable(pttemplate, i, "~1", "", 1:ngroups, 0)
 			}
-			res$fit.means <- refit(pttemplate, template)
+			res$fit.means <- try(do.call(pttemplate, template), silent = TRUE)
 		} else {
 			# fix loadings + intercepts + means
 			means <- dotdotdot
 			means$group.equal <- c("loadings", "intercepts", "means")
-			res$fit.means <- do.call(lavaancfa, means)
+			res$fit.means <- try(do.call(lavaancfa, means), silent = TRUE)
 		}
   }
 
@@ -196,34 +206,41 @@ measurementInvariance <- measurementinvariance <-
 
 #' @importFrom lavaan lavInspect
 printInvarianceResult <- function(FIT, fit.measures, method) {
-	# compare models
-	NAMES <- names(FIT); names(FIT) <- NULL
-	lavaanLavTestLRT <- function(...) { lavaan::lavTestLRT(...) }
+  ## check whether models converged
+  NAMES <- names(FIT)
+  nonconv <- which(sapply(FIT, class) == "try-error")
+  if (length(nonconv)) {
+    message('The following model(s) did not converge: \n', paste(NAMES[nonconv], sep = "\n"))
+    FIT <- FIT[-nonconv]
+    NAMES <- NAMES[-nonconv]
+  }
+	names(FIT) <- NULL
+	## compare models
+	lavaanLavTestLRT <- function(...) lavaan::lavTestLRT(...)
 	TABLE <- do.call(lavaanLavTestLRT, c(FIT, list(model.names = NAMES,
-									 method = method)))
+	                                               method = method)))
 
-	if(length(fit.measures) == 1L && fit.measures == "default") {
-		# scaled test statistic?
-		if(length(lavInspect(FIT[[1]], "test")) > 1L) {
+	if (length(fit.measures) == 1L && fit.measures == "default") {
+		## scaled test statistic?
+		if (length(lavInspect(FIT[[1]], "test")) > 1L) {
 			fit.measures <- c("cfi.scaled", "rmsea.scaled")
 		} else {
 			fit.measures <- c("cfi", "rmsea")
 		}
 	}
 
-	# add some fit measures
-	if(length(fit.measures)) {
+	## add some fit measures
+	if (length(fit.measures)) {
 
 		FM <- lapply(FIT, lavaan::fitMeasures, fit.measures)
 		FM.table1 <- sapply(fit.measures, function(x) sapply(FM, "[[", x))
-		if(length(FM) == 1L) {
-			FM.table1 <- rbind( rep(as.numeric(NA), length(fit.measures)),
-								FM.table1 )
+		if (length(FM) == 1L) {
+			FM.table1 <- rbind( rep(as.numeric(NA), length(fit.measures)), FM.table1)
 		}
-		if(length(FM) > 1L) {
+		if (length(FM) > 1L) {
 			FM.table2 <- rbind(as.numeric(NA),
 							   abs(apply(FM.table1, 2, diff)))
-			colnames(FM.table2) <- paste(colnames(FM.table2), ".delta", sep="")
+			colnames(FM.table2) <- paste(colnames(FM.table2), ".delta", sep = "")
 			FM.TABLE <- as.data.frame(cbind(FM.table1, FM.table2))
 		} else {
 			FM.TABLE <- as.data.frame(FM.table1)
@@ -237,7 +254,7 @@ printInvarianceResult <- function(FIT, fit.measures, method) {
 	cat("\n\n")
 
 	print(TABLE)
-	if(length(fit.measures)) {
+	if (length(fit.measures)) {
 		cat("\n\n")
 		cat("Fit measures:\n\n")
 		print(FM.TABLE)

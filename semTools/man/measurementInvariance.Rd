@@ -94,6 +94,9 @@ within person; \code{partialInvariance} for the automated function for
 finding partial invariance models
 }
 \author{
-Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be});
+Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

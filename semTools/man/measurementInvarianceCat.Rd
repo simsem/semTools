@@ -86,6 +86,9 @@ invariance test within person with continuous variables;
 invariance models
 }
 \author{
-Sunthud Pornprasertmanit (\email{psunthud@gmail.com}) Yves Rosseel
-(Ghent University; \email{Yves.Rosseel@UGent.be})
+Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+ Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+
+ Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

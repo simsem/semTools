@@ -6,7 +6,7 @@
 \usage{
 longInvariance(model, varList, auto = "all", constrainAuto = FALSE,
   fixed.x = TRUE, std.lv = FALSE, group = NULL, group.equal = "",
-  group.partial = "", warn = TRUE, debug = FALSE, strict = FALSE,
+  group.partial = "", strict = FALSE, warn = TRUE, debug = FALSE,
   quiet = FALSE, fit.measures = "default",
   method = "satorra.bentler.2001", ...)
 }
@@ -42,11 +42,11 @@ covariance of item 1 in time 2 and time 3.}
 
 \item{group.partial}{See \code{\link[lavaan]{lavaan}.}}
 
+\item{strict}{If \code{TRUE}, the sequence requires strict invariance. See}
+
 \item{warn}{See \code{\link[lavaan]{lavaan}.}}
 
-\item{debug}{See \code{\link[lavaan]{lavaan}.}}
-
-\item{strict}{If \code{TRUE}, the sequence requires strict invariance. See
+\item{debug}{See \code{\link[lavaan]{lavaan}.}
 details for more information.}
 
 \item{quiet}{If \code{TRUE}, a summary is printed out containing an overview
@@ -142,6 +142,9 @@ Research Methods, 3}(1), 4-70. doi:10.1177/109442810031002
 test between groups
 }
 \author{
-Sunthud Pornprasertmanit (\email{psunthud@gmail.com}); Yves Rosseel
-  (Ghent University; \email{Yves.Rosseel@UGent.be})
+Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+ Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+
+ Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
