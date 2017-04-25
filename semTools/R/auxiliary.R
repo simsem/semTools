@@ -85,6 +85,21 @@
 #' @export
 auxiliary <- function(model, data, aux, fun, ...) {
   lavArgs <- list(...)
+  ## check for constraints on observed variables that affect auxiliaries
+  if (!is.null(lavArgs$group.equal)) {
+    if (length(intersect(lavArgs$group.equal,
+                         c("intercepts","residuals","residual.covariances")))) {
+      warning('Using the "group.equal" argument to constrain intercepts will',
+              ' constrain all observed-variable intercepts, including',
+              ' auxiliary-variables means. Likewise, using the "group.equal"',
+              ' argument to constrain residual (co)variances will apply ',
+              ' those constraints to all observed variables, including',
+              ' exogenous and auxiliary variables. In order not to fit an',
+              ' overly constrained model, it is safer to apply equality',
+              ' constraints across groups manually using labels in the syntax.')
+    }
+  }
+
   if (missing(aux))
     stop("Please provide a character vector with names of auxiliary variables")
   if (missing(data))
