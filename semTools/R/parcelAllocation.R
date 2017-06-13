@@ -324,6 +324,8 @@ parcelAllocation <- function(nPerPar, facPlc, nAlloc = 100, syntax, dataset,
       fit <- lavaan::sem(syntax, data = data, ...)
       ## estimate model in lavaan
       Param[[i]] <- lavaan::parameterEstimates(fit)
+      ##Drop label column to avoid bugs with constraints
+      Param[[i]] <- Param[[i]][, !(names(Param[[i]]) %in% "label")]
       ## assign allocation parameter estimates to list
       Fitind[[i]] <- lavaan::fitMeasures(fit, c("chisq", "df", "cfi", "tli",
                                                 "rmsea", "srmr"))
