@@ -272,21 +272,6 @@ growth.auxiliary <- function(model, data, aux, ...) {
 ## After enough time passes, delete everything below this line ##
 #################################################################
 
-checkOrdered <- function(dat, varnames, ...) {
-	ord <- list(...)$ordered
-	if(is.null(ord)) {
-		ord <- FALSE
-	} else {
-		ord <- TRUE
-	}
-	if(is.null(dat)) {
-		orderedVar <- FALSE
-	} else {
-		orderedVar <- sapply(dat[,varnames], function(x) "ordered" %in% is(x))
-	}
-	any(c(ord, orderedVar))
-}
-
 craftAuxParTable <- function(model, aux, ...) {
 	constraintLine <- model$op %in% c("==", ":=", ">", "<")
 	modelConstraint <- lapply(model, "[", constraintLine)

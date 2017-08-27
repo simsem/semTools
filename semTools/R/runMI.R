@@ -719,7 +719,7 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
         dd <- object@DataList[[i]]
         for (g in group.label) {
           if (any(eigen(S1[[g]])$values <= 0))
-            stop("Using the pooled saturated-model estimates (i.e., averaging the",
+            stop("Using the pooled saturated-model estimates (i.e., averaging the",      ## FIXME: move from 1:m loop to g loop above
                  " observed covariance matrices across imputations), the covariance",
                  " matrix of observed variables was non-positive definite in",
                  " group ", sQuote(g), ". Log-likelihoods therefore cannot be",

@@ -10,14 +10,14 @@
 
 #' Class for the Results of 2-Stage Maximum Likelihood (TSML) Estimation for
 #' Missing Data
-#' 
+#'
 #' This class contains the results of 2-Stage Maximum Likelihood (TSML)
 #' estimation for missing data.  The \code{summary}, \code{anova}, \code{vcov}
 #' methods return corrected \emph{SE}s and test statistics.  Other methods are
 #' simply wrappers around the corresponding \code{\linkS4class{lavaan}}
 #' methods.
-#' 
-#' 
+#'
+#'
 #' @name twostage-class
 #' @aliases twostage-class show,twostage-method summary,twostage-method
 #' anova,twostage-method vcov,twostage-method coef,twostage-method
@@ -34,52 +34,52 @@
 #'  auxiliary variable names, if used
 #' @return
 #'  \item{show}{\code{signature(object = "twostage"):} The \code{show} function
-#'   is used to display the results of the \code{anova} method, as well as the 
+#'   is used to display the results of the \code{anova} method, as well as the
 #'   header of the (uncorrected) target model results.}
 #'  \item{summary}{\code{signature(object = "twostage", ...):} The summary
-#'   function prints the same information from the \code{show} method, but also 
-#'   provides (and returns) the output of 
+#'   function prints the same information from the \code{show} method, but also
+#'   provides (and returns) the output of
 #'   \code{\link[lavaan]{parameterEstimates}(object@target, ...)} with corrected
-#'   \emph{SE}s, test statistics, and confidence intervals.  Additional 
-#'   arguments can be passed to \code{\link[lavaan]{parameterEstimates}}, 
-#'   including \code{fmi = TRUE} to provide an estimate of the fraction of 
+#'   \emph{SE}s, test statistics, and confidence intervals.  Additional
+#'   arguments can be passed to \code{\link[lavaan]{parameterEstimates}},
+#'   including \code{fmi = TRUE} to provide an estimate of the fraction of
 #'   missing information.}
 #'  \item{anova}{\code{signature(object = "twostage", h1 = NULL, baseline = FALSE):}
 #'   The \code{anova} function returns the residual-based \eqn{\chi^2} test
-#'   statistic result, as well as the scaled \eqn{\chi^2} test statistic result, 
-#'   for the model in the \code{target} slot, or for the model in the 
-#'   \code{baseline} slot if \code{baseline = TRUE}.  The user can also provide 
-#'   a single additional \code{twostage} object to the \code{h1} argument, in 
-#'   which case \code{anova} returns residual-based and scaled 
-#'   (\eqn{\Delta})\eqn{\chi^2} test results, under the assumption that the 
+#'   statistic result, as well as the scaled \eqn{\chi^2} test statistic result,
+#'   for the model in the \code{target} slot, or for the model in the
+#'   \code{baseline} slot if \code{baseline = TRUE}.  The user can also provide
+#'   a single additional \code{twostage} object to the \code{h1} argument, in
+#'   which case \code{anova} returns residual-based and scaled
+#'   (\eqn{\Delta})\eqn{\chi^2} test results, under the assumption that the
 #'   models are nested.  The models will be automatically sorted according their
 #'   degrees of freedom.}
 #'  \item{nobs}{\code{signature(object = "twostage",
 #'   type = c("ntotal", "ngroups", "n.per.group", "norig", "patterns", "coverage")):}
-#'   The \code{nobs} function will return the total sample sized used in the 
+#'   The \code{nobs} function will return the total sample sized used in the
 #'   analysis by default.  Also available are the number of groups or the sample
-#'   size per group, the original sample size (if any rows were deleted because 
-#'   all variables were missing), the missing data patterns, and the matrix of 
-#'   coverage (diagonal is the proportion of sample observed on each variable, 
-#'   and off-diagonal is the proportion observed for both of each pair of 
+#'   size per group, the original sample size (if any rows were deleted because
+#'   all variables were missing), the missing data patterns, and the matrix of
+#'   coverage (diagonal is the proportion of sample observed on each variable,
+#'   and off-diagonal is the proportion observed for both of each pair of
 #'   variables).}
 #'  \item{coef}{\code{signature(object = "twostage", type = c("free", "user")):}
-#'   This is simply a wrapper around the corresponding 
-#'   \code{\linkS4class{lavaan}} method, providing point estimates from the 
+#'   This is simply a wrapper around the corresponding
+#'   \code{\linkS4class{lavaan}} method, providing point estimates from the
 #'   \code{target} slot.}
-#'  \item{vcov}{\code{signature(object = "twostage", baseline = FALSE):} Returns 
-#'   the asymptotic covariance matrix of the estimated parameters (corrected for 
-#'   additional uncertainty due to missing data) for the model in the 
-#'   \code{target} slot, or for the model in the \code{baseline} slot if 
+#'  \item{vcov}{\code{signature(object = "twostage", baseline = FALSE):} Returns
+#'   the asymptotic covariance matrix of the estimated parameters (corrected for
+#'   additional uncertainty due to missing data) for the model in the
+#'   \code{target} slot, or for the model in the \code{baseline} slot if
 #'   \code{baseline = TRUE}.}
 #'  \item{fitted.values, fitted}{\code{signature(object = "twostage",
-#'   model = c("target", "saturated", "baseline")):} This is simply a wrapper 
-#'   around the corresponding \code{\linkS4class{lavaan}} method, providing 
-#'   model-implied sample moments from the slot specified in the \code{model} 
+#'   model = c("target", "saturated", "baseline")):} This is simply a wrapper
+#'   around the corresponding \code{\linkS4class{lavaan}} method, providing
+#'   model-implied sample moments from the slot specified in the \code{model}
 #'   argument.}
 #'  \item{residuals, resid}{\code{signature(object = "twostage", type = c("raw",
-#'   "cor", "normalized", "standardized")):} This is simply a wrapper around the 
-#'   corresponding \code{\linkS4class{lavaan}} method, providing residuals of 
+#'   "cor", "normalized", "standardized")):} This is simply a wrapper around the
+#'   corresponding \code{\linkS4class{lavaan}} method, providing residuals of
 #'   the specified \code{type} from the \code{target} slot.}
 #' @section Objects from the Class: Objects can be created via the
 #' \code{\link{twostage}} function.
@@ -87,9 +87,9 @@
 #' \email{TJorgensen314@@gmail.com})
 #' @seealso \code{\link{twostage}}
 #' @examples
-#' 
+#'
 #' # See the example from the twostage function
-#' 
+#'
 setClass("twostage",
          slots = c(saturated = "lavaan", target = "lavaan", baseline = "lavaan",
                    auxNames = "character"))
@@ -164,7 +164,7 @@ twostageMatrices <- function(object, baseline) {
   }
   ## stack groups' deltas into 1 matrix
   delta <- do.call(rbind, delta)
-  
+
   ## extract estimated moments from saturated model, and number of moments
   satSigma <- lavInspect(object@saturated, "cov.ov")
   satMu <- lavInspect(object@saturated, "mean.ov")
@@ -198,7 +198,7 @@ twostageMatrices <- function(object, baseline) {
   ## assemble complete-data information matrix
   H <- list()
   for (g in 1:nG) H[[g]] <- matrix(0, (pStar + p), (pStar + p))
-  
+
   if (lavInspect(slot(object, SLOT), "options")$estimator == "expected") {
     for (g in 1:nG) {
       H[[g]][1:pStar, 1:pStar] <- .5*lavaan::lav_matrix_duplication_pre_post(shinv[[g]] %x% shinv[[g]])
@@ -217,7 +217,7 @@ twostageMatrices <- function(object, baseline) {
   }
   ## combine into 1 block-diagonal matrix
   H <- do.call(lavaan::lav_matrix_bdiag, H)
-  
+
   ## asymptotic information and covariance matrices of target model
   satACOV <- lavaan::vcov(object@saturated)
   satInfo <- solve(satACOV * lavaan::nobs(object@saturated))
@@ -254,7 +254,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   pval.res <- pchisq(T.res, df = DF, lower.tail = FALSE)
   residual <- c(chisq = T.res, df = DF, pvalue = pval.res)
   class(residual) <- c("lavaan.vector","numeric")
-  
+
   ## scaled test statistic (Savalei & Bentler, 2009, eq. 9)
   meat <- MATS$H %*% MATS$delta
   bread <- MASS::ginv(t(MATS$delta) %*% meat) # FIXME: why not solve()?
@@ -265,7 +265,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   scaled <- c(chisq.naive = chisq, scaling.factor = 1 / cc,
               chisq.scaled = T.scaled, df = DF, pvalue = pval.scaled)
   class(scaled) <- c("lavaan.vector","numeric")
-  
+
   ## return both statistics
   if (print) {
     if (lavInspect(object@saturated, "options")$se == "standard") {
@@ -425,7 +425,7 @@ setMethod("resid", "twostage",
 
 #' Fit a lavaan model using 2-Stage Maximum Likelihood (TSML) estimation for
 #' missing data.
-#' 
+#'
 #' This function automates 2-Stage Maximum Likelihood (TSML) estimation,
 #' optionally with auxiliary variables.  Step 1 involves fitting a saturated
 #' model to the partially observed data set (to variables in the hypothesized
@@ -436,7 +436,7 @@ setMethod("resid", "twostage",
 #' errors (\emph{SE}s) and chi-squared statistic to account for additional
 #' uncertainty due to missing data (using information from Step 1; see
 #' References section for sources with formulas).
-#' 
+#'
 #' All variables (including auxiliary variables) are treated as endogenous
 #' varaibles in the Step-1 saturated model (\code{fixed.x = FALSE}), so data
 #' are assumed continuous, although not necessarily multivariate normal
@@ -450,11 +450,11 @@ setMethod("resid", "twostage",
 #' "standard"}.  \code{\link[lavaan]{lavaan}}'s \code{se} option can only be
 #' set to \code{"standard"} to assume multivariate normality or to
 #' \code{"robust.huber.white"} to relax that assumption.
-#' 
-#' 
+#'
+#'
 #' @aliases twostage cfa.2stage sem.2stage growth.2stage lavaan.2stage
 #' @importFrom lavaan lavInspect
-#' 
+#'
 #' @param \dots Arguments passed to the \code{\link[lavaan]{lavaan}} function
 #' specified in the \code{fun} argument.  See also
 #' \code{\link[lavaan]{lavOptions}}.  At a minimum, the user must supply the
@@ -486,13 +486,13 @@ setMethod("resid", "twostage",
 #' missing data: Theory and application to auxiliary variables.
 #' \emph{Structural Equation Modeling, 16}(3), 477-497.
 #' doi:10.1080/10705510903008238
-#' 
+#'
 #' Savalei, V., & Falk, C. F. (2014). Robust two-stage approach outperforms
 #' robust full information maximum likelihood with incomplete nonnormal data.
 #' \emph{Structural Equation Modeling, 21}(2), 280-302.
 #' doi:10.1080/10705511.2014.882692
 #' @examples
-#' 
+#'
 #' ## impose missing data for example
 #' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
 #'                                       "ageyr","agemo","school")]
@@ -500,28 +500,28 @@ setMethod("resid", "twostage",
 #' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
 #' age <- HSMiss$ageyr + HSMiss$agemo/12
 #' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-#' 
+#'
 #' ## specify CFA model from lavaan's ?cfa help page
 #' HS.model <- '
 #'   visual  =~ x1 + x2 + x3
 #'   textual =~ x4 + x5 + x6
 #'   speed   =~ x7 + x8 + x9
 #' '
-#' 
+#'
 #' ## use ageyr and agemo as auxiliary variables
 #' out <- cfa.2stage(model = HS.model, data = HSMiss, aux = c("ageyr","agemo"))
-#' 
+#'
 #' ## two versions of a corrected chi-squared test results are shown
 #' out
 #' ## see Savalei & Bentler (2009) and Savalei & Falk (2014) for details
-#' 
+#'
 #' ## the summary additionally provides the parameter estimates with corrected
 #' ## standard errors, test statistics, and confidence intervals, along with
 #' ## any other options that can be passed to parameterEstimates()
 #' summary(out, standardized = TRUE)
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' ## use parameter labels to fit a more constrained model
 #' modc <- '
 #'   visual  =~ x1 + x2 + x3
@@ -529,17 +529,18 @@ setMethod("resid", "twostage",
 #'   speed   =~ x7 + a*x8 + a*x9
 #' '
 #' outc <- cfa.2stage(model = modc, data = HSMiss, aux = c("ageyr","agemo"))
-#' 
-#' 
+#'
+#'
 #' ## use the anova() method to test this constraint
 #' anova(out, outc)
 #' ## like for a single model, two corrected statistics are provided
-#' 
+#'
 #' @export
 twostage <- function(..., aux, fun, baseline.model = NULL) {
   if (all(aux == "")) aux <- NULL
   dots <- list(...)
   if (is.null(dots$model)) stop("lavaan model syntax argument must be named 'model'.")
+  ####################### FIXME: also check intersect(names(dots), names(lavOptions()))
   lavaanifyArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaanify)))]
   funArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaan)))]
   ## set some non-optional lavaan arguments
@@ -550,7 +551,7 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   funArgs$estimator <- "ML"
   funArgs$test <- "standard"
   if (is.null(funArgs$information)) funArgs$information <- "observed"
-  
+
   if (funArgs$information == "expected") {
     message("If data are MAR, only the observed information matrix is consistent.")
     if (!is.null(aux)) {
@@ -566,7 +567,7 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   }
   funArgs$NACOV <- NULL
   funArgs$do.fit <- NULL
-  
+
   ## STAGE 1:
   ## fit saturated model
   if (!is.null(funArgs$group))
@@ -580,14 +581,14 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   satArgs$model <- c(covstruc[lower.tri(covstruc, diag = TRUE)],
                      paste(varnames, "~ 1"))
   satFit <- do.call(lavaan::lavaan, satArgs)
-  
+
   ## check for robust estimators
   opts <- lavInspect(satFit, "options")
   if (!opts$se %in% c("standard","robust.huber.white"))
     stop(c("Two-Stage estimation requires either se = 'standard' for ",
            "multivariate normal data or se = 'robust.huber.white' to ",
            "correct for non-normality."))
-  
+
   ## STAGE 2:
   ## fit target model to saturated estimates
   targetArgs <- funArgs
@@ -598,7 +599,7 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   targetArgs$se <- "standard"
   targetArgs$sample.cov.rescale <- FALSE
   targetFit <- do.call(fun, targetArgs)
-  
+
   ## STAGE 0:
   ## fit baseline model (for incremental fit indices)
   baseArgs <- targetArgs
@@ -614,7 +615,7 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
     warning("The baseline model includes variables excluded from the target model.")
   if (length(setdiff(targetNames, lavaan::lavNames(baseFit))))
     warning("The target model includes variables excluded from the baseline model.")
-  
+
   ## return both models
   out <- new("twostage", saturated = satFit, target = targetFit,
              baseline = baseFit, auxNames = as.character(aux))

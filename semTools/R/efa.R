@@ -25,7 +25,7 @@
 #'
 #' @importFrom lavaan lavInspect parTable
 #' @importFrom stats factanal
-#' 
+#'
 #' @param data A target \code{data.frame}
 #' @param nf The desired number of factors
 #' @param varList Target observed variables. If not specified, all variables in
@@ -102,7 +102,7 @@ efaUnrotate <- function(data, nf, varList = NULL,
   if (start) {
     List <- c(list(model = syntax, data = data), list(...))
     List$do.fit <- FALSE
-    outtemp <- do.call("cfa", List)
+    outtemp <- do.call(lavaancfa, List)
     covtemp <- lavInspect(outtemp, "sampstat")$cov
     partemp <- parTable(outtemp)
     err <- try(startload <- factanal(factors = nf, covmat = covtemp)$loadings[],
@@ -111,7 +111,7 @@ efaUnrotate <- function(data, nf, varList = NULL,
                                    " function cannot be calculated. Please",
                                    " use start = FALSE instead.")
     startval <- sqrt(diag(diag(covtemp))) %*% startload
-    partemp$start[match(as.vector(loading), partemp$label)] <- as.vector(startval)
+    partemp$ustart[match(as.vector(loading), partemp$label)] <- as.vector(startval)
     partemp$est <- partemp$se <- NULL
     syntax <- partemp
   }
@@ -573,6 +573,21 @@ seStdLoadings <- function(rotate, object, fun, MoreArgs) {
 	partable <- parTable(object)
 	idx <- which(partable$op == "=~" & !(partable$rhs %in% lv.names))
 	matrix(LIST$se[idx], ncol = length(lv.names))
+}
+
+checkOrdered <- function(dat, varnames, ...) {
+  ord <- list(...)$ordered
+  if(is.null(ord)) {
+    ord <- FALSE
+  } else {
+    ord <- TRUE
+  }
+  if(is.null(dat)) {
+    orderedVar <- FALSE
+  } else {
+    orderedVar <- sapply(dat[,varnames], function(x) "ordered" %in% is(x))
+  }
+  any(c(ord, orderedVar))
 }
 
 

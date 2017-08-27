@@ -1,5 +1,5 @@
 ### Corbin Quick & Alex Schoemann
-### Last updated: 7 June 2017
+### Last updated: 13 June 2017
 
 
 #' Random Allocation of Items to Parcels in a Structural Equation Model
@@ -324,7 +324,7 @@ parcelAllocation <- function(nPerPar, facPlc, nAlloc = 100, syntax, dataset,
       fit <- lavaan::sem(syntax, data = data, ...)
       ## estimate model in lavaan
       Param[[i]] <- lavaan::parameterEstimates(fit)
-      ##Drop label column to avoid bugs with constraints
+      ## Drop label column to avoid bugs with constraints ## ADDED BY ALEX 13-JUN-2017
       Param[[i]] <- Param[[i]][, !(names(Param[[i]]) %in% "label")]
       ## assign allocation parameter estimates to list
       Fitind[[i]] <- lavaan::fitMeasures(fit, c("chisq", "df", "cfi", "tli",

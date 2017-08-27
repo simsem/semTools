@@ -1,5 +1,5 @@
 Package: semTools
-Version: 0.4-15.910
+Version: 0.4-15.911
 Title: Useful Tools for Structural Equation Modeling
 Description: Provides useful tools for structural equation modeling. 
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com"),
@@ -25,7 +25,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = c("Jason","D."), family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"), 		
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com") 		
 		)
-Depends: R(>= 3.3), utils, stats, graphics, lavaan(>= 0.6)
+Depends: R(>= 3.4), utils, stats, graphics, lavaan(>= 0.6)
 Imports: methods
 Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt
 License: GPL (>= 2)
@@ -33,5 +33,5 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2017-04-11
+Date/Publication: 2017-08-27
 RoxygenNote: 6.0.1

@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 3 April 2017
+### Last updated: 7 June 2017
 
 
 #' Modification indices and their power approach for model fit evaluation
@@ -39,7 +39,7 @@
 #' @aliases miPowerFit miPowerFit
 #' @importFrom lavaan lavInspect
 #' @importFrom stats qnorm qchisq pchisq
-#' 
+#'
 #' @param lavaanObj The lavaan model object used to evaluate model fit
 #' @param stdLoad The amount of standardized factor loading that one would like
 #' to be detected (rejected). The default value is 0.4, which is suggested by
