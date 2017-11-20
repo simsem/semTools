@@ -31,10 +31,11 @@ If the data has missing values multiple imputation before parceling is
 recommended.}
 
 \item{names}{(Optional) A character vector containing the names of parceled
-variables.}
+variables. These names should appear as indicators in \code{syntax}.}
 
 \item{leaveout}{A vector of variables to be left out of randomized
-parceling. Either variable names or column numbers are allowed.}
+parceling. Either variable names or column numbers are allowed. These names
+should appear as columns in \code{dataset} and be listed in \code{facPlc}.}
 
 \item{\dots}{Additional arguments to be passed to \link{lavaan}}
 }
@@ -79,7 +80,7 @@ itesm to parcels see Sterba (2011) and Sterba and MccCallum (2010).
 ## lavaan syntax for the model to be fit to parceled data
 library(lavaan)
 
-syntax <- 'La =~ V1 + V2 + V3 
+syntax <- 'La =~ V1 + V2 + V3
            Lb =~ V4 + V5 + V6
 '
 ## Parcel and fit data 20 times.
@@ -96,7 +97,7 @@ variability for comparing fit of item-solutions and parcel-solutions.
 \emph{Structural Equation Modeling, 18}(4), 554-577.
 doi:10.1080/10705511.2011.607073
 
-Sterba, S. K.m & MacCallum, R. C. (2010). Variability in parameter estimates
+Sterba, S. K. & MacCallum, R. C. (2010). Variability in parameter estimates
 and model fit across random allocations of items to parcels.
 \emph{Multivariate Behavioral Research, 45}(2), 322-358.
 doi:10.1080/00273171003680302
@@ -106,6 +107,6 @@ doi:10.1080/00273171003680302
 }
 \author{
 Corbin Quick (University of Michigan; \email{corbinq@umich.edu})
- 
+
 Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 }

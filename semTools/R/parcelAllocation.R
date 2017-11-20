@@ -1,5 +1,5 @@
-### Corbin Quick & Alex Schoemann
-### Last updated: 13 June 2017
+### Terrence D. Jorgensen
+### Last updated: 20 September 2017
 
 
 #' Random Allocation of Items to Parcels in a Structural Equation Model
@@ -70,7 +70,7 @@
 #' \emph{Structural Equation Modeling, 18}(4), 554-577.
 #' doi:10.1080/10705511.2011.607073
 #'
-#' Sterba, S. K.m & MacCallum, R. C. (2010). Variability in parameter estimates
+#' Sterba, S. K. & MacCallum, R. C. (2010). Variability in parameter estimates
 #' and model fit across random allocations of items to parcels.
 #' \emph{Multivariate Behavioral Research, 45}(2), 322-358.
 #' doi:10.1080/00273171003680302
@@ -419,3 +419,5 @@ parcelAllocation <- function(nPerPar, facPlc, nAlloc = 100, syntax, dataset,
 }
 
 #parcelAllocation(list(c(3,3,3)), list(name1), nAlloc=20, syntax=syntax, dataset=simParcel)
+
+

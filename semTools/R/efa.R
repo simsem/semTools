@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 3 April 2017
+### Last updated: 27 August 2017
 ### fit and rotate EFA models in lavaan
 
 
