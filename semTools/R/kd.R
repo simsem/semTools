@@ -115,6 +115,10 @@ kd <- function(covmat, n, type=c("exact","sample")) {
   ## Scale data to correspond to covmat
   dat <- t(dat) %*% mv.vars
 
+  ## convert to data.frame, use any existing names from covmat
+  dat <- data.frame(dat)
+  if(!is.null(colnames(covmat))) names(dat) <- colnames(covmat)
+  
   dat
 }
 
