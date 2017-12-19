@@ -9,18 +9,18 @@
 
 #' Class for the Results of Permutation Randomization Tests of Measurement
 #' Equivalence and DIF
-#' 
+#'
 #' This class contains the results of tests of Measurement Equivalence and
 #' Differential Item Functioning (DIF).
-#' 
-#' 
+#'
+#'
 #' @name permuteMeasEq-class
 #' @aliases permuteMeasEq-class show,permuteMeasEq-method
 #' summary,permuteMeasEq-method hist,permuteMeasEq-method
 #' @docType class
 #' @slot PT A \code{data.frame} returned by a call to
 #'   \code{\link[lavaan]{parTable}} on the constrained model
-#' @slot modelType A character indicating the specified \code{modelType} in the 
+#' @slot modelType A character indicating the specified \code{modelType} in the
 #'   call to \code{permuteMeasEq}
 #' @slot ANOVA A \code{numeric} vector indicating the results of the observed
 #'   (\eqn{\Delta})\eqn{\chi^2} test, based on the central \eqn{\chi^2}
@@ -29,72 +29,72 @@
 #' @slot AFI.dist The permutation distribution(s) of user-selected fit measures.
 #'   A \code{data.frame} with \code{n.Permutations} rows and one column for each
 #'   \code{AFI.obs}.
-#' @slot AFI.pval A vector of \emph{p} values (one for each element in slot 
-#'   \code{AFI.obs}) calculated using slot \code{AFI.dist}, indicating the 
-#'   probability of observing a change at least as extreme as \code{AFI.obs} 
+#' @slot AFI.pval A vector of \emph{p} values (one for each element in slot
+#'   \code{AFI.obs}) calculated using slot \code{AFI.dist}, indicating the
+#'   probability of observing a change at least as extreme as \code{AFI.obs}
 #'   if the null hypothesis were true
 #' @slot MI.obs A \code{data.frame} of observed Lagrange Multipliers
-#'   (modification indices) associated with the equality constraints or fixed 
-#'   parameters specified in the \code{param} argument. This is a subset of the 
-#'   output returned by a call to \code{\link[lavaan]{lavTestScore}} on the 
+#'   (modification indices) associated with the equality constraints or fixed
+#'   parameters specified in the \code{param} argument. This is a subset of the
+#'   output returned by a call to \code{\link[lavaan]{lavTestScore}} on the
 #'   constrained model.
-#' @slot MI.dist The permutation distribution of the maximum modification index 
-#'   (among those seen in slot \code{MI.obs$X2}) at each permutation of group 
+#' @slot MI.dist The permutation distribution of the maximum modification index
+#'   (among those seen in slot \code{MI.obs$X2}) at each permutation of group
 #'   assignment or of \code{covariates}
-#' @slot extra.obs If \code{permuteMeasEq} was called with an \code{extra} 
-#'   function, the output when applied to the original data is concatenated 
+#' @slot extra.obs If \code{permuteMeasEq} was called with an \code{extra}
+#'   function, the output when applied to the original data is concatenated
 #'   into this vector
 #' @slot extra.dist A \code{data.frame}, each column of which contains the
-#'   permutation distribution of the corresponding statistic in slot 
+#'   permutation distribution of the corresponding statistic in slot
 #'   \code{extra.obs}
 #' @slot n.Permutations An \code{integer} indicating the number of permutations
 #'   requested by the user
 #' @slot n.Converged An \code{integer} indicating the number of permuation
 #'   iterations which yielded a converged solution
 #' @slot n.nonConverged An \code{integer} vector of length
-#'   \code{n.Permutations} indicating how many times group assignment was 
+#'   \code{n.Permutations} indicating how many times group assignment was
 #'   randomly permuted (at each iteration) before converging on a solution
 #' @slot n.Sparse Only relevant with \code{ordered} indicators when
 #'   \code{modelType == "mgcfa"}. An \code{integer} vector of length
-#'   \code{n.Permutations} indicating how many times group assignment was 
-#'   randomly permuted (at each iteration) before obtaining a sample with all 
+#'   \code{n.Permutations} indicating how many times group assignment was
+#'   randomly permuted (at each iteration) before obtaining a sample with all
 #'   categories observed in all groups.
 #' @slot oldSeed An \code{integer} vector storing the value of
-#'   \code{.Random.seed} before running \code{permuteMeasEq}. Only relevant 
-#'   when using a parallel/multicore option and the original 
-#'   \code{RNGkind() != "L'Ecuyer-CMRG"}. This enables users to restore their 
-#'   previous \code{.Random.seed} state, if desired, by running:  
+#'   \code{.Random.seed} before running \code{permuteMeasEq}. Only relevant
+#'   when using a parallel/multicore option and the original
+#'   \code{RNGkind() != "L'Ecuyer-CMRG"}. This enables users to restore their
+#'   previous \code{.Random.seed} state, if desired, by running:
 #'   \code{.Random.seed[-1] <- permutedResults@oldSeed[-1]}
 #' @section Objects from the Class: Objects can be created via the
 #'   \code{\link[semTools]{permuteMeasEq}} function.
-#' @return 
+#' @return
 #' \itemize{
 #' \item The \code{show} method prints a summary of the multiparameter
 #'   omnibus test results, using the user-specified AFIs. The parametric
 #'  (\eqn{\Delta})\eqn{\chi^2} test is also displayed.
 #' \item The \code{summary} method prints the same information from the
-#'   \code{show} method, but when \code{extra = FALSE} (the default) it also 
-#'   provides a table summarizing any requested follow-up tests of DIF using 
-#'   modification indices in slot \code{MI.obs}. The user can also specify an 
-#'   \code{alpha} level for flagging modification indices as significant, as 
-#'   well as \code{nd} (the number of digits displayed). For each modification 
-#'   index, the \emph{p} value is displayed using a central \eqn{\chi^2} 
-#'   distribution with the \emph{df} shown in that column. Additionally, a 
-#'   \emph{p} value is displayed using the permutation distribution of the 
-#'   maximum index, which controls the familywise Type I error rate in a manner 
-#'   similar to Tukey's studentized range test. If any indices are flagged as 
+#'   \code{show} method, but when \code{extra = FALSE} (the default) it also
+#'   provides a table summarizing any requested follow-up tests of DIF using
+#'   modification indices in slot \code{MI.obs}. The user can also specify an
+#'   \code{alpha} level for flagging modification indices as significant, as
+#'   well as \code{nd} (the number of digits displayed). For each modification
+#'   index, the \emph{p} value is displayed using a central \eqn{\chi^2}
+#'   distribution with the \emph{df} shown in that column. Additionally, a
+#'   \emph{p} value is displayed using the permutation distribution of the
+#'   maximum index, which controls the familywise Type I error rate in a manner
+#'   similar to Tukey's studentized range test. If any indices are flagged as
 #'   significant using the \code{tukey.p.value}, then a message is displayed for
-#'   each flagged index. The invisibly returned \code{data.frame} is the 
-#'   displayed table of modification indices, unless 
-#'   \code{\link[semTools]{permuteMeasEq}} was called with \code{param = NULL}, 
-#'   in which case the invisibly returned object is \code{object}. If 
-#'   \code{extra = TRUE}, the permutation-based \emph{p} values for each 
+#'   each flagged index. The invisibly returned \code{data.frame} is the
+#'   displayed table of modification indices, unless
+#'   \code{\link[semTools]{permuteMeasEq}} was called with \code{param = NULL},
+#'   in which case the invisibly returned object is \code{object}. If
+#'   \code{extra = TRUE}, the permutation-based \emph{p} values for each
 #'   statistic returned by the \code{extra} function are displayed and returned
 #'   in a \code{data.frame} instead of the modification indices requested in the
 #'   \code{param} argument.
 #' \item The \code{hist} method returns a list of \code{length == 2},
 #'    containing the arguments for the call to \code{hist} and the arguments
-#'    to the call for \code{legend}, respectively. This list may facilitate 
+#'    to the call for \code{legend}, respectively. This list may facilitate
 #'    creating a customized histogram of \code{AFI.dist}, \code{MI.dist}, or
 #'    \code{extra.dist}
 #' }
@@ -102,9 +102,9 @@
 #'   \email{TJorgensen314@@gmail.com})
 #' @seealso \code{\link[semTools]{permuteMeasEq}}
 #' @examples
-#' 
+#'
 #' # See the example from the permuteMeasEq function
-#' 
+#'
 setClass("permuteMeasEq", slots = c(PT = "data.frame",
                                     modelType = "character",
                                     ANOVA = "vector",
@@ -162,7 +162,7 @@ setMethod("summary", "permuteMeasEq", function(object, alpha = .05, nd = 3,
   AFI <- data.frame(AFI.Difference = object@AFI.obs, p.value = object@AFI.pval)
   class(AFI) <- c("lavaan.data.frame","data.frame")
   print(AFI, nd = nd)
-  
+
   ## print extras or DIF test results, if any were requested
   if (extra && length(object@extra.obs)) {
     cat("\n\nUnadjusted p values of extra statistics,\n",
@@ -182,7 +182,7 @@ setMethod("summary", "permuteMeasEq", function(object, alpha = .05, nd = 3,
     MI <- do.call(paste("summ", object@modelType, sep = "."),
                   args = list(object = object, alpha = alpha))
     print(MI, nd = nd)
-    
+
     ## print messages about potential DIF
     if (all(MI$tukey.p.value > alpha)) {
       cat("\n\n No equality constraints were flagged as significant.\n\n")
@@ -197,9 +197,9 @@ setMethod("summary", "permuteMeasEq", function(object, alpha = .05, nd = 3,
       cat("\nUse lavTestScore(..., epc = TRUE) on your constrained model to",
           "display expected parameter changes for these equality constraints\n\n")
     }
-    
+
   } else return(invisible(object))
-  
+
   invisible(MI)
 })
 
@@ -267,7 +267,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
   if (is.null(histArgs$col)) histArgs$col <- "grey69"
   histArgs$freq <- !grepl("chi", AFI)
   histArgs$ylab <- if (histArgs$freq) "Frequency" else "Probability Density"
-  
+
   if (printLegend) {
     if (is.null(legendArgs$box.lty)) legendArgs$box.lty <- 0
     if (nd < length(strsplit(as.character(1 / alpha), "")[[1]]) - 1) {
@@ -282,7 +282,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
       pVal <- paste("=", round(x@AFI.pval[[AFI]], nd))
     }
   }
-  
+
   delta <- length(x@MI.dist) > 0L && x@modelType == "mgcfa"
   if (grepl("chi", AFI)) {   ####################################### Chi-squared
     ChiSq <- x@AFI.obs[AFI]
@@ -340,7 +340,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
                                bquote(Observed~Delta*.(toupper(AFI)) == .(round(x@AFI.obs[AFI], nd))),
                                expression(paste("")),
                                bquote(Permuted~italic(p)~.(pVal)))
-        
+
       }
     } else {
       histArgs$main <- paste("Permutation Distribution of", toupper(AFI))
@@ -350,7 +350,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
                                bquote(Observed~.(toupper(AFI)) == .(round(x@AFI.obs[AFI], nd))),
                                expression(paste("")),
                                bquote(Permuted~italic(p)~.(pVal)))
-        
+
       }
     }
     if (printLegend) {
@@ -382,12 +382,12 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 
 #' Permutation Randomization Tests of Measurement Equivalence and Differential
 #' Item Functioning (DIF)
-#' 
+#'
 #' The function \code{permuteMeasEq} provides tests of hypotheses involving
 #' measurement equivalence, in one of two frameworks: multigroup CFA or MIMIC
 #' models.
-#' 
-#' 
+#'
+#'
 #' The function \code{permuteMeasEq} provides tests of hypotheses involving
 #' measurement equivalence, in one of two frameworks:
 #' \enumerate{
@@ -404,7 +404,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' constraints. Configural invariance can also be tested by providing that
 #' fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which
 #' case \code{param} must be \code{NULL} as well.
-#' 
+#'
 #' \item{2} In MIMIC models, one or a set of continuous and/or discrete
 #' \code{covariates} can be permuted, and a constrained model is fit to each
 #' permutation in order to provide a distribution of any fit measures (namely,
@@ -412,11 +412,11 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' the null hypothesis of measurement equivalence across levels of those
 #' covariates.
 #' }
-#' 
+#'
 #' In either framework, modification indices for equality constraints or fixed
 #' parameters specified in \code{param} are calculated from the constrained
 #' model (\code{con}) using the function \code{\link[lavaan]{lavTestScore}}.
-#' 
+#'
 #' For multiple-group CFA models, the multiparameter omnibus null hypothesis of
 #' measurement equivalence/invariance is that there are no group differences in
 #' any measurement parameters (of a particular type). This can be tested using
@@ -427,7 +427,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' an empirical distribution of any \code{AFIs} under the null hypothesis, so
 #' the user is not restricted to using fixed cutoffs proposed by Cheung &
 #' Rensvold (2002), Chen (2007), or Meade, Johnson, & Braddy (2008).
-#' 
+#'
 #' If the multiparameter omnibus null hypothesis is rejected, partial
 #' invariance can still be established by freeing invalid equality constraints,
 #' as long as equality constraints are valid for at least two indicators per
@@ -438,7 +438,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' hypothesis is true, which allows the user to control the familywise Type I
 #' error rate in a manner similar to Tukey's \emph{q} (studentized range)
 #' distribution for the Honestly Significant Difference (HSD) post hoc test.
-#' 
+#'
 #' For MIMIC models, DIF can be tested by comparing modification indices of
 #' regression paths to the permutation distribution of the maximum modification
 #' index, which controls the familywise Type I error rate. The MIMIC approach
@@ -448,14 +448,14 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' parameters are constrained or unconstrained across groups, the MIMIC
 #' approach is only for testing null hypotheses about the effects of
 #' \code{covariates} on indicators, controlling for common factors.
-#' 
+#'
 #' In either framework, \code{\link[lavaan]{lavaan}}'s \code{group.label}
 #' argument is used to preserve the order of groups seen in \code{con} when
 #' permuting the data.
-#' 
-#' 
+#'
+#'
 #' @importFrom lavaan lavInspect parTable
-#' 
+#'
 #' @param nPermute An integer indicating the number of random permutations used
 #' to form empirical distributions under the null hypothesis.
 #' @param modelType A character string indicating type of model employed:
@@ -624,52 +624,80 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' an invalid value, \code{iseed} is silently set to the default (12345). To
 #' set the state of the RNG when not using parallel options, call
 #' \code{\link[base]{set.seed}} before calling \code{permuteMeasEq}.
-#' 
+#'
 #' @return The \linkS4class{permuteMeasEq} object representing the results of
 #' testing measurement equivalence (the multiparameter omnibus test) and DIF
 #' (modification indices), as well as diagnostics and any \code{extra} output.
-#' 
+#'
 #' @author Terrence D. Jorgensen (University of Amsterdam;
 #' \email{TJorgensen314@@gmail.com})
-#' 
+#'
 #' @seealso \code{\link[stats]{TukeyHSD}}, \code{\link[lavaan]{lavTestScore}},
 #' \code{\link[semTools]{measurementInvariance}},
 #' \code{\link[semTools]{measurementInvarianceCat}}
-#' 
-#' @references 
+#'
+#' @references
+#'
+#' \bold{Papers about permutation tests of measurement equivalence:}
+#'
+#' Jorgensen, T. D., Kite, B. A., Chen, P.-Y., & Short, S. D. (in press).
+#' Permutation randomization methods for testing measurement equivalence and
+#' detecting differential item functioning in multiple-group confirmatory
+#' factor analysis. \emph{Psychological Methods}. doi:10.1037/met0000152
+#'
+#' Kite, B. A., Jorgensen, T. D., & Chen, P.-Y. (in press). Random permutation
+#' tests of nonuniform differential item functioning in multigroup item factor
+#' analysis. In M. Wiberg, S. Culpepper, R. Janssen, J. González, & D. Molenaar
+#' (Eds.), \emph{Quantitative psychology: The 82nd annual meeting of the
+#' psychometric society, Zurich, Switzerland, 2017}.
+#'
+#' Jorgensen, T. D. (2017). Applying permutation tests and multivariate
+#' modification indices to configurally invariant models that need
+#' respecification. \emph{Frontiers in Psychology, 8}(1455).
+#' doi:10.3389/fpsyg.2017.01455
+#'
+#' Jorgensen, T. D., Kite, B., Chen, P.-Y., & Short, S. D. (2017). Finally!
+#' A valid test of configural invariance using permutation in multigroup CFA.
+#' In L. A. van der Ark, M. Wiberg, S. A. Culpepper, J. A. Douglas, & W.-C.
+#' Wang (Eds.), \emph{Quantitative psychology: The 81st annual meeting of the
+#' psychometric society, Asheville, North Carolina, 2016} (pp. 93–103).
+#' New York, NY: Springer. doi:10.1007/978-3-319-56294-0_9
+#'
+#' \bold{Additional reading:}
+#'
 #' Chen, F. F. (2007). Sensitivity of goodness of fit indexes to
 #' lack of measurement invariance.  \emph{Structural Equation Modeling, 14}(3),
 #' 464-504. doi:10.1080/10705510701301834
-#' 
+#'
 #' Cheung, G. W., & Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes
 #' for testing measurement invariance. \emph{Structural Equation Modeling,
 #' 9}(2), 233-255. doi:10.1207/S15328007SEM0902_5
-#' 
+#'
 #' Meade, A. W., Johnson, E. C., & Braddy, P. W. (2008). Power and sensitivity
 #' of alternative fit indices in tests of measurement invariance. \emph{Journal
 #' of Applied Psychology, 93}(3), 568-592. doi:10.1037/0021-9010.93.3.568
-#' 
+#'
 #' Widamin, K. F., & Thompson, J. S. (2003). On specifying the null model for
 #' incremental fit indices in structural equation modeling. \emph{Psychological
 #' Methods, 8}(1), 16-37. doi:10.1037/1082-989X.8.1.16
 #' @examples
-#' 
+#'
 #' \dontrun{
-#' 
+#'
 #' ########################
 #' ## Multiple-Group CFA ##
 #' ########################
-#' 
+#'
 #' ## create 3-group data in lavaan example(cfa) data
 #' HS <- lavaan::HolzingerSwineford1939
 #' HS$ageGroup <- ifelse(HS$ageyr < 13, "preteen",
 #'                       ifelse(HS$ageyr > 13, "teen", "thirteen"))
-#' 
+#'
 #' ## specify and fit an appropriate null model for incremental fit indices
 #' mod.null <- c(paste0("x", 1:9, " ~ c(T", 1:9, ", T", 1:9, ", T", 1:9, ")*1"),
 #'               paste0("x", 1:9, " ~~ c(L", 1:9, ", L", 1:9, ", L", 1:9, ")*x", 1:9))
 #' fit.null <- cfa(mod.null, data = HS, group = "ageGroup")
-#' 
+#'
 #' ## fit target model with varying levels of measurement equivalence
 #' mod.config <- '
 #' visual  =~ x1 + x2 + x3
@@ -678,56 +706,56 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' '
 #' miout <- measurementInvariance(mod.config, data = HS, std.lv = TRUE,
 #'                                group = "ageGroup")
-#' 
+#'
 #' (fit.config <- miout[["fit.configural"]])
 #' (fit.metric <- miout[["fit.loadings"]])
 #' (fit.scalar <- miout[["fit.intercepts"]])
-#' 
-#' 
+#'
+#'
 #' ####################### Permutation Method
-#' 
+#'
 #' ## fit indices of interest for multiparameter omnibus test
 #' myAFIs <- c("chisq","cfi","rmsea","mfi","aic")
 #' moreAFIs <- c("gammaHat","adjGammaHat")
-#' 
+#'
 #' ## Use only 20 permutations for a demo.  In practice,
 #' ## use > 1000 to reduce sampling variability of estimated p values
-#' 
+#'
 #' ## test configural invariance
 #' set.seed(12345)
 #' out.config <- permuteMeasEq(nPermute = 20, con = fit.config)
 #' out.config
-#' 
+#'
 #' ## test metric equivalence
 #' set.seed(12345) # same permutations
 #' out.metric <- permuteMeasEq(nPermute = 20, uncon = fit.config, con = fit.metric,
 #'                             param = "loadings", AFIs = myAFIs,
 #'                             moreAFIs = moreAFIs, null = fit.null)
 #' summary(out.metric, nd = 4)
-#' 
+#'
 #' ## test scalar equivalence
 #' set.seed(12345) # same permutations
 #' out.scalar <- permuteMeasEq(nPermute = 20, uncon = fit.metric, con = fit.scalar,
 #'                             param = "intercepts", AFIs = myAFIs,
 #'                             moreAFIs = moreAFIs, null = fit.null)
 #' summary(out.scalar)
-#' 
+#'
 #' ## Not much to see without significant DIF.
 #' ## Try using an absurdly high alpha level for illustration.
 #' outsum <- summary(out.scalar, alpha = .50)
-#' 
+#'
 #' ## notice that the returned object is the table of DIF tests
 #' outsum
-#' 
+#'
 #' ## visualize permutation distribution
 #' hist(out.config, AFI = "chisq")
 #' hist(out.metric, AFI = "chisq", nd = 2, alpha = .01,
 #'      legendArgs = list(x = "topright"))
 #' hist(out.scalar, AFI = "cfi", printLegend = FALSE)
-#' 
-#' 
+#'
+#'
 #' ####################### Extra Output
-#' 
+#'
 #' ## function to calculate expected change of Group-2 and -3 latent means if
 #' ## each intercept constraint were released
 #' extra <- function(con) {
@@ -770,10 +798,10 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #'                                     epc = TRUE, warn = FALSE)$epc$epc[108]
 #'   output
 #' }
-#' 
+#'
 #' ## observed EPC
 #' extra(fit.scalar)
-#' 
+#'
 #' ## permutation results, including extra output
 #' set.seed(12345) # same permutations
 #' out.scalar <- permuteMeasEq(nPermute = 20, uncon = fit.metric, con = fit.scalar,
@@ -781,12 +809,12 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #'                             moreAFIs = moreAFIs, null = fit.null, extra = extra)
 #' ## summarize extra output
 #' summary(out.scalar, extra = TRUE)
-#' 
-#' 
+#'
+#'
 #' ###########
 #' ## MIMIC ##
 #' ###########
-#' 
+#'
 #' ## Specify Restricted Factor Analysis (RFA) model, equivalent to MIMIC, but
 #' ## the factor covaries with the covariate instead of being regressed on it.
 #' ## The covariate defines a single-indicator construct, and the
@@ -796,17 +824,17 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' visual  =~ x1 + x2 + x3
 #' age =~ ageyr
 #' age.by.vis =~ x1.ageyr + x2.ageyr + x3.ageyr
-#' 
+#'
 #' x1 ~~ x1.ageyr
 #' x2 ~~ x2.ageyr
 #' x3 ~~ x3.ageyr
 #' '
-#' 
+#'
 #' HS.orth <- indProd(var1 = paste0("x", 1:3), var2 = "ageyr", match = FALSE,
 #'                    data = HS[ , c("ageyr", paste0("x", 1:3))] )
 #' fit.mimic <- cfa(mod.mimic, data = HS.orth, meanstructure = TRUE)
 #' summary(fit.mimic, stand = TRUE)
-#' 
+#'
 #' ## Whereas MIMIC models specify direct effects of the covariate on an indicator,
 #' ## DIF can be tested in RFA models by specifying free loadings of an indicator
 #' ## on the covariate's construct (uniform DIF, scalar invariance) and the
@@ -814,29 +842,29 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 #' param <- as.list(paste0("age + age.by.vis =~ x", 1:3))
 #' names(param) <- paste0("x", 1:3)
 #' # param <- as.list(paste0("x", 1:3, " ~ age + age.by.vis")) # equivalent
-#' 
+#'
 #' ## test both parameters simultaneously for each indicator
 #' do.call(rbind, lapply(param, function(x) lavTestScore(fit.mimic, add = x)$test))
 #' ## or test each parameter individually
 #' lavTestScore(fit.mimic, add = as.character(param))
-#' 
-#' 
+#'
+#'
 #' ####################### Permutation Method
-#' 
+#'
 #' ## function to recalculate interaction terms after permuting the covariate
 #' datafun <- function(data) {
 #'   d <- data[, !names(data) %in% paste0("x", 1:3, ".ageyr")]
 #'   indProd(var1 = paste0("x", 1:3), var2 = "ageyr", match = FALSE, data = d)
 #' }
-#' 
+#'
 #' set.seed(12345)
 #' perm.mimic <- permuteMeasEq(nPermute = 20, modelType = "mimic",
 #'                             con = fit.mimic, param = param,
 #'                             covariates = "ageyr", datafun = datafun)
 #' summary(perm.mimic)
-#' 
+#'
 #' }
-#' 
+#'
 #' @export
 permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
                           con, uncon = NULL, null = NULL,
@@ -1031,7 +1059,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
                           maxSparse, maxNonconv, showProgress, warn,
                           datafun, extra, parallelType, ncpus, cl, iseed) {
   fixedCall <- as.list(match.call())[-1]
-  
+
   fixedCall$nPermute <- as.integer(nPermute[1])
   fixedCall$modelType <- modelType[1]
   if (!fixedCall$modelType %in% c("mgcfa","mimic","long"))
@@ -1105,7 +1133,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
     fixedCall$ncpus <- NULL
     fixedCall <- c(fixedCall, list(ncpus = NULL))
   } else fixedCall$ncpus <- ncpus
-  
+
   ## check that "param" is NULL if uncon is NULL, and check for lavaan class
   notLavaan <- "Non-NULL 'con', 'uncon', or 'null' must be fitted lavaan object."
   if (is.null(uncon)) {
@@ -1123,7 +1151,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
   if (!is.null(null)) {
     if (class(null) != "lavaan") stop(notLavaan)
   }
-  
+
   ############ FIXME: check that lavInspect(con, "options")$conditional.x = FALSE (find defaults for continuous/ordered indicators)
   if (!is.null(fixedCall$param)) {
     ## Temporarily warn about testing thresholds without necessary constraints.   FIXME: check for binary indicators
@@ -1171,8 +1199,8 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
       fixedCall$param <- paste0(params$lhs, params$op, params$rhs)
     }
   }
-  
-  
+
+
   if (is.null(AFIs) & is.null(moreAFIs)) {
     message("No AFIs were selected, so only chi-squared will be permuted.\n")
     fixedCall$AFIs <- "chisq"
@@ -1180,7 +1208,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
   }
   if ("ecvi" %in% AFIs & lavInspect(con, "ngroups") > 1L)
     stop("ECVI is not available for multigroup models.")
-  
+
   ## check estimators
   leastSq <- grepl("LS", lavInspect(con, "options")$estimator)
   if (!is.null(uncon)) {
@@ -1191,7 +1219,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
     if (lavInspect(null, "options")$estimator != lavInspect(con, "options")$estimator)
       stop("Models must be fit using same estimator.")
   }
-  
+
   ## check extra functions, if any
   restrictedArgs <- c("con","uncon","null","param","freeParam","covariates",
                       "AFIs","moreAFIs","maxSparse","maxNonconv","iseed")
@@ -1209,7 +1237,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
       stop('The user-supplied function "extra" can only have any among the ',
            'following arguments:\n', paste(restrictedArgs, collapse = ", "))
   }
-  
+
   ## return evaluated list of other arguments
   lapply(fixedCall, eval)
 }
@@ -1219,7 +1247,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
 #' @importFrom lavaan lavInspect
 getAFIs <- function(...) {
   dots <- list(...)
-  
+
   AFI1 <- list()
   AFI0 <- list()
   leastSq <- grepl("LS", lavInspect(dots$con, "options")$estimator)
@@ -1251,7 +1279,7 @@ getAFIs <- function(...) {
       AFI1[[2]] <- moreFitIndices(dots$uncon, fit.measures = dots$moreAFIs)
     AFI0[[2]] <- moreFitIndices(dots$con, fit.measures = dots$moreAFIs)
   }
-  
+
   ## save observed AFIs or delta-AFIs
   if (is.null(dots$uncon)) {
     AFI.obs <- unlist(AFI0)
@@ -1265,7 +1293,7 @@ getAFIs <- function(...) {
 #' @importFrom lavaan parTable
 getMIs <- function(...) {
   dots <- list(...)
-  
+
   if (dots$modelType == "mgcfa") {
     ## save all estimates from constrained model
     PT <- parTable(dots$con)[ , c("lhs","op","rhs","group","plabel")]
@@ -1282,7 +1310,7 @@ getMIs <- function(...) {
   } else if (dots$modelType == "long") {
     ## coming soon
   }
-  
+
   MI.obs
 }
 
@@ -1297,7 +1325,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
   argNames <- names(formals(permuteOnce.mgcfa))
   availableArgs <- lapply(argNames, function(x) eval(as.name(x)))
   names(availableArgs) <- argNames
-  
+
   nSparse <- 0L
   nTries <- 1L
   while ( (nSparse <= maxSparse) & (nTries <= maxNonconv) ) {
@@ -1318,7 +1346,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
              'column names required by the model:\n',
              paste(setdiff(originalNames, colnames(d)), collapse = ", "))
     }
-    
+
     ## for ordered indicators, check that groups have same observed categories
     ordVars <- lavaan::lavNames(con, type = "ov.ord")
     if (length(ordVars) > 0) {
@@ -1340,7 +1368,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
     if (!is.null(null)) {
       out.null <- lavaan::update(null, data = d, group.label = lavInspect(con, "group.label"))
     }
-    
+
     ## fit constrained model, check for convergence
     try(out0 <- lavaan::update(con, data = d, group.label = lavInspect(con, "group.label")))
     if (!exists("out0")) {
@@ -1351,7 +1379,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
       nTries <- nTries + 1L
       next
     }
-    
+
     ## fit unconstrained model (unless NULL), check for convergence
     if (!is.null(uncon)) {
       try(out1 <- lavaan::update(uncon, data = d, group.label = lavInspect(con, "group.label")))
@@ -1363,7 +1391,7 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
         nTries <- nTries + 1L
         next
       }
-      
+
     }
     ## If you get this far, everything converged, so break WHILE loop
     break
@@ -1413,7 +1441,7 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
   argNames <- names(formals(permuteOnce.mimic))
   availableArgs <- lapply(argNames, function(x) eval(as.name(x)))
   names(availableArgs) <- argNames
-  
+
   nTries <- 1L
   while (nTries <= maxNonconv) {
     ## permute covariate(s) within each group
@@ -1444,13 +1472,13 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
              'column names required by the model:\n',
              paste(setdiff(originalNames, colnames(d)), collapse = ", "))
     }
-    
-    
+
+
     ## fit null model, if it exists
     if (!is.null(null)) {
       out.null <- lavaan::update(null, data = d, group.label = lavInspect(con, "group.label"))
     }
-    
+
     ## fit constrained model
     try(out0 <- lavaan::update(con, data = d, group.label = lavInspect(con, "group.label")))
     ## check for convergence
