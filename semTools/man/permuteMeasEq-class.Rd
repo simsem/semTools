@@ -49,28 +49,28 @@ placing the legend at the top-left of the figure.}
   omnibus test results, using the user-specified AFIs. The parametric
  (\eqn{\Delta})\eqn{\chi^2} test is also displayed.
 \item The \code{summary} method prints the same information from the
-  \code{show} method, but when \code{extra = FALSE} (the default) it also 
-  provides a table summarizing any requested follow-up tests of DIF using 
-  modification indices in slot \code{MI.obs}. The user can also specify an 
-  \code{alpha} level for flagging modification indices as significant, as 
-  well as \code{nd} (the number of digits displayed). For each modification 
-  index, the \emph{p} value is displayed using a central \eqn{\chi^2} 
-  distribution with the \emph{df} shown in that column. Additionally, a 
-  \emph{p} value is displayed using the permutation distribution of the 
-  maximum index, which controls the familywise Type I error rate in a manner 
-  similar to Tukey's studentized range test. If any indices are flagged as 
+  \code{show} method, but when \code{extra = FALSE} (the default) it also
+  provides a table summarizing any requested follow-up tests of DIF using
+  modification indices in slot \code{MI.obs}. The user can also specify an
+  \code{alpha} level for flagging modification indices as significant, as
+  well as \code{nd} (the number of digits displayed). For each modification
+  index, the \emph{p} value is displayed using a central \eqn{\chi^2}
+  distribution with the \emph{df} shown in that column. Additionally, a
+  \emph{p} value is displayed using the permutation distribution of the
+  maximum index, which controls the familywise Type I error rate in a manner
+  similar to Tukey's studentized range test. If any indices are flagged as
   significant using the \code{tukey.p.value}, then a message is displayed for
-  each flagged index. The invisibly returned \code{data.frame} is the 
-  displayed table of modification indices, unless 
-  \code{\link[semTools]{permuteMeasEq}} was called with \code{param = NULL}, 
-  in which case the invisibly returned object is \code{object}. If 
-  \code{extra = TRUE}, the permutation-based \emph{p} values for each 
+  each flagged index. The invisibly returned \code{data.frame} is the
+  displayed table of modification indices, unless
+  \code{\link[semTools]{permuteMeasEq}} was called with \code{param = NULL},
+  in which case the invisibly returned object is \code{object}. If
+  \code{extra = TRUE}, the permutation-based \emph{p} values for each
   statistic returned by the \code{extra} function are displayed and returned
   in a \code{data.frame} instead of the modification indices requested in the
   \code{param} argument.
 \item The \code{hist} method returns a list of \code{length == 2},
    containing the arguments for the call to \code{hist} and the arguments
-   to the call for \code{legend}, respectively. This list may facilitate 
+   to the call for \code{legend}, respectively. This list may facilitate
    creating a customized histogram of \code{AFI.dist}, \code{MI.dist}, or
    \code{extra.dist}
 }
@@ -85,7 +85,7 @@ Differential Item Functioning (DIF).
 \item{\code{PT}}{A \code{data.frame} returned by a call to
 \code{\link[lavaan]{parTable}} on the constrained model}
 
-\item{\code{modelType}}{A character indicating the specified \code{modelType} in the 
+\item{\code{modelType}}{A character indicating the specified \code{modelType} in the
 call to \code{permuteMeasEq}}
 
 \item{\code{ANOVA}}{A \code{numeric} vector indicating the results of the observed
@@ -98,27 +98,27 @@ distribution}
 A \code{data.frame} with \code{n.Permutations} rows and one column for each
 \code{AFI.obs}.}
 
-\item{\code{AFI.pval}}{A vector of \emph{p} values (one for each element in slot 
-\code{AFI.obs}) calculated using slot \code{AFI.dist}, indicating the 
-probability of observing a change at least as extreme as \code{AFI.obs} 
+\item{\code{AFI.pval}}{A vector of \emph{p} values (one for each element in slot
+\code{AFI.obs}) calculated using slot \code{AFI.dist}, indicating the
+probability of observing a change at least as extreme as \code{AFI.obs}
 if the null hypothesis were true}
 
 \item{\code{MI.obs}}{A \code{data.frame} of observed Lagrange Multipliers
-(modification indices) associated with the equality constraints or fixed 
-parameters specified in the \code{param} argument. This is a subset of the 
-output returned by a call to \code{\link[lavaan]{lavTestScore}} on the 
+(modification indices) associated with the equality constraints or fixed
+parameters specified in the \code{param} argument. This is a subset of the
+output returned by a call to \code{\link[lavaan]{lavTestScore}} on the
 constrained model.}
 
-\item{\code{MI.dist}}{The permutation distribution of the maximum modification index 
-(among those seen in slot \code{MI.obs$X2}) at each permutation of group 
+\item{\code{MI.dist}}{The permutation distribution of the maximum modification index
+(among those seen in slot \code{MI.obs$X2}) at each permutation of group
 assignment or of \code{covariates}}
 
-\item{\code{extra.obs}}{If \code{permuteMeasEq} was called with an \code{extra} 
-function, the output when applied to the original data is concatenated 
+\item{\code{extra.obs}}{If \code{permuteMeasEq} was called with an \code{extra}
+function, the output when applied to the original data is concatenated
 into this vector}
 
 \item{\code{extra.dist}}{A \code{data.frame}, each column of which contains the
-permutation distribution of the corresponding statistic in slot 
+permutation distribution of the corresponding statistic in slot
 \code{extra.obs}}
 
 \item{\code{n.Permutations}}{An \code{integer} indicating the number of permutations
@@ -128,20 +128,20 @@ requested by the user}
 iterations which yielded a converged solution}
 
 \item{\code{n.nonConverged}}{An \code{integer} vector of length
-\code{n.Permutations} indicating how many times group assignment was 
+\code{n.Permutations} indicating how many times group assignment was
 randomly permuted (at each iteration) before converging on a solution}
 
 \item{\code{n.Sparse}}{Only relevant with \code{ordered} indicators when
 \code{modelType == "mgcfa"}. An \code{integer} vector of length
-\code{n.Permutations} indicating how many times group assignment was 
-randomly permuted (at each iteration) before obtaining a sample with all 
+\code{n.Permutations} indicating how many times group assignment was
+randomly permuted (at each iteration) before obtaining a sample with all
 categories observed in all groups.}
 
 \item{\code{oldSeed}}{An \code{integer} vector storing the value of
-\code{.Random.seed} before running \code{permuteMeasEq}. Only relevant 
-when using a parallel/multicore option and the original 
-\code{RNGkind() != "L'Ecuyer-CMRG"}. This enables users to restore their 
-previous \code{.Random.seed} state, if desired, by running:  
+\code{.Random.seed} before running \code{permuteMeasEq}. Only relevant
+when using a parallel/multicore option and the original
+\code{RNGkind() != "L'Ecuyer-CMRG"}. This enables users to restore their
+previous \code{.Random.seed} state, if desired, by running:
 \code{.Random.seed[-1] <- permutedResults@oldSeed[-1]}}
 }}
 
