@@ -33,5 +33,5 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2017-12-19
+Date/Publication: 2018-01-09
 RoxygenNote: 6.0.1
