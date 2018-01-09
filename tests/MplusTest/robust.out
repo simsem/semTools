@@ -1,0 +1,204 @@
+Mplus VERSION 7.11
+MUTHEN & MUTHEN
+01/29/2017   9:21 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE: single-group 3-factor model, try robust
+  DATA:
+    FILE = "imp1.dat";
+    !TYPE IS IMPUTATION;
+  VARIABLE:
+    NAMES = x1 x2 x3 x4 x5 x6 x7 x8 x9 school;
+    USEVAR = x1-x9;
+  ANALYSIS: ESTIMATOR = MLM;
+  MODEL:
+    f1 BY x1-x3;
+    f2 BY x4-x6;
+    f3 BY x7-x9;
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+single-group 3-factor model, try robust
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                         301
+
+Number of dependent variables                                    9
+Number of independent variables                                  0
+Number of continuous latent variables                            3
+
+Observed dependent variables
+
+  Continuous
+   X1          X2          X3          X4          X5          X6
+   X7          X8          X9
+
+Continuous latent variables
+   F1          F2          F3
+
+
+Estimator                                                      MLM
+Information matrix                                        EXPECTED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+
+Input data file(s)
+  imp1.dat
+
+Input data format  FREE
+
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                       30
+
+Loglikelihood
+
+          H0 Value                       -3705.912
+          H1 Value                       -3664.961
+
+Information Criteria
+
+          Akaike (AIC)                    7471.823
+          Bayesian (BIC)                  7583.037
+          Sample-Size Adjusted BIC        7487.894
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                             80.475*
+          Degrees of Freedom                    24
+          P-Value                           0.0000
+          Scaling Correction Factor         1.0177
+            for MLM
+
+*   The chi-square value for MLM, MLMV, MLR, ULSMV, WLSM and WLSMV cannot be used
+    for chi-square difference testing in the regular way.  MLM, MLR and WLSM
+    chi-square difference testing is described on the Mplus website.  MLMV, WLSMV,
+    and ULSMV difference testing is done using the DIFFTEST option.
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.088
+          90 Percent C.I.                    0.068  0.110
+          Probability RMSEA <= .05           0.002
+
+CFI/TLI
+
+          CFI                                0.935
+          TLI                                0.902
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                            901.262
+          Degrees of Freedom                    36
+          P-Value                           0.0000
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.065
+
+WRMR (Weighted Root Mean Square Residual)
+
+          Value                              1.545
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ F1       BY
+    X1                 1.000      0.000    999.000    999.000
+    X2                 0.568      0.101      5.633      0.000
+    X3                 0.746      0.113      6.602      0.000
+
+ F2       BY
+    X4                 1.000      0.000    999.000    999.000
+    X5                 1.069      0.059     18.215      0.000
+    X6                 0.917      0.054     16.887      0.000
+
+ F3       BY
+    X7                 1.000      0.000    999.000    999.000
+    X8                 1.265      0.167      7.572      0.000
+    X9                 1.001      0.129      7.791      0.000
+
+ F2       WITH
+    F1                 0.412      0.080      5.155      0.000
+
+ F3       WITH
+    F1                 0.242      0.052      4.645      0.000
+    F2                 0.161      0.053      3.063      0.002
+
+ Intercepts
+    X1                 4.936      0.067     73.473      0.000
+    X2                 6.088      0.068     89.855      0.000
+    X3                 2.250      0.065     34.579      0.000
+    X4                 3.061      0.067     45.694      0.000
+    X5                 4.340      0.071     60.966      0.000
+    X6                 2.186      0.063     34.667      0.000
+    X7                 4.186      0.063     66.766      0.000
+    X8                 5.527      0.058     94.854      0.000
+    X9                 5.422      0.055     98.711      0.000
+
+ Variances
+    F1                 0.790      0.157      5.036      0.000
+    F2                 0.990      0.113      8.761      0.000
+    F3                 0.366      0.077      4.764      0.000
+
+ Residual Variances
+    X1                 0.568      0.135      4.213      0.000
+    X2                 1.126      0.099     11.361      0.000
+    X3                 0.835      0.084      9.994      0.000
+    X4                 0.361      0.046      7.761      0.000
+    X5                 0.394      0.052      7.563      0.000
+    X6                 0.364      0.042      8.723      0.000
+    X7                 0.817      0.077     10.669      0.000
+    X8                 0.436      0.075      5.828      0.000
+    X9                 0.541      0.062      8.746      0.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.415E-02
+       (ratio of smallest to largest eigenvalue)
+
+
+DIAGRAM INFORMATION
+
+  Use View Diagram under the Diagram menu in the Mplus Editor to view the diagram.
+  If running Mplus from the Mplus Diagrammer, the diagram opens automatically.
+
+  Diagram output
+    c:\users\tjorgen2\documents\svn\semtools\futureplans\mplustest\robust.dgm
+
+     Beginning Time:  21:21:44
+        Ending Time:  21:21:44
+       Elapsed Time:  00:00:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2013 Muthen & Muthen

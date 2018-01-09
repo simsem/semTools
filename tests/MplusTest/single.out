@@ -1,0 +1,404 @@
+Mplus VERSION 7.11
+MUTHEN & MUTHEN
+01/29/2017   7:19 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE: single-group 3-factor model
+  DATA:
+    FILE = "imps.dat";
+    TYPE IS IMPUTATION;
+  VARIABLE:
+    NAMES = x1 x2 x3 x4 x5 x6 x7 x8 x9 school;
+    USEVAR = x1-x9;
+  MODEL:
+    f1 BY x1-x3;
+    f2 BY x4-x6;
+    f3 BY x7-x9;
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+single-group 3-factor model
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Average number of observations                                 301
+
+Number of replications
+    Requested                                                   20
+    Completed                                                   20
+
+Number of dependent variables                                    9
+Number of independent variables                                  0
+Number of continuous latent variables                            3
+
+Observed dependent variables
+
+  Continuous
+   X1          X2          X3          X4          X5          X6
+   X7          X8          X9
+
+Continuous latent variables
+   F1          F2          F3
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+
+Input data file(s)
+  Multiple data files from
+    imps.dat
+
+Input data format  FREE
+
+
+SAMPLE STATISTICS
+
+NOTE:  These are average results over 20 data sets.
+
+
+     SAMPLE STATISTICS
+
+
+           Means
+              X1            X2            X3            X4            X5
+              ________      ________      ________      ________      ________
+      1         4.936         6.088         2.250         3.061         4.414
+
+
+           Means
+              X6            X7            X8            X9
+              ________      ________      ________      ________
+      1         2.186         4.186         5.527         5.414
+
+
+           Covariances
+              X1            X2            X3            X4            X5
+              ________      ________      ________      ________      ________
+ X1             1.358
+ X2             0.407         1.382
+ X3             0.580         0.451         1.275
+ X4             0.505         0.209         0.208         1.351
+ X5             0.346         0.203         0.119         1.031         1.536
+ X6             0.455         0.248         0.244         0.896         0.969
+ X7             0.085        -0.097         0.088         0.220         0.122
+ X8             0.264         0.110         0.212         0.126         0.089
+ X9             0.420         0.221         0.332         0.305         0.243
+
+
+           Covariances
+              X6            X7            X8            X9
+              ________      ________      ________      ________
+ X6             1.196
+ X7             0.144         1.183
+ X8             0.165         0.535         1.022
+ X9             0.299         0.353         0.431         0.927
+
+
+           Correlations
+              X1            X2            X3            X4            X5
+              ________      ________      ________      ________      ________
+ X1             1.000
+ X2             0.297         1.000
+ X3             0.441         0.340         1.000
+ X4             0.373         0.153         0.159         1.000
+ X5             0.239         0.139         0.085         0.716         1.000
+ X6             0.357         0.193         0.198         0.704         0.715
+ X7             0.067        -0.076         0.072         0.174         0.090
+ X8             0.224         0.092         0.186         0.107         0.071
+ X9             0.374         0.195         0.306         0.273         0.204
+
+
+           Correlations
+              X6            X7            X8            X9
+              ________      ________      ________      ________
+ X6             1.000
+ X7             0.121         1.000
+ X8             0.150         0.487         1.000
+ X9             0.284         0.337         0.443         1.000
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                       30
+
+Loglikelihood
+
+          H0 Value                       -3720.486
+          H1 Value                       -3675.896
+
+*   The loglikelihood cannot be used directly for chi-square testing with
+    imputed data.
+
+Information Criteria
+
+          Akaike (AIC)                    7500.971
+          Bayesian (BIC)                  7612.184
+          Sample-Size Adjusted BIC        7517.041
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                             63.082
+          Degrees of Freedom                    24
+          P-Value                           0.0000
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.074
+          90 Percent C.I.                    0.052  0.096
+          Probability RMSEA <= .05           0.039
+
+CFI/TLI
+
+          CFI                                0.937
+          TLI                                0.906
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                            661.168
+          Degrees of Freedom                    36
+          P-Value                           0.0000
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.060
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed   Rate of
+                    Estimate       S.E.  Est./S.E.    P-Value    Missing
+
+ F1       BY
+    X1                 1.000      0.000    999.000    999.000      0.000
+    X2                 0.570      0.115      4.970      0.000      0.054
+    X3                 0.752      0.124      6.052      0.000      0.056
+
+ F2       BY
+    X4                 1.000      0.000    999.000    999.000      0.000
+    X5                 1.056      0.082     12.939      0.000      0.281
+    X6                 0.944      0.063     15.045      0.000      0.112
+
+ F3       BY
+    X7                 1.000      0.000    999.000    999.000      0.000
+    X8                 1.178      0.171      6.895      0.000      0.117
+    X9                 1.116      0.399      2.796      0.005      0.402
+
+ F2       WITH
+    F1                 0.391      0.081      4.812      0.000      0.066
+
+ F3       WITH
+    F1                 0.251      0.058      4.306      0.000      0.110
+    F2                 0.175      0.053      3.301      0.001      0.109
+
+ Intercepts
+    X1                 4.936      0.067     73.476      0.000      0.000
+    X2                 6.088      0.068     89.858      0.000      0.000
+    X3                 2.250      0.065     34.579      0.000      0.000
+    X4                 3.061      0.067     45.693      0.000      0.000
+    X5                 4.414      0.088     50.123      0.000      0.260
+    X6                 2.186      0.063     34.668      0.000      0.000
+    X7                 4.186      0.063     66.768      0.000      0.000
+    X8                 5.527      0.058     94.851      0.000      0.000
+    X9                 5.414      0.076     71.261      0.000      0.325
+
+ Variances
+    F1                 0.787      0.151      5.214      0.000      0.049
+    F2                 0.966      0.115      8.426      0.000      0.034
+    F3                 0.366      0.113      3.244      0.001      0.245
+
+ Residual Variances
+    X1                 0.572      0.122      4.689      0.000      0.073
+    X2                 1.127      0.105     10.733      0.000      0.017
+    X3                 0.831      0.097      8.576      0.000      0.029
+    X4                 0.385      0.055      7.043      0.000      0.136
+    X5                 0.458      0.073      6.308      0.000      0.294
+    X6                 0.336      0.049      6.802      0.000      0.162
+    X7                 0.817      0.111      7.358      0.000      0.251
+    X8                 0.516      0.130      3.970      0.000      0.329
+    X9                 0.486      0.137      3.558      0.000      0.373
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Average Condition Number for the Information Matrix      0.311E-02
+       (ratio of smallest to largest eigenvalue)
+
+
+TECHNICAL 1 OUTPUT
+
+
+     PARAMETER SPECIFICATION
+
+
+           NU
+              X1            X2            X3            X4            X5
+              ________      ________      ________      ________      ________
+      1           1             2             3             4             5
+
+
+           NU
+              X6            X7            X8            X9
+              ________      ________      ________      ________
+      1           6             7             8             9
+
+
+           LAMBDA
+              F1            F2            F3
+              ________      ________      ________
+ X1                 0             0             0
+ X2                10             0             0
+ X3                11             0             0
+ X4                 0             0             0
+ X5                 0            12             0
+ X6                 0            13             0
+ X7                 0             0             0
+ X8                 0             0            14
+ X9                 0             0            15
+
+
+           THETA
+              X1            X2            X3            X4            X5
+              ________      ________      ________      ________      ________
+ X1                16
+ X2                 0            17
+ X3                 0             0            18
+ X4                 0             0             0            19
+ X5                 0             0             0             0            20
+ X6                 0             0             0             0             0
+ X7                 0             0             0             0             0
+ X8                 0             0             0             0             0
+ X9                 0             0             0             0             0
+
+
+           THETA
+              X6            X7            X8            X9
+              ________      ________      ________      ________
+ X6                21
+ X7                 0            22
+ X8                 0             0            23
+ X9                 0             0             0            24
+
+
+           ALPHA
+              F1            F2            F3
+              ________      ________      ________
+      1           0             0             0
+
+
+           BETA
+              F1            F2            F3
+              ________      ________      ________
+ F1                 0             0             0
+ F2                 0             0             0
+ F3                 0             0             0
+
+
+           PSI
+              F1            F2            F3
+              ________      ________      ________
+ F1                25
+ F2                26            27
+ F3                28            29            30
+
+
+     STARTING VALUES
+
+
+           NU
+              X1            X2            X3            X4            X5
+              ________      ________      ________      ________      ________
+      1         4.936         6.088         2.250         3.061         4.340
+
+
+           NU
+              X6            X7            X8            X9
+              ________      ________      ________      ________
+      1         2.186         4.186         5.527         5.422
+
+
+           LAMBDA
+              F1            F2            F3
+              ________      ________      ________
+ X1             1.000         0.000         0.000
+ X2             0.778         0.000         0.000
+ X3             1.107         0.000         0.000
+ X4             0.000         1.000         0.000
+ X5             0.000         1.089         0.000
+ X6             0.000         0.916         0.000
+ X7             0.000         0.000         1.000
+ X8             0.000         0.000         1.425
+ X9             0.000         0.000         0.823
+
+
+           THETA
+              X1            X2            X3            X4            X5
+              ________      ________      ________      ________      ________
+ X1             0.500
+ X2             0.000         0.500
+ X3             0.000         0.000         0.500
+ X4             0.000         0.000         0.000         0.500
+ X5             0.000         0.000         0.000         0.000         0.500
+ X6             0.000         0.000         0.000         0.000         0.000
+ X7             0.000         0.000         0.000         0.000         0.000
+ X8             0.000         0.000         0.000         0.000         0.000
+ X9             0.000         0.000         0.000         0.000         0.000
+
+
+           THETA
+              X6            X7            X8            X9
+              ________      ________      ________      ________
+ X6             0.500
+ X7             0.000         0.500
+ X8             0.000         0.000         0.500
+ X9             0.000         0.000         0.000         0.500
+
+
+           ALPHA
+              F1            F2            F3
+              ________      ________      ________
+      1         0.000         0.000         0.000
+
+
+           BETA
+              F1            F2            F3
+              ________      ________      ________
+ F1             0.000         0.000         0.000
+ F2             0.000         0.000         0.000
+ F3             0.000         0.000         0.000
+
+
+           PSI
+              F1            F2            F3
+              ________      ________      ________
+ F1             0.050
+ F2             0.000         0.050
+ F3             0.000         0.000         0.050
+
+
+     Beginning Time:  19:19:36
+        Ending Time:  19:19:37
+       Elapsed Time:  00:00:01
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2013 Muthen & Muthen
