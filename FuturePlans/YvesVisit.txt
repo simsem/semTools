@@ -1,0 +1,31 @@
+Yves visit:
+----------
+
+2-Stage MLE
+- Technical Documentation for 2-stage
+	- separate for information matrices? or appendix to missing-data vignette
+- plans for auxiliary variables
+	- also relevant for FIML
+
+	
+Bootstrap with missing data
+- new implementation with lavaanList
+
+
+Alignment
+- help with delta method for SEs
+- TIP: check how standardizedSolution uses delta method for all coefs
+
+
+semTools function for testing invariance constraints
+- wrapper around lavTestScore()
+- add parameter labels for multi-df modindices and epc-interest per item
+
+
+modification indices for lavaan.mi object
+- extended model not actually fit, so...
+	- evaluate score/Jacobian at pooled coefs?
+	- information available from inverted pooled ACOV?
+- easy to adapt lavTestScore() ?
+
+
