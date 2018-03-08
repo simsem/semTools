@@ -16,7 +16,8 @@ efaUnrotate(data, nf, varList = NULL, start = TRUE, aux = NULL, ...)
 
 \item{start}{Use starting values in the analysis from the
 \code{\link{factanal}} \code{function}. If \code{FALSE}, the starting values
-from the \code{lavaan} package will be used.}
+from the \code{lavaan} package will be used. \code{TRUE} is ignored with a
+warning if the \code{aux} argument is used.}
 
 \item{aux}{The list of auxiliary variables. These variables will be included
 in the model by the saturated-correlates approach to account for missing

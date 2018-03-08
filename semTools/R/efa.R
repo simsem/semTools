@@ -32,7 +32,8 @@
 #' \code{data} will be used.
 #' @param start Use starting values in the analysis from the
 #' \code{\link{factanal}} \code{function}. If \code{FALSE}, the starting values
-#' from the \code{lavaan} package will be used.
+#' from the \code{lavaan} package will be used. \code{TRUE} is ignored with a
+#' warning if the \code{aux} argument is used.
 #' @param aux The list of auxiliary variables. These variables will be included
 #' in the model by the saturated-correlates approach to account for missing
 #' information.
@@ -59,6 +60,7 @@ efaUnrotate <- function(data, nf, varList = NULL,
   if (is.null(varList)) varList <- colnames(data)
   isOrdered <- checkOrdered(data, varList, ...)
   args <- list(...)
+  if (!is.null(args$group)) stop("Multi-group EFA is not currently supported.")
   args$data <- data
   if (!is.null(aux)) {
     if (isOrdered) {
@@ -100,20 +102,24 @@ efaUnrotate <- function(data, nf, varList = NULL,
     }
   }
   if (start) {
-    List <- c(list(model = syntax, data = data), list(...))
-    List$do.fit <- FALSE
-    outtemp <- do.call(lavaancfa, List)
-    covtemp <- lavInspect(outtemp, "sampstat")$cov
-    partemp <- parTable(outtemp)
-    err <- try(startload <- factanal(factors = nf, covmat = covtemp)$loadings[],
-               silent = TRUE)
-    if (is(err, "try-error")) stop("The starting values from the factanal",
-                                   " function cannot be calculated. Please",
-                                   " use start = FALSE instead.")
-    startval <- sqrt(diag(diag(covtemp))) %*% startload
-    partemp$ustart[match(as.vector(loading), partemp$label)] <- as.vector(startval)
-    partemp$est <- partemp$se <- NULL
-    syntax <- partemp
+    if (is.null(aux)) {
+      List <- c(list(model = syntax, data = data), list(...))
+      List$do.fit <- FALSE
+      outtemp <- do.call(lavaancfa, List)
+      covtemp <- lavInspect(outtemp, "sampstat")$cov
+      partemp <- parTable(outtemp)
+      err <- try(startload <- factanal(factors = nf, covmat = covtemp)$loadings[],
+                 silent = TRUE)
+      if (is(err, "try-error")) stop("The starting values from the factanal",
+                                     " function cannot be calculated. Please",
+                                     " use start = FALSE instead.")
+      startval <- sqrt(diag(diag(covtemp))) %*% startload
+      partemp$ustart[match(as.vector(loading), partemp$label)] <- as.vector(startval)
+      partemp$est <- partemp$se <- NULL
+      syntax <- partemp
+    } else warning("The 'start' argument was ignored because factanal() does",
+                   " not support auxiliary variables.  When using auxiliary",
+                   " variables, set 'start = FALSE' ")
   }
   args$model <- syntax
   do.call(lavaancfa, args)
@@ -392,7 +398,7 @@ testLoadings <- function(object, level = 0.95) {
 
 #' @importFrom lavaan lavInspect
 getLoad <- function(object, std = TRUE) {
-	out <- lavInspect(object, "est")$lambda
+	out <- lavInspect(object, "est")$lambda #FIXME: check for multiple groups
 	if (std) {
 		impcov <- lavaan::fitted.values(object)$cov
 		impsd <- sqrt(diag(diag(impcov)))

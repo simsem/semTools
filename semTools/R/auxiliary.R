@@ -42,7 +42,7 @@
 #'
 #' @references Enders, C. K. (2008). A note on the use of missing auxiliary
 #'   variables in full information maximum likelihood-based structural equation
-#'   models. \emph{Structural Equation Modeling, 15}(3), 434-448.
+#'   models. \emph{Structural Equation Modeling, 15}(3), 434--448.
 #'   doi:10.1080/10705510802154307
 #'
 #' @return a fitted \code{\linkS4class{lavaan}} object.  Additional
@@ -55,6 +55,9 @@
 #'           variables are constrained to be orthogonal. See Examples for how
 #'           to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
 #'     \item \code{aux}. The character vector of auxiliary variable names.
+#'     \item \code{baseline.syntax}. A character vector generated within the
+#'           \code{auxiliary} function, specifying the \code{baseline.model}
+#'           syntax.
 #'   }
 #'
 #' @examples
@@ -85,82 +88,33 @@
 #' @export
 auxiliary <- function(model, data, aux, fun, ...) {
   lavArgs <- list(...)
-  ## check for constraints on observed variables that affect auxiliaries
-  if (!is.null(lavArgs$group.equal)) {
-    if (length(intersect(lavArgs$group.equal,
-                         c("intercepts","residuals","residual.covariances")))) {
-      warning('Using the "group.equal" argument to constrain intercepts will',
-              ' constrain all observed-variable intercepts, including',
-              ' auxiliary-variables means. Likewise, using the "group.equal"',
-              ' argument to constrain residual (co)variances will apply ',
-              ' those constraints to all observed variables, including',
-              ' exogenous and auxiliary variables. In order not to fit an',
-              ' overly constrained model, it is safer to apply equality',
-              ' constraints across groups manually using labels in the syntax.')
-    }
-  }
+  lavArgs$data <- data
+  lavArgs$fixed.x <- FALSE
+  lavArgs$missing <- "fiml"
+  lavArgs$meanstructure <- TRUE
+  lavArgs$ordered <- NULL
 
   if (missing(aux))
     stop("Please provide a character vector with names of auxiliary variables")
   if (missing(data))
     stop("Please provide a data.frame that includes modeled and auxiliary variables")
-  if (!all(sapply(data[aux], function(x) class(x[1]) %in% c("numeric","integer"))))
+  if (!all(sapply(data[aux], is.numeric)))
     stop("missing = 'FIML' is unavailable for categorical data")
 
-  ## Easiest scenario: model is a character string
-  if (is.character(model)) {
-    varnames <- lavaan::lavNames(lavaan::lavaanify(model), type = "ov")
-    if (length(intersect(varnames, aux))) stop('modeled variable declared as auxiliary')
-    ## concatenate saturated auxiliaries
-    covstruc <- outer(aux, aux, function(x, y) paste(x, "~~", y))
-    lavArgs$model <- c(model, paste(aux, "~ 1"),
-                       covstruc[lower.tri(covstruc, diag = TRUE)],
-                       outer(aux, varnames, function(x, y) paste(x, "~~", y)))
-    lavArgs$data <- data
-    lavArgs$fixed.x <- FALSE
-    lavArgs$missing <- "fiml"
-    lavArgs$meanstructure <- TRUE
-    lavArgs$ordered <- NULL
-#FIXME   if (lavArgs$group.equal != "")
-    result <- do.call(fun, lavArgs)
-    ## specify, fit, and attach an appropriate independence model
-    baseArgs <- list()
-    baseArgs$data                <- data
-    baseArgs$missing             <- "fiml"
-    baseArgs$group               <- lavArgs$group
-    baseArgs$group.label         <- lavArgs$group.label
-    baseArgs$cluster             <- lavArgs$cluster
-    baseArgs$sample.cov.rescale  <- lavArgs$sample.cov.rescale
-    baseArgs$information         <- lavArgs$information
-    baseArgs$se                  <- lavArgs$se
-    baseArgs$test                <- lavArgs$test
-    baseArgs$bootstrap           <- lavArgs$bootstrap
-    baseArgs$control             <- lavArgs$control
-    baseArgs$optim.method        <- lavArgs$optim.method
-    baseArgs$model <- c(paste(varnames, "~~", varnames),
-                        paste(varnames, "~ 1"), paste(aux, "~ 1"),
-                        covstruc[lower.tri(covstruc, diag = TRUE)],
-                        outer(aux, varnames, function(x, y) paste(x, "~~", y)))
-    result@external$baseline.model <- do.call(lavaan::lavaan, baseArgs)
-    result@external$aux <- aux
-    return(result)
-  }
 
-  ## otherwise, only accept a parameter table
   PTcols <- c("lhs","op","rhs","user","block","group","free","label","plabel","start")
-
-	if (is.list(model)) {
+  ## check parameter table, or create one from syntax
+  if (is.list(model)) {
 	  if (any(model$exo == 1))
 	    stop("All exogenous variables (covariates) must be treated as endogenous",
 	         " by the 'auxiliary' function. Please set 'fixed.x = FALSE'")
 
+    if (!is.null(lavArgs$group.equal))
+      warning("The 'group.equal' argument is ignored when 'model' is a parameter table.")
+
 	  if (is.null(model$start)) {
 	    startArgs <- lavArgs
 	    startArgs$model <- model
-	    startArgs$data <- data
-	    startArgs$fixed.x <- FALSE
-	    startArgs$missing <- "fiml"
-	    startArgs$meanstructure <- TRUE
 	    startArgs$do.fit <- FALSE
 	    model$start <- parTable(do.call(fun, startArgs))$start
 	  }
@@ -170,8 +124,14 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	                                " it must also include these columns: \n",
 	                                paste(missingCols, collapse = ", "))
 	  PT <- as.data.frame(model, stringsAsFactors = FALSE)[PTcols]
+	} else if (is.character(model)) {
+	  ptArgs <- lavArgs
+	  ptArgs$model <- model
+	  ptArgs$do.fit <- FALSE
+	  PT <- parTable(do.call(fun, ptArgs))[PTcols]
 	} else stop("The 'model' argument must be a character vector of",
 	            " lavaan syntax or a parameter table")
+
 
   ## separately store rows with constraints or user-defined parameters
   conRows <- PT$op %in% c("==","<",">",":=")
@@ -188,8 +148,8 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	covstruc <- outer(aux, aux, function(x, y) paste(x, "~~", y))
 	satMod <- c(covstruc[lower.tri(covstruc, diag = TRUE)], paste(aux, "~ 1"), # among auxiliaries
 	            outer(aux, varnames, function(x, y) paste(x, "~~", y)))        # between aux and targets
-	satPT <- lavaan::lavaanify(satMod,
-	                           ngroups = max(PT$group))[c("lhs","op","rhs","user","block","group")]
+	satPT <- lavaan::lavaanify(satMod, ngroups = max(PT$group))[c("lhs","op","rhs",
+	                                                              "user","block","group")]
 
 	## after omitting duplicates, check number of added parameters, add columns
 	mergedPT <- lavaan::lav_partable_merge(PT, satPT, remove.duplicated = TRUE, warn = FALSE)
@@ -224,34 +184,28 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	#   ## match order of parameters in syntax above
 	#   mergedPT$start[newRows] <- startVals
 	# }
-	finalPT <- lavaan::lav_partable_complete(rbind(mergedPT, CON))
-
-  lavArgs$model <- finalPT
-  lavArgs$data <- data
-  lavArgs$fixed.x <- FALSE
-  lavArgs$missing <- "fiml"
-  lavArgs$meanstructure <- TRUE
-  lavArgs$ordered <- NULL
+	lavArgs$model <- lavaan::lav_partable_complete(rbind(mergedPT, CON))
   result <- do.call(fun, lavArgs)
 
   ## specify, fit, and attach an appropriate independence model
   baseArgs <- list()
-  baseArgs$model                 <- lavaan::lav_partable_complete(satPT)
-  baseArgs$data                  <- data
-  baseArgs$group                 <- lavArgs$group
-  baseArgs$group.label           <- lavArgs$group.label
-  baseArgs$missing               <- "fiml"
-  baseArgs$cluster               <- lavArgs$cluster
-  baseArgs$sample.cov.rescale    <- lavArgs$sample.cov.rescale
-  baseArgs$information           <- lavArgs$information
-  baseArgs$se                    <- lavArgs$se
-  baseArgs$test                  <- lavArgs$test
-  baseArgs$bootstrap             <- lavArgs$bootstrap
-  baseArgs$control               <- lavArgs$control
-  baseArgs$optim.method          <- lavArgs$optim.method
-  result@external$baseline.model <- do.call(lavaan::lavaan, baseArgs)
-  result@external$aux <- aux
+  baseArgs$model                  <- lavaan::lav_partable_complete(satPT)
+  baseArgs$data                   <- data
+  baseArgs$group                  <- lavArgs$group
+  baseArgs$group.label            <- lavArgs$group.label
+  baseArgs$missing                <- "fiml"
+  baseArgs$cluster                <- lavArgs$cluster
+  baseArgs$sample.cov.rescale     <- lavArgs$sample.cov.rescale
+  baseArgs$information            <- lavArgs$information
+  baseArgs$se                     <- lavArgs$se
+  baseArgs$test                   <- lavArgs$test
+  baseArgs$bootstrap              <- lavArgs$bootstrap
+  baseArgs$control                <- lavArgs$control
+  baseArgs$optim.method           <- lavArgs$optim.method
 
+  result@external$baseline.model  <- do.call(lavaan::lavaan, baseArgs)
+  result@external$aux             <- aux
+  result@external$baseline.syntax <- satMod
 	result
 }
 
@@ -281,367 +235,6 @@ sem.auxiliary <- function(model, data, aux, ...) {
 #' @export
 growth.auxiliary <- function(model, data, aux, ...) {
 	auxiliary(model = model, data = data, aux = aux, fun = "growth", ...)
-}
-
-
-
-#################################################################
-## After enough time passes, delete everything below this line ##
-#################################################################
-
-craftAuxParTable <- function(model, aux, ...) {
-	constraintLine <- model$op %in% c("==", ":=", ">", "<")
-	modelConstraint <- lapply(model, "[", constraintLine)
-	model <- lapply(model, "[", !constraintLine)
-	facName <- NULL
-	indName <- NULL
-	singleIndicator <- NULL
-	facName <- unique(model$lhs[model$op == "=~"])
-	indName <- setdiff(unique(model$rhs[model$op == "=~"]), facName)
-	singleIndicator <- setdiff(unique(c(model$lhs, model$rhs)), c(facName, indName, ""))
-	facSingleIndicator <- paste0("f", singleIndicator)
-	for(i in seq_along(singleIndicator)) {
-		model$lhs <- gsub(singleIndicator[i], facSingleIndicator[i], model$lhs)
-		model$rhs <- gsub(singleIndicator[i], facSingleIndicator[i], model$rhs)
-	}
-	ngroups <- max(model$group)
-	if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, facSingleIndicator, "=~", singleIndicator, ngroups, fixed = TRUE, ustart = 1, expand = FALSE)
-	if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, singleIndicator, "~~", singleIndicator, ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
-	if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, singleIndicator, "~1", "", ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
-	if(is.null(indName) || length(indName) == 0) {
-		faux <- paste0("f", aux)
-		model <- attachPT(model, faux, "=~", aux, ngroups, fixed = TRUE, ustart = 1, expand = FALSE)
-		model <- attachPT(model, aux, "~~", aux, ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
-		model <- attachPT(model, facSingleIndicator, "~~", faux, ngroups)
-		model <- attachPT(model, faux, "~~", faux, ngroups, symmetric=TRUE)
-		if(any(model$op == "~1")) {
-			model <- attachPT(model, faux, "~1", "", ngroups)
-			model <- attachPT(model, aux, "~1", "", ngroups, fixed = TRUE, ustart = 0, expand = FALSE)
-		}
-	} else {
-		if(!is.null(indName) && length(indName) != 0) model <- attachPT(model, indName, "~~", aux, ngroups)
-		model <- attachPT(model, aux, "~~", aux, ngroups, symmetric=TRUE, useUpper=TRUE)
-		if(!is.null(singleIndicator) && length(singleIndicator) != 0) model <- attachPT(model, facSingleIndicator, "=~", aux, ngroups)
-		if(any(model$op == "~1")) model <- attachPT(model, aux, "~1", "", ngroups)
-	}
-	model <- attachConstraint(model, modelConstraint)
-
-	list(model = model, indName = union(indName, singleIndicator))
-}
-
-attachConstraint <- function(pt, con) {
-	len <- length(con$id)
-	if(len > 0) {
-		pt$id <- c(pt$id, (max(pt$id)+1):(max(pt$id)+len))
-		pt$lhs <- c(pt$lhs, con$lhs)
-		pt$op <- c(pt$op, con$op)
-		pt$rhs <- c(pt$rhs, con$rhs)
-		pt$user <- c(pt$user, con$user)
-		pt$group <- c(pt$group, con$group)
-		pt$free <- c(pt$free, con$free)
-		pt$ustart <- c(pt$ustart, con$ustart)
-		pt$exo <- c(pt$exo, con$exo)
-		pt$label <- c(pt$label, con$label)
-		pt$plabel <- c(pt$plabel, con$plabel)
-		pt$start <- c(pt$start, con$start)
-		pt$est <- c(pt$est, con$est)
-		pt$se <- c(pt$se, con$se)
-	}
-	pt
-}
-
-attachPT <- function(pt, lhs, op, rhs, ngroups, symmetric=FALSE, exo=FALSE, fixed=FALSE, useUpper=FALSE, ustart = NA, expand = TRUE, diag = TRUE) {
-	pt$start <- pt$est <- pt$se <- NULL
-	if(expand) {
-		element <- expand.grid(lhs, rhs, stringsAsFactors = FALSE)
-	} else {
-		element <- cbind(lhs, rhs)
-	}
-	if(symmetric) {
-		if(useUpper) {
-			element <- element[as.vector(upper.tri(diag(length(lhs)), diag=diag)),]
-		} else {
-			element <- element[as.vector(lower.tri(diag(length(lhs)), diag=diag)),]
-		}
-	}
-	num <- nrow(element) * ngroups
-	pt$id <- c(pt$id, (max(pt$id)+1):(max(pt$id)+num))
-	pt$lhs <- c(pt$lhs, rep(element[,1], ngroups))
-	pt$op <- c(pt$op, rep(op, num))
-	pt$rhs <- c(pt$rhs, rep(element[,2], ngroups))
-	pt$user <- c(pt$user, rep(1, num))
-	pt$group <- c(pt$group, rep(1:ngroups, each=nrow(element)))
-	free <- (max(pt$free)+1):(max(pt$free)+num)
-	if(fixed) free <- rep(0L, num)
-	pt$free <- c(pt$free, free)
-	pt$ustart <- c(pt$ustart, rep(ustart, num))
-	pt$exo <- c(pt$exo, rep(as.numeric(exo), num))
-	pt$label <- c(pt$label, rep("", num))
-	pt$plabel <- c(pt$plabel, rep("", num))
-	return(pt)
-}
-
-nullAuxiliary <- function(aux, indName, covName=NULL, meanstructure, ngroups) {
-	covName <- rev(covName)
-	pt <- list()
-	num <- length(indName) * ngroups
-	if(meanstructure) num <- num*2
-	pt$id <- 1:num
-	pt$lhs <- rep(indName, ngroups)
-	pt$op <- rep("~~", num)
-	pt$rhs <- rep(indName, ngroups)
-	pt$user <- rep(1, num)
-	pt$group <- rep(1:ngroups, each=length(indName))
-	pt$free <- 1:num
-	pt$ustart <- rep(NA, num)
-	pt$exo <- rep(0, num)
-	pt$label <- rep("", num)
-	pt$plabel <- rep("", num)
-	if(meanstructure) {
-		pt$lhs <- rep(rep(indName, ngroups), 2)
-		pt$op <- rep(c("~~", "~1"), each=num/2)
-		pt$rhs <- c(rep(indName, ngroups), rep("", num/2))
-		pt$group <- rep(rep(1:ngroups, each=length(indName)), 2)
-	}
-	pt <- attachPT(pt, aux, "~~", aux, ngroups, symmetric=TRUE)
-	pt <- attachPT(pt, indName, "~~", aux, ngroups)
-	if(meanstructure) pt <- attachPT(pt, aux, "~1", "", ngroups)
-	if(!is.null(covName) && length(covName) != 0) {
-		pt <- attachPT(pt, aux, "~~", covName, ngroups)
-		pt <- attachPT(pt, covName, "~~", covName, ngroups, symmetric=TRUE, useUpper=TRUE)
-		if(meanstructure) pt <- attachPT(pt, covName, "~1", "", ngroups)
-	}
-	return(pt)
-}
-
-fitMeasuresLavaanStar <- function(object) {
-	notused <- utils::capture.output(result <- suppressWarnings(getMethod("inspect", "lavaan")(object, what="fit"))) ## FIXME: don't set a new inspect method
-	result[c("baseline.chisq", "baseline.df", "baseline.pvalue")] <- object@nullfit[c("chisq", "df", "pvalue")]
-
-    if(lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler",
-                                                 "mean.var.adjusted", "scaled.shifted")) {
-        scaled <- TRUE
-    } else {
-        scaled <- FALSE
-    }
-
-	if(scaled) {
-		result[c("baseline.chisq.scaled", "baseline.df.scaled", "baseline.pvalue.scaled", "baseline.chisq.scaling.factor")] <- object@nullfit[c("chisq.scaled", "df.scaled", "pvalue.scaled", "chisq.scaling.factor")]
-	}
-
-	X2.null <- object@nullfit["chisq"]
-	df.null <- object@nullfit["df"]
-	X2 <- result["chisq"]
-	df <- result["df"]
-
-	if(df.null == 0) {
-		result["cfi"] <- NA
-		result["tli"] <- NA
-		result["nnfi"] <- NA
-		result["rfi"] <- NA
-		result["nfi"] <- NA
-		result["pnfi"] <- NA
-		result["ifi"] <- NA
-		result["rni"] <- NA
-	} else {
-		# CFI
-		if("cfi" %in% names(result)) {
-			t1 <- max( c(X2 - df, 0) )
-			t2 <- max( c(X2 - df, X2.null - df.null, 0) )
-			if(t1 == 0 && t2 == 0) {
-				result["cfi"] <- 1
-			} else {
-				result["cfi"] <- 1 - t1/t2
-			}
-		}
-
-		# TLI
-		if("tli" %in% names(result)) {
-			if(df > 0) {
-				t1 <- X2.null/df.null - X2/df
-				t2 <- X2.null/df.null - 1
-				# note: TLI original formula was in terms of fx/df, not X2/df
-				# then, t1 <- fx_0/df.null - fx/df
-				# t2 <- fx_0/df.null - 1/N (or N-1 for wishart)
-				if(t1 < 0 && t2 < 0) {
-					TLI <- 1
-				} else {
-					TLI <- t1/t2
-				}
-			} else {
-			   TLI <- 1
-			}
-			result["tli"] <- result["nnfi"] <- TLI
-		}
-
-		# RFI
-		if("rfi" %in% names(result)) {
-			if(df > 0) {
-				t1 <- X2.null/df.null - X2/df
-				t2 <- X2.null/df.null
-				if(t1 < 0 || t2 < 0) {
-					RLI <- 1
-				} else {
-					RLI <- t1/t2
-				}
-			} else {
-			   RLI <- 1
-			}
-			result["rfi"] <- RLI
-		}
-
-		# NFI
-		if("nfi" %in% names(result)) {
-			t1 <- X2.null - X2
-			t2 <- X2.null
-			NFI <- t1/t2
-			result["nfi"] <- NFI
-		}
-
-		# PNFI
-		if("pnfi" %in% names(result)) {
-			t1 <- X2.null - X2
-			t2 <- X2.null
-			PNFI <- (df/df.null) * t1/t2
-			result["pnfi"] <- PNFI
-		}
-
-		# IFI
-		if("ifi" %in% names(result)) {
-			t1 <- X2.null - X2
-			t2 <- X2.null - df
-			if(t2 < 0) {
-				IFI <- 1
-			} else {
-				IFI <- t1/t2
-			}
-			result["ifi"] <- IFI
-		}
-
-		# RNI
-		if("rni" %in% names(result)) {
-			t1 <- X2 - df
-			t2 <- X2.null - df.null
-			if(df.null == 0) {
-				RNI <- NA
-			} else if(t1 < 0 || t2 < 0) {
-				RNI <- 1
-			} else {
-				RNI <- 1 - t1/t2
-			}
-			result["rni"] <- RNI
-		}
-	}
-
-	if(scaled) {
-		X2.scaled <- result["chisq.scaled"]
-		df.scaled <- result["df.scaled"]
-		X2.null.scaled <- object@nullfit["chisq.scaled"]
-		df.null.scaled <- object@nullfit["df.scaled"]
-
-		if(df.null.scaled == 0) {
-			result["cfi.scaled"] <- NA
-			result["tli.scaled"] <- result["nnfi.scaled"] <- NA
-			result["rfi.scaled"] <- NA
-			result["nfi.scaled"] <- NA
-			result["pnfi.scaled"] <- NA
-			result["ifi.scaled"] <- NA
-			result["rni.scaled"] <- NA
-		} else {
-			if("cfi.scaled" %in% names(result)) {
-				t1 <- max( c(X2.scaled - df.scaled, 0) )
-				t2 <- max( c(X2.scaled - df.scaled,
-							 X2.null.scaled - df.null.scaled, 0) )
-				if(t1 == 0 && t2 == 0) {
-					result["cfi.scaled"] <- 1
-				} else {
-					result["cfi.scaled"] <- 1 - t1/t2
-				}
-			}
-
-			if("tli.scaled" %in% names(result)) {
-				if(df > 0) {
-					t1 <- X2.null.scaled/df.null.scaled - X2.scaled/df.scaled
-					t2 <- X2.null.scaled/df.null.scaled - 1
-					if(t1 < 0 && t2 < 0) {
-						TLI <- 1
-					} else {
-						TLI <- t1/t2
-					}
-				} else {
-					TLI <- 1
-				}
-				result["tli.scaled"] <- result["nnfi.scaled"] <- TLI
-			}
-
-			if("rfi.scaled" %in% names(result)) {
-				if(df > 0) {
-					t1 <- X2.null.scaled/df.null.scaled - X2.scaled/df.scaled
-					t2 <- X2.null.scaled/df.null.scaled
-					if(t1 < 0 || t2 < 0) {
-						RLI <- 1
-					} else {
-						RLI <- t1/t2
-					}
-				} else {
-				   RLI <- 1
-				}
-				result["rfi.scaled"] <- RLI
-			}
-
-			if("nfi.scaled" %in% names(result)) {
-				t1 <- X2.null.scaled - X2.scaled
-				t2 <- X2.null.scaled
-				NFI <- t1/t2
-				result["nfi.scaled"] <- NFI
-			}
-
-			if("pnfi.scaled" %in% names(result)) {
-				t1 <- X2.null.scaled - X2.scaled
-				t2 <- X2.null.scaled
-				PNFI <- (df/df.null) * t1/t2
-				result["pnfi.scaled"] <- PNFI
-			}
-
-			if("ifi.scaled" %in% names(result)) {
-				t1 <- X2.null.scaled - X2.scaled
-				t2 <- X2.null.scaled
-				if(t2 < 0) {
-					IFI <- 1
-				} else {
-					IFI <- t1/t2
-				}
-				result["ifi.scaled"] <- IFI
-			}
-
-			if("rni.scaled" %in% names(result)) {
-				t1 <- X2.scaled - df.scaled
-				t2 <- X2.null.scaled - df.null.scaled
-				t2 <- X2.null - df.null
-				if(t1 < 0 || t2 < 0) {
-					RNI <- 1
-				} else {
-					RNI <- 1 - t1/t2
-				}
-				result["rni.scaled"] <- RNI
-			}
-		}
-	}
-
-	#logl
-	imputed <- object@imputed
-	if(length(imputed) > 0) {
-		loglikval <- unlist(imputed[["logl"]])
-		npar <- result["npar"]
-		result["unrestricted.logl"] <- loglikval["unrestricted.logl"]
-		result["logl"] <- loglikval["logl"]
-		result["aic"] <-  -2*loglikval["logl"] + 2*npar
-        result["bic"] <- -2*loglikval["logl"] + npar*log(result["ntotal"])
-		N.star <- (result["ntotal"] + 2) / 24
-		result["bic2"] <- -2*loglikval["logl"] + npar*log(N.star)
-		result <- result[-which("fmin" == names(result))]
-	}
-	result
 }
 
 

@@ -55,6 +55,9 @@ a fitted \code{\linkS4class{lavaan}} object.  Additional
           variables are constrained to be orthogonal. See Examples for how
           to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
     \item \code{aux}. The character vector of auxiliary variable names.
+    \item \code{baseline.syntax}. A character vector generated within the
+          \code{auxiliary} function, specifying the \code{baseline.model}
+          syntax.
   }
 }
 \description{
@@ -100,7 +103,7 @@ fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
 \references{
 Enders, C. K. (2008). A note on the use of missing auxiliary
   variables in full information maximum likelihood-based structural equation
-  models. \emph{Structural Equation Modeling, 15}(3), 434-448.
+  models. \emph{Structural Equation Modeling, 15}(3), 434--448.
   doi:10.1080/10705510802154307
 }
 \author{
