@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 31 March 2017
+### Last updated: 8 March 2018
 ### new auxiliary function does NOT create a lavaanStar-class instance
 
 #' Implement Saturated Correlates with FIML
@@ -121,10 +121,12 @@ auxiliary <- function(model, data, aux, fun, ...) {
     lavArgs$missing <- "fiml"
     lavArgs$meanstructure <- TRUE
     lavArgs$ordered <- NULL
+#FIXME   if (lavArgs$group.equal != "")
     result <- do.call(fun, lavArgs)
     ## specify, fit, and attach an appropriate independence model
     baseArgs <- list()
     baseArgs$data                <- data
+    baseArgs$missing             <- "fiml"
     baseArgs$group               <- lavArgs$group
     baseArgs$group.label         <- lavArgs$group.label
     baseArgs$cluster             <- lavArgs$cluster
@@ -145,7 +147,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
   }
 
   ## otherwise, only accept a parameter table
-  PTcols <- c("lhs","op","rhs","user","group","free","label","plabel","start")
+  PTcols <- c("lhs","op","rhs","user","block","group","free","label","plabel","start")
 
 	if (is.list(model)) {
 	  if (any(model$exo == 1))
@@ -168,8 +170,8 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	                                " it must also include these columns: \n",
 	                                paste(missingCols, collapse = ", "))
 	  PT <- as.data.frame(model, stringsAsFactors = FALSE)[PTcols]
-	} else stop("The 'model' argument must be a character vector of lavaan",
-	            " syntax or a parameter table")
+	} else stop("The 'model' argument must be a character vector of",
+	            " lavaan syntax or a parameter table")
 
   ## separately store rows with constraints or user-defined parameters
   conRows <- PT$op %in% c("==","<",">",":=")
@@ -187,27 +189,41 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	satMod <- c(covstruc[lower.tri(covstruc, diag = TRUE)], paste(aux, "~ 1"), # among auxiliaries
 	            outer(aux, varnames, function(x, y) paste(x, "~~", y)))        # between aux and targets
 	satPT <- lavaan::lavaanify(satMod,
-	                           ngroups = max(PT$group))[c("lhs","op","rhs","group")]
+	                           ngroups = max(PT$group))[c("lhs","op","rhs","user","block","group")]
 
 	## after omitting duplicates, check number of added parameters, add columns
-	mergedPT <- suppressWarnings({
-	  lavaan::lav_partable_merge(PT, satPT, remove.duplicated = TRUE)
-	})
+	mergedPT <- lavaan::lav_partable_merge(PT, satPT, remove.duplicated = TRUE, warn = FALSE)
 	nAuxPar <- nrow(mergedPT) - nrow(PT)
 	newRows <- 1L:nAuxPar + nrow(PT)
-	mergedPT$user[newRows] <- 1L # FIXME: if they are listed as constraints (2L), could that omit them from being printed?
+	##FIXME:  mergedPT$user[newRows] <- 2L (list as constraints to omit printing?) or new code (9L)?
 	mergedPT$free[newRows] <- 1L:nAuxPar + max(PT$free)
-	mergedPT$label[newRows] <- ""
 	mergedPT$plabel[newRows] <- paste0(".p", 1L:nAuxPar + nrow(PT), ".")
 	## calculate sample moments as starting values (recycle over groups)
-	auxCov <- cov(data[aux], use = "pairwise.complete.obs")
-	auxM <- colMeans(data[aux], na.rm = TRUE)
-	auxTarget <- cov(data[c(aux, varnames)],
-	                 use = "pairwise.complete.obs")[aux, varnames]
-	## match order of parameters in syntax above
-	mergedPT$start[newRows] <- c(auxCov[lower.tri(auxCov, diag = TRUE)],
-	                             auxM, as.numeric(auxTarget))
-	mergedPT$block <- NULL
+	# if (is.null(lavArgs$group)) {
+	#   auxCov <- cov(data[aux], use = "pairwise.complete.obs")
+	#   auxM <- colMeans(data[aux], na.rm = TRUE)
+	#   auxTarget <- cov(data[c(aux, varnames)],
+	#                    use = "pairwise.complete.obs")[aux, varnames]
+	#   ## match order of parameters in syntax above
+	#   mergedPT$start[newRows] <- c(auxCov[lower.tri(auxCov, diag = TRUE)],
+	#                                auxM, as.numeric(auxTarget))
+	# } else {
+	#   auxCovs <- list()
+	#   auxMs <- list()
+	#   auxTargets <- list()
+	#   startVals <- numeric(0)
+	#   for (g in unique(data[ , lavArgs$group])) {
+	#     auxCovs[[g]] <- cov(data[data[ , lavArgs$group] == g, aux],
+	#                         use = "pairwise.complete.obs")
+	#     auxMs[[g]] <- colMeans(data[data[ , lavArgs$group] == g, aux], na.rm = TRUE)
+	#     auxTargets[[g]] <- cov(data[data[ , lavArgs$group] == g, c(aux, varnames)],
+	#                            use = "pairwise.complete.obs")[aux, varnames]
+	#     startVals <- c(startVals, auxCovs[[g]][lower.tri(auxCovs[[g]], diag = TRUE)],
+	#                    auxMs[[g]], as.numeric(auxTargets[[g]]))
+	#   }
+	#   ## match order of parameters in syntax above
+	#   mergedPT$start[newRows] <- startVals
+	# }
 	finalPT <- lavaan::lav_partable_complete(rbind(mergedPT, CON))
 
   lavArgs$model <- finalPT
@@ -224,6 +240,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
   baseArgs$data                  <- data
   baseArgs$group                 <- lavArgs$group
   baseArgs$group.label           <- lavArgs$group.label
+  baseArgs$missing               <- "fiml"
   baseArgs$cluster               <- lavArgs$cluster
   baseArgs$sample.cov.rescale    <- lavArgs$sample.cov.rescale
   baseArgs$information           <- lavArgs$information
