@@ -29,8 +29,6 @@ export(
 
   ## Alex
   plotRMSEApower, SSpower, tukeySEM,
-  ## Alex with Corbin (and James Selig)
-  monteCarloMed, parcelAllocation,
 
   ## Jason D. Rights
   PAVranking, poolMAlloc,
@@ -40,21 +38,23 @@ export(
   twostage, lavaan.2stage, cfa.2stage, sem.2stage, growth.2stage,
   runMI, lavaan.mi, cfa.mi, sem.mi, growth.mi,
   auxiliary, lavaan.auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary,
-
-  ## Mauricio & Terrence
+  parcelAllocation,
+  ## with Alex, Corbin, and James Selig
+  monteCarloMed,
+  ## with Mauricio
   fmi,
+  ## with Steven R. Chesnut
+  quark, combinequark,
+  ## with Ylenio Longo
+  htmt, efa.ekc,
+
+
 
   ## Ed Merkle
   kd,
 
   ## Corbin Quick
   splitSample, lisrel2lavaan, ## lisrel2lavaan is deprecated, being phased out
-
-  ## Steven R. Chesnut
-  quark, combinequark,
-
-  ## Ylenio Longo
-  htmt, efa.ekc,
 
   ## Ruben Arslan
   nullRMSEA,
