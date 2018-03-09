@@ -1,5 +1,5 @@
 ### Ylenio Longo
-### Last updated: 2 April 2017
+### Last updated: 9 March 2018
 
 #' Assessing Discriminant Validity using Heterotrait-Monotrait Ratio
 #'

@@ -1,5 +1,5 @@
 ### Alexander M. Schoemann & Terrence D. Jorgensen
-### Last updated: 4 April 2017
+### Last updated: 9 March 2018
 ### Function to apply Satorra & Saris method for chi-squared power analysis
 
 
@@ -24,7 +24,7 @@
 #'
 #'
 #' @importFrom stats qchisq pchisq
-#' 
+#'
 #' @param powerModel lavaan \code{\link[lavaan]{model.syntax}} for the model to
 #'   be analyzed. This syntax should constrain at least one nonzero parameter
 #'   to 0 (or another number).
@@ -57,7 +57,7 @@
 #'
 #' @references
 #'  Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
-#'  test in covariance structure analysis. \emph{Psychometrika, 50}, 83-90.
+#'  test in covariance structure analysis. \emph{Psychometrika, 50}, 83--90.
 #'  doi:10.1007/BF02294150
 #'
 #' @examples
@@ -125,7 +125,7 @@
 #' Sigma <- list(popMoments1$cov, popMoments2$cov)
 #' SSpower(powerModel = modelA2, mu = mu, Sigma = Sigma,
 #'         n = c(60, 65), nparam = 2)
-#' 
+#'
 #' @export
 SSpower <- function(powerModel, n, nparam, popModel, mu, Sigma,
                     fun = "cfa", alpha = .05, ...) {

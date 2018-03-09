@@ -121,7 +121,7 @@ SSpower(powerModel = modelA2, mu = mu, Sigma = Sigma,
 }
 \references{
 Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
- test in covariance structure analysis. \emph{Psychometrika, 50}, 83-90.
+ test in covariance structure analysis. \emph{Psychometrika, 50}, 83--90.
  doi:10.1007/BF02294150
 }
 \author{

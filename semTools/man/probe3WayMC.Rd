@@ -34,7 +34,7 @@ probe the effect of the independent factor.}
 A list with two elements:
 \enumerate{
  \item \code{SimpleIntercept}: The intercepts given each value of the moderator.
-  This element will be shown only if the factor intercept is estimated 
+  This element will be shown only if the factor intercept is estimated
   (e.g., not fixed as 0).
  \item \code{SimpleSlope}: The slopes given each value of the moderator.
 }
@@ -43,7 +43,7 @@ specified in the \code{valProbe1} argument. The second column represents
 values of the second moderator specified in the \code{valProbe2} argument.
 The third column is the simple intercept or simple slope. The fourth column
 is the standard error of the simple intercept or simple slope. The fifth
-column is the Wald (\emph{z}) statistic. The sixth column is the \emph{p} 
+column is the Wald (\emph{z}) statistic. The sixth column is the \emph{p}
 value testing whether the simple intercepts or slopes are different from 0.
 }
 \description{
@@ -147,14 +147,14 @@ f13 ~ NA*1
 f23 ~ NA*1
 f123 ~ NA*1
 f4 ~ NA*1
-" 
+"
 
 fitMC3way <- sem(model3, data = dat3wayMC, std.lv = FALSE,
                  meanstructure = TRUE)
 summary(fitMC3way)
 
 result3wayMC <- probe3WayMC(fitMC3way,
-                            c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+                            c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 result3wayMC
 
@@ -165,7 +165,7 @@ and interpreting interactions}. Newbury Park, CA: Sage.
 
 Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 latent interactions: Evaluation of alternative estimation strategies and
-indicator construction. \emph{Psychological Methods, 9}(3), 275-300.
+indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
 doi:10.1037/1082-989X.9.3.275
 }
 \seealso{

@@ -1,11 +1,11 @@
 ### Sunthud Pornprasertmanit, Alexander M. Schoemann, Kristopher J. Preacher, Donna Coffman
-### Last updated 4 April 2017
+### Last updated: 9 March 2018
 
 
 #' Plot power curves for RMSEA
-#' 
+#'
 #' Plots power of RMSEA over a range of sample sizes
-#' 
+#'
 #' This function creates plot of power for RMSEA against a range of sample
 #' sizes. The plot places sample size on the horizontal axis and power on the
 #' vertical axis. The user should indicate the lower and upper values for
@@ -13,10 +13,10 @@
 #' strongly urge the user to read the sources below (see References) before
 #' proceeding.  A web version of this function is available at:
 #' \url{http://quantpsy.org/rmsea/rmseaplot.htm}.
-#' 
-#' 
+#'
+#'
 #' @importFrom stats qchisq pchisq
-#' 
+#'
 #' @param rmsea0 Null RMSEA
 #' @param rmseaA Alternative RMSEA
 #' @param df Model degrees of freedom
@@ -30,54 +30,54 @@
 #' @param \dots The additional arguments for the plot function.
 #' @return Plot of power for RMSEA against a range of sample sizes
 #' @author
-#' Alexander M. Schoemann (East Carolina University; \email{schoemanna@@ecu.edu}) 
-#' 
+#' Alexander M. Schoemann (East Carolina University; \email{schoemanna@@ecu.edu})
+#'
 #' Kristopher J. Preacher (Vanderbilt University; \email{kris.preacher@@vanderbilt.edu})
-#' 
+#'
 #' Donna L. Coffman (Pennsylvania State University; \email{dlc30@@psu.edu.})
-#' 
-#' @seealso \itemize{ 
+#'
+#' @seealso \itemize{
 #' \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
 #' \item \code{\link{findRMSEApower}} to find the statistical power based on
 #'   population RMSEA given a sample size
-#' \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for 
+#' \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
 #'   a given statistical power based on population RMSEA
 #' }
-#' @references 
+#' @references
 #' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 #' differences between nested covariance structure models: Power analysis and
-#' null hypotheses. \emph{Psychological Methods, 11}(1), 19-35.
+#' null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
 #' doi:10.1037/1082-989X.11.1.19
-#' 
+#'
 #' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 #' and determination of sample size for covariance structure modeling.
-#' \emph{Psychological Methods, 1}(2), 130-149. doi:10.1037/1082-989X.1.2.130
-#' 
+#' \emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
+#'
 #' MacCallum, R. C., Lee, T., & Browne, M. W. (2010). The issue of isopower in
 #' power analysis for tests of structural equation models. \emph{Structural
-#' Equation Modeling, 17}(1), 23-41. doi:10.1080/10705510903438906
-#' 
+#' Equation Modeling, 17}(1), 23--41. doi:10.1080/10705510903438906
+#'
 #' Preacher, K. J., Cai, L., & MacCallum, R. C. (2007). Alternatives to
 #' traditional model comparison strategies for covariance structure models. In
 #' T. D. Little, J. A. Bovaird, & N. A. Card (Eds.), \emph{Modeling contextual
-#' effects in longitudinal studies} (pp. 33-62). Mahwah, NJ: Lawrence Erlbaum
+#' effects in longitudinal studies} (pp. 33--62). Mahwah, NJ: Lawrence Erlbaum
 #' Associates.
-#' 
+#'
 #' Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit
-#' index. \emph{Structural Equation Modeling, 5}(4), 411-419. 
+#' index. \emph{Structural Equation Modeling, 5}(4), 411--419.
 #' doi:10.1080/10705519809540115
-#' 
+#'
 #' Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests
 #' for the number of factors.} Paper presented at the annual meeting of the
 #' Psychometric Society, Iowa City, IA.
 #' @examples
-#' 
+#'
 #' plotRMSEApower(rmsea0 = .025, rmseaA = .075, df = 23,
 #'                nlow = 100, nhigh = 500, steps = 10)
-#' 
+#'
 #' @export
 plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
-                           alpha = .05, group = 1, ...) { 
+                           alpha = .05, group = 1, ...) {
 	pow1 <- 0
 	nseq <- seq(nlow,nhigh, by=steps)
 	for(i in nseq){
@@ -102,10 +102,10 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 
 
 #' Plot the sampling distributions of RMSEA
-#' 
+#'
 #' Plots the sampling distributions of RMSEA based on the noncentral chi-square
 #' distributions
-#' 
+#'
 #' This function creates overlappling plots of the sampling distribution of
 #' RMSEA based on noncentral \eqn{\chi^2} distribution (MacCallum, Browne, &
 #' Suguwara, 1996). First, the noncentrality parameter (\eqn{\lambda}) is
@@ -119,10 +119,10 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 #' by \deqn{\hat{\varepsilon} = \sqrt{K}\sqrt{\frac{\chi^2 - d}{(N - 1)d}},}
 #' where \eqn{\chi^2} is the \eqn{\chi^2} value obtained from the noncentral
 #' \eqn{\chi^2} distribution.
-#' 
-#' 
+#'
+#'
 #' @importFrom stats qchisq
-#' 
+#'
 #' @param rmsea The vector of RMSEA values to be plotted
 #' @param n Sample size of a dataset
 #' @param df Model degrees of freedom
@@ -134,31 +134,31 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 #' @param group The number of group that is used to calculate RMSEA.
 #' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 #' @seealso \itemize{
-#'  \item \code{\link{plotRMSEApower}} to plot the statistical power 
+#'  \item \code{\link{plotRMSEApower}} to plot the statistical power
 #'    based on population RMSEA given the sample size
 #'  \item \code{\link{findRMSEApower}} to find the statistical power based on
-#'    population RMSEA given a sample size 
+#'    population RMSEA given a sample size
 #'  \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
 #'   a given statistical power based on population RMSEA
 #' }
-#' @references 
+#' @references
 #' Dudgeon, P. (2004). A note on extending Steiger's (1998)
 #' multiple sample RMSEA adjustment to other noncentrality parameter-based
-#' statistic. \emph{Structural Equation Modeling, 11}(3), 305-319.
+#' statistic. \emph{Structural Equation Modeling, 11}(3), 305--319.
 #' doi:10.1207/s15328007sem1103_1
-#' 
+#'
 #' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 #' and determination of sample size for covariance structure modeling.
-#' \emph{Psychological Methods, 1}(2), 130-149. doi:10.1037/1082-989X.1.2.130
-#' 
+#' \emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
+#'
 #' Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit
-#' index. \emph{Structural Equation Modeling, 5}(4), 411-419. 
+#' index. \emph{Structural Equation Modeling, 5}(4), 411--419.
 #' doi:10.1080/10705519809540115
 #' @examples
-#' 
+#'
 #' plotRMSEAdist(c(.05, .08), n = 200, df = 20, ptile = .95, rmseaScale = TRUE)
 #' plotRMSEAdist(c(.05, .01), n = 200, df = 20, ptile = .05, rmseaScale = FALSE)
-#' 
+#'
 #' @export
 plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
                           rmseaScale = TRUE, group = 1) {
@@ -167,20 +167,20 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 	             FUN = function(x, n, group) ((n - 1) * x[2] * (x[1]^2))/group,
 	             n = n, group = group)
 	graph <- cbind(graph, ncp)
-	dens <- lapply(as.list(data.frame(t(graph))), function(x) findDensity("chisq", df = x[2], ncp=x[3])) 
+	dens <- lapply(as.list(data.frame(t(graph))), function(x) findDensity("chisq", df = x[2], ncp=x[3]))
 	if (rmseaScale) dens <- lapply(dens, function(x, df, n, group) { x[,1] <- (x[,1] - df)/(n-1); x[(x[,1] < 0),1] <- 0; x[,1] <- sqrt(group) * sqrt(x[,1]/df); return(x) }, df=df, n=n, group=group)
 	cutoff <- NULL
-	if (!is.null(ptile)) { 
+	if (!is.null(ptile)) {
 		cutoff <- qchisq(ptile, df = graph[1, 2], ncp = graph[1, 3])
 		if (rmseaScale) cutoff <- sqrt(group) * sqrt((cutoff - df)/(df * (n - 1)))
 	}
 	if (is.null(caption)) caption <- sapply(graph[,1],
 	                                        function(x) paste("Population RMSEA = ",
 	                                                          format(x, digits = 3),
-	                                                          sep = "")) 
+	                                                          sep = ""))
 	plotOverlapDensity(dens, cutoff, caption, ylab = "Density",
 	                   xlab = ifelse(rmseaScale, "RMSEA", "Chi-Square"))
-	equal0 <- sapply(dens, function(x) x[,1] == 0) 
+	equal0 <- sapply(dens, function(x) x[,1] == 0)
 	if (any(equal0)) warning("The density at RMSEA = 0 cannot be trusted",
 	                         " because the plots are truncated.")
 }
@@ -188,13 +188,13 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 
 
 #' Find the statistical power based on population RMSEA
-#' 
+#'
 #' Find the proportion of the samples from the sampling distribution of RMSEA
 #' in the alternative hypothesis rejected by the cutoff dervied from the
 #' sampling distribution of RMSEA in the null hypothesis. This function can be
 #' applied for both test of close fit and test of not-close fit (MacCallum,
 #' Browne, & Suguwara, 1996)
-#' 
+#'
 #' This function find the proportion of sampling distribution derived from the
 #' alternative RMSEA that is in the critical region derived from the sampling
 #' distribution of the null RMSEA. If \code{rmseaA} is greater than
@@ -203,10 +203,10 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 #' \code{rmseaA} is less than \code{rmsea0}, the test of not-close fit is used
 #' and the critical region is in the left hand side of the null sampling
 #' distribution (MacCallum, Browne, & Suguwara, 1996).
-#' 
-#' 
+#'
+#'
 #' @importFrom stats qchisq pchisq
-#' 
+#'
 #' @param rmsea0 Null RMSEA
 #' @param rmseaA Alternative RMSEA
 #' @param df Model degrees of freedom
@@ -217,19 +217,19 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 #' @seealso \itemize{
 #'  \item \code{\link{plotRMSEApower}} to plot the statistical power based on
 #'   population RMSEA given the sample size
-#'  \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions 
+#'  \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
 #'  \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
 #'   a given statistical power based on population RMSEA
 #' }
-#' @references 
+#' @references
 #' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 #' and determination of sample size for covariance structure modeling.
-#' \emph{Psychological Methods, 1}(2), 130-149. doi:10.1037/1082-989X.1.2.130
-#' 
+#' \emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
+#'
 #' @examples
-#' 
+#'
 #' findRMSEApower(rmsea0 = .05, rmseaA = .08, df = 20, n = 200)
-#' 
+#'
 #' @export
 findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 	ncp0 <- ((n-1)*df*rmsea0^2)/group
@@ -248,17 +248,17 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 
 #' Find the minimum sample size for a given statistical power based on
 #' population RMSEA
-#' 
+#'
 #' Find the minimum sample size for a specified statistical power based on
 #' population RMSEA. This function can be applied for both test of close fit
 #' and test of not-close fit (MacCallum, Browne, & Suguwara, 1996)
-#' 
+#'
 #' This function find the minimum sample size for a specified power based on an
 #' iterative routine. The sample size keep increasing until the calculated
 #' power from \code{\link{findRMSEApower}} function is just over the specified
 #' power. If \code{group} is greater than 1, the resulting sample size is the
 #' sample size per group.
-#' 
+#'
 #' @param rmsea0 Null RMSEA
 #' @param rmseaA Alternative RMSEA
 #' @param df Model degrees of freedom
@@ -269,20 +269,20 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 #' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 #' @seealso \itemize{
 #'  \item \code{\link{plotRMSEApower}} to plot the statistical power based on
-#'   population RMSEA given the sample size 
-#'  \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions 
+#'   population RMSEA given the sample size
+#'  \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
 #'  \item \code{\link{findRMSEApower}} to find the statistical power based on
 #'   population RMSEA given a sample size
 #' }
-#' @references 
+#' @references
 #' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 #' and determination of sample size for covariance structure modeling.
-#' \emph{Psychological Methods, 1}(2), 130-149. doi:10.1037/1082-989X.1.2.130
-#' 
+#' \emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
+#'
 #' @examples
-#' 
+#'
 #' findRMSEAsamplesize(rmsea0 = .05, rmseaA = .08, df = 20, power = 0.80)
-#' 
+#'
 #' @export
 findRMSEAsamplesize <- function(rmsea0, rmseaA, df, power = 0.80,
                                 alpha = .05, group = 1) {
@@ -335,7 +335,7 @@ findDensity <- function(dist, ...) {
 # Plot the overlapping distributions using density
 # dat: A list of data frame where each data frame has the x coordinate as the variable 1 and y coordinate as the variable 2
 # vline: Vertical line in the graph
-# caption: The name of each density line 
+# caption: The name of each density line
 # ...: Additional argument of the plot function
 plotOverlapDensity <- function(dat, vline = NULL, caption = NULL, ...) {
   if (!is.list(dat)) {

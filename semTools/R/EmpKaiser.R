@@ -1,5 +1,5 @@
 ### Ylenio Longo
-### Last updated: 2 April 2017
+### Last updated: 9 March 2018
 
 #' Empirical Kaiser criterion
 #'
@@ -16,7 +16,7 @@
 #'
 #'
 #' @importFrom stats cov cov2cor
-#' 
+#'
 #' @param data A \code{data.frame} or data \code{matrix} containing columns of
 #' variables to be factor-analyzed.
 #' @param sample.cov A covariance or correlation matrix can be used, instead of
@@ -48,8 +48,8 @@
 #'
 #' Terrence D. Jorgensen (University of Amsterdam;
 #' \email{TJorgensen314@@gmail.com})
-#' @references Braeken, J., & van Assen, M. A. (in press). An empirical Kaiser
-#' criterion. \emph{Psychological Methods}. doi:10.1037/met0000074
+#' @references Braeken, J., & van Assen, M. A. L. M. (in press). An empirical Kaiser
+#' criterion. \emph{Psychological Methods, 22}(3), 450--466. doi:10.1037/met0000074
 #' @examples
 #'
 #' ## Simulate data with 3 factors

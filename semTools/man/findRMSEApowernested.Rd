@@ -32,7 +32,7 @@ alternative pair of RMSEA is just over the specified power.
 }
 \examples{
 
-findRMSEApowernested(rmsea0A = 0.06, rmsea0B = 0.05, rmsea1A = 0.08, 
+findRMSEApowernested(rmsea0A = 0.06, rmsea0B = 0.05, rmsea1A = 0.08,
                      rmsea1B = 0.05, dfA = 22, dfB = 20, n = 200,
                      alpha = 0.05, group = 1)
 
@@ -40,15 +40,15 @@ findRMSEApowernested(rmsea0A = 0.06, rmsea0B = 0.05, rmsea1A = 0.08,
 \references{
 MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 differences between nested covariance structure models: Power analysis and
-null hypotheses. \emph{Psychological Methods, 11}(1), 19-35.
+null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
 doi:10.1037/1082-989X.11.1.19
 }
 \seealso{
 \itemize{
  \item \code{\link{plotRMSEApowernested}} to plot the statistical power for
-  nested model comparison based on population RMSEA given the sample size 
+  nested model comparison based on population RMSEA given the sample size
  \item \code{\link{findRMSEAsamplesizenested}} to find the minium sample
-  size for a given statistical power in nested model comparison based on 
+  size for a given statistical power in nested model comparison based on
   population RMSEA
 }
 }

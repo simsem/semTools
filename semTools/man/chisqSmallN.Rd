@@ -57,7 +57,7 @@ chisqSmallN(fit1, fit0)
 \references{
 Nevitt, J., & Hancock, G. R. (2004). Evaluating small sample
 approaches for model test statistics in structural equation modeling.
-\emph{Multivariate Behavioral Research, 39}(3), 439-478.
+\emph{Multivariate Behavioral Research, 39}(3), 439--478.
 doi:10.1207/S15327906MBR3903_3
 }
 \author{

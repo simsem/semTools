@@ -52,25 +52,25 @@ plotRMSEApower(rmsea0 = .025, rmseaA = .075, df = 23,
 \references{
 MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 differences between nested covariance structure models: Power analysis and
-null hypotheses. \emph{Psychological Methods, 11}(1), 19-35.
+null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
 doi:10.1037/1082-989X.11.1.19
 
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 and determination of sample size for covariance structure modeling.
-\emph{Psychological Methods, 1}(2), 130-149. doi:10.1037/1082-989X.1.2.130
+\emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
 
 MacCallum, R. C., Lee, T., & Browne, M. W. (2010). The issue of isopower in
 power analysis for tests of structural equation models. \emph{Structural
-Equation Modeling, 17}(1), 23-41. doi:10.1080/10705510903438906
+Equation Modeling, 17}(1), 23--41. doi:10.1080/10705510903438906
 
 Preacher, K. J., Cai, L., & MacCallum, R. C. (2007). Alternatives to
 traditional model comparison strategies for covariance structure models. In
 T. D. Little, J. A. Bovaird, & N. A. Card (Eds.), \emph{Modeling contextual
-effects in longitudinal studies} (pp. 33-62). Mahwah, NJ: Lawrence Erlbaum
+effects in longitudinal studies} (pp. 33--62). Mahwah, NJ: Lawrence Erlbaum
 Associates.
 
 Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit
-index. \emph{Structural Equation Modeling, 5}(4), 411-419. 
+index. \emph{Structural Equation Modeling, 5}(4), 411--419.
 doi:10.1080/10705519809540115
 
 Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests
@@ -78,16 +78,16 @@ for the number of factors.} Paper presented at the annual meeting of the
 Psychometric Society, Iowa City, IA.
 }
 \seealso{
-\itemize{ 
+\itemize{
 \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
 \item \code{\link{findRMSEApower}} to find the statistical power based on
   population RMSEA given a sample size
-\item \code{\link{findRMSEAsamplesize}} to find the minium sample size for 
+\item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
   a given statistical power based on population RMSEA
 }
 }
 \author{
-Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu}) 
+Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 
 Kristopher J. Preacher (Vanderbilt University; \email{kris.preacher@vanderbilt.edu})
 

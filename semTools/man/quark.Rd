@@ -39,11 +39,11 @@ return a list with 7 components.
  \item{ID Columns}{Is a vector of the identifier columns entered when
   running quark.}
  \item{ID Variables}{Is a subset of the dataset that contains the identifiers
-  as acknowledged when running quark.} 
+  as acknowledged when running quark.}
  \item{Used Data}{Is a matrix / dataframe of the data provided by user as
   the basis for quark to process.}
  \item{Imputed Data}{Is a matrix / dataframe of the data after the multiple
-  method imputation process.} 
+  method imputation process.}
  \item{Big Matrix}{Is the expanded product and polynomial matrix.}
  \item{Principal Components}{Is the entire dataframe of principal components
   for the dataset.  This dataset will have the same number of rows of the big
@@ -97,7 +97,7 @@ quark.list <- quark(data = dat, id = c(1, 2), order = 2)
 \references{
 Howard, W. J., Rhemtulla, M., & Little, T. D. (2015). Using
 Principal Components as Auxiliary Variables in Missing Data Estimation.
-\emph{Multivariate Behavioral Research, 50}(3), 285-299.
+\emph{Multivariate Behavioral Research, 50}(3), 285--299.
 doi:10.1080/00273171.2014.999267
 }
 \seealso{

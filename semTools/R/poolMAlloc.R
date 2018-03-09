@@ -3,12 +3,12 @@
 ### - based on research from/with Sonya Sterba
 ### - adapted from parcelAllocation() by Corbin Quick and Alexander Schoemann
 ### - additional "indices" argument added by Terrence D. Jorgensen
-### Last updated: 5 April 2017
+### Last updated: 9 March 2018
 
 
 #' Pooled estimates and standard errors across M parcel-allocations: Combining
 #' sampling variability and parcel-allocation variability.
-#' 
+#'
 #' This function employs an iterative algorithm to pick the number of random
 #' item-to-parcel allocations needed to meet user-defined stability criteria
 #' for a fitted structural equation model (SEM) (see "Details" below for more
@@ -23,7 +23,7 @@
 #' iteration, and then assesses whether stopping criteria are met. If stopping
 #' criteria are not met, the algorithm increments the number of allocations
 #' used (generating all new allocations).
-#' 
+#'
 #' This is a modified version of \code{\link{parcelAllocation}}. It implements
 #' a new algorithm for choosing the number of allocations (\emph{M}),
 #' (described in Sterba & Rights (2016)), newly pools parameter estimate and
@@ -36,17 +36,17 @@
 #' estimates and pooled standard errors fulfill stopping criteria
 #' (\code{stopProp} and \code{stopValue}, defined above). Results from the
 #' model that was fit to the \emph{M} allocations are outputted.
-#' 
+#'
 #' Additionally, this function newly outputs the proportion of allocations with
 #' solutions that converged (using a maximum likelihood estimator) as well as
 #' the proportion of allocations with solutions that were converged and proper.
 #' The converged and proper solutions among the final \emph{M} allocations are
 #' used in computing pooled results. The original parcelAllocation function
 #' could not be employed if any allocations yielded nonconverged solutions.
-#' 
+#'
 #' For further details on the benefits of the random allocation of items to
 #' parcels, see Sterba (2011) and Sterba & MacCallum (2010).
-#' 
+#'
 #' Additionally, after each iteration of the algorithm, information useful in
 #' monitoring the algorithm is outputted. The number of allocations used at
 #' that iteration, the proportion of pooled parameter estimates meeting
@@ -54,10 +54,10 @@
 #' standard errors meeting stopping criteria at the previous iteration, and the
 #' runtime of that iteration are outputted. When stopping criteria are
 #' satisfied, the full set of results are outputted.
-#' 
+#'
 #' @importFrom stats sd pnorm pt qt runif pchisq
 #' @importFrom lavaan lavInspect
-#' 
+#'
 #' @param nPerPar A list in which each element is a vector, corresponding to
 #' each factor, indicating sizes of parcels. If variables are left out of
 #' parceling, they should not be accounted for here (i.e., there should not be
@@ -137,20 +137,20 @@
 #' estimates and standard errors from 10 iterations post-convergence.
 #' @param \dots Additional arguments to be passed to
 #' \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
-#' @return 
+#' @return
 #' \item{Estimates}{A table containing pooled results across \emph{M}
 #' allocations at the iteration where stopping criteria were met. Columns
 #' correspond to individual parameter name, pooled estimate, pooled standard
 #' error, \emph{p}-value for a \emph{z}-test of the parameter, \emph{z}-based
 #' 95\% confidence interval, \emph{p}-value for a \emph{t}-test of the
 #' parameter (using degrees of freedom described in Sterba & Rights, 2016), and
-#' \emph{t}-based 95\% confidence interval for the parameter.} 
+#' \emph{t}-based 95\% confidence interval for the parameter.}
 #' \item{Fit}{A table containing results related to model fit from the \emph{M}
-#' allocations at the iteration where stopping criteria were met. Columns 
-#' correspond to fit index names, the average of each index across allocations, 
-#' the standard deviation of each fit index across allocations, the maximum of 
-#' each fit index across allocations, the minimum of each fit index across 
-#' allocations, the range of each fit index across allocations, and the percent 
+#' allocations at the iteration where stopping criteria were met. Columns
+#' correspond to fit index names, the average of each index across allocations,
+#' the standard deviation of each fit index across allocations, the maximum of
+#' each fit index across allocations, the minimum of each fit index across
+#' allocations, the range of each fit index across allocations, and the percent
 #' of the \emph{M} allocations where the chi-square test of absolute fit was
 #' significant.}
 #' \item{Proportion of converged and proper allocations}{A table
@@ -158,48 +158,48 @@
 #' (using a maximum likelihood estimator) and the proportion of allocations
 #' that converged to proper solutions. Note that pooled estimates, pooled
 #' standard errors, and other results are computed using only the converged,
-#' proper allocations.} 
-#' \item{Allocations needed for stability (M)}{The number of allocations 
-#' (\emph{M}) at which the algorithm's stopping criteria (defined above) were 
-#' met.} 
-#' \item{Indices used to quantify uncertainty in estimates due to sample vs. 
-#' allocation variability}{A table containing individual parameter names, an 
-#' estimate of the proportion of total variance of a pooled parameter estimate 
+#' proper allocations.}
+#' \item{Allocations needed for stability (M)}{The number of allocations
+#' (\emph{M}) at which the algorithm's stopping criteria (defined above) were
+#' met.}
+#' \item{Indices used to quantify uncertainty in estimates due to sample vs.
+#' allocation variability}{A table containing individual parameter names, an
+#' estimate of the proportion of total variance of a pooled parameter estimate
 #' that is attributable to parcel-allocation variability (PPAV), and an estimate
-#' of the ratio of the between-allocation variance of a pooled parameter 
+#' of the ratio of the between-allocation variance of a pooled parameter
 #' estimate to the within-allocation variance (RPAV). See Sterba & Rights (2016)
-#' for more detail.} 
+#' for more detail.}
 #' \item{Total runtime (minutes)}{The total runtime of the function, in minutes.
 #' Note that the total runtime will be greater when the the specified model
 #'  encountersconvergence problems for some allocations, as is the case with the
 #' \code{\link{simParcel}} dataset used below.}
 #' @author
 #' Jason D. Rights (Vanderbilt University; \email{jason.d.rights@@vanderbilt.edu})
-#' 
+#'
 #' The author would also like to credit Corbin Quick and Alexander Schoemann
 #' for providing the original parcelAllocation function on which this function
 #' is based.
 #' @seealso \code{\link{parcelAllocation}}, \code{\link{PAVranking}}
 #' @references Sterba, S. K. (2011). Implications of parcel-allocation
 #' variability for comparing fit of item-solutions and parcel-solutions.
-#' \emph{Structural Equation Modeling, 18}(4), 554-577.
+#' \emph{Structural Equation Modeling, 18}(4), 554--577.
 #' doi:10.1080/10705511.2011.607073
-#' 
+#'
 #' Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates
 #' and model fit across random allocations of items to parcels.
-#' \emph{Multivariate Behavioral Research, 45}(2), 322-358.
+#' \emph{Multivariate Behavioral Research, 45}(2), 322--358.
 #' doi:10.1080/00273171003680302
-#' 
+#'
 #' Sterba, S. K., & Rights, J. D. (2016). Accounting for parcel-allocation
 #' variability in practice: Combining sources of uncertainty and choosing the
-#' number of allocations. \emph{Multivariate Behavioral Research, 51}(2-3),
-#' 296-313. doi:10.1080/00273171.2016.1144502
+#' number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
+#' 296--313. doi:10.1080/00273171.2016.1144502
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' ## lavaan syntax: A 2 Correlated
 #' ## factor CFA model to be fit to parceled data
-#' 
+#'
 #' parmodel <- '
 #'    f1 =~ NA*p1f1 + p2f1 + p3f1
 #'    f2 =~ NA*p1f2 + p2f2 + p3f2
@@ -219,11 +219,11 @@
 #'    f2 ~~ 1*f2
 #'    f1 ~~ f2
 #' '
-#' 
+#'
 #' ## specify items for each factor
 #' f1name <- colnames(simParcel)[1:9]
 #' f2name <- colnames(simParcel)[10:18]
-#' 
+#'
 #' ## run function
 #' poolMAlloc(nPerPar = list(c(3,3,3), c(3,3,3)),
 #'            facPlc = list(f1name, f2name), nAllocStart = 10, AllocAdd = 10,
@@ -232,7 +232,7 @@
 #'            names = list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"),
 #'            double = FALSE, useTotalAlloc = FALSE)
 #' }
-#' 
+#'
 #' @export
 poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
                        parceloutput = NULL, syntax, dataset, stopProp, stopValue,

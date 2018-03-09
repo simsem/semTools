@@ -62,9 +62,10 @@ htmt(HS.model, dat)
 Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new
 criterion for assessing discriminant validity in variance-based structural
 equation modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
-115-135. doi:10.1007/s11747-014-0403-8
+115--135. doi:10.1007/s11747-014-0403-8
 }
 \author{
-Ylenio Longo (University of Nottingham;
-\email{yleniolongo@gmail.com})
+Ylenio Longo (University of Nottingham; \email{yleniolongo@gmail.com})
+
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

@@ -40,7 +40,7 @@ Plot power of nested model RMSEA over a range of possible sample sizes.
 
 plotRMSEApowernested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06,
                      rmsea1B = 0.05, dfA = 22, dfB = 20, nlow = 50,
-                     nhigh = 500, steps = 1, alpha = .05, group = 1)  
+                     nhigh = 500, steps = 1, alpha = .05, group = 1)
 
 }
 \references{
@@ -52,7 +52,7 @@ doi:10.1037/1082-989X.11.1.19
 \seealso{
 \itemize{
  \item \code{\link{findRMSEApowernested}} to find the power for a given
-  sample size in nested model comparison based on population RMSEA 
+  sample size in nested model comparison based on population RMSEA
  \item \code{\link{findRMSEAsamplesizenested}} to find the minium sample
   size for a given statistical power in nested model comparison based on
   population RMSEA

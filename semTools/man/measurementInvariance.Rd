@@ -86,7 +86,7 @@ measurementInvariance(HW.model, data = HolzingerSwineford1939,
 Vandenberg, R. J., and Lance, C. E. (2000). A review and
 synthesis of the measurement invariance literature: Suggestions, practices,
 and recommendations for organizational research. \emph{Organizational
-Research Methods, 3,} 4-70.
+Research Methods, 3,} 4--70.
 }
 \seealso{
 \code{\link{longInvariance}} for the measurement invariance test

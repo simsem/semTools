@@ -1,9 +1,9 @@
 ### Corbin Quick
-### Last updated 3 April 2017
+### Last updated 9 March 2018
 ### deprecated because it is based on an old template for lavaan's parTable
 
 
-#' DEPRECATED: Translate LISREL syntax to lavaan \code{\link[lavaan]{model.syntax}}
+#' Translate LISREL syntax to lavaan \code{\link[lavaan]{model.syntax}}
 #'
 #' \bold{This function is deprecated} because it is based on an old template
 #'  for lavaan's parameter table, which is expected to differ more as
@@ -109,11 +109,25 @@
 #' 	## lavaan fit object returned silently
 #' }
 #'
-#' @rdname package-deprecated
+#' @name lisrel2lavaan-deprecated
+#' @usage lisrel2lavaan(filename = NULL, analyze = TRUE, silent = FALSE, ...)
+#' @seealso \code{\link{semTools-deprecated}}
+#' @keywords internal
+NULL
+
+
+
+#' @rdname semTools-deprecated
+#' @section \code{lisrel2lavaan}:
+#' The \code{lisrel2lavaan} function will no longer be supported, nor will
+#' there be a replacement function.
+#'
 #' @export
 lisrel2lavaan <- function(filename = NULL, analyze = TRUE, silent = FALSE, ...) {
-  message("The lisrel2lavaan function is deprecated, and it will cease to be",
-          " included in future versions of semTools.")
+  .Deprecated(msg = c("The lisrel2lavaan function is deprecated, and it will",
+                      " cease to be included in future versions of semTools.",
+                      " There is no guarantee lisrel2lavaan will work with",
+                      " the current version of lavaan."))
   ## if filename == null, prompt user with file browser
 
   if (is.null(filename)) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/residualCovariate.R
 \name{residualCovariate}
 \alias{residualCovariate}
-\title{Residual centered all target indicators by covariates}
+\title{Residual-center all target indicators by covariates}
 \usage{
 residualCovariate(data, targetVar, covVar)
 }
@@ -33,7 +33,7 @@ dat <- residualCovariate(attitude, 2:7, 1)
 Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., &
 Little, T. D. (2013). Orthogonalizing through residual centering:
 Extended applications and caveats. \emph{Educational and Psychological
-Measurement, 73}(1), 27-46. doi:10.1177/0013164412445473
+Measurement, 73}(1), 27--46. doi:10.1177/0013164412445473
 }
 \seealso{
 \code{\link{indProd}} For creating the indicator products with no

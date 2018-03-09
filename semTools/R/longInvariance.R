@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Yves Rosseel
-### Last updated: 3 April 2017
+### Last updated: 9 March 2018
 
 #' Measurement Invariance Tests Within Person
 #'
@@ -92,7 +92,7 @@
 #' @references Vandenberg, R. J., and Lance, C. E. (2000). A review and
 #' synthesis of the measurement invariance literature: Suggestions, practices,
 #' and recommendations for organizational research. \emph{Organizational
-#' Research Methods, 3}(1), 4-70. doi:10.1177/109442810031002
+#' Research Methods, 3}(1), 4--70. doi:10.1177/109442810031002
 #' @examples
 #'
 #' model <- ' f1t1 =~ y1t1 + y2t1 + y3t1

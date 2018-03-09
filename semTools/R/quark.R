@@ -1,15 +1,15 @@
 ### Steven R. Chesnut, Danny Squire, Terrence D. Jorgensen
-### Last updated: 4 April 2017
+### Last updated: 9 March 2018
 
 
 
 #' Quark
-#' 
+#'
 #' The \code{quark} function provides researchers with the ability to calculate
 #' and include component scores calculated by taking into account the variance
 #' in the original dataset and all of the interaction and polynomial effects of
 #' the data in the dataset.
-#' 
+#'
 #' The \code{quark} function calculates these component scores by first filling
 #' in the data via means of multiple imputation methods and then expanding the
 #' dataset by aggregating the non-overlapping interaction effects between
@@ -27,7 +27,7 @@
 #' extract and retain. The function returns the dataset as submitted (with
 #' missing values) and the component scores as requested for a more accurate
 #' multiple imputation in subsequent steps.
-#' 
+#'
 #' @param data The data frame is a required component for \code{quark}.  In
 #' order for \code{quark} to process a data frame, it must not contain any
 #' factors or text-based variables.  All variables must be in numeric format.
@@ -54,11 +54,11 @@
 #'  \item{ID Columns}{Is a vector of the identifier columns entered when
 #'   running quark.}
 #'  \item{ID Variables}{Is a subset of the dataset that contains the identifiers
-#'   as acknowledged when running quark.} 
+#'   as acknowledged when running quark.}
 #'  \item{Used Data}{Is a matrix / dataframe of the data provided by user as
 #'   the basis for quark to process.}
 #'  \item{Imputed Data}{Is a matrix / dataframe of the data after the multiple
-#'   method imputation process.} 
+#'   method imputation process.}
 #'  \item{Big Matrix}{Is the expanded product and polynomial matrix.}
 #'  \item{Principal Components}{Is the entire dataframe of principal components
 #'   for the dataset.  This dataset will have the same number of rows of the big
@@ -68,33 +68,33 @@
 #'   explained with each column of principal components.}
 #' @author Steven R. Chesnut (University of Southern Mississippi;
 #' \email{Steven.Chesnut@@usm.edu})
-#' 
+#'
 #' Danny Squire (Texas Tech University)
-#' 
+#'
 #' Terrence D. Jorgensen (University of Amsterdam)
-#' 
+#'
 #' The PCA code is copied and modified from the \code{FactoMineR} package.
 #' @seealso \code{\link{combinequark}}
 #' @references Howard, W. J., Rhemtulla, M., & Little, T. D. (2015). Using
 #' Principal Components as Auxiliary Variables in Missing Data Estimation.
-#' \emph{Multivariate Behavioral Research, 50}(3), 285-299.
+#' \emph{Multivariate Behavioral Research, 50}(3), 285--299.
 #' doi:10.1080/00273171.2014.999267
 #' @examples
-#' 
+#'
 #' set.seed(123321)
-#' 
+#'
 #' dat <- HolzingerSwineford1939[,7:15]
 #' misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
 #' dat[misspat] <- NA
 #' dat <- cbind(HolzingerSwineford1939[,1:3], dat)
-#' 
+#'
 #' quark.list <- quark(data = dat, id = c(1, 2))
-#' 
+#'
 #' final.data <- combinequark(quark = quark.list, percent = 80)
-#' 
+#'
 #' ## Example to rerun quark after imputation failure:
 #' quark.list <- quark(data = dat, id = c(1, 2), order = 2)
-#' 
+#'
 #' @export
 quark <- function(data, id, order = 1, silent = FALSE, ...){
   if(!is.data.frame(data) && !is.matrix(data)) {
@@ -127,13 +127,13 @@ quark <- function(data, id, order = 1, silent = FALSE, ...){
 
 
 #' Combine the results from the quark function
-#' 
+#'
 #' This function builds upon the \code{\link{quark}} function to provide a
 #' final dataset comprised of the original dataset provided to
 #' \code{\link{quark}} and enough principal components to be able to account
 #' for a certain level of variance in the data.
-#' 
-#' 
+#'
+#'
 #' @param quark Provide the \code{\link{quark}} object that was returned.  It
 #' should be a list of objects.  Make sure to include it in its entirety.
 #' @param percent Provide a percentage of variance that you would like to have
@@ -147,23 +147,23 @@ quark <- function(data, id, order = 1, silent = FALSE, ...){
 #' \email{Steven.Chesnut@@usm.edu})
 #' @seealso \code{\link{quark}}
 #' @examples
-#' 
+#'
 #' set.seed(123321)
 #' dat <- HolzingerSwineford1939[,7:15]
 #' misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
 #' dat[misspat] <- NA
 #' dat <- cbind(HolzingerSwineford1939[,1:3], dat)
-#' 
+#'
 #' quark.list <- quark(data = dat, id = c(1, 2))
-#' 
+#'
 #' final.data <- combinequark(quark = quark.list, percent = 80)
-#' 
+#'
 #' @export
 combinequark <- function(quark, percent) {
   data <- cbind(quark$ID_Vars, quark$Used_Data)
   pct <- quark$Prin_Components_Prcnt
   comp <- quark$Prin_Components
-  
+
   for (i in 1:length(pct)) {
     if(pct[i] >= percent) {
       num <- i

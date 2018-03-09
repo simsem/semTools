@@ -1,7 +1,7 @@
 ### Terrence D. Jorgensen
-### Last updated: 11 April 2017
-### runMI creates lavaan.mi instead of lavaanStar,
-### extending lavaanList class instead of lavaan class
+### Last updated: 9 March 2018
+### runMI creates lavaan.mi instead of lavaanStar, and
+### extends lavaanList class instead of lavaan class
 
 
 
@@ -141,11 +141,11 @@
 #'
 #' Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
 #' Significance levels from repeated p-values with multiply-imputed data.
-#' \emph{Statistica Sinica, 1}(1), 65-92. Retrieved from
+#' \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
 #' \url{http://www.jstor.org/stable/24303994}
 #'
 #' Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-#' multiply-imputed data sets. \emph{Biometrika, 79}(1), 103-111. Retrieved
+#' multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111. Retrieved
 #' from \url{http://www.jstor.org/stable/2337151}
 #'
 #' Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.

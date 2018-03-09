@@ -279,7 +279,7 @@ partialInvarianceCat(modelsCat2, type = "scalar")
 \references{
 Millsap, R. E., & Olivera-Aguilar, M. (2012). Investigating
 measurement invariance using confirmatory factor analysis. In R. H. Hoyle
-(Ed.), \emph{Handbook of structural equation modeling} (pp. 380-392). New
+(Ed.), \emph{Handbook of structural equation modeling} (pp. 380--392). New
 York, NY: Guilford.
 }
 \seealso{

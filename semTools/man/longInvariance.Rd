@@ -135,7 +135,7 @@ longInvariance(model, auto = 1, constrainAuto = TRUE,
 Vandenberg, R. J., and Lance, C. E. (2000). A review and
 synthesis of the measurement invariance literature: Suggestions, practices,
 and recommendations for organizational research. \emph{Organizational
-Research Methods, 3}(1), 4-70. doi:10.1177/109442810031002
+Research Methods, 3}(1), 4--70. doi:10.1177/109442810031002
 }
 \seealso{
 \code{\link{measurementinvariance}} For the measurement invariance

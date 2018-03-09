@@ -1,5 +1,5 @@
 ### Corbin Quick, Alex Schoemann, James Selig, Terrence D. Jorgnensen
-### Last updated: 8 March 2018
+### Last updated: 9 March 2018
 
 # FIXME: work out a path-analysis example like slide 25:
 # http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
@@ -82,7 +82,7 @@
 #' @references
 #' MacKinnon, D. P., Lockwood, C. M., & Williams, J. (2004). Confidence limits
 #' for the indirect effect: Distribution of the product and resampling methods.
-#' \emph{Multivariate Behavioral Research, 39}(1) 99–128.
+#' \emph{Multivariate Behavioral Research, 39}(1) 99–-128.
 #' doi:10.1207/s15327906mbr3901_4
 #'
 #' Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method
@@ -92,7 +92,7 @@
 #'
 #' Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
 #' intervals for indirect effects. \emph{Communication Methods and Measures,
-#' 6}(2), 77-98. doi:10.1080/19312458.2012.679848
+#' 6}(2), 77--98. doi:10.1080/19312458.2012.679848
 #'
 #' Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 #' assessing mediation: An interactive tool for creating confidence intervals

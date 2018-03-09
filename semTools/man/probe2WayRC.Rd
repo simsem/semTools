@@ -66,7 +66,7 @@ covariance matrix among parameter estimates) has been computed. See the
 }
 \examples{
 
-library(lavaan) 
+library(lavaan)
 
 dat2wayRC <- orthogonalize(dat2way, 1:3, 4:6)
 
@@ -100,22 +100,23 @@ result2wayRC
 \references{
 Lance, C. E. (1988). Residual centering, exploratory and confirmatory
 moderator analysis, and decomposition of effects in path models containing
-interactions. \emph{Applied Psychological Measurement, 12}(2), 163-175.
+interactions. \emph{Applied Psychological Measurement, 12}(2), 163--175.
 doi:10.1177/014662168801200205
 
 Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 orthogonalizing powered and product terms: Implications for modeling
-interactions. \emph{Structural Equation Modeling, 13}(4), 497-519.
+interactions. \emph{Structural Equation Modeling, 13}(4), 497--519.
 doi:10.1207/s15328007sem1304_1
 
 Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 latent interactions: Evaluation of alternative estimation strategies and
-indicator construction. \emph{Psychological Methods, 9}(3), 275-300.
+indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
 doi:10.1037/1082-989X.9.3.275
 
-Pornprasertmanit, S., Schoemann, A. M., Geldhof, G. J., & Little, T. D.
-(submitted). \emph{Probing latent interaction estimated with a residual
-centering approach.}
+Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., & Little, T. D.
+(2013). Orthogonalizing through residual centering: Extended applications
+and caveats \emph{Educational and Psychological Measurement, 73}(1), 27--46.
+doi:10.1177/0013164412445473
 }
 \seealso{
 \itemize{

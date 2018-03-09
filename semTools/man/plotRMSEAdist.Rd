@@ -52,23 +52,23 @@ plotRMSEAdist(c(.05, .01), n = 200, df = 20, ptile = .05, rmseaScale = FALSE)
 \references{
 Dudgeon, P. (2004). A note on extending Steiger's (1998)
 multiple sample RMSEA adjustment to other noncentrality parameter-based
-statistic. \emph{Structural Equation Modeling, 11}(3), 305-319.
+statistic. \emph{Structural Equation Modeling, 11}(3), 305--319.
 doi:10.1207/s15328007sem1103_1
 
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 and determination of sample size for covariance structure modeling.
-\emph{Psychological Methods, 1}(2), 130-149. doi:10.1037/1082-989X.1.2.130
+\emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
 
 Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit
-index. \emph{Structural Equation Modeling, 5}(4), 411-419. 
+index. \emph{Structural Equation Modeling, 5}(4), 411--419.
 doi:10.1080/10705519809540115
 }
 \seealso{
 \itemize{
- \item \code{\link{plotRMSEApower}} to plot the statistical power 
+ \item \code{\link{plotRMSEApower}} to plot the statistical power
    based on population RMSEA given the sample size
  \item \code{\link{findRMSEApower}} to find the statistical power based on
-   population RMSEA given a sample size 
+   population RMSEA given a sample size
  \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
   a given statistical power based on population RMSEA
 }

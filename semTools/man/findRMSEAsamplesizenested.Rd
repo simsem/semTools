@@ -32,9 +32,9 @@ alternative pair of RMSEA is just over the specified power.
 }
 \examples{
 
-findRMSEAsamplesizenested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06, 
+findRMSEAsamplesizenested(rmsea0A = 0, rmsea0B = 0, rmsea1A = 0.06,
                           rmsea1B = 0.05, dfA = 22, dfB = 20, power = 0.80,
-                          alpha = .05, group = 1) 
+                          alpha = .05, group = 1)
 
 }
 \references{

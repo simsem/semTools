@@ -62,25 +62,25 @@ parameter estimate across allocations, the maximum parameter estimate across
 allocations, the minimum parameter estimate across allocations, the range of
 parameter estimates across allocations, and the percent of allocations in
 which the parameter estimate is significant.}
-\item{SE_A, SE_B}{A table containing results related to standard errors (in 
-table SE_A for Model A and in table SE_B for Model B) with columns 
-corresponding to parameter name, average standard error across allocations, 
-the standard deviation of standard errors across allocations, the maximum 
-standard error across allocations, the minimum standard error across 
-allocations, and the range of standard errors across allocations.} 
-\item{Fit_A, Fit_B}{A table containing results related to model fit (in 
-table Fit_A for Model A and in table Fit_B for Model B) with columns 
-corresponding to fit index name, the average of the fit index across 
-allocations, the standard deviation of the fit index across allocations, 
-the maximum of the fit index across allocations, the minimum of the fit 
-index across allocations, the range of the fit index across allocations, and 
-the percent of allocations where the chi-square test of absolute fit was 
-significant.} 
-\item{LRT Summary, Model A vs. Model B}{A table with columns corresponding 
-to: average likelihood ratio test (LRT) statistic for comparing Model A vs. 
-Model B (null hypothesis is no difference in fit between Models A and B in 
-the population), degrees of freedom (i.e. difference in the number of free 
-parameters between Models A and B), as well as the standard deviation, 
+\item{SE_A, SE_B}{A table containing results related to standard errors (in
+table SE_A for Model A and in table SE_B for Model B) with columns
+corresponding to parameter name, average standard error across allocations,
+the standard deviation of standard errors across allocations, the maximum
+standard error across allocations, the minimum standard error across
+allocations, and the range of standard errors across allocations.}
+\item{Fit_A, Fit_B}{A table containing results related to model fit (in
+table Fit_A for Model A and in table Fit_B for Model B) with columns
+corresponding to fit index name, the average of the fit index across
+allocations, the standard deviation of the fit index across allocations,
+the maximum of the fit index across allocations, the minimum of the fit
+index across allocations, the range of the fit index across allocations, and
+the percent of allocations where the chi-square test of absolute fit was
+significant.}
+\item{LRT Summary, Model A vs. Model B}{A table with columns corresponding
+to: average likelihood ratio test (LRT) statistic for comparing Model A vs.
+Model B (null hypothesis is no difference in fit between Models A and B in
+the population), degrees of freedom (i.e. difference in the number of free
+parameters between Models A and B), as well as the standard deviation,
 maximum, and minimum of LRT statistics across allocations, and the percent of
 allocations where the LRT was significant (indicating preference for the more
 complex Model B). }
@@ -92,23 +92,23 @@ parameters between Models A and B), as well as the standard deviation,
 maximum, and minimum of LRT statistics across allocations, and the percent
 of allocations where the LRT was significant (indicating preference for the
 more complex Model B). }
-\item{Fit index differences}{A table containing percentage of allocations 
-where Model A is preferred over Model B according to BIC, AIC, RMSEA, CFI, 
-TLI and SRMR and where Model B is preferred over Model A according to the 
-same indices. Also includes the average amount by which the given model is 
-preferred (calculated only using allocations where it was preferred).} 
+\item{Fit index differences}{A table containing percentage of allocations
+where Model A is preferred over Model B according to BIC, AIC, RMSEA, CFI,
+TLI and SRMR and where Model B is preferred over Model A according to the
+same indices. Also includes the average amount by which the given model is
+preferred (calculated only using allocations where it was preferred).}
 \item{Fit index difference histograms}{Histograms are automatically outputted
-showing the distribution of the differences (Model A - Model B) for each fit 
-index and for the p-value of the likelihood ratio difference test.} 
-\item{Percent of Allocations with | BIC Diff | > 10}{A table containing the 
-percentage of allocations with (BIC for Model A) - (BIC for Model B) < -10, 
-indicating "very strong evidence" to prefer Model A over Model B and the 
-percentage of allocations with (BIC for Model A) - (BIC for Model B) > 10, 
-indicating "very strong evidence" to prefer Model B over Model A (Raftery, 
-1995).} 
-\item{Converged and proper}{A table containing the proportion of allocations 
-that converged for Model A, Model B, and both models, and the proportion of 
-allocations with converged and proper solutions for Model A, Model B, and 
+showing the distribution of the differences (Model A - Model B) for each fit
+index and for the p-value of the likelihood ratio difference test.}
+\item{Percent of Allocations with | BIC Diff | > 10}{A table containing the
+percentage of allocations with (BIC for Model A) - (BIC for Model B) < -10,
+indicating "very strong evidence" to prefer Model A over Model B and the
+percentage of allocations with (BIC for Model A) - (BIC for Model B) > 10,
+indicating "very strong evidence" to prefer Model B over Model A (Raftery,
+1995).}
+\item{Converged and proper}{A table containing the proportion of allocations
+that converged for Model A, Model B, and both models, and the proportion of
+allocations with converged and proper solutions for Model A, Model B, and
 both models.}
 }
 \description{
@@ -155,19 +155,19 @@ window and rerun.
 \examples{
 
 \dontrun{
-## lavaan syntax for Model A: a 2 Uncorrelated 
+## lavaan syntax for Model A: a 2 Uncorrelated
 ## factor CFA model to be fit to parceled data
 
 parmodelA <- '
    f1 =~ NA*p1f1 + p2f1 + p3f1
    f2 =~ NA*p1f2 + p2f2 + p3f2
-   p1f1 ~ 1  
+   p1f1 ~ 1
    p2f1 ~ 1
    p3f1 ~ 1
    p1f2 ~ 1
    p2f2 ~ 1
    p3f2 ~ 1
-   p1f1 ~~ p1f1 
+   p1f1 ~~ p1f1
    p2f1 ~~ p2f1
    p3f1 ~~ p3f1
    p1f2 ~~ p1f2
@@ -178,7 +178,7 @@ parmodelA <- '
    f1 ~~ 0*f2
 '
 
-## lavaan syntax for Model B: a 2 Correlated 
+## lavaan syntax for Model B: a 2 Correlated
 ## factor CFA model to be fit to parceled data
 
 parmodelB <- '
@@ -189,8 +189,8 @@ parmodelB <- '
    p3f1 ~ 1
    p1f2 ~ 1
    p2f2 ~ 1
-   p3f2 ~ 1 
-   p1f1 ~~ p1f1 
+   p3f2 ~ 1
+   p1f1 ~~ p1f1
    p2f1 ~~ p2f1
    p3f1 ~~ p3f1
    p1f2 ~~ p1f2
@@ -202,7 +202,7 @@ parmodelB <- '
 '
 
 ## specify items for each factor
-f1name <- colnames(simParcel)[1:9]  
+f1name <- colnames(simParcel)[1:9]
 f2name <- colnames(simParcel)[10:18]
 
 ## run function
@@ -215,21 +215,21 @@ PAVranking(nPerPar = list(c(3,3,3), c(3,3,3)), facPlc = list(f1name,f2name),
 }
 \references{
 Raftery, A. E. (1995). Bayesian model selection in social
-research. \emph{Sociological Methodology, 25}, 111-163. doi:10.2307/271063
+research. \emph{Sociological Methodology, 25}, 111--163. doi:10.2307/271063
 
 Sterba, S. K. (2011). Implications of parcel-allocation variability for
 comparing fit of item-solutions and parcel-solutions. \emph{Structural
-Equation Modeling: A Multidisciplinary Journal, 18}(4), 554-577.
+Equation Modeling: A Multidisciplinary Journal, 18}(4), 554--577.
 doi:10.1080/10705511.2011.607073
 
 Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates
 and model fit across repeated allocations of items to parcels.
-\emph{Multivariate Behavioral Research, 45}(2), 322-358.
+\emph{Multivariate Behavioral Research, 45}(2), 322--358.
 doi:10.1080/00273171003680302
 
 Sterba, S. K., & Rights, J. D. (2017). Effects of parceling on model
 selection: Parcel-allocation variability in model ranking.
-\emph{Psychological Methods, 22}(1), 47-68. doi:10.1037/met0000067
+\emph{Psychological Methods, 22}(1), 47--68. doi:10.1037/met0000067
 }
 \seealso{
 \code{\link{parcelAllocation}}, \code{\link{poolMAlloc}}

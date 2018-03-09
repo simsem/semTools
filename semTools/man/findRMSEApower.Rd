@@ -44,13 +44,13 @@ findRMSEApower(rmsea0 = .05, rmseaA = .08, df = 20, n = 200)
 \references{
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 and determination of sample size for covariance structure modeling.
-\emph{Psychological Methods, 1}(2), 130-149. doi:10.1037/1082-989X.1.2.130
+\emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
 }
 \seealso{
 \itemize{
  \item \code{\link{plotRMSEApower}} to plot the statistical power based on
   population RMSEA given the sample size
- \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions 
+ \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
  \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
   a given statistical power based on population RMSEA
 }

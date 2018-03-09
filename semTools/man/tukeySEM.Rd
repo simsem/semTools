@@ -24,7 +24,7 @@ compared in the omnibus test).}
 }
 \value{
 A vector with three elements:
-\enumerate{ 
+\enumerate{
  \item \code{q}: The \emph{q} statistic
  \item \code{df}: The degrees of freedom for the \emph{q} statistic
  \item \code{p}: A \emph{p} value based on the \emph{q} statistic, \emph{df},

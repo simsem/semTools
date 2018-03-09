@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 5 April 2017
+### Last updated: 9 March 2018
 
 
 #' Partial Measurement Invariance Testing Across Groups
@@ -154,7 +154,7 @@
 #' multivariate Wald test
 #' @references Millsap, R. E., & Olivera-Aguilar, M. (2012). Investigating
 #' measurement invariance using confirmatory factor analysis. In R. H. Hoyle
-#' (Ed.), \emph{Handbook of structural equation modeling} (pp. 380-392). New
+#' (Ed.), \emph{Handbook of structural equation modeling} (pp. 380--392). New
 #' York, NY: Guilford.
 #' @examples
 #'

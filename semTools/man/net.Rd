@@ -63,7 +63,7 @@ summary(tests)
 }
 \references{
 Bentler, P. M., & Satorra, A. (2010). Testing model nesting and
-equivalence. \emph{Psychological Methods, 15}(2), 111-123.
+equivalence. \emph{Psychological Methods, 15}(2), 111--123.
 doi:10.1037/a0019625
 }
 \author{

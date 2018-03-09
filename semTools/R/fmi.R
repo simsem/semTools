@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 2 April 2017
+### Last updated: 9 March 2018
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -21,7 +21,7 @@
 #'
 #'
 #' @importFrom lavaan lavListInspect lavInspect
-#' 
+#'
 #' @param data Either a single \code{data.frame} with incomplete observations,
 #' or a \code{list} of imputed data sets.
 #' @param method character. If \code{"saturated"} or \code{"sat"} (default),
@@ -67,12 +67,12 @@
 #'
 #' Savalei, V. & Rhemtulla, M. (2012). On obtaining estimates of the fraction
 #' of missing information from full information maximum likelihood.
-#' \emph{Structural Equation Modeling, 19}(3), 477-494.
+#' \emph{Structural Equation Modeling, 19}(3), 477--494.
 #' doi:10.1080/10705511.2012.687669
 #'
 #' Wagner, J. (2010). The fraction of missing information as a tool for
 #' monitoring the quality of survey data. \emph{Public Opinion Quarterly,
-#' 74}(2), 223-243. doi:10.1093/poq/nfq007
+#' 74}(2), 223--243. doi:10.1093/poq/nfq007
 #' @examples
 #'
 #' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),

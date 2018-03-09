@@ -5,7 +5,7 @@
 \title{Plot the graphs for probing latent interaction}
 \usage{
 plotProbe(object, xlim, xlab = "Indepedent Variable",
-  ylab = "Dependent Variable", ...)
+  ylab = "Dependent Variable", legend = TRUE, legendArgs = list(), ...)
 }
 \arguments{
 \item{object}{The result of probing latent interaction obtained from
@@ -19,6 +19,11 @@ independent variable}
 
 \item{ylab}{The label of the y-axis}
 
+\item{legend}{\code{logical}. If \code{TRUE} (default), a legend is printed.}
+
+\item{legendArgs}{\code{list} of arguments passed to \code{\link{legend}}
+function if \code{legend=TRUE}.}
+
 \item{\dots}{Any addition argument for the \code{\link{plot}} function}
 }
 \value{
@@ -30,7 +35,7 @@ the independent variable given the values of the moderator.
 }
 \examples{
 
-library(lavaan) 
+library(lavaan)
 
 dat2wayMC <- indProd(dat2way, 1:3, 4:6)
 
@@ -99,7 +104,7 @@ f13 ~ NA*1
 f23 ~ NA*1
 f123 ~ NA*1
 f4 ~ NA*1
-" 
+"
 
 fitMC3way <- sem(model3, data = dat3wayMC, std.lv = FALSE,
                  meanstructure = TRUE)
@@ -125,4 +130,6 @@ plotProbe(result3wayMC, xlim = c(-2, 2))
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

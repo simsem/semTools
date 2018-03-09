@@ -471,40 +471,32 @@ detecting differential item functioning in multiple-group confirmatory
 factor analysis. \emph{Psychological Methods}. doi:10.1037/met0000152
 
 Kite, B. A., Jorgensen, T. D., & Chen, P.-Y. (in press). Random permutation
-tests of nonuniform differential item functioning in multigroup item factor
-analysis. In M. Wiberg, S. Culpepper, R. Janssen, J. González, & D. Molenaar
-(Eds.), \emph{Quantitative psychology: The 82nd annual meeting of the
-psychometric society, Zurich, Switzerland, 2017}.
+testing applied to measurement invariance testing with ordered-categorical
+indicators. \emph{Structural Equation Modeling}.
+doi:10.1080/10705511.2017.1421467
 
 Jorgensen, T. D. (2017). Applying permutation tests and multivariate
 modification indices to configurally invariant models that need
 respecification. \emph{Frontiers in Psychology, 8}(1455).
 doi:10.3389/fpsyg.2017.01455
 
-Jorgensen, T. D., Kite, B., Chen, P.-Y., & Short, S. D. (2017). Finally!
-A valid test of configural invariance using permutation in multigroup CFA.
-In L. A. van der Ark, M. Wiberg, S. A. Culpepper, J. A. Douglas, & W.-C.
-Wang (Eds.), \emph{Quantitative psychology: The 81st annual meeting of the
-psychometric society, Asheville, North Carolina, 2016} (pp. 93–103).
-New York, NY: Springer. doi:10.1007/978-3-319-56294-0_9
-
 \bold{Additional reading:}
 
 Chen, F. F. (2007). Sensitivity of goodness of fit indexes to
 lack of measurement invariance.  \emph{Structural Equation Modeling, 14}(3),
-464-504. doi:10.1080/10705510701301834
+464--504. doi:10.1080/10705510701301834
 
 Cheung, G. W., & Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes
 for testing measurement invariance. \emph{Structural Equation Modeling,
-9}(2), 233-255. doi:10.1207/S15328007SEM0902_5
+9}(2), 233--255. doi:10.1207/S15328007SEM0902_5
 
 Meade, A. W., Johnson, E. C., & Braddy, P. W. (2008). Power and sensitivity
 of alternative fit indices in tests of measurement invariance. \emph{Journal
-of Applied Psychology, 93}(3), 568-592. doi:10.1037/0021-9010.93.3.568
+of Applied Psychology, 93}(3), 568--592. doi:10.1037/0021-9010.93.3.568
 
 Widamin, K. F., & Thompson, J. S. (2003). On specifying the null model for
 incremental fit indices in structural equation modeling. \emph{Psychological
-Methods, 8}(1), 16-37. doi:10.1037/1082-989X.8.1.16
+Methods, 8}(1), 16--37. doi:10.1037/1082-989X.8.1.16
 }
 \seealso{
 \code{\link[stats]{TukeyHSD}}, \code{\link[lavaan]{lavTestScore}},

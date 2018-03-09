@@ -1,5 +1,5 @@
 ### Edgar Merkle
-### Last updated: 3 April 2017
+### Last updated: 9 March 2018
 ### Kaiser-Dickman (1962) algorithm for generating sample data
 ### based on the input covmat, which is a covariance matrix.
 
@@ -16,7 +16,7 @@
 #'
 #'
 #' @importFrom stats cov2cor rnorm
-#' 
+#'
 #' @param covmat a symmetric, positive definite covariance matrix
 #' @param n the sample size for the data that will be generated
 #' @param type type of data generation. \code{exact} generates data that
@@ -27,7 +27,7 @@
 #' @author Ed Merkle (University of Missouri; \email{merklee@@missouri.edu})
 #' @references Kaiser, H. F. and Dickman, K. (1962).  Sample and population
 #' score matrices and sample correlation matrices from an arbitrary population
-#' correlation matrix.  \emph{Psychometrika, 27}(2), 179-182.
+#' correlation matrix.  \emph{Psychometrika, 27}(2), 179--182.
 #' doi:10.1007/BF02289635
 #' @examples
 #'

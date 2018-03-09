@@ -3,7 +3,7 @@
 ##          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ##          Aaron Boulton <aboulton@ku.edu>,
 ##          Ruben Arslan <rubenarslan@gmail.com>
-## Last updated: 2 April 2017
+## Last updated: 9 March 2018
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------
 
@@ -107,16 +107,16 @@
 #' \code{\link{nullRMSEA}} For RMSEA of the null model }
 #'
 #' @references Burnham, K., & Anderson, D. (2003). \emph{Model selection and
-#' multimodel inference: A practical-theoretic approach}. New York, NY:
-#' Springer-Verlag.
+#' multimodel inference: A practical--theoretic approach}. New York, NY:
+#' Springer--Verlag.
 #'
 #' Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample
 #' RMSEA adjustment to other noncentrality parameter-based statistic.
-#' \emph{Structural Equation Modeling, 11}(3), 305-319.
+#' \emph{Structural Equation Modeling, 11}(3), 305--319.
 #' doi:10.1207/s15328007sem1103_1
 #'
 #' Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance.
-#' \emph{Sociological Methods Research, 33}(2), 188-229.
+#' \emph{Sociological Methods Research, 33}(2), 188--229.
 #' doi:10.1177/0049124103262065
 #'
 #' Preacher, K. J. (2006). Quantifying parsimony in structural equation
@@ -125,7 +125,7 @@
 #'
 #' West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection
 #' in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of
-#' Structural Equation Modeling} (pp. 209-231). New York, NY: Guilford.
+#' Structural Equation Modeling} (pp. 209--231). New York, NY: Guilford.
 #' @examples
 #'
 #' HS.model <- ' visual  =~ x1 + x2 + x3
@@ -236,7 +236,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 #' \code{\link{moreFitIndices}} For other fit indices }
 #' @references Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The
 #' performance of RMSEA in models with small degrees of freedom.
-#' \emph{Sociological Methods Research, 44}(3), 486-507.
+#' \emph{Sociological Methods Research, 44}(3), 486--507.
 #' doi:10.1177/0049124114543236
 #' @examples
 #'
@@ -359,7 +359,7 @@ sic <- function(f, lresults = NULL) {
 #' \email{TJorgensen314@@gmail.com})
 #' @references Nevitt, J., & Hancock, G. R. (2004). Evaluating small sample
 #' approaches for model test statistics in structural equation modeling.
-#' \emph{Multivariate Behavioral Research, 39}(3), 439-478.
+#' \emph{Multivariate Behavioral Research, 39}(3), 439--478.
 #' doi:10.1207/S15327906MBR3903_3
 #' @examples
 #'

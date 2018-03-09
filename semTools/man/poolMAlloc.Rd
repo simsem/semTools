@@ -114,13 +114,13 @@ correspond to individual parameter name, pooled estimate, pooled standard
 error, \emph{p}-value for a \emph{z}-test of the parameter, \emph{z}-based
 95\% confidence interval, \emph{p}-value for a \emph{t}-test of the
 parameter (using degrees of freedom described in Sterba & Rights, 2016), and
-\emph{t}-based 95\% confidence interval for the parameter.} 
+\emph{t}-based 95\% confidence interval for the parameter.}
 \item{Fit}{A table containing results related to model fit from the \emph{M}
-allocations at the iteration where stopping criteria were met. Columns 
-correspond to fit index names, the average of each index across allocations, 
-the standard deviation of each fit index across allocations, the maximum of 
-each fit index across allocations, the minimum of each fit index across 
-allocations, the range of each fit index across allocations, and the percent 
+allocations at the iteration where stopping criteria were met. Columns
+correspond to fit index names, the average of each index across allocations,
+the standard deviation of each fit index across allocations, the maximum of
+each fit index across allocations, the minimum of each fit index across
+allocations, the range of each fit index across allocations, and the percent
 of the \emph{M} allocations where the chi-square test of absolute fit was
 significant.}
 \item{Proportion of converged and proper allocations}{A table
@@ -128,17 +128,17 @@ containing the proportion of the final \emph{M} allocations that converged
 (using a maximum likelihood estimator) and the proportion of allocations
 that converged to proper solutions. Note that pooled estimates, pooled
 standard errors, and other results are computed using only the converged,
-proper allocations.} 
-\item{Allocations needed for stability (M)}{The number of allocations 
-(\emph{M}) at which the algorithm's stopping criteria (defined above) were 
-met.} 
-\item{Indices used to quantify uncertainty in estimates due to sample vs. 
-allocation variability}{A table containing individual parameter names, an 
-estimate of the proportion of total variance of a pooled parameter estimate 
+proper allocations.}
+\item{Allocations needed for stability (M)}{The number of allocations
+(\emph{M}) at which the algorithm's stopping criteria (defined above) were
+met.}
+\item{Indices used to quantify uncertainty in estimates due to sample vs.
+allocation variability}{A table containing individual parameter names, an
+estimate of the proportion of total variance of a pooled parameter estimate
 that is attributable to parcel-allocation variability (PPAV), and an estimate
-of the ratio of the between-allocation variance of a pooled parameter 
+of the ratio of the between-allocation variance of a pooled parameter
 estimate to the within-allocation variance (RPAV). See Sterba & Rights (2016)
-for more detail.} 
+for more detail.}
 \item{Total runtime (minutes)}{The total runtime of the function, in minutes.
 Note that the total runtime will be greater when the the specified model
  encountersconvergence problems for some allocations, as is the case with the
@@ -235,18 +235,18 @@ poolMAlloc(nPerPar = list(c(3,3,3), c(3,3,3)),
 \references{
 Sterba, S. K. (2011). Implications of parcel-allocation
 variability for comparing fit of item-solutions and parcel-solutions.
-\emph{Structural Equation Modeling, 18}(4), 554-577.
+\emph{Structural Equation Modeling, 18}(4), 554--577.
 doi:10.1080/10705511.2011.607073
 
 Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates
 and model fit across random allocations of items to parcels.
-\emph{Multivariate Behavioral Research, 45}(2), 322-358.
+\emph{Multivariate Behavioral Research, 45}(2), 322--358.
 doi:10.1080/00273171003680302
 
 Sterba, S. K., & Rights, J. D. (2016). Accounting for parcel-allocation
 variability in practice: Combining sources of uncertainty and choosing the
-number of allocations. \emph{Multivariate Behavioral Research, 51}(2-3),
-296-313. doi:10.1080/00273171.2016.1144502
+number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
+296--313. doi:10.1080/00273171.2016.1144502
 }
 \seealso{
 \code{\link{parcelAllocation}}, \code{\link{PAVranking}}

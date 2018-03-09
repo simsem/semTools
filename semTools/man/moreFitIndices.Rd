@@ -107,16 +107,16 @@ moreFitIndices(fit2)
 }
 \references{
 Burnham, K., & Anderson, D. (2003). \emph{Model selection and
-multimodel inference: A practical-theoretic approach}. New York, NY:
-Springer-Verlag.
+multimodel inference: A practical--theoretic approach}. New York, NY:
+Springer--Verlag.
 
 Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample
 RMSEA adjustment to other noncentrality parameter-based statistic.
-\emph{Structural Equation Modeling, 11}(3), 305-319.
+\emph{Structural Equation Modeling, 11}(3), 305--319.
 doi:10.1207/s15328007sem1103_1
 
 Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance.
-\emph{Sociological Methods Research, 33}(2), 188-229.
+\emph{Sociological Methods Research, 33}(2), 188--229.
 doi:10.1177/0049124103262065
 
 Preacher, K. J. (2006). Quantifying parsimony in structural equation
@@ -125,7 +125,7 @@ doi:10.1207/s15327906mbr4103_1
 
 West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection
 in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of
-Structural Equation Modeling} (pp. 209-231). New York, NY: Guilford.
+Structural Equation Modeling} (pp. 209--231). New York, NY: Guilford.
 }
 \seealso{
 \itemize{ \item \code{\link{miPowerFit}} For the modification
