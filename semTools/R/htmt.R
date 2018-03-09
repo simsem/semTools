@@ -37,12 +37,14 @@
 #' absolute correlations (recommended and default is \code{TRUE})
 #' @return A matrix showing HTMT values (i.e., discriminant validity) between
 #' each pair of factors
-#' @author Ylenio Longo (University of Nottingham;
-#' \email{yleniolongo@@gmail.com})
+#' @author
+#' Ylenio Longo (University of Nottingham; \email{yleniolongo@@gmail.com})
+#'
+#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 #' @references Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new
 #' criterion for assessing discriminant validity in variance-based structural
 #' equation modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
-#' 115-135. doi:10.1007/s11747-014-0403-8
+#' 115--135. doi:10.1007/s11747-014-0403-8
 #' @examples
 #'
 #' HS.model <- ' visual  =~ x1 + x2 + x3

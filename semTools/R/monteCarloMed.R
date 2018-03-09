@@ -78,6 +78,7 @@
 #'
 #' James P. Selig (University of New Mexico; \email{selig@@unm.edu})
 #'
+#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 #' @references
 #' MacKinnon, D. P., Lockwood, C. M., & Williams, J. (2004). Confidence limits
 #' for the indirect effect: Distribution of the product and resampling methods.

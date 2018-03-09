@@ -5,10 +5,10 @@
 
 #' Probing two-way interaction on the no-centered or mean-centered latent
 #' interaction
-#' 
+#'
 #' Probing interaction for simple intercept and simple slope for the
 #' no-centered or mean-centered latent two-way interaction
-#' 
+#'
 #' Before using this function, researchers need to make the products of the
 #' indicators between the first-order factors using mean centering (Marsh, Wen,
 #' & Hau, 2004). Note that the double-mean centering may not be appropriate for
@@ -20,7 +20,7 @@
 #' indicators and the product terms. See the example for how to fit the product
 #' term below. Once the lavaan result is obtained, this function will be used
 #' to probe the interaction.
-#' 
+#'
 #' Let that the latent interaction model regressing the dependent variable
 #' (\eqn{Y}) on the independent varaible (\eqn{X}) and the moderator (\eqn{Z})
 #' be \deqn{ Y = b_0 + b_1X + b_2Z + b_3XZ + r, } where \eqn{b_0} is the
@@ -29,29 +29,29 @@
 #' \eqn{b_2} is the effect of \eqn{Z} when \eqn{X} is 0, \eqn{b_3} is the
 #' interaction effect between \eqn{X} and \eqn{Z}, and \eqn{r} is the residual
 #' term.
-#' 
+#'
 #' For probing two-way interaction, the simple intercept of the independent
 #' variable at each value of the moderator (Aiken & West, 1991; Cohen, Cohen,
 #' West, & Aiken, 2003; Preacher, Curran, & Bauer, 2006) can be obtained by
 #' \deqn{ b_{0|X = 0, Z} = b_0 + b_2Z. }
-#' 
+#'
 #' The simple slope of the independent varaible at each value of the moderator
 #' can be obtained by \deqn{ b_{X|Z} = b_1 + b_3Z. }
-#' 
+#'
 #' The variance of the simple intercept formula is \deqn{ Var\left(b_{0|X = 0,
 #' Z}\right) = Var\left(b_0\right) + 2ZCov\left(b_0, b_2\right) +
 #' Z^2Var\left(b_2\right) } where \eqn{Var} denotes the variance of a parameter
 #' estimate and \eqn{Cov} denotes the covariance of two parameter estimates.
-#' 
+#'
 #' The variance of the simple slope formula is \deqn{ Var\left(b_{X|Z}\right) =
 #' Var\left(b_1\right) + 2ZCov\left(b_1, b_3\right) + Z^2Var\left(b_3\right) }
-#' 
+#'
 #' Wald statistic is used for test statistic.
-#' 
-#' 
+#'
+#'
 #' @importFrom lavaan lavInspect
 #' @importFrom stats pnorm
-#' 
+#'
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' first-order factor will be listed first. The last name must be the name
@@ -91,26 +91,26 @@
 #' @references
 #' Aiken, L. S., & West, S. G. (1991). \emph{Multiple regression: Testing
 #' and interpreting interactions}. Newbury Park, CA: Sage.
-#' 
+#'
 #' Cohen, J., Cohen, P., West, S. G., & Aiken, L. S. (2003). \emph{Applied
 #' multiple regression/correlation analysis for the behavioral sciences}
 #' (3rd ed.). New York, NY: Routledge.
-#' 
+#'
 #' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 #' latent interactions: Evaluation of alternative estimation strategies and
 #' indicator construction. \emph{Psychological Methods, 9}(3), 275-300.
 #' doi:10.1037/1082-989X.9.3.275
-#' 
+#'
 #' Preacher, K. J., Curran, P. J., & Bauer, D. J. (2006). Computational tools
 #' for probing interactions in multiple linear regression, multilevel modeling,
 #' and latent curve analysis. \emph{Journal of Educational and Behavioral
 #' Statistics, 31}(4), 437-448. doi:10.3102/10769986031004437
 #' @examples
-#' 
-#' library(lavaan) 
-#' 
+#'
+#' library(lavaan)
+#'
 #' dat2wayMC <- indProd(dat2way, 1:3, 4:6)
-#' 
+#'
 #' model1 <- "
 #' f1 =~ x1 + x2 + x3
 #' f2 =~ x4 + x5 + x6
@@ -128,15 +128,15 @@
 #' f12 ~ NA*1
 #' f3 ~ NA*1
 #' "
-#' 
+#'
 #' fitMC2way <- sem(model1, data = dat2wayMC, std.lv = FALSE,
 #'                  meanstructure = TRUE)
 #' summary(fitMC2way)
-#' 
+#'
 #' result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"),
 #'                             "f3", "f2", c(-1, 0, 1))
 #' result2wayMC
-#' 
+#'
 #' @export
 probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 	# Check whether modVar is correct
@@ -223,11 +223,11 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 
 
 #' Probing two-way interaction on the residual-centered latent interaction
-#' 
+#'
 #' Probing interaction for simple intercept and simple slope for the
 #' residual-centered latent two-way interaction (Pornprasertmanit, Schoemann,
 #' Geldhof, & Little, submitted)
-#' 
+#'
 #' Before using this function, researchers need to make the products of the
 #' indicators between the first-order factors and residualize the products by
 #' the original indicators (Lance, 1988; Little, Bovaird, & Widaman, 2006). The
@@ -239,7 +239,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' with a mean structure. See the example for how to fit the product term
 #' below. Once the lavaan result is obtained, this function will be used to
 #' probe the interaction.
-#' 
+#'
 #' The probing process on residual-centered latent interaction is based on
 #' transforming the residual-centered result into the no-centered result. See
 #' Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further
@@ -248,11 +248,11 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' is applied after the no-centered result (parameter estimates and their
 #' covariance matrix among parameter estimates) has been computed. See the
 #' \code{\link{probe2WayMC}} for further details.
-#' 
-#' 
+#'
+#'
 #' @importFrom lavaan lavInspect
 #' @importFrom stats pnorm
-#' 
+#'
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' first-order factor will be listed first. The last name must be the name
@@ -290,31 +290,31 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 #'   latent interaction.
 #' }
 #' @references
-#' 
+#'
 #' Lance, C. E. (1988). Residual centering, exploratory and confirmatory
 #' moderator analysis, and decomposition of effects in path models containing
 #' interactions. \emph{Applied Psychological Measurement, 12}(2), 163-175.
 #' doi:10.1177/014662168801200205
-#' 
+#'
 #' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 #' orthogonalizing powered and product terms: Implications for modeling
 #' interactions. \emph{Structural Equation Modeling, 13}(4), 497-519.
 #' doi:10.1207/s15328007sem1304_1
-#' 
+#'
 #' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 #' latent interactions: Evaluation of alternative estimation strategies and
 #' indicator construction. \emph{Psychological Methods, 9}(3), 275-300.
 #' doi:10.1037/1082-989X.9.3.275
-#' 
+#'
 #' Pornprasertmanit, S., Schoemann, A. M., Geldhof, G. J., & Little, T. D.
 #' (submitted). \emph{Probing latent interaction estimated with a residual
 #' centering approach.}
 #' @examples
-#' 
-#' library(lavaan) 
-#' 
+#'
+#' library(lavaan)
+#'
 #' dat2wayRC <- orthogonalize(dat2way, 1:3, 4:6)
-#' 
+#'
 #' model1 <- "
 #' f1 =~ x1 + x2 + x3
 #' f2 =~ x4 + x5 + x6
@@ -332,15 +332,15 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' f12 ~ NA*1
 #' f3 ~ NA*1
 #' "
-#' 
+#'
 #' fitRC2way <- sem(model1, data = dat2wayRC, std.lv = FALSE,
 #'                  meanstructure = TRUE)
 #' summary(fitRC2way)
-#' 
+#'
 #' result2wayRC <- probe2WayRC(fitRC2way, c("f1", "f2", "f12"),
 #'                             "f3", "f2", c(-1, 0, 1))
 #' result2wayRC
-#' 
+#'
 #' @export
 probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 	# Check whether modVar is correct
@@ -483,10 +483,10 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 
 #' Probing two-way interaction on the no-centered or mean-centered latent
 #' interaction
-#' 
+#'
 #' Probing interaction for simple intercept and simple slope for the
 #' no-centered or mean-centered latent two-way interaction
-#' 
+#'
 #' Before using this function, researchers need to make the products of the
 #' indicators between the first-order factors using mean centering (Marsh, Wen,
 #' & Hau, 2004). Note that the double-mean centering may not be appropriate for
@@ -498,7 +498,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' indicators and the product terms. See the example for how to fit the product
 #' term below. Once the lavaan result is obtained, this function will be used
 #' to probe the interaction.
-#' 
+#'
 #' Let that the latent interaction model regressing the dependent variable
 #' (\eqn{Y}) on the independent varaible (\eqn{X}) and two moderators (\eqn{Z}
 #' and \eqn{W}) be \deqn{ Y = b_0 + b_1X + b_2Z + b_3W + b_4XZ + b_5XW + b_6ZW
@@ -512,15 +512,15 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' effect between \eqn{Z} and \eqn{W} when \eqn{X} is 0, \eqn{b_7} is the
 #' three-way interaction effect between \eqn{X}, \eqn{Z}, and \eqn{W}, and
 #' \eqn{r} is the residual term.
-#' 
+#'
 #' For probing three-way interaction, the simple intercept of the independent
 #' variable at the specific values of the moderators (Aiken & West, 1991) can
 #' be obtained by \deqn{ b_{0|X = 0, Z, W} = b_0 + b_2Z + b_3W + b_6ZW. }
-#' 
+#'
 #' The simple slope of the independent varaible at the specific values of the
 #' moderators can be obtained by \deqn{ b_{X|Z, W} = b_1 + b_3Z + b_4W + b_7ZW.
 #' }
-#' 
+#'
 #' The variance of the simple intercept formula is \deqn{ Var\left(b_{0|X = 0,
 #' Z, W}\right) = Var\left(b_0\right) + Z^2Var\left(b_2\right) +
 #' W^2Var\left(b_3\right) + Z^2W^2Var\left(b_6\right) + 2ZCov\left(b_0,
@@ -529,20 +529,20 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' 2ZW^2Cov\left(b_3, b_6\right) } where \eqn{Var} denotes the variance of a
 #' parameter estimate and \eqn{Cov} denotes the covariance of two parameter
 #' estimates.
-#' 
+#'
 #' The variance of the simple slope formula is \deqn{ Var\left(b_{X|Z,
 #' W}\right) = Var\left(b_1\right) + Z^2Var\left(b_4\right) +
 #' W^2Var\left(b_5\right) + Z^2W^2Var\left(b_7\right) + 2ZCov\left(b_1,
 #' b_4\right) + 2WCov\left(b_1, b_5\right) + 2ZWCov\left(b_1, b_7\right) +
 #' 2ZWCov\left(b_4, b_5\right) + 2Z^2WCov\left(b_4, b_7\right) +
 #' 2ZW^2Cov\left(b_5, b_7\right) }
-#' 
+#'
 #' Wald statistic is used for test statistic.
-#' 
-#' 
+#'
+#'
 #' @importFrom lavaan lavInspect
 #' @importFrom stats pnorm
-#' 
+#'
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' three first-order factors will be listed first. Then the second-order
@@ -562,7 +562,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' @return A list with two elements:
 #' \enumerate{
 #'  \item \code{SimpleIntercept}: The intercepts given each value of the moderator.
-#'   This element will be shown only if the factor intercept is estimated 
+#'   This element will be shown only if the factor intercept is estimated
 #'   (e.g., not fixed as 0).
 #'  \item \code{SimpleSlope}: The slopes given each value of the moderator.
 #' }
@@ -571,7 +571,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' values of the second moderator specified in the \code{valProbe2} argument.
 #' The third column is the simple intercept or simple slope. The fourth column
 #' is the standard error of the simple intercept or simple slope. The fifth
-#' column is the Wald (\emph{z}) statistic. The sixth column is the \emph{p} 
+#' column is the Wald (\emph{z}) statistic. The sixth column is the \emph{p}
 #' value testing whether the simple intercepts or slopes are different from 0.
 #' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 #' @seealso \itemize{
@@ -586,20 +586,20 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #'  \item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
 #'   latent interaction.
 #' }
-#' @references 
+#' @references
 #' Aiken, L. S., & West, S. G. (1991). \emph{Multiple regression: Testing
 #' and interpreting interactions}. Newbury Park, CA: Sage.
-#' 
+#'
 #' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 #' latent interactions: Evaluation of alternative estimation strategies and
 #' indicator construction. \emph{Psychological Methods, 9}(3), 275-300.
 #' doi:10.1037/1082-989X.9.3.275
 #' @examples
-#' 
+#'
 #' library(lavaan)
-#' 
+#'
 #' dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
-#' 
+#'
 #' model3 <- "
 #' f1 =~ x1 + x2 + x3
 #' f2 =~ x4 + x5 + x6
@@ -638,17 +638,17 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe) {
 #' f23 ~ NA*1
 #' f123 ~ NA*1
 #' f4 ~ NA*1
-#' " 
-#' 
+#' "
+#'
 #' fitMC3way <- sem(model3, data = dat3wayMC, std.lv = FALSE,
 #'                  meanstructure = TRUE)
 #' summary(fitMC3way)
-#' 
+#'
 #' result3wayMC <- probe3WayMC(fitMC3way,
-#'                             c("f1", "f2", "f3", "f12", "f13", "f23", "f123"), 
+#'                             c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
 #'                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 #' result3wayMC
-#' 
+#'
 #' @export
 probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	# Check whether modVar is correct
@@ -743,11 +743,11 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 
 
 #' Probing three-way interaction on the residual-centered latent interaction
-#' 
+#'
 #' Probing interaction for simple intercept and simple slope for the
 #' residual-centered latent three-way interaction (Pornprasertmanit, Schoemann,
 #' Geldhof, & Little, submitted)
-#' 
+#'
 #' Before using this function, researchers need to make the products of the
 #' indicators between the first-order factors and residualize the products by
 #' the original indicators (Lance, 1988; Little, Bovaird, & Widaman, 2006). The
@@ -760,7 +760,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' structure. See the example for how to fit the product term below. Once the
 #' lavaan result is obtained, this function will be used to probe the
 #' interaction.
-#' 
+#'
 #' The probing process on residual-centered latent interaction is based on
 #' transforming the residual-centered result into the no-centered result. See
 #' Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further
@@ -769,11 +769,11 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' is applied after the no-centered result (parameter estimates and their
 #' covariance matrix among parameter estimates) has been computed See the
 #' \code{\link{probe3WayMC}} for further details.
-#' 
-#' 
+#'
+#'
 #' @importFrom lavaan lavInspect
 #' @importFrom stats pnorm
-#' 
+#'
 #' @param fit The lavaan model object used to evaluate model fit
 #' @param nameX The vector of the factor names used as the predictors. The
 #' three first-order factors will be listed first. Then the second-order
@@ -793,7 +793,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' @return A list with two elements:
 #' \enumerate{
 #'  \item \code{SimpleIntercept}: The intercepts given each value of the moderator.
-#'    This element will be shown only if the factor intercept is estimated 
+#'    This element will be shown only if the factor intercept is estimated
 #'    (e.g., not fixed as 0).
 #'  \item \code{SimpleSlope}: The slopes given each value of the moderator.
 #' }
@@ -817,36 +817,36 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #'  \item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
 #'   latent interaction.
 #' }
-#' @references 
+#' @references
 #' Geldhof, G. J., Pornprasertmanit, S., Schoemann, A., & Little,
 #' T. D. (2013). Orthogonalizing through residual centering: Extended
 #' applications and caveats. \emph{Educational and Psychological Measurement,
 #' 73}(1), 27-46. doi:10.1177/0013164412445473
-#' 
+#'
 #' Lance, C. E. (1988). Residual centering, exploratory and confirmatory
 #' moderator analysis, and decomposition of effects in path models containing
 #' interactions. \emph{Applied Psychological Measurement, 12}(2), 163-175.
 #' doi:10.1177/014662168801200205
-#' 
+#'
 #' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 #' orthogonalizing powered and product terms: Implications for modeling
 #' interactions. \emph{Structural Equation Modeling, 13}(4), 497-519.
 #' doi:10.1207/s15328007sem1304_1
-#' 
+#'
 #' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 #' latent interactions: Evaluation of alternative estimation strategies and
 #' indicator construction. \emph{Psychological Methods, 9}(3), 275-300.
 #' doi:10.1037/1082-989X.9.3.275
-#' 
+#'
 #' Pornprasertmanit, S., Schoemann, A. M., Geldhof, G. J., & Little, T. D.
 #' (submitted). \emph{Probing latent interaction estimated with a residual
 #' centering approach.}
 #' @examples
-#' 
+#'
 #' library(lavaan)
-#' 
+#'
 #' dat3wayRC <- orthogonalize(dat3way, 1:3, 4:6, 7:9)
-#' 
+#'
 #' model3 <- "
 #' f1 =~ x1 + x2 + x3
 #' f2 =~ x4 + x5 + x6
@@ -885,17 +885,17 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' f23 ~ NA*1
 #' f123 ~ NA*1
 #' f4 ~ NA*1
-#' " 
-#' 
+#' "
+#'
 #' fitRC3way <- sem(model3, data = dat3wayRC, std.lv = FALSE,
 #'                  meanstructure = TRUE)
 #' summary(fitRC3way)
-#' 
+#'
 #' result3wayRC <- probe3WayRC(fitRC3way,
 #'                             c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
 #'                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 #' result3wayRC
-#' 
+#'
 #' @export
 probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 	# Check whether modVar is correct
@@ -1087,11 +1087,11 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 
 
 #' Plot the graphs for probing latent interaction
-#' 
+#'
 #' This function will plot the line graphs representing the simple effect of
 #' the independent variable given the values of the moderator.
-#' 
-#' 
+#'
+#'
 #' @param object The result of probing latent interaction obtained from
 #' \code{\link{probe2WayMC}}, \code{\link{probe2WayRC}},
 #' \code{\link{probe3WayMC}}, or \code{\link{probe3WayRC}} function.
@@ -1099,9 +1099,15 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' independent variable
 #' @param xlab The label of the x-axis
 #' @param ylab The label of the y-axis
+#' @param legend \code{logical}. If \code{TRUE} (default), a legend is printed.
+#' @param legendArgs \code{list} of arguments passed to \code{\link{legend}}
+#' function if \code{legend=TRUE}.
 #' @param \dots Any addition argument for the \code{\link{plot}} function
 #' @return None. This function will plot the simple main effect only.
-#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#' @author
+#' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#'
+#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 #' @seealso \itemize{
 #'  \item \code{\link{indProd}} For creating the indicator products with no
 #'   centering, mean centering, double-mean centering, or residual centering.
@@ -1115,11 +1121,11 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #'   when the results are obtained from residual-centering approach.
 #' }
 #' @examples
-#' 
-#' library(lavaan) 
-#' 
+#'
+#' library(lavaan)
+#'
 #' dat2wayMC <- indProd(dat2way, 1:3, 4:6)
-#' 
+#'
 #' model1 <- "
 #' f1 =~ x1 + x2 + x3
 #' f2 =~ x4 + x5 + x6
@@ -1137,16 +1143,16 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' f12 ~ NA*1
 #' f3 ~ NA*1
 #' "
-#' 
+#'
 #' fitMC2way <- sem(model1, data = dat2wayMC, std.lv = FALSE,
 #'                  meanstructure = TRUE)
 #' result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"),
 #'                             "f3", "f2", c(-1, 0, 1))
 #' plotProbe(result2wayMC, xlim = c(-2, 2))
-#' 
-#' 
+#'
+#'
 #' dat3wayMC <- indProd(dat3way, 1:3, 4:6, 7:9)
-#' 
+#'
 #' model3 <- "
 #' f1 =~ x1 + x2 + x3
 #' f2 =~ x4 + x5 + x6
@@ -1185,48 +1191,51 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2) {
 #' f23 ~ NA*1
 #' f123 ~ NA*1
 #' f4 ~ NA*1
-#' " 
-#' 
+#' "
+#'
 #' fitMC3way <- sem(model3, data = dat3wayMC, std.lv = FALSE,
 #'                  meanstructure = TRUE)
 #' result3wayMC <- probe3WayMC(fitMC3way,
 #'                             c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
 #'                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
 #' plotProbe(result3wayMC, xlim = c(-2, 2))
-#' 
+#'
 #' @export
 plotProbe <- function(object, xlim, xlab = "Indepedent Variable",
-                      ylab = "Dependent Variable",  ...) {
+                      ylab = "Dependent Variable", legend = TRUE,
+                      legendArgs = list(), ...) {
   if (length(xlim) != 2)  stop("The x-limit should be specified as a numeric",
                                " vector with the length of 2.")
-  
+
   # Extract simple slope
   slope <- object$SimpleSlope
-  
+
   # Check whether the object is the two-way or three-way interaction result
   numInt <- 2
   if (ncol(slope) == 6) numInt <- 3
   estSlope <- slope[, ncol(slope) - 3]
-  
+
   # Get whether the simple slope is significant. If so, the resulting lines will be
   # shown as red. If not, the line will be black.
   estSlopeSig <- (slope[, ncol(slope)] < 0.05) + 1
-  
+
   # Extract simple intercept. If the simple intercept is not provided, the intercept
   # will be fixed as 0.
   estIntercept <- NULL
-  if (!is.null(object$SimpleIntcept)) 
+  if (!is.null(object$SimpleIntcept))
     estIntercept <- object$SimpleIntcept[, ncol(slope) - 3]
   if (numInt == 2) {
-    plotSingleProbe(estSlope, estIntercept, xlim = xlim, xlab = xlab, ylab = ylab, 
-                    colLine = estSlopeSig, legendMain = colnames(slope)[1],
-                    legendVal = slope[, 1], ...)
+    if (is.null(legendArgs$title)) legendArgs$title <- colnames(slope)[1]
+    if (is.null(legendArgs$legend)) legendArgs$legend <- slope[, 1]
+    plotSingleProbe(estSlope, estIntercept, xlim = xlim, xlab = xlab, ylab = ylab,
+                    colLine = estSlopeSig, legend = legend,
+                    legendArgs = legendArgs, ...)
   } else if (numInt == 3) {
     # Three-way interaction; separate lines for the first moderator, separate graphs
     # for the second moderator
     mod2 <- unique(slope[, 2])
     mod1 <- unique(slope[, 1])
-    
+
     # Use multiple graphs in a figure
     if (length(mod2) == 2) {
       obj <- par(mfrow = c(1, 2))
@@ -1240,12 +1249,14 @@ plotProbe <- function(object, xlim, xlab = "Indepedent Variable",
 
     for (i in 1:length(mod2)) {
       select <- slope[, 2] == mod2[i]
+      if (is.null(legendArgs$title)) legendArgs$title <- colnames(slope)[1]
+      if (is.null(legendArgs$legend)) legendArgs$legend <- mod1
       plotSingleProbe(estSlope[select], estIntercept[select], xlim = xlim,
                       xlab = xlab, ylab = ylab, colLine = estSlopeSig[select],
                       main = paste(colnames(slope)[2], "=", mod2[i]),
-                      legendMain = colnames(slope)[1], legendVal = mod1, ...)
+                      legend = legend, legendArgs = legendArgs, ...)
     }
-    if (length(mod2) > 1) 
+    if (length(mod2) > 1)
       par(obj)
   } else {
     stop("Please make sure that the object argument is obtained from",
@@ -1374,27 +1385,33 @@ var3NormProd <- function(m, s) {
 # ylab = the lable for the dependent variable
 # main = the title of the graph
 # colLine = the color of each line
-# legendMain = the title of the legend
-# legendVal = the description of each line representing in the plot
+# legend = whether to print a legend
+# legendArgs = arguments to pass to legend() function
 plotSingleProbe <- function(estSlope, estIntercept = NULL, xlim,
                             xlab = "Indepedent Variable",
                             ylab = "Dependent Variable", main = NULL,
-                            colLine = "black", legendMain = NULL,
-                            legendVal = NULL, ...) {
-	if(is.null(estIntercept)) estIntercept <- rep(0, length(estSlope))
-	if(length(colLine) == 1) colLine <- rep(colLine, length(estSlope))
+                            colLine = "black", legend = TRUE,
+                            legendArgs = list(), ...) {
+	if (is.null(estIntercept)) estIntercept <- rep(0, length(estSlope))
+	if (length(colLine) == 1) colLine <- rep(colLine, length(estSlope))
 	lower <- estIntercept + (xlim[1] * estSlope)
 	upper <- estIntercept + (xlim[2] * estSlope)
 	ylim <- c(min(c(lower, upper)), max(c(lower, upper)))
-	plot(cbind(xlim, ylim), xlim=xlim, ylim=ylim, type="n", xlab=xlab, ylab=ylab, main=main, ...)
-	for(i in 1:length(estSlope)) {
-		lines(cbind(xlim, c(lower[i], upper[i])), col = colLine[i], lwd=1.5, lty=i)
+	plot(cbind(xlim, ylim), xlim = xlim, ylim = ylim, type = "n",
+	     xlab = xlab, ylab = ylab, main = main, ...)
+	for (i in 1:length(estSlope)) {
+		lines(cbind(xlim, c(lower[i], upper[i])),
+		      col = colLine[i], lwd = 1.5, lty = i)
 	}
-	if(!is.null(legendVal)) {
+	if (legend) {
 		positionX <- 0.25
-		if(all(estSlope > 0)) positionX <- 0.01
-		if(all(estSlope < 0)) positionX <- 0.50
-		legend(positionX * (xlim[2] - xlim[1]) + xlim[1], 0.99 * (ylim[2] - ylim[1]) + ylim[1], legendVal, col=colLine, lty=1:length(estSlope), title=legendMain)
+		if (all(estSlope > 0)) positionX <- 0.01
+		if (all(estSlope < 0)) positionX <- 0.50
+		if (is.null(legendArgs$x)) legendArgs$x <- positionX * (xlim[2] - xlim[1]) + xlim[1]
+		if (is.null(legendArgs$y)) legendArgs$y <- 0.99 * (ylim[2] - ylim[1]) + ylim[1]
+		if (is.null(legendArgs$col)) legendArgs$col <- colLine
+		if (is.null(legendArgs$lty)) legendArgs$lty <- 1:length(estSlope)
+		do.call(graphics::legend, legendArgs)
 	}
 }
 

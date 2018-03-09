@@ -11,7 +11,7 @@ export(
   singleParamTest, ############################################################# wald,
   miPowerFit,
   plotRMSEAdist, findRMSEApower, findRMSEAsamplesize,
-  plotProbe,
+  plotProbe, ### with Terrence
   probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC,
   reliabilityL2, maximalRelia,
   partialInvariance, partialInvarianceCat,
