@@ -4,40 +4,55 @@
 \alias{parcelAllocation}
 \title{Random Allocation of Items to Parcels in a Structural Equation Model}
 \usage{
-parcelAllocation(nPerPar, facPlc, nAlloc = 100, syntax, dataset,
-  names = "default", leaveout = 0, ...)
+parcelAllocation(model, data, parcel.names, item.syntax, nAlloc = 100,
+  fun = "sem", alpha = 0.05, fit.measures = c("chisq", "df", "cfi", "tli",
+  "rmsea", "srmr"), ..., show.progress = FALSE, do.fit = TRUE)
 }
 \arguments{
-\item{nPerPar}{A list in which each element is a vector corresponding to
-each factor indicating sizes of parcels. If variables are left out of
-parceling, they should not be accounted for here (there should NOT be
-parcels of size "1").}
+\item{model}{\code{\link{lavaan}} model syntax specifying the model fit to
+(at least some) parceled data. Note that there can be a mixture of items
+and parcels (even within the same factor), in case certain items should
+never be parceled. Can be a character string or parameter table. Also see
+\code{\link{lavaanify}} for more details.}
 
-\item{facPlc}{A list of vectors, each corresponding to a factor, specifying
-the variables in that factor (whether included in parceling or not). Either
-variable names or column numbers. Variables not listed will not be modeled
-or included in output datasets.}
+\item{data}{A \code{data.frame} containing all observed variables appearing
+in the \code{model}, as well as those in the \code{item.syntax} used to
+create parcels. If the data have missing values, multiple imputation
+before parceling is recommended: submit a stacked data set (with a variable
+for the imputation number, so they can be separateed later) and set
+\code{do.fit = FALSE} to return the list of \code{data.frame}s (one per
+allocation), each of which is a stacked, imputed data set with parcels.}
 
-\item{nAlloc}{The number of random allocations of items to parcels to
-generate.}
+\item{parcel.names}{\code{character} vector containing names of all parcels
+appearing as indicators in \code{model}.}
 
-\item{syntax}{\link{lavaan} syntax. If substituted with a file name,
-parcelAllocation will print output data sets to a specified folder rather
-than analyzing using lavaan (note for Windows users: file path must be
-specified using forward slashes).}
+\item{item.syntax}{\link{lavaan} model syntax specifying the model that
+would be fit to all of the unparceled items, including items that should
+be randomly allocated to parcels appearing in \code{model}.}
 
-\item{dataset}{Data set. Can be file path or R object (matrix or dataframe).
-If the data has missing values multiple imputation before parceling is
-recommended.}
+\item{nAlloc}{The number of random items-to-parcels allocations to generate.}
 
-\item{names}{(Optional) A character vector containing the names of parceled
-variables. These names should appear as indicators in \code{syntax}.}
+\item{fun}{\code{character} string indicating the name of the
+\code{\link{lavaan}} function used to fit \code{model} to \code{data}.
+Can only take the values \code{"lavaan"}, \code{"sem"}, \code{"cfa"},
+or \code{"growth"}.}
 
-\item{leaveout}{A vector of variables to be left out of randomized
-parceling. Either variable names or column numbers are allowed. These names
-should appear as columns in \code{dataset} and be listed in \code{facPlc}.}
+\item{alpha}{Alpha level used as criterion for significance.}
 
-\item{\dots}{Additional arguments to be passed to \link{lavaan}}
+\item{fit.measures}{\code{character} vector containing names of fit measures
+to request from each fitted \code{\link{lavaan}} model.  See the output of
+\code{\link{fitMeaures}} for a list of available measures.}
+
+\item{\dots}{Additional arguments to be passed to \code{\link{lavaanList}}}
+
+\item{show.progress}{If \code{TRUE}, show a \code{\link{txtProgressBar}}
+indicating how fast the model-fitting iterates over allocations.}
+
+\item{do.fit}{If \code{TRUE} (default), the \code{model} is fitted to each
+parceled data set, and the summary of results is returned (see the Value
+section below). If \code{FALSE}, the items are randomly parceled, but the
+model is not fit; instead, the \code{list} of \code{data.frame}s is
+returned (so assign it to an object).}
 }
 \value{
 \item{Estimates}{A data frame containing results related to
@@ -64,49 +79,98 @@ allocations, fits a model to each allocation, and provides averaged results
 over all allocations.
 }
 \details{
-This function implements the random item to parcel allocation procedure
+This function implements the random item-to-parcel allocation procedure
 described in Sterba (2011) and Sterba and MacCallum (2010). The function
-takes a single data set with item level data, randomly assigns items to
+takes a single data set with item-level data, randomly assigns items to
 parcels, fits a structural equation model to the parceled data (using
-\link{lavaan}), and repeats this process for a user specified number of
-random allocations. Results from all fitted models are summarized and
+\link{lavaan}), and repeats this process for a user-specified number of
+random allocations. Results from all fitted models are summarized in the
 output. For further details on the benefits of the random allocation of
-itesm to parcels see Sterba (2011) and Sterba and MccCallum (2010).
+itesm to parcels, see Sterba (2011) and Sterba and MccCallum (2010).
 }
 \examples{
 
-## Fit 3 factor CFA to simulated data.
-## Each factor has 9 indicators that are randomly parceled into 3 parcels
-## lavaan syntax for the model to be fit to parceled data
-library(lavaan)
+## Fit 2-factor CFA to simulated data. Each factor has 9 indicators.
 
-syntax <- 'La =~ V1 + V2 + V3
-           Lb =~ V4 + V5 + V6
+## Specify the item-level model (if NO parcels were created)
+item.syntax <- c(paste0("f1 =~ f1item", 1:9),
+                 paste0("f2 =~ f2item", 1:9))
+cat(item.syntax, sep = "\\n")
+## Below, we reduce the size of this same model by
+## applying different parceling schemes
+
+
+## 3-indicator parcels
+mod.parcels <- '
+f1 =~ par1 + par2 + par3
+f2 =~ par4 + par5 + par6
 '
-## Parcel and fit data 20 times.
-## The actual parcel number should be higher than 20 times.
-name1 <- colnames(simParcel)[1:9]
-name2 <- colnames(simParcel)[10:18]
-parcelAllocation(list(c(3,3,3),c(3,3,3)), list(name1, name2), nAlloc = 20,
-                 syntax = syntax, dataset = simParcel)
+## names of parcels
+(parcel.names <- paste0("par", 1:6))
+
+set.seed(12345)
+parcelAllocation(mod.parcels, data = simParcel, parcel.names, item.syntax,
+                 nAlloc = 20, std.lv = TRUE, parallel = "snow", iseed = 12345)
+
+
+
+## multigroup example
+simParcel$group <- 0:1 # arbitrary groups for example
+mod.mg <- '
+f1 =~ par1 + c(L2, L2)*par2 + par3
+f2 =~ par4 + par5 + par6
+'
+## names of parcels
+(parcel.names <- paste0("par", 1:6))
+
+set.seed(12345)
+parcelAllocation(mod.mg, data = simParcel, parcel.names, item.syntax,
+                 std.lv = TRUE, group = "group", group.equal = "loadings",
+                 nAlloc = 20, show.progress = TRUE)
+
+
+
+## parcels for first factor, items for second factor
+mod.items <- '
+f1 =~ par1 + par2 + par3
+f2 =~ f2item2 + f2item7 + f2item8
+'
+## names of parcels
+(parcel.names <- paste0("par", 1:3))
+
+set.seed(12345)
+parcelAllocation(mod.items, data = simParcel, parcel.names, item.syntax,
+                 nAlloc = 20, std.lv = TRUE)
+
+
+
+## mixture of 1- and 3-indicator parcels for second factor
+mod.mix <- '
+f1 =~ par1 + par2 + par3
+f2 =~ f2item2 + f2item7 + f2item8 + par4 + par5 + par6
+'
+## names of parcels
+(parcel.names <- paste0("par", 1:6))
+
+set.seed(12345)
+parcelAllocation(mod.mix, data = simParcel, parcel.names, item.syntax,
+                 nAlloc = 20, std.lv = TRUE)
 
 }
 \references{
 Sterba, S. K. (2011). Implications of parcel-allocation
 variability for comparing fit of item-solutions and parcel-solutions.
-\emph{Structural Equation Modeling, 18}(4), 554-577.
+\emph{Structural Equation Modeling, 18}(4), 554--577.
 doi:10.1080/10705511.2011.607073
 
 Sterba, S. K. & MacCallum, R. C. (2010). Variability in parameter estimates
 and model fit across random allocations of items to parcels.
-\emph{Multivariate Behavioral Research, 45}(2), 322-358.
+\emph{Multivariate Behavioral Research, 45}(2), 322--358.
 doi:10.1080/00273171003680302
 }
 \seealso{
 \code{\link{PAVranking}}, \code{\link{poolMAlloc}}
 }
 \author{
-Corbin Quick (University of Michigan; \email{corbinq@umich.edu})
-
-Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
