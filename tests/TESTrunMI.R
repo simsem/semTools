@@ -163,6 +163,10 @@ imp <- mice(rosenberg.data, m = nImputations)
 impList <- list()
 for (i in 1:nImputations) impList[[i]] <- complete(imp, action = i)
 
+## estimate the fraction of missing information for summary stats
+fmi(impList, ords = paste0("Q", 1:10))
+
+
 # CFA model with all items loading on one factor
 rosenberg.model <- '
 A =~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q8 + Q9 + Q10
