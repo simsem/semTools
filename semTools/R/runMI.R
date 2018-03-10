@@ -870,15 +870,15 @@ robustify <- function(ChiSq, object, h1 = NULL) {
     ChiSq["chisq.scaled"] <- ChiSq[["chisq"]] / c0
     ChiSq["df.scaled"] <- d0
     if (scaleshift) {
-      ## add shift parameter here (copy from below) or below
+      ## add average shift parameter (or average of sums, if nG > 1)
       shift <- mean(sapply(object@testList[useImps],
-                           function(x) x[[2]][["shift.parameter"]]))
+                           function(x) sum(x[[2]][["shift.parameter"]]) ))
       ChiSq["chisq.scaled"] <- ChiSq[["chisq.scaled"]] + shift
       ChiSq["pvalue.scaled"] <- pchisq(ChiSq[["chisq.scaled"]],
                                        df = ChiSq[["df.scaled"]],
                                        lower.tail = FALSE)
       ChiSq["chisq.scaling.factor"] <- c0
-      ChiSq["chisq.shift.parameter"] <- shift
+      ChiSq["chisq.shift.parameters"] <- shift
     } else {
       ChiSq["pvalue.scaled"] <- pchisq(ChiSq[["chisq.scaled"]],
                                        df = ChiSq[["df.scaled"]],
@@ -915,7 +915,10 @@ anova.lavaan.mi <- function(object, h1 = NULL,
   if (robust) asymptotic <- TRUE
   scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
   if (scaleshift & !is.null(h1)) stop("Robust correction unavailable for model",
-                                      " comparison when test = 'scaled.shifted'")
+                                      " comparison when test = 'scaled.shifted'.",
+                                      " Try test = 'mean.var.adjusted' with",
+                                      " estimator = 'ML' or 'DWLS' to use the",
+                                      " older Satterthwaite approach instead.")
   ################### FIXME: unless possible to mimic DIFFTEST behavior?
 
 
@@ -1048,6 +1051,7 @@ anova.lavaan.mi <- function(object, h1 = NULL,
         out["baseline.pvalue.scaled"] <- baseOut[["pvalue.scaled"]]
         cb <- baseOut[["chisq.scaling.factor"]]
         out["baseline.chisq.scaling.factor"] <- cb
+        out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
       }
     }
   }

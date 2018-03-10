@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 February 2017
+### Last updated: 10 March 2018
 ### try new runMI
 
 library(lavaan)
@@ -136,3 +136,65 @@ MODEL Pasteur:
 runModels(logFile = NULL)
 
 
+
+## -----------------------------------------------------
+## Investigate probelm with CFI when test is MV-adjusted
+## https://github.com/simsem/semTools/issues/29
+## -----------------------------------------------------
+
+library(mice)
+
+# Data obtained from http://openpsychometrics.org/
+# Load Rosenberg self-esteem scale data from http://openpsychometrics.org/_rawdata/RSE.zip
+# Only first 10000 participants for faster computation
+rosenberg.data <- read.table("tests/data/data.txt", header = TRUE)[1:10000,1:10]
+
+## impose 50% missing values
+set.seed(123)
+for (COL in 1:10) {
+  ROW <- sample(1:nrow(rosenberg.data), size = .5*nrow(rosenberg.data))
+  rosenberg.data[ROW, COL] <- NA
+}
+
+# Impute with mice
+nImputations <- 5
+imp <- mice(rosenberg.data, m = nImputations)
+# Create list of imputated data sets
+impList <- list()
+for (i in 1:nImputations) impList[[i]] <- complete(imp, action = i)
+
+# CFA model with all items loading on one factor
+rosenberg.model <- '
+A =~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q8 + Q9 + Q10
+'
+# Fit CFA across all imputed datasets and pool results
+# All items are treated as ordinal
+rosenberg.fit <- cfa.mi(rosenberg.model, data = impList, estimator = "WLSMV",
+                        ordered = paste0("Q", 1:10), FUN = fitMeasures)
+# Obtain pooled fit indices
+pooled.indices <- anova(rosenberg.fit, indices = TRUE)
+# Loop over all imputed datasets and extract fit indices
+indices <- do.call(rbind, lapply(rosenberg.fit@funList, function(x) x$userFUN1))
+
+### Compare pooled fit indices to average fit indices
+
+# Average fit indices across imputations (cfi.scaled = .948, rmsea.scaled = .175)
+round(colMeans(indices), 3)[grep("cfi|rmsea|chisq", colnames(indices))]
+# Fit indices from pooled statistics (cfi.scaled = .052, rmsea.scaled = .083)
+round(pooled.indices[grep("cfi|rmsea|chisq", names(pooled.indices))], 3)
+
+
+## check between-imputation variability of chi-squareds
+round(apply(indices[ , grep("chisq", colnames(indices))], 2, sd), 3)
+
+## average relative increase in variance (ARIV)
+apply(indices[ , grep("chisq", colnames(indices))], 2,
+      function(w) (1 + 1/nImputations) * var(sqrt(w)))
+
+## calculate D2 for baseline.chisq manually from the quantities above
+X2 <- 404005.7773054838 # print(colMeans(indices)["baseline.chisq"], 16)
+DF <- 45 # degrees of freedom for baseline model
+M <- (nImputations + 1) / (nImputations - 1)
+ARIV <- 77.65339227 # average relative increase in variance
+((X2/DF - M*ARIV) / (1 + ARIV)) * DF # this D2 matches pooled.indices output
+pooled.indices["baseline.chisq"]
