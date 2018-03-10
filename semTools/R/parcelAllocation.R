@@ -17,7 +17,7 @@
 #' output. For further details on the benefits of the random allocation of
 #' itesm to parcels, see Sterba (2011) and Sterba and MccCallum (2010).
 #'
-#' @importFrom stats mean sd min max
+#' @importFrom stats sd 
 #' @importFrom lavaan parTable lavInspect
 #' @param model \code{\link{lavaan}} model syntax specifying the model fit to
 #'   (at least some) parceled data. Note that there can be a mixture of items
