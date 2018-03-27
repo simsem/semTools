@@ -259,7 +259,9 @@ printInvarianceResult <- function(FIT, fit.measures, method) {
 		cat("Fit measures:\n\n")
 		print(FM.TABLE)
 		cat("\n")
+		return(list(anova = TABLE, fitMeasures = FM.TABLE))
 	}
+	TABLE
 }
 
 
