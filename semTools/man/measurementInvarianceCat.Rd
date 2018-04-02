@@ -19,9 +19,9 @@ is used as marker variable.}
 \item{strict}{If \code{TRUE}, the sequence requires `strict' invariance.
 See details for more information.}
 
-\item{quiet}{If \code{TRUE}, a summary is printed out containing an overview
-of the different models that are fitted, together with some model comparison
-tests.}
+\item{quiet}{If \code{FALSE} (default), a summary is printed out containing
+an overview of the different models that are fitted, together with some
+model comparison tests. If \code{TRUE}, no summary is printed.}
 
 \item{fit.measures}{Fit measures used to calculate the differences between
 nested models.}

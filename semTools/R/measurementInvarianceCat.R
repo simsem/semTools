@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, & Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 20 March 2018
 ### automate measurement invariance tests for categorical indicators
 
 
@@ -42,9 +42,9 @@
 #' is used as marker variable.
 #' @param strict If \code{TRUE}, the sequence requires `strict' invariance.
 #' See details for more information.
-#' @param quiet If \code{TRUE}, a summary is printed out containing an overview
-#' of the different models that are fitted, together with some model comparison
-#' tests.
+#' @param quiet If \code{FALSE} (default), a summary is printed out containing
+#' an overview of the different models that are fitted, together with some
+#' model comparison tests. If \code{TRUE}, no summary is printed.
 #' @param fit.measures Fit measures used to calculate the differences between
 #' nested models.
 #' @param method The method used to calculate likelihood ratio test. See

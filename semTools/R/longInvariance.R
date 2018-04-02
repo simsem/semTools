@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Yves Rosseel
-### Last updated: 9 March 2018
+### Last updated: 20 March 2018
 
 #' Measurement Invariance Tests Within Person
 #'
@@ -72,9 +72,9 @@
 #' @param warn See \code{\link[lavaan]{lavaan}.}
 #' @param debug See \code{\link[lavaan]{lavaan}.}
 #' details for more information.
-#' @param quiet If \code{TRUE}, a summary is printed out containing an overview
-#' of the different models that are fitted, together with some model comparison
-#' tests.
+#' @param quiet If \code{FALSE} (default), a summary is printed out containing
+#' an overview of the different models that are fitted, together with some
+#' model comparison tests. If \code{TRUE}, no summary is printed.
 #' @param fit.measures Fit measures used to calculate the differences between
 #'   nested models.
 #' @param method The method used to calculate likelihood ratio test. See
