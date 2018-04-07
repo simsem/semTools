@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 2 April 2018
+### Last updated: 7 April 2018
 ### classic score test (= Lagrange Multiplier test)
 ### borrowed source code from lavaan/R/lav_test_score.R
 
@@ -14,7 +14,7 @@
 
 #' Score Test for Multiple Imputations
 #'
-#' Score test (or Lagrange Multiplier test) for lavaan models fitted to
+#' Score test (or Lagrange multiplier test) for lavaan models fitted to
 #' multiple imputed data sets. Statistics for releasing one or more
 #' fixed or constrained parameters in model can be calculated by pooling
 #' the gradient and information matrices pooled across imputed data sets
@@ -22,26 +22,57 @@
 #' across imputed data sets (Li, Meng, Raghunathan, & Rubin, 1991).
 #'
 #' @aliases lavTestScore.mi
-#' @importFrom lavaan lavInspect parTable
+#' @importFrom lavaan lavListInspect parTable
+#' @importFrom stats cov pchisq pf
+#' @importFrom methods getMethod
 #'
+#' @param object An object of class \code{\linkS4class{lavaan}}.
+#' @param add Either a \code{character} string (typically between single
+#'  quotes) or a parameter table containing additional (currently fixed-to-zero)
+#'  parameters for which the score test must be computed.
+#' @param release Vector of \code{integer}s. The indices of the \emph{equality}
+#'  constraints that should be released. The indices correspond to the order of
+#'  the equality constraints as they appear in the parameter table.
 #' @param type \code{character} indicating which pooling method to use.
 #' \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
-#' gradient and information, and those pooled values will be used to
-#' calculate modification indices in the usual manner. \code{"D2"} (default),
+#'  gradient and information, and those pooled values will be used to
+#'  calculate modification indices in the usual manner. \code{"D2"} (default),
 #' \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
-#' calculated from each imputed data set will be pooled across imputations,
-#' as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
-#' @param asymptotic \code{logical}. If \code{FALSE}, the pooled test will be
-#'  returned as an \emph{F}-distributed variable with numerator (\code{df1})
-#'  and denominator (\code{df2}) degrees of freedom.  If \code{TRUE} (default),
-#'  the pooled \emph{F} statistic will be multiplied by its \code{df1} on the
-#'  assumption that its \code{df2} is sufficiently large enough that the
-#'  statistic will be asymptotically \eqn{\chi^2} distributed with \code{df1}.
-#' @inheritParams lavaan::lavTestScore
+#'  calculated from each imputed data set will be pooled across imputations,
+#'  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
+#' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
+#'  will be returned as an \emph{F}-distributed variable with numerator
+#'  (\code{df1}) and denominator (\code{df2}) degrees of freedom.
+#'  If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
+#'  \code{df1} on the assumption that its \code{df2} is sufficiently large
+#'  enough that the statistic will be asymptotically \eqn{\chi^2} distributed
+#'  with \code{df1}.
+#' @param univariate \code{logical}. If \code{TRUE}, compute the univariate
+#'  score statistics, one for each constraint.
+#' @param cumulative \code{logical}. If \code{TRUE}, order the univariate score
+#'  statistics from large to small, and compute a series of multivariate
+#'  score statistics, each time adding an additional constraint.
+#' @param epc \code{logical}. If \code{TRUE}, and we are releasing existing
+#'  constraints, compute the expected parameter changes for the existing (free)
+#'  parameters (and any specified with \code{add}), if all constraints
+#'  were released.
+#' @param verbose \code{logical}. Not used for now.
+#' @param warn \code{logical}. If \code{TRUE}, print out warnings if they occur.
 #'
-#' @return A list containing at least one \code{data.frame} (the total score
-#' test), and optionally containing each 1-\emph{df} score test, the cumulative
-#' score tests, and expected parameter changes.
+#' @return
+#'  A list containing at least one \code{data.frame}:
+#'  \itemize{
+#'    \item{\code{$test}: The total score test, with columns for the score
+#'      test statistic (\code{X2}), the degrees of freedom (\code{df}), and
+#'      a \emph{p} value under the \eqn{\chi^2} distribution (\code{p.value}).}
+#'    \item{\code{$uni}: Optional (if \code{univariate=TRUE}).
+#'      Each 1-\emph{df} score test, equivalent to modification indices.}
+#'    \item{\code{$cumulative}: Optional (if \code{cumulative=TRUE}).
+#'      Cumulative score tests.}
+#'    \item{\code{$epc}: Optional (if \code{epc=TRUE}). Parameter estimates,
+#'      expected parameter changes, and expected parameter values if all
+#'      the tested constraints were freed.}
+#'  }
 #' See \code{\link[lavaan]{lavTestScore}} for details.
 #'
 #' @author
@@ -53,6 +84,7 @@
 #' \code{type = "Rubin"} method proposed by
 #'   Maxwell Mansolf (University of California, Los Angeles;
 #'   \email{mamansolf@@gmail.com})
+#'
 #' @references
 #' Bentler, P. M., & Chou, C.-P. (1992). Some new covariance structure model
 #' improvement statistics. \emph{Sociological Methods & Research, 21}(2),
@@ -94,16 +126,17 @@
 #'
 #' ## Mode 1: Score test for releasing equality constraints
 #'
-#' ## default: Li et al.'s (1991) "D2" method
-#' lavTestScore.mi(fit0, cumulative = TRUE)
-#' lavTestScore.mi(out, type = "Rubin") # Rubin's rules
+#' ## default type: Li et al.'s (1991) "D2" method
+#' lavTestScore.mi(out, cumulative = TRUE)
+#' ## Rubin's rules
+#' lavTestScore.mi(out, type = "Rubin")
 #'
 #' ## Mode 2: Score test for adding currently fixed-to-zero parameters
-#' lavTestScore.mi(fit0, add = 'x7 ~~ x8 + x9')
+#' lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
 #'
 #' }
 #'
-################################ @export
+#' @export
 lavTestScore.mi <- function(object, add = NULL, release = NULL,
                             type = c("D2","Rubin"), asymptotic = FALSE, # as F or chi-squared
                             univariate = TRUE, cumulative = FALSE,
@@ -281,7 +314,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                   !is.null(add$rhs))
         ADD <- as.data.frame(add)
       } else if (is.character(add)) {
-        ADD <- lavaanify(add, ngroups = ngroups)
+        ADD <- lavaan::lavaanify(add, ngroups = ngroups)
         ADD <- ADD[,c("lhs","op","rhs","block","user","label")]
         remove.idx <- which(ADD$user == 0)
         if (length(remove.idx) > 0L) {
@@ -336,7 +369,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
       W_list <- lapply(infoList, function(information) {
         Z <- cbind(rbind(information, R.model),
-                   rbind(t(R.model),matrix(0, nrow(R.model), nrow(R.model))))
+                   rbind(t(R.model), matrix(0, nrow(R.model), nrow(R.model))))
 
         Z.plus <- try(solve(Z), silent = TRUE)
         if (inherits(Z.plus, "try-error")) Z.plus <- MASS::ginv(Z) #FIXME: warn for each imputation?
@@ -373,7 +406,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
     PT <- FIT@funList[[ which(useImps)[1] ]]$parTable
     # lhs/rhs
-    lhs <- lav_partable_labels(PT)[ PT$user == 10L ]
+    lhs <- lavaan::lav_partable_labels(PT)[ PT$user == 10L ]
     op <- rep("==", nadd)
     rhs <- rep("0", nadd)
     Table <- data.frame(lhs = lhs, op = op, rhs = rhs)

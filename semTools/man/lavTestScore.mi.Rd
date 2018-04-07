@@ -9,29 +9,66 @@ lavTestScore.mi(object, add = NULL, release = NULL, type = c("D2",
   epc = FALSE, verbose = FALSE, warn = TRUE)
 }
 \arguments{
+\item{object}{An object of class \code{\linkS4class{lavaan}}.}
+
+\item{add}{Either a \code{character} string (typically between single
+quotes) or a parameter table containing additional (currently fixed-to-zero)
+parameters for which the score test must be computed.}
+
+\item{release}{Vector of \code{integer}s. The indices of the \emph{equality}
+constraints that should be released. The indices correspond to the order of
+the equality constraints as they appear in the parameter table.}
+
 \item{type}{\code{character} indicating which pooling method to use.
 \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
-gradient and information, and those pooled values will be used to
-calculate modification indices in the usual manner. \code{"D2"} (default),
+ gradient and information, and those pooled values will be used to
+ calculate modification indices in the usual manner. \code{"D2"} (default),
 \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
-calculated from each imputed data set will be pooled across imputations,
-as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).}
+ calculated from each imputed data set will be pooled across imputations,
+ as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).}
 
-\item{asymptotic}{\code{logical}. If \code{FALSE}, the pooled test will be
-returned as an \emph{F}-distributed variable with numerator (\code{df1})
-and denominator (\code{df2}) degrees of freedom.  If \code{TRUE} (default),
-the pooled \emph{F} statistic will be multiplied by its \code{df1} on the
-assumption that its \code{df2} is sufficiently large enough that the
-statistic will be asymptotically \eqn{\chi^2} distributed with \code{df1}.}
+\item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
+will be returned as an \emph{F}-distributed variable with numerator
+(\code{df1}) and denominator (\code{df2}) degrees of freedom.
+If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
+\code{df1} on the assumption that its \code{df2} is sufficiently large
+enough that the statistic will be asymptotically \eqn{\chi^2} distributed
+with \code{df1}.}
+
+\item{univariate}{\code{logical}. If \code{TRUE}, compute the univariate
+score statistics, one for each constraint.}
+
+\item{cumulative}{\code{logical}. If \code{TRUE}, order the univariate score
+statistics from large to small, and compute a series of multivariate
+score statistics, each time adding an additional constraint.}
+
+\item{epc}{\code{logical}. If \code{TRUE}, and we are releasing existing
+constraints, compute the expected parameter changes for the existing (free)
+parameters (and any specified with \code{add}), if all constraints
+were released.}
+
+\item{verbose}{\code{logical}. Not used for now.}
+
+\item{warn}{\code{logical}. If \code{TRUE}, print out warnings if they occur.}
 }
 \value{
-A list containing at least one \code{data.frame} (the total score
-test), and optionally containing each 1-\emph{df} score test, the cumulative
-score tests, and expected parameter changes.
+A list containing at least one \code{data.frame}:
+ \itemize{
+   \item{\code{$test}: The total score test, with columns for the score
+     test statistic (\code{X2}), the degrees of freedom (\code{df}), and
+     a \emph{p} value under the \eqn{\chi^2} distribution (\code{p.value}).}
+   \item{\code{$uni}: Optional (if \code{univariate=TRUE}).
+     Each 1-\emph{df} score test, equivalent to modification indices.}
+   \item{\code{$cumulative}: Optional (if \code{cumulative=TRUE}).
+     Cumulative score tests.}
+   \item{\code{$epc}: Optional (if \code{epc=TRUE}). Parameter estimates,
+     expected parameter changes, and expected parameter values if all
+     the tested constraints were freed.}
+ }
 See \code{\link[lavaan]{lavTestScore}} for details.
 }
 \description{
-Score test (or Lagrange Multiplier test) for lavaan models fitted to
+Score test (or Lagrange multiplier test) for lavaan models fitted to
 multiple imputed data sets. Statistics for releasing one or more
 fixed or constrained parameters in model can be calculated by pooling
 the gradient and information matrices pooled across imputed data sets
@@ -63,12 +100,13 @@ out <- cfa.mi(HS.model, data = imps, group = "school", std.lv = TRUE)
 
 ## Mode 1: Score test for releasing equality constraints
 
-## default: Li et al.'s (1991) "D2" method
-lavTestScore.mi(fit0, cumulative = TRUE)
-lavTestScore.mi(out, type = "Rubin") # Rubin's rules
+## default type: Li et al.'s (1991) "D2" method
+lavTestScore.mi(out, cumulative = TRUE)
+## Rubin's rules
+lavTestScore.mi(out, type = "Rubin")
 
 ## Mode 2: Score test for adding currently fixed-to-zero parameters
-lavTestScore.mi(fit0, add = 'x7 ~~ x8 + x9')
+lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
 
 }
 

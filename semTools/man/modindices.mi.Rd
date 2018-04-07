@@ -22,8 +22,16 @@ calculate modification indices in the usual manner. \code{"D2"} (default),
 calculated from each imputed data set will be pooled across imputations,
 as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).}
 
-\item{cov.std}{\code{logical}. Ignored if \code{type == "D2"}.
-  If \code{TRUE} (default), the (residual)
+\item{standardized}{\code{logical}. If \code{TRUE}, two extra columns
+(\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values for
+the EPCs. In the first column (\code{$sepc.lv}), standardizization is based
+on the variances of the (continuous) latent variables. In the second column
+(\code{$sepc.all}), standardization is based on both the variances of both
+(continuous) observed and latent variables. (Residual) covariances are
+standardized using (residual) variances.}
+
+\item{cov.std}{\code{logical}. \code{TRUE} if \code{type == "D2"}.
+If \code{TRUE} (default), the (residual)
 observed covariances are scaled by the square-root of the diagonal elements
 of the \eqn{\Theta} matrix, and the (residual) latent covariances are
 scaled by the square-root of the diagonal elements of the \eqn{\Psi}
@@ -32,25 +40,55 @@ the square-root of the diagonal elements of the model-implied covariance
 matrix of observed variables (\eqn{\Sigma}), and the (residual) latent
 covariances are scaled by the square-root of the diagonal elements of the
 model-implied covariance matrix of the latent variables.}
+
+\item{power}{\code{logical}. If \code{TRUE}, the (post-hoc) power is
+computed for each modification index, using the values of \code{delta}
+and \code{alpha}.}
+
+\item{delta}{The value of the effect size, as used in the post-hoc power
+computation, currently using the unstandardized metric of the \code{$epc}
+column.}
+
+\item{alpha}{The significance level used for deciding if the modification
+index is statistically significant or not.}
+
+\item{high.power}{If the computed power is higher than this cutoff value,
+the power is considered 'high'. If not, the power is considered 'low'.
+This affects the values in the \code{$decision} column in the output.}
+
+\item{sort.}{\code{logical}. If \code{TRUE}, sort the output using the
+values of the modification index values. Higher values appear first.}
+
+\item{minimum.value}{\code{numeric}. Filter output and only show rows with a
+modification index value equal or higher than this minimum value.}
+
+\item{maximum.number}{\code{integer}. Filter output and only show the first
+maximum number rows. Most useful when combined with the \code{sort.} option.}
+
+\item{na.remove}{\code{logical}. If \code{TRUE} (default), filter output by
+removing all rows with \code{NA} values for the modification indices.}
+
+\item{op}{\code{character} string. Filter the output by selecting only those
+rows with operator \code{op}.}
 }
 \value{
 A \code{data.frame} containing modification indices and (S)EPCs.
 }
 \description{
-Modification indices (1-\emph{df} Lagrange Multiplier tests) from a
+Modification indices (1-\emph{df} Lagrange multiplier tests) from a
 latent variable model fitted to multiple imputed data sets. Statistics
 for releasing one or more fixed or constrained parameters in model can
-be calculated by pooling the gradient and information matrices pooled
+be calculated by pooling the gradient and information matrices
 across imputed data sets using Rubin's (1987) rules, or by pooling the
-modification indices across imputed data sets (Li, Meng, Raghunathan, &
+test statistics across imputed data sets (Li, Meng, Raghunathan, &
 Rubin, 1991).
 }
 \note{
-When \code{type = "D2"}, (S)EPCs will be pooled by taking the average
-across imputations. When \code{type = "Rubin"}, EPCs will be calculated
-in the standard way using the pooled gradient and information, and SEPCs
-will be calculated by standardizing the EPCs using model-implied (residual)
-variances.
+When \code{type = "D2"}, each (S)EPC will be pooled by taking its
+ average across imputations. When \code{type = "Rubin"}, EPCs will be
+ calculated in the standard way using the pooled gradient and information,
+ and SEPCs will be calculated by standardizing the EPCs using model-implied
+ (residual) variances.
 }
 \examples{
  \dontrun{
@@ -98,8 +136,10 @@ New York, NY: Wiley.
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
+Adapted from \pkg{lavaan} source code, written by
   Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
+\code{type = "Rubin"} method proposed by
   Maxwell Mansolf (University of California, Los Angeles;
   \email{mamansolf@gmail.com})
 }
