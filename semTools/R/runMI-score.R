@@ -494,7 +494,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     class(Table) <- c("lavaan.data.frame", "data.frame")
   }
 
-  N <- nobs(object)
+  N <- lavListInspect(object, "ntotal")
   if (lavoptions$mimic == "EQS") N <- N - 1
 
   if (lavoptions$se == "standard") {
