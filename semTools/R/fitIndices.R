@@ -3,7 +3,7 @@
 ##          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ##          Aaron Boulton <aboulton@ku.edu>,
 ##          Ruben Arslan <rubenarslan@gmail.com>
-## Last updated: 9 March 2018
+## Last updated: 11 April 2018
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------
 
@@ -149,7 +149,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
                                 paste(flags, collapse = ", "),
                                 "Please choose 'all' or among the following:",
                                 paste(fit.choices, collapse = ", "), sep = "\n"))
-  if("all" %in% fit.measures) fit.measures <- fit.choices
+  if ("all" %in% fit.measures) fit.measures <- fit.choices
 
   # Extract fit indices information from lavaan object
   fit <- lavInspect(object, "fit")
@@ -169,29 +169,36 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   # Compute fit indices
   result <- list()
   if (length(grep("gamma", fit.measures, ignore.case = TRUE))) {
-    gammaHatValue <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
-    adjGammaHatValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHatValue)
-    result["gammaHat"] <- gammaHatValue
-    result["adjGammaHat"] <- adjGammaHatValue
-    if(lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
-      gammaHatScaledValue <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
-      adjGammaHatScaledValue <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaledValue)
-      result["gammaHat.scaled"] <- gammaHatScaledValue
-      result["adjGammaHat.scaled"] <- adjGammaHatScaledValue
+    gammaHat <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
+    adjGammaHat <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHat)
+    result["gammaHat"] <- gammaHat
+    result["adjGammaHat"] <- adjGammaHat
+    if (lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
+      gammaHatScaled <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
+      adjGammaHatScaled <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaled)
+      result["gammaHat.scaled"] <- gammaHatScaled
+      result["adjGammaHat.scaled"] <- adjGammaHatScaled
     }
   }
   if (length(grep("rmsea", fit.measures))) {
     result["baseline.rmsea"] <- nullRMSEA(object, silent = TRUE)
-    if(lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
+    if (lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
       result["baseline.rmsea.scaled"] <- nullRMSEA(object, scaled = TRUE, silent = TRUE)
     }
   }
-  if(!is.na(f)) {
-    if("aic.smallN" %in% fit.measures) result["aic.smallN"] <- fit[["aic"]] + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
-    if("bic.priorN" %in% fit.measures) result["bic.priorN"] <- f + log(1 + n/nPrior) * nParam
-    if("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(n)) * nParam
-    if("sic" %in% fit.measures) result["sic"] <- sic(f, object)
+  if (!is.na(f)) {
+    if ("aic.smallN" %in% fit.measures) {
+      warning('AICc was developed for univariate linear models. It is ',
+              'probably not appropriate to use AICc to compare SEMs.')
+      result["aic.smallN"] <- fit[["aic"]] + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
+    }
+    if ("bic.priorN" %in% fit.measures) {
+      result["bic.priorN"] <- f + log(1 + n/nPrior) * nParam
+    }
+    if ("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(n)) * nParam
+    if ("sic" %in% fit.measures) result["sic"] <- sic(f, object)
   }
+  class(result) <- c("lavaan.vector","numeric")
   unlist(result[fit.measures])
 }
 
@@ -204,10 +211,10 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 #' RMSEA of the null model is calculated similar to the formula provided in the
 #' \code{lavaan} package. The standard formula of RMSEA is
 #'
-#' \deqn{ RMSEA =\sqrt{\frac{\chi^{2}}{N \times df} - \frac{1}{N}} \times
+#' \deqn{ RMSEA =\sqrt{\frac{\chi^2}{N \times df} - \frac{1}{N}} \times
 #' \sqrt{G} }
 #'
-#' where \eqn{\chi^{2}} is the chi-square test statistic value of the target
+#' where \eqn{\chi^2} is the chi-square test statistic value of the target
 #' model, \eqn{N} is the total sample size, \eqn{df} is the degree of freedom
 #' of the hypothesized model, \eqn{G} is the number of groups. Kenny proposed
 #' in his website that
@@ -218,26 +225,37 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 #' RMSEA for the null model is less than 0.158, an incremental measure of fit
 #' may not be that informative."
 #'
-#' See \url{http://davidakenny.net/cm/fit.htm}.
+#' See also \url{http://davidakenny.net/cm/fit.htm}
 #'
 #'
 #' @importFrom lavaan lavInspect
 #'
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
-#' @param scaled If \code{TRUE}, calculate the null model from the scaled test.
+#' @param scaled If \code{TRUE}, the scaled (or robust, if available) RMSEA
+#'   is returned. Ignored if a robust test statistic was not requested.
 #' @param silent If \code{TRUE}, do not print anything on the screen.
-#' @return A value of RMSEA of the null model. This value is hidden. Users may
-#' be assigned the output of this function to any object for further usage.
-#' @author Ruben Arslan (Humboldt-University of Berlin,
-#' \email{rubenarslan@@gmail.com})
-#' @seealso \itemize{ \item \code{\link{miPowerFit}} For the modification
-#' indices and their power approach for model fit evaluation \item
-#' \code{\link{moreFitIndices}} For other fit indices }
+#'
+#' @return A value of RMSEA of the null model (a \code{numeric} vector)
+#'   returned invisibly.
+#'
+#' @author
+#' Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@@gmail.com})
+#'
+#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+#'
+#' @seealso
+#' \itemize{
+#'   \item \code{\link{miPowerFit}} For the modification indices and their
+#'      power approach for model fit evaluation
+#'   \item \code{\link{moreFitIndices}} For other fit indices
+#' }
+#'
 #' @references Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The
 #' performance of RMSEA in models with small degrees of freedom.
 #' \emph{Sociological Methods Research, 44}(3), 486--507.
 #' doi:10.1177/0049124114543236
+#'
 #' @examples
 #'
 #' HS.model <- ' visual  =~ x1 + x2 + x3
@@ -248,51 +266,22 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 #' nullRMSEA(fit)
 #'
 #' @export
-nullRMSEA <- function (object, scaled = FALSE, silent = FALSE) {
-	# return RMSEA of the null model, warn if it is lower than 0.158, because it makes the TLI/CLI hard to interpret
-	test <- lavInspect(object, "options")$test
+nullRMSEA <- function(object, scaled = FALSE, silent = FALSE) {
+  fit <- update(object, model = lavaan::lav_partable_independence(fit))
+	fits <- lavaan::fitMeasures(fit, fit.measures = c("rmsea","rmsea.scaled",
+	                                                  "rmsea.robust"))
+	if (scaled) {
+	  RMSEA <- fits["rmsea.robust"]
+	  if (is.na(RMSEA)) RMSEA <- fits["rmsea.scaled"]
+	  if (is.na(RMSEA)) RMSEA <- fits["rmsea"]
+	} else RMSEA <- fits["rmsea"]
 
-	fits <- lavaan::fitMeasures(object)
-	N <- lavInspect(object, "ntotal") # sample size
-
-	X2 <- as.numeric ( fits['baseline.chisq'] ) # get baseline chisq
-	df <- as.numeric ( fits['baseline.df'] ) # get baseline df
-	G <- lavInspect(object, "ngroups") # number of groups
-
-	### a simple rip from fit.measures.R in lavaan's codebase.
-	N.RMSEA <- max(N, X2*4) # Check with lavaan
-        # RMSEA
-	if(df > 0) {
-		if(scaled) {
-			d <- sum(diag(lavInspect(object, "UGamma")))
-		}
-		if(lavInspect(object, "options")$mimic %in% c("Mplus", "lavaan")) {
-			GG <- 0
-			RMSEA <- sqrt( max( c((X2/N)/df - 1/(N-GG), 0) ) ) * sqrt(G)
-			if(scaled && test != "scaled.shifted") {
-				RMSEA.scaled <-
-					 sqrt( max( c((X2/N)/d - 1/(N-GG), 0) ) ) * sqrt(G)
-			} else if(test == "scaled.shifted") {
-				RMSEA.scaled <-
-					 sqrt( max(c((as.numeric(fits["baseline.chisq.scaled"])/N)/df - 1/(N-GG), 0))) * sqrt(G)
-			}
-		} else {
-			RMSEA <- sqrt( max( c((X2/N)/df - 1/N, 0) ) )
-			if(scaled) {
-				RMSEA.scaled <- sqrt( max( c((X2/N)/d - 1/N, 0) ) )
-			}
-		}
-	} else {
-		RMSEA <- RMSEA.scaled <- 0
-	}
-	if(scaled) {
-		RMSEA <- RMSEA.scaled
-	}
-	if(!silent) {
-		if(RMSEA < 0.158 ) {
-			cat(paste0("TLI and other incremental fit indices may not be that informative, because the RMSEA of the baseline model is lower than 0.158 (Kenny, Kaniskan, & McCoach, 2011). The baseline RMSEA is ",round(RMSEA,3), "\n"))
-		} else {
-			cat(paste0("Baseline RMSEA: ",round(RMSEA,3), "\n"))
+	if (!silent) {
+	  cat("The baseline model's RMSEA =", RMSEA, "\n\n")
+		if (RMSEA < 0.158 ) {
+			cat("CFI, TLI, and other incremental fit indices may not be very",
+			    "informative because the baseline model's RMSEA < 0.158",
+			    "(Kenny, Kaniskan, & McCoach, 2015). \n")
 		}
 	}
 	invisible(RMSEA)
