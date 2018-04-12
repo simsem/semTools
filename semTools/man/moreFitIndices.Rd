@@ -35,15 +35,15 @@ Calculate more fit indices that are not already provided in lavaan.
 }
 \details{
 Gamma Hat (gammaHat; West, Taylor, & Wu, 2012) is a global fit index which
-can be computed by
+can be computed (assuming equal number of indicators across groups) by
 
-\deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N -
-1}},}
+\deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N}} ,}
 
 where \eqn{p} is the number of variables in the model, \eqn{\chi^{2}_{k}} is
 the \eqn{\chi^2} test statistic value of the target model, \eqn{df_{k}} is
 the degree of freedom when fitting the target model, and \eqn{N} is the
-sample size. This formula assumes equal number of indicators across groups.
+sample size (or sample size minus the number of groups if \code{mimic} is
+set to \code{"EQS"}).
 
 Adjusted Gamma Hat (adjGammaHat; West, Taylor, & Wu, 2012) is a global fit
 index which can be computed by
@@ -86,7 +86,7 @@ model selection similar to AIC or BIC.
 
 \deqn{ hqc = f + 2k\log{(\log{N})},}
 
-Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit
+Note that if Satorra--Bentler or Yuan--Bentler's method is used, the fit
 indices using the scaled \eqn{\chi^2} values are also provided.
 
 See \code{\link{nullRMSEA}} for the further details of the computation of

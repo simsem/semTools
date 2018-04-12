@@ -3,7 +3,7 @@
 ##          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ##          Aaron Boulton <aboulton@ku.edu>,
 ##          Ruben Arslan <rubenarslan@gmail.com>
-## Last updated: 11 April 2018
+## Last updated: 12 April 2018
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------
 
@@ -14,15 +14,15 @@
 #' Calculate more fit indices that are not already provided in lavaan.
 #'
 #' Gamma Hat (gammaHat; West, Taylor, & Wu, 2012) is a global fit index which
-#' can be computed by
+#' can be computed (assuming equal number of indicators across groups) by
 #'
-#' \deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N -
-#' 1}},}
+#' \deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N}} ,}
 #'
 #' where \eqn{p} is the number of variables in the model, \eqn{\chi^{2}_{k}} is
 #' the \eqn{\chi^2} test statistic value of the target model, \eqn{df_{k}} is
 #' the degree of freedom when fitting the target model, and \eqn{N} is the
-#' sample size. This formula assumes equal number of indicators across groups.
+#' sample size (or sample size minus the number of groups if \code{mimic} is
+#' set to \code{"EQS"}).
 #'
 #' Adjusted Gamma Hat (adjGammaHat; West, Taylor, & Wu, 2012) is a global fit
 #' index which can be computed by
@@ -65,7 +65,7 @@
 #'
 #' \deqn{ hqc = f + 2k\log{(\log{N})},}
 #'
-#' Note that if Satorra-Bentler or Yuan-Bentler's method is used, the fit
+#' Note that if Satorra--Bentler or Yuan--Bentler's method is used, the fit
 #' indices using the scaled \eqn{\chi^2} values are also provided.
 #'
 #' See \code{\link{nullRMSEA}} for the further details of the computation of
@@ -158,10 +158,11 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   # Get the number of parameters
   nParam <- fit["npar"]
 
-  # Get number of observations
-  n <- lavInspect(object, "ntotal")
   # Find the number of groups
   ngroup <- lavInspect(object, "ngroups")
+  # Get number of observations
+  N <- n <- lavInspect(object, "ntotal")
+  if (lavInspect(object, "options")$mimic == "EQS") n <- n - ngroup
 
   # Calculate -2*log(likelihood)
   f <- -2 * fit["logl"]
@@ -169,12 +170,12 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   # Compute fit indices
   result <- list()
   if (length(grep("gamma", fit.measures, ignore.case = TRUE))) {
-    gammaHat <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / (n - 1)))
+    gammaHat <- p / (p + 2 * ((fit["chisq"] - fit["df"]) / n))
     adjGammaHat <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHat)
     result["gammaHat"] <- gammaHat
     result["adjGammaHat"] <- adjGammaHat
     if (lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
-      gammaHatScaled <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / (n - 1)))
+      gammaHatScaled <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / n))
       adjGammaHatScaled <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaled)
       result["gammaHat.scaled"] <- gammaHatScaled
       result["adjGammaHat.scaled"] <- adjGammaHatScaled
@@ -190,12 +191,12 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
     if ("aic.smallN" %in% fit.measures) {
       warning('AICc was developed for univariate linear models. It is ',
               'probably not appropriate to use AICc to compare SEMs.')
-      result["aic.smallN"] <- fit[["aic"]] + (2 * nParam * (nParam + 1)) / (n - nParam - 1)
+      result["aic.smallN"] <- fit[["aic"]] + (2 * nParam * (nParam + 1)) / (N - nParam - 1)
     }
     if ("bic.priorN" %in% fit.measures) {
-      result["bic.priorN"] <- f + log(1 + n/nPrior) * nParam
+      result["bic.priorN"] <- f + log(1 + N/nPrior) * nParam
     }
-    if ("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(n)) * nParam
+    if ("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(N)) * nParam
     if ("sic" %in% fit.measures) result["sic"] <- sic(f, object)
   }
   class(result) <- c("lavaan.vector","numeric")
@@ -383,12 +384,14 @@ chisqSmallN <- function(fit0, fit1 = NULL, ...) {
   }
   ## calculate k-factor correction
   N <- lavInspect(fit0, "ntotal")
-  if (!lavInspect(fit0, "options")$sample.cov.rescale) N <- N - 1
+  Ng <- lavInspect(fit0, "ngroups")
+  if (!lavInspect(fit0, "options")$sample.cov.rescale) N <- N - Ng
   P <- length(lavaan::lavNames(fit0))
   K <- length(lavaan::lavNames(fit0, type = "lv")) # count latent factors
   if (!is.null(fit1)) {
     N1 <- lavInspect(fit1, "ntotal")
-    if (!lavInspect(fit1, "options")$sample.cov.rescale) N1 <- N1 - 1
+    Ng1 <- lavInspect(fit1, "ngroups")
+    if (!lavInspect(fit1, "options")$sample.cov.rescale) N1 <- N1 - Ng1
     if (N != N1) stop("Unequal sample sizes")
     if (P != length(lavaan::lavNames(fit1))) stop("Unequal number of variables")
     K <- max(K, length(lavaan::lavNames(fit1, type = "lv")))
