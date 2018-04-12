@@ -14,7 +14,6 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Kristopher", family = "Preacher", role = "ctb", email="kris.preacher@vanderbilt.edu"),
 		person(given = "Donna", family = "Coffman", role = "ctb", email="dlc30@psu.edu"),
 		person(given = "Mijke", family = "Rhemtulla", role = "ctb", email="mrhemtulla@ucdavis.edu"),
-		
 		person(given = "Alexander", family = "Robitzsch", role = "ctb", email="a.robitzsch@bifie.at"),
 		person(given = "Craig", family = "Enders", role = "ctb", email="Craig.Enders@asu.edu"),
 		person(given = "Ruber", family = "Arslan", role = "ctb", email="rubenarslan@gmail.com"),
