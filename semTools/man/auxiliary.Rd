@@ -95,10 +95,12 @@ fitaux1 <- cfa.auxiliary(targetModel, data = dat1, aux = "z",
 fitaux2 <- cfa.auxiliary(targetModel, data = dat1, aux = c("z","ageyr","grade"),
                          group = "school", group.equal = "loadings")
 
-## calculate correct incremental fit indices (e.g., CFI, TLI) using
-## the internally stored baseline model
-fitMeasures(fitaux2, fit.measures = c("cfi","tli"),
-            baseline.model = fitaux2@external$baseline.model)
+## calculate correct incremental fit indices (e.g., CFI, TLI)
+fitMeasures(fitaux2, fit.measures = c("cfi","tli"))
+## NOTE: lavaan will use the internally stored baseline model, which
+##       is the independence model plus saturated auxiliary parameters
+lavInspect(fitaux2@external$baseline.model, "free")
+
 }
 \references{
 Enders, C. K. (2008). A note on the use of missing auxiliary
