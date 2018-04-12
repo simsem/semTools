@@ -28,7 +28,7 @@ export(
   measurementInvariance, longInvariance, measurementInvarianceCat,
 
   ## Alex
-  plotRMSEApower, SSpower, tukeySEM,
+  plotRMSEApower, tukeySEM,
 
   ## Jason D. Rights
   PAVranking, poolMAlloc,
@@ -41,24 +41,23 @@ export(
   parcelAllocation,
   ## with Alex, Corbin, and James Selig
   monteCarloMed,
+  ## with Alex
+  SSpower,
   ## with Mauricio
   fmi,
   ## with Steven R. Chesnut
   quark, combinequark,
   ## with Ylenio Longo
   htmt, efa.ekc,
-
-
+  ## with Ruben Arslan
+  nullRMSEA,
+  ## with Sunthud, Aaron, Yves
+  moreFitIndices,
 
   ## Ed Merkle
   kd,
 
   ## Corbin Quick
-  splitSample, lisrel2lavaan, ## lisrel2lavaan is deprecated, being phased out
+  splitSample, lisrel2lavaan ## lisrel2lavaan is deprecated, being phased out
 
-  ## Ruben Arslan
-  nullRMSEA,
-
-  ## Sunthud, Terrence, Aaron, Ruben Arslan, Yves
-  moreFitIndices
 )

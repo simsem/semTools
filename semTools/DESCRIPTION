@@ -1,12 +1,12 @@
 Package: semTools
-Version: 0.4-15.916
+Version: 0.4-15.917
 Title: Useful Tools for Structural Equation Modeling
 Description: Provides useful tools for structural equation modeling. 
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com"),
 		person(given = "Sunthud", family = "Pornprasertmanit", role = "aut", email = "psunthud@gmail.com"),
 		person(given = "Alexander", family = "Schoemann", role = "aut", email="schoemanna@ecu.edu"),
 		person(given = "Yves", family = "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be"),
-		person(given = "Patrick", family = "Miller", role = "aut", email="pmille13@nd.edu"),
+		person(given = "Patrick", family = "Miller", role = "ctb", email="pmille13@nd.edu"),
 		person(given = "Corbin", family = "Quick", role = "ctb", email="corbinq@umich.edu"),
 		person(given = "Mauricio", family = "Garnier-Villarreal", role = "ctb", email="mauricio.garniervillarreal@marquette.edu"),
 		person(given = "James", family = "Selig", role = "ctb", email="selig@unm.edu"),
@@ -14,6 +14,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Kristopher", family = "Preacher", role = "ctb", email="kris.preacher@vanderbilt.edu"),
 		person(given = "Donna", family = "Coffman", role = "ctb", email="dlc30@psu.edu"),
 		person(given = "Mijke", family = "Rhemtulla", role = "ctb", email="mrhemtulla@ucdavis.edu"),
+		
 		person(given = "Alexander", family = "Robitzsch", role = "ctb", email="a.robitzsch@bifie.at"),
 		person(given = "Craig", family = "Enders", role = "ctb", email="Craig.Enders@asu.edu"),
 		person(given = "Ruber", family = "Arslan", role = "ctb", email="rubenarslan@gmail.com"),
@@ -26,7 +27,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com"),
 		person(given = "Maxwell", family = "Mansolf", role = "ctb", email="mamansolf@gmail.com")
 		)
-Depends: R(>= 3.4), utils, stats, graphics, lavaan(>= 0.6)
+Depends: R(>= 3.3), utils, stats, graphics, lavaan(>= 0.6.1)
 Imports: methods
 Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt
 License: GPL (>= 2)
@@ -34,5 +35,5 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2018-03-27
+Date/Publication: 2018-04-12
 RoxygenNote: 6.0.1
