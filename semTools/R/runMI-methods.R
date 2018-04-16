@@ -818,7 +818,12 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   ## calculate average of m LRTs
   LRT_con <- mean(-2*(LL0[useImps] - LL1[useImps]))
   ## average chisq across imputations
-  LRT_bar <- mean(sapply(object@testList[useImps], function(x) x[[1]]$stat))
+  if (is.null(h1)) {
+    LRT_bar <- mean(sapply(object@testList[useImps], function(x) x[[1]]$stat))
+  } else {
+    LRT_bar <- mean(sapply(object@testList[useImps], function(x) x[[1]]$stat) -
+                      sapply(h1@testList[useImps], function(x) x[[1]]$stat))
+  }
   ## calculate average relative increase in variance
   a <- DF*(nImps - 1)
   ariv <- ((nImps + 1) / a) * (LRT_bar - LRT_con)
@@ -909,8 +914,8 @@ anova.lavaan.mi <- function(object, h1 = NULL,
   useImps <- sapply(object@convergence, "[[", i = "converged")
   nImps <- sum(useImps)
   ## check class
-  if (!is(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
-  if (!is.null(h1) & !is(object, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
+  if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
+  if (!is.null(h1) & !inherits(object, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
 
   ## Everything else obsolete if test = "D1"
   if (toupper(test[1]) == "D1") {
@@ -952,6 +957,9 @@ anova.lavaan.mi <- function(object, h1 = NULL,
     if (is.null(baseline)) {
       PTb <- lavaan::lav_partable_independence(lavdata = object@Data,
                                                lavoptions = lavListInspect(object, "options"))
+      # FIXME: shouldn't need this line, but lav_partable_merge() fails when
+      #        lavaan:::lav_object_extended() returns a NULL slot instead of "plabel"
+      PTb$plabel <- paste0(".p", PTb$id, ".")
       baseFit <- runMI(model = PTb, data = object@DataList[useImps],
                        group = lavListInspect(object, "group"),
                        se = "none", # to save time
@@ -960,7 +968,7 @@ anova.lavaan.mi <- function(object, h1 = NULL,
                        ordered = lavListInspect(object, "ordered"),
                        parameterization = lavListInspect(object,
                                                          "parameterization"))
-    } else if (!is(baseline, "lavaan.mi")) {
+    } else if (!inherits(baseline, "lavaan.mi")) {
       stop('User-supplied baseline model must be "lavaan.mi" class fit',
            ' to the same imputed data')
     } else baseFit <- baseline
@@ -972,9 +980,9 @@ anova.lavaan.mi <- function(object, h1 = NULL,
   ## check DF
   DF0 <- object@testList[[ which(useImps)[1] ]][[1]][["df"]]
   if (!is.null(h1)) {
-    if (!is(h1, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
+    if (!inherits(h1, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
     DF1 <- h1@testList[[ which(useImps)[1] ]][[1]][["df"]]
-    if (DF0 == DF1) stop("models have the equal degrees of freedom")
+    if (DF0 == DF1) stop("models have equal degrees of freedom")
     if (DF0 < DF1) {
       H0 <- h1
       h1 <- object
@@ -1063,7 +1071,9 @@ anova.lavaan.mi <- function(object, h1 = NULL,
         out["baseline.pvalue.scaled"] <- baseOut[["pvalue.scaled"]]
         cb <- baseOut[["chisq.scaling.factor"]]
         out["baseline.chisq.scaling.factor"] <- cb
-        out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
+        if (scaleshift) {
+          out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
+        }
       }
     }
   }

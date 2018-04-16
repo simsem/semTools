@@ -28,10 +28,10 @@ speed   =~ x7 + x8 + x9
 ab := a*b
 '
 ## fit single-group model
-fit1 <- cfa.mi(HS.model, data = imps, std.lv = TRUE, meanstructure = TRUE,
-               estimator = "mlm")
+fit1 <- cfa.mi(HS.model, data = imps, std.lv = TRUE, meanstructure = TRUE)
 fit0 <- cfa.mi(HS.model, data = fit1, std.lv = TRUE, meanstructure = TRUE,
-               se = "none",#estimator = "mlm",
+               #se = "none",
+               #estimator = "mlm",
                constraints = '.p2. == .p3. ; .p5. == .p6. ; .p8. == .p9.')
 ## use methods
 summary(fit1, stand = TRUE, rsq = TRUE) # mimics parameterEstimates()
