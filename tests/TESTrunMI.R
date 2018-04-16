@@ -51,8 +51,8 @@ anova(fit0, h1 = fit1, test = "D2")  # compare fit
 
 
 ## fit multigroup model
-mgfit1 <- cfa.mi(HS.model, data = imps, estimator = "mlm", group = "school")
-mgfit0 <- cfa.mi(HS.model, data = imps, estimator = "mlm", group = "school",
+mgfit1 <- cfa.mi(HS.model, data = imps, group = "school")
+mgfit0 <- cfa.mi(HS.model, data = imps, group = "school",
                  group.equal = c("loadings","intercepts"))
 ## use methods
 summary(mgfit0, standardized = "std.all") # can also request "std.lv"
@@ -108,9 +108,10 @@ VARIABLE:
   NAMES = x1 x2 x3 x4 x5 x6 x7 x8 x9 school;
   USEVAR = x1-x9;
 MODEL:
-  f1 BY x1-x3;
-  f2 BY x4-x6;
-  f3 BY x7-x9;
+  f1 BY x1* x2 x3;
+  f2 BY x4* x5 x6;
+  f3 BY x7* x8 x9;
+  f1@1 f2@1 f3@1;
 ', file = "single.inp")
 
 ## write multigroup model to file
