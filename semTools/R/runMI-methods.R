@@ -568,109 +568,52 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE,
   class(out) <- c("lavaan.vector","numeric")
   out
 }
-#' @importFrom lavaan lavListInspect
-getLLs <- function(object) {
-  meanstructure <- lavListInspect(object, "meanstructure")
-  nG <- lavListInspect(object, "ngroups")
-  group <- lavListInspect(object, "group")
+#' @importFrom lavaan parTable lavaan lavListInspect
+#' @importFrom methods getMethod
+getLLs <- function(object, saturated = FALSE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
-  nImps <- sum(useImps)
-  m <- length(useImps)
-  implied <- getMethod("fitted", "lavaan.mi")(object)
-  ## Multiple groups?
-  if (nG > 1L) {
-    group.label <- lavListInspect(object, "group.label")
-    varnames <- lavaan::lavNames(object, group = 1:nG) # in case order differs?
-    names(varnames) <- group.label
-    S <- lapply(implied, "[[", i = "cov")
-    if (meanstructure) {
-      M <- lapply(implied, "[[", i = "mean")
-    } else {
-      M <- list()
-      for (g in group.label) {
-        M[[g]] <- Reduce("+", lapply(lapply(object@SampleStatsList[useImps],
-                                            "[[", i = g),   # Group g's list of means
-                                     "[[", i = "mean")) / nImps # average them
-      }
-    }
-    LL <- numeric(length = m)
-    for (i in 1:m) {
-      if (!useImps[i]) next
-      LLg <- numeric(length = nG)
-      names(LLg) <- group.label
-      dd <- object@DataList[[i]]
-      for (g in group.label) {
-        ## check NPD
-        if (any(eigen(S[[g]])$values <= 0))
-          return(paste("the model-implied covariance matrix of observed",
-                       "variables was non-positive definite in group", sQuote(g)))
-        ## check symmetry
-        if (max(abs(S[[g]] - t(S[[g]]))) > .Machine$double.eps) {
-          places <- 15
-          while (places >= 3) {
-            temp <- round(S[[g]], places)
-            if (max(abs(temp - t(temp))) > .Machine$double.eps) {
-              places <- places - 1
-              next
-            } else {
-              warning("The model-implied covariance matrix of observed",
-                      " variables in group ", sQuote(g), " needed to be rounded to ",
-                      places, " decimal places in order to pass a test for",
-                      " symmetry before calculating log-likelihoods.  This",
-                      " is probably nothing to worry about.\n")
-              S[[g]] <- temp
-              places <- 0
-              break
-            }
-          }
-        }
-        ## calculate log-likelihoods, if S passed above tests
-        LLg[g] <- sum(apply(as.matrix(dd[ dd[,group] == g, varnames[[g]]]),
-                            MARGIN = 1, FUN = mnormt::dmnorm, log = TRUE,
-                            mean = M[[g]], varcov = unclass(S[[g]])))
-      }
-      LL[i] <- sum(LLg)
-    }
+  ## FIXME: lavaanList does not return info when fixed because no convergence!
+  dataList <- object@DataList[useImps]
+  lavoptions <- lavListInspect(object, "options")
+  group <- lavListInspect(object, "group")
+  if (saturated) {
+    fit <- lavaan(parTable(object), data = dataList[[ which(useImps)[1] ]],
+                  slotOptions = lavoptions, group = group)
+    ## use saturated parameter table as new model
+    PT <- lavaan::lav_partable_unrestricted(fit)
+    ## fit saturated parameter table to each imputation, return estimates
+    satParams <- lapply(object@DataList[useImps], function(d) {
+      parTable(lavaan(model = PT, data = d,
+                      slotOptions = lavoptions, group = group))$est
+    })
+    ## set all parameters fixed
+    PT$free <- 0L
+    PT$user <- 1L
+    ## fix them to pooled estimates
+    PT$ustart <- colMeans(do.call(rbind, satParams))
+    PT$start <- NULL
+    PT$est <- NULL
+    PT$se <- NULL
   } else {
-    varnames <- lavaan::lavNames(object)
-    S <- implied$cov
-    ## check NPD
-    if (any(eigen(S)$values <= 0))
-      return(paste("the model-implied covariance matrix of observed",
-                   "variables was non-positive definite"))
-    ## check symmetry
-    if (max(abs(S - t(S))) > .Machine$double.eps) {
-      places <- 15
-      while (places >= 3) {
-        temp <- round(S, places)
-        if (max(abs(temp - t(temp))) > .Machine$double.eps) {
-          places <- places - 1
-          next
-        } else {
-          warning("The model-implied covariance matrix of observed",
-                  " variables needed to be rounded to ",
-                  places, " decimal places in order to pass a test for",
-                  " symmetry before calculating log-likelihoods.  This",
-                  " is probably nothing to worry about.\n")
-          S <- temp
-          places <- 0
-          break
-        }
-      }
-    }
-
-    M <- if (meanstructure) implied$mean else {
-      Reduce("+", lapply(object@SampleStatsList[useImps], "[[", i = "mean")) / nImps
-    }
-    LL <- numeric(length = m)
-    for (i in 1:m) {
-      if (!useImps[i]) next
-      LL[i] <- sum(apply(as.matrix(object@DataList[[i]][ , varnames]),
-                         MARGIN = 1, FUN = mnormt::dmnorm,
-                         mean = M, varcov = unclass(S), log = TRUE))
-    }
+    ## save parameter table as new model
+    PT <- parTable(object)
+    ## set all parameters fixed
+    PT$free <- 0L
+    PT$user <- 1L
+    ## fix them to pooled estimates
+    fixedValues <- getMethod("coef","lavaan.mi")(object, type = "user")
+    PT$ustart <- fixedValues
+    PT$start <- NULL
+    PT$est <- NULL
+    PT$se <- NULL
+    ## omit (in)equality constraints and user-defined parameters
+    params <- !(PT$op %in% c("==","<",">",":="))
+    PT <- PT[params, ]
   }
-  LL
+  ## return log-likelihoods
+  sapply(object@DataList[useImps], function(d) {
+    logLik(lavaan(PT, data = d, slotOptions = lavoptions, group = group))
+  })
 }
 #' @importFrom stats pf pchisq
 #' @importFrom lavaan lavListInspect parTable
@@ -691,132 +634,12 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
 
   ## calculate m log-likelihoods under pooled H0 estimates
   LL0 <- getLLs(object)
-  if (is.character(LL0))
-    stop("Using the pooled restricted-model estimates (i.e., the model with",
-         " more degrees of freedom), ", LL0, ". Log-likelihoods therefore cannot",
-         " be computed, so the D3 statistic is unavailable.\n\nUse the D2",
-         " statistic with caution, as Type I error rates could be too",
-         " low or too high (Enders, 2010, ch. 8).\n\nIf your models are",
-         " parametrically nested, you could use the D1 statistic by labeling",
-         " relevant parameters in your less-restricted model's syntax and",
-         " specify constraints on them, as in ?lavTestWald")
-
   ## calculate m log-likelihoods under pooled H1 estimates
-  if (is.null(h1)) {
-    ## calculate log-likelihood under saturated model as alternative (H1)
-    LL1 <- numeric(length = m)
-    if (nG > 1L) {
-      group.label <- lavListInspect(object, "group.label")
-      varnames <- lavaan::lavNames(object, group = 1:nG) # in case order changes?
-      names(varnames) <- group.label
-      Ns <- lavListInspect(object, "nobs") # group sample sizes
-      names(Ns) <- group.label
-      S1 <- M1 <- list()
-      for (g in group.label) {
-        S1[[g]] <- Reduce("+", lapply(lapply(object@SampleStatsList[useImps],
-                                             "[[", i = g),  # Group g's cov list
-                                      "[[", i = "cov")) / nImps  # average them
-        M1[[g]] <- Reduce("+", lapply(lapply(object@SampleStatsList[useImps],
-                                             "[[", i = g),  # Group g's list of means
-                                      "[[", i = "mean")) / nImps # average them
-        if (lavListInspect(object, "options")$sample.cov.rescale) {
-          S1[[g]] <- S1[[g]] * (Ns[g] - 1) / Ns[g]
-        }
-      }
-      ## within 1:m, iterate over 1:nG
-      for (i in 1:m) {
-        if (!useImps[i]) next
-        LL1g <- numeric(length = nG)
-        names(LL1g) <- group.label
-        dd <- object@DataList[[i]]
-        for (g in group.label) {
-          if (any(eigen(S1[[g]])$values <= 0))
-            stop("Using the pooled saturated-model estimates (i.e., averaging the",      ## FIXME: move from 1:m loop to g loop above
-                 " observed covariance matrices across imputations), the covariance",
-                 " matrix of observed variables was non-positive definite in",
-                 " group ", sQuote(g), ". Log-likelihoods therefore cannot be",
-                 " computed, so the D3 statistic is unavailable.  Use the D2",
-                 " statistic with caution, as Type I error rates could be too",
-                 " low or too high (Enders, 2010, ch. 8).\n")
-          if (max(abs(S1[[g]] - t(S1[[g]]))) > .Machine$double.eps) {
-            places <- 15
-            while (places >= 3) {
-              temp <- round(S1[[g]], places)
-              if (max(abs(temp - t(temp))) > .Machine$double.eps) {
-                places <- places - 1
-                next
-              } else {
-                warning("The pooled saturated-model estimates (i.e., averaging",
-                        " the observed covariance matrices across imputations)",
-                        " in group ", sQuote(g), " needed to be rounded to ",
-                        places, " decimal places in order to pass a test for",
-                        " symmetry before calculating log-likelihoods.  This",
-                        " is probably nothing to worry about.\n")
-                S1[[g]] <- temp
-                places <- 0
-                break
-              }
-            }
-          }
-          LL1g[g] <- sum(apply(as.matrix(dd[ dd[,group] == g, varnames[[g]]]),
-                               MARGIN = 1, FUN = mnormt::dmnorm, log = TRUE,
-                               mean = M1[[g]], varcov = unclass(S1[[g]])))
-        }
-        LL1[i] <- sum(LL1g)
-      }
-    } else {
-      varnames <- lavaan::lavNames(object)
-      S1 <- Reduce("+", lapply(object@SampleStatsList[useImps], "[[", i = "cov")) / nImps
-      if (lavListInspect(object, "options")$sample.cov.rescale) S1 <- S1 * (N - 1) / N
-      if (any(eigen(S1)$values <= 0))
-        stop("Using the pooled saturated-model estimates (i.e., averaging the",
-             " observed covariance matrices across imputations), the covariance",
-             " matrix of observed variables was non-positive definite. Log-",
-             "likelihoods therefore cannot be computed, so the D3 statistic",
-             " is unavailable.  Use the D2 statistic with caution, as Type I",
-             " error rates could be too low or too high (Enders, 2010, ch. 8).\n")
-      if (max(abs(S1 - t(S1))) > .Machine$double.eps) {
-        places <- 15
-        while (places >= 3) {
-          temp <- round(S1, places)
-          if (max(abs(temp - t(temp))) > .Machine$double.eps) {
-            places <- places - 1
-            next
-          } else {
-            warning("The pooled saturated-model estimates (i.e., averaging",
-                    " the observed covariance matrices across imputations)",
-                    " needed to be rounded to ",
-                    places, " decimal places in order to pass a test for",
-                    " symmetry before calculating log-likelihoods.  This",
-                    " is probably nothing to worry about.\n")
-            S1 <- temp
-            places <- 0
-            break
-          }
-        }
-      }
-
-      M1 <- Reduce("+", lapply(object@SampleStatsList[useImps], "[[", i = "mean")) / nImps
-      for (i in 1:m) {
-        if (!useImps[i]) next
-        LL1[i] <- sum(apply(as.matrix(object@DataList[[i]][ , varnames]),
-                            MARGIN = 1, FUN = mnormt::dmnorm,
-                            mean = M1, varcov = unclass(S1), log = TRUE))
-      }
-    }
-  } else LL1 <- getLLs(h1)
-  if (is.character(LL1))
-    stop("Using pooled estimates from the less-restricted model (i.e., with",
-         " fewer degrees of freedom), ", LL1, ". Log-likelihoods therefore cannot",
-         " be computed, so the D3 statistic is unavailable.\n\nUse the D2",
-         " statistic with caution, as Type I error rates could be too",
-         " low or too high (Enders, 2010, ch. 8).\n\nIf your models are",
-         " parametrically nested, you could use the D1 statistic by labeling",
-         " relevant parameters in your less-restricted model's syntax and",
-         " specify constraints on them, as in ?lavTestWald")
+  LL1 <- if (is.null(h1)) getLLs(object, saturated = TRUE) else getLLs(h1)
+  #FIXME: check whether LL1 or LL0 returned errors?  add try()?
 
   ## calculate average of m LRTs
-  LRT_con <- mean(-2*(LL0[useImps] - LL1[useImps]))
+  LRT_con <- mean(-2*(LL0 - LL1)) # getLLs() already applies [useImps]
   ## average chisq across imputations
   if (is.null(h1)) {
     LRT_bar <- mean(sapply(object@testList[useImps], function(x) x[[1]]$stat))

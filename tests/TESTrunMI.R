@@ -151,18 +151,20 @@ library(mice)
 rosenberg.data <- read.table("tests/data/data.txt", header = TRUE)[1:10000,1:10]
 
 ## impose 50% missing values
-set.seed(123)
-for (COL in 1:10) {
-  ROW <- sample(1:nrow(rosenberg.data), size = .5*nrow(rosenberg.data))
-  rosenberg.data[ROW, COL] <- NA
-}
-
-# Impute with mice
+# set.seed(123)
+# for (COL in 1:10) {
+#   ROW <- sample(1:nrow(rosenberg.data), size = .5*nrow(rosenberg.data))
+#   rosenberg.data[ROW, COL] <- NA
+# }
+#
+# # Impute with mice
 nImputations <- 5
-imp <- mice(rosenberg.data, m = nImputations)
-# Create list of imputated data sets
-impList <- list()
-for (i in 1:nImputations) impList[[i]] <- complete(imp, action = i)
+# imp <- mice(rosenberg.data, m = nImputations)
+# # Create list of imputated data sets
+# impList <- list()
+# for (i in 1:nImputations) impList[[i]] <- complete(imp, action = i)
+# saveRDS(impList, "tests/data/imps.rds")
+impList <- readRDS("tests/data/imps.rds")
 
 ## estimate the fraction of missing information for summary stats
 fmi(impList, ords = paste0("Q", 1:10))
