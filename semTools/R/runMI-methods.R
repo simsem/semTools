@@ -68,8 +68,9 @@
 #'  the total (default) sample size or a vector of group sample sizes
 #'  (\code{total = FALSE}).}
 #' \item{anova}{\code{signature(object = "lavaan.mi", h1 = NULL,
-#'   test = c("D3","D2","D1"), asymptotic = FALSE, constraints = NULL,
-#'   indices = FALSE, baseline = NULL)}: Returns a test of model fit, or a test
+#'   test = c("D3","D2","D1"), pool.robust = FALSE, asymptotic = FALSE,
+#'   constraints = NULL, indices = FALSE, baseline = NULL)}:
+#'   Returns a test of model fit, or a test
 #'   of the difference in fit between nested models if \code{h1} is another
 #'   \code{lavaan.mi} object, assuming \code{object} is nested in \code{h1}. If
 #'   \code{asymptotic}, the returned test statistic will follow a \eqn{\chi^2}
@@ -87,7 +88,14 @@
 #'   estimator (e.g., DWLS for categorical outcomes), \code{"D3"} is not
 #'   available, so the default is changed to \code{"D2"} (alias can be any of
 #'   \code{"lmrr", "Li.et.al", "pooled.wald"}), which returns a pooled test
-#'   statistic. \code{"D1"} is a Wald test calculated for constraints on the
+#'   statistic. If \code{pool.robust = TRUE} (ignored if \code{test != "D2"} or
+#'   if a robust test was not requested), the robust test statistic is pooled,
+#'   whereas \code{pool.robust = FALSE} will pool the naive test statistic
+#'   (or difference statistic) and apply the average scale/shift
+#'   parameters to it (unavailable for mean- and variance-adjusted difference
+#'   statistics, so \code{pool.robust} will be set \code{TRUE}).
+#'
+#'   \code{"D1"} is a Wald test calculated for constraints on the
 #'   pooled point estimates, using the pooled covariance matrix of parameter
 #'   estimates; see \code{\link[lavaan]{lavTestWald}} for details. \code{h1} is
 #'   ignored when \code{test = "D1"}, and \code{constraints} is ignored when
@@ -287,10 +295,17 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
     PE$label <- PT$label
     PE$exo <- 0L # because PT$exo must be when !fixed.x
     class(PE) <- c("lavaan.parameterEstimates","lavaan.data.frame","data.frame")
-    attr(PE, "information") <- lavListInspect(object, "options")$information
-    attr(PE, "se") <- lavListInspect(object, "options")$se
+    lavops <- lavListInspect(object, "options")
+    attr(PE, "information") <- lavops$information
+    attr(PE, "se") <- lavops$se
     attr(PE, "group.label") <- lavListInspect(object, "group.label")
-    attr(PE, "missing") <- lavListInspect(object, "options")$missing
+    attr(PE, "level.label") <- object@Data@level.label #FIXME: lavListInspect?
+    attr(PE, "bootstrap") <- lavops$bootstrap
+    attr(PE, "bootstrap.successful") <- 0L #FIXME: assumes none. Implement Wei & Fan's mixing method?
+    attr(PE, "missing") <- lavops$missing
+    attr(PE, "observed.information") <- lavops$observed.information
+    attr(PE, "h1.information") <- lavops$h1.information
+    # FIXME: lavaan may add more!!
     if (fmi) cat("\n", messFMI, sep = "")
   } else {
     ## if not, attach header
@@ -546,6 +561,12 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE,
   test <- if (robust) 2L else 1L ## only included for simulation studies
   #test <- ifelse(lavListInspect(object, "options")$test == "standard", 1L, 2L)
 
+ if (scaleshift & !is.null(h1)) {
+   oldCall <- object@lavListCall #re-run lavaanList() and save DIFFTEST
+
+ }
+
+
   ## pool Wald tests
   if (is.null(h1)) {
     DF <- mean(sapply(object@testList[useImps], function(x) x[[test]][["df"]]))
@@ -576,6 +597,7 @@ getLLs <- function(object, saturated = FALSE) {
   dataList <- object@DataList[useImps]
   lavoptions <- lavListInspect(object, "options")
   group <- lavListInspect(object, "group")
+  if (length(group) == 0L) group <- NULL
   if (saturated) {
     fit <- lavaan(parTable(object), data = dataList[[ which(useImps)[1] ]],
                   slotOptions = lavoptions, group = group)
@@ -619,11 +641,9 @@ getLLs <- function(object, saturated = FALSE) {
 #' @importFrom lavaan lavListInspect parTable
 D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   N <- lavListInspect(object, "ntotal")
-  nG <- lavListInspect(object, "ngroups")
-  group <- lavListInspect(object, "group")
   useImps <- sapply(object@convergence, "[[", i = "converged")
   nImps <- sum(useImps)
-  m <- length(object@testList)
+  # m <- length(object@testList)
   if (is.null(h1)) {
     DF <- object@testList[[ which(useImps)[1] ]][[1]][["df"]]
   } else {
@@ -673,7 +693,6 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   if (is.null(h1)) {
     PT <- parTable(object)
     npar <- max(PT$free) - sum(PT$op == "==")
-    if (lavListInspect(object, "options")$sample.cov.rescale) N <- N - nG
     out <- c(out, npar = npar, ntotal = lavListInspect(object, "ntotal"),
              logl = mean(LL0), unrestricted.logl = mean(LL1),
              aic = -2*mean(LL0) + 2*npar, bic = -2*mean(LL0) + npar*log(N),
@@ -731,7 +750,7 @@ robustify <- function(ChiSq, object, h1 = NULL) {
 #' @importFrom stats pchisq uniroot
 #' @importFrom lavaan lavListInspect
 anova.lavaan.mi <- function(object, h1 = NULL,
-                            test = c("D3","D2","D1"),
+                            test = c("D3","D2","D1"), pool.robust = FALSE,
                             asymptotic = FALSE, constraints = NULL,
                             indices = FALSE, baseline = NULL) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -783,9 +802,10 @@ anova.lavaan.mi <- function(object, h1 = NULL,
       # FIXME: shouldn't need this line, but lav_partable_merge() fails when
       #        lavaan:::lav_object_extended() returns a NULL slot instead of "plabel"
       PTb$plabel <- paste0(".p", PTb$id, ".")
+      group <- lavListInspect(object, "group")
+      if (length(group) == 0L) group <- NULL
       baseFit <- runMI(model = PTb, data = object@DataList[useImps],
-                       group = lavListInspect(object, "group"),
-                       se = "none", # to save time
+                       group = group, se = "none", # to save time
                        test = lavListInspect(object, "options")$test,
                        estimator = lavListInspect(object, "options")$estimator,
                        ordered = lavListInspect(object, "ordered"),
@@ -820,7 +840,7 @@ anova.lavaan.mi <- function(object, h1 = NULL,
   if (moreFit) asymptotic <- TRUE
 
   ## check test options, backward compatibility?
-  if (tolower(test[1]) == "mplus") {
+  if (tolower(test[1]) == "mplus" || lavListInspect(object, "options")$mimic == "Mplus") {
     test <- "D3"
     asymptotic <- TRUE
   }
@@ -839,8 +859,9 @@ anova.lavaan.mi <- function(object, h1 = NULL,
     out <- D3(object = object, h1 = h1, asymptotic = asymptotic)
     if (any(indices %in% incremental)) baseOut <- D3(baseFit, asymptotic = TRUE)
   } else if (toupper(test[1]) == "D2") {
-    out <- D2(object = object, h1 = h1, asymptotic = asymptotic)
-    if (any(indices %in% incremental)) baseOut <- D2(baseFit, asymptotic = TRUE)
+    out <- D2(object = object, h1 = h1, asymptotic = asymptotic, robust = pool.robust)
+    if (any(indices %in% incremental)) baseOut <- D2(baseFit, asymptotic = TRUE,
+                                                     robust = pool.robust)
   }
   ## If test statistic is negative, return without any indices or robustness
   if (asymptotic & (moreFit | robust)) {
