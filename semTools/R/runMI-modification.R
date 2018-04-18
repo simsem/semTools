@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 7 April 2018
+### Last updated: 18 April 2018
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -26,6 +26,11 @@
 #'  \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
 #'  calculated from each imputed data set will be pooled across imputations,
 #'  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
+#' @param scale.W \code{logical}. If \code{TRUE} (default), the pooled
+#'  information matrix is calculated by scaling the within-imputation component
+#'  by the average relative increase in variance (ARIV; see Enders, 2010, p.
+#'  235). Otherwise, the pooled information is calculated as the weighted sum
+#'  of the within-imputation and between-imputation components.
 #' @param standardized \code{logical}. If \code{TRUE}, two extra columns
 #'  (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values for
 #'  the EPCs. In the first column (\code{$sepc.lv}), standardizization is based
@@ -128,6 +133,7 @@
 #' @export
 modindices.mi <- function(object,
                           type = c("D2","Rubin"),
+                          scale.W = TRUE,
 
                           standardized = TRUE,
                           cov.std = TRUE,
@@ -235,50 +241,60 @@ modindices.mi <- function(object,
                              slotData        = obj@Data,
                              slotCache       = obj@Cache,
                              sloth1          = obj@h1)
-      ## -------------------------------
-      ## borrowed code from modindices()
-      ## -------------------------------
-      information <- lavaan::lavInspect(obj2, "information")
-      LIST <- lavaan::parTable(obj2)
-      model.idx <- LIST$free[ LIST$free > 0L & LIST$user != 10L ]
-      extra.idx <- LIST$free[ LIST$free > 0L & LIST$user == 10L ]
-      # partition
-      I11 <- information[extra.idx, extra.idx, drop = FALSE]
-      I12 <- information[extra.idx, model.idx, drop = FALSE]
-      I21 <- information[model.idx, extra.idx, drop = FALSE]
-      I22 <- information[model.idx, model.idx, drop = FALSE]
-      I22.inv <- try(lavaan::lavInspect(obj2, "inverted.information"), silent = TRUE)
-      # just in case...
-      if (inherits(I22.inv, "try-error")) {
-        I22.inv <- try(solve(I22), silent = TRUE)
-        if (inherits(I22.inv, "try-error")) {
-          I22.inv <- MASS::ginv(I22)
-          warning("Could not invert I22; modification indices computed using generalized inverse.")
-        }
-      } else I22.inv <- I22.inv[model.idx, model.idx, drop = FALSE]
-      list(gradient = lavaan::lavInspect(obj2, "gradient")[extra.idx],
-           information = I11 - I12 %*% I22.inv %*% I21,
+      list(gradient = lavaan::lavInspect(obj2, "gradient"),
+           information = lavaan::lavInspect(obj2, "information"),
+           LIST = LIST,
            parTable = LIST[LIST$free > 0L & LIST$user == 10L, ])
     }
     oldCall$FUN <- lav_object_extend.mi
     FIT <- eval(as.call(oldCall))
+
+    LIST <- FIT@funList[[ which(useImps)[1] ]]$LIST
+    model.idx <- LIST$free[ LIST$free > 0L & LIST$user != 10L ]
+    extra.idx <- LIST$free[ LIST$free > 0L & LIST$user == 10L ]
     ## pool gradients and information matrices
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
-    score <- colMeans(do.call(rbind, gradList))
+    score <- colMeans(do.call(rbind, gradList))[extra.idx]
     B <- cov(do.call(rbind, gradList))
     W <- Reduce("+", infoList) / m
     ## check whether equality constraints prevent inversion of W
     inv.W <- try(solve(W), silent = TRUE)
-    if (!inherits(inv.W, "try-error")) {
-      ## relative increase in variance due to missing data
-      r <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
-      V <- (1 + r) * W
-    } else {
-      # warning("Could not invert W; information matrices pooled without ARIV")
-      ## less reliable, but constraints prevent inversion of W
-      V <- W + B + (1/m)*B ## Enders (2010, p. 235) eq. 8.19
+    if (inherits(inv.W, "try-error")) {
+      if (lavaan::lavOptions()$warn && scale.W)
+        warning("Could not invert W. Generalized inverse used instead.\n",
+                "If the model does not have equality constraints, ",
+                "it may be safer to set `scale.W = FALSE'.")
+      inv.W <- MASS::ginv(W)
     }
+    ## relative increase in variance due to missing data
+    ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
+    if (scale.W) {
+      information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
+    } else {
+      ## less reliable, but constraints prevent inversion of W
+      information <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
+    }
+
+    # partition
+    I11 <- information[extra.idx, extra.idx, drop = FALSE]
+    I12 <- information[extra.idx, model.idx, drop = FALSE]
+    I21 <- information[model.idx, extra.idx, drop = FALSE]
+    I22 <- information[model.idx, model.idx, drop = FALSE]
+    I22.inv <- try(solve(I22), silent = TRUE)
+    if (inherits(I22.inv, "try-error")) {
+      I22.inv <- MASS::ginv(I22)
+      if (lavaan::lavOptions()$warn)
+        warning("Could not invert I22; modification indices computed",
+                " using generalized inverse.")
+    }
+    V <- I11 - I12 %*% I22.inv %*% I21
+    V.diag <- diag(V)
+    # dirty hack: catch very small or negative values in diag(V)
+    # this is needed eg when parameters are not identified if freed-up;
+    idx <- which(V.diag < sqrt(.Machine$double.eps))
+    if (length(idx) > 0L) V.diag[idx] <- as.numeric(NA)
+
 
     ## template to save output
     myCols <- c("lhs","op","rhs")
@@ -289,12 +305,6 @@ modindices.mi <- function(object,
     rownames(LIST) <- NULL
     nR <- try(nrow(LIST), silent = TRUE)
     if (class(nR) == "try-error" || is.null(nR)) stop("No modification indices were computed.")
-
-    V.diag <- diag(V)
-    # dirty hack: catch very small or negative values in diag(V)
-    # this is needed eg when parameters are not identified if freed-up;
-    idx <- which(V.diag < sqrt(.Machine$double.eps))
-    if (length(idx) > 0L) V.diag[idx] <- as.numeric(NA)
 
     # create and fill in mi
     N <- lavListInspect(object, "ntotal")

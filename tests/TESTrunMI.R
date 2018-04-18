@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 March 2018
+### Last updated: 18 April 2018
 ### try new runMI
 
 library(lavaan)
@@ -49,14 +49,13 @@ anova(fit0, h1 = fit1, test = "D2")  # compare fit
 
 
 
-
 ## fit multigroup model
 mgfit1 <- cfa.mi(HS.model, data = imps, group = "school")
 mgfit0 <- cfa.mi(HS.model, data = imps, group = "school",
                  group.equal = c("loadings","intercepts"))
 ## use methods
 summary(mgfit0, standardized = "std.all") # can also request "std.lv"
-summary(mgfit0, ci = FALSE, fmi = TRUE)
+summary(mgfit0, ci = FALSE, fmi = TRUE, asymptotic = TRUE)
 coef(mgfit0)           # pooled coefs
 vcov(mgfit0)[1:4, 1:4] # pooled sampling covariance matrix
 fitted(mgfit0)         # model-implied moments evaluated at pooled coefficients
@@ -76,7 +75,13 @@ anova(mgfit0, test = "D1", constraints = '
       .p71. == 0
       .p72. == 0')
 
-
+## Score test for metric invariance
+lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
+                type = "Rubin", scale.W = TRUE)
+lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
+                type = "Rubin", scale.W = FALSE)
+lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = TRUE)
+lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = FALSE)
 
 
 ##############################################

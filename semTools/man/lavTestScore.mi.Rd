@@ -5,8 +5,8 @@
 \title{Score Test for Multiple Imputations}
 \usage{
 lavTestScore.mi(object, add = NULL, release = NULL, type = c("D2",
-  "Rubin"), asymptotic = FALSE, univariate = TRUE, cumulative = FALSE,
-  epc = FALSE, verbose = FALSE, warn = TRUE)
+  "Rubin"), scale.W = TRUE, asymptotic = FALSE, univariate = TRUE,
+  cumulative = FALSE, epc = FALSE, verbose = FALSE, warn = TRUE)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan}}.}
@@ -26,6 +26,12 @@ the equality constraints as they appear in the parameter table.}
 \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
  calculated from each imputed data set will be pooled across imputations,
  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).}
+
+\item{scale.W}{\code{logical}. If \code{TRUE} (default), the pooled
+information matrix is calculated by scaling the within-imputation component
+by the average relative increase in variance (ARIV; see Enders, 2010, p.
+235). Otherwise, the pooled information is calculated as the weighted sum
+of the within-imputation and between-imputation components.}
 
 \item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
 will be returned as an \emph{F}-distributed variable with numerator

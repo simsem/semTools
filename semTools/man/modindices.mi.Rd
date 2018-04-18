@@ -6,9 +6,9 @@
 \alias{modificationindices.mi}
 \title{Modification Indices for Multiple Imputations}
 \usage{
-modindices.mi(object, type = c("D2", "Rubin"), standardized = TRUE,
-  cov.std = TRUE, power = FALSE, delta = 0.1, alpha = 0.05,
-  high.power = 0.75, sort. = FALSE, minimum.value = 0,
+modindices.mi(object, type = c("D2", "Rubin"), scale.W = TRUE,
+  standardized = TRUE, cov.std = TRUE, power = FALSE, delta = 0.1,
+  alpha = 0.05, high.power = 0.75, sort. = FALSE, minimum.value = 0,
   maximum.number = nrow(LIST), na.remove = TRUE, op = NULL)
 }
 \arguments{
@@ -21,6 +21,12 @@ calculate modification indices in the usual manner. \code{"D2"} (default),
 \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
 calculated from each imputed data set will be pooled across imputations,
 as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).}
+
+\item{scale.W}{\code{logical}. If \code{TRUE} (default), the pooled
+information matrix is calculated by scaling the within-imputation component
+by the average relative increase in variance (ARIV; see Enders, 2010, p.
+235). Otherwise, the pooled information is calculated as the weighted sum
+of the within-imputation and between-imputation components.}
 
 \item{standardized}{\code{logical}. If \code{TRUE}, two extra columns
 (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values for

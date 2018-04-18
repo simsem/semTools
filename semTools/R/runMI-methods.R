@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 April 2018
+### Last updated: 18 April 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -128,12 +128,13 @@
 #'
 #' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = TRUE,
 #'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-#'  scale.W = FALSE, add.attributes = TRUE)}: see
+#'  scale.W = FALSE, asymptotic = FALSE, add.attributes = TRUE)}: see
 #'  \code{\link[lavaan]{parameterEstimates}} for details.
 #'  By default, \code{summary} returns pooled point and \emph{SE}
 #'  estimates, along with \emph{t} test statistics and associated \emph{df} and
 #'  \emph{p} value, and 95\% CI (control using the \code{ci} and \code{level}
-#'  arguments). Standardized solution(s) can also be requested by name
+#'  arguments). If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t}
+#'  tests are returned. Standardized solution(s) can also be requested by name
 #'  (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
 #'  \emph{R}-squared for endogenous variables can be requested, as well as the
 #'  Fraction Missing Information (FMI) for parameter estimates. By default, the
@@ -220,12 +221,12 @@ setMethod("show", "lavaan.mi", function(object) {
 })
 
 
-#' @importFrom stats pt qt
+#' @importFrom stats pt qt pnorm qnorm
 #' @importFrom lavaan lavListInspect parTable
 summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
                               fmi = FALSE, scale.W = TRUE,
-                              add.attributes = TRUE) {
+                              asymptotic = FALSE, add.attributes = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   ## extract parameter table with attributes for printing
@@ -253,19 +254,25 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
     VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W)
     PE$se <- lavaan::lav_model_vcov_se(object@Model, VCOV = VCOV,
                                        lavpartable = object@ParTable)
-    PE$t[free] <- PE$est[free] / PE$se[free]
-    ## calculate df for t test
     W <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "se")^2)
     B <- apply(sapply(object@ParTableList[useImps], "[[", i = "est"), 1, var)
-    Bm <- B + B/m
+    Bm <- B + B/m #FIXME: if (scale.W) use ARIV
     Tot <- W + Bm
-    ## can't do finite-sample correction because Wald z tests have no df (see Enders, 2010, p. 231, eq. 8.13 & 8.14)
-    PE$df[free] <- (m - 1) * (1 + W[free] / Bm[free])^2
-    ## if DF are obscenely large, set them to infinity for pretty printing
-    PE$df <- ifelse(PE$df > 9999, Inf, PE$df)
-    PE$pvalue <- pt(-abs(PE$t), df = PE$df)*2
-    if (ci) {
+    if (asymptotic) {
+      PE$z[free] <- PE$est[free] / PE$se[free]
+      PE$pvalue <- pnorm(-abs(PE$z))*2
+      crit <- qnorm(1 - (1 - level) / 2)
+    } else {
+      PE$t[free] <- PE$est[free] / PE$se[free]
+      ## calculate df for t test
+      ## can't do finite-sample correction because Wald z tests have no df (see Enders, 2010, p. 231, eq. 8.13 & 8.14)
+      PE$df[free] <- (m - 1) * (1 + W[free] / Bm[free])^2
+      ## if DF are obscenely large, set them to infinity for pretty printing
+      PE$df <- ifelse(PE$df > 9999, Inf, PE$df)
+      PE$pvalue <- pt(-abs(PE$t), df = PE$df)*2
       crit <- qt(1 - (1 - level) / 2, df = PE$df)
+    }
+    if (ci) {
       PE$ci.lower <- PE$est - crit * PE$se
       PE$ci.upper <- PE$est + crit * PE$se
       PE$ci.lower[!free] <- PE$ci.upper[!free] <- PE$est[!free]
@@ -295,15 +302,12 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                                                      est = PE$est)$est.std
   }
   if (fmi) {
-    PE$fmi1[free] <- Bm[free] / Tot[free]
-    PE$fmi2[free] <- (Bm[free] + 2 / (PE$df[free] + 3)) / Tot[free]
+    PE$fmi[free] <- Bm[free] / Tot[free]
     PE$riv[free] <- Bm[free] / W[free] # (Enders, 2010, p. 226, eq. 8.10)
     # == PE$riv[free] <- PE$fmi1[free] / (1 - PE$fmi1[free])
-    messFMI <- paste("FMI(2) adjusts for using few imputations, but can",
-                     "exceed 1 when the df are very large, making it",
-                     "uninterpretable. The RIV will exceed 1 whenever",
-                     "between-imputation variance exceeds",
-                     "within-imputation variance (when FMI(1) > 50%).\n\n")
+    messRIV <- paste("The RIV will exceed 1 whenever between-imputation",
+                     "variance exceeds within-imputation variance",
+                     "(when FMI(1) > 50%).\n\n")
   }
   ## fancy or not?
   if (add.attributes) {
@@ -321,11 +325,11 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
     attr(PE, "observed.information") <- lavops$observed.information
     attr(PE, "h1.information") <- lavops$h1.information
     # FIXME: lavaan may add more!!
-    if (fmi) cat("\n", messFMI, sep = "")
+    if (fmi) cat("\n", messRIV, sep = "")
   } else {
     ## if not, attach header
     class(PE) <- c("lavaan.data.frame","data.frame")
-    attr(PE, "header") <- if (fmi) c(messPool, "\n", messFMI) else messPool
+    attr(PE, "header") <- if (fmi) c(messPool, "\n", messRIV) else messPool
   }
   ## requested R-squared?
   endoNames <- c(lavaan::lavNames(object, "ov.nox"),
@@ -410,7 +414,8 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within"),
     type <- "between"
   }
   PT <- parTable(object)
-  npar <- max(PT$free) - sum(PT$op == "==")
+  ncon <- sum(PT$op == "==")
+  npar <- max(PT$free) - ncon
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   type <- tolower(type[1])
@@ -440,13 +445,13 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within"),
 
   ## check whether equality constraints prevent inversion of W
   if (scale.W) {
-    inv.W <- try(solve(W), silent = TRUE)
-    if (!inherits(inv.W, "try-error")) {
-      warning("Could not invert W for total score test, perhaps due ",
-              "to constraints on estimated parameters. ",
-              "Generalized inverse used instead.\n",
-              "If the model does not have equality constraints, ",
-              "it may be safer to set `scale.W = FALSE'.")
+    inv.W <- if (ncon == 0) try(solve(W), silent = TRUE) else MASS::ginv(W)
+    if (inherits(inv.W, "try-error")) {
+      if (ncon == 0) {
+        warning("Could not invert within-imputation covariance matrix. ",
+                "Generalized inverse used instead.\n",
+                "It may be safer to set `scale.W = FALSE'.")
+      }
       inv.W <- MASS::ginv(W)
     }
     ## relative increase in variance due to missing data

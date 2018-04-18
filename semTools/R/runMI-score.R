@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 7 April 2018
+### Last updated: 18 April 2018
 ### classic score test (= Lagrange Multiplier test)
 ### borrowed source code from lavaan/R/lav_test_score.R
 
@@ -366,17 +366,19 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     B <- cov(do.call(rbind, gradList))          # between-imputation information
     W <- Reduce("+", infoList) / m              # within-imputation information
     inv.W <- try(solve(W), silent = TRUE)
-    if (scale.W && !inherits(inv.W, "try-error")) {
-      ## relative increase in variance due to missing data
-      ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
-      information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
-    } else if (scale.W && inherits(inv.W, "try-error")) {
-      if (warn) warning("Could not invert W for total score test, perhaps due ",
-                        "to constraints on estimated parameters. ",
-                        "Generalized inverse used instead.\n",
-                        "If the model does not have equality constraints, ",
-                        "it may be safer to set `scale.W = FALSE'.")
+    if (inherits(inv.W, "try-error")) {
+      if (warn && scale.W) warning("Could not invert W for total score test, ",
+                                   "perhaps due to constraints on estimated ",
+                                   "parameters. Generalized inverse used instead.\n",
+                                   "If the model does not have equality constraints, ",
+                                   "it may be safer to set `scale.W = FALSE'.")
       inv.W <- MASS::ginv(W)
+    }
+    ## relative increase in variance due to missing data
+    ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
+
+    if (scale.W) {
+      information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
     } else {
       ## less reliable, but constraints prevent inversion of W
       information <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
@@ -404,6 +406,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     }
 
     PT <- FIT@funList[[ which(useImps)[1] ]]$parTable
+    PT$group <- PT$block
     # lhs/rhs
     lhs <- lavaan::lav_partable_labels(PT)[ PT$user == 10L ]
     op <- rep("==", nadd)
@@ -430,17 +433,18 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     B <- cov(do.call(rbind, gradList))          # between-imputation information
     W <- Reduce("+", infoList) / m              # within-imputation information
     inv.W <- try(solve(W), silent = TRUE)
-    if (scale.W && !inherits(inv.W, "try-error")) {
-      ## relative increase in variance due to missing data
-      ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
-      information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
-    } else if (scale.W && inherits(inv.W, "try-error")) {
-      if (warn) warning("Could not invert W for total score test, perhaps due ",
-                        "to constraints on estimated parameters. ",
-                        "Generalized inverse used instead.\n",
-                        "If the model does not have equality constraints, ",
-                        "it may be safer to set `scale.W = FALSE'.")
+    if (inherits(inv.W, "try-error")) {
+      if (warn && scale.W) warning("Could not invert W for total score test, ",
+                                   "perhaps due to constraints on estimated ",
+                                   "parameters. Generalized inverse used instead.\n",
+                                   "If the model does not have equality constraints, ",
+                                   "it may be safer to set `scale.W = FALSE'.")
       inv.W <- MASS::ginv(W)
+    }
+    ## relative increase in variance due to missing data
+    ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
+    if (scale.W) {
+      information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
     } else {
       ## less reliable, but constraints prevent inversion of W
       information <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19

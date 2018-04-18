@@ -38,18 +38,19 @@
 \S4method{show}{lavaan.mi}(object)
 
 \S4method{summary}{lavaan.mi}(object, se = TRUE, ci = TRUE, level = 0.95,
-  standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-  add.attributes = TRUE)
+  standardized = FALSE, rsquare = FALSE, fmi = FALSE, scale.W = TRUE,
+  asymptotic = FALSE, add.attributes = TRUE)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
 \S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE)
 
-\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between", "within"))
+\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between", "within"),
+  scale.W = TRUE)
 
 \S4method{anova}{lavaan.mi}(object, h1 = NULL, test = c("D3", "D2", "D1"),
-  asymptotic = FALSE, constraints = NULL, indices = FALSE,
-  baseline = NULL)
+  pool.robust = FALSE, scale.W = TRUE, asymptotic = FALSE,
+  constraints = NULL, indices = FALSE, baseline = NULL)
 
 \S4method{fitted}{lavaan.mi}(object)
 
@@ -63,17 +64,24 @@
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE)}:
  See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
  averaged across imputed data sets; see Rubin, 1987).}
-\item{vcov}{\code{signature(object = "lavaan.mi",
- type = c("pooled","between","within"))}: Returns the pooled covariance
+
+\item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
+ type = c("pooled","between","within"))}:  Returns the pooled covariance
  matrix of parameter estimates (\code{type = "pooled"}, the default), the
  within-imputations covariance matrix (\code{type = "within"}), or the
- between-imputations covariance matrix (\code{type = "between"}). See Enders
- (2010, ch. 8) for details.}
+ between-imputations covariance matrix (\code{type = "between"}). If
+ \code{scale=TRUE} (default), the pooled covariance matrix is calculated by
+ scaling the within-imputation component by the average relative increase in
+ variance (ARIV; see Enders, 2010, p. 235).  Otherwise, the pooled matrix is
+ calculated as the weighted sum of the within-imputation and
+ between-imputation components.  See Enders (2010, ch. 8) for details.}
+
 \item{fitted.values}{\code{signature(object = "lavaan.mi")}: See
  \code{\linkS4class{lavaan}}. Returns model-implied moments, evaluated at the
  pooled point estimates.}
 \item{fitted}{\code{signature(object = "lavaan.mi")}:
   alias for \code{fitted.values}}
+
 \item{residuals}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
  See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
  the difference between the model-implied moments from \code{fitted.values}
@@ -83,12 +91,15 @@
  (\code{type = "cor.bentler"}) formulas.}
 \item{resid}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
  alias for \code{residuals}}
+
 \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
  the total (default) sample size or a vector of group sample sizes
  (\code{total = FALSE}).}
+
 \item{anova}{\code{signature(object = "lavaan.mi", h1 = NULL,
-  test = c("D3","D2","D1"), asymptotic = FALSE, constraints = NULL,
-  indices = FALSE, baseline = NULL)}: Returns a test of model fit, or a test
+  test = c("D3","D2","D1"), pool.robust = FALSE, scale.W = TRUE,
+  asymptotic = FALSE, constraints = NULL, indices = FALSE, baseline = NULL)}:
+  Returns a test of model fit, or a test
   of the difference in fit between nested models if \code{h1} is another
   \code{lavaan.mi} object, assuming \code{object} is nested in \code{h1}. If
   \code{asymptotic}, the returned test statistic will follow a \eqn{\chi^2}
@@ -106,11 +117,19 @@
   estimator (e.g., DWLS for categorical outcomes), \code{"D3"} is not
   available, so the default is changed to \code{"D2"} (alias can be any of
   \code{"lmrr", "Li.et.al", "pooled.wald"}), which returns a pooled test
-  statistic. \code{"D1"} is a Wald test calculated for constraints on the
+  statistic. If \code{pool.robust = TRUE} (ignored if \code{test != "D2"} or
+  if a robust test was not requested), the robust test statistic is pooled,
+  whereas \code{pool.robust = FALSE} will pool the naive test statistic
+  (or difference statistic) and apply the average scale/shift
+  parameters to it (unavailable for mean- and variance-adjusted difference
+  statistics, so \code{pool.robust} will be set \code{TRUE}).
+
+  \code{"D1"} is a Wald test calculated for constraints on the
   pooled point estimates, using the pooled covariance matrix of parameter
   estimates; see \code{\link[lavaan]{lavTestWald}} for details. \code{h1} is
   ignored when \code{test = "D1"}, and \code{constraints} is ignored when
-  \code{test != "D1"}.
+  \code{test != "D1"}. The \code{scale.W} argument is passed to the
+  \code{vcov} method (see description above).
 
   When \code{indices = TRUE} and \code{is.null(h1)}, popular indices of
   approximate fit (CFI, TLI/NNFI, RMSEA with CI, and SRMR) will be returned
@@ -126,19 +145,23 @@
 \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
  convergence rates and estimation problems (if applicable) across imputed
  data sets.}
+
 \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = TRUE,
  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
- add.attributes = TRUE)}: see \code{\link[lavaan]{parameterEstimates}} for
- details. By default, \code{summary} returns pooled point and \emph{SE}
+ scale.W = FALSE, asymptotic = FALSE, add.attributes = TRUE)}: see
+ \code{\link[lavaan]{parameterEstimates}} for details.
+ By default, \code{summary} returns pooled point and \emph{SE}
  estimates, along with \emph{t} test statistics and associated \emph{df} and
  \emph{p} value, and 95\% CI (control using the \code{ci} and \code{level}
- arguments). Standardized solution(s) can also be requested by name
+ arguments). If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t}
+ tests are returned. Standardized solution(s) can also be requested by name
  (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
  \emph{R}-squared for endogenous variables can be requested, as well as the
  Fraction Missing Information (FMI) for parameter estimates. By default, the
  output will appear like \code{lavaan}'s \code{summary} output, but if
  \code{add.attributes = FALSE}, the returned \code{data.frame} will resemble
- the \code{parameterEstimates} output.}
+ the \code{parameterEstimates} output. The \code{scale.W} argument is
+ passed to \code{vcov} (see description above).}
 }
 \description{
 This class extends the \code{\linkS4class{lavaanList}} class, created by
