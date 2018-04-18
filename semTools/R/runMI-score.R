@@ -40,6 +40,11 @@
 #' \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
 #'  calculated from each imputed data set will be pooled across imputations,
 #'  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
+#' @param scale.W \code{logical}. If \code{TRUE} (default), the pooled
+#'  information matrix is calculated by scaling the within-imputation component
+#'  by the average relative increase in variance (ARIV; see Enders, 2010, p.
+#'  235). Otherwise, the pooled information is calculated as the weighted sum
+#'  of the within-imputation and between-imputation components.
 #' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
 #'  will be returned as an \emph{F}-distributed variable with numerator
 #'  (\code{df1}) and denominator (\code{df2}) degrees of freedom.
@@ -138,7 +143,8 @@
 #'
 #' @export
 lavTestScore.mi <- function(object, add = NULL, release = NULL,
-                            type = c("D2","Rubin"), asymptotic = FALSE, # as F or chi-squared
+                            type = c("D2","Rubin"), scale.W = TRUE,
+                            asymptotic = FALSE, # as F or chi-squared
                             univariate = TRUE, cumulative = FALSE,
                             #standardized = TRUE, #FIXME: add std.lv and std.all if(epc)?
                             epc = FALSE, verbose = FALSE, warn = TRUE) {
@@ -356,8 +362,25 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     ## pool gradients and information matrices
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
-    score <- colMeans(do.call(rbind, gradList))
-    B <- cov(do.call(rbind, gradList))
+    score <- colMeans(do.call(rbind, gradList)) # pooled point estimates
+    B <- cov(do.call(rbind, gradList))          # between-imputation information
+    W <- Reduce("+", infoList) / m              # within-imputation information
+    inv.W <- try(solve(W), silent = TRUE)
+    if (scale.W && !inherits(inv.W, "try-error")) {
+      ## relative increase in variance due to missing data
+      ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
+      information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
+    } else if (scale.W && inherits(inv.W, "try-error")) {
+      if (warn) warning("Could not invert W for total score test, perhaps due ",
+                        "to constraints on estimated parameters. ",
+                        "Generalized inverse used instead.\n",
+                        "If the model does not have equality constraints, ",
+                        "it may be safer to set `scale.W = FALSE'.")
+      inv.W <- MASS::ginv(W)
+    } else {
+      ## less reliable, but constraints prevent inversion of W
+      information <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
+    }
 
     ## obtain list of inverted Jacobians: within-impuation covariance matrices
     R.model <- object@Model@con.jac[,,drop = FALSE]
@@ -367,42 +390,18 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       R.add   <- cbind(matrix(0, nrow = nadd, ncol = npar), diag(nadd))
       R       <- rbind(R.model, R.add)
 
-      W_list <- lapply(infoList, function(information) {
-        Z <- cbind(rbind(information, R.model),
-                   rbind(t(R.model), matrix(0, nrow(R.model), nrow(R.model))))
+      Z <- cbind(rbind(information, R.model),
+                 rbind(t(R.model),matrix(0,nrow(R.model),nrow(R.model))))
+      Z.plus <- MASS::ginv(Z)
+      J.inv  <- Z.plus[ 1:nrow(information), 1:nrow(information) ]
 
-        Z.plus <- try(solve(Z), silent = TRUE)
-        if (inherits(Z.plus, "try-error")) Z.plus <- MASS::ginv(Z) #FIXME: warn for each imputation?
-        Z.plus[ 1:nrow(information), 1:nrow(information) ]
-      })
       r.idx <- seq_len(nadd) + nrow(R.model)
     } else {
       R <- cbind(matrix(0, nrow = nadd, ncol = npar), diag(nadd))
-      W_list <- lapply(infoList, function(information) {
-        J.inv <- try(solve(information), silent = TRUE)
-        if (inherits(J.inv, "try-error")) J.inv <- MASS::ginv(information) #FIXME: warn for each imputation?
-        J.inv
-      })
+      J.inv <- MASS::ginv(information)
+
       r.idx <- seq_len(nadd)
     }
-
-    ## pool within-impuation covariance matrices
-    W <- Reduce("+", W_list) / m
-    ## check whether equality constraints prevent inversion of W
-    inv.W <- try(solve(W), silent = TRUE)
-    if (inherits(inv.W, "try-error")) {
-      if (warn) warning("Could not invert W for total score test, likely due ",
-                        "to constraints on estimated parameters. ",
-                        "Generalized inverse used instead.")
-      inv.W <- MASS::ginv(W)
-      # asymptotic <- TRUE
-      # ## less reliable, but constraints prevent inversion of W
-      # J.inv <- W + B + (1/m)*B ## Enders (2010, p. 235) eq. 8.19
-    } #else {
-      ## relative increase in variance due to missing data
-    ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
-    J.inv <- (1 + ariv) * W
-    #}
 
     PT <- FIT@funList[[ which(useImps)[1] ]]$parTable
     # lhs/rhs
@@ -413,6 +412,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     class(Table) <- c("lavaan.data.frame", "data.frame")
   } else {
     # MODE 2: releasing constraints
+    if (is.character(release)) stop("not implemented yet") #FIXME: moved up to save time
     R <- object@Model@con.jac[,,drop = FALSE]
     if (nrow(R) == 0L) stop("No equality constraints found in the model.")
 
@@ -426,62 +426,47 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     ## pool gradients and information matrices
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
-    score <- colMeans(do.call(rbind, gradList))
-    B <- cov(do.call(rbind, gradList))
+    score <- colMeans(do.call(rbind, gradList)) # pooled point estimates
+    B <- cov(do.call(rbind, gradList))          # between-imputation information
+    W <- Reduce("+", infoList) / m              # within-imputation information
+    inv.W <- try(solve(W), silent = TRUE)
+    if (scale.W && !inherits(inv.W, "try-error")) {
+      ## relative increase in variance due to missing data
+      ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
+      information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
+    } else if (scale.W && inherits(inv.W, "try-error")) {
+      if (warn) warning("Could not invert W for total score test, perhaps due ",
+                        "to constraints on estimated parameters. ",
+                        "Generalized inverse used instead.\n",
+                        "If the model does not have equality constraints, ",
+                        "it may be safer to set `scale.W = FALSE'.")
+      inv.W <- MASS::ginv(W)
+    } else {
+      ## less reliable, but constraints prevent inversion of W
+      information <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
+    }
 
     if (is.null(release)) {
-      # release ALL constraints
-      W_list <- lapply(infoList, function(information) {
-        J.inv <- try(solve(information), silent = TRUE)
-        if (inherits(J.inv, "try-error")) J.inv <- MASS::ginv(information) #FIXME: warn for each imputation?
-        J.inv
-      })
-      ## pool within-impuation covariance matrices
-      W <- Reduce("+", W_list) / m
-      ## check whether equality constraints prevent inversion of W
-      inv.W <- try(solve(W), silent = TRUE)
-      if (inherits(inv.W, "try-error")) {
-        if (warn) warning("Could not invert W for total score test, likely due ",
-                          "to constraints on estimated parameters. ",
-                          "Generalized inverse used instead.")
-        inv.W <- MASS::ginv(W)
-      }
-      ## relative increase in variance due to missing data
-      ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
-      J.inv <- (1 + ariv) * W
+      # ALL constraints
       r.idx <- seq_len( nrow(R) )
+      J.inv <- MASS::ginv(information) #FIXME? Yves has this above if(is.null(release))
     } else if (is.numeric(release)) {
       r.idx <- release
-      if (max(r.idx) > nrow(R)) {
+      if(max(r.idx) > nrow(R)) {
         stop("lavaan ERROR: maximum constraint number (", max(r.idx),
              ") is larger than number of constraints (", nrow(R), ")")
       }
 
       # neutralize the non-needed constraints
       R1 <- R[-r.idx, , drop = FALSE]
-      W_list <- lapply(infoList, function(information) {
-        Z1 <- cbind( rbind(information, R1),
-                     rbind(t(R1), matrix(0, nrow(R1), nrow(R1))) )
-        Z1.plus <- try(solve(Z1), silent = TRUE)
-        if (inherits(Z1.plus, "try-error")) Z1.plus <- MASS::ginv(Z1) #FIXME: warn for each imputation?
-        Z1.plus[ 1:nrow(information), 1:nrow(information) ]
-      })
-      ## pool within-impuation covariance matrices
-      W <- Reduce("+", W_list) / m
-      ## check whether equality constraints prevent inversion of W
-      inv.W <- try(solve(W), silent = TRUE)
-      if (inherits(inv.W, "try-error")) {
-        if (warn) warning("Could not invert W for total score test, likely due ",
-                          "to constraints on estimated parameters. ",
-                          "Generalized inverse used instead.")
-        inv.W <- MASS::ginv(W)
-      }
-      ## relative increase in variance due to missing data
-      ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
-      J.inv <- (1 + ariv) * W
+      Z1 <- cbind( rbind(information, R1),
+                   rbind(t(R1), matrix(0, nrow(R1), nrow(R1))) )
+      Z1.plus <- MASS::ginv(Z1)
+      J.inv <- Z1.plus[ 1:nrow(information), 1:nrow(information) ]
     } else if (is.character(release)) {
       stop("not implemented yet")
     }
+
 
     # lhs/rhs
     eq.idx <- which(object@ParTable$op == "==")
@@ -537,31 +522,11 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
   if (univariate) {
     TS <- numeric( nrow(R) )
     for (r in r.idx) {
-      R1 <- R[-r,,drop = FALSE]
-      W_list <- lapply(infoList, function(information) {
-        Z1 <- cbind( rbind(information, R1),
-                     rbind(t(R1), matrix(0, nrow(R1), nrow(R1)) ) )
-        Z1.plus <- try(solve(Z1), silent = TRUE)
-        if (inherits(Z1.plus, "try-error")) Z1.plus <- MASS::ginv(Z1) #FIXME: warn for each imputation?
-        Z1.plus[ 1:nrow(information), 1:nrow(information) ]
-      })
-      W <- Reduce("+", W_list) / m
-      inv.W <- try(solve(W), silent = TRUE)
-      if (inherits(inv.W, "try-error")) {
-        if (warn) warning("Could not invert W for univariate test number ",
-                          which(r.idx == r),
-                          ", likely due to constraints on estimated ",
-                          "parameters. Generalized inverse used instead.")
-        inv.W <- MASS::ginv(W)
-        # asymptotic <- TRUE
-        # ## less reliable, but constraints prevent inversion of W
-        # J.inv <- W + B + (1/m)*B ## Enders (2010, p. 235) eq. 8.19
-      } #else {
-      ## relative increase in variance due to missing data
-      ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
-      Z1.plus1 <- (1 + ariv) * W
-      #}
-
+      R1 <- R[-r, , drop = FALSE]
+      Z1 <- cbind( rbind(information, R1),
+                   rbind(t(R1), matrix(0, nrow(R1), nrow(R1))) )
+      Z1.plus <- MASS::ginv(Z1)
+      Z1.plus1 <- Z1.plus[ 1:nrow(information), 1:nrow(information) ]
       TS[r] <- as.numeric(N * t(score) %*%  Z1.plus1 %*% score)
     }
 
@@ -593,20 +558,12 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     TS <- numeric( length(r.idx) )
     for (r in 1:length(r.idx)) {
       rcumul.idx <- TS.order[1:r]
-      R1 <- R[-rcumul.idx,,drop = FALSE]
-      W_list <- lapply(infoList, function(information) {
-        Z1 <- cbind( rbind(information, R1),
-                     rbind(t(R1), matrix(0, nrow(R1), nrow(R1)) ) )
-        Z1.plus <- try(solve(Z1), silent = TRUE)
-        if (inherits(Z1.plus, "try-error")) Z1.plus <- MASS::ginv(Z1) #FIXME: warn for each imputation?
-        Z1.plus[ 1:nrow(information), 1:nrow(information) ]
-      })
-      W <- Reduce("+", W_list) / m
-      inv.W <- try(solve(W), silent = TRUE)
-      if (inherits(inv.W, "try-error")) inv.W <- MASS::ginv(W) # already warned for univariate and total test
-      ## relative increase in variance due to missing data
-      ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
-      Z1.plus1 <- (1 + ariv) * W
+
+      R1 <- R[-rcumul.idx, , drop = FALSE]
+      Z1 <- cbind( rbind(information, R1),
+                   rbind(t(R1), matrix(0, nrow(R1), nrow(R1))) )
+      Z1.plus <- MASS::ginv(Z1)
+      Z1.plus1 <- Z1.plus[ 1:nrow(information), 1:nrow(information) ]
       TS[r] <- as.numeric(N * t(score) %*%  Z1.plus1 %*% score)
     }
 
@@ -650,22 +607,11 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     # OUT$EPC <- EPC
 
     # EPCs when freeing all constraints together (total test)
-    R1 <- R[-r.idx,,drop = FALSE]
-    W_list <- lapply(infoList, function(information) {
-      Z1 <- cbind( rbind(information, R1),
-                   rbind(t(R1), matrix(0, nrow(R1), nrow(R1))) )
-      Z1.plus <- try(solve(Z1), silent = TRUE)
-      if (inherits(Z1.plus, "try-error")) Z1.plus <- MASS::ginv(Z1)
-      Z1.plus[ 1:nrow(information), 1:nrow(information) ]
-    })
-    W <- Reduce("+", W_list) / m
-    ## check whether equality constraints prevent inversion of W
-    inv.W <- try(solve(W), silent = TRUE)
-    if (inherits(inv.W, "try-error")) inv.W <- MASS::ginv(W) # already warned
-    ## relative increase in variance due to missing data
-    ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
-    Z1.plus1 <- (1 + ariv) * W
-
+    R1 <- R[-r.idx, , drop = FALSE]
+    Z1 <- cbind( rbind(information, R1),
+                 rbind(t(R1), matrix(0, nrow(R1), nrow(R1))) )
+    Z1.plus <- MASS::ginv(Z1)
+    Z1.plus1 <- Z1.plus[ 1:nrow(information), 1:nrow(information) ]
     EPC.all <- -1 * as.numeric(score %*%  Z1.plus1)
 
     # create epc table for the 'free' parameters
