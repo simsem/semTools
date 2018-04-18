@@ -44,17 +44,24 @@
 #' \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE)}:
 #'  See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
 #'  averaged across imputed data sets; see Rubin, 1987).}
-#' \item{vcov}{\code{signature(object = "lavaan.mi",
-#'  type = c("pooled","between","within"))}: Returns the pooled covariance
+#'
+#' \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
+#'  type = c("pooled","between","within"))}:  Returns the pooled covariance
 #'  matrix of parameter estimates (\code{type = "pooled"}, the default), the
 #'  within-imputations covariance matrix (\code{type = "within"}), or the
-#'  between-imputations covariance matrix (\code{type = "between"}). See Enders
-#'  (2010, ch. 8) for details.}
+#'  between-imputations covariance matrix (\code{type = "between"}). If
+#'  \code{scale=TRUE} (default), the pooled covariance matrix is calculated by
+#'  scaling the within-imputation component by the average relative increase in
+#'  variance (ARIV; see Enders, 2010, p. 235).  Otherwise, the pooled matrix is
+#'  calculated as the weighted sum of the within-imputation and
+#'  between-imputation components.  See Enders (2010, ch. 8) for details.}
+#'
 #' \item{fitted.values}{\code{signature(object = "lavaan.mi")}: See
 #'  \code{\linkS4class{lavaan}}. Returns model-implied moments, evaluated at the
 #'  pooled point estimates.}
 #' \item{fitted}{\code{signature(object = "lavaan.mi")}:
 #'   alias for \code{fitted.values}}
+#'
 #' \item{residuals}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
 #'  See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
 #'  the difference between the model-implied moments from \code{fitted.values}
@@ -64,12 +71,14 @@
 #'  (\code{type = "cor.bentler"}) formulas.}
 #' \item{resid}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
 #'  alias for \code{residuals}}
+#'
 #' \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
 #'  the total (default) sample size or a vector of group sample sizes
 #'  (\code{total = FALSE}).}
+#'
 #' \item{anova}{\code{signature(object = "lavaan.mi", h1 = NULL,
-#'   test = c("D3","D2","D1"), pool.robust = FALSE, asymptotic = FALSE,
-#'   constraints = NULL, indices = FALSE, baseline = NULL)}:
+#'   test = c("D3","D2","D1"), pool.robust = FALSE, scale.W = TRUE,
+#'   asymptotic = FALSE, constraints = NULL, indices = FALSE, baseline = NULL)}:
 #'   Returns a test of model fit, or a test
 #'   of the difference in fit between nested models if \code{h1} is another
 #'   \code{lavaan.mi} object, assuming \code{object} is nested in \code{h1}. If
@@ -99,7 +108,8 @@
 #'   pooled point estimates, using the pooled covariance matrix of parameter
 #'   estimates; see \code{\link[lavaan]{lavTestWald}} for details. \code{h1} is
 #'   ignored when \code{test = "D1"}, and \code{constraints} is ignored when
-#'   \code{test != "D1"}.
+#'   \code{test != "D1"}. The \code{scale.W} argument is passed to the
+#'   \code{vcov} method (see description above).
 #'
 #'   When \code{indices = TRUE} and \code{is.null(h1)}, popular indices of
 #'   approximate fit (CFI, TLI/NNFI, RMSEA with CI, and SRMR) will be returned
@@ -115,10 +125,12 @@
 #' \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
 #'  convergence rates and estimation problems (if applicable) across imputed
 #'  data sets.}
+#'
 #' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = TRUE,
 #'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-#'  add.attributes = TRUE)}: see \code{\link[lavaan]{parameterEstimates}} for
-#'  details. By default, \code{summary} returns pooled point and \emph{SE}
+#'  scale.W = FALSE, add.attributes = TRUE)}: see
+#'  \code{\link[lavaan]{parameterEstimates}} for details.
+#'  By default, \code{summary} returns pooled point and \emph{SE}
 #'  estimates, along with \emph{t} test statistics and associated \emph{df} and
 #'  \emph{p} value, and 95\% CI (control using the \code{ci} and \code{level}
 #'  arguments). Standardized solution(s) can also be requested by name
@@ -127,7 +139,8 @@
 #'  Fraction Missing Information (FMI) for parameter estimates. By default, the
 #'  output will appear like \code{lavaan}'s \code{summary} output, but if
 #'  \code{add.attributes = FALSE}, the returned \code{data.frame} will resemble
-#'  the \code{parameterEstimates} output.}
+#'  the \code{parameterEstimates} output. The \code{scale.W} argument is
+#'  passed to \code{vcov} (see description above).}
 #'
 #' @section Objects from the Class: See the \code{\link{runMI}} function for
 #' details. Wrapper functions include \code{\link{lavaan.mi}},
@@ -211,7 +224,8 @@ setMethod("show", "lavaan.mi", function(object) {
 #' @importFrom lavaan lavListInspect parTable
 summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
-                              fmi = FALSE, add.attributes = TRUE) {
+                              fmi = FALSE, scale.W = TRUE,
+                              add.attributes = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   ## extract parameter table with attributes for printing
@@ -236,8 +250,9 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                      if (se) " parameter's t test and CI.",
                      "\n")
   if (se) {
-    PE$se <- lavaan::lav_model_vcov_se(object@Model, lavpartable = object@ParTable,
-                                       VCOV = getMethod("vcov","lavaan.mi")(object))
+    VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W)
+    PE$se <- lavaan::lav_model_vcov_se(object@Model, VCOV = VCOV,
+                                       lavpartable = object@ParTable)
     PE$t[free] <- PE$est[free] / PE$se[free]
     ## calculate df for t test
     W <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "se")^2)
@@ -387,7 +402,8 @@ setMethod("coef", "lavaan.mi", coef.lavaan.mi)
 
 #' @importFrom stats cov
 #' @importFrom lavaan lavListInspect parTable
-vcov.lavaan.mi <- function(object, type = c("pooled","between","within")) {
+vcov.lavaan.mi <- function(object, type = c("pooled","between","within"),
+                           scale.W = TRUE) {
   if (lavListInspect(object, "options")$se == "none") {
     warning('requested se="none", so only between-imputation (co)variance can',
             ' be computed')
@@ -423,8 +439,16 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within")) {
             ' matrix is therefore based on different imputed data sets.')
 
   ## check whether equality constraints prevent inversion of W
-  inv.W <- try(solve(W), silent = TRUE)
-  if (class(inv.W) != "try-error") {
+  if (scale.W) {
+    inv.W <- try(solve(W), silent = TRUE)
+    if (!inherits(inv.W, "try-error")) {
+      warning("Could not invert W for total score test, perhaps due ",
+              "to constraints on estimated parameters. ",
+              "Generalized inverse used instead.\n",
+              "If the model does not have equality constraints, ",
+              "it may be safer to set `scale.W = FALSE'.")
+      inv.W <- MASS::ginv(W)
+    }
     ## relative increase in variance due to missing data
     r <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
     Total <- (1 + r) * W # FIXME: asked Yves for a hack, says it can't be inverted back to infoMat
@@ -443,7 +467,8 @@ setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
 
 #' @importFrom stats pf pchisq
 #' @importFrom lavaan parTable
-D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) {
+D1 <- function(object, constraints = NULL, scale.W = TRUE,
+               asymptotic = FALSE, verbose = FALSE) {
   ## "borrowed" lavTestWald()
   nImps <- sum(sapply(object@convergence, "[[", i = "converged"))
   if (nImps == 1L) stop("model did not converge on any imputations")
@@ -491,7 +516,7 @@ D1 <- function(object, constraints = NULL, asymptotic = FALSE, verbose = FALSE) 
   if (verbose) {cat("Restricted theta values:\n"); print(theta.r); cat("\n")}
 
   # get VCOV
-  VCOV <- getMethod("vcov", "lavaan.mi")(object)
+  VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W)
 
   # restricted vcov
   info.r  <- JAC %*% VCOV %*% t(JAC)
@@ -749,8 +774,8 @@ robustify <- function(ChiSq, object, h1 = NULL) {
 }
 #' @importFrom stats pchisq uniroot
 #' @importFrom lavaan lavListInspect
-anova.lavaan.mi <- function(object, h1 = NULL,
-                            test = c("D3","D2","D1"), pool.robust = FALSE,
+anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
+                            pool.robust = FALSE, scale.W = TRUE,
                             asymptotic = FALSE, constraints = NULL,
                             indices = FALSE, baseline = NULL) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -762,7 +787,8 @@ anova.lavaan.mi <- function(object, h1 = NULL,
   ## Everything else obsolete if test = "D1"
   if (toupper(test[1]) == "D1") {
     if (!asymptotic) asymptotic <- TRUE ## FIXME: until W can be inverted with eq. constraints
-    out <- D1(object = object, constraints = constraints, asymptotic = asymptotic)
+    out <- D1(object = object, constraints = constraints, scale.W = scale.W,
+              asymptotic = asymptotic)
     message('D1 (Wald test) calculated using pooled "',
             lavListInspect(object, "options")$se,
             '" asymptotic covariance matrix of model parameters')
