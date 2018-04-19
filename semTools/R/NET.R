@@ -245,7 +245,6 @@ x.within.y <- function(x, y, crit = .0001) {
   if (is.list(yData)) yData <- do.call(rbind, yData)
   yData <- yData[ , order(Ynames)]
   if (!identical(xData, yData)) stop("Models must apply to the same data")
-  ##############################################################################
 
   ## check degrees of freedom support nesting structure
   if (lavInspect(x, "fit")["df"] < lavInspect(y, "fit")["df"])
@@ -261,7 +260,10 @@ x.within.y <- function(x, y, crit = .0001) {
   suppressWarnings(try(newFit <- lavaan::update(y, data = NULL,
                                                 sample.cov = Sigma,
                                                 sample.mean = Mu,
-                                                sample.nobs = N)))
+                                                sample.nobs = N,
+                                                estimator = "ML",
+                                                se = "none", # to save time
+                                                test = "standard")))
   if(!lavInspect(newFit, "converged")) return(NA) else {
     result <- lavInspect(newFit, "fit")["chisq"] < crit
     names(result) <- NULL
