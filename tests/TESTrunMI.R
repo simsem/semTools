@@ -50,8 +50,8 @@ anova(fit0, h1 = fit1, test = "D2")  # compare fit
 
 
 ## fit multigroup model
-mgfit1 <- cfa.mi(HS.model, data = imps, group = "school")
-mgfit0 <- cfa.mi(HS.model, data = imps, group = "school",
+mgfit1 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlmv")
+mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlmv",
                  group.equal = c("loadings","intercepts"))
 ## use methods
 summary(mgfit0, standardized = "std.all") # can also request "std.lv"
@@ -67,7 +67,8 @@ anova(mgfit0)          # pooled LRT by default (D3 statistic)
 anova(mgfit0, asymptotic = TRUE, indices = TRUE)  # reported by Mplus
 anova(mgfit0, test = 'D2', indices = "all")        # add fit indices
 anova(mgfit0, h1 = mgfit1)           # compare fit
-anova(mgfit0, h1 = mgfit1, test = 'D2')
+anova(mgfit0, h1 = mgfit1, test = 'D2') # robustifies pooled naive statistic
+anova(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic
 
 ## use D1 to test a parametrically nested model (whether latent means are ==)
 anova(mgfit0, test = "D1", constraints = '

@@ -50,7 +50,8 @@
 
 \S4method{anova}{lavaan.mi}(object, h1 = NULL, test = c("D3", "D2", "D1"),
   pool.robust = FALSE, scale.W = TRUE, asymptotic = FALSE,
-  constraints = NULL, indices = FALSE, baseline = NULL)
+  constraints = NULL, indices = FALSE, baseline = NULL,
+  method = "default", A.method = "delta", H1 = TRUE, type = "Chisq")
 
 \S4method{fitted}{lavaan.mi}(object)
 
@@ -98,8 +99,9 @@
 
 \item{anova}{\code{signature(object = "lavaan.mi", h1 = NULL,
   test = c("D3","D2","D1"), pool.robust = FALSE, scale.W = TRUE,
-  asymptotic = FALSE, constraints = NULL, indices = FALSE, baseline = NULL)}:
-  Returns a test of model fit, or a test
+  asymptotic = FALSE, constraints = NULL, indices = FALSE, baseline = NULL,
+  method = "default", A.method = "delta", H1 = TRUE, type = "Chisq")}:
+  Returns a test of model fit if \code{h1} is \code{NULL}, or a test
   of the difference in fit between nested models if \code{h1} is another
   \code{lavaan.mi} object, assuming \code{object} is nested in \code{h1}. If
   \code{asymptotic}, the returned test statistic will follow a \eqn{\chi^2}
@@ -108,7 +110,8 @@
   \code{object} results (it is assumed the same was requested in \code{h1},
   if provided), then \code{asymptotic} will be set to \code{TRUE} and the
   pooled test statistic will be scaled using the average scaling factor (and
-  average shift parameter or \emph{df}, if applicable) across imputations.
+  average shift parameter or \emph{df}, if applicable) across imputations
+  (unless \code{pool.robust = FALSE} and \code{test = "D2"}; see below).
 
   The default test (\code{"D3"}, or any of \code{"mr", "Meng.Rubin",
   "likelihood", "LRT"}) is a pooled likeliehood-ratio test (see Enders, 2010,
@@ -122,7 +125,10 @@
   whereas \code{pool.robust = FALSE} will pool the naive test statistic
   (or difference statistic) and apply the average scale/shift
   parameters to it (unavailable for mean- and variance-adjusted difference
-  statistics, so \code{pool.robust} will be set \code{TRUE}).
+  statistics, so \code{pool.robust} will be set \code{TRUE}). If
+  \code{test = "D2"} and \code{pool.robust = TRUE}, further options can be
+  passed to \code{\link[lavaan]{lavTestLRT}} via the arguments \code{method},
+  \code{A.method}, \code{H1}, and \code{type}.
 
   \code{"D1"} is a Wald test calculated for constraints on the
   pooled point estimates, using the pooled covariance matrix of parameter
