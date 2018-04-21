@@ -26,6 +26,10 @@
 \alias{lavaan.mi-class}
 \alias{anova,lavaan.mi-method}
 \alias{lavaan.mi-class}
+\alias{fitMeasures,lavaan.mi-method}
+\alias{lavaan.mi-class}
+\alias{fitmeasures,lavaan.mi-method}
+\alias{lavaan.mi-class}
 \alias{fitted,lavaan.mi-method}
 \alias{lavaan.mi-class}
 \alias{fitted.values,lavaan.mi-method}
@@ -45,13 +49,19 @@
 
 \S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE)
 
-\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between", "within"),
-  scale.W = TRUE)
+\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between", "within",
+  "ariv"), scale.W = TRUE)
 
 \S4method{anova}{lavaan.mi}(object, h1 = NULL, test = c("D3", "D2", "D1"),
   pool.robust = FALSE, scale.W = TRUE, asymptotic = FALSE,
   constraints = NULL, indices = FALSE, baseline = NULL,
   method = "default", A.method = "delta", H1 = TRUE, type = "Chisq")
+
+\S4method{fitMeasures}{lavaan.mi}(object, fit.measures = "all",
+  baseline.model = NULL)
+
+\S4method{fitmeasures}{lavaan.mi}(object, fit.measures = "all",
+  baseline.model = NULL)
 
 \S4method{fitted}{lavaan.mi}(object)
 
@@ -67,14 +77,15 @@
  averaged across imputed data sets; see Rubin, 1987).}
 
 \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
- type = c("pooled","between","within"))}:  Returns the pooled covariance
- matrix of parameter estimates (\code{type = "pooled"}, the default), the
- within-imputations covariance matrix (\code{type = "within"}), or the
- between-imputations covariance matrix (\code{type = "between"}). If
- \code{scale=TRUE} (default), the pooled covariance matrix is calculated by
- scaling the within-imputation component by the average relative increase in
- variance (ARIV; see Enders, 2010, p. 235).  Otherwise, the pooled matrix is
- calculated as the weighted sum of the within-imputation and
+ type = c("pooled","between","within","ariv"))}:  By default, returns the
+ pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
+ the within-imputations covariance matrix (\code{type = "within"}), the
+ between-imputations covariance matrix (\code{type = "between"}), or the
+ average relative increase in variance (\code{type = "ariv"}) due to missing
+ data. If \code{scale = TRUE} (default), the pooled covariance matrix is
+ calculated by scaling the within-imputation component by the ARIV (see
+ Enders, 2010, p. 235, for definition and formula).  Otherwise, the pooled
+ matrix is calculated as the weighted sum of the within-imputation and
  between-imputation components.  See Enders (2010, ch. 8) for details.}
 
 \item{fitted.values}{\code{signature(object = "lavaan.mi")}: See
@@ -148,6 +159,15 @@
   indices (e.g., CFI, TLI). If \code{is.null(baseline)}, the default
   independence model will be used.}
 
+\item{fitMeasures}{\code{signature(object = "lavaan.mi",
+  fit.measures = "all", baseline.model = NULL)}: arguments are consistent
+  with lavaan's \code{\link[lavaan]{fitMeasures}}. This merely calls the
+  \code{anova} method described above, with \code{indices = fit.measures}
+  and \code{baseline = baseline.model}, and default values for the
+  remaining arguments. The user has more control (e.g., over pooling methods)
+  using \code{anova} directly.}
+\item{fitmeasures}{alias for \code{fitMeasures}.}
+
 \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
  convergence rates and estimation problems (if applicable) across imputed
  data sets.}
@@ -177,9 +197,33 @@ data sets are multiple imputations of missing data.
 \section{Slots}{
 
 \describe{
-\item{\code{lavaanList_slots}}{All slots from \code{\linkS4class{lavaanList}} are
-available, but \code{\link{runMI}} only populates a subset of the list
-slots, some of them with custom information:}
+\item{\code{coefList}}{\code{list} of estimated coefficients in matrix format (one
+per imputation) as output by \code{\link[lavaan]{lavInspect}(fit, "est")}}
+
+\item{\code{GLIST}}{pooled \code{list} of coefficients in GLIST format}
+
+\item{\code{miList}}{\code{list} of modification indices output by
+\code{\link[lavaan]{modindices}}}
+
+\item{\code{seed}}{\code{integer} seed set before running imputations}
+
+\item{\code{lavListCall}}{call to \code{\link[lavaan]{lavaanList}} used to fit the
+model to the list of imputed data sets in \code{@DataList}, stored as a
+\code{list} of arguments}
+
+\item{\code{imputeCall}}{call to imputation function (if used), stored as a
+\code{list} of arguments}
+
+\item{\code{convergence}}{\code{list} of \code{logical} vectors indicating whether,
+for each imputed data set, (1) the model converged on a solution, (2)
+\emph{SE}s could be calculated, (3) the (residual) covariance matrix of
+latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the residual
+covariance matrix of observed variables (\eqn{\Theta}) is
+non-positive-definite.}
+
+\item{\code{lavaanList_slots}}{All remaining slots are from
+\code{\linkS4class{lavaanList}}, but \code{\link{runMI}} only populates a
+subset of the \code{list} slots, two of them with custom information:}
 
 \item{\code{DataList}}{The \code{list} of imputed data sets}
 
@@ -191,24 +235,7 @@ model}
 
 \item{\code{vcovList}}{See \code{\linkS4class{lavaanList}}}
 
-\item{\code{ParTableList}}{See \code{\linkS4class{lavaanList}}}
-
-\item{\code{testList}}{\code{list} of estimated coefficients in matrix format (one
-per imputation)}
-
-\item{\code{GLIST}}{pooled \code{list} of coefficients in GLIST format}
-
-\item{\code{seed}}{\code{integer} seed set before running imputations}
-
-\item{\code{imputeCall}}{call from imputation (if used) stored as a \code{list} of
-arguments}
-
-\item{\code{convergence}}{\code{list} of \code{logical} vectors indicating whether,
-for each imputed data set, (1) the model converged on a solution, (2)
-\emph{SE}s could be calculated, (3) the (residual) covariance matrix of
-latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the residual
-covariance matrix of observed variables (\eqn{\Theta}) is
-non-positive-definite.}
+\item{\code{testList}}{See \code{\linkS4class{lavaanList}}}
 }}
 
 \section{Objects from the Class}{

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 18 April 2018
+### Last updated: 21 April 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -17,28 +17,33 @@
 #' vcov,lavaan.mi-method fitted,lavaan.mi-method fitted.values,lavaan.mi-method
 #' residuals,lavaan.mi-method resid,lavaan.mi-method
 #' @docType class
-#' @slot lavaanList_slots All slots from \code{\linkS4class{lavaanList}} are
-#'  available, but \code{\link{runMI}} only populates a subset of the list
-#'  slots, some of them with custom information:
-#' @slot DataList The \code{list} of imputed data sets
-#' @slot SampleStatsList List of output from
-#'  \code{\link[lavaan]{lavInspect}(fit, "sampstat")} applied to each fitted
-#'  model
-#' @slot ParTableList See \code{\linkS4class{lavaanList}}
-#' @slot vcovList See \code{\linkS4class{lavaanList}}
-#' @slot ParTableList See \code{\linkS4class{lavaanList}}
-#' @slot testList \code{list} of estimated coefficients in matrix format (one
-#'  per imputation)
+#' @slot coefList \code{list} of estimated coefficients in matrix format (one
+#'  per imputation) as output by \code{\link[lavaan]{lavInspect}(fit, "est")}
 #' @slot GLIST pooled \code{list} of coefficients in GLIST format
+#' @slot miList \code{list} of modification indices output by
+#'  \code{\link[lavaan]{modindices}}
 #' @slot seed \code{integer} seed set before running imputations
-#' @slot imputeCall call from imputation (if used) stored as a \code{list} of
-#'  arguments
+#' @slot lavListCall call to \code{\link[lavaan]{lavaanList}} used to fit the
+#'  model to the list of imputed data sets in \code{@@DataList}, stored as a
+#'  \code{list} of arguments
+#' @slot imputeCall call to imputation function (if used), stored as a
+#'  \code{list} of arguments
 #' @slot convergence \code{list} of \code{logical} vectors indicating whether,
 #'  for each imputed data set, (1) the model converged on a solution, (2)
 #'  \emph{SE}s could be calculated, (3) the (residual) covariance matrix of
 #'  latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the residual
 #'  covariance matrix of observed variables (\eqn{\Theta}) is
 #'  non-positive-definite.
+#' @slot lavaanList_slots All remaining slots are from
+#'  \code{\linkS4class{lavaanList}}, but \code{\link{runMI}} only populates a
+#'  subset of the \code{list} slots, two of them with custom information:
+#' @slot DataList The \code{list} of imputed data sets
+#' @slot SampleStatsList List of output from
+#'  \code{\link[lavaan]{lavInspect}(fit, "sampstat")} applied to each fitted
+#'  model
+#' @slot ParTableList See \code{\linkS4class{lavaanList}}
+#' @slot vcovList See \code{\linkS4class{lavaanList}}
+#' @slot testList See \code{\linkS4class{lavaanList}}
 #'
 #' @return
 #' \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE)}:
@@ -46,14 +51,15 @@
 #'  averaged across imputed data sets; see Rubin, 1987).}
 #'
 #' \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
-#'  type = c("pooled","between","within"))}:  Returns the pooled covariance
-#'  matrix of parameter estimates (\code{type = "pooled"}, the default), the
-#'  within-imputations covariance matrix (\code{type = "within"}), or the
-#'  between-imputations covariance matrix (\code{type = "between"}). If
-#'  \code{scale=TRUE} (default), the pooled covariance matrix is calculated by
-#'  scaling the within-imputation component by the average relative increase in
-#'  variance (ARIV; see Enders, 2010, p. 235).  Otherwise, the pooled matrix is
-#'  calculated as the weighted sum of the within-imputation and
+#'  type = c("pooled","between","within","ariv"))}:  By default, returns the
+#'  pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
+#'  the within-imputations covariance matrix (\code{type = "within"}), the
+#'  between-imputations covariance matrix (\code{type = "between"}), or the
+#'  average relative increase in variance (\code{type = "ariv"}) due to missing
+#'  data. If \code{scale = TRUE} (default), the pooled covariance matrix is
+#'  calculated by scaling the within-imputation component by the ARIV (see
+#'  Enders, 2010, p. 235, for definition and formula).  Otherwise, the pooled
+#'  matrix is calculated as the weighted sum of the within-imputation and
 #'  between-imputation components.  See Enders (2010, ch. 8) for details.}
 #'
 #' \item{fitted.values}{\code{signature(object = "lavaan.mi")}: See
@@ -126,6 +132,15 @@
 #'   model, fit using \code{runMI}, can be used to calculate incremental fit
 #'   indices (e.g., CFI, TLI). If \code{is.null(baseline)}, the default
 #'   independence model will be used.}
+#'
+#' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
+#'   fit.measures = "all", baseline.model = NULL)}: arguments are consistent
+#'   with lavaan's \code{\link[lavaan]{fitMeasures}}. This merely calls the
+#'   \code{anova} method described above, with \code{indices = fit.measures}
+#'   and \code{baseline = baseline.model}, and default values for the
+#'   remaining arguments. The user has more control (e.g., over pooling methods)
+#'   using \code{anova} directly.}
+#' \item{fitmeasures}{alias for \code{fitMeasures}.}
 #'
 #' \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
 #'  convergence rates and estimation problems (if applicable) across imputed
@@ -252,8 +267,9 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
   messPool <- paste0("Rubin's (1987) rules were used to pool point",
                      if (se) " and SE",
                      " estimates across ", m, " imputed data sets",
-                     if (se) ", and to calculate degrees of freedom for each",
-                     if (se) " parameter's t test and CI.",
+                     if (se & !asymptotic) ", and to calculate degrees of",
+                     if (se & !asymptotic) " freedom for each parameter's t",
+                     if (se & !asymptotic) " test and CI.",
                      "\n")
   if (se) {
     VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W)
@@ -261,7 +277,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                                        lavpartable = object@ParTable)
     W <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "se")^2)
     B <- apply(sapply(object@ParTableList[useImps], "[[", i = "est"), 1, var)
-    Bm <- B + B/m #FIXME: if (scale.W) use ARIV
+    Bm <- B + B/m
     Tot <- W + Bm
     if (asymptotic) {
       PE$z[free] <- PE$est[free] / PE$se[free]
@@ -411,19 +427,22 @@ setMethod("coef", "lavaan.mi", coef.lavaan.mi)
 
 #' @importFrom stats cov
 #' @importFrom lavaan lavListInspect parTable
-vcov.lavaan.mi <- function(object, type = c("pooled","between","within"),
+vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
                            scale.W = TRUE) {
   if (lavListInspect(object, "options")$se == "none") {
     warning('requested se="none", so only between-imputation (co)variance can',
             ' be computed')
     type <- "between"
   }
+  type <- tolower(type[1])
+  if (!(type %in% c("pooled","between","within","ariv")))
+    stop("'", type, "' is not a valid option for 'type'")
+
   PT <- parTable(object)
   ncon <- sum(PT$op == "==")
   npar <- max(PT$free) - ncon
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
-  type <- tolower(type[1])
 
   useSE <- sapply(object@convergence, "[[", i = "SE")
   useSE[is.na(useSE)] <- FALSE
@@ -437,9 +456,7 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within"),
   W <- Reduce("+", lapply(object@vcovList[useSE], function(x) x$vcov)) / sum(useSE)
   class(W) <- c("lavaan.matrix.symmetric","matrix")
   dimnames(W) <- dimnames(B)
-  if (type == "within") {
-    return(W)
-  } else if (type != "pooled") stop("'", type, "' is not a valid option for 'type'")
+  if (type == "within") return(W)
 
   if (!all(useImps == useSE))
     warning('Between-imputation covariance matrix based on estimated parameters',
@@ -449,7 +466,7 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within"),
             ' matrix is therefore based on different imputed data sets.')
 
   ## check whether equality constraints prevent inversion of W
-  if (scale.W) {
+  if (scale.W || type == "ariv") {
     inv.W <- if (ncon == 0) try(solve(W), silent = TRUE) else MASS::ginv(W)
     if (inherits(inv.W, "try-error")) {
       if (ncon == 0) {
@@ -461,6 +478,7 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within"),
     }
     ## relative increase in variance due to missing data
     r <- (1 + 1/m)/npar * sum(diag(B %*% inv.W)) # Enders (2010, p. 235) eqs. 8.20-21
+    if (type == "ariv") return(r)
     Total <- (1 + r) * W # FIXME: asked Yves for a hack, says it can't be inverted back to infoMat
   } else {
     ## less reliable, but constraints prevent inversion of W
@@ -828,9 +846,10 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
   ## check class
   if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
   if (!is.null(h1) & !inherits(object, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
+  test <- as.character(test[1])
 
   ## Everything else obsolete if test = "D1"
-  if (toupper(test[1]) == "D1") {
+  if (toupper(test) == "D1") {
     if (!asymptotic) asymptotic <- TRUE ## FIXME: until W can be inverted with eq. constraints
     out <- D1(object = object, constraints = constraints, scale.W = scale.W,
               asymptotic = asymptotic)
@@ -923,25 +942,25 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
   if (moreFit) asymptotic <- TRUE
 
   ## check test options, backward compatibility?
-  if (tolower(test[1]) == "mplus") {
+  if (tolower(test) == "mplus") {
     test <- "D3"
     asymptotic <- TRUE
   }
-  if (tolower(test[1]) %in% c("mr","meng.rubin","likelihood","lrt")) test <- "D3"
-  if (tolower(test[1]) %in% c("lmrr","li.et.al","pooled.wald")) test <- "D2"
-  if (toupper(test[1]) == "D3" & !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
+  if (tolower(test) %in% c("mr","meng.rubin","likelihood","lrt")) test <- "D3"
+  if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald")) test <- "D2"
+  if (toupper(test) == "D3" & !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
     message('"D3" only available using maximum likelihood estimation. ',
             'Changed test to "D2".')
     test <- "D2"
   }
   ## calculate pooled test
-  if (toupper(test[1]) == "D3") {
+  if (toupper(test) == "D3") {
     ## check estimator
     if (lavListInspect(object, "options")$estimator != "ML")
       stop("D3 is only available using ML estimation")
     out <- D3(object = object, h1 = h1, asymptotic = asymptotic)
     if (any(indices %in% incremental)) baseOut <- D3(baseFit, asymptotic = TRUE)
-  } else if (toupper(test[1]) == "D2") {
+  } else if (toupper(test) == "D2") {
     out <- D2(object = object, h1 = h1, asymptotic = asymptotic,
               pool.robust = pool.robust, method = method, A.method = A.method,
               H1 = H1, type = type)
@@ -950,7 +969,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
                                                      method = method,
                                                      A.method = A.method,
                                                      H1 = H1, type = type)
-  }
+  } else stop("'", test, "' is an invalid option for the 'test' argument.")
   ## If test statistic is negative, return without any indices or robustness
   if (asymptotic & (moreFit | robust)) {
     if (out[["chisq"]] == 0) {
@@ -1305,6 +1324,40 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
 #' @export
 setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 
+
+#' @name lavaan.mi-class
+#' @aliases fitMeasures,lavaan.mi-method
+#' @importFrom lavaan fitMeasures
+setMethod("fitMeasures", "lavaan.mi", function(object, fit.measures = "all",
+                                               baseline.model = NULL) {
+  if (!is.character(fit.measures)) stop("'fit.measures' must be a character ",
+                                        "string specifying name(s) of desired ",
+                                        "fit indices.")
+  message('anova() provides more control over options for pooling chi-squared',
+          ' before calculating fit indices from multiple imputations. ',
+          'See the class?lavaan.mi help page for details.\n\n')
+  fits <- anova.lavaan.mi(object, indices = TRUE, baseline = baseline.model)
+  if ("all" %in% fit.measures) return(fits)
+  out <- fits[fit.measures]
+  out[which(!is.na(names(out)))]
+})
+# lowercase 'm'
+#' @name lavaan.mi-class
+#' @aliases fitmeasures,lavaan.mi-method
+#' @importFrom lavaan fitmeasures
+setMethod("fitmeasures", "lavaan.mi", function(object, fit.measures = "all",
+                                               baseline.model = NULL) {
+  if (!is.character(fit.measures)) stop("'fit.measures' must be a character ",
+                                        "string specifying name(s) of desired ",
+                                        "fit indices.")
+  message('anova() provides more control over options for pooling chi-squared',
+          ' before calculating fit indices from multiple imputations. ',
+          'See the class?lavaan.mi help page for details.\n\n')
+  fits <- anova.lavaan.mi(object, indices = TRUE, baseline = baseline.model)
+  if ("all" %in% fit.measures) return(fits)
+  out <- fits[fit.measures]
+  out[which(!is.na(names(out)))]
+})
 
 
 ## function to pool each group's list of sample stats

@@ -137,6 +137,7 @@
 #' estimates and standard errors from 10 iterations post-convergence.
 #' @param \dots Additional arguments to be passed to
 #' \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
+#'
 #' @return
 #' \item{Estimates}{A table containing pooled results across \emph{M}
 #' allocations at the iteration where stopping criteria were met. Columns
@@ -170,16 +171,19 @@
 #' estimate to the within-allocation variance (RPAV). See Sterba & Rights (2016)
 #' for more detail.}
 #' \item{Total runtime (minutes)}{The total runtime of the function, in minutes.
-#' Note that the total runtime will be greater when the the specified model
-#'  encountersconvergence problems for some allocations, as is the case with the
+#' Note that the total runtime will be greater when the specified model
+#' encounters convergence problems for some allocations, as is the case with the
 #' \code{\link{simParcel}} dataset used below.}
+#'
 #' @author
 #' Jason D. Rights (Vanderbilt University; \email{jason.d.rights@@vanderbilt.edu})
 #'
 #' The author would also like to credit Corbin Quick and Alexander Schoemann
 #' for providing the original parcelAllocation function on which this function
 #' is based.
+#'
 #' @seealso \code{\link{parcelAllocation}}, \code{\link{PAVranking}}
+#'
 #' @references Sterba, S. K. (2011). Implications of parcel-allocation
 #' variability for comparing fit of item-solutions and parcel-solutions.
 #' \emph{Structural Equation Modeling, 18}(4), 554--577.
@@ -194,6 +198,7 @@
 #' variability in practice: Combining sources of uncertainty and choosing the
 #' number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
 #' 296--313. doi:10.1080/00273171.2016.1144502
+#'
 #' @examples
 #'
 #' \dontrun{

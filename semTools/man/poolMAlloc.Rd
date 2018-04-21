@@ -140,8 +140,8 @@ of the ratio of the between-allocation variance of a pooled parameter
 estimate to the within-allocation variance (RPAV). See Sterba & Rights (2016)
 for more detail.}
 \item{Total runtime (minutes)}{The total runtime of the function, in minutes.
-Note that the total runtime will be greater when the the specified model
- encountersconvergence problems for some allocations, as is the case with the
+Note that the total runtime will be greater when the specified model
+encounters convergence problems for some allocations, as is the case with the
 \code{\link{simParcel}} dataset used below.}
 }
 \description{
