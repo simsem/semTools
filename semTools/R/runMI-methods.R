@@ -658,15 +658,19 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE, pool.robust = FALSE,
     DF <- mean(sapply(object@testList[useImps], function(x) x[[test]][["df"]]))
     w <- sapply(object@testList[useImps], function(x) x[[test]][["stat"]])
   } else {
-    DF0 <- mean(sapply(object@testList[useImps], function(x) x[[test]][["df"]]))
-    DF1 <- mean(sapply(h1@testList[useImps], function(x) x[[test]][["df"]]))
+    ## this will not get run if !pool.robust because logic catches that first
+    DF0 <- mean(sapply(object@testList[useImps], function(x) x[[1]][["df"]]))
+    DF1 <- mean(sapply(h1@testList[useImps], function(x) x[[1]][["df"]]))
     DF <- DF0 - DF1
-    w0 <- sapply(object@testList[useImps], function(x) x[[test]][["stat"]])
-    w1 <- sapply(h1@testList[useImps], function(x) x[[test]][["stat"]])
+    w0 <- sapply(object@testList[useImps], function(x) x[[1]][["stat"]])
+    w1 <- sapply(h1@testList[useImps], function(x) x[[1]][["stat"]])
     w <- w0 - w1
   }
   out <- calculate.D2(w, DF, asymptotic)
-  if (is.null(h1)) {
+  ## add .scaled suffix
+  if (pool.robust) names(out) <- paste0(names(out), ".scaled")
+  ## for 1 model, add extra info (redundant if pool.robust)
+  if (is.null(h1) & !pool.robust) {
     PT <- parTable(object)
     out <- c(out, npar = max(PT$free) - sum(PT$op == "=="),
              ntotal = lavListInspect(object, "ntotal"))
@@ -847,11 +851,23 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
   if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
   if (!is.null(h1) & !inherits(object, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
   test <- as.character(test[1])
+  ## check test options, backward compatibility?
+  if (tolower(test) == "mplus") {
+    test <- "D3"
+    asymptotic <- TRUE
+  }
+  if (tolower(test) %in% c("mr","meng.rubin","likelihood","lrt","d3")) test <- "D3"
+  if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald","d2")) test <- "D2"
+  if (toupper(test) == "D3" & !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
+    message('"D3" only available using maximum likelihood estimation. ',
+            'Changed test to "D2".')
+    test <- "D2"
+  }
 
   ## Everything else obsolete if test = "D1"
   if (toupper(test) == "D1") {
     if (!asymptotic) asymptotic <- TRUE ## FIXME: until W can be inverted with eq. constraints
-    out <- D1(object = object, constraints = constraints, scale.W = scale.W,
+    out <- D1(object, constraints = constraints, scale.W = scale.W,
               asymptotic = asymptotic)
     message('D1 (Wald test) calculated using pooled "',
             lavListInspect(object, "options")$se,
@@ -862,8 +878,9 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
   ## check for robust
   robust <- lavListInspect(object, "options")$test != "standard"
   if (robust & !pool.robust) {
-    message('Robust correction can only be applied to pooled chi-squared',
-            ' statistic, not F statistic. "asymptotic" was switched to TRUE.')
+    if (!asymptotic)
+      message('Robust correction can only be applied to pooled chi-squared',
+              ' statistic, not F statistic. "asymptotic" was switched to TRUE.')
     asymptotic <- TRUE
   }
   scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
@@ -941,34 +958,26 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
   if (DF == 0) indices <- moreFit <- FALSE # arbitrary perfect fit, no indices
   if (moreFit) asymptotic <- TRUE
 
-  ## check test options, backward compatibility?
-  if (tolower(test) == "mplus") {
-    test <- "D3"
-    asymptotic <- TRUE
-  }
-  if (tolower(test) %in% c("mr","meng.rubin","likelihood","lrt")) test <- "D3"
-  if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald")) test <- "D2"
-  if (toupper(test) == "D3" & !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
-    message('"D3" only available using maximum likelihood estimation. ',
-            'Changed test to "D2".')
-    test <- "D2"
-  }
   ## calculate pooled test
-  if (toupper(test) == "D3") {
-    ## check estimator
-    if (lavListInspect(object, "options")$estimator != "ML")
-      stop("D3 is only available using ML estimation")
-    out <- D3(object = object, h1 = h1, asymptotic = asymptotic)
+  if (test == "D3") {
+    if (pool.robust & moreFit) stop('pool.robust = TRUE only applicable ',
+                                    'when test = "D2".')
+    out <- D3(object, h1 = h1, asymptotic = asymptotic)
     if (any(indices %in% incremental)) baseOut <- D3(baseFit, asymptotic = TRUE)
-  } else if (toupper(test) == "D2") {
-    out <- D2(object = object, h1 = h1, asymptotic = asymptotic,
-              pool.robust = pool.robust, method = method, A.method = A.method,
-              H1 = H1, type = type)
+  } else if (test == "D2") {
+    out <- D2(object, h1 = h1, asymptotic = asymptotic, pool.robust = FALSE)
     if (any(indices %in% incremental)) baseOut <- D2(baseFit, asymptotic = TRUE,
-                                                     pool.robust = pool.robust,
-                                                     method = method,
-                                                     A.method = A.method,
-                                                     H1 = H1, type = type)
+                                                     pool.robust = FALSE)
+    if (robust & pool.robust) {
+      out <- c(out,
+               D2(object, h1 = h1, asymptotic = asymptotic, pool.robust = TRUE,
+                  method = method, A.method = A.method, H1 = H1, type = type))
+      if (any(indices %in% incremental)) {
+        baseOut <- c(baseOut, D2(baseFit, asymptotic = TRUE, pool.robust = TRUE,
+                                 method = method, A.method = A.method,
+                                 H1 = H1, type = type))
+      }
+    }
   } else stop("'", test, "' is an invalid option for the 'test' argument.")
   ## If test statistic is negative, return without any indices or robustness
   if (asymptotic & (moreFit | robust)) {
@@ -981,7 +990,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
     }
   }
 
-  ## add robust statistics
+  ## If robust statistics were not pooled above, robustify naive statistics
   if (robust & !pool.robust) {
     out <- robustify(ChiSq = out, object, h1)
     if (scaleshift) {
@@ -989,27 +998,29 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
     } else if (lavListInspect(object, "options")$test == "mean.var.adjusted") {
       extraWarn <- ' and degrees of freedom'
     } else extraWarn <- ''
-    message('Robust corrections are made to the naive (pooled) chi-squared',
-            ' test statistic using the mean scaling factor', extraWarn,
-            ' across ', nImps, ' imputations for which the model converged. \n',
-            'To instead pool robust test statistics, set pool.robust=TRUE. \n')
+    message('Robust corrections are made by pooling the naive chi-squared ',
+            'statistic across ', nImps, ' imputations for which the model ',
+            'converged, then applying the average (across imputations) scaling',
+            ' factor', extraWarn, ' to that pooled value. \n',
+            'To instead pool the robust test statistics, set test = "D2" and ',
+            'pool.robust = TRUE. \n')
   }
 
   ## add fit indices for single model
   if (moreFit) {
     X2 <- out[["chisq"]]
-    if (pool.robust) message('All fit indices are calculated using the pooled',
-                             ' robust test statistic. \n')
-    if (robust & !pool.robust) {
+    # if (pool.robust) message('All fit indices are calculated using the pooled',
+    #                          ' robust test statistic. \n')
+    if (robust) {
       X2.sc <- out[["chisq.scaled"]]
       DF.sc <- out[["df.scaled"]] ## for mean.var.adjusted, mean DF across imputations
-      ch <- out[["chisq.scaling.factor"]] ## mean c_hat across imputations
+      if (!pool.robust) ch <- out[["chisq.scaling.factor"]] ## mean c_hat across imputations
       if (X2 < .Machine$double.eps && DF == 0) ch <- 0
       ## for RMSEA
       if ("rmsea" %in% indices) {
         d <- mean(sapply(object@testList[useImps],
                          function(x) sum(x[[2]][["trace.UGamma"]])))
-        if (is.na(d) || d == 0) d <- NA # FIXME: only relevant when scaleshift?
+        if (is.na(d) || d == 0) d <- NA # FIXME: only relevant when mean.var.adjusted?
       }
     }
     ## for CFI, TLI, etc.
@@ -1018,15 +1029,17 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
       bDF <- baseOut[["df"]]
       out <- c(out, baseline.chisq = bX2, baseline.df = bDF,
                baseline.pvalue = baseOut[["pvalue"]])
-      if (robust & !pool.robust) {
-        baseOut <- robustify(ChiSq = baseOut, object = baseFit)
+      if (robust) {
+        if (!pool.robust) baseOut <- robustify(ChiSq = baseOut, object = baseFit)
         out["baseline.chisq.scaled"] <- bX2.sc <- baseOut[["chisq.scaled"]]
         out["baseline.df.scaled"]    <- bDF.sc <- baseOut[["df.scaled"]]
         out["baseline.pvalue.scaled"] <- baseOut[["pvalue.scaled"]]
-        cb <- baseOut[["chisq.scaling.factor"]]
-        out["baseline.chisq.scaling.factor"] <- cb
-        if (scaleshift) {
-          out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
+        if (!pool.robust) {
+          cb <- baseOut[["chisq.scaling.factor"]]
+          out["baseline.chisq.scaling.factor"] <- cb
+          if (scaleshift) {
+            out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
+          }
         }
       }
     }
@@ -1035,7 +1048,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
     t1 <- max(X2 - DF, 0)
     t2 <- max(X2 - DF, bX2 - bDF, 0)
     out["cfi"] <- if(t1 == 0 && t2 == 0) 1 else 1 - t1/t2
-    if (robust & !pool.robust) {
+    if (robust) {
       ## scaled
       t1 <- max(X2.sc - DF.sc, 0)
       t2 <- max(X2.sc - DF.sc, bX2.sc - bDF.sc, 0)
@@ -1045,8 +1058,8 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
         out["cfi.scaled"] <- 1
       } else out["cfi.scaled"] <- 1 - t1/t2
       ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (lavListInspect(object, "options")$test %in%
-          c("satorra.bentler","yuan.bentler")) {
+      if (!pool.robust & lavListInspect(object, "options")$test %in%
+          c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
         t1 <- max(X2 - ch*DF, 0)
         t2 <- max(X2 - ch*DF, bX2 - cb*bDF, 0)
         if (is.na(t1) || is.na(t2)) {
@@ -1061,7 +1074,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
     t1 <- X2 - DF
     t2 <- bX2 - bDF
     out["rni"] <- if (t2 == 0) NA else 1 - t1/t2
-    if (robust & !pool.robust) {
+    if (robust) {
       ## scaled
       t1 <- X2.sc - DF.sc
       t2 <- bX2.sc - bDF.sc
@@ -1071,8 +1084,8 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
         out["rni.scaled"] <- NA
       } else out["rni.scaled"] <- 1 - t1/t2
       ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (lavListInspect(object, "options")$test %in%
-          c("satorra.bentler","yuan.bentler")) {
+      if (!pool.robust & lavListInspect(object, "options")$test %in%
+          c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
         t1 <- X2 - ch*DF
         t2 <- bX2 - cb*bDF
         if (is.na(t1) || is.na(t2)) {
@@ -1087,7 +1100,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
     t1 <- (X2 - DF)*bDF
     t2 <- (bX2 - bDF)*DF
     out["tli"] <- out["nnfi"] <- if (DF > 0) 1 - t1/t2 else 1
-    if (robust & !pool.robust) {
+    if (robust) {
       ## scaled
       t1 <- (X2.sc - DF.sc)*bDF.sc
       t2 <- (bX2.sc - bDF.sc)*DF.sc
@@ -1099,8 +1112,8 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
         out["tli.scaled"] <- out["nnfi.scaled"] <- 1
       }
       ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (lavListInspect(object, "options")$test %in%
-          c("satorra.bentler","yuan.bentler")) {
+      if (!pool.robust & lavListInspect(object, "options")$test %in%
+          c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
         t1 <- (X2 - ch*DF)*bDF
         t2 <- (bX2 - cb*bDF)*DF
         if (is.na(t1) || is.na(t2)) {
@@ -1117,7 +1130,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
       t1 <- t2 - X2/DF
       out["rfi"] <- if (t1 < 0 || t2 < 0) 1 else t1/t2
     } else out["rfi"] <- 1
-    if (robust & !pool.robust) {
+    if (robust) {
       if (DF > 0) {
         t2 <- bX2.sc / bDF.sc
         t1 <- t2 - X2.sc/DF.sc
@@ -1131,13 +1144,13 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
       t2 <- bX2
       out["nfi"] <- t1 / t2
     } else out["nfi"] <- 1
-    if (robust & !pool.robust) out["nfi.scaled"] <- (bX2.sc - X2.sc) / bX2.sc
+    if (robust) out["nfi.scaled"] <- (bX2.sc - X2.sc) / bX2.sc
   }
   if ("pnfi" %in% indices) {
     t1 <- bX2 - X2
     t2 <- bX2
     out["pnfi"] <- (DF / bDF) * t1/t2
-    if (robust & !pool.robust) {
+    if (robust) {
       t1 <- bX2.sc - X2.sc
       t2 <- bX2.sc
       out["pnfi.scaled"] <- (DF / bDF) * t1/t2
@@ -1147,7 +1160,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
     t1 <- bX2 - X2
     t2 <- bX2 - DF
     out["ifi"] <- if (t2 < 0) 1 else t1/t2
-    if (robust & !pool.robust) {
+    if (robust) {
       t1 <- bX2.sc - X2.sc
       t2 <- bX2.sc - DF.sc
       if (is.na(t2)) {
@@ -1202,7 +1215,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
                                     lower.tail = FALSE)
 
       ## Scaled versions (naive and robust)
-      if (robust & !pool.robust & !scaleshift) {
+      if (robust & !scaleshift) {
         ## naive
         out["rmsea.scaled"] <- sqrt( max(0, (X2/N)/d - 1/N) ) * sqrt(nG)
         ## lower confidence limit
@@ -1227,7 +1240,8 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
         out["rmsea.pvalue.scaled"] <- pchisq(X2, DF.sc, ncp = N*DF.sc*0.05^2/nG,
                                              lower.tail = FALSE)
 
-        if (object@Options$test %in% c("satorra.bentler","yuan.bentler")) {
+        if (!pool.robust & lavListInspect(object, "options")$test %in%
+            c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
           ## robust
           out["rmsea.robust"] <- sqrt( max(0, (X2/N)/DF - ch/N ) ) * sqrt(nG)
           ## lower confidence limit
@@ -1251,7 +1265,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
           ## p value
           ########## To be discovered?
         }
-      } else if (scaleshift & !pool.robust) {
+      } else if (scaleshift) {
         ## naive only
         out["rmsea.scaled"] <- sqrt( max(0, (X2.sc/N)/DF - 1/N) ) * sqrt(nG)
         ## lower confidence limit
@@ -1282,7 +1296,7 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
   if ("gammaHat" %in% indices) {
     out["gammaHat"] <- nVars / (nVars + 2*((X2 - DF) / N))
     out["adjGammaHat"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF) * (1 - out["gammaHat"])
-    if (robust & !pool.robust) {
+    if (robust) {
       out["gammaHat.scaled"] <- nVars / (nVars + 2*((X2.sc - DF.sc) / N))
       out["adjGammaHat.scaled"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF.sc) * (1 - out["gammaHat.scaled"])
     }
