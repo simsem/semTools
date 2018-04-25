@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 21 April 2018
+### Last updated: 25 April 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -622,7 +622,8 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE, pool.robust = FALSE,
         oldCall$ncpus <- 1L
         if (lavoptions$warn) warning("Unable to pass lavaan::lavTestLRT() ",
                           "arguments when parallel = 'snow'.\n",
-                          "Switching to parallel = 'no'.")
+                          "Switching to parallel = 'no'.",
+                          " Unless using Windows, parallel='multicore' works.")
       }
     }
 

@@ -77,12 +77,18 @@ anova(mgfit0, test = "D1", constraints = '
       .p72. == 0')
 
 ## Score test for metric invariance
-lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
-                type = "Rubin", scale.W = TRUE)
-lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
-                type = "Rubin", scale.W = FALSE)
 lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = TRUE)
 lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = FALSE)
+## compare univariate score test to modification indices
+lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
+                type = "Rubin", scale.W = TRUE, asymptotic = TRUE)
+modindices.mi(mgfit1, op = '~~',
+              type = "Rubin", scale.W = TRUE)
+
+lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
+                type = "Rubin", scale.W = FALSE, asymptotic = TRUE)
+modindices.mi(mgfit1, op = '~~',
+              type = "Rubin", scale.W = FALSE)
 
 
 ##############################################

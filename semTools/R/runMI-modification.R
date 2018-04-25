@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 18 April 2018
+### Last updated: 25 April 2018
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -159,6 +159,8 @@ modindices.mi <- function(object,
   #FIXME: cut useSE?
   # useSE <- sapply(object@convergence, "[[", i = "SE")
   # useSE[is.na(useSE)] <- FALSE
+  N <- lavListInspect(object, "ntotal")
+  #FIXME: if (lavoptions$mimic == "EQS") N <- N - 1 # not in lavaan, why?
 
   ## check if model has converged
   if (m == 0L) stop("No models converged. Modification indices unavailable.")
@@ -256,7 +258,7 @@ modindices.mi <- function(object,
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
     score <- colMeans(do.call(rbind, gradList))[extra.idx]
-    B <- cov(do.call(rbind, gradList))
+    B <- cov(do.call(rbind, gradList) * sqrt(N)) # unit-information scale
     W <- Reduce("+", infoList) / m
     ## check whether equality constraints prevent inversion of W
     inv.W <- try(solve(W), silent = TRUE)
@@ -307,7 +309,6 @@ modindices.mi <- function(object,
     if (class(nR) == "try-error" || is.null(nR)) stop("No modification indices were computed.")
 
     # create and fill in mi
-    N <- lavListInspect(object, "ntotal")
     LIST$mi <- N * (score*score) / V.diag
 
     # handle equality constraints (if any)

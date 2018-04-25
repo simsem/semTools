@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 18 April 2018
+### Last updated: 25 April 2018
 ### classic score test (= Lagrange Multiplier test)
 ### borrowed source code from lavaan/R/lav_test_score.R
 
@@ -186,7 +186,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
         oldCall$parallel <- "no"
         oldCall$ncpus <- 1L
         if (warn) warning("Unable to pass lavaan::lavTestScore() arguments ",
-                          "when parallel='snow'. Switching to parallel='no'.")
+                          "when parallel='snow'. Switching to parallel='no'.",
+                          " Unless using Windows, parallel='multicore' works.")
       }
     }
 
@@ -280,6 +281,9 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
   ## number of free parameters (regardless of whether they are constrained)
   npar <- object@Model@nx.free
+  ## sample size
+  N <- lavListInspect(object, "ntotal")
+  if (lavoptions$mimic == "EQS") N <- N - 1
 
   # Mode 1: ADDING new parameters
   if (!is.null(add) && nchar(add) > 0L) {
@@ -289,7 +293,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
         oldCall$parallel <- "no"
         oldCall$ncpus <- 1L
         if (warn) warning("Unable to pass lavaan::lavTestScore() arguments ",
-                          "when parallel='snow'. Switching to parallel='no'.")
+                          "when parallel='snow'. Switching to parallel='no'.",
+                          " Unless using Windows, parallel='multicore' works.")
       }
     }
 
@@ -362,9 +367,9 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     ## pool gradients and information matrices
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
-    score <- colMeans(do.call(rbind, gradList)) # pooled point estimates
-    B <- cov(do.call(rbind, gradList))          # between-imputation information
-    W <- Reduce("+", infoList) / m              # within-imputation information
+    score <- colMeans(do.call(rbind, gradList))  # pooled point estimates
+    B <- cov(do.call(rbind, gradList) * sqrt(N)) # between-imputation UNIT information
+    W <- Reduce("+", infoList) / m               # within-imputation UNIT information
     inv.W <- try(solve(W), silent = TRUE)
     if (inherits(inv.W, "try-error")) {
       if (warn && scale.W) warning("Could not invert W for total score test, ",
@@ -429,9 +434,9 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     ## pool gradients and information matrices
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
-    score <- colMeans(do.call(rbind, gradList)) # pooled point estimates
-    B <- cov(do.call(rbind, gradList))          # between-imputation information
-    W <- Reduce("+", infoList) / m              # within-imputation information
+    score <- colMeans(do.call(rbind, gradList))  # pooled point estimates
+    B <- cov(do.call(rbind, gradList) * sqrt(N)) # between-imputation UNIT information
+    W <- Reduce("+", infoList) / m               # within-imputation UNIT information
     inv.W <- try(solve(W), silent = TRUE)
     if (inherits(inv.W, "try-error")) {
       if (warn && scale.W) warning("Could not invert W for total score test, ",
@@ -482,9 +487,6 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     Table <- data.frame(lhs = lhs, op = op, rhs = rhs)
     class(Table) <- c("lavaan.data.frame", "data.frame")
   }
-
-  N <- lavListInspect(object, "ntotal")
-  if (lavoptions$mimic == "EQS") N <- N - 1
 
   if (lavoptions$se == "standard") {
     stat <- as.numeric(N * score %*% J.inv %*% score)
