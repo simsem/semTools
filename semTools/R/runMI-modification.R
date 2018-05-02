@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 25 April 2018
+### Last updated: 2 May 2018
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -195,6 +195,7 @@ modindices.mi <- function(object,
       LIST$sepc.all <- rowMeans(do.call(cbind, sepcList))
     }
   } else {
+    warning('type = "Rubin" does not currently work as expected. type = "D2" is advised.') #FIXME
     ## apply Rubin's rules to pool gradient and augmented information matrix
     oldCall <- object@lavListCall
     #oldCall$model <- parTable(object) #FIXME: necessary?
@@ -243,8 +244,19 @@ modindices.mi <- function(object,
                              slotData        = obj@Data,
                              slotCache       = obj@Cache,
                              sloth1          = obj@h1)
+
+      ## partition information matrix
+      model.idx <- LIST$free[ LIST$free > 0L & LIST$user != 10L ]
+      extra.idx <- LIST$free[ LIST$free > 0L & LIST$user == 10L ]
+      information <- lavaan::lavInspect(obj2, "information")
+      I11 <- information[extra.idx, extra.idx, drop = FALSE]
+      I12 <- information[extra.idx, model.idx, drop = FALSE]
+      I21 <- information[model.idx, extra.idx, drop = FALSE]
+      I22 <- information[model.idx, model.idx, drop = FALSE]
+      I22.inv <- MASS::ginv(I22)
+
       list(gradient = lavaan::lavInspect(obj2, "gradient"),
-           information = lavaan::lavInspect(obj2, "information"),
+           information = I11 - I12 %*% I22.inv %*% I21,
            LIST = LIST,
            parTable = LIST[LIST$free > 0L & LIST$user == 10L, ])
     }
@@ -258,7 +270,7 @@ modindices.mi <- function(object,
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
     score <- colMeans(do.call(rbind, gradList))[extra.idx]
-    B <- cov(do.call(rbind, gradList) * sqrt(N)) # unit-information scale
+    B <- cov(do.call(rbind, gradList)[ , extra.idx] * sqrt(N)) # unit-info scale
     W <- Reduce("+", infoList) / m
     ## check whether equality constraints prevent inversion of W
     inv.W <- try(solve(W), silent = TRUE)
@@ -272,25 +284,11 @@ modindices.mi <- function(object,
     ## relative increase in variance due to missing data
     ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
     if (scale.W) {
-      information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
+      V <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
     } else {
       ## less reliable, but constraints prevent inversion of W
-      information <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
+      V <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
     }
-
-    # partition
-    I11 <- information[extra.idx, extra.idx, drop = FALSE]
-    I12 <- information[extra.idx, model.idx, drop = FALSE]
-    I21 <- information[model.idx, extra.idx, drop = FALSE]
-    I22 <- information[model.idx, model.idx, drop = FALSE]
-    I22.inv <- try(solve(I22), silent = TRUE)
-    if (inherits(I22.inv, "try-error")) {
-      I22.inv <- MASS::ginv(I22)
-      if (lavaan::lavOptions()$warn)
-        warning("Could not invert I22; modification indices computed",
-                " using generalized inverse.")
-    }
-    V <- I11 - I12 %*% I22.inv %*% I21
     V.diag <- diag(V)
     # dirty hack: catch very small or negative values in diag(V)
     # this is needed eg when parameters are not identified if freed-up;
