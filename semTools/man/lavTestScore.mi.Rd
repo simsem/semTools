@@ -5,8 +5,9 @@
 \title{Score Test for Multiple Imputations}
 \usage{
 lavTestScore.mi(object, add = NULL, release = NULL, type = c("D2",
-  "Rubin"), scale.W = TRUE, asymptotic = FALSE, univariate = TRUE,
-  cumulative = FALSE, epc = FALSE, verbose = FALSE, warn = TRUE)
+  "Rubin"), scale.W = FALSE, asymptotic = !is.null(add),
+  univariate = TRUE, cumulative = FALSE, epc = FALSE, verbose = FALSE,
+  warn = TRUE)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan}}.}
@@ -27,31 +28,37 @@ the equality constraints as they appear in the parameter table.}
  calculated from each imputed data set will be pooled across imputations,
  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).}
 
-\item{scale.W}{\code{logical}. If \code{TRUE} (default), the pooled
-information matrix is calculated by scaling the within-imputation component
-by the average relative increase in variance (ARIV; see Enders, 2010, p.
-235). Otherwise, the pooled information is calculated as the weighted sum
-of the within-imputation and between-imputation components.}
+\item{scale.W}{\code{logical}. If \code{FALSE} (default), the pooled
+information matrix is calculated as the weighted sum of the
+within-imputation and between-imputation components. Otherwise, the pooled
+information is calculated by scaling the within-imputation component by the
+average relative increase in variance (ARIV; see Enders, 2010, p. 235).
+Not recommended, and ignored (irrelevant) if \code{type = "D2"}.}
 
-\item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
+\item{asymptotic}{\code{logical}. If \code{FALSE} (default when using
+\code{add} to test adding fixed parameters to the model), the pooled test
 will be returned as an \emph{F}-distributed variable with numerator
 (\code{df1}) and denominator (\code{df2}) degrees of freedom.
 If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
 \code{df1} on the assumption that its \code{df2} is sufficiently large
 enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-with \code{df1}.}
+with \code{df1}. When using the \code{release} argument, \code{asymptotic}
+will be set to \code{TRUE} because (A)RIV can only be calculated for
+\code{add}ed parameters.}
 
 \item{univariate}{\code{logical}. If \code{TRUE}, compute the univariate
 score statistics, one for each constraint.}
 
 \item{cumulative}{\code{logical}. If \code{TRUE}, order the univariate score
 statistics from large to small, and compute a series of multivariate
-score statistics, each time adding an additional constraint.}
+score statistics, each time including an additional constraint in the test.}
 
 \item{epc}{\code{logical}. If \code{TRUE}, and we are releasing existing
 constraints, compute the expected parameter changes for the existing (free)
 parameters (and any specified with \code{add}), if all constraints
-were released.}
+were released. For EPCs associated with a particular (1-\emph{df})
+constraint, only specify one parameter in \code{add} or one constraint in
+\code{release}.}
 
 \item{verbose}{\code{logical}. Not used for now.}
 

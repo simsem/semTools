@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 18 April 2018
+### Last updated: 3 May 2018
 ### try new runMI
 
 library(lavaan)
@@ -82,13 +82,10 @@ lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = FALSE)
 ## compare univariate score test to modification indices
 lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
                 type = "Rubin", scale.W = TRUE, asymptotic = TRUE)
-modindices.mi(mgfit1, op = '~~',
-              type = "Rubin", scale.W = TRUE)
-
 lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
                 type = "Rubin", scale.W = FALSE, asymptotic = TRUE)
-modindices.mi(mgfit1, op = '~~',
-              type = "Rubin", scale.W = FALSE)
+modindices.mi(mgfit1, op = '~~', type = "Rubin")
+
 
 
 ##############################################

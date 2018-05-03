@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 2 May 2018
+### Last updated: 3 May 2018
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -14,7 +14,7 @@
 #' Rubin, 1991).
 #'
 #' @aliases modificationIndices.mi modificationindices.mi modindices.mi
-#' @importFrom lavaan lavInspect lavListInspect parTable
+#' @importFrom lavaan lavInspect lavListInspect
 #' @importFrom methods getMethod
 #' @importFrom stats cov pchisq qchisq
 #'
@@ -26,11 +26,6 @@
 #'  \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
 #'  calculated from each imputed data set will be pooled across imputations,
 #'  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
-#' @param scale.W \code{logical}. If \code{TRUE} (default), the pooled
-#'  information matrix is calculated by scaling the within-imputation component
-#'  by the average relative increase in variance (ARIV; see Enders, 2010, p.
-#'  235). Otherwise, the pooled information is calculated as the weighted sum
-#'  of the within-imputation and between-imputation components.
 #' @param standardized \code{logical}. If \code{TRUE}, two extra columns
 #'  (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values for
 #'  the EPCs. In the first column (\code{$sepc.lv}), standardizization is based
@@ -133,7 +128,6 @@
 #' @export
 modindices.mi <- function(object,
                           type = c("D2","Rubin"),
-                          scale.W = TRUE,
 
                           standardized = TRUE,
                           cov.std = TRUE,
@@ -151,8 +145,6 @@ modindices.mi <- function(object,
                           na.remove = TRUE,
                           op = NULL) {
   stopifnot(inherits(object, "lavaan.mi"))
-  PT <- parTable(object)
-  npar <- max(PT$free) - sum(PT$op == "==")
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   type <- tolower(type[1])
@@ -273,22 +265,7 @@ modindices.mi <- function(object,
     B <- cov(do.call(rbind, gradList)[ , extra.idx] * sqrt(N)) # unit-info scale
     W <- Reduce("+", infoList) / m
     ## check whether equality constraints prevent inversion of W
-    inv.W <- try(solve(W), silent = TRUE)
-    if (inherits(inv.W, "try-error")) {
-      if (lavaan::lavOptions()$warn && scale.W)
-        warning("Could not invert W. Generalized inverse used instead.\n",
-                "If the model does not have equality constraints, ",
-                "it may be safer to set `scale.W = FALSE'.")
-      inv.W <- MASS::ginv(W)
-    }
-    ## relative increase in variance due to missing data
-    ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
-    if (scale.W) {
-      V <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
-    } else {
-      ## less reliable, but constraints prevent inversion of W
-      V <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
-    }
+    V <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
     V.diag <- diag(V)
     # dirty hack: catch very small or negative values in diag(V)
     # this is needed eg when parameters are not identified if freed-up;

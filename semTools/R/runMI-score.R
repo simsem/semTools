@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 25 April 2018
+### Last updated: 3 May 2018
 ### classic score test (= Lagrange Multiplier test)
 ### borrowed source code from lavaan/R/lav_test_score.R
 
@@ -40,27 +40,33 @@
 #' \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
 #'  calculated from each imputed data set will be pooled across imputations,
 #'  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
-#' @param scale.W \code{logical}. If \code{TRUE} (default), the pooled
-#'  information matrix is calculated by scaling the within-imputation component
-#'  by the average relative increase in variance (ARIV; see Enders, 2010, p.
-#'  235). Otherwise, the pooled information is calculated as the weighted sum
-#'  of the within-imputation and between-imputation components.
-#' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
+#' @param scale.W \code{logical}. If \code{FALSE} (default), the pooled
+#'  information matrix is calculated as the weighted sum of the
+#'  within-imputation and between-imputation components. Otherwise, the pooled
+#'  information is calculated by scaling the within-imputation component by the
+#'  average relative increase in variance (ARIV; see Enders, 2010, p. 235).
+#'  Not recommended, and ignored (irrelevant) if \code{type = "D2"}.
+#' @param asymptotic \code{logical}. If \code{FALSE} (default when using
+#'  \code{add} to test adding fixed parameters to the model), the pooled test
 #'  will be returned as an \emph{F}-distributed variable with numerator
 #'  (\code{df1}) and denominator (\code{df2}) degrees of freedom.
 #'  If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
 #'  \code{df1} on the assumption that its \code{df2} is sufficiently large
 #'  enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-#'  with \code{df1}.
+#'  with \code{df1}. When using the \code{release} argument, \code{asymptotic}
+#'  will be set to \code{TRUE} because (A)RIV can only be calculated for
+#'  \code{add}ed parameters.
 #' @param univariate \code{logical}. If \code{TRUE}, compute the univariate
 #'  score statistics, one for each constraint.
 #' @param cumulative \code{logical}. If \code{TRUE}, order the univariate score
 #'  statistics from large to small, and compute a series of multivariate
-#'  score statistics, each time adding an additional constraint.
+#'  score statistics, each time including an additional constraint in the test.
 #' @param epc \code{logical}. If \code{TRUE}, and we are releasing existing
 #'  constraints, compute the expected parameter changes for the existing (free)
 #'  parameters (and any specified with \code{add}), if all constraints
-#'  were released.
+#'  were released. For EPCs associated with a particular (1-\emph{df})
+#'  constraint, only specify one parameter in \code{add} or one constraint in
+#'  \code{release}.
 #' @param verbose \code{logical}. Not used for now.
 #' @param warn \code{logical}. If \code{TRUE}, print out warnings if they occur.
 #'
@@ -143,8 +149,8 @@
 #'
 #' @export
 lavTestScore.mi <- function(object, add = NULL, release = NULL,
-                            type = c("D2","Rubin"), scale.W = TRUE,
-                            asymptotic = FALSE, # as F or chi-squared
+                            type = c("D2","Rubin"), scale.W = FALSE,
+                            asymptotic = !is.null(add), # as F or chi-squared
                             univariate = TRUE, cumulative = FALSE,
                             #standardized = TRUE, #FIXME: add std.lv and std.all if(epc)?
                             epc = FALSE, verbose = FALSE, warn = TRUE) {
@@ -277,7 +283,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     }
 
     return(OUT)
-  } # else type == "Rubin"
+  } # else type == "Rubin", making 'scale.W=' relevant
 
   ## number of free parameters (regardless of whether they are constrained)
   npar <- object@Model@nx.free
@@ -380,7 +386,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       inv.W <- MASS::ginv(W)
     }
     ## relative increase in variance due to missing data
-    ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
+    ariv <- (1 + 1/m)/nrow(B) * sum(diag(B %*% inv.W))
 
     if (scale.W) {
       information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
@@ -420,6 +426,13 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     class(Table) <- c("lavaan.data.frame", "data.frame")
   } else {
     # MODE 2: releasing constraints
+    if (!asymptotic) {
+      message('The average relative increase in variance (ARIV) cannot be ',
+              'calculated for releasing estimated constraints, preventing the ',
+              'denominator degrees of freedom from being calculated for the F ',
+              'test, so the "asymptotic" argument was switched to TRUE.' )
+      asymptotic <- TRUE
+    }
     if (is.character(release)) stop("not implemented yet") #FIXME: moved up to save time
     R <- object@Model@con.jac[,,drop = FALSE]
     if (nrow(R) == 0L) stop("No equality constraints found in the model.")
@@ -447,7 +460,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       inv.W <- MASS::ginv(W)
     }
     ## relative increase in variance due to missing data
-    ariv <- (1 + 1/m)/npar * sum(diag(B %*% inv.W))
+    ariv <- (1 + 1/m)/nrow(B) * sum(diag(B %*% inv.W))
     if (scale.W) {
       information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
     } else {
@@ -512,11 +525,13 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                        p.value = pchisq(stat*DF, df = DF, lower.tail = FALSE))
   } else {
     ## calculate denominator DF for F statistic
+    myDims <- 1:nadd + npar
+    ARIV <- (1 + 1/m)/nadd * sum(diag(B[myDims, myDims, drop = FALSE] %*% inv.W[myDims, myDims, drop = FALSE]))
     a <- DF*(m - 1)
     if (a > 4) {
-      df2 <- 4 + (a - 4) * (1 + (1 - 2/a)*(1 / ariv))^2 # Enders (eq. 8.24)
+      df2 <- 4 + (a - 4) * (1 + (1 - 2/a)*(1 / ARIV))^2 # Enders (eq. 8.24)
     } else {
-      df2 <- a*(1 + 1/DF) * (1 + 1/ariv)^2 / 2 # Enders (eq. 8.25)
+      df2 <- a*(1 + 1/DF) * (1 + 1/ARIV)^2 / 2 # Enders (eq. 8.25)
     }
     TEST <- data.frame(test = "score", "F" = stat, df1 = DF, df2 = df2,
                        p.value = pf(stat, df1 = DF, df2 = df2, lower.tail = FALSE))
@@ -538,6 +553,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
     Table2 <- Table
     DF <- rep(1, length(r.idx))
+
     if (asymptotic) {
       Table2$X2 <- TS[r.idx] * DF
       Table2$df <- DF
@@ -545,12 +561,15 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     } else {
       Table2$F <- TS[r.idx]
       Table2$df1 <- DF
-      ## calculate denominator DF for F statistic
-      Table2$df2 <- sapply(DF, function(DF1) {
+      ## calculate denominator DF for F statistic using RIV per 1-df test (Enders eq. 8.10)
+      myDims <- 1:nadd + npar
+      RIVs <- diag((1 + 1/m) * B[myDims, myDims, drop = FALSE]) / diag(W[myDims, myDims, drop = FALSE])
+      Table2$df2 <- sapply(RIVs, function(riv) {
+        DF1 <- 1L # Univariate tests
         a <- DF1*(m - 1)
         DF2 <- if (a > 4) {
-          4 + (a - 4) * (1 + (1 - 2/a)*(1 / ariv))^2 # Enders (eq. 8.24)
-        } else a*(1 + 1/DF1) * (1 + 1/ariv)^2 / 2 # Enders (eq. 8.25)
+          4 + (a - 4) * (1 + (1 - 2/a)*(1 / riv))^2 # Enders (eq. 8.24)
+        } else a*(1 + 1/DF1) * (1 + 1/riv)^2 / 2 # Enders (eq. 8.25)
         DF2
       })
       Table2$p.value = pf(Table2$F, df1 = DF, df2 = Table2$df2, lower.tail = FALSE)
@@ -562,6 +581,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
   if (cumulative) {
     TS.order <- sort.int(TS, index.return = TRUE, decreasing = TRUE)$ix
     TS <- numeric( length(r.idx) )
+    if (!asymptotic) ARIVs <- numeric( length(r.idx) )
     for (r in 1:length(r.idx)) {
       rcumul.idx <- TS.order[1:r]
 
@@ -571,6 +591,10 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       Z1.plus <- MASS::ginv(Z1)
       Z1.plus1 <- Z1.plus[ 1:nrow(information), 1:nrow(information) ]
       TS[r] <- as.numeric(N * t(score) %*%  Z1.plus1 %*% score)
+      if (!asymptotic) {
+        myDims <- rcumul.idx + npar
+        ARIVs[r] <- (1 + 1/m)/length(myDims) * sum(diag(B[myDims, myDims, drop = FALSE] %*% inv.W[myDims, myDims, drop = FALSE]))
+      }
     }
 
     Table3 <- Table
@@ -583,13 +607,13 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       Table3$F <- TS
       Table3$df1 <- DF
       ## calculate denominator DF for F statistic
-      Table3$df2 <- sapply(DF, function(DF1) {
+      Table3$df2 <- mapply(FUN = function(DF1, ariv) {
         a <- DF1*(m - 1)
         DF2 <- if (a > 4) {
           4 + (a - 4) * (1 + (1 - 2/a)*(1 / ariv))^2 # Enders (eq. 8.24)
         } else a*(1 + 1/DF1) * (1 + 1/ariv)^2 / 2 # Enders (eq. 8.25)
         DF2
-      })
+      }, DF1 = DF, ariv = ARIVs)
       Table3$p.value = pf(Table3$F, df1 = DF, df2 = Table3$df2, lower.tail = FALSE)
     }
     attr(Table3, "header") <- "cumulative score tests:"
