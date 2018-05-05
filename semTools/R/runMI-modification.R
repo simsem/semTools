@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 3 May 2018
+### Last updated: 5 May 2018
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -20,12 +20,13 @@
 #'
 #' @param object An object of class \code{\linkS4class{lavaan.mi}}
 #' @param type \code{character} indicating which pooling method to use.
-#'  \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
-#'  gradient and information, and those pooled values will be used to
-#'  calculate modification indices in the usual manner. \code{"D2"} (default),
+#'  \code{type = "Rubin"} currently unavailable. \code{type = "D2"} (default),
 #'  \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
 #'  calculated from each imputed data set will be pooled across imputations,
 #'  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
+##########  \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
+##########  gradient and information, and those pooled values will be used to
+##########  calculate modification indices in the usual manner.
 #' @param standardized \code{logical}. If \code{TRUE}, two extra columns
 #'  (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values for
 #'  the EPCs. In the first column (\code{$sepc.lv}), standardizization is based
@@ -145,12 +146,11 @@ modindices.mi <- function(object,
                           na.remove = TRUE,
                           op = NULL) {
   stopifnot(inherits(object, "lavaan.mi"))
-  useImps <- sapply(object@convergence, "[[", i = "converged")
+  useSE <- sapply(object@convergence, "[[", i = "SE")
+  useSE[is.na(useSE)] <- FALSE
+  useImps <- useSE & sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   type <- tolower(type[1])
-  #FIXME: cut useSE?
-  # useSE <- sapply(object@convergence, "[[", i = "SE")
-  # useSE[is.na(useSE)] <- FALSE
   N <- lavListInspect(object, "ntotal")
   #FIXME: if (lavoptions$mimic == "EQS") N <- N - 1 # not in lavaan, why?
 
@@ -187,7 +187,9 @@ modindices.mi <- function(object,
       LIST$sepc.all <- rowMeans(do.call(cbind, sepcList))
     }
   } else {
-    warning('type = "Rubin" does not currently work as expected. type = "D2" is advised.') #FIXME
+    stop('type = "Rubin" does not currently work as expected. Use type = "D2".')
+    #FIXME: call lavTestScore.mi() to add all parameters
+
     ## apply Rubin's rules to pool gradient and augmented information matrix
     oldCall <- object@lavListCall
     #oldCall$model <- parTable(object) #FIXME: necessary?

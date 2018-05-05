@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 May 2018
+### Last updated: 5 May 2018
 ### classic score test (= Lagrange Multiplier test)
 ### borrowed source code from lavaan/R/lav_test_score.R
 
@@ -157,12 +157,11 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
   stopifnot(inherits(object, "lavaan.mi"))
   lavoptions <- object@Options
 
-  useImps <- sapply(object@convergence, "[[", i = "converged")
+  useSE <- sapply(object@convergence, "[[", i = "SE")
+  useSE[is.na(useSE)] <- FALSE
+  useImps <- useSE & sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   type <- tolower(type[1])
-  #FIXME: cut useSE?
-  # useSE <- sapply(object@convergence, "[[", i = "SE")
-  # useSE[is.na(useSE)] <- FALSE
 
   ## check if model has converged
   if (m == 0L) stop("No models converged. Score tests unavailable.")

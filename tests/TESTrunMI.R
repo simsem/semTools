@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 May 2018
+### Last updated: 5 May 2018
 ### try new runMI
 
 library(lavaan)
@@ -50,8 +50,8 @@ anova(fit0, h1 = fit1, test = "D2")  # compare fit
 
 
 ## fit multigroup model
-mgfit1 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlmv")
-mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlmv",
+mgfit1 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm")
+mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
                  group.equal = c("loadings","intercepts"))
 ## use methods
 summary(mgfit0, standardized = "std.all") # can also request "std.lv"
@@ -70,11 +70,26 @@ anova(mgfit0, h1 = mgfit1)           # compare fit
 anova(mgfit0, h1 = mgfit1, test = 'D2') # robustifies pooled naive statistic
 anova(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic
 
+
 ## use D1 to test a parametrically nested model (whether latent means are ==)
-anova(mgfit0, test = "D1", constraints = '
+anova(mgfit0, test = "D1", asymptotic = TRUE, constraints = '
       .p70. == 0
       .p71. == 0
       .p72. == 0')
+## compare to complete data and FIML
+mgfit <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
+             estimator = "mlr", group.equal = c("loadings","intercepts"))
+mgfitm <- cfa(HS.model, data = HSMiss, group = "school", missing = "fiml",
+              estimator = "mlr", group.equal = c("loadings","intercepts"))
+lavTestWald(mgfit, constraints = '
+            .p70. == 0
+            .p71. == 0
+            .p72. == 0')
+lavTestWald(mgfitm, constraints = '
+            .p70. == 0
+            .p71. == 0
+            .p72. == 0')
+
 
 ## Score test for metric invariance
 lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = TRUE)
