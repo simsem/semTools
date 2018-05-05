@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 April 2018
+### Last updated: 5 May 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -506,12 +506,6 @@ D1 <- function(object, constraints = NULL, scale.W = TRUE,
   # remove == constraints from parTable, save as list
   PT <- parTable(object)
   partable <- as.list(PT[PT$op != "==", ])
-  if (sum(PT$op == "==") > 0L) {
-    message("When the unrestricted model already has equality constraints,",
-            " D1 requires 'asymptotic = TRUE', so an approximate chi-squared",
-            " will be returned instead of an F test statistic. \n")
-    asymptotic <- TRUE
-  }
 
   # parse constraints
   FLAT <- lavaan::lavParseModelString( constraints )
@@ -557,23 +551,17 @@ D1 <- function(object, constraints = NULL, scale.W = TRUE,
   DF <- nrow(JAC)
 
   if (asymptotic) {
-    out <- c("chisq" = test.stat * DF, df = DF,
+    out <- c("chisq" = test.stat, df = DF,
              pvalue = pchisq(test.stat * DF, df = DF, lower.tail = FALSE))
   } else {
-    npar <- max(PT$free) - sum(PT$op == "==")
     W <- getMethod("vcov", "lavaan.mi")(object, type = "within")
     B <- getMethod("vcov", "lavaan.mi")(object, type = "between")
-    ########### FIXME: can't invert with equality constraints.
-    ##                 Asked Yves for a hack, says it can't be done
-    W.inv <- try(solve(W), silent = TRUE)
-    if (inherits(W.inv, "try-error")) {
-      warning("W could not be inverted, likely due to equality constraints. ",
-              "Generalized inverse used instead.")
-      W.inv <- MASS::ginv(W)
-    }
+    # restricted B & W components of VCOV
+    W.r  <- JAC %*% W %*% t(JAC)
+    B.r  <- JAC %*% B %*% t(JAC)
     ## relative increase in variance due to missing data
-    ariv <- (1 + 1/nImps) * sum(diag(B %*% W.inv)) / npar
-
+    W.inv <- MASS::ginv(W.r)
+    ariv <- (1 + 1/nImps) * sum(diag(B.r %*% W.inv)) / DF
     ## calculate denominator DF for F statistic
     a <- DF*(nImps - 1)
     if (a > 4) {
@@ -581,7 +569,7 @@ D1 <- function(object, constraints = NULL, scale.W = TRUE,
     } else {
       v2 <- a*(1 + 1/DF) * (1 + 1/ariv)^2 / 2 # Enders (eq. 8.25)
     }
-    out <- c("F" = test.stat, df1 = DF, df2 = v2,
+    out <- c("F" = test.stat / DF, df1 = DF, df2 = v2,
              pvalue = pf(test.stat, df1 = DF, df2 = v2, lower.tail = FALSE))
   }
 
@@ -868,7 +856,6 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
 
   ## Everything else obsolete if test = "D1"
   if (toupper(test) == "D1") {
-    if (!asymptotic) asymptotic <- TRUE ## FIXME: until W can be inverted with eq. constraints
     out <- D1(object, constraints = constraints, scale.W = scale.W,
               asymptotic = asymptotic)
     message('D1 (Wald test) calculated using pooled "',
