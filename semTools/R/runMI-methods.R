@@ -245,7 +245,7 @@ setMethod("show", "lavaan.mi", function(object) {
 #' @importFrom lavaan lavListInspect parTable
 summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
-                              fmi = FALSE, scale.W = TRUE,
+                              fmi = FALSE, header = TRUE, scale.W = TRUE,
                               asymptotic = FALSE, add.attributes = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
@@ -345,12 +345,11 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
     attr(PE, "missing") <- lavops$missing
     attr(PE, "observed.information") <- lavops$observed.information
     attr(PE, "h1.information") <- lavops$h1.information
+    attr(PE, "header") <- header
     # FIXME: lavaan may add more!!
     if (fmi) cat("\n", messRIV, sep = "")
   } else {
-    ## if not, attach header
     class(PE) <- c("lavaan.data.frame","data.frame")
-    attr(PE, "header") <- if (fmi) c(messPool, "\n", messRIV) else messPool
   }
   ## requested R-squared?
   endoNames <- c(lavaan::lavNames(object, "ov.nox"),
@@ -378,6 +377,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
     getMethod("show", "lavaan.mi")(object)
     cat(messPool)
   }
+  ## FIXME: ask Yves to make this accessible somehow, or hack it?
+  # if (fit.measures) lavaan:::print.fit.measures(fitMeasures(object))
   PE
 }
 #' @name lavaan.mi-class
