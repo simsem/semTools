@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 May 2018
+### Last updated: 6 May 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -496,7 +496,7 @@ setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
 
 #' @importFrom stats pf pchisq
 #' @importFrom lavaan parTable
-D1 <- function(object, constraints = NULL, scale.W = TRUE,
+D1 <- function(object, constraints = NULL, scale.W = FALSE,
                asymptotic = FALSE, verbose = FALSE) {
   ## "borrowed" lavTestWald()
   nImps <- sum(sapply(object@convergence, "[[", i = "converged"))
@@ -556,7 +556,8 @@ D1 <- function(object, constraints = NULL, scale.W = TRUE,
   } else {
     W <- getMethod("vcov", "lavaan.mi")(object, type = "within")
     B <- getMethod("vcov", "lavaan.mi")(object, type = "between")
-    # restricted B & W components of VCOV
+    #FIXME: only valid for linear constraints?
+    ## restricted B & W components of VCOV
     W.r  <- JAC %*% W %*% t(JAC)
     B.r  <- JAC %*% B %*% t(JAC)
     ## relative increase in variance due to missing data
@@ -636,6 +637,7 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE, pool.robust = FALSE,
     chiList <- sapply(FIT@funList[useImps & !(noFit | noLRT)], "[[", i = "chisq")
     dfList <- sapply(FIT@funList[useImps & !(noFit | noLRT)], "[[", i = "df")
     out <- calculate.D2(chiList, DF = mean(dfList), asymptotic)
+    names(out) <- paste0(names(out), ".scaled")
     class(out) <- c("lavaan.vector","numeric")
     return(out)
   }
@@ -830,7 +832,7 @@ robustify <- function(ChiSq, object, h1 = NULL) {
 #' @importFrom stats pchisq uniroot
 #' @importFrom lavaan lavListInspect
 anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
-                            pool.robust = FALSE, scale.W = TRUE,
+                            pool.robust = FALSE, scale.W = FALSE,
                             asymptotic = FALSE, constraints = NULL,
                             indices = FALSE, baseline = NULL,
                             method = "default", A.method = "delta",

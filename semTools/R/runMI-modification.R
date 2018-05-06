@@ -244,27 +244,24 @@ modindices.mi <- function(object,
       extra.idx <- LIST$free[ LIST$free > 0L & LIST$user == 10L ]
       information <- lavaan::lavInspect(obj2, "information")
       I11 <- information[extra.idx, extra.idx, drop = FALSE]
-      I12 <- information[extra.idx, model.idx, drop = FALSE]
-      I21 <- information[model.idx, extra.idx, drop = FALSE]
-      I22 <- information[model.idx, model.idx, drop = FALSE]
-      I22.inv <- MASS::ginv(I22)
+      # I12 <- information[extra.idx, model.idx, drop = FALSE]
+      # I21 <- information[model.idx, extra.idx, drop = FALSE]
+      # I22 <- information[model.idx, model.idx, drop = FALSE]
+      # I22.inv <- MASS::ginv(I22)
 
-      list(gradient = lavaan::lavInspect(obj2, "gradient"),
-           information = I11 - I12 %*% I22.inv %*% I21,
-           LIST = LIST,
+      list(gradient = lavaan::lavInspect(obj2, "gradient")[extra.idx],
+           information = I11,# - I12 %*% I22.inv %*% I21,
+           #LIST = LIST,
            parTable = LIST[LIST$free > 0L & LIST$user == 10L, ])
     }
     oldCall$FUN <- lav_object_extend.mi
     FIT <- eval(as.call(oldCall))
 
-    LIST <- FIT@funList[[ which(useImps)[1] ]]$LIST
-    model.idx <- LIST$free[ LIST$free > 0L & LIST$user != 10L ]
-    extra.idx <- LIST$free[ LIST$free > 0L & LIST$user == 10L ]
     ## pool gradients and information matrices
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
-    score <- colMeans(do.call(rbind, gradList))[extra.idx]
-    B <- cov(do.call(rbind, gradList)[ , extra.idx] * sqrt(N)) # unit-info scale
+    score <- colMeans(do.call(rbind, gradList))
+    B <- cov(do.call(rbind, gradList) * sqrt(N)) # unit-info scale
     W <- Reduce("+", infoList) / m
     ## check whether equality constraints prevent inversion of W
     V <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
