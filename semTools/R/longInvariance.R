@@ -508,8 +508,8 @@ patMerge <- function (pt1 = NULL, pt2 = NULL, remove.duplicated = FALSE,
   stopifnot(!is.null(pt1$lhs), !is.null(pt1$op), !is.null(pt1$rhs),
             !is.null(pt2$lhs), !is.null(pt2$op), !is.null(pt2$rhs))
   if (is.null(pt1$group) && is.null(pt2$group)) {
-    TMP <- rbind(pt1[, c("lhs", "op", "rhs", "group")], pt2[,
-                                                            c("lhs", "op", "rhs", "group")])
+    TMP <- rbind(pt1[, c("lhs", "op", "rhs", "group")],
+                 pt2[, c("lhs", "op", "rhs", "group")])
   }
   else {
     if (is.null(pt1$group) && !is.null(pt2$group)) {
@@ -518,8 +518,8 @@ patMerge <- function (pt1 = NULL, pt2 = NULL, remove.duplicated = FALSE,
     else if (is.null(pt2$group) && !is.null(pt1$group)) {
       pt2$group <- rep(1L, length(pt2$lhs))
     }
-    TMP <- rbind(pt1[, c("lhs", "op", "rhs", "group")], pt2[,
-                                                            c("lhs", "op", "rhs", "group")])
+    TMP <- rbind(pt1[, c("lhs", "op", "rhs", "group")],
+                 pt2[, c("lhs", "op", "rhs", "group")])
   }
   if (is.null(pt1$user) && !is.null(pt2$user)) {
     pt1$user <- rep(0L, length(pt1$lhs))

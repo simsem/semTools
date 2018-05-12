@@ -244,14 +244,13 @@ modindices.mi <- function(object,
       extra.idx <- LIST$free[ LIST$free > 0L & LIST$user == 10L ]
       information <- lavaan::lavInspect(obj2, "information")
       I11 <- information[extra.idx, extra.idx, drop = FALSE]
-      # I12 <- information[extra.idx, model.idx, drop = FALSE]
-      # I21 <- information[model.idx, extra.idx, drop = FALSE]
-      # I22 <- information[model.idx, model.idx, drop = FALSE]
-      # I22.inv <- MASS::ginv(I22)
+      I12 <- information[extra.idx, model.idx, drop = FALSE]
+      I21 <- information[model.idx, extra.idx, drop = FALSE]
+      I22 <- information[model.idx, model.idx, drop = FALSE]
+      I22.inv <- MASS::ginv(I22)
 
       list(gradient = lavaan::lavInspect(obj2, "gradient")[extra.idx],
-           information = I11,# - I12 %*% I22.inv %*% I21,
-           #LIST = LIST,
+           information = I11 - I12 %*% I22.inv %*% I21,
            parTable = LIST[LIST$free > 0L & LIST$user == 10L, ])
     }
     oldCall$FUN <- lav_object_extend.mi

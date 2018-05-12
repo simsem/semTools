@@ -1,5 +1,5 @@
-### Sunthud Pornprasertmanit & Yves Rosseel
-### Last updated: 9 March 2018
+### Sunthud Pornprasertmanit, Yves Rosseel, and Terrence D. Jorgensen
+### Last updated: 12 May 2018
 
 
 #' Measurement Invariance Tests
@@ -44,8 +44,9 @@
 #'
 #' @importFrom lavaan parTable
 #' @aliases measurementInvariance measurementinvariance
+#'
 #' @param ... The same arguments as for any lavaan model.  See
-#' \code{\link{cfa}} for more information.
+#'  \code{\link{cfa}} for more information.
 #' @param std.lv If \code{TRUE}, the fixed-factor method of scale
 #' identification is used. If \code{FALSE}, the first variable for each factor
 #' is used as marker variable.
@@ -57,20 +58,25 @@
 #' @param fit.measures Fit measures used to calculate the differences between
 #' nested models.
 #' @param method The method used to calculate likelihood ratio test. See
-#' \code{\link[lavaan]{lavTestLRT}} for available options
+#'  \code{\link[lavaan]{lavTestLRT}} for available options
+#'
 #' @return Invisibly, all model fits in the sequence are returned as a list.
+#'
 #' @author Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
 #'
 #' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 #'
 #' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+#'
 #' @seealso \code{\link{longInvariance}} for the measurement invariance test
 #' within person; \code{partialInvariance} for the automated function for
 #' finding partial invariance models
+#'
 #' @references Vandenberg, R. J., and Lance, C. E. (2000). A review and
 #' synthesis of the measurement invariance literature: Suggestions, practices,
 #' and recommendations for organizational research. \emph{Organizational
 #' Research Methods, 3,} 4--70.
+#'
 #' @examples
 #'
 #' HW.model <- ' visual =~ x1 + x2 + x3
@@ -90,6 +96,8 @@ measurementInvariance <- measurementinvariance <-
   dotdotdot <- list(...)
   if (!is.null(dotdotdot$group.equal))
       stop("lavaan ERROR: group.equal argument should not be used")
+  ## and a model
+  if (names(dotdotdot)[1] == "") names(dotdotdot)[1] <- "model"
 
   res <- list()
   ## base-line model: configural invariance
@@ -114,7 +122,8 @@ measurementInvariance <- measurementinvariance <-
 			pttemplate <- freeParTable(pttemplate, pttemplate$lhs[i], "=~",
 			                           pttemplate$rhs[i], pttemplate$group[i])
 		}
-		res$fit.configural <- try(do.call(pttemplate, template), silent = TRUE)
+		dotdotdot$model <- pttemplate
+		res$fit.configural <- try(do.call(lavaancfa, dotdotdot), silent = TRUE)
 	} else {
 		res$fit.configural <- template
 	}
@@ -129,11 +138,12 @@ measurementInvariance <- measurementinvariance <-
 		for (i in facnames) {
 			pttemplate <- freeParTable(pttemplate, i, "~~", i, 2:ngroups)
 		}
-		res$fit.loadings <- try(do.call(pttemplate, template), silent = TRUE)
+		dotdotdot$model <- pttemplate
+		res$fit.loadings <- try(do.call(lavaancfa, dotdotdot), silent = TRUE)
 	} else {
 		loadings <- dotdotdot
 		loadings$group.equal <- c("loadings")
-		res$fit.loadings <- try(do.call("cfa", loadings), silent = TRUE)
+		res$fit.loadings <- try(do.call(lavaancfa, loadings), silent = TRUE)
 	}
 
   ## fix loadings + intercepts across groups
@@ -147,7 +157,8 @@ measurementInvariance <- measurementinvariance <-
 		for (i in facnames) {
 			pttemplate <- freeParTable(pttemplate, i, "~1", "", 2:ngroups)
 		}
-		res$fit.intercepts <- try(do.call(pttemplate, template), silent = TRUE)
+		dotdotdot$model <- pttemplate
+		res$fit.intercepts <- try(do.call(lavaancfa, dotdotdot), silent = TRUE)
 	} else {
 		intercepts <- dotdotdot
 		intercepts$group.equal <- c("loadings", "intercepts")
@@ -164,11 +175,13 @@ measurementInvariance <- measurementinvariance <-
 				pttemplate <- constrainParTable(pttemplate, pttemplate$lhs[i], "~~",
 				                                pttemplate$rhs[i], 1:ngroups)
 			}
-			res$fit.residuals <- try(do.call(pttemplate, template), silent = TRUE)
+			dotdotdot$model <- pttemplate
+			res$fit.residuals <- try(do.call(lavaancfa, dotdotdot), silent = TRUE)
 			for (i in facnames) {
 				pttemplate <- fixParTable(pttemplate, i, "~1", "", 1:ngroups, 0)
 			}
-			res$fit.means <- try(do.call(pttemplate, template), silent = TRUE)
+			dotdotdot$model <- pttemplate
+			res$fit.means <- try(do.call(lavaancfa, dotdotdot), silent = TRUE)
 		} else {
 			# fix loadings + intercepts + residuals
 			residuals <- dotdotdot
@@ -185,7 +198,8 @@ measurementInvariance <- measurementinvariance <-
 			for (i in facnames) {
 				pttemplate <- fixParTable(pttemplate, i, "~1", "", 1:ngroups, 0)
 			}
-			res$fit.means <- try(do.call(pttemplate, template), silent = TRUE)
+		  dotdotdot$model <- pttemplate
+		  res$fit.means <- try(do.call(lavaancfa, dotdotdot), silent = TRUE)
 		} else {
 			# fix loadings + intercepts + means
 			means <- dotdotdot
