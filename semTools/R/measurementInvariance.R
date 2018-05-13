@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, and Terrence D. Jorgensen
-### Last updated: 12 May 2018
+### Last updated: 13 May 2018
 
 
 #' Measurement Invariance Tests
@@ -57,6 +57,8 @@
 #' model comparison tests. If \code{TRUE}, no summary is printed.
 #' @param fit.measures Fit measures used to calculate the differences between
 #' nested models.
+#' @param baseline.model custom baseline model passed to
+#'  \code{\link[lavaan]{fitMeasures}}
 #' @param method The method used to calculate likelihood ratio test. See
 #'  \code{\link[lavaan]{lavTestLRT}} for available options
 #'
@@ -89,7 +91,8 @@
 #' @export
 measurementInvariance <- measurementinvariance <-
   function(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
-           fit.measures = "default", method = "satorra.bentler.2001") {
+           fit.measures = "default", baseline.model = NULL,
+           method = "satorra.bentler.2001") {
 
 	lavaancfa <- function(...) { lavaan::cfa(...) }
   ## check for a group.equal argument in ...
@@ -208,7 +211,7 @@ measurementInvariance <- measurementinvariance <-
 		}
   }
 
-	if (!quiet) printInvarianceResult(res, fit.measures, method)
+	if (!quiet) printInvarianceResult(res, fit.measures, baseline.model, method)
   invisible(res)
 }
 
@@ -219,7 +222,7 @@ measurementInvariance <- measurementinvariance <-
 ## ----------------
 
 #' @importFrom lavaan lavInspect
-printInvarianceResult <- function(FIT, fit.measures, method) {
+printInvarianceResult <- function(FIT, fit.measures, baseline.model, method) {
   ## check whether models converged
   NAMES <- names(FIT)
   nonconv <- which(sapply(FIT, class) == "try-error")
@@ -237,7 +240,9 @@ printInvarianceResult <- function(FIT, fit.measures, method) {
 	if (length(fit.measures) == 1L && fit.measures == "default") {
 		## scaled test statistic?
 		if (length(lavInspect(FIT[[1]], "test")) > 1L) {
-			fit.measures <- c("cfi.scaled", "rmsea.scaled")
+		  if (lavInspect(FIT[[1]], "test")[[2]]$test %in% c("satorra.bentler", "yuan.bentler")) {
+		    fit.measures <- c("cfi.robust", "rmsea.robust")
+		  } else fit.measures <- c("cfi.scaled", "rmsea.scaled")
 		} else {
 			fit.measures <- c("cfi", "rmsea")
 		}
@@ -246,7 +251,8 @@ printInvarianceResult <- function(FIT, fit.measures, method) {
 	## add some fit measures
 	if (length(fit.measures)) {
 
-		FM <- lapply(FIT, lavaan::fitMeasures, fit.measures)
+		FM <- lapply(FIT, lavaan::fitMeasures,
+		             fit.measures = fit.measures, baseline.model = baseline.model)
 		FM.table1 <- sapply(fit.measures, function(x) sapply(FM, "[[", x))
 		if (length(FM) == 1L) {
 			FM.table1 <- rbind( rep(as.numeric(NA), length(fit.measures)), FM.table1)

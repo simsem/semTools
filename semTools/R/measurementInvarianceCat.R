@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, & Terrence D. Jorgensen
-### Last updated: 20 March 2018
+### Last updated: 13 May 2018
 ### automate measurement invariance tests for categorical indicators
 
 
@@ -47,6 +47,8 @@
 #' model comparison tests. If \code{TRUE}, no summary is printed.
 #' @param fit.measures Fit measures used to calculate the differences between
 #' nested models.
+#' @param baseline.model custom baseline model passed to
+#'  \code{\link[lavaan]{fitMeasures}}
 #' @param method The method used to calculate likelihood ratio test. See
 #' \code{\link[lavaan]{lavTestLRT}} for available options
 #' @return Invisibly, all model fits in the sequence are returned as a list.
@@ -76,6 +78,7 @@
 #' @export
 measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
                                      quiet = FALSE, fit.measures = "default",
+                                     baseline.model = NULL,
                                      method = "satorra.bentler.2001") {
 	List <- list(...)
 	lavaancfa <- function(...) { lavaan::cfa(...) }
@@ -265,7 +268,7 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
 	FIT <- FIT[!sapply(FIT, is.null)]
 
 	if (!quiet) {
-        printInvarianceResult(FIT, fit.measures, method)
+        printInvarianceResult(FIT, fit.measures, baseline.model, method)
     }
 
     invisible(FIT)

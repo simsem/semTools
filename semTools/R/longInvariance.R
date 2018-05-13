@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Yves Rosseel
-### Last updated: 20 March 2018
+### Last updated: 13 May 2018
 
 #' Measurement Invariance Tests Within Person
 #'
@@ -77,6 +77,8 @@
 #' model comparison tests. If \code{TRUE}, no summary is printed.
 #' @param fit.measures Fit measures used to calculate the differences between
 #'   nested models.
+#' @param baseline.model custom baseline model passed to
+#'  \code{\link[lavaan]{fitMeasures}}
 #' @param method The method used to calculate likelihood ratio test. See
 #'   \code{\link[lavaan]{lavTestLRT}} for available options
 #' @param ... Additional arguments in the \code{\link[lavaan]{lavaan}}
@@ -119,7 +121,7 @@ longInvariance <- function(model, varList, auto = "all", constrainAuto = FALSE,
                            fixed.x = TRUE, std.lv = FALSE, group = NULL,
                            group.equal = "", group.partial = "", strict = FALSE,
                            warn = TRUE, debug = FALSE, quiet = FALSE,
-                           fit.measures = "default",
+                           fit.measures = "default", baseline.model = NULL,
                            method = "satorra.bentler.2001", ...) {
 	List <- list(...)
 
@@ -290,7 +292,7 @@ longInvariance <- function(model, varList, auto = "all", constrainAuto = FALSE,
 	                      fit.means = fitMeans))
 	FIT <- FIT[!sapply(FIT, is.null)]
 
-	if (!quiet) printInvarianceResult(FIT, fit.measures, method)
+	if (!quiet) printInvarianceResult(FIT, fit.measures, baseline.model, method)
 
 	# Modify these functions from measurementInvariance function
 	# if(!quiet) {
