@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, & Terrence D. Jorgensen
-### Last updated: 13 May 2018
+### Last updated: 14 May 2018
 ### automate measurement invariance tests for categorical indicators
 
 
@@ -68,9 +68,9 @@
 #' @examples
 #'
 #' \dontrun{
-#' model <- ' f1 =~ u1 + u2 + u3 + u4'
+#' syntax <- ' f1 =~ u1 + u2 + u3 + u4'
 #'
-#' measurementInvarianceCat(model, data = datCat, group = "g",
+#' measurementInvarianceCat(model = syntax, data = datCat, group = "g",
 #'                          parameterization = "theta", estimator = "wlsmv",
 #'                          ordered = c("u1", "u2", "u3", "u4"))
 #' }

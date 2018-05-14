@@ -5,7 +5,7 @@
 \title{Measurement Invariance Tests for Categorical Items}
 \usage{
 measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE,
-  quiet = FALSE, fit.measures = "default",
+  quiet = FALSE, fit.measures = "default", baseline.model = NULL,
   method = "satorra.bentler.2001")
 }
 \arguments{
@@ -25,6 +25,9 @@ model comparison tests. If \code{TRUE}, no summary is printed.}
 
 \item{fit.measures}{Fit measures used to calculate the differences between
 nested models.}
+
+\item{baseline.model}{custom baseline model passed to
+\code{\link[lavaan]{fitMeasures}}}
 
 \item{method}{The method used to calculate likelihood ratio test. See
 \code{\link[lavaan]{lavTestLRT}} for available options}
@@ -65,9 +68,9 @@ parameterization in Millsap and Yun-Tein (2004).
 \examples{
 
 \dontrun{
-model <- ' f1 =~ u1 + u2 + u3 + u4'
+syntax <- ' f1 =~ u1 + u2 + u3 + u4'
 
-measurementInvarianceCat(model, data = datCat, group = "g",
+measurementInvarianceCat(model = syntax, data = datCat, group = "g",
                          parameterization = "theta", estimator = "wlsmv",
                          ordered = c("u1", "u2", "u3", "u4"))
 }

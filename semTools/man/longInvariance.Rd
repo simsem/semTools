@@ -7,7 +7,7 @@
 longInvariance(model, varList, auto = "all", constrainAuto = FALSE,
   fixed.x = TRUE, std.lv = FALSE, group = NULL, group.equal = "",
   group.partial = "", strict = FALSE, warn = TRUE, debug = FALSE,
-  quiet = FALSE, fit.measures = "default",
+  quiet = FALSE, fit.measures = "default", baseline.model = NULL,
   method = "satorra.bentler.2001", ...)
 }
 \arguments{
@@ -55,6 +55,9 @@ model comparison tests. If \code{TRUE}, no summary is printed.}
 
 \item{fit.measures}{Fit measures used to calculate the differences between
 nested models.}
+
+\item{baseline.model}{custom baseline model passed to
+\code{\link[lavaan]{fitMeasures}}}
 
 \item{method}{The method used to calculate likelihood ratio test. See
 \code{\link[lavaan]{lavTestLRT}} for available options}

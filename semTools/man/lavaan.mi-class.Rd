@@ -42,8 +42,8 @@
 \S4method{show}{lavaan.mi}(object)
 
 \S4method{summary}{lavaan.mi}(object, se = TRUE, ci = TRUE, level = 0.95,
-  standardized = FALSE, rsquare = FALSE, fmi = FALSE, scale.W = TRUE,
-  asymptotic = FALSE, add.attributes = TRUE)
+  standardized = FALSE, rsquare = FALSE, fmi = FALSE, header = TRUE,
+  scale.W = TRUE, asymptotic = FALSE, add.attributes = TRUE)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
@@ -53,7 +53,7 @@
   "ariv"), scale.W = TRUE)
 
 \S4method{anova}{lavaan.mi}(object, h1 = NULL, test = c("D3", "D2", "D1"),
-  pool.robust = FALSE, scale.W = TRUE, asymptotic = FALSE,
+  pool.robust = FALSE, scale.W = FALSE, asymptotic = FALSE,
   constraints = NULL, indices = FALSE, baseline = NULL,
   method = "default", A.method = "delta", H1 = TRUE, type = "Chisq")
 

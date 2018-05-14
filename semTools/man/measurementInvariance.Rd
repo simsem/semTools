@@ -6,7 +6,8 @@
 \title{Measurement Invariance Tests}
 \usage{
 measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
-  fit.measures = "default", method = "satorra.bentler.2001")
+  fit.measures = "default", baseline.model = NULL,
+  method = "satorra.bentler.2001")
 }
 \arguments{
 \item{...}{The same arguments as for any lavaan model.  See
@@ -25,6 +26,9 @@ model comparison tests. If \code{TRUE}, no summary is printed.}
 
 \item{fit.measures}{Fit measures used to calculate the differences between
 nested models.}
+
+\item{baseline.model}{custom baseline model passed to
+\code{\link[lavaan]{fitMeasures}}}
 
 \item{method}{The method used to calculate likelihood ratio test. See
 \code{\link[lavaan]{lavTestLRT}} for available options}

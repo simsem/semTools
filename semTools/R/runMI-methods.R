@@ -1333,6 +1333,7 @@ setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 #' @name lavaan.mi-class
 #' @aliases fitMeasures,lavaan.mi-method
 #' @importFrom lavaan fitMeasures
+#' @export
 setMethod("fitMeasures", "lavaan.mi", function(object, fit.measures = "all",
                                                baseline.model = NULL) {
   if (!is.character(fit.measures)) stop("'fit.measures' must be a character ",
@@ -1350,6 +1351,7 @@ setMethod("fitMeasures", "lavaan.mi", function(object, fit.measures = "all",
 #' @name lavaan.mi-class
 #' @aliases fitmeasures,lavaan.mi-method
 #' @importFrom lavaan fitmeasures
+#' @export
 setMethod("fitmeasures", "lavaan.mi", function(object, fit.measures = "all",
                                                baseline.model = NULL) {
   if (!is.character(fit.measures)) stop("'fit.measures' must be a character ",
