@@ -966,10 +966,10 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
       cl <- parallel::makePSOCKcluster(rep("localhost", ncpus))
     }
     parallel::clusterSetRNGStream(cl, iseed = iseed)
-    # clusterExport(cl, c("getAFIs","getMIs","permuteOnce.mgcfa","permuteOnce.mimic"))
     argList$cl <- cl
     argList$X <- 1:nPermute
     argList$fun <- paste("permuteOnce", modelType, sep = ".")
+    parallel::clusterExport(cl, varlist = c(argList$fun, "getAFIs","getMIs")) #FIXME: need update?
 	tempppl <- function(...) { parallel::parLapply(...) }
     permuDist <- do.call(tempppl, args = argList)
     if (stopTheCluster) parallel::stopCluster(cl)
