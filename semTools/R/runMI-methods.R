@@ -1341,7 +1341,7 @@ setMethod("fitMeasures", "lavaan.mi", function(object, fit.measures = "all",
   message('anova() provides more control over options for pooling chi-squared',
           ' before calculating fit indices from multiple imputations. ',
           'See the class?lavaan.mi help page for details.\n\n')
-  fits <- anova.lavaan.mi(object, indices = TRUE, baseline = baseline.model)
+  fits <- anova.lavaan.mi(object, indices = "all", baseline = baseline.model)
   if ("all" %in% fit.measures) return(fits)
   out <- fits[fit.measures]
   out[which(!is.na(names(out)))]
@@ -1358,7 +1358,7 @@ setMethod("fitmeasures", "lavaan.mi", function(object, fit.measures = "all",
   message('anova() provides more control over options for pooling chi-squared',
           ' before calculating fit indices from multiple imputations. ',
           'See the class?lavaan.mi help page for details.\n\n')
-  fits <- anova.lavaan.mi(object, indices = TRUE, baseline = baseline.model)
+  fits <- anova.lavaan.mi(object, indices = "all", baseline = baseline.model)
   if ("all" %in% fit.measures) return(fits)
   out <- fits[fit.measures]
   out[which(!is.na(names(out)))]
