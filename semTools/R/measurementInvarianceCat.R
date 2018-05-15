@@ -79,7 +79,7 @@
 measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
                                      quiet = FALSE, fit.measures = "default",
                                      baseline.model = NULL,
-                                     method = "satorra.bentler.2001") {
+                                     method = "default") {
 	List <- list(...)
 	lavaancfa <- function(...) { lavaan::cfa(...) }
 	lavaanlavaan <- function(...) { lavaan::lavaan(...) }
