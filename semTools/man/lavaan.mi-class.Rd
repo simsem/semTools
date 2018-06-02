@@ -41,7 +41,7 @@
 \usage{
 \S4method{show}{lavaan.mi}(object)
 
-\S4method{summary}{lavaan.mi}(object, se = TRUE, ci = TRUE, level = 0.95,
+\S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE, level = 0.95,
   standardized = FALSE, rsquare = FALSE, fmi = FALSE, header = TRUE,
   scale.W = TRUE, asymptotic = FALSE, add.attributes = TRUE)
 
@@ -172,15 +172,16 @@
  convergence rates and estimation problems (if applicable) across imputed
  data sets.}
 
-\item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = TRUE,
+\item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
  scale.W = FALSE, asymptotic = FALSE, add.attributes = TRUE)}: see
  \code{\link[lavaan]{parameterEstimates}} for details.
  By default, \code{summary} returns pooled point and \emph{SE}
- estimates, along with \emph{t} test statistics and associated \emph{df} and
- \emph{p} value, and 95\% CI (control using the \code{ci} and \code{level}
- arguments). If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t}
- tests are returned. Standardized solution(s) can also be requested by name
+ estimates, along with \emph{t} test statistics and their associated
+ \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
+ are returned with the specified confidence \code{level} (default 95\% CI).
+ If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
+ returned. \code{standardized} solution(s) can also be requested by name
  (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
  \emph{R}-squared for endogenous variables can be requested, as well as the
  Fraction Missing Information (FMI) for parameter estimates. By default, the

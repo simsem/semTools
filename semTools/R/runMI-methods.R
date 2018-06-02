@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 May 2018
+### Last updated: 2 June 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -146,15 +146,16 @@
 #'  convergence rates and estimation problems (if applicable) across imputed
 #'  data sets.}
 #'
-#' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = TRUE,
+#' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
 #'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
 #'  scale.W = FALSE, asymptotic = FALSE, add.attributes = TRUE)}: see
 #'  \code{\link[lavaan]{parameterEstimates}} for details.
 #'  By default, \code{summary} returns pooled point and \emph{SE}
-#'  estimates, along with \emph{t} test statistics and associated \emph{df} and
-#'  \emph{p} value, and 95\% CI (control using the \code{ci} and \code{level}
-#'  arguments). If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t}
-#'  tests are returned. Standardized solution(s) can also be requested by name
+#'  estimates, along with \emph{t} test statistics and their associated
+#'  \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
+#'  are returned with the specified confidence \code{level} (default 95\% CI).
+#'  If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
+#'  returned. \code{standardized} solution(s) can also be requested by name
 #'  (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
 #'  \emph{R}-squared for endogenous variables can be requested, as well as the
 #'  Fraction Missing Information (FMI) for parameter estimates. By default, the
@@ -243,7 +244,7 @@ setMethod("show", "lavaan.mi", function(object) {
 
 #' @importFrom stats pt qt pnorm qnorm
 #' @importFrom lavaan lavListInspect parTable
-summary.lavaan.mi <- function(object, se = TRUE, ci = TRUE, level = .95,
+summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
                               fmi = FALSE, header = TRUE, scale.W = TRUE,
                               asymptotic = FALSE, add.attributes = TRUE) {
@@ -753,6 +754,8 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   a <- DF*(nImps - 1)
   ariv <- ((nImps + 1) / a) * (LRT_bar - LRT_con)
   test.stat <- LRT_con / (DF*(1 + ariv))
+  if (is.na(test.stat)) stop('D3 test statistic could not be calculated. ',
+                             'Try the D2 pooling method.') #FIXME: check whether model-implied Sigma is NPD
   if (test.stat < 0) {
     message('Negative test statistic set to zero \n')
     test.stat <- 0
