@@ -3,7 +3,7 @@
 ##          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ##          Aaron Boulton <aboulton@ku.edu>,
 ##          Ruben Arslan <rubenarslan@gmail.com>
-## Last updated: 12 April 2018
+## Last updated: 2 June 2018
 ## Description: Calculations for promising alternative fit indices
 ##----------------------------------------------------------------------------
 
@@ -174,7 +174,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
     adjGammaHat <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHat)
     result["gammaHat"] <- gammaHat
     result["adjGammaHat"] <- adjGammaHat
-    if (lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
+    if (!lavInspect(object, "options")$test %in% c("standard","bollen.stine")) {
       gammaHatScaled <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / n))
       adjGammaHatScaled <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaled)
       result["gammaHat.scaled"] <- gammaHatScaled
@@ -183,14 +183,14 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   }
   if (length(grep("rmsea", fit.measures))) {
     result["baseline.rmsea"] <- nullRMSEA(object, silent = TRUE)
-    if (lavInspect(object, "options")$test %in% c("satorra.bentler", "yuan.bentler")) {
+    if (!lavInspect(object, "options")$test %in% c("standard","bollen.stine")) {
       result["baseline.rmsea.scaled"] <- nullRMSEA(object, scaled = TRUE, silent = TRUE)
     }
   }
   if (!is.na(f)) {
     if ("aic.smallN" %in% fit.measures) {
-      warning('AICc was developed for univariate linear models. It is ',
-              'probably not appropriate to use AICc to compare SEMs.')
+      warning('AICc (aic.smallN) was developed for univariate linear models.',
+              ' It is probably not appropriate to use AICc to compare SEMs.')
       result["aic.smallN"] <- fit[["aic"]] + (2 * nParam * (nParam + 1)) / (N - nParam - 1)
     }
     if ("bic.priorN" %in% fit.measures) {
