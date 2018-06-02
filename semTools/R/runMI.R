@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 31 March 2018
+### Last updated: 3 June 2018
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -208,8 +208,8 @@ runMI <- function(model, data, fun = "lavaan", ...,
     }
     list(sampstat = lavaan::lavInspect(obj, "sampstat"),
          coefMats = lavaan::lavInspect(obj, "est"),
-         modindices = lavaan::modindices(obj),
-         GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all
+         modindices = try(lavaan::modindices(obj), silent = TRUE),
+         GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all and in simsem
          converged = converged, SE = se.test,
          Heywood.lv = Heywood.lv, Heywood.ov = Heywood.ov)
   }

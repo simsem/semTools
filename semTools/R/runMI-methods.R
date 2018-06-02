@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 June 2018
+### Last updated: 3 June 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -455,6 +455,9 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
   rownames(B) <- colnames(B) <- lavaan::lav_partable_labels(PT, type = "free")
   if (type == "between") return(B)
 
+  if (sum(useSE) == 0L) stop('Standard errors could not be computed in any ',
+                             'imputations, so it is not possible to calculate ',
+                             'the within-imputation portion of sampling variance.')
   W <- Reduce("+", lapply(object@vcovList[useSE], function(x) x$vcov)) / sum(useSE)
   class(W) <- c("lavaan.matrix.symmetric","matrix")
   dimnames(W) <- dimnames(B)
