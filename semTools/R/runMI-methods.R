@@ -556,7 +556,7 @@ D1 <- function(object, constraints = NULL, scale.W = FALSE,
 
   if (asymptotic) {
     out <- c("chisq" = test.stat, df = DF,
-             pvalue = pchisq(test.stat * DF, df = DF, lower.tail = FALSE))
+             pvalue = pchisq(test.stat, df = DF, lower.tail = FALSE))
   } else {
     W <- getMethod("vcov", "lavaan.mi")(object, type = "within")
     B <- getMethod("vcov", "lavaan.mi")(object, type = "between")
@@ -575,7 +575,7 @@ D1 <- function(object, constraints = NULL, scale.W = FALSE,
       v2 <- a*(1 + 1/DF) * (1 + 1/ariv)^2 / 2 # Enders (eq. 8.25)
     }
     out <- c("F" = test.stat / DF, df1 = DF, df2 = v2,
-             pvalue = pf(test.stat, df1 = DF, df2 = v2, lower.tail = FALSE))
+             pvalue = pf(test.stat / DF, df1 = DF, df2 = v2, lower.tail = FALSE))
   }
 
   class(out) <- c("lavaan.vector","numeric")
