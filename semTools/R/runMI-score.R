@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 5 May 2018
+### Last updated: 3 June 2018
 ### classic score test (= Lagrange Multiplier test)
 ### borrowed source code from lavaan/R/lav_test_score.R
 
@@ -520,8 +520,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
   #          ( qr(information)$rank - qr(information.plus)$rank )
   DF <- nrow( R[r.idx, , drop = FALSE] )
   if (asymptotic) {
-    TEST <- data.frame(test = "score", X2 = stat*DF, df = DF,
-                       p.value = pchisq(stat*DF, df = DF, lower.tail = FALSE))
+    TEST <- data.frame(test = "score", X2 = stat, df = DF,
+                       p.value = pchisq(stat, df = DF, lower.tail = FALSE))
   } else {
     ## calculate denominator DF for F statistic
     myDims <- 1:nadd + npar
@@ -532,8 +532,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     } else {
       df2 <- a*(1 + 1/DF) * (1 + 1/ARIV)^2 / 2 # Enders (eq. 8.25)
     }
-    TEST <- data.frame(test = "score", "F" = stat, df1 = DF, df2 = df2,
-                       p.value = pf(stat, df1 = DF, df2 = df2, lower.tail = FALSE))
+    TEST <- data.frame(test = "score", "F" = stat / DF, df1 = DF, df2 = df2,
+                       p.value = pf(stat / DF, df1 = DF, df2 = df2, lower.tail = FALSE))
   }
   class(TEST) <- c("lavaan.data.frame", "data.frame")
   attr(TEST, "header") <- "total score test:"
@@ -554,11 +554,11 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     DF <- rep(1, length(r.idx))
 
     if (asymptotic) {
-      Table2$X2 <- TS[r.idx] * DF
+      Table2$X2 <- TS[r.idx]
       Table2$df <- DF
       Table2$p.value <- pchisq(Table2$X2, df = DF, lower.tail = FALSE)
     } else {
-      Table2$F <- TS[r.idx]
+      Table2$F <- TS[r.idx] / DF
       Table2$df1 <- DF
       ## calculate denominator DF for F statistic using RIV per 1-df test (Enders eq. 8.10)
       myDims <- 1:nadd + npar
@@ -599,11 +599,11 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     Table3 <- Table
     DF <- seq_len( length(TS) )
     if (asymptotic) {
-      Table3$X2 <- TS * DF
+      Table3$X2 <- TS
       Table3$df <- DF
       Table3$p.value <- pchisq(Table3$X2, df = DF, lower.tail = FALSE)
     } else {
-      Table3$F <- TS
+      Table3$F <- TS / DF
       Table3$df1 <- DF
       ## calculate denominator DF for F statistic
       Table3$df2 <- mapply(FUN = function(DF1, ariv) {
