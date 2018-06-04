@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 June 2018
+### Last updated: 4 June 2018
 ### classic score test (= Lagrange Multiplier test)
 ### borrowed source code from lavaan/R/lav_test_score.R
 
@@ -541,6 +541,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
   if (univariate) {
     TS <- numeric( nrow(R) )
+    EPC.uni <- numeric( nrow(R) ) #FIXME: to add univariate EPCs for added parameters
     for (r in r.idx) {
       R1 <- R[-r, , drop = FALSE]
       Z1 <- cbind( rbind(information, R1),
@@ -548,6 +549,9 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       Z1.plus <- MASS::ginv(Z1)
       Z1.plus1 <- Z1.plus[ 1:nrow(information), 1:nrow(information) ]
       TS[r] <- as.numeric(N * t(score) %*%  Z1.plus1 %*% score)
+
+      ## FIXME: experimentally add univariate EPCs for added parameters, as would accompany modification indices
+      if (epc && !is.null(add)) EPC.uni[r] <- -1 * tail(as.numeric(score %*%  Z1.plus1), n = nrow(R))[r]
     }
 
     Table2 <- Table
@@ -571,8 +575,12 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
         } else a*(1 + 1/DF1) * (1 + 1/riv)^2 / 2 # Enders (eq. 8.25)
         DF2
       })
-      Table2$p.value = pf(Table2$F, df1 = DF, df2 = Table2$df2, lower.tail = FALSE)
+      Table2$p.value <- pf(Table2$F, df1 = DF, df2 = Table2$df2, lower.tail = FALSE)
     }
+
+    ## FIXME: experimentally add univariate EPCs for added parameters, as would accompany modification indices
+    if (epc && !is.null(add)) Table2$epc <- EPC.uni
+
     attr(Table2, "header") <- "univariate score tests:"
     OUT$uni <- Table2
   }
