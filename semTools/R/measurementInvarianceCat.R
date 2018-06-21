@@ -81,6 +81,8 @@ measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
                                      baseline.model = NULL,
                                      method = "default") {
 	List <- list(...)
+	if (is.null(List$model)) stop('all lavaan() and lavOptions() arguments must ',
+	                              'named, including the "model=" argument.')
 	lavaancfa <- function(...) { lavaan::cfa(...) }
 	lavaanlavaan <- function(...) { lavaan::lavaan(...) }
 	if (!is.null(List$parameterization) && tolower(List$parameterization) != "theta")

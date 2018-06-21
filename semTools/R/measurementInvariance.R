@@ -97,6 +97,8 @@ measurementInvariance <- measurementinvariance <-
 	lavaancfa <- function(...) { lavaan::cfa(...) }
   ## check for a group.equal argument in ...
   dotdotdot <- list(...)
+  if (is.null(dotdotdot$model)) stop('all lavaan() and lavOptions() arguments must',
+                                     ' named, including the "model=" argument.')
   if (!is.null(dotdotdot$group.equal))
       stop("lavaan ERROR: group.equal argument should not be used")
   ## and a model
