@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit , Yves Rosseel
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 
 
 
@@ -100,7 +100,7 @@
 #' submitting each to the \code{reliability} function.
 #'
 #'
-#' @importFrom lavaan lavInspect
+#' @importFrom lavaan lavInspect lavNames
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.
 #' @return Reliability values (coefficient alpha, coefficients omega, average
@@ -485,7 +485,7 @@ reliabilityL2 <- function(object, secondFactor) {
 #' and \eqn{j}.
 #'
 #'
-#' @importFrom lavaan lavInspect
+#' @importFrom lavaan lavInspect lavNames
 #'
 #' @param object The lavaan model object provided after running the \code{cfa},
 #' \code{sem}, \code{growth}, or \code{lavaan} functions.

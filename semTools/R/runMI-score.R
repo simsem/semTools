@@ -553,7 +553,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       TS[r] <- as.numeric(N * t(score) %*%  Z1.plus1 %*% score)
 
       ## FIXME: experimentally add univariate EPCs for added parameters, as would accompany modification indices
-      if (epc && !is.null(add)) EPC.uni[r] <- -1 * tail(as.numeric(score %*%  Z1.plus1), n = nrow(R))[r]
+      if (epc && !is.null(add)) EPC.uni[r] <- -1 * utils::tail(as.numeric(score %*%  Z1.plus1), n = nrow(R))[r]
     }
 
     Table2 <- Table

@@ -1,5 +1,5 @@
 ### Corbin Quick, Alex Schoemann, James Selig, Terrence D. Jorgnensen
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 
 # FIXME: work out a path-analysis example like slide 25:
 # http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
@@ -82,7 +82,7 @@
 #' @references
 #' MacKinnon, D. P., Lockwood, C. M., & Williams, J. (2004). Confidence limits
 #' for the indirect effect: Distribution of the product and resampling methods.
-#' \emph{Multivariate Behavioral Research, 39}(1) 99–-128.
+#' \emph{Multivariate Behavioral Research, 39}(1) 99--128.
 #' doi:10.1207/s15327906mbr3901_4
 #'
 #' Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method
@@ -142,7 +142,7 @@ monteCarloMed <- function(expression, ..., ACM = NULL, object = NULL,
   input <- c(...)
 
   ## Get names and the number of unique variables in the expression
-  paramnames <- all.vars(as.formula(paste("~", expression)))
+  paramnames <- all.vars(stats::as.formula(paste("~", expression)))
 
   ## If input is a lavaan object pull out coefs and ACM
   if (class(object) == "lavaan"){

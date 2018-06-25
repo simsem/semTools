@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 
@@ -81,6 +81,7 @@ function(object) {
 #' @aliases hist,BootMiss-method
 #' @importFrom stats qchisq dchisq quantile
 #' @param object,x object of class \code{BootMiss}
+#' @param ... Additional arguments to pass to \code{\link[graphics]{hist}}
 #' @param alpha alpha level used to draw confidence limits
 #' @param nd number of digits to display
 #' @param printLegend \code{logical}. If \code{TRUE} (default), a legend will

@@ -120,7 +120,7 @@ monteCarloMed(med, coef1 = aparam, coef2 = b1param,
 \references{
 MacKinnon, D. P., Lockwood, C. M., & Williams, J. (2004). Confidence limits
 for the indirect effect: Distribution of the product and resampling methods.
-\emph{Multivariate Behavioral Research, 39}(1) 99–-128.
+\emph{Multivariate Behavioral Research, 39}(1) 99--128.
 doi:10.1207/s15327906mbr3901_4
 
 Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method

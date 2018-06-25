@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -18,11 +18,16 @@
 #' @docType class
 #' @slot test Logical \code{matrix} indicating nesting/equivalence among models
 #' @slot df The degrees of freedom of tested models
+#'
 #' @section Objects from the Class: Objects can be created via the
 #' \code{\link{net}} function.
-#' @return The \code{show} method displays the logical matrix of test results,
-#'  and the \code{summary} method is used to describe the results in narrative.
-#'  In either case, the original \code{object} is invisibly returned.
+#'
+#' @return
+#' \item{show}{\code{signature(object = "Net")}: prints the logical matrix of
+#'   test results.}
+#' \item{summary}{\code{signature(object = "Net")}: prints a narrative
+#'   description of results. The original \code{object} is invisibly returned.}
+#'
 #' @author Terrence D. Jorgensen (University of Amsterdam;
 #' \email{TJorgensen314@@gmail.com})
 #' @seealso \code{\link{net}}

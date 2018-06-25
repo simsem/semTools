@@ -9,11 +9,11 @@ parcelAllocation(model, data, parcel.names, item.syntax, nAlloc = 100,
   "rmsea", "srmr"), ..., show.progress = FALSE, do.fit = TRUE)
 }
 \arguments{
-\item{model}{\code{\link{lavaan}} model syntax specifying the model fit to
-(at least some) parceled data. Note that there can be a mixture of items
-and parcels (even within the same factor), in case certain items should
-never be parceled. Can be a character string or parameter table. Also see
-\code{\link{lavaanify}} for more details.}
+\item{model}{\code{\link[lavaan]{lavaan}} model syntax specifying the model
+fit to (at least some) parceled data. Note that there can be a mixture of
+items and parcels (even within the same factor), in case certain items
+should never be parceled. Can be a character string or parameter table.
+Also see \code{\link[lavaan]{lavaanify}} for more details.}
 
 \item{data}{A \code{data.frame} containing all observed variables appearing
 in the \code{model}, as well as those in the \code{item.syntax} used to
@@ -26,26 +26,27 @@ allocation), each of which is a stacked, imputed data set with parcels.}
 \item{parcel.names}{\code{character} vector containing names of all parcels
 appearing as indicators in \code{model}.}
 
-\item{item.syntax}{\link{lavaan} model syntax specifying the model that
-would be fit to all of the unparceled items, including items that should
-be randomly allocated to parcels appearing in \code{model}.}
+\item{item.syntax}{\link[lavaan]{lavaan} model syntax specifying the model
+that would be fit to all of the unparceled items, including items that
+should be randomly allocated to parcels appearing in \code{model}.}
 
 \item{nAlloc}{The number of random items-to-parcels allocations to generate.}
 
 \item{fun}{\code{character} string indicating the name of the
-\code{\link{lavaan}} function used to fit \code{model} to \code{data}.
-Can only take the values \code{"lavaan"}, \code{"sem"}, \code{"cfa"},
-or \code{"growth"}.}
+\code{\link[lavaan]{lavaan}} function used to fit \code{model} to
+\code{data}. Can only take the values \code{"lavaan"}, \code{"sem"},
+\code{"cfa"}, or \code{"growth"}.}
 
 \item{alpha}{Alpha level used as criterion for significance.}
 
 \item{fit.measures}{\code{character} vector containing names of fit measures
-to request from each fitted \code{\link{lavaan}} model.  See the output of
-\code{\link{fitMeaures}} for a list of available measures.}
+to request from each fitted \code{\link[lavaan]{lavaan}} model.  See the
+output of \code{\link[lavaan]{fitMeasures}} for a list of available measures.}
 
-\item{\dots}{Additional arguments to be passed to \code{\link{lavaanList}}}
+\item{\dots}{Additional arguments to be passed to
+\code{\link[lavaan]{lavaanList}}}
 
-\item{show.progress}{If \code{TRUE}, show a \code{\link{txtProgressBar}}
+\item{show.progress}{If \code{TRUE}, show a \code{\link[utils]{txtProgressBar}}
 indicating how fast the model-fitting iterates over allocations.}
 
 \item{do.fit}{If \code{TRUE} (default), the \code{model} is fitted to each
@@ -83,8 +84,8 @@ This function implements the random item-to-parcel allocation procedure
 described in Sterba (2011) and Sterba and MacCallum (2010). The function
 takes a single data set with item-level data, randomly assigns items to
 parcels, fits a structural equation model to the parceled data (using
-\link{lavaan}), and repeats this process for a user-specified number of
-random allocations. Results from all fitted models are summarized in the
+\link[lavaan]{lavaan}), and repeats this process for a user-specified number
+of random allocations. Results from all fitted models are summarized in the
 output. For further details on the benefits of the random allocation of
 itesm to parcels, see Sterba (2011) and Sterba and MccCallum (2010).
 }
@@ -108,10 +109,10 @@ f2 =~ par4 + par5 + par6
 ## names of parcels
 (parcel.names <- paste0("par", 1:6))
 
-set.seed(12345)
+\dontrun{
 parcelAllocation(mod.parcels, data = simParcel, parcel.names, item.syntax,
                  nAlloc = 20, std.lv = TRUE, parallel = "snow", iseed = 12345)
-
+}
 
 
 ## multigroup example

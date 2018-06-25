@@ -201,7 +201,7 @@ modindices.mi <- function(object,
 
     scoreOut <- lavTestScore.mi(object, add = cbind(LIST, user = 10L,
                                                     free = 1, start = 0),
-                                type = "Rubin", scale.W = scale.W,
+                                type = "Rubin", scale.W = FALSE,
                                 epc = TRUE, asymptotic = TRUE)$uni
     LIST$mi <- scoreOut$X2
     LIST$epc <- scoreOut$epc

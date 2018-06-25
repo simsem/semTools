@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -133,7 +133,7 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
   ## construct model
   covstruc <- outer(vars, vars, function(x, y) paste(x, "~~", y))
   if (method == "saturated" | method == "sat") {
-    diag(covstruc)[sapply(ordvars, function(x) match(x, vars))] <- ""
+    diag(covstruc)[which(ordvars %in% vars)] <- ""
     model <- covstruc[lower.tri(covstruc, diag = TRUE)]
   } else if (method == "null") model <- diag(covstruc)
   if (length(numvars)) model <- c(model, paste(numvars, "~1"))

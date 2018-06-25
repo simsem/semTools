@@ -21,6 +21,8 @@
 \arguments{
 \item{object, x}{object of class \code{BootMiss}}
 
+\item{...}{Additional arguments to pass to \code{\link[graphics]{hist}}}
+
 \item{alpha}{alpha level used to draw confidence limits}
 
 \item{nd}{number of digits to display}

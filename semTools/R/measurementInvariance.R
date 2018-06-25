@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, and Terrence D. Jorgensen
-### Last updated: 13 May 2018
+### Last updated: 25 June 2018
 
 
 #' Measurement Invariance Tests
@@ -85,7 +85,7 @@
 #'               textual =~ x4 + x5 + x6
 #'               speed =~ x7 + x8 + x9 '
 #'
-#' measurementInvariance(HW.model, data = HolzingerSwineford1939,
+#' measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
 #'                       group = "school", fit.measures = c("cfi","aic"))
 #'
 #' @export

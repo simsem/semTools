@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 
 
 #' Random Allocation of Items to Parcels in a Structural Equation Model
@@ -12,18 +12,18 @@
 #' described in Sterba (2011) and Sterba and MacCallum (2010). The function
 #' takes a single data set with item-level data, randomly assigns items to
 #' parcels, fits a structural equation model to the parceled data (using
-#' \link{lavaan}), and repeats this process for a user-specified number of
-#' random allocations. Results from all fitted models are summarized in the
+#' \link[lavaan]{lavaan}), and repeats this process for a user-specified number
+#' of random allocations. Results from all fitted models are summarized in the
 #' output. For further details on the benefits of the random allocation of
 #' itesm to parcels, see Sterba (2011) and Sterba and MccCallum (2010).
 #'
-#' @importFrom stats sd 
-#' @importFrom lavaan parTable lavInspect
-#' @param model \code{\link{lavaan}} model syntax specifying the model fit to
-#'   (at least some) parceled data. Note that there can be a mixture of items
-#'   and parcels (even within the same factor), in case certain items should
-#'   never be parceled. Can be a character string or parameter table. Also see
-#'   \code{\link{lavaanify}} for more details.
+#' @importFrom stats sd
+#' @importFrom lavaan parTable lavInspect lavaanList lavaanify
+#' @param model \code{\link[lavaan]{lavaan}} model syntax specifying the model
+#'   fit to (at least some) parceled data. Note that there can be a mixture of
+#'   items and parcels (even within the same factor), in case certain items
+#'   should never be parceled. Can be a character string or parameter table.
+#'   Also see \code{\link[lavaan]{lavaanify}} for more details.
 #' @param data A \code{data.frame} containing all observed variables appearing
 #'   in the \code{model}, as well as those in the \code{item.syntax} used to
 #'   create parcels. If the data have missing values, multiple imputation
@@ -33,20 +33,21 @@
 #'   allocation), each of which is a stacked, imputed data set with parcels.
 #' @param parcel.names \code{character} vector containing names of all parcels
 #' appearing as indicators in \code{model}.
-#' @param item.syntax \link{lavaan} model syntax specifying the model that
-#'   would be fit to all of the unparceled items, including items that should
-#'   be randomly allocated to parcels appearing in \code{model}.
+#' @param item.syntax \link[lavaan]{lavaan} model syntax specifying the model
+#'   that would be fit to all of the unparceled items, including items that
+#'   should be randomly allocated to parcels appearing in \code{model}.
 #' @param nAlloc The number of random items-to-parcels allocations to generate.
 #' @param fun \code{character} string indicating the name of the
-#'   \code{\link{lavaan}} function used to fit \code{model} to \code{data}.
-#'   Can only take the values \code{"lavaan"}, \code{"sem"}, \code{"cfa"},
-#'   or \code{"growth"}.
+#'   \code{\link[lavaan]{lavaan}} function used to fit \code{model} to
+#'   \code{data}. Can only take the values \code{"lavaan"}, \code{"sem"},
+#'   \code{"cfa"}, or \code{"growth"}.
 #' @param alpha Alpha level used as criterion for significance.
 #' @param fit.measures \code{character} vector containing names of fit measures
-#'   to request from each fitted \code{\link{lavaan}} model.  See the output of
-#'   \code{\link{fitMeaures}} for a list of available measures.
-#' @param \dots Additional arguments to be passed to \code{\link{lavaanList}}
-#' @param show.progress If \code{TRUE}, show a \code{\link{txtProgressBar}}
+#'   to request from each fitted \code{\link[lavaan]{lavaan}} model.  See the
+#'   output of \code{\link[lavaan]{fitMeasures}} for a list of available measures.
+#' @param \dots Additional arguments to be passed to
+#'   \code{\link[lavaan]{lavaanList}}
+#' @param show.progress If \code{TRUE}, show a \code{\link[utils]{txtProgressBar}}
 #'   indicating how fast the model-fitting iterates over allocations.
 #' @param do.fit If \code{TRUE} (default), the \code{model} is fitted to each
 #'   parceled data set, and the summary of results is returned (see the Value
@@ -103,10 +104,10 @@
 #' ## names of parcels
 #' (parcel.names <- paste0("par", 1:6))
 #'
-#' set.seed(12345)
+#' \dontrun{
 #' parcelAllocation(mod.parcels, data = simParcel, parcel.names, item.syntax,
 #'                  nAlloc = 20, std.lv = TRUE, parallel = "snow", iseed = 12345)
-#'
+#' }
 #'
 #'
 #' ## multigroup example

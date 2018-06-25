@@ -58,7 +58,7 @@ functions a \emph{suite}. Our suites include:
   \code{\link{funRotate}}}
 \item{Reliability Estimation:
   \code{\link{reliability}},
-  \code{\link{reliabiltyL2}}, and
+  \code{\link{reliabilityL2}}, and
   \code{\link{maximalRelia}}}
 \item{Parceling:
   \code{\link{parcelAllocation}},

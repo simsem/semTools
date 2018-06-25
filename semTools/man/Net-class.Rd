@@ -14,9 +14,10 @@
 \S4method{summary}{Net}(object)
 }
 \value{
-The \code{show} method displays the logical matrix of test results,
- and the \code{summary} method is used to describe the results in narrative.
- In either case, the original \code{object} is invisibly returned.
+\item{show}{\code{signature(object = "Net")}: prints the logical matrix of
+  test results.}
+\item{summary}{\code{signature(object = "Net")}: prints a narrative
+  description of results. The original \code{object} is invisibly returned.}
 }
 \description{
 This class contains the results of nesting and equivalence testing among

@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 
 
 #' Partial Measurement Invariance Testing Across Groups
@@ -191,7 +191,8 @@
 #'               textual =~ x4 + x5 + x6
 #'               speed =~ x7 + x8 + x9 '
 #'
-#' models2 <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school")
+#' models2 <- measurementInvariance(model = HW.model, data=HolzingerSwineford1939,
+#'                                  group="school")
 #' partialInvariance(models2, "scalar")
 #'
 #' ## Conduct weak invariance testing manually by using fixed-factor
@@ -255,7 +256,7 @@
 #' model <- ' f1 =~ u1 + u2 + u3 + u4
 #'            f2 =~ u5 + u6 + u7 + u8'
 #'
-#' modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g",
+#' modelsCat2 <- measurementInvarianceCat(model = model, data = datCat, group = "g",
 #' 	                                      parameterization = "theta",
 #' 	                                      estimator = "wlsmv", strict = TRUE)
 #'

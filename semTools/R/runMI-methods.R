@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 June 2018
+### Last updated: 25 June 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -677,6 +677,7 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE, pool.robust = FALSE,
 }
 #' @importFrom lavaan parTable lavaan lavListInspect
 #' @importFrom methods getMethod
+#' @importFrom stats logLik
 getLLs <- function(object, saturated = FALSE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   ## FIXME: lavaanList does not return info when fixed because no convergence!
@@ -1351,7 +1352,9 @@ setMethod("fitMeasures", "lavaan.mi", function(object, fit.measures = "all",
   fits <- anova.lavaan.mi(object, indices = "all", baseline = baseline.model)
   if ("all" %in% fit.measures) return(fits)
   out <- fits[fit.measures]
-  out[which(!is.na(names(out)))]
+  out <- out[which(!is.na(names(out)))]
+  class(out) <- c("lavaan.vector","numeric")
+  out
 })
 # lowercase 'm'
 #' @name lavaan.mi-class
@@ -1369,7 +1372,9 @@ setMethod("fitmeasures", "lavaan.mi", function(object, fit.measures = "all",
   fits <- anova.lavaan.mi(object, indices = "all", baseline = baseline.model)
   if ("all" %in% fit.measures) return(fits)
   out <- fits[fit.measures]
-  out[which(!is.na(names(out)))]
+  out <- out[which(!is.na(names(out)))]
+  class(out) <- c("lavaan.vector","numeric")
+  out
 })
 
 

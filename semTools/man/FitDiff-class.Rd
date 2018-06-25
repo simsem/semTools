@@ -50,7 +50,7 @@ HW.model <- ' visual =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed =~ x7 + x8 + x9 '
 
-out <- measurementInvariance(HW.model, data = HolzingerSwineford1939,
+out <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
                              group = "school", quiet = TRUE)
 modelDiff <- compareFit(out)
 summary(modelDiff)

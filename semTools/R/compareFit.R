@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 11 April 2017
+### Last updated: 25 June 2018
 ### source code for compareFit() function and FitDiff class
 
 
@@ -31,7 +31,7 @@
 #'               textual =~ x4 + x5 + x6
 #'               speed =~ x7 + x8 + x9 '
 #'
-#' out <- measurementInvariance(HW.model, data = HolzingerSwineford1939,
+#' out <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
 #'                              group = "school", quiet = TRUE)
 #' modelDiff <- compareFit(out)
 #' summary(modelDiff)
@@ -182,7 +182,7 @@ saveFileFitDiff <- function(object, file, what = "summary",
 #'               textual =~ x4 + x5 + x6
 #'               speed =~ x7 + x8 + x9 '
 #'
-#' out <- measurementInvariance(HW.model, data = HolzingerSwineford1939,
+#' out <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
 #'                              group = "school", quiet = TRUE)
 #' compareFit(out)
 #'

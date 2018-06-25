@@ -33,6 +33,8 @@ should return permutation-based \emph{p} values for each statistic returned
 by the \code{extra} function.  If \code{FALSE} (default), \code{summary}
 will return permutation-based \emph{p} values for each modification index.}
 
+\item{...}{Additional arguments to pass to \code{\link[graphics]{hist}}}
+
 \item{AFI}{\code{character} indicating the fit measure whose permutation
 distribution should be plotted}
 

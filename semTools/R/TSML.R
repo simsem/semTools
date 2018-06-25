@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 ### semTools function to implement 2-stage ML
 
 
@@ -24,6 +24,7 @@
 #' fitted.values,twostage-method fitted,twostage-method
 #' residuals,twostage-method resid,twostage-method nobs,twostage-method
 #' @docType class
+#'
 #' @slot saturated A fitted \code{\linkS4class{lavaan}} object containing the
 #'  saturated model results
 #' @slot target A fitted \code{\linkS4class{lavaan}} object containing the
@@ -32,6 +33,7 @@
 #'  baseline/null model results
 #' @slot auxNames A character string (potentially of \code{length == 0}) of any
 #'  auxiliary variable names, if used
+#'
 #' @return
 #'  \item{show}{\code{signature(object = "twostage"):} The \code{show} function
 #'   is used to display the results of the \code{anova} method, as well as the
@@ -81,11 +83,15 @@
 #'   "cor", "normalized", "standardized")):} This is simply a wrapper around the
 #'   corresponding \code{\linkS4class{lavaan}} method, providing residuals of
 #'   the specified \code{type} from the \code{target} slot.}
+#'
 #' @section Objects from the Class: Objects can be created via the
 #' \code{\link{twostage}} function.
+#'
 #' @author Terrence D. Jorgensen (University of Amsterdam;
 #' \email{TJorgensen314@@gmail.com})
+#'
 #' @seealso \code{\link{twostage}}
+#'
 #' @examples
 #'
 #' # See the example from the twostage function

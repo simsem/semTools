@@ -1,5 +1,5 @@
 ### Steven R. Chesnut, Danny Squire, Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 
 
 
@@ -411,7 +411,7 @@ svd.triplet.quark <- function (X, row.w = NULL, col.w = NULL, ncp = Inf) {
 		  svd.usuelle <- tryCatch.W.E(svd(t(X), nu = ncp, nv = ncp))$val
 		  if (names(svd.usuelle)[[1]] == "d") {
   			aux <- svd.usuelle$u
-  			svd.usuelle$u <- vd.usuelle$v
+  			svd.usuelle$u <- svd.usuelle$v
   			svd.usuelle$v <- aux
 		  } else {
 			  bb <- eigen(t(X) %*% X, symmetric = TRUE)

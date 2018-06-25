@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 April 2017
+### Last updated: 25 June 2018
 ### package documentation, along with convenience documentation (e.g., imports)
 
 
@@ -57,7 +57,7 @@
 #'   \code{\link{funRotate}}}
 #' \item{Reliability Estimation:
 #'   \code{\link{reliability}},
-#'   \code{\link{reliabiltyL2}}, and
+#'   \code{\link{reliabilityL2}}, and
 #'   \code{\link{maximalRelia}}}
 #' \item{Parceling:
 #'   \code{\link{parcelAllocation}},

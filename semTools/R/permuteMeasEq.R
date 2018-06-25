@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 25 June 2018
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -244,6 +244,7 @@ summ.mimic <- function(object, alpha) {
 #' @aliases hist,permuteMeasEq-method
 #' @importFrom stats qchisq dchisq quantile
 #' @param object,x object of class \code{permuteMeasEq}
+#' @param ... Additional arguments to pass to \code{\link[graphics]{hist}}
 #' @param AFI \code{character} indicating the fit measure whose permutation
 #'  distribution should be plotted
 #' @param alpha alpha level used to draw confidence limits in \code{hist} and
