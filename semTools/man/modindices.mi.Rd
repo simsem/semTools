@@ -15,10 +15,13 @@ modindices.mi(object, type = c("D2", "Rubin"), standardized = TRUE,
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}}
 
 \item{type}{\code{character} indicating which pooling method to use.
-\code{type = "Rubin"} currently unavailable. \code{type = "D2"} (default),
-\code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
-calculated from each imputed data set will be pooled across imputations,
-as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).}
+\code{type = "D2"} (default), \code{"LMRR"}, or \code{"Li.et.al"} indicates
+that modification indices that were calculated within each imputed data set
+will be pooled across imputations, as described in Li, Meng, Raghunathan,
+& Rubin (1991) and Enders (2010).
+\code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
+gradient and information, and those pooled values will be used to
+calculate modification indices in the usual manner.}
 
 \item{standardized}{\code{logical}. If \code{TRUE}, two extra columns
 (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values for

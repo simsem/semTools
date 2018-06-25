@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 5 May 2018
+### Last updated: 25 June 2018
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -20,13 +20,13 @@
 #'
 #' @param object An object of class \code{\linkS4class{lavaan.mi}}
 #' @param type \code{character} indicating which pooling method to use.
-#'  \code{type = "Rubin"} currently unavailable. \code{type = "D2"} (default),
-#'  \code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
-#'  calculated from each imputed data set will be pooled across imputations,
-#'  as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
-##########  \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
-##########  gradient and information, and those pooled values will be used to
-##########  calculate modification indices in the usual manner.
+#'  \code{type = "D2"} (default), \code{"LMRR"}, or \code{"Li.et.al"} indicates
+#'  that modification indices that were calculated within each imputed data set
+#'  will be pooled across imputations, as described in Li, Meng, Raghunathan,
+#'  & Rubin (1991) and Enders (2010).
+#'  \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
+#'  gradient and information, and those pooled values will be used to
+#'  calculate modification indices in the usual manner.
 #' @param standardized \code{logical}. If \code{TRUE}, two extra columns
 #'  (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values for
 #'  the EPCs. In the first column (\code{$sepc.lv}), standardizization is based
@@ -165,13 +165,24 @@ modindices.mi <- function(object,
   # sanity check
   if (power) standardized <- TRUE
 
+  ## use first available modification indices as template to store pooled results
+  myCols <- c("lhs","op","rhs")
+  #FIXME: add "level" column?  how to check for multilevel data?
+  if (lavListInspect(object, "ngroups") > 1L) myCols <- c(myCols,"block","group")
+  for (i in which(useImps)) {
+    LIST <- object@miList[[ which(useImps)[i] ]][myCols]
+    nR <- try(nrow(LIST), silent = TRUE)
+    if (class(nR) == "try-error" || is.null(nR)) {
+      if (i == max(which(useImps))) {
+        stop("No modification indices could be computed for any imputations.")
+      } else next
+    } else break
+  }
+
+
+
   ## D2 pooling method
   if (type == "d2") {
-    myCols <- c("lhs","op","rhs")
-    if (lavListInspect(object, "ngroups") > 1L) myCols <- c(myCols,"block","group")
-    LIST <- object@miList[[ which(useImps)[1] ]][myCols]
-    nR <- try(nrow(LIST), silent = TRUE)
-    if (class(nR) == "try-error" || is.null(nR)) stop("No modification indices were computed.")
     chiList <- lapply(object@miList[useImps], "[[", i = "mi")
     ## imputations in columns, parameters in rows
     LIST$mi <- apply(do.call(cbind, chiList), 1, function(x) {
@@ -187,120 +198,13 @@ modindices.mi <- function(object,
       LIST$sepc.all <- rowMeans(do.call(cbind, sepcList))
     }
   } else {
-    stop('type = "Rubin" does not currently work as expected. Use type = "D2".')
-    #FIXME: call lavTestScore.mi() to add all parameters
 
-    ## apply Rubin's rules to pool gradient and augmented information matrix
-    oldCall <- object@lavListCall
-    #oldCall$model <- parTable(object) #FIXME: necessary?
-    lav_object_extend.mi <- function(obj) {
-      ## --------------------------------------
-      ## borrowed code from lav_object_extend()
-      ## --------------------------------------
-
-      # partable original model
-      oldPT <- lavaan::parTable(obj)[c("lhs","op","rhs","block","group",
-                                       "free","label","plabel")]
-      oldPT$user <- rep(1L, length(oldPT$lhs))
-      non.free.idx <- which(oldPT$free == 0L & !(oldPT$op %in% c("==",":=","<",">")))
-      oldPT$free[ non.free.idx ] <- 1L
-      oldPT$user[ non.free.idx ] <- 10L
-
-      # replace 'start' column, since lav_model will fill these in in GLIST
-      oldPT$start <- lavaan::parameterEstimates(obj, remove.system.eq = FALSE,
-                                                remove.def = FALSE,
-                                                remove.eq = FALSE,
-                                                remove.ineq = FALSE)$est
-
-      # add new parameters, extend model
-      myCols <- c("lhs","op","rhs")
-      if (lavaan::lavInspect(obj, "ngroups") > 1L) myCols <- c(myCols,"block","group")
-      ADD <- lavaan::modindices(obj, standardized = FALSE)[myCols]
-      nR <- try(nrow(ADD), silent = TRUE)
-      if (class(nR) == "try-error" || is.null(nR)) return(list(gradient = NULL,
-                                                               information = NULL))
-      ADD$free <- rep(1L, nR)
-      ADD$user <- rep(10L, nR)
-
-      # merge
-      LIST <- lavaan::lav_partable_merge(oldPT, ADD, remove.duplicated = TRUE, warn = FALSE)
-      # redo 'free'
-      free.idx <- which(LIST$free > 0)
-      LIST$free[free.idx] <- 1:length(free.idx)
-      # adapt options
-      lavoptions <- obj@Options
-      if (any(LIST$op == "~1")) lavoptions$meanstructure <- TRUE
-      lavoptions$do.fit <- FALSE
-
-      obj2 <- lavaan::lavaan(LIST,
-                             slotOptions     = lavoptions,
-                             slotSampleStats = obj@SampleStats,
-                             slotData        = obj@Data,
-                             slotCache       = obj@Cache,
-                             sloth1          = obj@h1)
-
-      ## partition information matrix
-      model.idx <- LIST$free[ LIST$free > 0L & LIST$user != 10L ]
-      extra.idx <- LIST$free[ LIST$free > 0L & LIST$user == 10L ]
-      information <- lavaan::lavInspect(obj2, "information")
-      I11 <- information[extra.idx, extra.idx, drop = FALSE]
-      I12 <- information[extra.idx, model.idx, drop = FALSE]
-      I21 <- information[model.idx, extra.idx, drop = FALSE]
-      I22 <- information[model.idx, model.idx, drop = FALSE]
-      I22.inv <- MASS::ginv(I22)
-
-      list(gradient = lavaan::lavInspect(obj2, "gradient")[extra.idx],
-           information = I11 - I12 %*% I22.inv %*% I21,
-           parTable = LIST[LIST$free > 0L & LIST$user == 10L, ])
-    }
-    oldCall$FUN <- lav_object_extend.mi
-    FIT <- eval(as.call(oldCall))
-
-    ## pool gradients and information matrices
-    gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
-    infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
-    score <- colMeans(do.call(rbind, gradList))
-    B <- cov(do.call(rbind, gradList) * sqrt(N)) # unit-info scale
-    W <- Reduce("+", infoList) / m
-    ## check whether equality constraints prevent inversion of W
-    V <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
-    V.diag <- diag(V)
-    # dirty hack: catch very small or negative values in diag(V)
-    # this is needed eg when parameters are not identified if freed-up;
-    idx <- which(V.diag < sqrt(.Machine$double.eps))
-    if (length(idx) > 0L) V.diag[idx] <- as.numeric(NA)
-
-
-    ## template to save output
-    myCols <- c("lhs","op","rhs")
-    if (lavListInspect(object, "ngroups") > 1L) myCols <- c(myCols,"block","group")
-    LIST <- FIT@funList[[ which(useImps)[1] ]]$parTable[myCols]
-    ## remove rows with (in)equality constraints and user-defined parameters
-    LIST <- LIST[!(LIST$op %in% c("==",":=","<",">")), ]
-    rownames(LIST) <- NULL
-    nR <- try(nrow(LIST), silent = TRUE)
-    if (class(nR) == "try-error" || is.null(nR)) stop("No modification indices were computed.")
-
-    # create and fill in mi
-    LIST$mi <- N * (score*score) / V.diag
-
-    # handle equality constraints (if any)
-    #eq.idx <- which(LIST$op == "==")
-    #if(length(eq.idx) > 0L) {
-    #    OUT <- lavTestScore(object, warn = FALSE)
-    #    LIST$mi[ eq.idx ] <- OUT$uni$X2
-    #}
-
-    # scaled?
-    #if(length(object@test) > 1L) {
-    #    LIST$mi.scaled <- LIST$mi / object@test[[2]]$scaling.factor
-    #}
-
-    # EPC
-    d <- (-1 * N) * score
-    # needed? probably not; just in case
-    d[which(abs(d) < 1e-15)] <- 1.0
-    LIST$epc <- LIST$mi / d
+    scoreOut <- lavTestScore.mi(object, add = cbind(LIST, user = 10L,
+                                                    free = 1, start = 0),
+                                type = "Rubin", scale.W = scale.W,
+                                epc = TRUE, asymptotic = TRUE)$uni
+    LIST$mi <- scoreOut$X2
+    LIST$epc <- scoreOut$epc
 
     # standardize?
     if (standardized) {
@@ -310,8 +214,7 @@ modindices.mi <- function(object,
                                                 add.attributes = FALSE)
       PE <- lavaan::lav_partable_merge(oldPE, cbind(LIST, est = 0),
                                        remove.duplicated = TRUE, warn = FALSE)
-      ## EPCs of user-specified fixed parameters were lost, so replace them.
-      ## FIXME? irrelevant if type == "d2" ?  If so, harmless
+      ## merge EPCs, using parameter labels (unavailable for estimates)
       rownames(LIST) <- paste0(LIST$lhs, LIST$op, LIST$rhs, ".g", LIST$group)
       rownames(PE) <- paste0(PE$lhs, PE$op, PE$rhs, ".g", PE$group)
       PE[rownames(LIST), "epc"] <- LIST$epc
@@ -340,11 +243,13 @@ modindices.mi <- function(object,
 
       PE$sepc.lv <- EPC.sign * lavaan::standardizedSolution(object, se = FALSE,
                                                             type = "std.lv",
+                                                            cov.std = cov.std,
                                                             partable = PE,
                                                             GLIST = object@GLIST,
                                                             est = abs(EPC))$est.std
       PE$sepc.all <- EPC.sign * lavaan::standardizedSolution(object, se = FALSE,
                                                              type = "std.all",
+                                                             cov.std = cov.std,
                                                              partable = PE,
                                                              GLIST = object@GLIST,
                                                              est = abs(EPC))$est.std

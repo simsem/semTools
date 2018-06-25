@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 May 2018
+### Last updated: 25 June 2018
 ### try new runMI
 
 library(lavaan)
@@ -95,11 +95,13 @@ lavTestWald(mgfitm, constraints = '
 lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = TRUE)
 lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = FALSE)
 ## compare univariate score test to modification indices
-lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
-                type = "Rubin", scale.W = TRUE, asymptotic = TRUE)
-lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7',
-                type = "Rubin", scale.W = FALSE, asymptotic = TRUE)
+lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7', epc = TRUE,
+                type = "Rubin", asymptotic = TRUE)
 modindices.mi(mgfit1, op = '~~', type = "Rubin")
+## match perfectly! (not if scale.W = TRUE)
+## also comparable with D2 pooled results:
+lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7', asymptotic = TRUE)
+modindices.mi(mgfit1, op = '~~')
 
 
 

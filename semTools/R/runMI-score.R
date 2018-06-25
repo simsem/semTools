@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 4 June 2018
+### Last updated: 25 June 2018
 ### classic score test (= Lagrange Multiplier test)
 ### borrowed source code from lavaan/R/lav_test_score.R
 
@@ -244,6 +244,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
         OUT$uni$p.value[i] <- chiPooled[["pvalue"]]
       }
       if (!asymptotic) names(OUT$uni)[names(OUT$uni) == "df"] <- "df1"
+      #FIXME: If Yves allows EPC here, add it if(epc)
     }
 
     ## cumulative?
@@ -322,6 +323,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
       # add new parameters, extend model
       myCols <- c("lhs","op","rhs")
+      #FIXME: add "level" column?  how to check for multilevel data?
       if (ngroups > 1L) myCols <- c(myCols,"block","group")
       # ADD <- lavaan::modindices(obj, standardized = FALSE)[myCols]
       if (is.list(add)) {
