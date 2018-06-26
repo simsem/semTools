@@ -16,11 +16,14 @@
 #' @name Net-class
 #' @aliases Net-class show,Net-method summary,Net-method
 #' @docType class
+#'
 #' @slot test Logical \code{matrix} indicating nesting/equivalence among models
 #' @slot df The degrees of freedom of tested models
 #'
 #' @section Objects from the Class: Objects can be created via the
 #' \code{\link{net}} function.
+#'
+#' @param object An object of class \code{Net}.
 #'
 #' @return
 #' \item{show}{\code{signature(object = "Net")}: prints the logical matrix of

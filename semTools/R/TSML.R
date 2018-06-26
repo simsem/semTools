@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 25 June 2018
+### Last updated: 26 June 2018
 ### semTools function to implement 2-stage ML
 
 
@@ -33,6 +33,21 @@
 #'  baseline/null model results
 #' @slot auxNames A character string (potentially of \code{length == 0}) of any
 #'  auxiliary variable names, if used
+#'
+#' @param object An object of class \code{twostage}.
+#' @param ... arguments passed to \code{\link[lavaan]{parameterEstimates}}.
+#' @param h1 An object of class \code{twostage} in which \code{object} is
+#'        nested, so that their difference in fit can be tested using
+#'        \code{anova} (see \bold{Value} section for details).
+#' @param baseline \code{logical} indicating whether to return results for the
+#'        baseline model, rather than the default target (hypothesized) model.
+#' @param type The meaning of this argument varies depending on which method it
+#'        it used for. Find detailed descriptions in the \bold{Value} section
+#'        under \code{coef}, \code{nobs}, and \code{residuals}.
+#' @param model \code{character} naming the slot for which to return the
+#'        model-implied sample moments (see \code{fitted.values} description.)
+#' @param labels \code{logical} indicating whether the model-implied sample
+#'        moments should have (row/column) labels.
 #'
 #' @return
 #'  \item{show}{\code{signature(object = "twostage"):} The \code{show} function

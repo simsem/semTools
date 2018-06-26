@@ -51,6 +51,28 @@ Missing Data}
 \S4method{resid}{twostage}(object, type = c("raw", "cor", "normalized",
   "standardized"))
 }
+\arguments{
+\item{object}{An object of class \code{twostage}.}
+
+\item{...}{arguments passed to \code{\link[lavaan]{parameterEstimates}}.}
+
+\item{h1}{An object of class \code{twostage} in which \code{object} is
+nested, so that their difference in fit can be tested using
+\code{anova} (see \bold{Value} section for details).}
+
+\item{baseline}{\code{logical} indicating whether to return results for the
+baseline model, rather than the default target (hypothesized) model.}
+
+\item{type}{The meaning of this argument varies depending on which method it
+it used for. Find detailed descriptions in the \bold{Value} section
+under \code{coef}, \code{nobs}, and \code{residuals}.}
+
+\item{model}{\code{character} naming the slot for which to return the
+model-implied sample moments (see \code{fitted.values} description.)}
+
+\item{labels}{\code{logical} indicating whether the model-implied sample
+moments should have (row/column) labels.}
+}
 \value{
 \item{show}{\code{signature(object = "twostage"):} The \code{show} function
   is used to display the results of the \code{anova} method, as well as the

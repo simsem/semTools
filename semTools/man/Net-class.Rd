@@ -13,6 +13,9 @@
 
 \S4method{summary}{Net}(object)
 }
+\arguments{
+\item{object}{An object of class \code{Net}.}
+}
 \value{
 \item{show}{\code{signature(object = "Net")}: prints the logical matrix of
   test results.}

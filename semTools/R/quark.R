@@ -1,5 +1,5 @@
 ### Steven R. Chesnut, Danny Squire, Terrence D. Jorgensen
-### Last updated: 25 June 2018
+### Last updated: 26 June 2018
 
 
 
@@ -87,13 +87,14 @@
 #' misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
 #' dat[misspat] <- NA
 #' dat <- cbind(HolzingerSwineford1939[,1:3], dat)
-#'
+#' \dontrun{
 #' quark.list <- quark(data = dat, id = c(1, 2))
 #'
 #' final.data <- combinequark(quark = quark.list, percent = 80)
 #'
 #' ## Example to rerun quark after imputation failure:
 #' quark.list <- quark(data = dat, id = c(1, 2), order = 2)
+#' }
 #'
 #' @export
 quark <- function(data, id, order = 1, silent = FALSE, ...){
@@ -115,8 +116,17 @@ quark <- function(data, id, order = 1, silent = FALSE, ...){
   final.collect$ID_Columns <- id
   final.collect$ID_Vars <- data[,id]
   final.collect$Used_Data <- data[,-c(id)]
-  final.collect$Imputed_Data <- imputequark(data = final.collect$Used_Data, order = order, silent = silent, ...)
-  final.collect$Big_Data_Matrix <- bigquark(data = final.collect$Imputed_Data, silent = silent)
+  ##FIXME 26-June-2018: Terrence had to add a logical check for whether mice
+  ##                    is installed, otherwise won't pass CRAN checks.
+  checkMice <- requireNamespace("mice")
+  if (!checkMice) {
+    message('The quark function requires the "mice" package to be installed.')
+    return(invisible(NULL))
+  }
+  final.collect$Imputed_Data <- imputequark(data = final.collect$Used_Data,
+                                            order = order, silent = silent, ...)
+  final.collect$Big_Data_Matrix <- bigquark(data = final.collect$Imputed_Data,
+                                            silent = silent)
   cmp <- compquark(data = final.collect$Big_Data_Matrix, silent = silent)
   final.collect$Prin_Components <- cmp[[1]]
   final.collect$Prin_Components_Prcnt <- cmp[[2]]
