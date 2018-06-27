@@ -1,5 +1,5 @@
 ### Corbin Quick
-### Last updated 9 March 2018
+### Last updated: 9 March 2018
 ### deprecated because it is based on an old template for lavaan's parTable
 
 
