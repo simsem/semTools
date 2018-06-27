@@ -13,10 +13,11 @@
 #' @param free If \code{TRUE}, the function will show only standardized values
 #' of free parameters. If \code{FALSE}, the function will show the results for
 #' fixed and free parameters.
+#'
 #' @return A vector of standardized estimates
+#'
 #' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
-#' @seealso \code{\link{saturateMx}}, \code{\link{nullMx}},
-#' \code{\link{fitMeasuresMx}}
+#'
 #' @examples
 #'
 #' \dontrun{
@@ -87,16 +88,20 @@ NULL
 
 #' @rdname semTools-deprecated
 #' @section \code{standardizeMx}:
-#' The \code{standardizeMx} function will no longer be supported, nor will
-#' there be a replacement function. Its functionality is now available in the
-#' \pkg{OpenMx} package, making this function obsolete, with the exception
-#' that \code{\link[OpenMx]{mxStandardizeRAMpaths}} currently only provides
+#' The \code{standardizeMx} and \code{fitMeasuresMx} functions will no longer
+#' be supported, nor will there be replacement functions.  Their functionality
+#' is now available in the \pkg{OpenMx} package, making these functions
+#' obsolete. The utility functions \code{nullMx} and \code{saturateMx} will
+#' also no longer be supported. These have already been removed from
+#' \pkg{semTools}, except that \code{standardizeMx} remains deprecated due to
+#' the temporary depndency on it of the \pkg{semPlot} package.  The exception
+#' is that \code{\link[OpenMx]{mxStandardizeRAMpaths}} currently only provides
 #' standardized estimates of covariance-structure parameters, whereas
 #' \code{standardizeMx} also provides standardized means.
 #'
 #' @export
 standardizeMx <- function(object, free = TRUE) {
-  objectOrig <- object
+  # objectOrig <- object
   multigroup <- length(object@submodels) > 0
   if(multigroup) {
     defVars <- lapply(object@submodels, findDefVars)
@@ -118,8 +123,26 @@ standardizeMx <- function(object, free = TRUE) {
 ## ----------------
 
 findDefVars <- function(object) {
+  ## borrowed from OpenMx::imxIsDefinitionVariable
+  imxSeparatorChar <- "."
+  imxIsDefinitionVariable <- function (name) {
+    if (is.na(name)) {
+      return(FALSE)
+    }
+    components <- unlist(strsplit(name, imxSeparatorChar, fixed = TRUE))
+    if (length(components) == 2 && components[[1]] == "data") {
+      return(TRUE)
+    }
+    else if (length(components) > 2 && components[[2]] == "data") {
+      return(TRUE)
+    }
+    else {
+      return(FALSE)
+    }
+  }
+  ## end borrowed code
 	mat <- lapply(object@matrices, slot, "labels")
-	defvars <- sapply(mat, function(x) x[apply(x, c(1,2), OpenMx::imxIsDefinitionVariable)])
+	defvars <- sapply(mat, function(x) x[apply(x, c(1,2), imxIsDefinitionVariable)])
 	Reduce("c", defvars)
 }
 
@@ -158,7 +181,7 @@ standardizeMxSingleGroup <- function(object) {
   A <- object@matrices$A@values
   I <- diag(nrow(A))
   S <- object@matrices$S@values
-  F <- object@matrices$F@values
+  # F <- object@matrices$F@values
   Z <- solve(I - A)
   impliedCov <- Z %*% S %*% t(Z)
   temp <- sqrt(diag(impliedCov))

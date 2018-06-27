@@ -28,7 +28,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		)
 Depends: R(>= 3.3), utils, stats, graphics, lavaan(>= 0.6.1)
 Imports: methods
-Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt
+Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt, OpenMx
 License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes

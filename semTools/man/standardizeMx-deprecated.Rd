@@ -83,9 +83,6 @@ standardizedSolution(fit)
 
 }
 \seealso{
-\code{\link{saturateMx}}, \code{\link{nullMx}},
-\code{\link{fitMeasuresMx}}
-
 \code{\link{semTools-deprecated}}
 }
 \author{
