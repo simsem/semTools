@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 27 August 2017
+### Last updated: 21 July 2018
 ### fit and rotate EFA models in lavaan
 
 
@@ -29,20 +29,23 @@
 #' @param data A target \code{data.frame}
 #' @param nf The desired number of factors
 #' @param varList Target observed variables. If not specified, all variables in
-#' \code{data} will be used.
+#'   \code{data} will be used.
 #' @param start Use starting values in the analysis from the
-#' \code{\link{factanal}} \code{function}. If \code{FALSE}, the starting values
-#' from the \code{lavaan} package will be used. \code{TRUE} is ignored with a
-#' warning if the \code{aux} argument is used.
+#'   \code{\link{factanal}} \code{function}. If \code{FALSE}, the starting values
+#'   from the \code{lavaan} package will be used. \code{TRUE} is ignored with a
+#'   warning if the \code{aux} argument is used.
 #' @param aux The list of auxiliary variables. These variables will be included
-#' in the model by the saturated-correlates approach to account for missing
-#' information.
+#'   in the model by the saturated-correlates approach to account for missing
+#'   information.
 #' @param \dots Other arguments in the \code{\link[lavaan]{cfa}} function in
-#' the \code{lavaan} package, such as \code{ordered}, \code{se}, or
-#' \code{estimator}
+#'   the \code{lavaan} package, such as \code{ordered}, \code{se}, or
+#'   \code{estimator}
+#'
 #' @return A \code{lavaan} output of unrotated exploratory factor analysis
 #' solution.
+#'
 #' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#'
 #' @examples
 #'
 #' unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
@@ -59,9 +62,9 @@ efaUnrotate <- function(data, nf, varList = NULL,
                         start = TRUE, aux = NULL, ...) {
   if (is.null(varList)) varList <- colnames(data)
   isOrdered <- checkOrdered(data, varList, ...)
-  args <- list(...)
-  if (!is.null(args$group)) stop("Multi-group EFA is not currently supported.")
-  args$data <- data
+  efaArgs <- list(...)
+  if (!is.null(efaArgs$group)) stop("Multi-group EFA is not currently supported.")
+  efaArgs$data <- data
   if (!is.null(aux)) {
     if (isOrdered) {
       stop("The analysis model or the analysis data have ordered categorical",
@@ -69,9 +72,9 @@ efaUnrotate <- function(data, nf, varList = NULL,
            " the models for categorical variables with the weighted least",
            " square approach.")
     }
-    args$fixed.x <- FALSE
-    args$missing <- "fiml"
-    args$aux <- aux
+    efaArgs$fixed.x <- FALSE
+    efaArgs$missing <- "fiml"
+    efaArgs$aux <- aux
     lavaancfa <- function(...) { cfa.auxiliary(...)}
   } else lavaancfa <- function(...) { lavaan::cfa(...)}
   nvar <- length(varList)
@@ -120,9 +123,19 @@ efaUnrotate <- function(data, nf, varList = NULL,
     } else warning("The 'start' argument was ignored because factanal() does",
                    " not support auxiliary variables.  When using auxiliary",
                    " variables, set 'start = FALSE' ")
+  } else {
+    ## FIXME: optimizer can't escape loadings == 0 without starting values from
+    ##        factanal() or by using theta parameterization
+    ##        https://groups.google.com/d/msg/lavaan/ujkHmCVirEY/-LGut4ewAwAJ
+    parameterization <- efaArgs$parameterization
+    if (is.null(parameterization)) parameterization <- lavaan::lavOptions("parameterization")
+    if (isOrdered && parameterization != "theta")
+      warning('If the default parameterization = "delta" returns results with ',
+              'all factor loadings equal to zero, try either setting start ',
+              '= TRUE or setting parameterization = "theta" instead.')
   }
-  args$model <- syntax
-  do.call(lavaancfa, args)
+  efaArgs$model <- syntax
+  do.call(lavaancfa, efaArgs)
 }
 
 
