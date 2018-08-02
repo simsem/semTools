@@ -1007,9 +1007,9 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
     out <- D3(object, h1 = h1, asymptotic = asymptotic)
     if (any(indices %in% incremental)) baseOut <- D3(baseFit, asymptotic = TRUE)
   } else if (test == "D2") {
-    out <- D2(object, h1 = h1, asymptotic = asymptotic, pool.robust = FALSE)
+    out <- D2(object, h1 = h1, asymptotic = asymptotic, pool.robust = pool.robust)
     if (any(indices %in% incremental)) baseOut <- D2(baseFit, asymptotic = TRUE,
-                                                     pool.robust = FALSE)
+                                                     pool.robust = pool.robust)
     if (robust & pool.robust) {
       out <- c(out,
                D2(object, h1 = h1, asymptotic = asymptotic, pool.robust = TRUE,
