@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 June 2018
-### try new runMI
+### Last updated: 14 August 2018
+### test runMI
 
 library(lavaan)
 library(Amelia)
@@ -102,6 +102,65 @@ modindices.mi(mgfit1, op = '~~', type = "Rubin")
 ## also comparable with D2 pooled results:
 lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7', asymptotic = TRUE)
 modindices.mi(mgfit1, op = '~~')
+
+
+
+## ------------------------------------
+## check lavaan.mi with multilevel data
+## ------------------------------------
+
+Galo <- read.table("http://users.ugent.be/~yrosseel/lavaan/tubingen2017/Galo.dat")
+names(Galo) <- c("school", "sex", "galo", "advice", "feduc", "meduc",
+                 "focc", "denom")
+
+# missing data
+Galo[Galo == 999] <- NA
+
+model <- '
+level: within
+
+wses =~ a*focc + b*meduc + c*feduc
+
+advice ~ wc*wses + wb*galo
+galo   ~ wa*wses
+
+# residual correlation
+focc ~~ feduc
+
+level: between
+
+bses =~ a*focc + b*meduc + c*feduc
+
+advice ~ bc*bses + bb*galo
+galo   ~ ba*bses + denom
+
+feduc ~~ 0*feduc
+
+# defined parameters
+wi := wa * wb
+bi := ba * bb
+'
+library(lavaan)
+fit <- sem(model, data = Galo, cluster = "school", fixed.x = FALSE,
+           missing = "fiml", std.lv = TRUE, h1 = TRUE)
+
+summary(fit, fit.measures = TRUE, standardized = TRUE)
+lavInspect(fit, "ngroups")
+lavInspect(fit, "cov.lv")
+lavInspect(fit, "theta")
+
+## impute data
+library(mice)
+m <- 5
+mice.out <- mice(Galo, m = m, diagnostics = TRUE)
+imputedData <- list()
+for (i in 1:m) {
+  imputedData[[i]] <- mice::complete(data = mice.out, action = i, include = FALSE)
+}
+
+library(semTools)
+fit.mi <- sem.mi(model, data = imputedData, cluster="school", fixed.x = FALSE,
+                 std.lv = TRUE)
 
 
 

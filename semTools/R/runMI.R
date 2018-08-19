@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 June 2018
+### Last updated: 19 August 2018
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -145,13 +145,13 @@ runMI <- function(model, data, fun = "lavaan", ...,
                   m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
   CALL <- match.call()
   dots <- list(...)
-  if (!is.null(dots$fixed.x)) {
-    if (dots$fixed.x) warning('fixed.x set to FALSE')
-  }
-  if (!is.null(dots$conditional.x)) {
-    if (dots$conditional.x) warning('conditional.x set to FALSE')
-  }
-  dots$fixed.x <- dots$conditional.x <- FALSE
+  # if (!is.null(dots$fixed.x)) {
+  #   if (dots$fixed.x) warning('fixed.x set to FALSE')
+  # }
+  # if (!is.null(dots$conditional.x)) {
+  #   if (dots$conditional.x) warning('conditional.x set to FALSE')
+  # }
+  # dots$conditional.x <- FALSE
 
   seed <- as.integer(seed[1])
   ## Create (or acknowledge) list of imputed data sets
@@ -172,7 +172,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
       miceOut <- eval(as.call(imputeCall))
       imputedData <- list()
       for (i in 1:m) {
-        imputedData[[i]] <- mice::complete(x = miceOut, action = i, include = FALSE)
+        imputedData[[i]] <- mice::complete(data = miceOut, action = i, include = FALSE)
       }
     } else stop("Currently runMI only supports imputation by Amelia or mice")
   } else if (is.list(data)) {
@@ -196,7 +196,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
     if (converged) {
       se <- lavaan::parTable(obj)$se
       se.test <- all(!is.na(se)) & all(se >= 0) & any(se != 0)
-      if (lavaan::lavInspect(obj, "ngroups") == 1L) {
+      if (lavaan::lavInspect(obj, "ngroups") == 1L && obj@Data@nlevels == 1L) { #FIXME: request lavInspect(fit, "nlevels")
         Heywood.lv <- det(lavaan::lavInspect(obj, "cov.lv")) <= 0
         Heywood.ov <- det(lavaan::lavInspect(obj, "theta")) <= 0
       } else {

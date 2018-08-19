@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 June 2018
+### Last updated: 19 August 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -295,13 +295,14 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   m <- sum(useImps)
   ## extract parameter table with attributes for printing
   PT <- parTable(object)
-  myCols <- c("lhs","op","rhs")
+  myCols <- c("lhs","op","rhs","exo")
   if (lavListInspect(object, "ngroups") > 1L) myCols <- c(myCols,"block","group")
   PE <- PT[ , myCols]
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">")) # which rows can be standardized
 
-  PE$est <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "est"))
+  # PE$est <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "est"))
+  PE$est <- getMethod("coef","lavaan.mi")(object, type = "all")
 
   if (lavListInspect(object, "options")$se == "none") {
     warning('pooled variances and tests unavailable when se="none" is requested')
@@ -377,7 +378,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   ## fancy or not?
   if (add.attributes) {
     PE$label <- PT$label
-    PE$exo <- 0L # because PT$exo must be when !fixed.x
+    #FIXME: no longer needed?  PE$exo <- 0L
     class(PE) <- c("lavaan.parameterEstimates","lavaan.data.frame","data.frame")
     lavops <- lavListInspect(object, "options")
     attr(PE, "information") <- lavops$information
@@ -393,6 +394,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     # FIXME: lavaan may add more!!
     if (fmi) cat("\n", messRIV, sep = "")
   } else {
+    PE$exo <- NULL
     class(PE) <- c("lavaan.data.frame","data.frame")
   }
   ## requested R-squared?
