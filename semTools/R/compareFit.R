@@ -1,5 +1,5 @@
-### Sunthud Pornprasertmanit
-### Last updated: 25 June 2018
+### Sunthud Pornprasertmanit & Terrence D. Jorgensen
+### Last updated: 21 August 2018
 ### source code for compareFit() function and FitDiff class
 
 
@@ -16,22 +16,27 @@
 #' @name FitDiff-class
 #' @aliases FitDiff-class show,FitDiff-method summary,FitDiff-method
 #' @docType class
+#'
 #' @slot name The name of each model
 #' @slot nested Model fit comparisons between adjacent nested models that are
 #'  ordered based on their degrees of freedom (\emph{df})
 #' @slot ordernested The order of nested models regarding to their \emph{df}
 #' @slot fit Fit measures of all models specified in the \code{name} slot
+#'
 #' @section Objects from the Class: Objects can be created via the
 #'  \code{\link{compareFit}} function.
+#'
 #' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+#'
 #' @seealso \code{\link{compareFit}}; \code{\link{clipboard}}
+#'
 #' @examples
 #'
-#' HW.model <- ' visual =~ x1 + x2 + x3
+#' HS.model <- ' visual =~ x1 + x2 + x3
 #'               textual =~ x4 + x5 + x6
 #'               speed =~ x7 + x8 + x9 '
 #'
-#' out <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
+#' out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
 #'                              group = "school", quiet = TRUE)
 #' modelDiff <- compareFit(out)
 #' summary(modelDiff)
@@ -54,7 +59,8 @@ setClass("FitDiff", representation(name = "vector",
 #' @rdname FitDiff-class
 #' @export
 setMethod("show", signature(object = "FitDiff"), function(object) {
-    summary(object)
+  summary(object)
+  invisible(object)
 })
 
 #' @rdname FitDiff-class
@@ -67,24 +73,32 @@ setMethod("show", signature(object = "FitDiff"), function(object) {
 #' @export
 setMethod("summary", signature(object = "FitDiff"),
           function(object, fit.measures = "default") {
+  out <- list()
+
   if (isNested(object)) {
+    out$nested <- getNestedTable(object)
 		cat("################### Nested Model Comparison #########################\n")
-		print(getNestedTable(object))
+		print(out$nested)
 		cat("\n")
-	}
-	cat("#################### Fit Indices Summaries ##########################\n")
-	print(getFitSummary(object, fit.measures))
+  }
+
+	cat("#################### Summary of Fit Indices #########################\n")
+	out$fit.indices <- getFitSummary(object, fit.measures) #TODO: diff = TRUE (for below)
+	print(out$fit.indices)
+
+	#TODO: if (nested) add a table of differences: object@fit[i,] - object@fit[i-1,]
+	invisible(out)
 })
 
 getNestedTable <- function(object) {
 	ord <- object@ordernested
-	nameDiff <- paste(object@name[ord[-1]], "-", object@name[ord[-length(ord)]])
+	nameDiff <- paste(object@name[ord[-length(ord)]], "-", object@name[ord[-1]])
 	pprint <- noLeadingZero(object@nested$p, "%4.3f")
-	pprint[object@nested$p < 0.001] <- " <.001"
+	pprint[object@nested$p < 0.001] <- " <.001" #FIXME: make this a lavaan.matrix for printing
 	nestedTab <- object@nested
 	nestedTab$chi <- sprintf("%.2f", object@nested$chi)
-	nestedTab$p <- pprint
-	nestedTab$delta.cfi <- sprintf("%.4f", object@nested$delta.cfi)
+	nestedTab$p <- pprint #FIXME: use printCoefmat(nestedTab, P.values = T, has.Pvalue = T)
+	nestedTab$delta.cfi <- sprintf("%.4f", object@nested$delta.cfi) #FIXME: remove this garbage
 	nestedTab <- data.frame(nestedTab)
 	rownames(nestedTab) <- nameDiff
 	nestedTab[nrow(nestedTab):1,]
@@ -147,46 +161,52 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ## Constructor Function
 ## --------------------
 
-#' Build an object summarizing fit indices across multiple models
-#'
-#' This function will create the template to compare fit indices across
-#' multiple fitted lavaan objects. The results can be exported to a clipboard
-#' or a file later.
-#'
-#'
-#' @param ...  fitted \code{lavaan} models or list(s) of \code{lavaan} objects
-#' @param nested \code{logical} indicating whether the models in \code{...} are
-#'  nested. See the \code{\link{net}} function for an empirical test of nesting.
-#' @return A \code{\linkS4class{FitDiff}} object that saves model fit
-#' comparisons across multiple models. If the output is not assigned as an
-#' object, the output is printed in two parts: (1) nested model comparison (if
-#' models are nested) and (2) summary of fit indices. In the fit indices
-#' summaries, daggers are tagged to the model with the best fit according to
-#' each fit index.
-#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
-#' @seealso \code{\linkS4class{FitDiff}}, \code{\link{clipboard}}
-#' @examples
-#'
-#' m1 <- ' visual  =~ x1 + x2 + x3
-#'         textual =~ x4 + x5 + x6
-#'         speed   =~ x7 + x8 + x9 '
-#'
-#' fit1 <- cfa(m1, data = HolzingerSwineford1939)
-#'
-#' m2 <- ' f1  =~ x1 + x2 + x3 + x4
-#'         f2 =~ x5 + x6 + x7 + x8 + x9 '
-#' fit2 <- cfa(m2, data = HolzingerSwineford1939)
-#' compareFit(fit1, fit2, nested = FALSE)
-#'
-#' HW.model <- ' visual =~ x1 + x2 + x3
-#'               textual =~ x4 + x5 + x6
-#'               speed =~ x7 + x8 + x9 '
-#'
-#' out <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
-#'                              group = "school", quiet = TRUE)
-#' compareFit(out)
-#'
-#' @export
+##' Build an object summarizing fit indices across multiple models
+##'
+##' This function will create the template to compare fit indices across
+##' multiple fitted lavaan objects. The results can be exported to a clipboard
+##' or a file later.
+##'
+##'
+##' @param ...  fitted \code{lavaan} models or list(s) of \code{lavaan} objects
+##' @param nested \code{logical} indicating whether the models in \code{...} are
+##'   nested. See \code{\link{net}} for an empirical test of nesting.
+##'
+##' @return A \code{\linkS4class{FitDiff}} object that saves model fit
+##' comparisons across multiple models. If the output is not assigned as an
+##' object, the output is printed in two parts: (1) nested model comparison (if
+##' models are nested) and (2) summary of fit indices. In the fit indices
+##' summaries, daggers are tagged to the model with the best fit according to
+##' each fit index.
+##'
+##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
+##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##' @seealso \code{\linkS4class{FitDiff}}, \code{\link{clipboard}}
+##'
+##' @examples
+##'
+##' m1 <- ' visual  =~ x1 + x2 + x3
+##'         textual =~ x4 + x5 + x6
+##'         speed   =~ x7 + x8 + x9 '
+##'
+##' fit1 <- cfa(m1, data = HolzingerSwineford1939)
+##'
+##' m2 <- ' f1  =~ x1 + x2 + x3 + x4
+##'         f2 =~ x5 + x6 + x7 + x8 + x9 '
+##' fit2 <- cfa(m2, data = HolzingerSwineford1939)
+##' compareFit(fit1, fit2, nested = FALSE)
+##'
+##' HS.model <- ' visual =~ x1 + x2 + x3
+##'               textual =~ x4 + x5 + x6
+##'               speed =~ x7 + x8 + x9 '
+##'
+##' out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
+##'                              group = "school", quiet = TRUE)
+##' compareFit(out)
+##'
+##' @export
 compareFit <- function(..., nested = TRUE) {
 	arg <- match.call()
 	mods <- input <- list(...)
