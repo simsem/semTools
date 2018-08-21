@@ -6,10 +6,6 @@
 \alias{sem.2stage}
 \alias{growth.2stage}
 \alias{lavaan.2stage}
-\alias{lavaan.2stage}
-\alias{cfa.2stage}
-\alias{sem.2stage}
-\alias{growth.2stage}
 \title{Fit a lavaan model using 2-Stage Maximum Likelihood (TSML) estimation for
 missing data.}
 \usage{

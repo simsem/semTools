@@ -5,8 +5,6 @@
 \alias{Net-class}
 \alias{show,Net-method}
 \alias{summary,Net-method}
-\alias{show,Net-method}
-\alias{summary,Net-method}
 \title{Class For the Result of Nesting and Equivalence Testing}
 \usage{
 \S4method{show}{Net}(object)

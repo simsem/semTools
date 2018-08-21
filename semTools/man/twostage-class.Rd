@@ -13,16 +13,6 @@
 \alias{residuals,twostage-method}
 \alias{resid,twostage-method}
 \alias{nobs,twostage-method}
-\alias{show,twostage-method}
-\alias{summary,twostage-method}
-\alias{anova,twostage-method}
-\alias{nobs,twostage-method}
-\alias{coef,twostage-method}
-\alias{vcov,twostage-method}
-\alias{fitted.values,twostage-method}
-\alias{fitted,twostage-method}
-\alias{residuals,twostage-method}
-\alias{resid,twostage-method}
 \title{Class for the Results of 2-Stage Maximum Likelihood (TSML) Estimation for
 Missing Data}
 \usage{
@@ -32,21 +22,21 @@ Missing Data}
 
 \S4method{anova}{twostage}(object, h1 = NULL, baseline = FALSE)
 
-\S4method{nobs}{twostage}(object, type = c("ntotal", "ngroups", "n.per.group",
-  "norig", "patterns", "coverage"))
+\S4method{nobs}{twostage}(object, type = c("ntotal", "ngroups",
+  "n.per.group", "norig", "patterns", "coverage"))
 
 \S4method{coef}{twostage}(object, type = c("free", "user"))
 
 \S4method{vcov}{twostage}(object, baseline = FALSE)
 
-\S4method{fitted.values}{twostage}(object, model = c("target", "saturated",
-  "baseline"), type = "moments", labels = TRUE)
+\S4method{fitted.values}{twostage}(object, model = c("target",
+  "saturated", "baseline"), type = "moments", labels = TRUE)
 
 \S4method{fitted}{twostage}(object, model = c("target", "saturated",
   "baseline"), type = "moments", labels = TRUE)
 
-\S4method{residuals}{twostage}(object, type = c("raw", "cor", "normalized",
-  "standardized"))
+\S4method{residuals}{twostage}(object, type = c("raw", "cor",
+  "normalized", "standardized"))
 
 \S4method{resid}{twostage}(object, type = c("raw", "cor", "normalized",
   "standardized"))

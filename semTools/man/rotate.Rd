@@ -4,8 +4,6 @@
 \alias{orthRotate}
 \alias{oblqRotate}
 \alias{funRotate}
-\alias{oblqRotate}
-\alias{funRotate}
 \title{Implement orthogonal or oblique rotation}
 \usage{
 orthRotate(object, method = "varimax", ...)

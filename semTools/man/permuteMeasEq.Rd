@@ -5,11 +5,12 @@
 \title{Permutation Randomization Tests of Measurement Equivalence and Differential
 Item Functioning (DIF)}
 \usage{
-permuteMeasEq(nPermute, modelType = c("mgcfa", "mimic"), con, uncon = NULL,
-  null = NULL, param = NULL, freeParam = NULL, covariates = NULL,
-  AFIs = NULL, moreAFIs = NULL, maxSparse = 10, maxNonconv = 10,
-  showProgress = TRUE, warn = -1, datafun, extra, parallelType = c("none",
-  "multicore", "snow"), ncpus = NULL, cl = NULL, iseed = 12345)
+permuteMeasEq(nPermute, modelType = c("mgcfa", "mimic"), con,
+  uncon = NULL, null = NULL, param = NULL, freeParam = NULL,
+  covariates = NULL, AFIs = NULL, moreAFIs = NULL, maxSparse = 10,
+  maxNonconv = 10, showProgress = TRUE, warn = -1, datafun, extra,
+  parallelType = c("none", "multicore", "snow"), ncpus = NULL,
+  cl = NULL, iseed = 12345)
 }
 \arguments{
 \item{nPermute}{An integer indicating the number of random permutations used
@@ -214,26 +215,26 @@ models.
 The function \code{permuteMeasEq} provides tests of hypotheses involving
 measurement equivalence, in one of two frameworks:
 \enumerate{
-\item{1} For multiple-group CFA models, provide a pair of nested lavaan objects,
-the less constrained of which (\code{uncon}) freely estimates a set of
-measurement parameters (e.g., factor loadings, intercepts, or thresholds;
-specified in \code{param}) in all groups, and the more constrained of which
-(\code{con}) constrains those measurement parameters to equality across
-groups. Group assignment is repeatedly permuted and the models are fit to
-each permutation, in order to produce an empirical distribution under the
-null hypothesis of no group differences, both for (a) changes in
-user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for
-(b) the maximum modification index among the user-specified equality
-constraints. Configural invariance can also be tested by providing that
-fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which
-case \code{param} must be \code{NULL} as well.
+  \item{1} For multiple-group CFA models, provide a pair of nested lavaan objects,
+  the less constrained of which (\code{uncon}) freely estimates a set of
+  measurement parameters (e.g., factor loadings, intercepts, or thresholds;
+  specified in \code{param}) in all groups, and the more constrained of which
+  (\code{con}) constrains those measurement parameters to equality across
+  groups. Group assignment is repeatedly permuted and the models are fit to
+  each permutation, in order to produce an empirical distribution under the
+  null hypothesis of no group differences, both for (a) changes in
+  user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for
+  (b) the maximum modification index among the user-specified equality
+  constraints. Configural invariance can also be tested by providing that
+  fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which
+  case \code{param} must be \code{NULL} as well.
 
 \item{2} In MIMIC models, one or a set of continuous and/or discrete
-\code{covariates} can be permuted, and a constrained model is fit to each
-permutation in order to provide a distribution of any fit measures (namely,
-the maximum modification index among fixed parameters in \code{param}) under
-the null hypothesis of measurement equivalence across levels of those
-covariates.
+  \code{covariates} can be permuted, and a constrained model is fit to each
+  permutation in order to provide a distribution of any fit measures (namely,
+  the maximum modification index among fixed parameters in \code{param}) under
+  the null hypothesis of measurement equivalence across levels of those
+  covariates.
 }
 
 In either framework, modification indices for equality constraints or fixed

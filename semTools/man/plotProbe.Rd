@@ -5,7 +5,8 @@
 \title{Plot the graphs for probing latent interaction}
 \usage{
 plotProbe(object, xlim, xlab = "Indepedent Variable",
-  ylab = "Dependent Variable", legend = TRUE, legendArgs = list(), ...)
+  ylab = "Dependent Variable", legend = TRUE, legendArgs = list(),
+  ...)
 }
 \arguments{
 \item{object}{The result of probing latent interaction obtained from

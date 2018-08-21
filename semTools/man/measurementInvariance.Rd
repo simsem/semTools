@@ -5,8 +5,8 @@
 \alias{measurementinvariance}
 \title{Measurement Invariance Tests}
 \usage{
-measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
-  fit.measures = "default", baseline.model = NULL,
+measurementInvariance(..., std.lv = FALSE, strict = FALSE,
+  quiet = FALSE, fit.measures = "default", baseline.model = NULL,
   method = "satorra.bentler.2001")
 }
 \arguments{

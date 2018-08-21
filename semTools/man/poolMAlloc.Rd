@@ -5,10 +5,11 @@
 \title{Pooled estimates and standard errors across M parcel-allocations: Combining
 sampling variability and parcel-allocation variability.}
 \usage{
-poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0, parceloutput = NULL,
-  syntax, dataset, stopProp, stopValue, selectParam = NULL,
-  indices = "default", double = FALSE, checkConv = FALSE,
-  names = "default", leaveout = 0, useTotalAlloc = FALSE, ...)
+poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
+  parceloutput = NULL, syntax, dataset, stopProp, stopValue,
+  selectParam = NULL, indices = "default", double = FALSE,
+  checkConv = FALSE, names = "default", leaveout = 0,
+  useTotalAlloc = FALSE, ...)
 }
 \arguments{
 \item{nPerPar}{A list in which each element is a vector, corresponding to

@@ -1,239 +1,242 @@
 ### Terrence D. Jorgensen
-### Last updated: 19 August 2018
+### Last updated: 21 August 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
-#' Class for a lavaan Model Fitted to Multiple Imputations
-#'
-#' This class extends the \code{\linkS4class{lavaanList}} class, created by
-#' fitting a lavaan model to a list of data sets. In this case, the list of
-#' data sets are multiple imputations of missing data.
-#'
-#'
-#' @name lavaan.mi-class
-#' @importClassesFrom lavaan lavaanList
-#' @aliases lavaan.mi-class show,lavaan.mi-method summary,lavaan.mi-method
-#' anova,lavaan.mi-method nobs,lavaan.mi-method coef,lavaan.mi-method
-#' vcov,lavaan.mi-method fitted,lavaan.mi-method fitted.values,lavaan.mi-method
-#' residuals,lavaan.mi-method resid,lavaan.mi-method
-#' @docType class
-#'
-#' @slot coefList \code{list} of estimated coefficients in matrix format (one
-#'  per imputation) as output by \code{\link[lavaan]{lavInspect}(fit, "est")}
-#' @slot GLIST pooled \code{list} of coefficients in GLIST format
-#' @slot miList \code{list} of modification indices output by
-#'  \code{\link[lavaan]{modindices}}
-#' @slot seed \code{integer} seed set before running imputations
-#' @slot lavListCall call to \code{\link[lavaan]{lavaanList}} used to fit the
-#'  model to the list of imputed data sets in \code{@@DataList}, stored as a
-#'  \code{list} of arguments
-#' @slot imputeCall call to imputation function (if used), stored as a
-#'  \code{list} of arguments
-#' @slot convergence \code{list} of \code{logical} vectors indicating whether,
-#'  for each imputed data set, (1) the model converged on a solution, (2)
-#'  \emph{SE}s could be calculated, (3) the (residual) covariance matrix of
-#'  latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the residual
-#'  covariance matrix of observed variables (\eqn{\Theta}) is
-#'  non-positive-definite.
-#' @slot lavaanList_slots All remaining slots are from
-#'  \code{\linkS4class{lavaanList}}, but \code{\link{runMI}} only populates a
-#'  subset of the \code{list} slots, two of them with custom information:
-#' @slot DataList The \code{list} of imputed data sets
-#' @slot SampleStatsList List of output from
-#'  \code{\link[lavaan]{lavInspect}(fit, "sampstat")} applied to each fitted
-#'  model
-#' @slot ParTableList See \code{\linkS4class{lavaanList}}
-#' @slot vcovList See \code{\linkS4class{lavaanList}}
-#' @slot testList See \code{\linkS4class{lavaanList}}
-#'
-#' @param object An object of class \code{lavaan.mi}
-#' @param se,ci,level,standardized,rsquare,header,add.attributes See
-#'        \code{\link[lavaan]{parameterEstimates}}.
-#' @param fmi \code{logical} indicating whether to include the Fraction Missing
-#'        Information (FMI) for parameter estimates in the \code{summary} output
-#'        (see \bold{Value} section).
-#' @param asymptotic \code{logical}. If \code{FALSE} (typically a default, but
-#'       see \bold{Value} section for details using various methods), pooled
-#'       tests (of fit or pooled estimates) will be \emph{F} or \emph{t}
-#'       statistics with associated degrees of freedom (\emph{df}). If
-#'       \code{TRUE}, the (denominator) \emph{df} are assumed to be sufficiently
-#'       large for a \emph{t} statistic to follow a normal distribution, so it
-#'       is printed as a \emph{z} statisic; likewise, \emph{F} times its
-#'       numerator \emph{df} is printed, assumed to follow a \eqn{\chi^2}
-#'       distribution.
-#' @param scale.W \code{logical}. If \code{TRUE} (default), the \code{vcov}
-#'       method will calculate the pooled covariance matrix by scaling the
-#'       within-imputation component by the ARIV (see Enders, 2010, p. 235,
-#'       for definition and formula). Otherwise, the pooled matrix is calculated
-#'       as the weighted sum of the within-imputation and between-imputation
-#'       components (see Enders, 2010, ch. 8, for details). This in turn affects
-#'       how the \code{summary} method calcualtes its pooled standard errors, as
-#'       well as the Wald test (\code{anova(..., test = "D1")}).
-#' @param labels \code{logical} indicating whether the \code{coef} output should
-#'        include parameter labels. Default is \code{TRUE}.
-#' @param total \code{logical} (default: \code{TRUE}) indicating whether the
-#'        \code{nobs} method should return the total sample size or (if
-#'        \code{FALSE}) a vector of group sample sizes.
-#' @param type The meaning of this argument varies depending on which method it
-#'        it used for. Find detailed descriptions in the \bold{Value} section
-#'        under \code{coef}, \code{vcov}, \code{residuals}, and \code{anova}.
-#' @param h1 An object of class \code{lavaan.mi} in which \code{object} is
-#'        nested, so that their difference in fit can be tested using
-#'        \code{anova} (see \bold{Value} section for details).
-#' @param test \code{character} indicating the method used to pool model-fit or
-#'        model-comparison test statistics:
-#'   \itemize{
-#'      \item{\code{"D3": }}{The default test (\code{"D3"}, or any of
-#'            \code{"mr", "Meng.Rubin", "likelihood", "LRT"}) is a pooled
-#'            likeliehood-ratio test (see Enders, 2010, ch. 8).
-#'            \code{test = "mplus"} implies \code{"D3"} and \code{asymptotic =
-#'            TRUE} (see Asparouhov & Muthen, 2010). When using a non-likelihood
-#'            estimator (e.g., DWLS for categorical outcomes), \code{"D3"} is
-#'            unavailable, so the default is changed to \code{"D2"}.}
-#'      \item{\code{"D2": }}{Returns a pooled test statistic, as described by
-#'            Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010, chapter 8).
-#'            Aliases include \code{"lmrr", "Li.et.al", "pooled.wald"}).}
-#'      \item{\code{"D1": }}{Returns a Wald test calculated for constraints on
-#'            the pooled point estimates, using the pooled covariance matrix of
-#'            parameter estimates; see \code{\link[lavaan]{lavTestWald}} for
-#'            details. \code{h1} is ignored when \code{test = "D1"}, and
-#'            \code{constraints} is ignored when \code{test != "D1"}. The
-#'            \code{scale.W} argument is passed to the \code{vcov} method (see
-#'            \bold{Value} section for details).}
-#'    }
-#' @param pool.robust \code{logical}. Ignored unless \code{test = "D2"} and a
-#'      robust test was requested. If \code{pool.robust = TRUE}, the robust test
-#'      statistic is pooled, whereas \code{pool.robust = FALSE} will pool
-#'      the naive test statistic (or difference statistic) and apply the average
-#'      scale/shift parameter to it (unavailable for mean- and variance-adjusted
-#'      difference statistics, so \code{pool.robust} will be set \code{TRUE}).
-#'      If \code{test = "D2"} and \code{pool.robust = TRUE}, further options
-#'      can be passed to \code{\link[lavaan]{lavTestLRT}} (see below).
-#' @param indices \code{logical}, or \code{character} vector naming fit indices
-#'      to be printed with test of model fit.  Ignored \code{if (!is.null(h1))}.
-#'      See description of \code{anova} in \bold{Value} section for details.
-#' @param constraints See \code{\link[lavaan]{lavTestWald}}.
-#' @param method,A.method,H1,scaled.shifted See \code{\link[lavaan]{lavTestLRT}}.
-#' @param fit.measures,baseline.model See \code{\link[lavaan]{fitMeasures}}.
-#'
-#' @return
-#' \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE)}:
-#'  See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
-#'  averaged across imputed data sets; see Rubin, 1987).}
-#'
-#' \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
-#'  type = c("pooled","between","within","ariv"))}:  By default, returns the
-#'  pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
-#'  the within-imputations covariance matrix (\code{type = "within"}), the
-#'  between-imputations covariance matrix (\code{type = "between"}), or the
-#'  average relative increase in variance (\code{type = "ariv"}) due to missing
-#'  data.}
-#'
-#' \item{fitted.values}{\code{signature(object = "lavaan.mi")}: See
-#'  \code{\linkS4class{lavaan}}. Returns model-implied moments, evaluated at the
-#'  pooled point estimates.}
-#' \item{fitted}{\code{signature(object = "lavaan.mi")}:
-#'   alias for \code{fitted.values}}
-#'
-#' \item{residuals}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
-#'  See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
-#'  the difference between the model-implied moments from \code{fitted.values}
-#'  and the pooled observed moments (i.e., averaged across imputed data sets).
-#'  Standardized residuals are also available, using Bollen's
-#'  (\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's
-#'  (\code{type = "cor.bentler"}) formulas.}
-#' \item{resid}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
-#'  alias for \code{residuals}}
-#'
-#' \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
-#'  the total (default) sample size or a vector of group sample sizes
-#'  (\code{total = FALSE}).}
-#'
-#' \item{anova}{\code{signature(object = "lavaan.mi", h1 = NULL,
-#'   test = c("D3","D2","D1"), pool.robust = FALSE, scale.W = TRUE,
-#'   asymptotic = FALSE, constraints = NULL, indices = FALSE, baseline.model = NULL,
-#'   method = "default", A.method = "delta", H1 = TRUE, type = "Chisq")}:
-#'   Returns a test of model fit if \code{h1} is \code{NULL}, or a test
-#'   of the difference in fit between nested models if \code{h1} is another
-#'   \code{lavaan.mi} object, assuming \code{object} is nested in \code{h1}. If
-#'   \code{asymptotic}, the returned test statistic will follow a \eqn{\chi^2}
-#'   distribution in sufficiently large samples; otherwise, it will follow an
-#'   \emph{F} distribution. If a robust test statistic is detected in the
-#'   \code{object} results (it is assumed the same was requested in \code{h1},
-#'   if provided), then \code{asymptotic} will be set to \code{TRUE} and the
-#'   pooled test statistic will be scaled using the average scaling factor (and
-#'   average shift parameter or \emph{df}, if applicable) across imputations
-#'   (unless \code{pool.robust = FALSE} and \code{test = "D2"}; see below).
-#'
-#'   When \code{indices = TRUE} and \code{is.null(h1)}, popular indices of
-#'   approximate fit (CFI, TLI/NNFI, RMSEA with CI, and SRMR) will be returned
-#'   for \code{object}; see \code{\link[lavaan]{fitMeasures}} for more details.
-#'   Specific indices can be requested with a \code{character} vector (any of
-#'   \code{"mfi", "rmsea", "gammaHat", "rmr", "srmr", "cfi", "tli", "nnfi",
-#'   "rfi", "nfi", "pnfi", "ifi", "rni"}), or all available indices will be
-#'   returned if \code{indices = "all"}. Users can specify a custom
-#'   \code{baseline.model}, also fit using \code{runMI}, to calculate
-#'   incremental fit indices (e.g., CFI, TLI). If \code{baseline.model = NULL},
-#'   the default independence model will be used.}
-#'
-#' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
-#'   fit.measures = "all", baseline.model = NULL)}: arguments are consistent
-#'   with lavaan's \code{\link[lavaan]{fitMeasures}}. This merely calls the
-#'   \code{anova} method described above, with \code{indices = fit.measures}
-#'   and \code{baseline.model = baseline.model}, and default values for the
-#'   remaining arguments. The user has more control (e.g., over pooling methods)
-#'   using \code{anova} directly.}
-#' \item{fitmeasures}{alias for \code{fitMeasures}.}
-#'
-#' \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
-#'  convergence rates and estimation problems (if applicable) across imputed
-#'  data sets.}
-#'
-#' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
-#'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-#'  scale.W = FALSE, asymptotic = FALSE, add.attributes = TRUE)}: see
-#'  \code{\link[lavaan]{parameterEstimates}} for details.
-#'  By default, \code{summary} returns pooled point and \emph{SE}
-#'  estimates, along with \emph{t} test statistics and their associated
-#'  \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
-#'  are returned with the specified confidence \code{level} (default 95\% CI).
-#'  If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
-#'  returned. \code{standardized} solution(s) can also be requested by name
-#'  (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
-#'  \emph{R}-squared for endogenous variables can be requested, as well as the
-#'  Fraction Missing Information (FMI) for parameter estimates. By default, the
-#'  output will appear like \code{lavaan}'s \code{summary} output, but if
-#'  \code{add.attributes = FALSE}, the returned \code{data.frame} will resemble
-#'  the \code{parameterEstimates} output. The \code{scale.W} argument is
-#'  passed to \code{vcov} (see description above).}
-#'
-#' @section Objects from the Class: See the \code{\link{runMI}} function for
-#' details. Wrapper functions include \code{\link{lavaan.mi}},
-#' \code{\link{cfa.mi}}, \code{\link{sem.mi}}, and \code{\link{growth.mi}}.
-#' @author Terrence D. Jorgensen (University of Amsterdam;
-#' \email{TJorgensen314@@gmail.com})
-#' @references Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
-#' with multiple imputation}. Technical Report. Retrieved from
-#' \url{www.statmodel.com}
-#'
-#' Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
-#' Guilford.
-#'
-#' Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-#' Significance levels from repeated \emph{p}-values with multiply-imputed data.
-#' \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-#' \url{http://www.jstor.org/stable/24303994}
-#'
-#' Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-#' multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111. Retrieved
-#' from \url{http://www.jstor.org/stable/2337151}
-#'
-#' Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-#' New York, NY: Wiley.
-#' @examples
-#'
-#' ## See ?runMI help page
-#'
+##' Class for a lavaan Model Fitted to Multiple Imputations
+##'
+##' This class extends the \code{\linkS4class{lavaanList}} class, created by
+##' fitting a lavaan model to a list of data sets. In this case, the list of
+##' data sets are multiple imputations of missing data.
+##'
+##'
+##' @name lavaan.mi-class
+##' @importClassesFrom lavaan lavaanList
+##' @aliases lavaan.mi-class show,lavaan.mi-method summary,lavaan.mi-method
+##' anova,lavaan.mi-method nobs,lavaan.mi-method coef,lavaan.mi-method
+##' vcov,lavaan.mi-method fitted,lavaan.mi-method fitted.values,lavaan.mi-method
+##' residuals,lavaan.mi-method resid,lavaan.mi-method
+##' @docType class
+##'
+##' @slot coefList \code{list} of estimated coefficients in matrix format (one
+##'  per imputation) as output by \code{\link[lavaan]{lavInspect}(fit, "est")}
+##' @slot GLIST pooled \code{list} of coefficients in GLIST format
+##' @slot miList \code{list} of modification indices output by
+##'  \code{\link[lavaan]{modindices}}
+##' @slot seed \code{integer} seed set before running imputations
+##' @slot lavListCall call to \code{\link[lavaan]{lavaanList}} used to fit the
+##'  model to the list of imputed data sets in \code{@@DataList}, stored as a
+##'  \code{list} of arguments
+##' @slot imputeCall call to imputation function (if used), stored as a
+##'  \code{list} of arguments
+##' @slot convergence \code{list} of \code{logical} vectors indicating whether,
+##'  for each imputed data set, (1) the model converged on a solution, (2)
+##'  \emph{SE}s could be calculated, (3) the (residual) covariance matrix of
+##'  latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the residual
+##'  covariance matrix of observed variables (\eqn{\Theta}) is
+##'  non-positive-definite.
+##' @slot lavaanList_slots All remaining slots are from
+##'  \code{\linkS4class{lavaanList}}, but \code{\link{runMI}} only populates a
+##'  subset of the \code{list} slots, two of them with custom information:
+##' @slot DataList The \code{list} of imputed data sets
+##' @slot SampleStatsList List of output from
+##'  \code{\link[lavaan]{lavInspect}(fit, "sampstat")} applied to each fitted
+##'  model
+##' @slot ParTableList See \code{\linkS4class{lavaanList}}
+##' @slot vcovList See \code{\linkS4class{lavaanList}}
+##' @slot testList See \code{\linkS4class{lavaanList}}
+##'
+##' @param object An object of class \code{lavaan.mi}
+##' @param se,ci,level,standardized,rsquare,header,add.attributes See
+##'        \code{\link[lavaan]{parameterEstimates}}.
+##' @param fmi \code{logical} indicating whether to include the Fraction Missing
+##'        Information (FMI) for parameter estimates in the \code{summary} output
+##'        (see \bold{Value} section).
+##' @param asymptotic \code{logical}. If \code{FALSE} (typically a default, but
+##'       see \bold{Value} section for details using various methods), pooled
+##'       tests (of fit or pooled estimates) will be \emph{F} or \emph{t}
+##'       statistics with associated degrees of freedom (\emph{df}). If
+##'       \code{TRUE}, the (denominator) \emph{df} are assumed to be sufficiently
+##'       large for a \emph{t} statistic to follow a normal distribution, so it
+##'       is printed as a \emph{z} statisic; likewise, \emph{F} times its
+##'       numerator \emph{df} is printed, assumed to follow a \eqn{\chi^2}
+##'       distribution.
+##' @param scale.W \code{logical}. If \code{TRUE} (default), the \code{vcov}
+##'       method will calculate the pooled covariance matrix by scaling the
+##'       within-imputation component by the ARIV (see Enders, 2010, p. 235,
+##'       for definition and formula). Otherwise, the pooled matrix is calculated
+##'       as the weighted sum of the within-imputation and between-imputation
+##'       components (see Enders, 2010, ch. 8, for details). This in turn affects
+##'       how the \code{summary} method calcualtes its pooled standard errors, as
+##'       well as the Wald test (\code{anova(..., test = "D1")}).
+##' @param labels \code{logical} indicating whether the \code{coef} output should
+##'        include parameter labels. Default is \code{TRUE}.
+##' @param total \code{logical} (default: \code{TRUE}) indicating whether the
+##'        \code{nobs} method should return the total sample size or (if
+##'        \code{FALSE}) a vector of group sample sizes.
+##' @param type The meaning of this argument varies depending on which method it
+##'        it used for. Find detailed descriptions in the \bold{Value} section
+##'        under \code{coef}, \code{vcov}, \code{residuals}, and \code{anova}.
+##' @param h1 An object of class \code{lavaan.mi} in which \code{object} is
+##'        nested, so that their difference in fit can be tested using
+##'        \code{anova} (see \bold{Value} section for details).
+##' @param test \code{character} indicating the method used to pool model-fit or
+##'        model-comparison test statistics:
+##'   \itemize{
+##'      \item{\code{"D3": }}{The default test (\code{"D3"}, or any of
+##'            \code{"mr", "Meng.Rubin", "likelihood", "LRT"}) is a pooled
+##'            likeliehood-ratio test (see Enders, 2010, ch. 8).
+##'            \code{test = "mplus"} implies \code{"D3"} and \code{asymptotic =
+##'            TRUE} (see Asparouhov & Muthen, 2010). When using a non-likelihood
+##'            estimator (e.g., DWLS for categorical outcomes), \code{"D3"} is
+##'            unavailable, so the default is changed to \code{"D2"}.}
+##'      \item{\code{"D2": }}{Returns a pooled test statistic, as described by
+##'            Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010, chapter 8).
+##'            Aliases include \code{"lmrr", "Li.et.al", "pooled.wald"}).}
+##'      \item{\code{"D1": }}{Returns a Wald test calculated for constraints on
+##'            the pooled point estimates, using the pooled covariance matrix of
+##'            parameter estimates; see \code{\link[lavaan]{lavTestWald}} for
+##'            details. \code{h1} is ignored when \code{test = "D1"}, and
+##'            \code{constraints} is ignored when \code{test != "D1"}. The
+##'            \code{scale.W} argument is passed to the \code{vcov} method (see
+##'            \bold{Value} section for details).}
+##'    }
+##' @param pool.robust \code{logical}. Ignored unless \code{test = "D2"} and a
+##'      robust test was requested. If \code{pool.robust = TRUE}, the robust test
+##'      statistic is pooled, whereas \code{pool.robust = FALSE} will pool
+##'      the naive test statistic (or difference statistic) and apply the average
+##'      scale/shift parameter to it (unavailable for mean- and variance-adjusted
+##'      difference statistics, so \code{pool.robust} will be set \code{TRUE}).
+##'      If \code{test = "D2"} and \code{pool.robust = TRUE}, further options
+##'      can be passed to \code{\link[lavaan]{lavTestLRT}} (see below).
+##' @param indices \code{logical}, or \code{character} vector naming fit indices
+##'      to be printed with test of model fit.  Ignored \code{if (!is.null(h1))}.
+##'      See description of \code{anova} in \bold{Value} section for details.
+##' @param constraints See \code{\link[lavaan]{lavTestWald}}.
+##' @param method,A.method,H1,scaled.shifted See \code{\link[lavaan]{lavTestLRT}}.
+##' @param fit.measures,baseline.model See \code{\link[lavaan]{fitMeasures}}.
+##'
+##' @return
+##' \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE)}:
+##'  See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
+##'  averaged across imputed data sets; see Rubin, 1987).}
+##'
+##' \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
+##'  type = c("pooled","between","within","ariv"))}:  By default, returns the
+##'  pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
+##'  the within-imputations covariance matrix (\code{type = "within"}), the
+##'  between-imputations covariance matrix (\code{type = "between"}), or the
+##'  average relative increase in variance (\code{type = "ariv"}) due to missing
+##'  data.}
+##'
+##' \item{fitted.values}{\code{signature(object = "lavaan.mi")}: See
+##'  \code{\linkS4class{lavaan}}. Returns model-implied moments, evaluated at the
+##'  pooled point estimates.}
+##' \item{fitted}{\code{signature(object = "lavaan.mi")}:
+##'   alias for \code{fitted.values}}
+##'
+##' \item{residuals}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
+##'  See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
+##'  the difference between the model-implied moments from \code{fitted.values}
+##'  and the pooled observed moments (i.e., averaged across imputed data sets).
+##'  Standardized residuals are also available, using Bollen's
+##'  (\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's
+##'  (\code{type = "cor.bentler"}) formulas.}
+##' \item{resid}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
+##'  alias for \code{residuals}}
+##'
+##' \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
+##'  the total (default) sample size or a vector of group sample sizes
+##'  (\code{total = FALSE}).}
+##'
+##' \item{anova}{\code{signature(object = "lavaan.mi", h1 = NULL,
+##'   test = c("D3","D2","D1"), pool.robust = FALSE, scale.W = TRUE,
+##'   asymptotic = FALSE, constraints = NULL, indices = FALSE, baseline.model = NULL,
+##'   method = "default", A.method = "delta", H1 = TRUE, type = "Chisq")}:
+##'   Returns a test of model fit if \code{h1} is \code{NULL}, or a test
+##'   of the difference in fit between nested models if \code{h1} is another
+##'   \code{lavaan.mi} object, assuming \code{object} is nested in \code{h1}. If
+##'   \code{asymptotic}, the returned test statistic will follow a \eqn{\chi^2}
+##'   distribution in sufficiently large samples; otherwise, it will follow an
+##'   \emph{F} distribution. If a robust test statistic is detected in the
+##'   \code{object} results (it is assumed the same was requested in \code{h1},
+##'   if provided), then \code{asymptotic} will be set to \code{TRUE} and the
+##'   pooled test statistic will be scaled using the average scaling factor (and
+##'   average shift parameter or \emph{df}, if applicable) across imputations
+##'   (unless \code{pool.robust = FALSE} and \code{test = "D2"}; see below).
+##'
+##'   When \code{indices = TRUE} and \code{is.null(h1)}, popular indices of
+##'   approximate fit (CFI, TLI/NNFI, RMSEA with CI, and SRMR) will be returned
+##'   for \code{object}; see \code{\link[lavaan]{fitMeasures}} for more details.
+##'   Specific indices can be requested with a \code{character} vector (any of
+##'   \code{"mfi", "rmsea", "gammaHat", "rmr", "srmr", "cfi", "tli", "nnfi",
+##'   "rfi", "nfi", "pnfi", "ifi", "rni"}), or all available indices will be
+##'   returned if \code{indices = "all"}. Users can specify a custom
+##'   \code{baseline.model}, also fit using \code{runMI}, to calculate
+##'   incremental fit indices (e.g., CFI, TLI). If \code{baseline.model = NULL},
+##'   the default independence model will be used.}
+##'
+##' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
+##'   fit.measures = "all", baseline.model = NULL)}: arguments are consistent
+##'   with lavaan's \code{\link[lavaan]{fitMeasures}}. This merely calls the
+##'   \code{anova} method described above, with \code{indices = fit.measures}
+##'   and \code{baseline.model = baseline.model}, and default values for the
+##'   remaining arguments. The user has more control (e.g., over pooling methods)
+##'   using \code{anova} directly.}
+##' \item{fitmeasures}{alias for \code{fitMeasures}.}
+##'
+##' \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
+##'  convergence rates and estimation problems (if applicable) across imputed
+##'  data sets.}
+##'
+##' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
+##'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
+##'  scale.W = FALSE, asymptotic = FALSE, add.attributes = TRUE)}: see
+##'  \code{\link[lavaan]{parameterEstimates}} for details.
+##'  By default, \code{summary} returns pooled point and \emph{SE}
+##'  estimates, along with \emph{t} test statistics and their associated
+##'  \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
+##'  are returned with the specified confidence \code{level} (default 95\% CI).
+##'  If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
+##'  returned. \code{standardized} solution(s) can also be requested by name
+##'  (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
+##'  \emph{R}-squared for endogenous variables can be requested, as well as the
+##'  Fraction Missing Information (FMI) for parameter estimates. By default, the
+##'  output will appear like \code{lavaan}'s \code{summary} output, but if
+##'  \code{add.attributes = FALSE}, the returned \code{data.frame} will resemble
+##'  the \code{parameterEstimates} output. The \code{scale.W} argument is
+##'  passed to \code{vcov} (see description above).}
+##'
+##' @section Objects from the Class: See the \code{\link{runMI}} function for
+##' details. Wrapper functions include \code{\link{lavaan.mi}},
+##' \code{\link{cfa.mi}}, \code{\link{sem.mi}}, and \code{\link{growth.mi}}.
+##'
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##' \email{TJorgensen314@@gmail.com})
+##'
+##' @references Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
+##' with multiple imputation}. Technical Report. Retrieved from
+##' \url{www.statmodel.com}
+##'
+##' Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
+##' Guilford.
+##'
+##' Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+##' Significance levels from repeated \emph{p}-values with multiply-imputed data.
+##' \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+##' \url{http://www.jstor.org/stable/24303994}
+##'
+##' Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
+##' multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111. Retrieved
+##' from \url{http://www.jstor.org/stable/2337151}
+##'
+##' Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##' New York, NY: Wiley.
+##'
+##' @examples
+##'
+##' ## See ?runMI help page
+##'
 setClass("lavaan.mi", contains = "lavaanList",
          slots = c(coefList = "list",     # coefficients in matrix format
                    GLIST = "list",        # list of pooled coefs in GLIST format
@@ -245,9 +248,9 @@ setClass("lavaan.mi", contains = "lavaanList",
 
 
 
-#' @name lavaan.mi-class
-#' @aliases show,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases show,lavaan.mi-method
+##' @export
 setMethod("show", "lavaan.mi", function(object) {
   nData <- object@meta$ndat
 
@@ -285,8 +288,8 @@ setMethod("show", "lavaan.mi", function(object) {
 })
 
 
-#' @importFrom stats pt qt pnorm qnorm
-#' @importFrom lavaan lavListInspect parTable
+##' @importFrom stats pt qt pnorm qnorm
+##' @importFrom lavaan lavListInspect parTable
 summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
                               fmi = FALSE, header = TRUE, scale.W = TRUE,
@@ -427,16 +430,16 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   # if (fit.measures) lavaan:::print.fit.measures(fitMeasures(object))
   PE
 }
-#' @name lavaan.mi-class
-#' @aliases summary,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases summary,lavaan.mi-method
+##' @export
 setMethod("summary", "lavaan.mi", summary.lavaan.mi)
 
 
-#' @name lavaan.mi-class
-#' @aliases nobs,lavaan.mi-method
-#' @importFrom lavaan lavListInspect
-#' @export
+##' @name lavaan.mi-class
+##' @aliases nobs,lavaan.mi-method
+##' @importFrom lavaan lavListInspect
+##' @export
 setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
   if (total) return(lavListInspect(object, "ntotal"))
   N <- lavListInspect(object, "norig")
@@ -446,7 +449,7 @@ setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
 
 
 
-#' @importFrom lavaan parTable
+##' @importFrom lavaan parTable
 coef.lavaan.mi <- function(object, type = "free", labels = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   PT <- parTable(object)
@@ -465,15 +468,15 @@ coef.lavaan.mi <- function(object, type = "free", labels = TRUE) {
   class(out) <- c("lavaan.vector","numeric")
   out
 }
-#' @name lavaan.mi-class
-#' @aliases coef,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases coef,lavaan.mi-method
+##' @export
 setMethod("coef", "lavaan.mi", coef.lavaan.mi)
 
 
 
-#' @importFrom stats cov
-#' @importFrom lavaan lavListInspect parTable
+##' @importFrom stats cov
+##' @importFrom lavaan lavListInspect parTable
 vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
                            scale.W = TRUE) {
   if (lavListInspect(object, "options")$se == "none") {
@@ -537,14 +540,14 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
   ## return pooled variance
   Total
 }
-#' @name lavaan.mi-class
-#' @aliases vcov,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases vcov,lavaan.mi-method
+##' @export
 setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
 
 
-#' @importFrom stats pf pchisq
-#' @importFrom lavaan parTable
+##' @importFrom stats pf pchisq
+##' @importFrom lavaan parTable
 D1 <- function(object, constraints = NULL, scale.W = FALSE,
                asymptotic = FALSE, verbose = FALSE) {
   ## "borrowed" lavTestWald()
@@ -626,7 +629,7 @@ D1 <- function(object, constraints = NULL, scale.W = FALSE,
   class(out) <- c("lavaan.vector","numeric")
   out
 }
-#' @importFrom stats var pf pchisq
+#importFrom stats var pf pchisq
 calculate.D2 <- function(w, DF, asymptotic = FALSE) {
   if (!length(w)) return(NA)
   nImps <- sum(!is.na(w))
@@ -645,7 +648,7 @@ calculate.D2 <- function(w, DF, asymptotic = FALSE) {
   }
   out
 }
-#' @importFrom lavaan lavListInspect parTable
+##' @importFrom lavaan lavListInspect parTable
 D2 <- function(object, h1 = NULL, asymptotic = FALSE, pool.robust = FALSE,
                method = "default", A.method = "delta", H1 = TRUE,
                scaled.shifted = TRUE, type = "Chisq") {
@@ -722,8 +725,8 @@ D2 <- function(object, h1 = NULL, asymptotic = FALSE, pool.robust = FALSE,
   class(out) <- c("lavaan.vector","numeric")
   out
 }
-#' @importFrom lavaan parTable lavaan lavListInspect
-#' @importFrom methods getMethod
+##' @importFrom lavaan parTable lavaan lavListInspect
+##' @importFrom methods getMethod
 getLLs <- function(object, saturated = FALSE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   ## FIXME: lavaanList does not return info when fixed because no convergence!
@@ -770,8 +773,8 @@ getLLs <- function(object, saturated = FALSE) {
     lavaan::logLik(lavaan(PT, data = d, slotOptions = lavoptions, group = group))
   })
 }
-#' @importFrom stats pf pchisq
-#' @importFrom lavaan lavListInspect parTable
+##' @importFrom stats pf pchisq
+##' @importFrom lavaan lavListInspect parTable
 D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   N <- lavListInspect(object, "ntotal")
   useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -840,8 +843,8 @@ D3 <- function(object, h1 = NULL, asymptotic = FALSE) {
   class(out) <- c("lavaan.vector","numeric")
   out
 }
-#' @importFrom stats pchisq
-#' @importFrom lavaan lavListInspect
+##' @importFrom stats pchisq
+##' @importFrom lavaan lavListInspect
 robustify <- function(ChiSq, object, h1 = NULL) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
@@ -882,8 +885,8 @@ robustify <- function(ChiSq, object, h1 = NULL) {
   }
   ChiSq
 }
-#' @importFrom stats pchisq uniroot
-#' @importFrom lavaan lavListInspect
+##' @importFrom stats pchisq uniroot
+##' @importFrom lavaan lavListInspect
 anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
                             pool.robust = FALSE, scale.W = FALSE,
                             asymptotic = FALSE, constraints = NULL,
@@ -1378,16 +1381,16 @@ anova.lavaan.mi <- function(object, h1 = NULL, test = c("D3","D2","D1"),
   class(out) <- c("lavaan.vector","numeric")
   out # FIXME: in future, accept more than 2 models, arrange sequentially by DF
 }
-#' @name lavaan.mi-class
-#' @aliases anova,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases anova,lavaan.mi-method
+##' @export
 setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 
 
-#' @name lavaan.mi-class
-#' @aliases fitMeasures,lavaan.mi-method
-#' @importFrom lavaan fitMeasures
-#' @export
+##' @name lavaan.mi-class
+##' @aliases fitMeasures,lavaan.mi-method
+##' @importFrom lavaan fitMeasures
+##' @export
 setMethod("fitMeasures", "lavaan.mi", function(object, fit.measures = "all",
                                                baseline.model = NULL) {
   if (!is.character(fit.measures)) stop("'fit.measures' must be a character ",
@@ -1404,11 +1407,11 @@ setMethod("fitMeasures", "lavaan.mi", function(object, fit.measures = "all",
   class(out) <- c("lavaan.vector","numeric")
   out
 })
-# lowercase 'm'
-#' @name lavaan.mi-class
-#' @aliases fitmeasures,lavaan.mi-method
-#' @importFrom lavaan fitmeasures
-#' @export
+## lowercase 'm'
+##' @name lavaan.mi-class
+##' @aliases fitmeasures,lavaan.mi-method
+##' @importFrom lavaan fitmeasures
+##' @export
 setMethod("fitmeasures", "lavaan.mi", function(object, fit.measures = "all",
                                                baseline.model = NULL) {
   if (!is.character(fit.measures)) stop("'fit.measures' must be a character ",
@@ -1435,7 +1438,7 @@ sampstat.lavaan.mi <- function(lst, means = FALSE, categ = FALSE, m = m) {
   if (categ) out$th <- Reduce("+", lapply(lst, "[[", i = "th")) / m
   out
 }
-#' @importFrom lavaan lavListInspect
+##' @importFrom lavaan lavListInspect
 fitted.lavaan.mi <- function(object) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
@@ -1489,19 +1492,19 @@ fitted.lavaan.mi <- function(object) {
   }
   out
 }
-#' @name lavaan.mi-class
-#' @aliases fitted,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases fitted,lavaan.mi-method
+##' @export
 setMethod("fitted", "lavaan.mi", fitted.lavaan.mi)
-#' @name lavaan.mi-class
-#' @aliases fitted.values,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases fitted.values,lavaan.mi-method
+##' @export
 setMethod("fitted.values", "lavaan.mi", fitted.lavaan.mi)
 
 
 
 ## function to calculate residuals for one group
-#' @importFrom stats cov2cor
+##' @importFrom stats cov2cor
 gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
                                means = FALSE, categ = FALSE, m) {
   obsMats <- sampstat.lavaan.mi(Observed, means = means, categ = categ, m = m)
@@ -1542,7 +1545,7 @@ gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
   if (categ) out$th <- Th_mean - Implied$th
   out
 }
-#' @importFrom lavaan lavListInspect
+##' @importFrom lavaan lavListInspect
 resid.lavaan.mi <- function(object, type = c("raw","cor")) {
   ## @SampleStatsList is (for each imputation) output from:
   ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
@@ -1577,13 +1580,13 @@ resid.lavaan.mi <- function(object, type = c("raw","cor")) {
   }
   out
 }
-#' @name lavaan.mi-class
-#' @aliases residuals,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases residuals,lavaan.mi-method
+##' @export
 setMethod("residuals", "lavaan.mi", resid.lavaan.mi)
-#' @name lavaan.mi-class
-#' @aliases resid,lavaan.mi-method
-#' @export
+##' @name lavaan.mi-class
+##' @aliases resid,lavaan.mi-method
+##' @export
 setMethod("resid", "lavaan.mi", resid.lavaan.mi)
 
 

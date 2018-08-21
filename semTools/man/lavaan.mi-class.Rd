@@ -13,47 +13,26 @@
 \alias{fitted.values,lavaan.mi-method}
 \alias{residuals,lavaan.mi-method}
 \alias{resid,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{show,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{summary,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{nobs,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{coef,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{vcov,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{anova,lavaan.mi-method}
-\alias{lavaan.mi-class}
 \alias{fitMeasures,lavaan.mi-method}
-\alias{lavaan.mi-class}
 \alias{fitmeasures,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{fitted,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{fitted.values,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{residuals,lavaan.mi-method}
-\alias{lavaan.mi-class}
-\alias{resid,lavaan.mi-method}
 \title{Class for a lavaan Model Fitted to Multiple Imputations}
 \usage{
 \S4method{show}{lavaan.mi}(object)
 
-\S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE, level = 0.95,
-  standardized = FALSE, rsquare = FALSE, fmi = FALSE, header = TRUE,
-  scale.W = TRUE, asymptotic = FALSE, add.attributes = TRUE)
+\S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE,
+  level = 0.95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
+  header = TRUE, scale.W = TRUE, asymptotic = FALSE,
+  add.attributes = TRUE)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
 \S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE)
 
-\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between", "within",
-  "ariv"), scale.W = TRUE)
+\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between",
+  "within", "ariv"), scale.W = TRUE)
 
-\S4method{anova}{lavaan.mi}(object, h1 = NULL, test = c("D3", "D2", "D1"),
-  pool.robust = FALSE, scale.W = FALSE, asymptotic = FALSE,
+\S4method{anova}{lavaan.mi}(object, h1 = NULL, test = c("D3", "D2",
+  "D1"), pool.robust = FALSE, scale.W = FALSE, asymptotic = FALSE,
   constraints = NULL, indices = FALSE, baseline.model = NULL,
   method = "default", A.method = "delta", scaled.shifted = TRUE,
   H1 = TRUE, type = "Chisq")

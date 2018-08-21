@@ -6,8 +6,8 @@
 \usage{
 lavTestScore.mi(object, add = NULL, release = NULL, type = c("D2",
   "Rubin"), scale.W = FALSE, asymptotic = !is.null(add),
-  univariate = TRUE, cumulative = FALSE, epc = FALSE, verbose = FALSE,
-  warn = TRUE)
+  univariate = TRUE, cumulative = FALSE, epc = FALSE,
+  verbose = FALSE, warn = TRUE)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan}}.}

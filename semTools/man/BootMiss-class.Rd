@@ -6,9 +6,6 @@
 \alias{show,BootMiss-method}
 \alias{summary,BootMiss-method}
 \alias{hist,BootMiss-method}
-\alias{show,BootMiss-method}
-\alias{summary,BootMiss-method}
-\alias{hist,BootMiss-method}
 \title{Class For the Results of Bollen-Stine Bootstrap with Incomplete Data}
 \usage{
 \S4method{show}{BootMiss}(object)

@@ -3,7 +3,6 @@
 \name{indProd}
 \alias{indProd}
 \alias{orthogonalize}
-\alias{orthogonalize}
 \title{Make products of indicators using no centering, mean centering, double-mean
 centering, or residual centering}
 \usage{

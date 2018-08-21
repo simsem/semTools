@@ -5,8 +5,6 @@
 \alias{EFA-class}
 \alias{show,EFA-method}
 \alias{summary,EFA-method}
-\alias{show,EFA-method}
-\alias{summary,EFA-method}
 \title{Class For Rotated Results from EFA}
 \usage{
 \S4method{show}{EFA}(object)

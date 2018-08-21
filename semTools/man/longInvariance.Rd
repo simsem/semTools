@@ -73,7 +73,7 @@ Testing measurement invariance across timepoints (longitudinal) or any
 context involving the use of the same scale in one case (e.g., a dyad case
 with husband and wife answering the same scale). The measurement invariance
 uses a typical sequence of model comparison tests. This function currently
-works with only one scale.
+works with only one scale, and only with continuous indicators.
 }
 \details{
 If \code{strict = FALSE}, the following four models are tested in order:

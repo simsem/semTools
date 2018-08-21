@@ -3,16 +3,15 @@
 \name{partialInvariance}
 \alias{partialInvariance}
 \alias{partialInvarianceCat}
-\alias{partialInvarianceCat}
 \title{Partial Measurement Invariance Testing Across Groups}
 \usage{
 partialInvariance(fit, type, free = NULL, fix = NULL, refgroup = 1,
-  poolvar = TRUE, p.adjust = "none", fbound = 2, return.fit = FALSE,
-  method = "satorra.bentler.2001")
+  poolvar = TRUE, p.adjust = "none", fbound = 2,
+  return.fit = FALSE, method = "satorra.bentler.2001")
 
-partialInvarianceCat(fit, type, free = NULL, fix = NULL, refgroup = 1,
-  poolvar = TRUE, p.adjust = "none", return.fit = FALSE,
-  method = "satorra.bentler.2001")
+partialInvarianceCat(fit, type, free = NULL, fix = NULL,
+  refgroup = 1, poolvar = TRUE, p.adjust = "none",
+  return.fit = FALSE, method = "satorra.bentler.2001")
 }
 \arguments{
 \item{fit}{A list of models for invariance testing. Each model should be

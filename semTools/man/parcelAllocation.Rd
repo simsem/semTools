@@ -5,8 +5,8 @@
 \title{Random Allocation of Items to Parcels in a Structural Equation Model}
 \usage{
 parcelAllocation(model, data, parcel.names, item.syntax, nAlloc = 100,
-  fun = "sem", alpha = 0.05, fit.measures = c("chisq", "df", "cfi", "tli",
-  "rmsea", "srmr"), ..., show.progress = FALSE, do.fit = TRUE)
+  fun = "sem", alpha = 0.05, fit.measures = c("chisq", "df", "cfi",
+  "tli", "rmsea", "srmr"), ..., show.progress = FALSE, do.fit = TRUE)
 }
 \arguments{
 \item{model}{\code{\link[lavaan]{lavaan}} model syntax specifying the model

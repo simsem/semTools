@@ -10,26 +10,31 @@ modindices.mi(object, type = c("D2", "Rubin"), standardized = TRUE,
   cov.std = TRUE, power = FALSE, delta = 0.1, alpha = 0.05,
   high.power = 0.75, sort. = FALSE, minimum.value = 0,
   maximum.number = nrow(LIST), na.remove = TRUE, op = NULL)
+
+modificationIndices.mi(object, type = c("D2", "Rubin"),
+  standardized = TRUE, cov.std = TRUE, power = FALSE, delta = 0.1,
+  alpha = 0.05, high.power = 0.75, sort. = FALSE,
+  minimum.value = 0, maximum.number = nrow(LIST), na.remove = TRUE,
+  op = NULL)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}}
 
 \item{type}{\code{character} indicating which pooling method to use.
-\code{type = "D2"} (default), \code{"LMRR"}, or \code{"Li.et.al"} indicates
-that modification indices that were calculated within each imputed data set
-will be pooled across imputations, as described in Li, Meng, Raghunathan,
-& Rubin (1991) and Enders (2010).
+\code{type = "D2"} (default) indicates that modification indices that were
+calculated within each imputed data set will be pooled across imputations,
+as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
 \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
 gradient and information, and those pooled values will be used to
 calculate modification indices in the usual manner.}
 
 \item{standardized}{\code{logical}. If \code{TRUE}, two extra columns
-(\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values for
-the EPCs. In the first column (\code{$sepc.lv}), standardizization is based
-on the variances of the (continuous) latent variables. In the second column
-(\code{$sepc.all}), standardization is based on both the variances of both
-(continuous) observed and latent variables. (Residual) covariances are
-standardized using (residual) variances.}
+(\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values
+for the EPCs. In the first column (\code{$sepc.lv}), standardizization is
+based on the variances of the (continuous) latent variables. In the second
+column (\code{$sepc.all}), standardization is based on both the variances
+of both (continuous) observed and latent variables. (Residual) covariances
+are standardized using (residual) variances.}
 
 \item{cov.std}{\code{logical}. \code{TRUE} if \code{type == "D2"}.
 If \code{TRUE} (default), the (residual)
@@ -86,10 +91,10 @@ Rubin, 1991).
 }
 \note{
 When \code{type = "D2"}, each (S)EPC will be pooled by taking its
- average across imputations. When \code{type = "Rubin"}, EPCs will be
- calculated in the standard way using the pooled gradient and information,
- and SEPCs will be calculated by standardizing the EPCs using model-implied
- (residual) variances.
+  average across imputations. When \code{type = "Rubin"}, EPCs will be
+  calculated in the standard way using the pooled gradient and information,
+  and SEPCs will be calculated by standardizing the EPCs using model-implied
+  (residual) variances.
 }
 \examples{
  \dontrun{
@@ -124,20 +129,20 @@ modindices.mi(out, type = "Rubin") # Rubin's rules
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}.
-New York, NY: Guilford.
+  New York, NY: Guilford.
 
-Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-Significance levels from repeated \emph{p}-values with multiply-imputed data.
-\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-\url{http://www.jstor.org/stable/24303994}
+  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+  Significance levels from repeated \emph{p}-values with multiply-imputed
+   data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+  \url{http://www.jstor.org/stable/24303994}
 
-Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-New York, NY: Wiley.
+  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+  New York, NY: Wiley.
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
-Adapted from \pkg{lavaan} source code, written by
+  Adapted from \pkg{lavaan} source code, written by
   Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
 \code{type = "Rubin"} method proposed by

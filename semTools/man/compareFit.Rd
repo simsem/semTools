@@ -10,7 +10,7 @@ compareFit(..., nested = TRUE)
 \item{...}{fitted \code{lavaan} models or list(s) of \code{lavaan} objects}
 
 \item{nested}{\code{logical} indicating whether the models in \code{...} are
-nested. See the \code{\link{net}} function for an empirical test of nesting.}
+nested. See \code{\link{net}} for an empirical test of nesting.}
 }
 \value{
 A \code{\linkS4class{FitDiff}} object that saves model fit
@@ -38,11 +38,11 @@ m2 <- ' f1  =~ x1 + x2 + x3 + x4
 fit2 <- cfa(m2, data = HolzingerSwineford1939)
 compareFit(fit1, fit2, nested = FALSE)
 
-HW.model <- ' visual =~ x1 + x2 + x3
+HS.model <- ' visual =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed =~ x7 + x8 + x9 '
 
-out <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
+out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
                              group = "school", quiet = TRUE)
 compareFit(out)
 
@@ -52,4 +52,6 @@ compareFit(out)
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

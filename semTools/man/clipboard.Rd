@@ -3,7 +3,6 @@
 \name{clipboard}
 \alias{clipboard}
 \alias{saveFile}
-\alias{saveFile}
 \title{Copy or save the result of \code{lavaan} or \code{FitDiff} objects into a
 clipboard or a file}
 \usage{

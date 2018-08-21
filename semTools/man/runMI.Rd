@@ -6,10 +6,6 @@
 \alias{cfa.mi}
 \alias{sem.mi}
 \alias{growth.mi}
-\alias{lavaan.mi}
-\alias{cfa.mi}
-\alias{sem.mi}
-\alias{growth.mi}
 \title{Fit a lavaan Model to Multiple Imputed Data Sets}
 \usage{
 runMI(model, data, fun = "lavaan", ..., m, miArgs = list(),

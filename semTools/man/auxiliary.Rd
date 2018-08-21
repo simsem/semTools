@@ -6,10 +6,6 @@
 \alias{cfa.auxiliary}
 \alias{sem.auxiliary}
 \alias{growth.auxiliary}
-\alias{lavaan.auxiliary}
-\alias{cfa.auxiliary}
-\alias{sem.auxiliary}
-\alias{growth.auxiliary}
 \title{Implement Saturated Correlates with FIML}
 \usage{
 auxiliary(model, data, aux, fun, ...)

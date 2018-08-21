@@ -5,8 +5,6 @@
 \alias{FitDiff-class}
 \alias{show,FitDiff-method}
 \alias{summary,FitDiff-method}
-\alias{show,FitDiff-method}
-\alias{summary,FitDiff-method}
 \title{Class For Representing A Template of Model Fit Comparisons}
 \usage{
 \S4method{show}{FitDiff}(object)
@@ -46,11 +44,11 @@ ordered based on their degrees of freedom (\emph{df})}
 
 \examples{
 
-HW.model <- ' visual =~ x1 + x2 + x3
+HS.model <- ' visual =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed =~ x7 + x8 + x9 '
 
-out <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
+out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
                              group = "school", quiet = TRUE)
 modelDiff <- compareFit(out)
 summary(modelDiff)
