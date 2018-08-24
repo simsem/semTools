@@ -201,7 +201,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       out <- try(lavaan::lavTestScore(obj, add = add, release = release,
                                       cumulative = cumulative,
                                       univariate = univariate, epc = epc,
-                                      warn = FALSE), silent = TRUE)
+                                      warn = FALSE), #FIXME: use.exp.info = use.exp.info
+                 silent = TRUE)
       if (inherits(out, "try-error")) return(NULL)
       out
     }

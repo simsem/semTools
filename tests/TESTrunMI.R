@@ -146,6 +146,8 @@ fit <- sem(model, data = Galo, cluster = "school", fixed.x = FALSE,
 
 summary(fit, fit.measures = TRUE, standardized = TRUE)
 lavInspect(fit, "ngroups")
+lavInspect(fit, "nlevels") #fails
+lavaan:::lav_partable_nlevels(fit@ParTable)
 lavInspect(fit, "cov.lv")
 lavInspect(fit, "theta")
 

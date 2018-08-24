@@ -253,7 +253,7 @@ printInvarianceResult <- function(FIT, fit.measures, baseline.model, method) {
 	## add some fit measures
 	if (length(fit.measures)) {
 
-		FM <- lapply(FIT, lavaan::fitMeasures,
+		FM <- lapply(FIT, lavaan::fitMeasures, #FIXME: getMethod() in case it is a lavaan.mi object
 		             fit.measures = fit.measures, baseline.model = baseline.model)
 		FM.table1 <- sapply(fit.measures, function(x) sapply(FM, "[[", x))
 		if (length(FM) == 1L) {
