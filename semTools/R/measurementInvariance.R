@@ -223,7 +223,8 @@ measurementInvariance <- measurementinvariance <-
 ## Hidden Functions
 ## ----------------
 
-#' @importFrom lavaan lavInspect
+##' @importFrom lavaan lavInspect
+##' @importMethodsFrom lavaan fitMeasures
 printInvarianceResult <- function(FIT, fit.measures, baseline.model, method) {
   ## check whether models converged
   NAMES <- names(FIT)
@@ -253,7 +254,7 @@ printInvarianceResult <- function(FIT, fit.measures, baseline.model, method) {
 	## add some fit measures
 	if (length(fit.measures)) {
 
-		FM <- lapply(FIT, lavaan::fitMeasures, #FIXME: getMethod() in case it is a lavaan.mi object
+		FM <- lapply(FIT, fitMeasures,
 		             fit.measures = fit.measures, baseline.model = baseline.model)
 		FM.table1 <- sapply(fit.measures, function(x) sapply(FM, "[[", x))
 		if (length(FM) == 1L) {

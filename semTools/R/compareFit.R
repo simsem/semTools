@@ -1,5 +1,5 @@
-### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 21 August 2018
+### Terrence D. Jorgensen & Sunthud Pornprasertmanit
+### Last updated: 25 August 2018
 ### source code for compareFit() function and FitDiff class
 
 
@@ -7,125 +7,138 @@
 ## Class and Methods
 ## -----------------
 
-#' Class For Representing A Template of Model Fit Comparisons
-#'
-#' This class contains model fit measures and model fit comparisons among
-#' multiple models
-#'
-#'
-#' @name FitDiff-class
-#' @aliases FitDiff-class show,FitDiff-method summary,FitDiff-method
-#' @docType class
-#'
-#' @slot name The name of each model
-#' @slot nested Model fit comparisons between adjacent nested models that are
-#'  ordered based on their degrees of freedom (\emph{df})
-#' @slot ordernested The order of nested models regarding to their \emph{df}
-#' @slot fit Fit measures of all models specified in the \code{name} slot
-#'
-#' @section Objects from the Class: Objects can be created via the
-#'  \code{\link{compareFit}} function.
-#'
-#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
-#'
-#' @seealso \code{\link{compareFit}}; \code{\link{clipboard}}
-#'
-#' @examples
-#'
-#' HS.model <- ' visual =~ x1 + x2 + x3
-#'               textual =~ x4 + x5 + x6
-#'               speed =~ x7 + x8 + x9 '
-#'
-#' out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
-#'                              group = "school", quiet = TRUE)
-#' modelDiff <- compareFit(out)
-#' summary(modelDiff)
-#' summary(modelDiff, fit.measures = "all")
-#' summary(modelDiff, fit.measures = c("aic", "bic"))
-#'
-#' \dontrun{
-#' ## Save results to a file
-#' saveFile(modelDiff, file = "modelDiff.txt")
-#'
-#' ## Copy to a clipboard
-#' clipboard(modelDiff)
-#' }
-#'
-setClass("FitDiff", representation(name = "vector",
-                                   nested = "data.frame",
-                                   ordernested = "vector",
-                                   fit = "data.frame"))
+##' Class For Representing A Template of Model Fit Comparisons
+##'
+##' This class contains model fit measures and model fit comparisons among
+##' multiple models
+##'
+##'
+##' @name FitDiff-class
+##' @aliases FitDiff-class show,FitDiff-method summary,FitDiff-method
+##' @docType class
+##'
+##' @slot name \code{character}. The name of each model
+##' @slot model.class \code{character}. One class to which each model belongs
+##' @slot nested \code{data.frame}. Model fit comparisons between adjacently
+##'   nested models that are ordered by their degrees of freedom (\emph{df})
+##' @slot fit \code{data.frame}. Fit measures of all models specified in the
+##'   \code{name} slot, ordered by their \emph{df}
+##'
+##' @section Objects from the Class: Objects can be created via the
+##'  \code{\link{compareFit}} function.
+##'
+##'
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##'   \email{TJorgensen314@@gmail.com})
+##'
+##'   Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
+##' @seealso \code{\link{compareFit}}; \code{\link{clipboard}}
+##'
+##' @examples
+##'
+##' HS.model <- ' visual =~ x1 + x2 + x3
+##'               textual =~ x4 + x5 + x6
+##'               speed =~ x7 + x8 + x9 '
+##'
+##' out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
+##'                              group = "school", quiet = TRUE)
+##' modelDiff <- compareFit(out)
+##' summary(modelDiff)
+##' summary(modelDiff, fit.measures = "all")
+##' summary(modelDiff, fit.measures = c("aic", "bic"))
+##'
+##' \dontrun{
+##' ## Save results to a file
+##' saveFile(modelDiff, file = "modelDiff.txt")
+##'
+##' ## Copy to a clipboard
+##' clipboard(modelDiff)
+##' }
+##'
+setClass("FitDiff", slots = c(name = "character",
+                              model.class = "character",
+                              nested = "data.frame",
+                              fit = "data.frame"))
 
-#' @rdname FitDiff-class
-#' @export
+
+
+##' @rdname FitDiff-class
+##' @export
 setMethod("show", signature(object = "FitDiff"), function(object) {
   summary(object)
   invisible(object)
 })
 
-#' @rdname FitDiff-class
-#' @param object object of class \code{FitDiff}
-#' @param fit.measures \code{character} vector naming fit indices the user can
-#'  request from \code{\link[lavaan]{fitMeasures}}. If \code{"default"}, the
-#'  fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli",
-#'  "rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit measures
-#'  will be returned.
-#' @export
+
+
+##' @rdname FitDiff-class
+##'
+##' @param object object of class \code{FitDiff}
+##' @param fit.measures \code{character} vector naming fit indices the user can
+##'   request from \code{\link[lavaan]{fitMeasures}}. If \code{"default"}, the
+##'   fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli",
+##'   "rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit
+##'   measures will be returned.
+##' @param nd number of digits printed
+##'
+##' @export
 setMethod("summary", signature(object = "FitDiff"),
-          function(object, fit.measures = "default") {
+          function(object, fit.measures = "default", nd = 3) {
+
   out <- list()
 
-  if (isNested(object)) {
-    out$nested <- getNestedTable(object)
+  if (nrow(object@nested) > 0L) {
 		cat("################### Nested Model Comparison #########################\n")
-		print(out$nested)
+    out$test.statistics <- object@nested
+    if (object@model.class == "lavaan") {
+      class(out$test.statistics) <- c("anova","data.frame")
+      print(out$test.statistics, nd = nd)
+    } else {
+      class(out$test.statistics) <- c("lavaan.data.frame","data.frame")
+      stats::printCoefmat(out$test.statistics, has.Pvalue = TRUE, P.values = 3)
+    }
 		cat("\n")
   }
 
-	cat("#################### Summary of Fit Indices #########################\n")
-	out$fit.indices <- getFitSummary(object, fit.measures) #TODO: diff = TRUE (for below)
-	print(out$fit.indices)
 
-	#TODO: if (nested) add a table of differences: object@fit[i,] - object@fit[i-1,]
+  cat("####################### Model Fit Indices ###########################\n")
+  ## this is the object to return (numeric, no printed daggers)
+  out$fit.indices <- getFitSummary(object, fit.measures, return.diff = FALSE)
+  class(out$fit.indices) <- c("lavaan.data.frame","data.frame")
+
+  ## print with daggers marking each fit index's preferred model
+  ## (turns "numeric" vectors into "character")
+  badness <- grepl(pattern = c("chisq|rmsea|ic|rmr|ecvi"),
+                   x = colnames(out$fit.indices))
+  goodness <- grepl(pattern = c("pvalue|cfi|tli|rfi|nfi|ifi|rni|cn|gfi|mfi"),
+                    x = colnames(out$fit.indices))
+  minvalue <- badness & !goodness
+  minvalue[!badness & !goodness] <- NA
+  no.dagger <- grepl(pattern = c("df|npar|ntotal"),
+                     x = colnames(out$fit.indices))
+  suppressWarnings(fitTab <- as.data.frame(mapply(tagDagger, out$fit.indices,
+                                                  minvalue = minvalue,
+                                                  no.dagger = no.dagger),
+                                           stringsAsFactors = FALSE))
+  rownames(fitTab) <- object@name
+  print(fitTab)
+  cat("\n")
+
+
+	if (nrow(object@nested) > 0L) {
+	  cat("################## Differences in Fit Indices #######################\n")
+    out$fit.diff <- getFitSummary(object, fit.measures, return.diff = TRUE)
+    class(out$fit.diff) <- c("lavaan.data.frame","data.frame")
+    print(out$fit.diff, nd = nd)
+    cat("\n")
+	}
+
+
 	invisible(out)
 })
 
-getNestedTable <- function(object) {
-	ord <- object@ordernested
-	nameDiff <- paste(object@name[ord[-length(ord)]], "-", object@name[ord[-1]])
-	pprint <- noLeadingZero(object@nested$p, "%4.3f")
-	pprint[object@nested$p < 0.001] <- " <.001" #FIXME: make this a lavaan.matrix for printing
-	nestedTab <- object@nested
-	nestedTab$chi <- sprintf("%.2f", object@nested$chi)
-	nestedTab$p <- pprint #FIXME: use printCoefmat(nestedTab, P.values = T, has.Pvalue = T)
-	nestedTab$delta.cfi <- sprintf("%.4f", object@nested$delta.cfi) #FIXME: remove this garbage
-	nestedTab <- data.frame(nestedTab)
-	rownames(nestedTab) <- nameDiff
-	nestedTab[nrow(nestedTab):1,]
-}
 
-getFitSummary <- function(object, fit.measures = "default") {
-	if (is.null(fit.measures)) fit.measures <- "all"
-	if (length(fit.measures) == 1) {
-		if (fit.measures == "default") {
-			fit.measures <- c("chisq", "df", "pvalue", "cfi", "tli", "rmsea", "srmr", "aic", "bic")
-		} else if (fit.measures == "all") {
-			fit.measures <- colnames(object@fit)
-		}
-	}
-	fitTab <- object@fit
-	orderThing <- rep(NA, ncol(fitTab))
-	orderThing[colnames(fitTab) %in% c("rmsea","aic","bic","bic2","srmr","rmr",
-	                                   "srmr_nomean","rmr_nomean","ecvi")] <- TRUE
-	orderThing[colnames(fitTab) %in% c("pvalue","cfi","tli","nnfi","rfi","nfi",
-	                                   "pnfi","ifi","rni","cn_05","cn_01","gfi",
-	                                   "agfi","pgfi","mfi")] <- FALSE
-	isDF <- rep(FALSE, ncol(fitTab))
-	isDF[grep("df", colnames(fitTab))] <- TRUE
-	suppressWarnings(fitTab <- as.data.frame(mapply(tagDagger, fitTab, orderThing, is.df = isDF)))
-	rownames(fitTab) <- object@name
-	fitTab[ , colnames(fitTab) %in% fit.measures]
-}
 
 ## "method" for saveFile() function (see "clipboard.R")
 saveFileFitDiff <- function(object, file, what = "summary",
@@ -138,10 +151,10 @@ saveFileFitDiff <- function(object, file, what = "summary",
 		if (is.null(writeArgs$quote)) writeArgs$quote <- FALSE
 		if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
 
-		if (isNested(object)) {
+		if (nrow(object@nested) > 0L) {
 			cat("Nested Model Comparison\n\n", file = file, append = TRUE)
-			out <- getNestedTable(object)
-			out <- data.frame(model.diff = rownames(out), out)
+			out <- object@nested
+			#out <- data.frame(model.diff = rownames(out), out)
   		writeArgs$x <- out
 			do.call("write.table", writeArgs)
 			cat("\n\n", file = file, append = TRUE)
@@ -167,101 +180,160 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##' multiple fitted lavaan objects. The results can be exported to a clipboard
 ##' or a file later.
 ##'
+##' @importFrom lavaan lavTestLRT
+##' @importMethodsFrom lavaan fitMeasures
+##' @importMethodsFrom stats anova
 ##'
-##' @param ...  fitted \code{lavaan} models or list(s) of \code{lavaan} objects
+##' @param ...  fitted \code{lavaan} models or list(s) of \code{lavaan} objects.
+##'   \code{\linkS4class{lavaan.mi}) objects are also accepted, but all models
+##'   must belong to the same class.
 ##' @param nested \code{logical} indicating whether the models in \code{...} are
 ##'   nested. See \code{\link{net}} for an empirical test of nesting.
+##' @param argsLRT \code{list} of arguments to pass to
+##'   \code{\link[lavaan]{lavTestLRT}}, or to \code{anova} when comparing
+##'   \code{\linkS4class{lavaan.mi}} models.
+##' @param baseline.model optional fitted \code{\linkS4class{lavaan}} model
+##'   passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit
+##'   indices.
 ##'
 ##' @return A \code{\linkS4class{FitDiff}} object that saves model fit
-##' comparisons across multiple models. If the output is not assigned as an
-##' object, the output is printed in two parts: (1) nested model comparison (if
-##' models are nested) and (2) summary of fit indices. In the fit indices
-##' summaries, daggers are tagged to the model with the best fit according to
-##' each fit index.
+##'   comparisons across multiple models. If the output is not assigned as an
+##'   object, the output is printed in two parts: (1) nested model comparison
+##'   (if models are nested) and (2) summary of fit indices. In the fit indices
+##'   summaries, daggers are tagged to the model with the best fit according to
+##'   each fit index.
 ##'
-##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##'   \email{TJorgensen314@@gmail.com})
 ##'
-##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
 ##' @seealso \code{\linkS4class{FitDiff}}, \code{\link{clipboard}}
 ##'
 ##' @examples
 ##'
-##' m1 <- ' visual  =~ x1 + x2 + x3
-##'         textual =~ x4 + x5 + x6
-##'         speed   =~ x7 + x8 + x9 '
-##'
-##' fit1 <- cfa(m1, data = HolzingerSwineford1939)
-##'
-##' m2 <- ' f1  =~ x1 + x2 + x3 + x4
-##'         f2 =~ x5 + x6 + x7 + x8 + x9 '
-##' fit2 <- cfa(m2, data = HolzingerSwineford1939)
-##' compareFit(fit1, fit2, nested = FALSE)
-##'
 ##' HS.model <- ' visual =~ x1 + x2 + x3
 ##'               textual =~ x4 + x5 + x6
 ##'               speed =~ x7 + x8 + x9 '
 ##'
+##' fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
+##'
+##' ## non-nested model
+##' m2 <- ' f1 =~ x1 + x2 + x3 + x4
+##'         f2 =~ x5 + x6 + x7 + x8 + x9 '
+##' fit2 <- cfa(m2, data = HolzingerSwineford1939)
+##' compareFit(fit1, fit2, nested = FALSE)
+##'
+##'
+##' ## nested model comparisons:
 ##' out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
 ##'                              group = "school", quiet = TRUE)
 ##' compareFit(out)
 ##'
+##' \dontrun{
+##' ## also applies to lavaan.mi objects (fit model to multiple imputations)
+##' set.seed(12345)
+##' HSMiss <- HolzingerSwineford1939[ , paste("x", 1:9, sep = "")]
+##' HSMiss$x5 <- ifelse(HSMiss$x1 <= quantile(HSMiss$x1, .3), NA, HSMiss$x5)
+##' HSMiss$x9 <- ifelse(is.na(HSMiss$x5), NA, HSMiss$x9)
+##' HSMiss$school <- HolzingerSwineford1939$school
+##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school")
+##' imps <- HS.amelia$imputations
+##'
+##' ## request robust test statistics
+##' mgfit2 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm")
+##' mgfit1 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
+##'                  group.equal = "loadings")
+##' mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
+##'                  group.equal = c("loadings","intercepts"))
+##'
+##' ## request the strictly-positive robust test statistics
+##' compareFit(scalar = mgfit0, metric = mgfit1, config = mgfit2,
+##'            argsLRT = list(method = "satorra.bentler.2010"))
+##' }
+##'
 ##' @export
-compareFit <- function(..., nested = TRUE) {
-	arg <- match.call()
-	mods <- input <- list(...)
-	if(any(sapply(mods, is, "list"))) {
-		temp <- list()
-		for(i in seq_along(mods)) {
-			if(!is(mods[[i]], "list")) { temp <- c(temp, list(mods[[i]])) } else { temp <- c(temp, mods[[i]]) }
-		}
-		mods <- temp
+compareFit <- function(..., nested = TRUE, argsLRT = list(),
+                       baseline.model = NULL) {
+
+	## collapse models into a single-level list
+	mods <- list(...)
+	if (any(sapply(mods, is.list))) mods <- unlist(mods)
+
+	## make sure models are named
+	mc <- as.list(match.call(expand.dots = TRUE)[-1])
+	mc <- mc[ !names(mc) %in% c("nested","argsLRT","baseline.model") ]
+	if (is.null(names(mods))) {
+	  names(mods) <- as.character(mc)
+	} else {
+	  for (nn in seq_along(mods)) {
+	    if (names(mods)[nn] == "") names(mods)[nn] <- as.character(mc)[nn]
+	  }
 	}
-	if(any(!sapply(mods, is, "lavaan"))) stop("Some models specified here are not lavaan outputs or list of lavaan outputs")
-	nameMods <- NULL
-	tempname <- as.list(arg)[-1]
-	if(!is.null(names(tempname))) tempname <- tempname[!(names(tempname) %in% "nested")]
-	tempname <- lapply(tempname, as.character)
-	for(i in seq_along(input)) {
-		if(is(input[[i]], "list")) {
-			if(length(tempname[[i]]) == 1) {
-				temp2 <- paste0(tempname[[i]], "[[", seq_along(input[[i]]), "]]")
-				if(!is.null(names(input[[i]]))) temp2 <- names(input[[i]])
-				nameMods <- c(nameMods, temp2)
-			} else {
-				temp2 <- tempname[[i]][tempname[[i]] != "list"]
-				nameMods <- c(nameMods, temp2)
-			}
-		} else {
-			nameMods <- c(nameMods, tempname[[i]])
-		}
+
+	## check for lavaan models
+	not.lavaan <- !sapply(mods, inherits, what = c("lavaan","lavaanList"))
+	if (any(not.lavaan)) stop("The following are not fitted lavaan models:\n",
+	                          paste0(names(which(not.lavaan)), collapse = ", "))
+	modClass <- unique(sapply(mods, class))
+	if (length(modClass) > 1L) stop('All models must be of the same class (e.g.,',
+	                                ' cannot compare lavaan objects to lavaan.mi)')
+
+	## FIT INDICES
+	fitList <- lapply(mods, fitMeasures)
+	if (length(unique(sapply(fitList, length))) > 1L) {
+	  warning('fitMeasures() returned vectors of different lengths for different',
+	          ' models, probably because certain options are not the same. Check',
+	          ' lavInspect(fit, "options")[c("estimator","test","meanstructure")]',
+	          ' for each model, or run fitMeasures() on each model to investigate.')
+	  indexList <- lapply(fitList, names)
+	  useNames <- names(which(table(unlist(indexList)) == length(fitList)))
+	  fitList <- lapply(fitList, "[", i = useNames)
 	}
-	nestedout <- data.frame()
-	ord <- NA
-	if(nested) {
-		dfs <- sapply(mods, function(x) lavaan::fitMeasures(x)["df"])
-		ord <- order(dfs, decreasing = TRUE)
-		modsTemp <- mods[ord]
-		modsA <- modsTemp[-1]
-		modsB <- modsTemp[-length(mods)]
-		chisqdiff <- NULL
-		dfdiff <- NULL
-		pdiff <- NULL
-		cfidiff <- NULL
-		# Need the for loop because the mapply function does not work.
-		for(i in seq_along(modsA)) {
-			fitA <- modsA[[i]]
-			fitB <- modsB[[i]]
-			fitDiff <- lavaan::anova(fitA, fitB)
-			cfidiff <- c(cfidiff, lavaan::fitMeasures(fitA)["cfi"] - lavaan::fitMeasures(fitB)["cfi"])
-			chisqdiff <- c(chisqdiff, fitDiff["Chisq diff"][2, 1])
-			dfdiff <- c(dfdiff, fitDiff["Df diff"][2, 1])
-			pdiff <- c(pdiff, fitDiff["Pr(>Chisq)"][2, 1])
-		}
-		nestedout <- data.frame(chi = chisqdiff, df = dfdiff, p = pdiff, delta.cfi = cfidiff)
-	}
-	fit <- as.data.frame(t(sapply(mods, lavaan::fitMeasures)))
-	new("FitDiff", name = nameMods, nested = nestedout, ordernested = ord, fit = fit)
+	fit <- as.data.frame(do.call(rbind, fitList))
+
+	## order models by increasing df (least-to-most constrained)
+	ord <- order(fit$df)
+	fit <- fit[ord, ]
+	mods <- mods[ord]
+
+	## TEST STATISTICS
+	if (nested) {
+
+	  if (class(mods[[1]]) == "lavaan") {
+	    argsLRT$model.names <- names(mods)
+	    argsLRT$object <- mods[[1]]
+	    nestedout <- do.call(lavTestLRT, c(mods[-1], argsLRT))
+	  } else if (inherits(mods[[1]], "lavaan.mi")) { #FIXME: generalize to lavaan.pool
+
+	    modsA <- mods[-1]
+	    modsB <- mods[-length(mods)]
+	    fitDiff <- list()
+
+	    for (i in seq_along(modsA)) {
+	      fitA <- modsA[[i]]
+	      fitB <- modsB[[i]]
+	      diffName <- paste(names(modsA)[i], "-", names(modsB)[i])
+	      tempDiff <- do.call(anova, c(list(fitA, fitB), argsLRT))
+
+	      if (names(tempDiff)[1] == "F") {
+	        statNames <- c("F", "df1", "df2", "pvalue")
+	      } else if (any(grepl(pattern = "scaled", x = names(tempDiff)))) {
+	        statNames <- c("chisq.scaled", "df.scaled", "pvalue.scaled")
+	      } else statNames <- c("chisq", "df", "pvalue")
+
+	      fitDiff[[diffName]] <- tempDiff[statNames]
+	    }
+
+	    nestedout <- as.data.frame(do.call(rbind, fitDiff))
+	  }
+
+	  ## not nested
+	} else nestedout <- data.frame()
+
+	new("FitDiff",
+	    name = names(mods), model.class = modClass,
+	    nested = nestedout, fit = fit)
 }
 
 
@@ -269,8 +341,6 @@ compareFit <- function(..., nested = TRUE) {
 ## ----------------
 ## Hidden Functions
 ## ----------------
-
-isNested <- function(object) length(object@ordernested) > 1 || !is.na(object@ordernested)
 
 noLeadingZero <- function(vec, fmt) {
   out <- sprintf(fmt, vec)
@@ -280,24 +350,55 @@ noLeadingZero <- function(vec, fmt) {
   out
 }
 
-tagDagger <- function(vec, minvalue = NA, is.df = FALSE) {
-  if(is.na(minvalue)) {
-    if(is.df) {
+tagDagger <- function(vec, minvalue = NA, no.dagger = FALSE) {
+  if (is.na(minvalue)) {
+    if (no.dagger) {
       vec <- noLeadingZero(vec, fmt="%.0f")
     } else {
       vec <- noLeadingZero(vec, fmt="%.3f")
     }
   } else  {
-    target <- max(vec, na.rm=TRUE)
-    if (minvalue) {
-      target <- min(vec, na.rm=TRUE)
-    }
+    target <- if (minvalue) min(vec, na.rm = TRUE) else max(vec, na.rm = TRUE)
     tag <- rep(" ", length(vec))
     tag[vec == target] <- "\u2020"
-    vec <- noLeadingZero(vec, fmt="%.3f")
+    vec <- noLeadingZero(vec, fmt = "%.3f")
     vec <- paste0(vec, tag)
   }
   vec
+}
+
+getFitSummary <- function(object, fit.measures = "default", return.diff = FALSE) {
+  if (is.null(fit.measures)) fit.measures <- colnames(object@fit)
+  if (length(fit.measures) == 1 && fit.measures == "default") {
+    ## robust or scaled test statistics?
+    if (any(grepl(pattern = "robust", x = colnames(object@fit)))) {
+      fit.measures <- c("chisq.scaled","df.scaled","pvalue.scaled",
+                        "rmsea.robust","cfi.robust","tli.robust","srmr")
+    } else if (any(grepl(pattern = "scaled", x = colnames(object@fit)))) {
+      fit.measures <- c("chisq.scaled","df.scaled","pvalue.scaled",
+                        "rmsea.scaled","cfi.scaled","tli.scaled","srmr")
+    } else {
+      fit.measures <- c("chisq","df","pvalue","rmsea","cfi","tli","srmr")
+    }
+    if ("aic" %in% colnames(object@fit)) {
+      fit.measures <- c(fit.measures, "aic", "bic")
+    }
+  }
+
+  ## chi-squared difference test already reported, so remove (diff in p-value)
+  if (return.diff) {
+    fit.measures <- fit.measures[!grepl(pattern = "chisq|pvalue|ntotal",
+                                        x = fit.measures)]
+  }
+
+  ## return numeric values
+  fitTab <- object@fit[ , colnames(object@fit) %in% fit.measures]
+  if (!return.diff) return(fitTab)
+
+  ## or return differences in fit indices
+  diffTab <- as.data.frame(do.call(cbind, lapply(fitTab, diff)))
+  rownames(diffTab) <- paste(object@name[-1], "-", object@name[-nrow(diffTab)])
+  diffTab
 }
 
 
