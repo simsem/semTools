@@ -10,8 +10,8 @@ standardizeMx(object, free = TRUE)
 \item{object}{Target OpenMx output using \code{MxRAMObjective}}
 
 \item{free}{If \code{TRUE}, the function will show only standardized values
-of free parameters. If \code{FALSE}, the function will show the results for
-fixed and free parameters.}
+of free parameters. If \code{FALSE}, the function will show the results
+for fixed and free parameters.}
 }
 \value{
 A vector of standardized estimates
