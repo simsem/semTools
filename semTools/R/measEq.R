@@ -485,7 +485,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 ##' measurement equivalence/invariance across groups and/or repeated measures.
 ##'
 ##' This function is a pedagogical and analytical tool to generate model syntax
-##' representing some level of measurement equivalent/invariance across any
+##' representing some level of measurement equivalence/invariance across any
 ##' combination of multiple groups and/or repeated measures. Support is provided
 ##' for confirmatory factor analysis (CFA) models with simple or complex
 ##' structure (i.e., cross-loadings and correlated residuals are allowed).
@@ -562,20 +562,21 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 ##' user can let \code{longIndNames} be automatically generated. Generic names
 ##' for the repeatedly measured indicators are created using the name of the
 ##' repeatedly measured factors (i.e., \code{names(longFacNames)}) and the
-##' number of indicators. So the repeatedly measured first indicator(\code{"ind})
-##' of a longitudinal construct called "factor" would be generated as
-##' \code{"._factor_ind.1"}.
+##' number of indicators. So the repeatedly measured first indicator
+##' (\code{"ind"}) of a longitudinal construct called "factor" would be
+##' generated as \code{"._factor_ind.1"}.
 ##'
 ##' The same types of parameter can be specified for \code{long.equal} as for
 ##' \code{group.equal} (see \code{\link[lavaan]{lavOptions}} for a list), except
 ##' for \code{"residual.covariances"} or \code{"lv.covariances"}. Instead, users
 ##' can constrain \emph{auto}covariances using keywords \code{"resid.autocov"}
-##' or \code{"lv.autocov"}. Note that \code{group.equal} will constrain any
+##' or \code{"lv.autocov"}. Note that \code{group.equal = "lv.covariances"} or
+##' \code{group.equal = "residual.covariances"} will constrain any
 ##' autocovariances across groups, along with any other covariances the user
 ##' specified in the \code{configural.model}. Note also that autocovariances
 ##' cannot be specified as exceptions in \code{long.partial}, so anything more
-##' complex that the automated \code{auto} argument provides should instead be
-##' manually specified in the \code{configural.model}.
+##' complex than the \code{auto} argument automatically provides should instead
+##' be manually specified in the \code{configural.model}.
 ##'
 ##' When users set \code{orthogonal=TRUE} in the \code{configural.model} (e.g.,
 ##' in bifactor models of repeatedly measured constructs), autocovariances of
@@ -584,8 +585,8 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 ##'
 ##' \strong{Missing Data:} If users wish to utilize the \code{\link{auxiliary}}
 ##' function to automatically include auxiliary variables in conjunction with
-##' \code{missing = "FIML"}, it is recommend to generate the hypothesized-model
-##' syntax first, then submit that syntax as the model to \code{auxiliary()}.
+##' \code{missing = "FIML"}, they should first generate the hypothesized-model
+##' syntax, then submit that syntax as the model to \code{auxiliary()}.
 ##' If users utilized \code{\link{runMI}} to fit their \code{configural.model}
 ##' to multiply imputed data, that model can also be passed to the
 ##' \code{configural.model} argument, and if \code{return.fit = TRUE}, the
@@ -652,7 +653,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 ##'   See \strong{Details} and \strong{References} for more information.
 ##'
 ##' @param ID.thr \code{integer}. Only relevant when
-##'   \code{ID.cat == "Millsap.Tein.2004"}. Used to indicate which thresholds
+##'   \code{ID.cat = "Millsap.Tein.2004"}. Used to indicate which thresholds
 ##'   should be constrained for identification. The first integer indicates the
 ##'   threshold used for all indicators, the second integer indicates the
 ##'   additional threshold constrained for a reference indicator (ignored if
@@ -721,10 +722,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso
-##'   \code{\link[semTools]{measurementInvariance}},
-##'   \code{\link[semTools]{measurementInvarianceCat}},
-##'   \code{\link[semTools]{longInvariance}}
+##' @seealso  \code{\link{compareFit}}
 ##'
 ##' @references
 ##'   Little, T. D., Slegers, D. W., & Card, N. A. (2006). A non-arbitrary
@@ -777,6 +775,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 ##' ## print a summary of model features
 ##' summary(syntax.thresh)
 ##'
+##'
 ##' ## Fit a model to the data either in a subsequent step:
 ##' mod.config <- as.character(syntax.config)
 ##' fit.config <- cfa(mod.config, data = datCat, group = "g",
@@ -792,6 +791,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 ##'
 ##' ## compare their fit to test threshold invariance
 ##' anova(fit.config, fit.thresh)
+##'
 ##'
 ##' ## compare several invariance models
 ##' test.seq <- c("thresholds","loadings","intercepts","means","residuals")
@@ -822,10 +822,8 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 ##' compareFit(meq.list)
 ##'
 ##' @export
-measEq.syntax <- function(configural.model, ...,
-                          ID.fac = c("std.lv","auto.fix.first","effects.coding"),
-                          ID.cat = c("Wu.Estabrook.2016","Mplus","Millsap.Tein.2004","LISREL"),
-                          ID.thr = c(1L, 2L),
+measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
+                          ID.cat = "Wu.Estabrook.2016", ID.thr = c(1L, 2L),
                           group = NULL, group.equal = "", group.partial = "",
                           longFacNames = list(), longIndNames = list(),
                           long.equal = "", long.partial = "", auto = "all",
@@ -916,7 +914,7 @@ measEq.syntax <- function(configural.model, ...,
   ## only relevant when there are longitudinal factors
   if (length(longFacNames) > 0L) {
     if (!is.atomic(auto)) stop("'auto' must be a non-negative integer or the character 'all'.")
-    if (is.logical(auto)) { if (auto) auto <- "all" }
+    if (is.logical(auto)) { if (auto) auto <- "all" else auto <- 0L}
     if (is.factor(auto)) auto <- as.character(auto)
     if (is.character(auto) && auto != "all")
       stop("'auto' must be a non-negative integer or the character 'all'.")

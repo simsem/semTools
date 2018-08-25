@@ -25,11 +25,11 @@ indices.}
 }
 \value{
 A \code{\linkS4class{FitDiff}} object that saves model fit
-  comparisons across multiple models. If the output is not assigned as an
-  object, the output is printed in two parts: (1) nested model comparison
-  (if models are nested) and (2) summary of fit indices. In the fit indices
-  summaries, daggers are tagged to the model with the best fit according to
-  each fit index.
+  comparisons across multiple models. If the models are not nested, only
+  fit indices for each model are returned. If the models are nested, the
+  differences in fit indices are additionally returned, as well as test
+  statistics comparing each sequential pair of models (ordered by their
+  degrees of freedom).
 }
 \description{
 This function will create the template to compare fit indices across

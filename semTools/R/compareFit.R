@@ -64,15 +64,18 @@ setClass("FitDiff", slots = c(name = "character",
 
 
 ##' @rdname FitDiff-class
+##' @aliases show,FitDiff-method
+##' @importFrom methods getMethod
 ##' @export
 setMethod("show", signature(object = "FitDiff"), function(object) {
-  summary(object)
+  getMethod("summary", signature = "FitDiff")(object)
   invisible(object)
 })
 
 
 
 ##' @rdname FitDiff-class
+##' @aliases summary,FitDiff-method
 ##'
 ##' @param object object of class \code{FitDiff}
 ##' @param fit.measures \code{character} vector naming fit indices the user can
@@ -109,19 +112,21 @@ setMethod("summary", signature(object = "FitDiff"),
 
   ## print with daggers marking each fit index's preferred model
   ## (turns "numeric" vectors into "character")
-  badness <- grepl(pattern = c("chisq|rmsea|ic|rmr|ecvi"),
+  badness <- grepl(pattern = c("chisq|rmsea|ic|rmr|ecvi|fmin"),
                    x = colnames(out$fit.indices))
-  goodness <- grepl(pattern = c("pvalue|cfi|tli|rfi|nfi|ifi|rni|cn|gfi|mfi"),
+  goodness <- grepl(pattern = c("cfi|tli|rfi|nfi|ifi|rni|cn|gfi|mfi"),
                     x = colnames(out$fit.indices))
   minvalue <- badness & !goodness
   minvalue[!badness & !goodness] <- NA
-  no.dagger <- grepl(pattern = c("df|npar|ntotal"),
-                     x = colnames(out$fit.indices))
-  suppressWarnings(fitTab <- as.data.frame(mapply(tagDagger, out$fit.indices,
+  fit.integer <- grepl(pattern = c("df|npar|ntotal"),
+                       x = colnames(out$fit.indices))
+  suppressWarnings(fitTab <- as.data.frame(mapply(tagDagger, nd = nd,
+                                                  vec = out$fit.indices,
                                                   minvalue = minvalue,
-                                                  no.dagger = no.dagger),
+                                                  print_integer = fit.integer),
                                            stringsAsFactors = FALSE))
   rownames(fitTab) <- object@name
+  colnames(fitTab) <- colnames(out$fit.indices)
   print(fitTab)
   cat("\n")
 
@@ -196,11 +201,11 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##'   indices.
 ##'
 ##' @return A \code{\linkS4class{FitDiff}} object that saves model fit
-##'   comparisons across multiple models. If the output is not assigned as an
-##'   object, the output is printed in two parts: (1) nested model comparison
-##'   (if models are nested) and (2) summary of fit indices. In the fit indices
-##'   summaries, daggers are tagged to the model with the best fit according to
-##'   each fit index.
+##'   comparisons across multiple models. If the models are not nested, only
+##'   fit indices for each model are returned. If the models are nested, the
+##'   differences in fit indices are additionally returned, as well as test
+##'   statistics comparing each sequential pair of models (ordered by their
+##'   degrees of freedom).
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
@@ -341,44 +346,47 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 ## Hidden Functions
 ## ----------------
 
-noLeadingZero <- function(vec, fmt) {
+noLeadingZero <- function(vec, fmt, nd = 3L) {
   out <- sprintf(fmt, vec)
-  used <- vec < 1 & vec >= 0
+  upper.limit <- paste0(".", paste(rep(9, nd - 1L), collapse = ""), "5")
+  used <- vec < as.numeric(upper.limit) & vec >= 0
   used[is.na(used)] <- FALSE
   out[used] <- substring(out[used], 2)
   out
 }
 
-tagDagger <- function(vec, minvalue = NA, no.dagger = FALSE) {
-  if (is.na(minvalue)) {
-    if (no.dagger) {
-      vec <- noLeadingZero(vec, fmt="%.0f")
-    } else {
-      vec <- noLeadingZero(vec, fmt="%.3f")
-    }
-  } else  {
+tagDagger <- function(vec, minvalue = NA, print_integer = FALSE, nd = 3L) {
+  if (print_integer) {
+    vec <- noLeadingZero(vec, fmt = "%.0f", nd = nd)
+  } else if (is.na(minvalue)) {
+    vec <- noLeadingZero(vec, fmt = paste0("%.", nd, "f"), nd = nd)
+  } else {
     target <- if (minvalue) min(vec, na.rm = TRUE) else max(vec, na.rm = TRUE)
     tag <- rep(" ", length(vec))
     tag[vec == target] <- "\u2020"
-    vec <- noLeadingZero(vec, fmt = "%.3f")
+    vec <- noLeadingZero(vec, fmt = paste0("%.", nd, "f"), nd = nd)
     vec <- paste0(vec, tag)
   }
+
   vec
 }
 
 getFitSummary <- function(object, fit.measures = "default", return.diff = FALSE) {
   if (is.null(fit.measures)) fit.measures <- colnames(object@fit)
+  if ("all" %in% fit.measures) fit.measures <- colnames(object@fit)
+
   if (length(fit.measures) == 1 && fit.measures == "default") {
     ## robust or scaled test statistics?
-    if (any(grepl(pattern = "robust", x = colnames(object@fit)))) {
+    if (is.null(object@fit$cfi.scaled)) {
+      fit.measures <- c("chisq","df","pvalue","rmsea","cfi","tli","srmr")
+    } else if (all(!is.na(object@fit$cfi.robust))) {
       fit.measures <- c("chisq.scaled","df.scaled","pvalue.scaled",
                         "rmsea.robust","cfi.robust","tli.robust","srmr")
-    } else if (any(grepl(pattern = "scaled", x = colnames(object@fit)))) {
+    } else {
       fit.measures <- c("chisq.scaled","df.scaled","pvalue.scaled",
                         "rmsea.scaled","cfi.scaled","tli.scaled","srmr")
-    } else {
-      fit.measures <- c("chisq","df","pvalue","rmsea","cfi","tli","srmr")
     }
+
     if ("aic" %in% colnames(object@fit)) {
       fit.measures <- c(fit.measures, "aic", "bic")
     }
