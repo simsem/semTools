@@ -107,7 +107,7 @@ measEq <- function(configural.model,
 ##'   contain \code{character} labels used to constrain parameters to equality.
 ##'
 ##' @slot constraints \code{character} vector containing additional equality
-##'   constraints used to identify the model when \code{ID.fac = "fx").
+##'   constraints used to identify the model when \code{ID.fac = "fx"}.
 ##' @slot ngroups \code{integer} indicating the number of groups.
 ##' @slot group.equal \code{character} vector indicating type(s) of parameter
 ##'   the user requested to equate across groups.
@@ -854,9 +854,9 @@ measEq.syntax <- function(configural.model, ...,
     ID.cat <- "wu"
   } else if (ID.cat %in% c("millsap","millsap.2004","millsap.tein.2004")) {
     ID.cat <- "millsap"
-  } else if (ID.cat %in% c("default","mplus","muthen","muthén")) {
+  } else if (ID.cat %in% c("default","mplus","muthen")) {
     ID.cat <- "mplus"
-  } else if (ID.cat %in% c("joreskog","jöreskog","lisrel")) {
+  } else if (ID.cat %in% c("joreskog","lisrel")) {
     ID.cat <- "lisrel"
   } else stop('Invalid choice for argument: ID.cat = "', ID.cat, '"')
 
@@ -1172,7 +1172,7 @@ measEq.syntax <- function(configural.model, ...,
 
 
   ## If it is estimated in the user's configural model, free it (NA).
-  ## Íf it is specified as fixed but != 0, retain fixed value.
+  ## If it is specified as fixed but != 0, retain fixed value.
   GLIST.values <- sapply(names(GLIST.free), function(g) list())
   for (g in 1:nG) {
     GLIST.values[[g]] <- mapply(function(est, free) {

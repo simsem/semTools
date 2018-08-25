@@ -182,10 +182,9 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##'
 ##' @importFrom lavaan lavTestLRT
 ##' @importMethodsFrom lavaan fitMeasures
-##' @importMethodsFrom stats anova
 ##'
 ##' @param ...  fitted \code{lavaan} models or list(s) of \code{lavaan} objects.
-##'   \code{\linkS4class{lavaan.mi}) objects are also accepted, but all models
+##'   \code{\linkS4class{lavaan.mi}} objects are also accepted, but all models
 ##'   must belong to the same class.
 ##' @param nested \code{logical} indicating whether the models in \code{...} are
 ##'   nested. See \code{\link{net}} for an empirical test of nesting.

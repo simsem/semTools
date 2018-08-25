@@ -4,21 +4,32 @@
 \alias{compareFit}
 \title{Build an object summarizing fit indices across multiple models}
 \usage{
-compareFit(..., nested = TRUE)
+compareFit(..., nested = TRUE, argsLRT = list(),
+  baseline.model = NULL)
 }
 \arguments{
-\item{...}{fitted \code{lavaan} models or list(s) of \code{lavaan} objects}
+\item{...}{fitted \code{lavaan} models or list(s) of \code{lavaan} objects.
+\code{\linkS4class{lavaan.mi}} objects are also accepted, but all models
+must belong to the same class.}
 
 \item{nested}{\code{logical} indicating whether the models in \code{...} are
 nested. See \code{\link{net}} for an empirical test of nesting.}
+
+\item{argsLRT}{\code{list} of arguments to pass to
+\code{\link[lavaan]{lavTestLRT}}, or to \code{anova} when comparing
+\code{\linkS4class{lavaan.mi}} models.}
+
+\item{baseline.model}{optional fitted \code{\linkS4class{lavaan}} model
+passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit
+indices.}
 }
 \value{
 A \code{\linkS4class{FitDiff}} object that saves model fit
-comparisons across multiple models. If the output is not assigned as an
-object, the output is printed in two parts: (1) nested model comparison (if
-models are nested) and (2) summary of fit indices. In the fit indices
-summaries, daggers are tagged to the model with the best fit according to
-each fit index.
+  comparisons across multiple models. If the output is not assigned as an
+  object, the output is printed in two parts: (1) nested model comparison
+  (if models are nested) and (2) summary of fit indices. In the fit indices
+  summaries, daggers are tagged to the model with the best fit according to
+  each fit index.
 }
 \description{
 This function will create the template to compare fit indices across
@@ -27,31 +38,53 @@ or a file later.
 }
 \examples{
 
-m1 <- ' visual  =~ x1 + x2 + x3
-        textual =~ x4 + x5 + x6
-        speed   =~ x7 + x8 + x9 '
-
-fit1 <- cfa(m1, data = HolzingerSwineford1939)
-
-m2 <- ' f1  =~ x1 + x2 + x3 + x4
-        f2 =~ x5 + x6 + x7 + x8 + x9 '
-fit2 <- cfa(m2, data = HolzingerSwineford1939)
-compareFit(fit1, fit2, nested = FALSE)
-
 HS.model <- ' visual =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed =~ x7 + x8 + x9 '
 
+fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
+
+## non-nested model
+m2 <- ' f1 =~ x1 + x2 + x3 + x4
+        f2 =~ x5 + x6 + x7 + x8 + x9 '
+fit2 <- cfa(m2, data = HolzingerSwineford1939)
+compareFit(fit1, fit2, nested = FALSE)
+
+
+## nested model comparisons:
 out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
                              group = "school", quiet = TRUE)
 compareFit(out)
+
+\dontrun{
+## also applies to lavaan.mi objects (fit model to multiple imputations)
+set.seed(12345)
+HSMiss <- HolzingerSwineford1939[ , paste("x", 1:9, sep = "")]
+HSMiss$x5 <- ifelse(HSMiss$x1 <= quantile(HSMiss$x1, .3), NA, HSMiss$x5)
+HSMiss$x9 <- ifelse(is.na(HSMiss$x5), NA, HSMiss$x9)
+HSMiss$school <- HolzingerSwineford1939$school
+HS.amelia <- amelia(HSMiss, m = 20, noms = "school")
+imps <- HS.amelia$imputations
+
+## request robust test statistics
+mgfit2 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm")
+mgfit1 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
+                 group.equal = "loadings")
+mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
+                 group.equal = c("loadings","intercepts"))
+
+## request the strictly-positive robust test statistics
+compareFit(scalar = mgfit0, metric = mgfit1, config = mgfit2,
+           argsLRT = list(method = "satorra.bentler.2010"))
+}
 
 }
 \seealso{
 \code{\linkS4class{FitDiff}}, \code{\link{clipboard}}
 }
 \author{
-Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam;
+  \email{TJorgensen314@gmail.com})
 
-Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }
