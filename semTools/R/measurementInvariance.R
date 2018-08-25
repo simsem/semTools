@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, and Terrence D. Jorgensen
-### Last updated: 25 June 2018
+### Last updated: 25 August 2018
 
 
 ##' Measurement Invariance Tests
@@ -88,11 +88,34 @@
 ##' measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
 ##'                       group = "school", fit.measures = c("cfi","aic"))
 ##'
+##' @name measurementInvariance-deprecated
+##' @usage
+##' measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
+##'                       fit.measures = "default", baseline.model = NULL,
+##'                       method = "satorra.bentler.2001")
+##' @seealso \code{\link{semTools-deprecated}}
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
+##' @section Previous measurement-invariance functions:
+##' The \code{measurementInvariance}, \code{measurementInvarianceCat}, and
+##' \code{longInvariance} functions will no longer be supported. Instead, use
+##' the \code{\link{measEq.syntax}} function, which is much more flexible and
+##' supports a wider range of data (e.g., any mixture of \code{numeric} and
+##' \code{ordered} indicators, any combination of multiple groups and repeated
+##' measures, models fit to multiple imputations with \code{\link{runMI}}).
+##'
 ##' @export
 measurementInvariance <- measurementinvariance <-
   function(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
            fit.measures = "default", baseline.model = NULL,
            method = "satorra.bentler.2001") {
+
+    .Deprecated(msg = c("The measurementInvariance function is deprecated, and",
+                        " it will cease to be included in future versions of ",
+                        "semTools. See help('semTools-deprecated) for details."))
 
 	lavaancfa <- function(...) { lavaan::cfa(...) }
   ## check for a group.equal argument in ...

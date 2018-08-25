@@ -101,6 +101,9 @@ NULL
 ##'
 ##' @export
 standardizeMx <- function(object, free = TRUE) {
+  .Deprecated(msg = c("The standardizeMx function is deprecated, and it will",
+                      " cease to be included in future versions of semTools.",
+                      " See help('semTools-deprecated) for details."))
   # objectOrig <- object
   multigroup <- length(object@submodels) > 0
   if(multigroup) {

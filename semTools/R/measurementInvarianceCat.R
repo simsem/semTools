@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, & Terrence D. Jorgensen
-### Last updated: 14 May 2018
+### Last updated: 25 August 2018
 ### automate measurement invariance tests for categorical indicators
 
 
@@ -75,12 +75,29 @@
 ##'                          ordered = c("u1", "u2", "u3", "u4"))
 ##' }
 ##'
+##' @name measurementInvarianceCat-deprecated
+##' @usage
+##' measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE,
+##'                          quiet = FALSE, fit.measures = "default",
+##'                          baseline.model = NULL, method = "default")
+##' @seealso \code{\link{semTools-deprecated}}
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
+##'
 ##' @export
 measurementInvarianceCat <- function(..., std.lv = FALSE, strict = FALSE,
                                      quiet = FALSE, fit.measures = "default",
                                      baseline.model = NULL,
                                      method = "default") {
-	List <- list(...)
+
+  .Deprecated(msg = c("The measurementInvarianceCat function is deprecated, and",
+                      " it will cease to be included in future versions of ",
+                      "semTools. See help('semTools-deprecated) for details."))
+
+  List <- list(...)
 	if (is.null(List$model)) stop('all lavaan() and lavOptions() arguments must ',
 	                              'named, including the "model=" argument.')
 	lavaancfa <- function(...) { lavaan::cfa(...) }
