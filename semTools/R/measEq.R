@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 August 2018
+### Last updated: 26 August 2018
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -83,17 +83,13 @@ measEq <- function(configural.model,
 ##'   tested across levels of exogenous variables explicitly included as
 ##'   predictors of indicators, controlling for their effects on (or correlation
 ##'   with) the common factors.
-##' @slot ID.fac \code{character} indicating the method used to identify the
-##'   distributions (mean and variance) of common factors.
-##' @slot ID.cat \code{character}indicating the method used to identify the.
-##'   distributions (intercept and (residual) variance) of latent item-responses
-##'   underlying \code{ordered} indicators.
+##' @slot call The function call as returned by \code{match.call()}, with
+##'   some arguments updated if necessary for logical consistency.
 ##' @slot meanstructure \code{logical} indicating whether a mean structure is
 ##'   included in the model.
 ##' @slot numeric \code{character} vector naming \code{numeric} manifest indicators.
 ##' @slot ordered \code{character} vector naming \code{ordered} indicators.
 ##' @slot parameterization \code{character}. See \code{\link[lavaan]{lavOptions}}.
-##'
 ##' @slot specify \code{list} of parameter matrices, similar in form to the
 ##'   output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
 ##'   are \code{logical}, indicating whether each parameter should be specified
@@ -105,30 +101,19 @@ measEq <- function(configural.model,
 ##' @slot labels \code{list} of parameter matrices, similar in form to the
 ##'   output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
 ##'   contain \code{character} labels used to constrain parameters to equality.
-##'
 ##' @slot constraints \code{character} vector containing additional equality
 ##'   constraints used to identify the model when \code{ID.fac = "fx"}.
 ##' @slot ngroups \code{integer} indicating the number of groups.
-##' @slot group.equal \code{character} vector indicating type(s) of parameter
-##'   the user requested to equate across groups.
-##' @slot group.partial \code{data.frame}. Parameters the user requested to
-##'   be exceptions to \code{group.equal}, in the form of a minimal parameter
-##'   table (see \code{\link[lavaan]{lavParseModelString}}).
-##' @slot long.equal \code{character} vector indicating type(s) of parameter
-##'   the user requested to equate across repeated measures.
-##' @slot long.partial \code{data.frame}. Parameters the user requested to
-##'   be exceptions to \code{long.equal}, in the form of a minimal parameter
-##'   table (see \code{\link[lavaan]{lavParseModelString}}).
-##' @slot longFacNames named \code{list} of \code{character} vectors indicating
-##'   any repeatedly measured constructs.
-##' @slot longIndNames named \code{list} of \code{character} vectors indicating
-##'   any repeatedly measured indicators.
 ##'
 ##' @param x,object an object of class \code{measEq.syntax}
 ##' @param package \code{character} indicating the package for which the
 ##'   syntax should be generated.  Currently, only \code{"lavaan"}.
 ##' @param verbose \code{logical} indicating whether to print a summary to the
-##'  screen (default). If \code{FALSE}, only a pattern matrix is returned.
+##'   screen (default). If \code{FALSE}, only a pattern matrix is returned.
+##' @param ... Additional arguments to the \code{call}, or arguments with
+##'   changed values.
+##' @param evaluate If \code{TRUE}, evaluate the new \code{call}; otherwise,
+##'   return the new \code{call}.
 ##'
 ##' @return
 ##'   \item{summary}{\code{signature(object = "measEq.syntax", verbose = TRUE)}:
@@ -140,6 +125,8 @@ measEq <- function(configural.model,
 ##'   \item{show}{\code{signature(object = "measEq.syntax")}: Prints a message
 ##'     about how to use the object for model fitting. Invisibly returns the
 ##'     object.}
+##'   \item{update}{\code{signature(object = "measEq.syntax"), ...,
+##'     evaluate = TRUE}: Creates a new object with updated arguments.}
 ##'   \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
 ##'     Converts the \code{measEq.syntax} object to model syntax that can be
 ##'     copy/pasted into a syntax file to be edited before analysis, or simply
@@ -153,8 +140,7 @@ measEq <- function(configural.model,
 ##'
 setClass("measEq.syntax", slots = c(package = "character", # lavaan, OpenMx in the future?
                                     model.type = "character", # cfa, extend to mimic/rfa?
-                                    ID.fac = "character",
-                                    ID.cat = "character",
+                                    call = "call",
                                     meanstructure = "logical",
                                     numeric = "character",
                                     ordered = "character",
@@ -163,14 +149,7 @@ setClass("measEq.syntax", slots = c(package = "character", # lavaan, OpenMx in t
                                     values = "list",
                                     labels = "list",
                                     constraints = "character",
-                                    ngroups = "integer",
-                                    group.equal = "character",
-                                    group.partial = "data.frame",
-                                    long.equal = "character",
-                                    long.partial = "data.frame",
-                                    longFacNames = "list",
-                                    longIndNames = "list"))
-##FIXME: replace many slots with @call, use for update() method
+                                    ngroups = "integer"))
 
 ##' @rdname measEq.syntax-class
 ##' @aliases as.character,measEq.syntax-method
@@ -259,19 +238,19 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 
   ## Basics: number of groups, factors, and indicators (higher order?); ID.fac
   nHigher <- if (higher) sum(apply(object@specify[[1]]$beta, 2, any)) else 0L
-  if (object@ID.fac == "ul" && !object@meanstructure) {
+  if (object@call$ID.fac == "ul" && !object@meanstructure) {
     ID.fac.text <- 'first indicator`s factor loading was fixed to 1.'
-  } else if (object@ID.fac == "ul" && object@meanstructure) {
+  } else if (object@call$ID.fac == "ul" && object@meanstructure) {
     ID.fac.text <- paste('first indicator`s intercept and factor loading were',
                          'fixed to 0 and 1, respectively.')
-  } else if (object@ID.fac == "uv" && !object@meanstructure) {
+  } else if (object@call$ID.fac == "uv" && !object@meanstructure) {
     ID.fac.text <- paste('factor variances were fixed to 1, unless equality',
                          'constraints on factor loadings allow them to be freed.')
-  } else if (object@ID.fac == "uv" && object@meanstructure) {
+  } else if (object@call$ID.fac == "uv" && object@meanstructure) {
     ID.fac.text <- paste('factor means and variances were fixed to 0 and 1,',
                          'respectively, unless equality constraints on',
                          'measurement parameters allow them to be freed.')
-  } else if (object@ID.fac == "fx") {
+  } else if (object@call$ID.fac == "fx") {
     ID.fac.text <- paste('factor loadings were constrained to average 1',
                          if (object@meanstructure) 'and intercepts were constrained to average 0',
                          'within each factor. In models with partial',
@@ -298,17 +277,17 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 
   ## if (ordered) ID.cat and parameterization
   if (nOrd) {
-    if (object@ID.cat == "wu") {
+    if (object@call$ID.cat == "wu") {
       ID.cat.author <- 'recommended by Wu & Estabrook (2016). '
       ID.cat.DOI <- 'https://doi.org/10.1007/s11336-016-9506-0 \n\n'
-    } else if (object@ID.cat == "millsap") {
+    } else if (object@call$ID.cat == "millsap") {
       ID.cat.author <- 'recommended by Millsap & Tein (2004). '
-    } else if (object@ID.cat == "mplus") {
+    } else if (object@call$ID.cat == "mplus") {
       ID.cat.author <- 'used by default in the Mplus (and lavaan) software. '
-    } else if (object@ID.cat == "lisrel") {
+    } else if (object@call$ID.cat == "lisrel") {
       ID.cat.author <- 'used by default in the LISREL software. '
     }
-    if (object@ID.cat != "wu") ID.cat.DOI <- 'http://dx.doi.org/10.1207/S15327906MBR3903_4 \n\n'
+    if (object@call$ID.cat != "wu") ID.cat.DOI <- 'http://dx.doi.org/10.1207/S15327906MBR3903_4 \n\n'
     cat('The location and scale of each latent item-response underlying ', nOrd,
         ' ordinal indicators were identified using the "', object@parameterization,
         '" parameterization, and the identification constraints ',
@@ -316,10 +295,10 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
   }
 
   ## number of occassions per longitudinal construct
-  if (length(object@longFacNames)) {
+  if (length(object@call$longFacNames)) {
     cat('The following factors were measured on multiple occasions:\n')
-    for (f in names(object@longFacNames)) {
-      cat('\t"', f, '" was measured on ', length(object@longFacNames[[f]]),
+    for (f in names(object@call$longFacNames)) {
+      cat('\t"', f, '" was measured on ', length(object@call$longFacNames[[f]]),
           ' occasions\n', sep = '')
     }
     cat('\n')
@@ -332,8 +311,8 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
   cat('\n')
 
   ## without any constraints, call it the configural model
-  if (length(object@group.equal) == 1L && object@group.equal == "" &&
-      length(object@long.equal) == 1L && object@long.equal == "") {
+  if (length(object@call$group.equal) == 1L && object@call$group.equal == "" &&
+      length(object@call$long.equal) == 1L && object@call$long.equal == "") {
     cat('\nThis model hypothesizes only configural invariance.\n\n')
     ## return pattern matrix
     return(invisible(lambda))
@@ -342,13 +321,13 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 
   ## constrained parameters across groups (+ partial exceptions)
   if (nG > 1L) {
-    if (length(object@group.equal) == 1L && object@group.equal == "") {
+    if (length(object@call$group.equal) == 1L && object@call$group.equal == "") {
       cat('No parameters were constrained to equality across groups.\n')
     } else {
       cat('The following types of parameter were constrained to',
           'equality across groups:\n\n')
-      for (i in object@group.equal) {
-        group.partial <- object@group.partial
+      for (i in object@call$group.equal) {
+        group.partial <- object@call$group.partial
         ## first, check for exceptions
         if (i == "loadings") {
           man.ind <- group.partial$rhs %in% rownames(object@specify[[1]]$lambda)
@@ -408,43 +387,43 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
     cat('\n')
   }
   ## constrained parameters across repeated measures (+ partial exceptions)
-  if (length(object@longFacNames)) {
-    if (length(object@long.equal) == 1L && object@long.equal == "") {
+  if (length(object@call$longFacNames)) {
+    if (length(object@call$long.equal) == 1L && object@call$long.equal == "") {
       cat('No parameters were constrained to equality across repeated measures:\n')
     } else {
       cat('The following types of parameter were constrained to equality',
           'across repeated measures:\n\n')
-      for (i in object@long.equal) {
-        long.partial <- object@long.partial
+      for (i in object@call$long.equal) {
+        long.partial <- object@call$long.partial
         ## first, check for exceptions
         if (i == "loadings") {
-          man.ind <- long.partial$rhs %in% names(object@longIndNames)
+          man.ind <- long.partial$rhs %in% names(object@call$longIndNames)
           long.partial <- long.partial[long.partial$op == "=~" & man.ind, ]
 
         } else if (i == "regressions") {
-          lat.ind <- long.partial$rhs %in% names(object@longFacNames)
+          lat.ind <- long.partial$rhs %in% names(object@call$longFacNames)
           long.partial <- long.partial[long.partial$op == "=~" & lat.ind, ]
 
         } else if (i == "thresholds") {
-          man.ind <- long.partial$lhs %in% names(object@longIndNames)
+          man.ind <- long.partial$lhs %in% names(object@call$longIndNames)
           long.partial <- long.partial[long.partial$op == "|" & man.ind, ]
 
         } else if (i == "residuals") {
-          man.ind <- long.partial$rhs %in% names(object@longIndNames)
+          man.ind <- long.partial$rhs %in% names(object@call$longIndNames)
           same.ind <- long.partial$rhs == long.partial$lhs
           long.partial <- long.partial[long.partial$op == "~~" & man.ind & same.ind, ]
 
         } else if (i == "lv.variances") {
-          lat <- long.partial$rhs %in% names(object@longFacNames)
+          lat <- long.partial$rhs %in% names(object@call$longFacNames)
           same <- long.partial$rhs == long.partial$lhs
           long.partial <- long.partial[long.partial$op == "~~" & lat & same, ]
 
         } else if (i == "intercepts") {
-          man.ind <- long.partial$lhs %in% names(object@longIndNames)
+          man.ind <- long.partial$lhs %in% names(object@call$longIndNames)
           long.partial <- long.partial[long.partial$op == "~1" & man.ind, ]
 
         } else if (i == "means") {
-          lat <- long.partial$lhs %in% names(object@longFacNames)
+          lat <- long.partial$lhs %in% names(object@call$longFacNames)
           long.partial <- long.partial[long.partial$op == "~1" & lat, ]
         }
 
@@ -467,6 +446,25 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 
   ## return pattern matrix
   invisible(lambda)
+})
+
+##' @rdname measEq.syntax-class
+##' @aliases update,measEq.syntax-method
+##' @export
+setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
+  call <- object@call
+  #extras <- match.call(expand.dots = FALSE)$...
+  extras <- list(...)
+  existing <- !is.na(match(names(extras), names(call)))
+  for (a in names(extras)[existing]) call[[a]] <- extras[[a]]
+  if (any(!existing)) {
+    call <- c(as.list(call), extras[!existing])
+    call <- as.call(call)
+  }
+  if (evaluate) {
+    out <- eval(call, parent.frame())
+  } else out <- call
+  out
 })
 
 
@@ -829,6 +827,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                           long.equal = "", long.partial = "", auto = "all",
                           warn = TRUE, debug = FALSE, return.fit = FALSE) {
 
+  mc <- match.call(expand.dots = TRUE)
+
   ## -------------------------------
   ## Preliminary checks on arguments
   ## -------------------------------
@@ -838,24 +838,31 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   if (ID.fac %in% c("std.lv","unit.variance","uv",
                     "fixed.factor","fixed-factor")) {
     ID.fac <- "uv"
+    mc$ID.fac <- "uv"
   } else if (ID.fac %in% c("auto.fix.first","unit.loading","ul","marker","ref",
                            "marker.variable","marker-variable","ref.indicator",
                            "reference.indicator","reference-indicator")) {
     ID.fac <- "ul"
+    mc$ID.fac <- "ul"
   } else if (ID.fac %in% c("fx","ec","effects","effects.coding",
                            "effects-coding","effects.code","effects-code")) {
     ID.fac <- "fx"
+    mc$ID.fac <- "fx"
   } else stop('Invalid choice for argument: ID.fac = "', ID.fac, '"')
 
   ID.cat <- tolower(as.character(ID.cat)[1])
   if (ID.cat %in% c("wu.estabrook.2016","wu.2016","wu.estabrook","wu","wu2016")) {
     ID.cat <- "wu"
+    mc$ID.cat <- "wu"
   } else if (ID.cat %in% c("millsap","millsap.2004","millsap.tein.2004")) {
     ID.cat <- "millsap"
+    mc$ID.cat <- "millsap"
   } else if (ID.cat %in% c("default","mplus","muthen")) {
     ID.cat <- "mplus"
+    mc$ID.cat <- "mplus"
   } else if (ID.cat %in% c("joreskog","lisrel")) {
     ID.cat <- "lisrel"
+    mc$ID.cat <- "lisrel"
   } else stop('Invalid choice for argument: ID.cat = "', ID.cat, '"')
 
   ## pass arguments to lavaan
@@ -868,7 +875,11 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                                  '"configural.model=" argument, not "model=".')
   if (is.null(dots$sample.mean) && is.null(dots$data)) {
     dots$meanstructure <- FALSE
-  } else dots$meanstructure <- TRUE
+    mc$meanstructure <- FALSE
+  } else {
+    dots$meanstructure <- TRUE
+    mc$meanstructure <- TRUE
+  }
 
   ## lavaan template from configural model
   if (inherits(configural.model, c("lavaan","lavaanList"))) {
@@ -887,6 +898,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     lavArgs$model <- configural.model # let lavaan() do its own checks
     lavArgs$do.fit <- FALSE
     lavTemplate <- do.call("cfa", lavArgs) #FIXME: violates NAMESPACE rules?  Import cfa()?
+    mc$configural.model <- lavTemplate
   }
 
 
@@ -922,6 +934,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       auto <- as.integer(auto[1]) # only the first integer
       if (auto < 1L) auto <- NULL
     }
+    mc$auto <- auto
   }
 
   ## extract options and other information
@@ -980,6 +993,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     partial.means <- long.partial$op == "~1"
     if (any(partial.means)) long.partial <- long.partial[!partial.means, ]
   }
+  mc$group.partial <- group.partial[c("lhs","op","rhs")] #FIXME: any more? "block" for multilevel?
+  mc$long.partial  <- long.partial[c("lhs","op","rhs")]
 
   ## check logic of constraints
   if (length(allOrdNames) && parameterization == "delta") {
@@ -1052,6 +1067,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                      names(GLIST.free[[1]]))
   if ("beta" %in% pmats && ID.fac != "ul") {
     ID.fac <- "ul" #FIXME: could use effects-coding with relative ease?
+    mc$ID.fac <- ID.fac
     message('Higher-order factors detected. ID.fac set to "ul".')
   }
 
@@ -1381,6 +1397,9 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   names(longFacKey) <- unlist(longFacNames)
   longIndKey <- rep(names(longIndNames), times = sapply(longIndNames, length))
   names(longIndKey) <- unlist(longIndNames)
+
+  mc$longFacNames <- longFacNames
+  mc$longIndNames <- longIndNames
 
 
 
@@ -1712,8 +1731,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       ## assign labels
       equate.var <- "lv.variances" %in% long.equal &&
         !any(long.partial$lhs == longFacKey[f] &
-               long.partial$op  == "~~" &
-               long.partial$rhs == longFacKey[f])
+             long.partial$op  == "~~" &
+             long.partial$rhs == longFacKey[f])
       if (equate.var) {
         GLIST.labels[[g]]$psi[f, f] <- GLIST.labels[[g]]$psi[longFacs[1], longFacs[1]]
       }
@@ -1729,8 +1748,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       ## assign labels
       equate.var <- "lv.variances" %in% group.equal &&
         !any(group.partial$lhs == f &
-               group.partial$op  == "~~" &
-               group.partial$rhs == f)
+             group.partial$op  == "~~" &
+             group.partial$rhs == f)
       if (!equate.var) {
         GLIST.labels[[g]]$psi[f, f] <- paste0(GLIST.labels[[g]]$psi[f, f], ".g", g)
       }
@@ -1762,8 +1781,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         ## assign labels
         equate.load <- "loadings" %in% long.equal &&
           !any(long.partial$lhs == longFacKey[f] &
-                 long.partial$op  == "=~" &
-                 long.partial$rhs == longIndKey[i])
+               long.partial$op  == "=~" &
+               long.partial$rhs == longIndKey[i])
         if (equate.load) {
           GLIST.labels[[g]]$lambda[i, f] <- GLIST.labels[[g]]$lambda[longInds[1], longFacs[1]]
 
@@ -1783,8 +1802,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         ## assign labels
         equate.load <- "regressions" %in% long.equal &&
           !any(long.partial$lhs == longFacKey[f] &
-                 long.partial$op  == "=~" &
-                 long.partial$rhs == longFacKey[i])
+               long.partial$op  == "=~" &
+               long.partial$rhs == longFacKey[i])
         if (equate.load) {
           GLIST.labels[[g]]$beta[i, f] <- GLIST.labels[[g]]$beta[longInds[1], longFacs[1]]
         }
@@ -1804,8 +1823,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         ## assign labels
         equate.load <- "loadings" %in% group.equal &&
           !any(group.partial$lhs == f &
-                 group.partial$op  == "=~" &
-                 group.partial$rhs == i)
+               group.partial$op  == "=~" &
+               group.partial$rhs == i)
         if (!equate.load) {
           GLIST.labels[[g]]$lambda[i, f] <- paste0(GLIST.labels[[g]]$lambda[i, f],
                                                    ".g", g)
@@ -1821,8 +1840,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         ## assign labels
         equate.load <- "regressions" %in% group.equal &&
           !any(group.partial$lhs == f &
-                 group.partial$op  == "=~" &
-                 group.partial$rhs == i)
+               group.partial$op  == "=~" &
+               group.partial$rhs == i)
         if (!equate.load) {
           GLIST.labels[[g]]$beta[i, f] <- paste0(GLIST.labels[[g]]$beta[i, f],
                                                  ".g", g)
@@ -2230,8 +2249,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   ## Return object
   ## -------------
 
-  out <- new("measEq.syntax", package = "lavaan", model.type = "cfa",
-             ID.fac = ID.fac, ID.cat = ID.cat,
+  out <- new("measEq.syntax", package = "lavaan", model.type = "cfa", call = mc,
              meanstructure = meanstructure,
              numeric = lavNames(lavTemplate, "ov.num"),
              ordered = lavNames(lavTemplate, "ov.ord"),
@@ -2240,13 +2258,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
              values  = GLIST.values,
              labels  = GLIST.labels,
              constraints = fxList,
-             ngroups = nG,
-             group.equal = group.equal,
-             group.partial = group.partial[c("lhs","op","rhs")], #FIXME: any more? "block" for multilevel?
-             long.equal = long.equal,
-             long.partial = long.partial[c("lhs","op","rhs")],
-             longFacNames = longFacNames,
-             longIndNames = longIndNames)
+             ngroups = nG)
 
   if (return.fit) {
     if (inherits(configural.model, "lavaan")) {

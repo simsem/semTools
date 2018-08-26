@@ -6,6 +6,7 @@
 \alias{show,measEq.syntax-method}
 \alias{summary,measEq.syntax-method}
 \alias{as.character,measEq.syntax-method}
+\alias{update,measEq.syntax-method}
 \title{Class for Representing a Measurement-Equivalence Model}
 \usage{
 \S4method{as.character}{measEq.syntax}(x, package = "lavaan")
@@ -13,6 +14,8 @@
 \S4method{show}{measEq.syntax}(object)
 
 \S4method{summary}{measEq.syntax}(object, verbose = TRUE)
+
+\S4method{update}{measEq.syntax}(object, ..., evaluate = TRUE)
 }
 \arguments{
 \item{x, object}{an object of class \code{measEq.syntax}}
@@ -22,6 +25,12 @@ syntax should be generated.  Currently, only \code{"lavaan"}.}
 
 \item{verbose}{\code{logical} indicating whether to print a summary to the
 screen (default). If \code{FALSE}, only a pattern matrix is returned.}
+
+\item{...}{Additional arguments to the \code{call}, or arguments with
+changed values.}
+
+\item{evaluate}{If \code{TRUE}, evaluate the new \code{call}; otherwise,
+return the new \code{call}.}
 }
 \value{
 \item{summary}{\code{signature(object = "measEq.syntax", verbose = TRUE)}:
@@ -33,6 +42,8 @@ screen (default). If \code{FALSE}, only a pattern matrix is returned.}
   \item{show}{\code{signature(object = "measEq.syntax")}: Prints a message
     about how to use the object for model fitting. Invisibly returns the
     object.}
+  \item{update}{\code{signature(object = "measEq.syntax"), ...,
+    evaluate = TRUE}: Creates a new object with updated arguments.}
   \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
     Converts the \code{measEq.syntax} object to model syntax that can be
     copy/pasted into a syntax file to be edited before analysis, or simply
@@ -59,12 +70,8 @@ tested across levels of exogenous variables explicitly included as
 predictors of indicators, controlling for their effects on (or correlation
 with) the common factors.}
 
-\item{\code{ID.fac}}{\code{character} indicating the method used to identify the
-distributions (mean and variance) of common factors.}
-
-\item{\code{ID.cat}}{\code{character}indicating the method used to identify the.
-distributions (intercept and (residual) variance) of latent item-responses
-underlying \code{ordered} indicators.}
+\item{\code{call}}{The function call as returned by \code{match.call()}, with
+some arguments updated if necessary for logical consistency.}
 
 \item{\code{meanstructure}}{\code{logical} indicating whether a mean structure is
 included in the model.}
@@ -93,26 +100,6 @@ contain \code{character} labels used to constrain parameters to equality.}
 constraints used to identify the model when \code{ID.fac = "fx"}.}
 
 \item{\code{ngroups}}{\code{integer} indicating the number of groups.}
-
-\item{\code{group.equal}}{\code{character} vector indicating type(s) of parameter
-the user requested to equate across groups.}
-
-\item{\code{group.partial}}{\code{data.frame}. Parameters the user requested to
-be exceptions to \code{group.equal}, in the form of a minimal parameter
-table (see \code{\link[lavaan]{lavParseModelString}}).}
-
-\item{\code{long.equal}}{\code{character} vector indicating type(s) of parameter
-the user requested to equate across repeated measures.}
-
-\item{\code{long.partial}}{\code{data.frame}. Parameters the user requested to
-be exceptions to \code{long.equal}, in the form of a minimal parameter
-table (see \code{\link[lavaan]{lavParseModelString}}).}
-
-\item{\code{longFacNames}}{named \code{list} of \code{character} vectors indicating
-any repeatedly measured constructs.}
-
-\item{\code{longIndNames}}{named \code{list} of \code{character} vectors indicating
-any repeatedly measured indicators.}
 }}
 
 \examples{
