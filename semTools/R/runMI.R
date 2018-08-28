@@ -3,6 +3,11 @@
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
+## -------------
+## Main function
+## -------------
+
+
 ##' Fit a lavaan Model to Multiple Imputed Data Sets
 ##'
 ##' This function fits a lavaan model to a list of imputed data sets, and can
@@ -105,23 +110,38 @@
 ##'
 ##'
 ##' ## fit multigroup model without invariance constraints
-##' mgfit1 <- cfa.mi(HS.model, data = imps, estimator = "mlm", group = "school")
+##' mgfit.config <- cfa.mi(HS.model, data = imps, estimator = "mlm",
+##'                        group = "school")
 ##' ## add invariance constraints, and use previous fit as "data"
-##' mgfit0 <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm", group = "school",
-##'                  group.equal = c("loadings","intercepts"))
+##' mgfit.metric <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm"
+##'                        group = "school", group.equal = "loadings")
+##' mgfit.scalar <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm"
+##'                        group = "school",
+##'                        group.equal = c("loadings","intercepts"))
 ##'
-##' ## compare fit (scaled likelihood ratio test)
-##' lavTestLRT.mi(mgfit0, h1 = mgfit1)
+##' ## compare fit of 2 models to test metric invariance
+##' ## (scaled likelihood ratio test)
+##' lavTestLRT.mi(mgfit.metric, h1 = mgfit.config)
+##' ## To compare multiple models, you must use anova()
+##' anova(mgfit.config, mgfit.metric, mgfit.scalar)
+##' ## or compareFit(), which also includes fit indices for comparison
+##' ## (optional: name the models)
+##' compareFit(config = mgfit.config, metric = mgfit.metric,
+##'            scalar = mgfit.scalar,
+##'            argsLRT = list(test = "D2", method = "satorra.bentler.2010"))
 ##'
-##' ## correlation residuals
-##' resid(mgfit0, type = "cor.bentler")
+##' ## correlation residuals to investigate local misfit
+##' resid(mgfit.scalar, type = "cor.bentler")
+##' ## modification indices for fixed parameters, to investigate local misfit
+##' modindices.mi(mgfit.scalar)
+##' ## or lavTestScore.mi for modification indices about equality constraints
+##' lavTestScore.mi(mgfit.scalar)
 ##'
-##'
-##' ## use D1 to test a parametrically nested model (whether latent means are ==)
-##' lavTestWald.mi(mgfit0, test = "D1",
-##'                constraints = ' .p70. == 0
-##'                                .p71. == 0
-##'                                .p72. == 0 ')
+##' ## Wald test of whether latent means are == (fix 3 means to zero in group 2)
+##' eq.means <- ' .p70. == 0
+##'               .p71. == 0
+##'               .p72. == 0 '
+##' lavTestWald.mi(mgfit.scalar, constraints = eq.means)
 ##'
 ##'
 ##'
@@ -341,5 +361,124 @@ growth.mi <- function(model, data, ...,
   mc$fun <- "growth"
   mc[[1L]] <- quote(semTools::runMI)
   eval(mc, parent.frame())
+}
+
+
+
+## -----------------
+## Utility functions
+## -----------------
+
+##' Calculate the "D2" statistic
+##'
+##' This is a utility function used to calculate the "D2" statistic for pooling
+##' test statistics across multiple imputations. This function is called by
+##' several functions used for \code{\linkS4class{lavaan.mi}} objects, such as
+##' \code{\link{lavTestLRT.mi}}, \code{\link{lavTestWald.mi}}, and
+##' \code{\link{lavTestScore.mi}}. But this function can be used for any general
+##' scenario because it only requires a vector of \eqn{\chi^2} statistics (one
+##' from each imputation) and the degrees of freedom for the test statistic.
+##' See Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010, chapter 8) for
+##' details about how it is calculated.
+##'
+##' @importFrom stats var pf pchisq
+##'
+##' @param model The analysis model can be specified using lavaan
+##'   \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
+##'   \code{\link[lavaan]{parTable}}).
+##' @param data A \code{data.frame} with missing observations, or a \code{list}
+##'   of imputed data sets (if data are imputed already). If \code{runMI} has
+##'   already been called, then imputed data sets are stored in the
+##'   \code{@@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
+##'   from which the same imputed data will be used for additional analyses.
+##' @param fun \code{character}. Name of a specific lavaan function used to fit
+##'   \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
+##'   \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
+##' @param \dots additional arguments to pass to \code{\link[lavaan]{lavaan}} or
+##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
+##'   Note that \code{lavaanList} provides parallel computing options, as well as
+##'   a \code{FUN} argument so the user can extract custom output after the model
+##'   is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
+##'   custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
+##'   the user-supplied function should explicitly call \code{library} or use
+##'   \code{\link[base]{::}} for any functions not part of the base distribution.
+##' @param m \code{integer}. Request the number of imputations. Ignored if
+##'   \code{data} is already a \code{list} of imputed data sets or a
+##'   \code{lavaan.mi} object.
+##' @param miArgs Addition arguments for the multiple-imputation function
+##'   (\code{miPackage}). The arguments should be put in a list (see example
+##'   below). Ignored if \code{data} is already a \code{list} of imputed data
+##'   sets or a \code{lavaan.mi} object.
+##' @param miPackage Package to be used for imputation. Currently these
+##'   functions only support \code{"Amelia"} or \code{"mice"} for imputation.
+##'   Ignored if \code{data} is already a \code{list} of imputed data sets or a
+##'   \code{lavaan.mi} object.
+##' @param seed \code{integer}. Random number seed to be set before imputing the
+##'   data. Ignored if \code{data} is already a \code{list} of imputed data sets
+##'   or a \code{lavaan.mi} object.
+##'
+##' @return A \code{\linkS4class{lavaan.mi}} object
+##'
+##' @seealso \code{\link{lavTestLRT.mi}}, \code{\link{lavTestWald.mi}},
+##'   \code{\link{lavTestScore.mi}}
+##'
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##'   \email{TJorgensen314@@gmail.com})
+##'
+##' @references
+##'   Enders, C. K. (2010). \emph{Applied missing data analysis}. New
+##'   York, NY: Guilford.
+##'
+##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+##'   Significance levels from repeated \emph{p}-values with multiply-imputed
+##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+##'   \url{http://www.jstor.org/stable/24303994}
+##'
+##' @examples
+##' ## generate a vector of chi-squared values, just for example
+##' DF <- 3 # degrees of freedom
+##' M <- 20 # number of imputations
+##' CHI <- rchisq(M, DF)
+##'
+##' ## pool the "results"
+##' calculate.D2(CHI, DF) # by default, an F statistic is returned
+##' calculate.D2(CHI, DF, asymptotic = TRUE) # asymptotically chi-squared
+##'
+##' ## generate standard-normal values, for an example of Wald z tests
+##' Z <- rnorm(M)
+##' calculate.D2(Z) # default DF = 0 will square Z to make chisq(DF = 1)
+##' ## F test is equivalent to a t test with the denominator DF
+##'
+##'
+##' @export
+calculate.D2 <- function(w, DF = 0L, asymptotic = FALSE) {
+  if (!length(w)) return(NA)
+  w <- as.numeric(w)
+  DF <- as.numeric(DF)
+
+  nImps <- sum(!is.na(w))
+  if (nImps == 0) return(NA)
+
+  if (DF <= 0L) {
+    ## assume they are Z scores
+    w <- w^2
+    DF <- 1L
+  }
+
+  ## pool test statistics
+  w_bar <- mean(w, na.rm = TRUE)
+  ariv <- (1 + 1/nImps) * var(sqrt(w), na.rm = TRUE)
+  test.stat <- (w_bar/DF - ((nImps + 1) * ariv / (nImps - 1))) / (1 + ariv)
+  if (test.stat < 0) test.stat <- 0
+  if (asymptotic) {
+    out <- c("chisq" = test.stat * DF, df = DF,
+             pvalue = pchisq(test.stat * DF, df = DF, lower.tail = FALSE))
+  } else {
+    v3 <- DF^(-3 / nImps) * (nImps - 1) * (1 + (1 / ariv))^2
+    out <- c("F" = test.stat, df1 = DF, df2 = v3,
+             pvalue = pf(test.stat, df1 = DF, df2 = v3, lower.tail = FALSE))
+  }
+  class(out) <- c("lavaan.vector","numeric")
+  out
 }
 

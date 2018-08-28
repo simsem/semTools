@@ -119,23 +119,38 @@ fitMeasures(out1)
 
 
 ## fit multigroup model without invariance constraints
-mgfit1 <- cfa.mi(HS.model, data = imps, estimator = "mlm", group = "school")
+mgfit.config <- cfa.mi(HS.model, data = imps, estimator = "mlm",
+                       group = "school")
 ## add invariance constraints, and use previous fit as "data"
-mgfit0 <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm", group = "school",
-                 group.equal = c("loadings","intercepts"))
+mgfit.metric <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm"
+                       group = "school", group.equal = "loadings")
+mgfit.scalar <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm"
+                       group = "school",
+                       group.equal = c("loadings","intercepts"))
 
-## compare fit (scaled likelihood ratio test)
-lavTestLRT.mi(mgfit0, h1 = mgfit1)
+## compare fit of 2 models to test metric invariance
+## (scaled likelihood ratio test)
+lavTestLRT.mi(mgfit.metric, h1 = mgfit.config)
+## To compare multiple models, you must use anova()
+anova(mgfit.config, mgfit.metric, mgfit.scalar)
+## or compareFit(), which also includes fit indices for comparison
+## (optional: name the models)
+compareFit(config = mgfit.config, metric = mgfit.metric,
+           scalar = mgfit.scalar,
+           argsLRT = list(test = "D2", method = "satorra.bentler.2010"))
 
-## correlation residuals
-resid(mgfit0, type = "cor.bentler")
+## correlation residuals to investigate local misfit
+resid(mgfit.scalar, type = "cor.bentler")
+## modification indices for fixed parameters, to investigate local misfit
+modindices.mi(mgfit.scalar)
+## or lavTestScore.mi for modification indices about equality constraints
+lavTestScore.mi(mgfit.scalar)
 
-
-## use D1 to test a parametrically nested model (whether latent means are ==)
-lavTestWald.mi(mgfit0, test = "D1",
-               constraints = ' .p70. == 0
-                               .p71. == 0
-                               .p72. == 0 ')
+## Wald test of whether latent means are == (fix 3 means to zero in group 2)
+eq.means <- ' .p70. == 0
+              .p71. == 0
+              .p72. == 0 '
+lavTestWald.mi(mgfit.scalar, constraints = eq.means)
 
 
 

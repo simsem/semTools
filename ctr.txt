@@ -1,4 +1,4 @@
-## Last updated: 11 April 2017
+## Last updated: 28 August 2018
 
 ## List of functions, organized by author(s)
 export(
@@ -25,7 +25,7 @@ export(
   ## Sunthud with Yves Rosseel
   reliability, mvrnonnorm,
   ## with Yves and Terrence
-  measurementInvariance, longInvariance, measurementInvarianceCat,
+  measurementInvariance, longInvariance, measurementInvarianceCat, ###### deprecated
 
   ## Alex
   plotRMSEApower, tukeySEM,
@@ -34,9 +34,11 @@ export(
   PAVranking, poolMAlloc,
 
   ## Terrence
-  bsBootMiss, net, chisqSmallN, permuteMeasEq,
+  bsBootMiss, net, chisqSmallN,
+  permuteMeasEq, measEq.syntax,
   twostage, lavaan.2stage, cfa.2stage, sem.2stage, growth.2stage,
   runMI, lavaan.mi, cfa.mi, sem.mi, growth.mi,
+  lavTestLRT.mi, lavTestWald.mi, lavTestScore.mi, modindices.mi, calculate.D2,
   auxiliary, lavaan.auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary,
   parcelAllocation,
   ## with Alex, Corbin, and James Selig

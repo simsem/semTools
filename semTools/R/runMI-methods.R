@@ -119,7 +119,8 @@
 ##'
 ##' \item{anova}{\code{signature(object = "lavaan.mi", ...)}:
 ##'   Returns a test of model fit for a single model (\code{object}) or test(s)
-##'   of the difference(s) in fit between nested models passed via \code{...}.}
+##'   of the difference(s) in fit between nested models passed via \code{...}.
+##'   See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
 ##'
 ##' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
 ##'   fit.measures = "all", baseline.model = NULL)}: See lavaan's
@@ -156,7 +157,8 @@
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
-##' @references Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
+##' @references
+##'   Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
 ##'   with multiple imputation}. Technical Report. Retrieved from
 ##'   \url{www.statmodel.com}
 ##'

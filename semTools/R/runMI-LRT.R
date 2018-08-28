@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 27 August 2018
+### Last updated: 28 August 2018
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -271,25 +271,6 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
 ## ----------------
 
 
-#importFrom stats var pf pchisq
-calculate.D2 <- function(w, DF, asymptotic = FALSE) {
-  if (!length(w)) return(NA)
-  nImps <- sum(!is.na(w))
-  if (nImps == 0) return(NA)
-  w_bar <- mean(w, na.rm = TRUE)
-  ariv <- (1 + 1/nImps) * var(sqrt(w), na.rm = TRUE)
-  test.stat <- (w_bar/DF - ((nImps + 1) * ariv / (nImps - 1))) / (1 + ariv)
-  if (test.stat < 0) test.stat <- 0
-  if (asymptotic) {
-    out <- c("chisq" = test.stat * DF, df = DF,
-             pvalue = pchisq(test.stat * DF, df = DF, lower.tail = FALSE))
-  } else {
-    v3 <- DF^(-3 / nImps) * (nImps - 1) * (1 + (1 / ariv))^2
-    out <- c("F" = test.stat, df1 = DF, df2 = v3,
-             pvalue = pf(test.stat, df1 = DF, df2 = v3, lower.tail = FALSE))
-  }
-  out
-}
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
 D2.LRT <- function(object, h1 = NULL, asymptotic = FALSE,
                    pool.robust = FALSE, LRTargs = list()) {

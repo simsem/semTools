@@ -18,7 +18,7 @@ The formula for multivariate Wald test is
 
 \deqn{ \chi^2 = \left(C\hat{b}\right)^\prime\left[C\hat{V}C^\prime\right]^{-1}\left(C\hat{b}\right),}
 
-where \eqn{C} is the contrast matrix, \eqn{\hat{b}} is the estimated fixed effect, \eqn{\hat{V}} is the asymptotic covariance matrix among fixed effects. 
+where \eqn{C} is the contrast matrix, \eqn{\hat{b}} is the estimated fixed effect, \eqn{\hat{V}} is the asymptotic covariance matrix among fixed effects.
 }
 \value{
 Chi-square value with \emph{p} value.
@@ -36,7 +36,7 @@ HS.model <- ' visual  =~ x1 + con1*x2 + con1*x3
 fit <- cfa(HS.model, data=HolzingerSwineford1939)
 wald(fit, "con2 - con1")
 
-# Simultaneously test the difference in the influences 
+# Simultaneously test the difference in the influences
 # of x1 and x2 on intercept and slope
 model.syntax <- '
     i =~ 1*t1 + 1*t2 + 1*t3 + 1*t4

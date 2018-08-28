@@ -9,9 +9,9 @@ library(Amelia)
 library(semTools)
 
 
-##############
-## Examples ##
-##############
+## --------
+## Examples
+## --------
 
 set.seed(12345)
 HSMiss <- HolzingerSwineford1939[ , paste("x", 1:9, sep = "")]
@@ -166,9 +166,9 @@ fit.mi <- sem.mi(model, data = imputedData, cluster="school", fixed.x = FALSE,
 
 
 
-##############################################
-## Compare to old runMI output and to Mplus ##
-##############################################
+## ----------------------------------------
+## Compare to old runMI output and to Mplus
+## ----------------------------------------
 
 library(semTools)
 mgfit0.old <- semTools::runMI(HS.model, data = imps, group = "school", fun = "cfa",
