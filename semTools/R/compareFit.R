@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 25 August 2018
+### Last updated: 27 August 2018
 ### source code for compareFit() function and FitDiff class
 
 
@@ -194,8 +194,8 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##' @param nested \code{logical} indicating whether the models in \code{...} are
 ##'   nested. See \code{\link{net}} for an empirical test of nesting.
 ##' @param argsLRT \code{list} of arguments to pass to
-##'   \code{\link[lavaan]{lavTestLRT}}, or to \code{anova} when comparing
-##'   \code{\linkS4class{lavaan.mi}} models.
+##'   \code{\link[lavaan]{lavTestLRT}}, or to \code{\link{lavTestLRT.mi}} when
+##'   comparing \code{\linkS4class{lavaan.mi}} models.
 ##' @param baseline.model optional fitted \code{\linkS4class{lavaan}} model
 ##'   passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit
 ##'   indices.
@@ -253,7 +253,8 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##'
 ##' ## request the strictly-positive robust test statistics
 ##' compareFit(scalar = mgfit0, metric = mgfit1, config = mgfit2,
-##'            argsLRT = list(method = "satorra.bentler.2010"))
+##'            argsLRT = list(asymptotic = TRUE,
+##'                           method = "satorra.bentler.2010"))
 ##' }
 ##'
 ##' @export
@@ -284,7 +285,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	                                ' cannot compare lavaan objects to lavaan.mi)')
 
 	## FIT INDICES
-	fitList <- lapply(mods, fitMeasures)
+	fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model)
 	if (length(unique(sapply(fitList, length))) > 1L) {
 	  warning('fitMeasures() returned vectors of different lengths for different',
 	          ' models, probably because certain options are not the same. Check',
@@ -310,6 +311,11 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	    nestedout <- do.call(lavTestLRT, c(mods[-1], argsLRT))
 	  } else if (inherits(mods[[1]], "lavaan.mi")) { #FIXME: generalize to lavaan.pool
 
+	    if (!is.null(mods$h1)) {
+	      mods <- c(mods, list(mods$h1))
+	      mods$h1 <- NULL
+	    }
+
 	    modsA <- mods[-1]
 	    modsB <- mods[-length(mods)]
 	    fitDiff <- list()
@@ -317,8 +323,9 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	    for (i in seq_along(modsA)) {
 	      fitA <- modsA[[i]]
 	      fitB <- modsB[[i]]
-	      diffName <- paste(names(modsA)[i], "-", names(modsB)[i])
-	      tempDiff <- do.call(anova, c(list(fitA, fitB), argsLRT))
+	      if (is.null(argsLRT$asymptotic))
+	        argsLRT$asymptotic <- lavListInspect(fitA, "options")$test != "standard"
+	      tempDiff <- do.call(lavTestLRT.mi, c(list(fitA, h1 = fitB), argsLRT))
 
 	      if (names(tempDiff)[1] == "F") {
 	        statNames <- c("F", "df1", "df2", "pvalue")
@@ -326,6 +333,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	        statNames <- c("chisq.scaled", "df.scaled", "pvalue.scaled")
 	      } else statNames <- c("chisq", "df", "pvalue")
 
+	      diffName <- paste(names(modsA)[i], "-", names(modsB)[i])
 	      fitDiff[[diffName]] <- tempDiff[statNames]
 	    }
 

@@ -4,13 +4,13 @@
 \alias{lavTestScore.mi}
 \title{Score Test for Multiple Imputations}
 \usage{
-lavTestScore.mi(object, add = NULL, release = NULL, type = c("D2",
+lavTestScore.mi(object, add = NULL, release = NULL, test = c("D2",
   "Rubin"), scale.W = FALSE, asymptotic = !is.null(add),
   univariate = TRUE, cumulative = FALSE, epc = FALSE,
   verbose = FALSE, warn = TRUE)
 }
 \arguments{
-\item{object}{An object of class \code{\linkS4class{lavaan}}.}
+\item{object}{An object of class \code{\linkS4class{lavaan.mi}}.}
 
 \item{add}{Either a \code{character} string (typically between single
 quotes) or a parameter table containing additional (currently fixed-to-zero)
@@ -20,7 +20,7 @@ parameters for which the score test must be computed.}
 constraints that should be released. The indices correspond to the order of
 the equality constraints as they appear in the parameter table.}
 
-\item{type}{\code{character} indicating which pooling method to use.
+\item{test}{\code{character} indicating which pooling method to use.
 \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
  gradient and information, and those pooled values will be used to
  calculate modification indices in the usual manner. \code{"D2"} (default),
@@ -33,7 +33,7 @@ information matrix is calculated as the weighted sum of the
 within-imputation and between-imputation components. Otherwise, the pooled
 information is calculated by scaling the within-imputation component by the
 average relative increase in variance (ARIV; see Enders, 2010, p. 235).
-Not recommended, and ignored (irrelevant) if \code{type = "D2"}.}
+Not recommended, and ignored (irrelevant) if \code{test = "D2"}.}
 
 \item{asymptotic}{\code{logical}. If \code{FALSE} (default when using
 \code{add} to test adding fixed parameters to the model), the pooled test
@@ -62,7 +62,7 @@ constraint, only specify one parameter in \code{add} or one constraint in
 
 \item{verbose}{\code{logical}. Not used for now.}
 
-\item{warn}{\code{logical}. If \code{TRUE}, print out warnings if they occur.}
+\item{warn}{\code{logical}. If \code{TRUE}, print warnings if they occur.}
 }
 \value{
 A list containing at least one \code{data.frame}:
@@ -81,7 +81,7 @@ A list containing at least one \code{data.frame}:
 See \code{\link[lavaan]{lavTestScore}} for details.
 }
 \description{
-Score test (or Lagrange multiplier test) for lavaan models fitted to
+Score test (or "Lagrange multiplier" test) for lavaan models fitted to
 multiple imputed data sets. Statistics for releasing one or more
 fixed or constrained parameters in model can be calculated by pooling
 the gradient and information matrices pooled across imputed data sets
@@ -113,10 +113,10 @@ out <- cfa.mi(HS.model, data = imps, group = "school", std.lv = TRUE)
 
 ## Mode 1: Score test for releasing equality constraints
 
-## default type: Li et al.'s (1991) "D2" method
+## default test: Li et al.'s (1991) "D2" method
 lavTestScore.mi(out, cumulative = TRUE)
 ## Rubin's rules
-lavTestScore.mi(out, type = "Rubin")
+lavTestScore.mi(out, test = "Rubin")
 
 ## Mode 2: Score test for adding currently fixed-to-zero parameters
 lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
@@ -126,19 +126,22 @@ lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
 }
 \references{
 Bentler, P. M., & Chou, C.-P. (1992). Some new covariance structure model
-improvement statistics. \emph{Sociological Methods & Research, 21}(2),
-259--282. doi:10.1177/0049124192021002006
+  improvement statistics. \emph{Sociological Methods & Research, 21}(2),
+  259--282. doi:10.1177/0049124192021002006
 
-Enders, C. K. (2010). \emph{Applied missing data analysis}.
-New York, NY: Guilford.
+  Enders, C. K. (2010). \emph{Applied missing data analysis}.
+  New York, NY: Guilford.
 
-Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-Significance levels from repeated \emph{p}-values with multiply-imputed data.
-\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-\url{http://www.jstor.org/stable/24303994}
+  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+  Significance levels from repeated \emph{p}-values with multiply-imputed
+  data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+  \url{http://www.jstor.org/stable/24303994}
 
-Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-New York, NY: Wiley.
+  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+  New York, NY: Wiley.
+}
+\seealso{
+\code{\link[lavaan]{lavTestScore}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
@@ -146,7 +149,7 @@ Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 Adapted from \pkg{lavaan} source code, written by
   Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
-\code{type = "Rubin"} method proposed by
+\code{test = "Rubin"} method proposed by
   Maxwell Mansolf (University of California, Los Angeles;
   \email{mamansolf@gmail.com})
 }

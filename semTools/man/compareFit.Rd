@@ -16,8 +16,8 @@ must belong to the same class.}
 nested. See \code{\link{net}} for an empirical test of nesting.}
 
 \item{argsLRT}{\code{list} of arguments to pass to
-\code{\link[lavaan]{lavTestLRT}}, or to \code{anova} when comparing
-\code{\linkS4class{lavaan.mi}} models.}
+\code{\link[lavaan]{lavTestLRT}}, or to \code{\link{lavTestLRT.mi}} when
+comparing \code{\linkS4class{lavaan.mi}} models.}
 
 \item{baseline.model}{optional fitted \code{\linkS4class{lavaan}} model
 passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit
@@ -75,7 +75,8 @@ mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
 
 ## request the strictly-positive robust test statistics
 compareFit(scalar = mgfit0, metric = mgfit1, config = mgfit2,
-           argsLRT = list(method = "satorra.bentler.2010"))
+           argsLRT = list(asymptotic = TRUE,
+                          method = "satorra.bentler.2010"))
 }
 
 }

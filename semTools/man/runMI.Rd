@@ -53,8 +53,8 @@ the user-supplied function should explicitly call \code{library} or use
 
 \item{miArgs}{Addition arguments for the multiple-imputation function
 (\code{miPackage}). The arguments should be put in a list (see example
-below). Ignored if \code{data} is already a \code{list} of imputed data sets
-or a \code{lavaan.mi} object.}
+below). Ignored if \code{data} is already a \code{list} of imputed data
+sets or a \code{lavaan.mi} object.}
 
 \item{miPackage}{Package to be used for imputation. Currently these
 functions only support \code{"Amelia"} or \code{"mice"} for imputation.
@@ -110,8 +110,12 @@ summary(out1, ci = FALSE, stand = TRUE, rsq = TRUE)
 
 ## model fit. D3 includes information criteria
 anova(out1)
-anova(out1, test = "D2", indices = TRUE) # request D2 and fit indices
-
+## equivalently:
+lavTestLRT.mi(out1)
+## request D2
+anova(out1, test = "D2")
+## request fit indices
+fitMeasures(out1)
 
 
 ## fit multigroup model without invariance constraints
@@ -121,17 +125,17 @@ mgfit0 <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm", group = "school",
                  group.equal = c("loadings","intercepts"))
 
 ## compare fit (scaled likelihood ratio test)
-anova(mgfit0, h1 = mgfit1)
+lavTestLRT.mi(mgfit0, h1 = mgfit1)
 
 ## correlation residuals
 resid(mgfit0, type = "cor.bentler")
 
 
 ## use D1 to test a parametrically nested model (whether latent means are ==)
-anova(mgfit0, test = "D1", constraints = '
-      .p70. == 0
-      .p71. == 0
-      .p72. == 0')
+lavTestWald.mi(mgfit0, test = "D1",
+               constraints = ' .p70. == 0
+                               .p71. == 0
+                               .p72. == 0 ')
 
 
 
@@ -150,7 +154,7 @@ catout <- cfa.mi(' f =~ u1 + u2 + u3 + u4 ', data = datCat,
                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
                  })
 summary(catout)
-anova(catout, indices = "all") # note the scaled versions of indices, too
+fitMeasures(catout, indices = "all") # scaled versions of indices, too
 
 ## extract custom output
 sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
@@ -162,12 +166,12 @@ catout@funList[[2]]$zeroCells # zero-cell tables for second imputation ...
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. New
-York, NY: Guilford.
+  York, NY: Guilford.
 
-Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-New York, NY: Wiley.
+  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+  New York, NY: Wiley.
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-\email{TJorgensen314@gmail.com})
+  \email{TJorgensen314@gmail.com})
 }

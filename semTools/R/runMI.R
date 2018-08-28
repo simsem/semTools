@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 21 August 2018
+### Last updated: 28 August 2018
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -14,46 +14,51 @@
 ##' @importFrom lavaan lavInspect parTable
 ##'
 ##' @param model The analysis model can be specified using lavaan
-##' \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
-##' \code{\link[lavaan]{parTable}}).
+##'   \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
+##'   \code{\link[lavaan]{parTable}}).
 ##' @param data A \code{data.frame} with missing observations, or a \code{list}
-##' of imputed data sets (if data are imputed already). If \code{runMI} has
-##' already been called, then imputed data sets are stored in the
-##' \code{@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
-##' from which the same imputed data will be used for additional analyses.
+##'   of imputed data sets (if data are imputed already). If \code{runMI} has
+##'   already been called, then imputed data sets are stored in the
+##'   \code{@@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
+##'   from which the same imputed data will be used for additional analyses.
 ##' @param fun \code{character}. Name of a specific lavaan function used to fit
-##' \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
-##' \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
+##'   \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
+##'   \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
 ##' @param \dots additional arguments to pass to \code{\link[lavaan]{lavaan}} or
-##' \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
-##' Note that \code{lavaanList} provides parallel computing options, as well as
-##' a \code{FUN} argument so the user can extract custom output after the model
-##' is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
-##' custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
-##' the user-supplied function should explicitly call \code{library} or use
-##' \code{\link[base]{::}} for any functions not part of the base distribution.
+##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
+##'   Note that \code{lavaanList} provides parallel computing options, as well as
+##'   a \code{FUN} argument so the user can extract custom output after the model
+##'   is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
+##'   custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
+##'   the user-supplied function should explicitly call \code{library} or use
+##'   \code{\link[base]{::}} for any functions not part of the base distribution.
 ##' @param m \code{integer}. Request the number of imputations. Ignored if
-##' \code{data} is already a \code{list} of imputed data sets or a
-##' \code{lavaan.mi} object.
+##'   \code{data} is already a \code{list} of imputed data sets or a
+##'   \code{lavaan.mi} object.
 ##' @param miArgs Addition arguments for the multiple-imputation function
-##' (\code{miPackage}). The arguments should be put in a list (see example
-##' below). Ignored if \code{data} is already a \code{list} of imputed data sets
-##' or a \code{lavaan.mi} object.
+##'   (\code{miPackage}). The arguments should be put in a list (see example
+##'   below). Ignored if \code{data} is already a \code{list} of imputed data
+##'   sets or a \code{lavaan.mi} object.
 ##' @param miPackage Package to be used for imputation. Currently these
-##' functions only support \code{"Amelia"} or \code{"mice"} for imputation.
-##' Ignored if \code{data} is already a \code{list} of imputed data sets or a
-##' \code{lavaan.mi} object.
+##'   functions only support \code{"Amelia"} or \code{"mice"} for imputation.
+##'   Ignored if \code{data} is already a \code{list} of imputed data sets or a
+##'   \code{lavaan.mi} object.
 ##' @param seed \code{integer}. Random number seed to be set before imputing the
-##'  data. Ignored if \code{data} is already a \code{list} of imputed data sets
-##'  or a \code{lavaan.mi} object.
-##' @return A \code{\linkS4class{lavaan.mi}} object
-##' @author Terrence D. Jorgensen (University of Amsterdam;
-##' \email{TJorgensen314@@gmail.com})
-##' @references Enders, C. K. (2010). \emph{Applied missing data analysis}. New
-##' York, NY: Guilford.
+##'   data. Ignored if \code{data} is already a \code{list} of imputed data sets
+##'   or a \code{lavaan.mi} object.
 ##'
-##' Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-##' New York, NY: Wiley.
+##' @return A \code{\linkS4class{lavaan.mi}} object
+##'
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##'   \email{TJorgensen314@@gmail.com})
+##'
+##' @references
+##'   Enders, C. K. (2010). \emph{Applied missing data analysis}. New
+##'   York, NY: Guilford.
+##'
+##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##'   New York, NY: Wiley.
+##'
 ##' @examples
 ##'  \dontrun{
 ##' ## impose missing data for example
@@ -91,8 +96,12 @@
 ##'
 ##' ## model fit. D3 includes information criteria
 ##' anova(out1)
-##' anova(out1, test = "D2", indices = TRUE) # request D2 and fit indices
-##'
+##' ## equivalently:
+##' lavTestLRT.mi(out1)
+##' ## request D2
+##' anova(out1, test = "D2")
+##' ## request fit indices
+##' fitMeasures(out1)
 ##'
 ##'
 ##' ## fit multigroup model without invariance constraints
@@ -102,17 +111,17 @@
 ##'                  group.equal = c("loadings","intercepts"))
 ##'
 ##' ## compare fit (scaled likelihood ratio test)
-##' anova(mgfit0, h1 = mgfit1)
+##' lavTestLRT.mi(mgfit0, h1 = mgfit1)
 ##'
 ##' ## correlation residuals
 ##' resid(mgfit0, type = "cor.bentler")
 ##'
 ##'
 ##' ## use D1 to test a parametrically nested model (whether latent means are ==)
-##' anova(mgfit0, test = "D1", constraints = '
-##'       .p70. == 0
-##'       .p71. == 0
-##'       .p72. == 0')
+##' lavTestWald.mi(mgfit0, test = "D1",
+##'                constraints = ' .p70. == 0
+##'                                .p71. == 0
+##'                                .p72. == 0 ')
 ##'
 ##'
 ##'
@@ -131,7 +140,7 @@
 ##'                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
 ##'                  })
 ##' summary(catout)
-##' anova(catout, indices = "all") # note the scaled versions of indices, too
+##' fitMeasures(catout, indices = "all") # scaled versions of indices, too
 ##'
 ##' ## extract custom output
 ##' sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
