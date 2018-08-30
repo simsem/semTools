@@ -233,7 +233,7 @@ setMethod("show", "lavaan.mi", function(object) {
 
 
 ##' @importFrom stats pt qt pnorm qnorm
-##' @importFrom lavaan lavListInspect parTable
+##' @importFrom lavaan lavListInspect parTable lavNames
 summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
                               fmi = FALSE, header = TRUE, scale.W = TRUE,
@@ -345,8 +345,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     class(PE) <- c("lavaan.data.frame","data.frame")
   }
   ## requested R-squared?
-  endoNames <- c(lavaan::lavNames(object, "ov.nox"),
-                 lavaan::lavNames(object, "lv.nox"))
+  endoNames <- c(lavNames(object, "ov.nox"), lavNames(object, "lv.nox"))
   if (rsquare & length(endoNames)) {
     isEndo <- sapply(PE$lhs, function(x) x %in% endoNames)
     rsqPE <- PE[PE$lhs == PE$rhs & PE$op == "~~" & isEndo, ]
@@ -512,7 +511,7 @@ anova.lavaan.mi <- function(object, ...) {
       mods <- c(mods, list(dots$h1))
       dots$h1 <- NULL
     }
-  }
+  } else mods <- NULL
 
   ## run compareFit if length(idx.mi) > 1L
   if (length(mods) == 0L) {
@@ -522,7 +521,7 @@ anova.lavaan.mi <- function(object, ...) {
     argList <- c(list(object = object, h1 = mods[[1]]), dots)
     results <- do.call(lavTestLRT.mi, argList)
   } else if (length(mods) > 1L) {
-    argList <- c(list(object), mods, list(argsLRT = dots))
+    argList <- c(list(object), mods, list(argsLRT = dots, indices = FALSE))
     out <- do.call(compareFit, argList)
     results <- getMethod("summary", "FitDiff")(out)$test.statistics
   }
@@ -534,7 +533,8 @@ anova.lavaan.mi <- function(object, ...) {
 ##' @export
 setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 
-
+##' @importFrom lavaan lavNames
+##' @importFrom stats pchisq uniroot
 fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generic needs "..."
                            baseline.model = NULL) {
 
@@ -564,7 +564,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generi
                            union(names(formals(lavTestLRT)),
                                  names(formals(lavTestLRT.mi))))
     dots <- if (length(LRT.names)) dots[LRT.names] else list(asymptotic = TRUE)
-  } else list(asymptotic = TRUE)
+  } else dots <- list(asymptotic = TRUE)
   if (robust) {
     if (is.null(dots$pool.robust)) {
       pool.robust <- formals(lavTestLRT.mi)$pool.robust # default value
@@ -776,7 +776,8 @@ fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generi
   N <- lavListInspect(object, "ntotal")
   Ns <- lavListInspect(object, "nobs")
   nG <- lavListInspect(object, "ngroups")
-  nVars <- length(lavaan::lavNames(object))
+  nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+  nVars <- length(lavNames(object))
   if (!(lavoptions$likelihood == "normal" |
         lavoptions$estimator %in% c("ML","PML","FML"))) {
     N <- N - nG
@@ -904,32 +905,64 @@ fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generi
     }
   }
 
-  getSRMR <- function(object, type) {
-    vv <- lavaan::lavNames(object, type = "ov.num")
+  getSRMR <- function(object, type, level = "within") {
+    meanstructure <- lavListInspect(object, "meanstructure")
+    N <- lavListInspect(object, "ntotal")
+    nG <- lavListInspect(object, "ngroups")
+    nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+    #TODO: ov.names(.x) should account for conditional.x (res.cov, res.int, etc.)
+
     R <- getMethod("resid", "lavaan.mi")(object, type = type)
     index <- if (type == "raw") "cov" else "cor"
+    include.diag <- type != "cor.bollen"
+
     if (nG > 1L) {
+      vv.g <- object@Data@ov.names #FIXME: assumes never nG > 1 && nlevels > 1
       RR <- list()
       for (g in 1:nG) {
-        RR[[g]] <- c(R[[g]][[index]][lower.tri(R[[g]][[index]], diag = FALSE)]^2,
-                     diag(R[[g]][[index]])[vv]^2)
+        vv <- vv.g[[g]]
+        RR[[g]] <- R[[g]][[index]][lower.tri(R[[g]][[index]], diag = FALSE)]^2
+        if (include.diag)  RR[[g]] <- c(RR[[g]], diag(R[[g]][[index]])[vv]^2)
+        if (meanstructure) RR[[g]] <- c(RR[[g]], R[[g]]$mean[vv]^2)
       }
-    } else RR <- c(R[[index]][lower.tri(R[[index]], diag = FALSE)]^2,
-                   diag(R[[index]])[vv]^2)
+      n.per.group <- lavListInspect(object, "nobs")
 
-    if (lavListInspect(object, "meanstructure")) {
-      if (nG > 1L) {
-        for (g in 1:nG) RR[[g]] <- c(RR[[g]], R[[g]]$mean[vv]^2)
-      } else RR <- c(RR, R$mean[vv]^2)
+    } else if (nlevels > 1L) { #FIXME: needs to allow multiple levels & groups
+      vv.l <- object@Data@ov.names.l[[1]]
+      names(vv.l) <- c("within", lavListInspect(object, "cluster")) #FIXME: only works for 2 levels
+      vv <- vv.l[[level]]
+
+      RR <- R[[level]][[index]][lower.tri(R[[level]][[index]], diag = FALSE)]^2
+      if (include.diag)  RR <- c(RR, diag(R[[level]][[index]])[vv]^2)
+      if (meanstructure) RR <- c(RR, R[[level]]$mean[vv]^2)
+      nclusters <- object@Data@Lp[[1]]$nclusters #TODO: add this to lavInspect
+      names(nclusters) <- c("within", lavListInspect(object, "cluster")) #FIXME: only works for 2 levels
+      n.per.group <- nclusters[[level]]
+
+    } else {
+      vv <- lavNames(object, type = "ov.num") #FIXME: not "ov" because always ignore correlation==1?
+      RR <- R[[index]][lower.tri(R[[index]], diag = FALSE)]^2
+      RR <- c(RR, diag(R[[index]])[vv]^2)
+      if (meanstructure) RR <- c(RR, R$mean[vv]^2)
+      n.per.group <- 1L
     }
 
     SS <- if (nG > 1L) sqrt(sapply(RR, mean)) else sqrt(mean(RR))
-    as.numeric( (lavListInspect(object, "nobs") %*% SS) / lavListInspect(object, "ntotal") )
+    as.numeric( (n.per.group %*% SS) / N )
   }
-  if ("rmr" %in% indices) {
-    out["rmr"] <- getSRMR(object, type = "raw")
-    out["srmr_bollen"] <- getSRMR(object, type = "cor.bollen")
-    out["srmr_bentler"] <- getSRMR(object, type = "cor.bentler")
+
+  if (any(c("rmr","srmr","crmr") %in% indices)) {
+    if (nlevels > 1L) {
+      out["srmr"] <- NA # to preserve the order in lavaan output
+      out["srmr_within"] <- getSRMR(object, type = "cor", level = "within")
+      out["srmr_between"] <- getSRMR(object, type = "cor",
+                                     level = lavListInspect(object, "cluster"))
+      out["srmr"] <- out["srmr_within"] + out["srmr_between"]
+    } else {
+      out["rmr"] <- getSRMR(object, type = "raw")
+      out["crmr"] <- getSRMR(object, type = "cor.bollen")
+      out["srmr"] <- getSRMR(object, type = "cor.bentler")
+    }
   }
 
 
@@ -946,14 +979,12 @@ fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generi
 }
 ##' @name lavaan.mi-class
 ##' @aliases fitMeasures,lavaan.mi-method
-##' @importFrom stats pchisq uniroot
 ##' @importFrom lavaan fitMeasures
 ##' @export
 setMethod("fitMeasures", "lavaan.mi", fitMeasures.mi)
 ## lowercase 'm'
 ##' @name lavaan.mi-class
 ##' @aliases fitmeasures,lavaan.mi-method
-##' @importFrom stats pchisq uniroot
 ##' @importFrom lavaan fitmeasures
 ##' @export
 setMethod("fitmeasures", "lavaan.mi", fitMeasures.mi)
@@ -965,31 +996,48 @@ sampstat.lavaan.mi <- function(lst, means = FALSE, categ = FALSE, m = m) {
   out <- list(cov = Reduce("+", lapply(lst, "[[", i = "cov")) / m)
   if (means) out$mean <- Reduce("+", lapply(lst, "[[", i = "mean")) / m
   if (categ) out$th <- Reduce("+", lapply(lst, "[[", i = "th")) / m
+  #TODO: add others for conditional.x (e.g., slopes) ONLY if necessary
   out
 }
-##' @importFrom lavaan lavListInspect
+##' @importFrom lavaan lavListInspect lavNames
 fitted.lavaan.mi <- function(object) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
   meanstructure <- lavListInspect(object, "meanstructure")
   categ <- lavListInspect(object, "categorical")
   nG <- lavListInspect(object, "ngroups")
-  ov.names <- lavaan::lavNames(object)
+  nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+  #TODO: account for fixed.x and conditional.x (res.cov, res.int, etc.)
+  if (nG > 1L) {
+    ov.names <- object@Data@ov.names #FIXME: assumes never nG > 1 && nlevels > 1
+  } else if (nlevels > 1L) {
+    ov.names <- object@Data@ov.names.l[[1]] # for first group (implies levels within groups?)
+  } else ov.names <- lavNames(object)
 
   est <- getMethod("coef", "lavaan.mi")(object)
   imp <- lavaan::lav_model_implied(lavaan::lav_model_set_parameters(object@Model,
                                                                     x = est))
+
+  #TODO: adapt to multilevel, multigroup, or both
+
   out <- list()
-  if (nG > 1L) {
-    group.label <- lavListInspect(object, "group.label")
+  if (nG > 1L || nlevels > 1L) {
+    #FIXME: assumes never nG > 1 && nlevels > 1
+    if (nG > 1L) {
+      group.label <- lavListInspect(object, "group.label")
+    }
+    if (nlevels > 1L) {
+      group.label <- c("within", lavListInspect(object, "cluster")) #FIXME: only works for 2 levels
+    }
+    names(ov.names) <- group.label
     for (i in seq_along(imp)) names(imp[[i]]) <- group.label
     for (g in group.label) {
       out[[g]]$cov <- imp$cov[[g]]
-      dimnames(out[[g]]$cov) <- list(ov.names, ov.names)
+      dimnames(out[[g]]$cov) <- list(ov.names[[g]], ov.names[[g]])
       class(out[[g]]$cov) <- c("lavaan.matrix.symmetric","matrix")
       if (meanstructure) {
         out[[g]]$mean <- as.numeric(imp$mean[[g]])
-        names(out[[g]]$mean) <- ov.names
+        names(out[[g]]$mean) <- ov.names[[g]]
         class(out[[g]]$mean) <- c("lavaan.vector","numeric")
       } else {
         out[[g]]$mean <- sampstat.lavaan.mi(lapply(object@SampleStatsList[useImps], "[[", g),
@@ -997,7 +1045,7 @@ fitted.lavaan.mi <- function(object) {
       }
       if (categ) {
         out[[g]]$th <- imp$th[[g]]
-        names(out[[g]]$th) <- lavaan::lavNames(object, "th")
+        names(out[[g]]$th) <- lavNames(object, "th")
         class(out[[g]]$th) <- c("lavaan.vector","numeric")
       }
     }
@@ -1015,7 +1063,7 @@ fitted.lavaan.mi <- function(object) {
     }
     if (categ) {
       out$th <- imp$th[[1]]
-      names(out$th) <- lavaan::lavNames(object, "th")
+      names(out$th) <- lavNames(object, "th")
       class(out$th) <- c("lavaan.vector","numeric")
     }
   }
@@ -1090,21 +1138,28 @@ resid.lavaan.mi <- function(object, type = c("raw","cor")) {
   Implied <- getMethod("fitted", "lavaan.mi")(object)
   ## Calculate residuals
   nG <- lavListInspect(object, "ngroups")
-  N <- lavListInspect(object, "nobs")
-  if (nG > 1L) {
-    group.label <- names(Implied)
-    if (is.null(group.label)) group.label <- 1:length(Implied) else names(N) <- group.label
+  nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+  if (nG > 1L || nlevels > 1L) {
+    if (nG > 1L) {
+      group.label <- lavListInspect(object, "group.label")
+      if (rescale) {
+        N <- lavListInspect(object, "nobs")
+        names(N) <- group.label
+      } else N <- NULL
+    }
+    if (nlevels > 1L) {
+      group.label <- c("within", lavListInspect(object, "cluster")) #FIXME: only works for 2 levels
+      N <- NULL #FIXME: likelihood="wishart" does not change chisq in 0.6-3.1297
+    }
     out <- list()
     for (g in group.label) {
       out[[g]] <- gp.resid.lavaan.mi(Observed = lapply(object@SampleStatsList[useImps], "[[", g),
-                                     N = if (rescale) N[g] else NULL,
-                                     Implied = Implied[[g]], type = type,
+                                     N = N, Implied = Implied[[g]], type = type,
                                      means = meanstructure, m = m, categ = categ)
     }
   } else {
     out <- gp.resid.lavaan.mi(Observed = object@SampleStatsList[useImps],
-                              N = if (rescale) N else NULL,
-                              Implied = Implied, type = type,
+                              N = N, Implied = Implied, type = type,
                               means = meanstructure, m = m, categ = categ)
   }
   out

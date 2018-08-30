@@ -361,23 +361,28 @@ D2.LRT <- function(object, h1 = NULL, asymptotic = FALSE,
   class(out) <- c("lavaan.vector","numeric")
   out
 }
+
 ##' @importFrom lavaan parTable lavaan lavListInspect
 ##' @importFrom methods getMethod
 getLLs <- function(object, useImps, saturated = FALSE) {
   ## FIXME: lavaanList does not return info when fixed because no convergence!
   dataList <- object@DataList[useImps]
   lavoptions <- lavListInspect(object, "options")
+
   group <- lavListInspect(object, "group")
   if (length(group) == 0L) group <- NULL
+  cluster <- lavListInspect(object, "cluster")
+  if (length(cluster) == 0L) cluster <- NULL
+
   if (saturated) {
     fit <- lavaan(parTable(object), data = dataList[[ which(useImps)[1] ]],
-                  slotOptions = lavoptions, group = group)
+                  slotOptions = lavoptions, group = group, cluster = cluster)
     ## use saturated parameter table as new model
     PT <- lavaan::lav_partable_unrestricted(fit)
     ## fit saturated parameter table to each imputation, return estimates
     satParams <- lapply(object@DataList[useImps], function(d) {
-      parTable(lavaan(model = PT, data = d,
-                      slotOptions = lavoptions, group = group))$est
+      parTable(lavaan(model = PT, data = d, slotOptions = lavoptions,
+                      group = group, cluster = cluster))$est
     })
     ## set all parameters fixed
     PT$free <- 0L
@@ -405,9 +410,11 @@ getLLs <- function(object, useImps, saturated = FALSE) {
   }
   ## return log-likelihoods
   sapply(object@DataList[useImps], function(d) {
-    lavaan::logLik(lavaan(PT, data = d, slotOptions = lavoptions, group = group))
+    lavaan::logLik(lavaan(PT, data = d, slotOptions = lavoptions,
+                          group = group, cluster = cluster))
   })
 }
+
 ##' @importFrom stats pf pchisq
 ##' @importFrom lavaan lavListInspect parTable
 D3.LRT <- function(object, h1 = NULL, asymptotic = FALSE) {
@@ -492,6 +499,7 @@ D3.LRT <- function(object, h1 = NULL, asymptotic = FALSE) {
   class(out) <- c("lavaan.vector","numeric")
   out
 }
+
 ##' @importFrom stats pchisq
 ##' @importFrom lavaan lavListInspect
 robustify <- function(ChiSq, object, h1 = NULL, useImps) {

@@ -312,14 +312,20 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     ## call lavaanList() to fit augmented model (do.fit = FALSE)
     oldCall$FUN <- function(obj) {
       ngroups <- lavaan::lavInspect(obj, "ngroups")
+      nlevels <- obj@Data@nlevels #FIXME: lavListInspect(obj, "nlevels")
 
       ## --------------------------------------
       ## borrowed code from lav_object_extend()
       ## --------------------------------------
 
+      ## select columns that should always be included below
+      myCols <- c("lhs","op","rhs")
+      if (ngroups > 1L) myCols <- c(myCols,"block","group")
+      if (nlevels > 1L) myCols <- c(myCols,"block","level")
+      myCols <- unique(myCols)
+
       # partable original model
-      oldPT <- lavaan::parTable(obj)[c("lhs","op","rhs","block","group",
-                                       "free","label","plabel")]
+      oldPT <- lavaan::parTable(obj)[c(myCols, "free","label","plabel")]
       # replace 'start' column, since lav_model will fill these in in GLIST
       oldPT$start <- lavaan::parameterEstimates(obj, remove.system.eq = FALSE,
                                                 remove.def = FALSE,
@@ -327,9 +333,6 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                                                 remove.ineq = FALSE)$est
 
       # add new parameters, extend model
-      myCols <- c("lhs","op","rhs")
-      #FIXME: add "level" column?  how to check for multilevel data?
-      if (ngroups > 1L) myCols <- c(myCols,"block","group")
       # ADD <- lavaan::modindices(obj, standardized = FALSE)[myCols]
       if (is.list(add)) {
         stopifnot(!is.null(add$lhs),
@@ -338,7 +341,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
         ADD <- as.data.frame(add)
       } else if (is.character(add)) {
         ADD <- lavaan::lavaanify(add, ngroups = ngroups)
-        ADD <- ADD[,c("lhs","op","rhs","block","user","label")]
+        ADD <- ADD[ , c(myCols, "user","label")]
         remove.idx <- which(ADD$user == 0)
         if (length(remove.idx) > 0L) {
           ADD <- ADD[-remove.idx,]
@@ -423,7 +426,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     }
 
     PT <- FIT@funList[[ which(useImps)[1] ]]$parTable
-    PT$group <- PT$block
+    if (is.null(PT$group)) PT$group <- PT$block
     # lhs/rhs
     lhs <- lavaan::lav_partable_labels(PT)[ PT$user == 10L ]
     op <- rep("==", nadd)
@@ -660,12 +663,14 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
     # create epc table for the 'free' parameters
     myCoefs <- getMethod("coef","lavaan.mi")(object)
-    myCols <- c("lhs","op","rhs","group","user","free","label","plabel")
+    myCols <- c("lhs","op","rhs","group")
+    if (ngroups > 1L) myCols <- c(myCols, "block","group")
+    if (nlevels > 1L) myCols <- c(myCols, "block","level")
+    myCols <- c(unique(myCols), "user","free","label","plabel")
     LIST <- if (!is.null(add) && nchar(add) > 0L) {
       PT[ , myCols]
     } else parTable(object)[ , myCols]
 
-    if (lavListInspect(object, "ngroups") == 1L) LIST$group <- NULL
     nonpar.idx <- which(LIST$op %in% c("==", ":=", "<", ">"))
     if (length(nonpar.idx) > 0L) LIST <- LIST[ -nonpar.idx , ]
 

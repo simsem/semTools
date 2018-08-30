@@ -166,9 +166,13 @@ modindices.mi <- function(object,
   if (power) standardized <- TRUE
 
   ## use first available modification indices as template to store pooled results
+  ngroups <- lavaan::lavInspect(object, "ngroups")
+  nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
   myCols <- c("lhs","op","rhs")
-  #FIXME: add "level" column?  how to check for multilevel data?
-  if (lavListInspect(object, "ngroups") > 1L) myCols <- c(myCols,"block","group")
+  if (ngroups > 1L) myCols <- c(myCols,"block","group")
+  if (nlevels > 1L) myCols <- c(myCols,"block","level")
+  myCols <- unique(myCols)
+
   for (i in which(useImps)) {
     LIST <- object@miList[[ which(useImps)[i] ]][myCols]
     nR <- try(nrow(LIST), silent = TRUE)
@@ -201,7 +205,7 @@ modindices.mi <- function(object,
 
     scoreOut <- lavTestScore.mi(object, add = cbind(LIST, user = 10L,
                                                     free = 1, start = 0),
-                                type = "Rubin", scale.W = FALSE,
+                                test = "Rubin", scale.W = FALSE,
                                 epc = TRUE, asymptotic = TRUE)$uni
     LIST$mi <- scoreOut$X2
     LIST$epc <- scoreOut$epc
@@ -215,7 +219,7 @@ modindices.mi <- function(object,
       PE <- lavaan::lav_partable_merge(oldPE, cbind(LIST, est = 0),
                                        remove.duplicated = TRUE, warn = FALSE)
       ## merge EPCs, using parameter labels (unavailable for estimates)
-      rownames(LIST) <- paste0(LIST$lhs, LIST$op, LIST$rhs, ".g", LIST$group)
+      rownames(LIST) <- paste0(LIST$lhs, LIST$op, LIST$rhs, ".g", LIST$group) #FIXME: multilevel?
       rownames(PE) <- paste0(PE$lhs, PE$op, PE$rhs, ".g", PE$group)
       PE[rownames(LIST), "epc"] <- LIST$epc
       rownames(LIST) <- NULL

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 27 August 2018
+### Last updated: 29 August 2018
 ### source code for compareFit() function and FitDiff class
 
 
@@ -105,39 +105,42 @@ setMethod("summary", signature(object = "FitDiff"),
   }
 
 
-  cat("####################### Model Fit Indices ###########################\n")
-  ## this is the object to return (numeric, no printed daggers)
-  out$fit.indices <- getFitSummary(object, fit.measures, return.diff = FALSE)
-  class(out$fit.indices) <- c("lavaan.data.frame","data.frame")
+  noFit <- ncol(object@fit) == 1L && names(object)[1] == "df"
+  if (!noFit) {
+    cat("####################### Model Fit Indices ###########################\n")
+    ## this is the object to return (numeric, no printed daggers)
+    out$fit.indices <- getFitSummary(object, fit.measures, return.diff = FALSE)
+    class(out$fit.indices) <- c("lavaan.data.frame","data.frame")
 
-  ## print with daggers marking each fit index's preferred model
-  ## (turns "numeric" vectors into "character")
-  badness <- grepl(pattern = c("chisq|rmsea|ic|rmr|ecvi|fmin"),
-                   x = colnames(out$fit.indices))
-  goodness <- grepl(pattern = c("cfi|tli|rfi|nfi|ifi|rni|cn|gfi|mfi"),
-                    x = colnames(out$fit.indices))
-  minvalue <- badness & !goodness
-  minvalue[!badness & !goodness] <- NA
-  fit.integer <- grepl(pattern = c("df|npar|ntotal"),
-                       x = colnames(out$fit.indices))
-  suppressWarnings(fitTab <- as.data.frame(mapply(tagDagger, nd = nd,
-                                                  vec = out$fit.indices,
-                                                  minvalue = minvalue,
-                                                  print_integer = fit.integer),
-                                           stringsAsFactors = FALSE))
-  rownames(fitTab) <- object@name
-  colnames(fitTab) <- colnames(out$fit.indices)
-  print(fitTab)
-  cat("\n")
-
-
-	if (nrow(object@nested) > 0L) {
-	  cat("################## Differences in Fit Indices #######################\n")
-    out$fit.diff <- getFitSummary(object, fit.measures, return.diff = TRUE)
-    class(out$fit.diff) <- c("lavaan.data.frame","data.frame")
-    print(out$fit.diff, nd = nd)
+    ## print with daggers marking each fit index's preferred model
+    ## (turns "numeric" vectors into "character")
+    badness <- grepl(pattern = c("chisq|rmsea|ic|rmr|ecvi|fmin"),
+                     x = colnames(out$fit.indices))
+    goodness <- grepl(pattern = c("cfi|tli|rfi|nfi|ifi|rni|cn|gfi|mfi"),
+                      x = colnames(out$fit.indices))
+    minvalue <- badness & !goodness
+    minvalue[!badness & !goodness] <- NA
+    fit.integer <- grepl(pattern = c("df|npar|ntotal"),
+                         x = colnames(out$fit.indices))
+    suppressWarnings(fitTab <- as.data.frame(mapply(tagDagger, nd = nd,
+                                                    vec = out$fit.indices,
+                                                    minvalue = minvalue,
+                                                    print_integer = fit.integer),
+                                             stringsAsFactors = FALSE))
+    rownames(fitTab) <- object@name
+    colnames(fitTab) <- colnames(out$fit.indices)
+    print(fitTab)
     cat("\n")
-	}
+
+
+    if (nrow(object@nested) > 0L) {
+      cat("################## Differences in Fit Indices #######################\n")
+      out$fit.diff <- getFitSummary(object, fit.measures, return.diff = TRUE)
+      class(out$fit.diff) <- c("lavaan.data.frame","data.frame")
+      print(out$fit.diff, nd = nd)
+      cat("\n")
+    }
+  }
 
 
 	invisible(out)
@@ -196,6 +199,8 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##' @param argsLRT \code{list} of arguments to pass to
 ##'   \code{\link[lavaan]{lavTestLRT}}, or to \code{\link{lavTestLRT.mi}} when
 ##'   comparing \code{\linkS4class{lavaan.mi}} models.
+##' @param indices \code{logical} indicating whether to return fit indices from
+##'   the \code{\link[lavaan]{fitMeasures}} function.
 ##' @param baseline.model optional fitted \code{\linkS4class{lavaan}} model
 ##'   passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit
 ##'   indices.
@@ -259,7 +264,12 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##'
 ##' @export
 compareFit <- function(..., nested = TRUE, argsLRT = list(),
-                       baseline.model = NULL) {
+                       indices = TRUE, baseline.model = NULL) {
+  ## make sure there is something to do
+  if (!(nested || indices)) {
+    message('User requested neither indices nor tests of nested models.')
+    return(NULL)
+  }
 
 	## collapse models into a single-level list
 	mods <- list(...)
@@ -267,7 +277,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 
 	## make sure models are named
 	mc <- as.list(match.call(expand.dots = TRUE)[-1])
-	mc <- mc[ !names(mc) %in% c("nested","argsLRT","baseline.model") ]
+	mc <- mc[ !names(mc) %in% c("nested","argsLRT","indices","baseline.model") ]
 	if (is.null(names(mods))) {
 	  names(mods) <- as.character(mc)
 	} else {
@@ -285,17 +295,23 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	                                ' cannot compare lavaan objects to lavaan.mi)')
 
 	## FIT INDICES
-	fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model)
-	if (length(unique(sapply(fitList, length))) > 1L) {
-	  warning('fitMeasures() returned vectors of different lengths for different',
-	          ' models, probably because certain options are not the same. Check',
-	          ' lavInspect(fit, "options")[c("estimator","test","meanstructure")]',
-	          ' for each model, or run fitMeasures() on each model to investigate.')
-	  indexList <- lapply(fitList, names)
-	  useNames <- names(which(table(unlist(indexList)) == length(fitList)))
-	  fitList <- lapply(fitList, "[", i = useNames)
+	if (indices) {
+	  fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model)
+	  if (length(unique(sapply(fitList, length))) > 1L) {
+	    warning('fitMeasures() returned vectors of different lengths for different',
+	            ' models, probably because certain options are not the same. Check',
+	            ' lavInspect(fit, "options")[c("estimator","test","meanstructure")]',
+	            ' for each model, or run fitMeasures() on each model to investigate.')
+	    indexList <- lapply(fitList, names)
+	    useNames <- names(which(table(unlist(indexList)) == length(fitList)))
+	    fitList <- lapply(fitList, "[", i = useNames)
+	  }
+	  fit <- as.data.frame(do.call(rbind, fitList))
+	} else {
+	  fitList <- sapply(mods, fitMeasures, fit.measures = "df")
+	  fit <- data.frame(df = fitList)
 	}
-	fit <- as.data.frame(do.call(rbind, fitList))
+
 
 	## order models by increasing df (least-to-most constrained)
 	ord <- order(fit$df)

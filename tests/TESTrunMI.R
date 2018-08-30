@@ -118,36 +118,30 @@ Galo[Galo == 999] <- NA
 
 model <- '
 level: within
-
-wses =~ a*focc + b*meduc + c*feduc
-
-advice ~ wc*wses + wb*galo
-galo   ~ wa*wses
-
-# residual correlation
-focc ~~ feduc
-
+  wses =~ a*focc + b*meduc + c*feduc
+  advice ~ wc*wses + wb*galo
+  galo   ~ wa*wses
+  # residual correlation
+  focc ~~ feduc
 level: between
-
-bses =~ a*focc + b*meduc + c*feduc
-
-advice ~ bc*bses + bb*galo
-galo   ~ ba*bses + denom
-
-feduc ~~ 0*feduc
-
+  bses =~ a*focc + b*meduc + c*feduc
+  advice ~ bc*bses + bb*galo
+  galo   ~ ba*bses + denom
+  feduc ~~ 0*feduc
 # defined parameters
-wi := wa * wb
-bi := ba * bb
+  wi := wa * wb
+  bi := ba * bb
 '
 library(lavaan)
 fit <- sem(model, data = Galo, cluster = "school", fixed.x = FALSE,
            missing = "fiml", std.lv = TRUE, h1 = TRUE)
+fitmg <- sem(model, data = Galo, cluster = "school", fixed.x = FALSE,
+             missing = "fiml", std.lv = TRUE, h1 = TRUE, group = "sex")
 
 summary(fit, fit.measures = TRUE, standardized = TRUE)
 lavInspect(fit, "ngroups")
 lavInspect(fit, "nlevels") #fails
-lavaan:::lav_partable_nlevels(fit@ParTable)
+fit@Data@nlevels
 lavInspect(fit, "cov.lv")
 lavInspect(fit, "theta")
 
@@ -157,12 +151,29 @@ m <- 5
 mice.out <- mice(Galo, m = m, diagnostics = TRUE)
 imputedData <- list()
 for (i in 1:m) {
-  imputedData[[i]] <- mice::complete(data = mice.out, action = i, include = FALSE)
+  imputedData[[i]] <- complete(data = mice.out, action = i, include = FALSE)
 }
 
 library(semTools)
-fit.mi <- sem.mi(model, data = imputedData, cluster="school", fixed.x = FALSE,
+fit.mi <- sem.mi(model, data = imputedData, cluster = "school", fixed.x = FALSE,
                  std.lv = TRUE)
+## runs fine, check methods
+fit.mi
+summary(fit.mi, ci = TRUE, standardized = TRUE, rsquare = TRUE, fmi = TRUE)
+coef(fit.mi)
+vcov(fit.mi)
+nobs(fit.mi)
+fitted(fit.mi)
+resid(fit.mi, type = "cor") # works, but resid(fit) generates an error
+modindices.mi(fit.mi) # modindices(fit) also generates an error
+lavTestScore.mi(fit.mi, test = "D2") # lavTestScore(fit, epc = T) generates an error, expects a "group" column
+lavTestScore.mi(fit.mi, test = "rubin") # very different results
+lavTestWald.mi(fit.mi, constraints = 'wa == ba ; wb == bb')
+lavTestLRT.mi(fit.mi, test = "D2")
+anova(fit.mi) # D3 takes an obscenely long time
+anova(fit.mi, asymptotic = TRUE) # comparable to anova(fit)
+fitMeasures(fit.mi) # fails to fit the baseline.model
+fitMeasures(fit.mi, fit.measures = c("rmsea","rmr","aic"))
 
 
 
