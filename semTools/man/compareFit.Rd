@@ -4,7 +4,7 @@
 \alias{compareFit}
 \title{Build an object summarizing fit indices across multiple models}
 \usage{
-compareFit(..., nested = TRUE, argsLRT = list(),
+compareFit(..., nested = TRUE, argsLRT = list(), indices = TRUE,
   baseline.model = NULL)
 }
 \arguments{
@@ -18,6 +18,9 @@ nested. See \code{\link{net}} for an empirical test of nesting.}
 \item{argsLRT}{\code{list} of arguments to pass to
 \code{\link[lavaan]{lavTestLRT}}, or to \code{\link{lavTestLRT.mi}} when
 comparing \code{\linkS4class{lavaan.mi}} models.}
+
+\item{indices}{\code{logical} indicating whether to return fit indices from
+the \code{\link[lavaan]{fitMeasures}} function.}
 
 \item{baseline.model}{optional fitted \code{\linkS4class{lavaan}} model
 passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit

@@ -26,7 +26,7 @@ pooled across imputations, as described in Li, Meng, Raghunathan, & Rubin
 (1991) and Enders (2010, chapter 8).}
 
 \item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
-will be returned as an \emph{F}-distributed variable with numerator
+will be returned as an \emph{F}-distributed statistic with numerator
 (\code{df1}) and denominator (\code{df2}) degrees of freedom.
 If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
 \code{df1} on the assumption that its \code{df2} is sufficiently large

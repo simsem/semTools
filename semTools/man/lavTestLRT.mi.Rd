@@ -19,16 +19,13 @@ calculated using each imputed data set, which will then be pooled across
 imputations, as described in Li, Meng, Raghunathan, & Rubin (1991).
 Find additional details in Enders (2010, chapter 8).}
 
-\item{asymptotic}{\code{logical}. If \code{FALSE} (default when using
-\code{add} to test adding fixed parameters to the model), the pooled test
-will be returned as an \emph{F}-distributed variable with numerator
+\item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
+will be returned as an \emph{F}-distributed statistic with numerator
 (\code{df1}) and denominator (\code{df2}) degrees of freedom.
 If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
 \code{df1} on the assumption that its \code{df2} is sufficiently large
 enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-with \code{df1}. When using the \code{release} argument, \code{asymptotic}
-will be set to \code{TRUE} because (A)RIV can only be calculated for
-\code{add}ed parameters.}
+with \code{df1}.}
 
 \item{pool.robust}{\code{logical}. Ignored unless \code{test = "D2"} and a
 robust test was requested. If \code{pool.robust = TRUE}, the robust test

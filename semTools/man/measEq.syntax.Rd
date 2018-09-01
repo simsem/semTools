@@ -302,6 +302,8 @@ fit.thresh <- measEq.syntax(configural.model = mod.cat, data = datCat,
 anova(fit.config, fit.thresh)
 
 
+\dontrun{
+
 ## compare several invariance models
 test.seq <- c("thresholds","loadings","intercepts","means","residuals")
 meq.list <- list()
@@ -330,6 +332,7 @@ for (i in 0:length(test.seq)) {
 
 compareFit(meq.list)
 
+}
 }
 \references{
 Little, T. D., Slegers, D. W., & Card, N. A. (2006). A non-arbitrary

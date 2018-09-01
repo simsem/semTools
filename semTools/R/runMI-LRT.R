@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 28 August 2018
+### Last updated: 1 September 2018
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -43,16 +43,13 @@
 ##'   calculated using each imputed data set, which will then be pooled across
 ##'   imputations, as described in Li, Meng, Raghunathan, & Rubin (1991).
 ##'   Find additional details in Enders (2010, chapter 8).
-##' @param asymptotic \code{logical}. If \code{FALSE} (default when using
-##'   \code{add} to test adding fixed parameters to the model), the pooled test
-##'   will be returned as an \emph{F}-distributed variable with numerator
+##' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
+##'   will be returned as an \emph{F}-distributed statistic with numerator
 ##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
 ##'   If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
 ##'   \code{df1} on the assumption that its \code{df2} is sufficiently large
 ##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-##'   with \code{df1}. When using the \code{release} argument, \code{asymptotic}
-##'   will be set to \code{TRUE} because (A)RIV can only be calculated for
-##'   \code{add}ed parameters.
+##'   with \code{df1}.
 ##' @param pool.robust \code{logical}. Ignored unless \code{test = "D2"} and a
 ##'   robust test was requested. If \code{pool.robust = TRUE}, the robust test
 ##'   statistic is pooled, whereas \code{pool.robust = FALSE} will pool

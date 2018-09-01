@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 27 August 2018
+### Last updated: 1 September 2018
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -638,6 +638,9 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
   }
 
   if (epc) {
+    ngroups <- lavaan::lavInspect(object, "ngroups")
+    nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+
     ################# source code Yves commented out.
     ################# Calculates 1 EPC-vector per constraint.
     ################# Better to call lavTestScore() multiple times?  Ugh...

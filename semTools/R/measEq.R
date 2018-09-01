@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 August 2018
+### Last updated: 1 September 2018
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -71,6 +71,7 @@ measEq <- function(configural.model,
 ##' @name measEq.syntax-class
 ##' @aliases measEq.syntax-class show,measEq.syntax-method
 ##'   summary,measEq.syntax-method as.character,measEq.syntax-method
+##'   update,measEq.syntax-method
 ##' @docType class
 ##'
 ##' @slot package \code{character} indicating the software package used to
@@ -450,6 +451,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 
 ##' @rdname measEq.syntax-class
 ##' @aliases update,measEq.syntax-method
+##' @importFrom stats update
 ##' @export
 setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
   call <- object@call
@@ -791,6 +793,8 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##' anova(fit.config, fit.thresh)
 ##'
 ##'
+##' \dontrun{
+##'
 ##' ## compare several invariance models
 ##' test.seq <- c("thresholds","loadings","intercepts","means","residuals")
 ##' meq.list <- list()
@@ -819,6 +823,7 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##'
 ##' compareFit(meq.list)
 ##'
+##' }
 ##' @export
 measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                           ID.cat = "Wu.Estabrook.2016", ID.thr = c(1L, 2L),
@@ -2279,7 +2284,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     if (inherits(fit, "try-error")) {
       warning('The generated model syntax was not successfully fit to the ',
               'data, and generated the following error message(s): \n\n',
-              fit[1:length(foo)], "\n",
+              fit[1:length(fit)], "\n",
               "The measEq.syntax object was returned instead.")
     } else {
       fit@external$measEq.syntax <- out # save the syntax to the lavaan(.mi) object

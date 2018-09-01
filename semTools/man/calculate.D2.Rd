@@ -7,49 +7,25 @@
 calculate.D2(w, DF = 0L, asymptotic = FALSE)
 }
 \arguments{
-\item{model}{The analysis model can be specified using lavaan
-\code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
-\code{\link[lavaan]{parTable}}).}
+\item{w}{\code{numeric} vector of Wald \eqn{\chi^2} statistics. Can also
+be Wald \emph{z} statistics, which will be internally squared to make
+\eqn{\chi^2} statistics with one \emph{df} (must set \code{DF = 0L}).}
 
-\item{data}{A \code{data.frame} with missing observations, or a \code{list}
-of imputed data sets (if data are imputed already). If \code{runMI} has
-already been called, then imputed data sets are stored in the
-\code{@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
-from which the same imputed data will be used for additional analyses.}
+\item{DF}{degrees of freedom (\emph{df}) of the \eqn{\chi^2} statistics.
+If \code{DF = 0L} (default), \code{w} is assumed to contain \emph{z}
+statistics, which will be internally squared.}
 
-\item{fun}{\code{character}. Name of a specific lavaan function used to fit
-\code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
-\code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.}
-
-\item{\dots}{additional arguments to pass to \code{\link[lavaan]{lavaan}} or
-\code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
-Note that \code{lavaanList} provides parallel computing options, as well as
-a \code{FUN} argument so the user can extract custom output after the model
-is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
-custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
-the user-supplied function should explicitly call \code{library} or use
-\code{\link[base]{::}} for any functions not part of the base distribution.}
-
-\item{m}{\code{integer}. Request the number of imputations. Ignored if
-\code{data} is already a \code{list} of imputed data sets or a
-\code{lavaan.mi} object.}
-
-\item{miArgs}{Addition arguments for the multiple-imputation function
-(\code{miPackage}). The arguments should be put in a list (see example
-below). Ignored if \code{data} is already a \code{list} of imputed data
-sets or a \code{lavaan.mi} object.}
-
-\item{miPackage}{Package to be used for imputation. Currently these
-functions only support \code{"Amelia"} or \code{"mice"} for imputation.
-Ignored if \code{data} is already a \code{list} of imputed data sets or a
-\code{lavaan.mi} object.}
-
-\item{seed}{\code{integer}. Random number seed to be set before imputing the
-data. Ignored if \code{data} is already a \code{list} of imputed data sets
-or a \code{lavaan.mi} object.}
+\item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
+will be returned as an \emph{F}-distributed statistic with numerator
+(\code{df1}) and denominator (\code{df2}) degrees of freedom.
+If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
+\code{df1} on the assumption that its \code{df2} is sufficiently large
+enough that the statistic will be asymptotically \eqn{\chi^2} distributed
+with \code{df1}.}
 }
 \value{
-A \code{\linkS4class{lavaan.mi}} object
+A \code{numeric} vector containing the test statistic, \emph{df},
+  and a \emph{p} value.
 }
 \description{
 This is a utility function used to calculate the "D2" statistic for pooling
