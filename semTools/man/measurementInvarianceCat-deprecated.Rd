@@ -13,8 +13,8 @@ measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE,
 \code{\link{cfa}} for more information.}
 
 \item{std.lv}{If \code{TRUE}, the fixed-factor method of scale
-identification is used. If \code{FALSE}, the first variable for each factor
-is used as marker variable.}
+identification is used. If \code{FALSE}, the first variable for each
+factor is used as marker variable.}
 
 \item{strict}{If \code{TRUE}, the sequence requires `strict' invariance.
 See details for more information.}
@@ -78,16 +78,10 @@ measurementInvarianceCat(model = syntax, data = datCat, group = "g",
 }
 \references{
 Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial
-invariance in ordered-categorical measures. \emph{Multivariate Behavioral
-Research, 39}(3), 479--515. doi:10.1207/S15327906MBR3903_4
+  invariance in ordered-categorical measures. \emph{Multivariate Behavioral
+  Research, 39}(3), 479--515. doi:10.1207/S15327906MBR3903_4
 }
 \seealso{
-\code{\link{measurementInvariance}} for measurement invariance for
-continuous variables; \code{\link{longInvariance}} For the measurement
-invariance test within person with continuous variables;
-\code{partialInvariance} for the automated function for finding partial
-invariance models
-
 \code{\link{semTools-deprecated}}
 }
 \author{

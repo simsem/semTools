@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, & Terrence D. Jorgensen
-### Last updated: 25 August 2018
+### Last updated: 1 September 2018
 ### automate measurement invariance tests for categorical indicators
 
 
@@ -36,35 +36,34 @@
 ##' @importFrom lavaan lavInspect parTable
 ##'
 ##' @param ... The same arguments as for any lavaan model.  See
-##' \code{\link{cfa}} for more information.
+##'   \code{\link{cfa}} for more information.
 ##' @param std.lv If \code{TRUE}, the fixed-factor method of scale
-##' identification is used. If \code{FALSE}, the first variable for each factor
-##' is used as marker variable.
+##'   identification is used. If \code{FALSE}, the first variable for each
+##'   factor is used as marker variable.
 ##' @param strict If \code{TRUE}, the sequence requires `strict' invariance.
-##' See details for more information.
+##'   See details for more information.
 ##' @param quiet If \code{FALSE} (default), a summary is printed out containing
-##' an overview of the different models that are fitted, together with some
-##' model comparison tests. If \code{TRUE}, no summary is printed.
+##'   an overview of the different models that are fitted, together with some
+##'   model comparison tests. If \code{TRUE}, no summary is printed.
 ##' @param fit.measures Fit measures used to calculate the differences between
-##' nested models.
+##'   nested models.
 ##' @param baseline.model custom baseline model passed to
-##'  \code{\link[lavaan]{fitMeasures}}
+##'   \code{\link[lavaan]{fitMeasures}}
 ##' @param method The method used to calculate likelihood ratio test. See
-##' \code{\link[lavaan]{lavTestLRT}} for available options
+##'   \code{\link[lavaan]{lavTestLRT}} for available options
+##'
 ##' @return Invisibly, all model fits in the sequence are returned as a list.
+##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
 ##'  Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
 ##'
 ##'  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
-##' @seealso \code{\link{measurementInvariance}} for measurement invariance for
-##' continuous variables; \code{\link{longInvariance}} For the measurement
-##' invariance test within person with continuous variables;
-##' \code{partialInvariance} for the automated function for finding partial
-##' invariance models
+##'
 ##' @references Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial
-##' invariance in ordered-categorical measures. \emph{Multivariate Behavioral
-##' Research, 39}(3), 479--515. doi:10.1207/S15327906MBR3903_4
+##'   invariance in ordered-categorical measures. \emph{Multivariate Behavioral
+##'   Research, 39}(3), 479--515. doi:10.1207/S15327906MBR3903_4
+##'
 ##' @examples
 ##'
 ##' \dontrun{

@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Yves Rosseel
-### Last updated: 25 August 2018
+### Last updated: 1 September 2018
 
 ##' Measurement Invariance Tests Within Person
 ##'
@@ -45,7 +45,6 @@
 ##' or Yuan-Bentler test statistic), a special version of the \eqn{\Delta\chi^2}
 ##' test is used as described in \url{http://www.statmodel.com/chidiff.shtml}
 ##'
-##' @aliases longInvariance
 ##'
 ##' @param model lavaan syntax or parameter table
 ##' @param varList A list containing indicator names of factors used in the
@@ -92,9 +91,6 @@
 ##'  Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
 ##'
 ##'  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
-##'
-##' @seealso \code{\link{measurementinvariance}} for the measurement invariance
-##'   test between groups
 ##'
 ##' @references Vandenberg, R. J., and Lance, C. E. (2000). A review and
 ##'   synthesis of the measurement invariance literature: Suggestions,

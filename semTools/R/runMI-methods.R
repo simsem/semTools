@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 August 2018
+### Last updated: 1 September 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 

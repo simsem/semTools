@@ -2,8 +2,6 @@
 % Please edit documentation in R/measurementInvariance.R
 \name{measurementInvariance-deprecated}
 \alias{measurementInvariance-deprecated}
-\alias{measurementInvariance}
-\alias{measurementinvariance}
 \title{Measurement Invariance Tests}
 \usage{
 measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
@@ -88,16 +86,12 @@ measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
 
 }
 \references{
-Vandenberg, R. J., and Lance, C. E. (2000). A review and
-synthesis of the measurement invariance literature: Suggestions, practices,
-and recommendations for organizational research. \emph{Organizational
-Research Methods, 3,} 4--70.
+Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the
+  measurement invariance literature: Suggestions, practices, and
+  recommendations for organizational research. \emph{Organizational
+  Research Methods, 3,} 4--70.
 }
 \seealso{
-\code{\link{longInvariance}} for the measurement invariance test
-within person; \code{partialInvariance} for the automated function for
-finding partial invariance models
-
 \code{\link{semTools-deprecated}}
 }
 \author{

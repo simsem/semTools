@@ -20,9 +20,6 @@ functions a \emph{suite}. Our suites include:
   \code{\link{chisqSmallN}}}
 \item{Measurement Invariance:
   \code{\link{measEq.syntax}},
-  \code{\link{measurementInvariance}},
-  \code{\link{measurementInvarianceCat}},
-  \code{\link{longInvariance}},
   \code{\link{partialInvariance}},
   \code{\link{partialInvarianceCat}}, and
   \code{\link{permuteMeasEq}}}

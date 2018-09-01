@@ -2,7 +2,6 @@
 % Please edit documentation in R/longInvariance.R
 \name{longInvariance-deprecated}
 \alias{longInvariance-deprecated}
-\alias{longInvariance}
 \title{Measurement Invariance Tests Within Person}
 \usage{
 longInvariance(model, varList, auto = "all", constrainAuto = FALSE,
@@ -144,9 +143,6 @@ Vandenberg, R. J., and Lance, C. E. (2000). A review and
   doi:10.1177/109442810031002
 }
 \seealso{
-\code{\link{measurementinvariance}} for the measurement invariance
-  test between groups
-
 \code{\link{semTools-deprecated}}
 }
 \author{

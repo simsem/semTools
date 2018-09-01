@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, and Terrence D. Jorgensen
-### Last updated: 25 August 2018
+### Last updated: 1 September 2018
 
 
 ##' Measurement Invariance Tests
@@ -43,24 +43,23 @@
 ##' test is used as described in \url{http://www.statmodel.com/chidiff.shtml}
 ##'
 ##' @importFrom lavaan parTable
-##' @aliases measurementInvariance measurementinvariance
 ##'
 ##' @param ... The same arguments as for any lavaan model.  See
-##'  \code{\link{cfa}} for more information.
+##'   \code{\link{cfa}} for more information.
 ##' @param std.lv If \code{TRUE}, the fixed-factor method of scale
-##' identification is used. If \code{FALSE}, the first variable for each factor
-##' is used as marker variable.
+##'   identification is used. If \code{FALSE}, the first variable for each factor
+##'   is used as marker variable.
 ##' @param strict If \code{TRUE}, the sequence requires `strict' invariance.
-##' See details for more information.
+##'   See details for more information.
 ##' @param quiet If \code{FALSE} (default), a summary is printed out containing
-##' an overview of the different models that are fitted, together with some
-##' model comparison tests. If \code{TRUE}, no summary is printed.
+##'   an overview of the different models that are fitted, together with some
+##'   model comparison tests. If \code{TRUE}, no summary is printed.
 ##' @param fit.measures Fit measures used to calculate the differences between
-##' nested models.
+##'   nested models.
 ##' @param baseline.model custom baseline model passed to
-##'  \code{\link[lavaan]{fitMeasures}}
+##'   \code{\link[lavaan]{fitMeasures}}
 ##' @param method The method used to calculate likelihood ratio test. See
-##'  \code{\link[lavaan]{lavTestLRT}} for available options
+##'   \code{\link[lavaan]{lavTestLRT}} for available options
 ##'
 ##' @return Invisibly, all model fits in the sequence are returned as a list.
 ##'
@@ -70,14 +69,11 @@
 ##'
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 ##'
-##' @seealso \code{\link{longInvariance}} for the measurement invariance test
-##' within person; \code{partialInvariance} for the automated function for
-##' finding partial invariance models
-##'
-##' @references Vandenberg, R. J., and Lance, C. E. (2000). A review and
-##' synthesis of the measurement invariance literature: Suggestions, practices,
-##' and recommendations for organizational research. \emph{Organizational
-##' Research Methods, 3,} 4--70.
+##' @references
+##'   Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the
+##'   measurement invariance literature: Suggestions, practices, and
+##'   recommendations for organizational research. \emph{Organizational
+##'   Research Methods, 3,} 4--70.
 ##'
 ##' @examples
 ##'
@@ -108,10 +104,10 @@ NULL
 ##' measures, models fit to multiple imputations with \code{\link{runMI}}).
 ##'
 ##' @export
-measurementInvariance <- measurementinvariance <-
-  function(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
-           fit.measures = "default", baseline.model = NULL,
-           method = "satorra.bentler.2001") {
+measurementInvariance <- function(..., std.lv = FALSE, strict = FALSE,
+                                  quiet = FALSE,  fit.measures = "default",
+                                  baseline.model = NULL,
+                                  method = "satorra.bentler.2001") {
 
     .Deprecated(msg = c("The measurementInvariance function is deprecated, and",
                         " it will cease to be included in future versions of ",

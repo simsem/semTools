@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 August 2018
+### Last updated: 1 September 2018
 ### package documentation, along with convenience documentation (e.g., imports)
 
 
@@ -19,9 +19,6 @@
 ##'   \code{\link{chisqSmallN}}}
 ##' \item{Measurement Invariance:
 ##'   \code{\link{measEq.syntax}},
-##'   \code{\link{measurementInvariance}},
-##'   \code{\link{measurementInvarianceCat}},
-##'   \code{\link{longInvariance}},
 ##'   \code{\link{partialInvariance}},
 ##'   \code{\link{partialInvarianceCat}}, and
 ##'   \code{\link{permuteMeasEq}}}
