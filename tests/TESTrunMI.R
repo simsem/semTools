@@ -177,6 +177,61 @@ fitMeasures(fit.mi, fit.measures = c("rmsea","rmr","aic"))
 
 
 
+## -------------------------------------
+## check lavaan.mi with sampling weights
+## -------------------------------------
+
+example(cfa)
+## use agemo as weights (internally rescaled)
+fit.w <- update(fit, sampling.weights = "agemo")
+## coef method
+rbind(unweighted = coef(fit), weighted = coef(fit.w))
+## parTable
+rbind(unweighted = parTable(fit)$est, weighted = parTable(fit.w)$est)
+## GLIST format
+lavInspect(fit, "est")$lambda
+lavInspect(fit.w, "est")$lambda
+
+
+## bootstrap with lavaanList
+bootFun <- function() {
+  N <- nrow(lavaan::HolzingerSwineford1939)
+  idx <- sample(1:N, size = N, replace = TRUE)
+  lavaan::HolzingerSwineford1939[idx, ]
+}
+set.seed(123)
+lst <- cfaList(HS.model, dataFunction = bootFun, ndat = 5)
+set.seed(123)
+lst.w <- cfaList(HS.model, dataFunction = bootFun, ndat = 5,
+                 sampling.weights = "agemo")
+## coef method
+data.frame(unweighted = coef(lst), weighted = coef(lst.w))
+## parTable
+data.frame(lst@ParTableList[[1]][c("lhs","op","rhs","est")],
+           weighted = lst.w@ParTableList[[1]]$est)
+## same.  Problem:
+fit.w@Options$sampling.weights
+
+
+## multiple imputations
+HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
+                                      "ageyr","agemo","school")]
+set.seed(12345)
+HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
+age <- HSMiss$ageyr + HSMiss$agemo/12
+HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
+## impute missing data first
+library(Amelia)
+set.seed(12345)
+HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
+imps <- HS.amelia$imputations
+## fit model both ways
+mi <- cfa.mi(HS.model, data = imps)
+mi.w <- cfa.mi(HS.model, data = imps, sampling.weights = "agemo")
+data.frame(unweighted = coef(mi), weighted = coef(mi.w))
+
+
+
 ## ----------------------------------------
 ## Compare to old runMI output and to Mplus
 ## ----------------------------------------

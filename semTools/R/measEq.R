@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 September 2018
+### Last updated: 12 September 2018
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -2472,7 +2472,7 @@ write.lavaan.syntax <- function(pmat, specify, value, label) {
       if (pmat == "theta") params <- c(params, "\n## UNIQUE-FACTOR COVARIANCES:\n")
     }
     nn <- rownames(specify[[1]])
-    for (CC in 1:(length(nn) - 1)) {
+    if (length(nn) > 1L) for (CC in 1:(length(nn) - 1)) {
       for (RR in (CC + 1):length(nn)) {
 
         if (!specify[[1]][RR, CC]) next
