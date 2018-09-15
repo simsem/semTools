@@ -77,8 +77,10 @@ two elements:
   intercepts over the observed means differences (\code{propdiff}). For error
   variances, the additional outputs are the proportion of the difference in
   error variances over the difference in observed variances (\code{propdiff}).
+
  \item \code{results}: Statistical tests as well as the change in CFI are
   provided. \eqn{\chi^2} and \emph{p} value are provided for all methods.
+
  \item \code{models}: The submodels used in the \code{free} and \code{fix}
   methods, as well as the nested and parent models. The nested and parent
   models will be changed from the original models if \code{free} or
@@ -106,7 +108,8 @@ names of "fit.configural" and "fit.loadings". Users may use "metric",
 "weak", "loading", or "loadings" in the \code{type} argument. Note that, for
 testing invariance on marker variables, other variables will be assigned as
 marker variables automatically.
- \item Partial strong invariance. The model
+
+\item Partial strong invariance. The model
 named 'fit.loadings' from the list of models is compared with the model
 named either 'fit.intercepts' or 'fit.thresholds'. Each intercept will be
 freed or fixed from the scalar and metric invariance models respectively.
@@ -118,7 +121,8 @@ either "fit.intercepts" or "fit.thresholds". Users may use "scalar",
 other variables will be assigned as marker variables automatically. Note
 that if all variables are dichotomous, scalar invariance testing is not
 available.
- \item Partial strict invariance. The model named either
+
+\item Partial strict invariance. The model named either
 'fit.intercepts' or 'fit.thresholds' (or 'fit.loadings') from the list of
 models is compared with the model named 'fit.residuals'. Each residual
 variance will be freed or fixed from the strict and scalar (or metric)
@@ -127,7 +131,8 @@ original model. Note that the objects in the list of models must have the
 names of "fit.residuals" and either "fit.intercepts", "fit.thresholds", or
 "fit.loadings". Users may use "strict", "residual", "residuals", "error", or
 "errors" in the \code{type} argument.
- \item Partial mean invariance. The
+
+\item Partial mean invariance. The
 model named either 'fit.intercepts' or 'fit.thresholds' (or 'fit.residuals'
 or 'fit.loadings') from the list of models is compared with the model named
 'fit.means'. Each factor mean will be freed or fixed from the means and
@@ -144,11 +149,13 @@ parameter indicating the differences between two models is free. The new
 model is compared with the nested model. This process is repeated for all
 differences between two models. The likelihood-ratio test and the difference
 in CFI are provided.
+
 \item \code{fix}: The parent model is used as a template. Then, one parameter
 indicating the differences between two models is fixed or constrained to be
 equal to other parameters. The new model is then compared with the parent
 model. This process is repeated for all differences between two models. The
 likelihood-ratio test and the difference in CFI are provided.
+
 \item \code{wald}: This method is similar to the \code{fix} method. However,
 instead of building a new model and compare them with likelihood-ratio test,
 multivariate wald test is used to compare equality between parameter

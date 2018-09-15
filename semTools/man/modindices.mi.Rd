@@ -7,15 +7,16 @@
 \title{Modification Indices for Multiple Imputations}
 \usage{
 modindices.mi(object, type = c("D2", "Rubin"), standardized = TRUE,
-  cov.std = TRUE, power = FALSE, delta = 0.1, alpha = 0.05,
-  high.power = 0.75, sort. = FALSE, minimum.value = 0,
-  maximum.number = nrow(LIST), na.remove = TRUE, op = NULL)
-
-modificationIndices.mi(object, type = c("D2", "Rubin"),
-  standardized = TRUE, cov.std = TRUE, power = FALSE, delta = 0.1,
-  alpha = 0.05, high.power = 0.75, sort. = FALSE,
+  cov.std = TRUE, information = "expected", power = FALSE,
+  delta = 0.1, alpha = 0.05, high.power = 0.75, sort. = FALSE,
   minimum.value = 0, maximum.number = nrow(LIST), na.remove = TRUE,
   op = NULL)
+
+modificationIndices.mi(object, type = c("D2", "Rubin"),
+  standardized = TRUE, cov.std = TRUE, information = "expected",
+  power = FALSE, delta = 0.1, alpha = 0.05, high.power = 0.75,
+  sort. = FALSE, minimum.value = 0, maximum.number = nrow(LIST),
+  na.remove = TRUE, op = NULL)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}}
@@ -46,6 +47,11 @@ the square-root of the diagonal elements of the model-implied covariance
 matrix of observed variables (\eqn{\Sigma}), and the (residual) latent
 covariances are scaled by the square-root of the diagonal elements of the
 model-implied covariance matrix of the latent variables.}
+
+\item{information}{\code{character} indicating the type of information
+matrix to use (check \code{\link{lavInspect}} for available options).
+\code{"expected"} information is the default, which provides better
+control of Type I errors.}
 
 \item{power}{\code{logical}. If \code{TRUE}, the (post-hoc) power is
 computed for each modification index, using the values of \code{delta}

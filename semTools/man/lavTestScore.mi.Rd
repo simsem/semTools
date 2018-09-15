@@ -7,7 +7,7 @@
 lavTestScore.mi(object, add = NULL, release = NULL, test = c("D2",
   "Rubin"), scale.W = FALSE, asymptotic = !is.null(add),
   univariate = TRUE, cumulative = FALSE, epc = FALSE,
-  verbose = FALSE, warn = TRUE)
+  verbose = FALSE, warn = TRUE, information = "expected")
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}.}
@@ -63,6 +63,11 @@ constraint, only specify one parameter in \code{add} or one constraint in
 \item{verbose}{\code{logical}. Not used for now.}
 
 \item{warn}{\code{logical}. If \code{TRUE}, print warnings if they occur.}
+
+\item{information}{\code{character} indicating the type of information
+matrix to use (check \code{\link{lavInspect}} for available options).
+\code{"expected"} information is the default, which provides better
+control of Type I errors.}
 }
 \value{
 A list containing at least one \code{data.frame}:

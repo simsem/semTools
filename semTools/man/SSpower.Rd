@@ -113,7 +113,7 @@ modelA2 <- '
   f2 =~ V5 + V6 + V7 + V8
   f1 ~~ c(0, 0)*f2
 '
-mu <- list(popMoments1$mean, popMoments2$mean)
+mu <- list(popMoments1$mean, popMoments2$mean) # ignored if NULL
 Sigma <- list(popMoments1$cov, popMoments2$cov)
 SSpower(powerModel = modelA2, mu = mu, Sigma = Sigma,
         n = c(60, 65), nparam = 2)

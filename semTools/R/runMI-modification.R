@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 21 August 2018
+### Last updated: 15 September 2018
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -44,6 +44,10 @@
 ##'   matrix of observed variables (\eqn{\Sigma}), and the (residual) latent
 ##'   covariances are scaled by the square-root of the diagonal elements of the
 ##'   model-implied covariance matrix of the latent variables.
+##' @param information \code{character} indicating the type of information
+##'   matrix to use (check \code{\link{lavInspect}} for available options).
+##'   \code{"expected"} information is the default, which provides better
+##'   control of Type I errors.
 ##' @param power \code{logical}. If \code{TRUE}, the (post-hoc) power is
 ##'   computed for each modification index, using the values of \code{delta}
 ##'   and \code{alpha}.
@@ -132,6 +136,7 @@ modindices.mi <- function(object,
 
                           standardized = TRUE,
                           cov.std = TRUE,
+                          information = "expected",
 
                           # power statistics?
                           power = FALSE,
@@ -206,7 +211,8 @@ modindices.mi <- function(object,
     scoreOut <- lavTestScore.mi(object, add = cbind(LIST, user = 10L,
                                                     free = 1, start = 0),
                                 test = "Rubin", scale.W = FALSE,
-                                epc = TRUE, asymptotic = TRUE)$uni
+                                epc = TRUE, asymptotic = TRUE,
+                                information = information)$uni
     LIST$mi <- scoreOut$X2
     LIST$epc <- scoreOut$epc
 

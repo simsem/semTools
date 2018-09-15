@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 September 2018
+### Last updated: 15 September 2018
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -69,6 +69,10 @@
 ##'  \code{release}.
 ##' @param verbose \code{logical}. Not used for now.
 ##' @param warn \code{logical}. If \code{TRUE}, print warnings if they occur.
+##' @param information \code{character} indicating the type of information
+##'   matrix to use (check \code{\link{lavInspect}} for available options).
+##'   \code{"expected"} information is the default, which provides better
+##'   control of Type I errors.
 ##'
 ##' @return
 ##'  A list containing at least one \code{data.frame}:
@@ -155,7 +159,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                             asymptotic = !is.null(add), # as F or chi-squared
                             univariate = TRUE, cumulative = FALSE,
                             #standardized = TRUE, #FIXME: add std.lv and std.all if(epc)?
-                            epc = FALSE, verbose = FALSE, warn = TRUE) {
+                            epc = FALSE, verbose = FALSE, warn = TRUE,
+                            information = "expected") {
   stopifnot(inherits(object, "lavaan.mi"))
   lavoptions <- object@Options
 
@@ -205,7 +210,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       out <- try(lavaan::lavTestScore(obj, add = add, release = release,
                                       cumulative = cumulative,
                                       univariate = univariate, epc = epc,
-                                      warn = FALSE), #FIXME: use.exp.info = use.exp.info
+                                      warn = FALSE, information = information),
                  silent = TRUE)
       if (inherits(out, "try-error")) return(NULL)
       out
@@ -374,7 +379,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                              sloth1          = obj@h1)
       ## ---------------------------------
       list(gradient = lavaan::lavInspect(obj2, "gradient"),
-           information = lavaan::lavInspect(obj2, "information"),
+           information = lavaan::lavInspect(obj2, paste("information",
+                                                        information, sep = ".")),
            nadd = nrow(ADD), parTable = lavaan::parTable(obj2))
     }
     FIT <- eval(as.call(oldCall))
@@ -450,7 +456,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     ## use lavaanList() to get gradient/information from each imputation
     oldCall$FUN <- function(obj) {
       list(gradient = lavaan::lavInspect(obj, "gradient"),
-           information = lavaan::lavInspect(obj, "information"))
+           information = lavaan::lavInspect(obj, paste("information",
+                                                       information, sep = ".")))
     }
     FIT <- eval(as.call(oldCall))
     ## pool gradients and information matrices
