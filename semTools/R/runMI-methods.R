@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 September 2018
+### Last updated: 15 September 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -1039,10 +1039,12 @@ fitted.lavaan.mi <- function(object) {
         out[[g]]$mean <- as.numeric(imp$mean[[g]])
         names(out[[g]]$mean) <- ov.names[[g]]
         class(out[[g]]$mean) <- c("lavaan.vector","numeric")
-      } else {
-        out[[g]]$mean <- sampstat.lavaan.mi(lapply(object@SampleStatsList[useImps], "[[", g),
-                                            means = TRUE, categ = categ, m = m)$mean
       }
+      #TODO: omit "else" to match new lavaan::fitted output, which excludes $mean if !meanstructure
+      # else {
+      #   out[[g]]$mean <- sampstat.lavaan.mi(lapply(object@SampleStatsList[useImps], "[[", g),
+      #                                       means = TRUE, categ = categ, m = m)$mean
+      # }
       if (categ) {
         out[[g]]$th <- imp$th[[g]]
         names(out[[g]]$th) <- lavNames(object, "th")
@@ -1057,10 +1059,12 @@ fitted.lavaan.mi <- function(object) {
       out$mean <- as.numeric(imp$mean[[1]])
       names(out$mean) <- ov.names
       class(out$mean) <- c("lavaan.vector","numeric")
-    } else {
-      out$mean <- sampstat.lavaan.mi(object@SampleStatsList[useImps],
-                                     means = TRUE, categ = categ, m = m)$mean
     }
+    #TODO: omit "else" to match new lavaan::fitted output, which excludes $mean if !meanstructure
+    # else {
+    #   out$mean <- sampstat.lavaan.mi(object@SampleStatsList[useImps],
+    #                                  means = TRUE, categ = categ, m = m)$mean
+    # }
     if (categ) {
       out$th <- imp$th[[1]]
       names(out$th) <- lavNames(object, "th")
@@ -1092,18 +1096,17 @@ gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
 
   if (type == "raw") {
     out <- list(cov = S_mean - Implied$cov)
-    if (means) out$mean <- M_mean - Implied$mean else {
-      out$mean <- rep(0, nrow(out$cov))
-      names(out$mean) <- rownames(out$cov)
-    }
+    if (means) out$mean <- M_mean - Implied$mean
+    #TODO: omit "else" to match new lavaan::fitted output, which excludes $mean if !meanstructure
+    # else {
+    #   out$mean <- rep(0, nrow(out$cov))
+    #   names(out$mean) <- rownames(out$cov)
+    # }
     if (categ) out$th <- Th_mean - Implied$th
     return(out)
   } else if (type == "cor.bollen") {
     out <- list(cor = cov2cor(S_mean) - cov2cor(Implied$cov))
-    if (!means) {
-      out$mean <- rep(0, nrow(out$cor))
-      names(out$mean) <- rownames(out$cor)
-    } else {
+    if (means) {
       std.obs.M <- M_mean / sqrt(diag(S_mean))
       std.mod.M <- Implied$mean / sqrt(diag(Implied$cov))
       out$mean <- std.obs.M - std.mod.M
@@ -1113,10 +1116,7 @@ gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
     dimnames(SDs) <- dimnames(S_mean)
     out <- list(cor = solve(SDs) %*% (S_mean - Implied$cov) %*% solve(SDs))
     class(out$cor) <- c("lavaan.matrix.symmetric","matrix")
-    if (!means) {
-      out$mean <- rep(0, nrow(out$cor))
-      names(out$mean) <- rownames(out$cor)
-    } else out$mean <- (M_mean - Implied$mean) / diag(SDs)
+    if (means) out$mean <- (M_mean - Implied$mean) / diag(SDs)
   } else stop("argument 'type' must be 'raw', 'cor', 'cor.bollen', ",
               "or 'cor.bentler'.")
   if (categ) out$th <- Th_mean - Implied$th
