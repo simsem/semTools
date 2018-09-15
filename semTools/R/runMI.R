@@ -433,7 +433,7 @@ growth.mi <- function(model, data, ...,
 ##'
 ##' @export
 calculate.D2 <- function(w, DF = 0L, asymptotic = FALSE) {
-  if (!length(w)) return(NA)
+  if (length(w) == 0L) return(NA)
   w <- as.numeric(w)
   DF <- as.numeric(DF)
 
@@ -447,9 +447,15 @@ calculate.D2 <- function(w, DF = 0L, asymptotic = FALSE) {
   }
 
   ## pool test statistics
-  w_bar <- mean(w, na.rm = TRUE)
-  ariv <- (1 + 1/nImps) * var(sqrt(w), na.rm = TRUE)
-  test.stat <- (w_bar/DF - ((nImps + 1) * ariv / (nImps - 1))) / (1 + ariv)
+  if (length(w) > 1L) {
+    w_bar <- mean(w, na.rm = TRUE)
+    ariv <- (1 + 1/nImps) * var(sqrt(w), na.rm = TRUE)
+    test.stat <- (w_bar/DF - ((nImps + 1) * ariv / (nImps - 1))) / (1 + ariv)
+  } else {
+    warning('There was only 1 non-missing value to pool, leading to zero ',
+            'variance, so D2 cannot be calculated.')
+    test.stat <- ariv <- NA
+  }
   if (test.stat < 0) test.stat <- 0
   if (asymptotic) {
     out <- c("chisq" = test.stat * DF, df = DF,
