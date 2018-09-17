@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 June 2018
+### Last updated: 17 September 2018
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -7,43 +7,45 @@
 ## Class and Methods
 ## -----------------
 
-#' Class For the Result of Nesting and Equivalence Testing
-#'
-#' This class contains the results of nesting and equivalence testing among
-#' multiple models
-#'
-#'
-#' @name Net-class
-#' @aliases Net-class show,Net-method summary,Net-method
-#' @docType class
-#'
-#' @slot test Logical \code{matrix} indicating nesting/equivalence among models
-#' @slot df The degrees of freedom of tested models
-#'
-#' @section Objects from the Class: Objects can be created via the
-#' \code{\link{net}} function.
-#'
-#' @param object An object of class \code{Net}.
-#'
-#' @return
-#' \item{show}{\code{signature(object = "Net")}: prints the logical matrix of
-#'   test results.}
-#' \item{summary}{\code{signature(object = "Net")}: prints a narrative
-#'   description of results. The original \code{object} is invisibly returned.}
-#'
-#' @author Terrence D. Jorgensen (University of Amsterdam;
-#' \email{TJorgensen314@@gmail.com})
-#' @seealso \code{\link{net}}
-#' @examples
-#'
-#' # See the example in the net function.
-#'
+##' Class For the Result of Nesting and Equivalence Testing
+##'
+##' This class contains the results of nesting and equivalence testing among
+##' multiple models
+##'
+##'
+##' @name Net-class
+##' @aliases Net-class show,Net-method summary,Net-method
+##' @docType class
+##'
+##' @slot test Logical \code{matrix} indicating nesting/equivalence among models
+##' @slot df The degrees of freedom of tested models
+##'
+##' @section Objects from the Class: Objects can be created via the
+##' \code{\link{net}} function.
+##'
+##' @param object An object of class \code{Net}.
+##'
+##' @return
+##' \item{show}{\code{signature(object = "Net")}: prints the logical matrix of
+##'   test results.}
+##' \item{summary}{\code{signature(object = "Net")}: prints a narrative
+##'   description of results. The original \code{object} is invisibly returned.}
+##'
+##' @author
+##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##' @seealso \code{\link{net}}
+##'
+##' @examples
+##'
+##' # See the example in the net function.
+##'
 setClass("Net", representation(test = "matrix", df = "vector"))
 
 
-#' @rdname Net-class
-#' @aliases show,Net-method
-#' @export
+##' @rdname Net-class
+##' @aliases show,Net-method
+##' @export
 setMethod("show", "Net",
 function(object) {
   if (length(object@test)) {
@@ -72,9 +74,9 @@ function(object) {
 })
 
 
-#' @rdname Net-class
-#' @aliases summary,Net-method
-#' @export
+##' @rdname Net-class
+##' @aliases summary,Net-method
+##' @export
 setMethod("summary", "Net",
 function(object) {
   DFs <- object@df
@@ -104,64 +106,68 @@ function(object) {
 ## Constructor Function
 ## --------------------
 
-#' Nesting and Equivalence Testing
-#'
-#' This test examines whether models are nested or equivalent based on Bentler
-#' and Satorra's (2010) procedure.
-#'
-#' The concept of nesting/equivalence should be the same regardless of
-#' estimation method. However, the particular method of testing
-#' nesting/equivalence (as described in Bentler & Satorra, 2010) employed by
-#' the net function analyzes summary statistics (model-implied means and
-#' covariance matrices, not raw data). In the case of robust methods like MLR,
-#' the raw data is only utilized for the robust adjustment to SE and chi-sq,
-#' and the net function only checks the unadjusted chi-sq for the purposes of
-#' testing nesting/equivalence.  This method does not apply to models that
-#' estimate thresholds for categorical data, so an error message will be issued
-#' if such a model is provided.
-#'
-#'
-#' @importFrom lavaan lavInspect
-#'
-#' @param \dots The \code{lavaan} objects used for test of nesting and
-#' equivalence
-#' @param crit The upper-bound criterion for testing the equivalence of models.
-#' Models are considered nested (or equivalent) if the difference between their
-#' chi-squared fit statistics is less than this criterion.
-#' @return The \linkS4class{Net} object representing the outputs for nesting
-#' and equivalent testing, including a logical matrix of test results and a
-#' vector of degrees of freedom for each model.
-#' @author Terrence D. Jorgensen (University of Amsterdam;
-#' \email{TJorgensen314@@gmail.com})
-#' @references Bentler, P. M., & Satorra, A. (2010). Testing model nesting and
-#' equivalence. \emph{Psychological Methods, 15}(2), 111--123.
-#' doi:10.1037/a0019625
-#' @examples
-#'
-#' \dontrun{
-#' m1 <- ' visual  =~ x1 + x2 + x3
-#' 	       textual =~ x4 + x5 + x6
-#' 	       speed   =~ x7 + x8 + x9 '
-#'
-#'
-#' m2 <- ' f1  =~ x1 + x2 + x3 + x4
-#' 	       f2 =~ x5 + x6 + x7 + x8 + x9 '
-#'
-#' m3 <- ' visual  =~ x1 + x2 + x3
-#' 	       textual =~ eq*x4 + eq*x5 + eq*x6
-#' 	       speed   =~ x7 + x8 + x9 '
-#'
-#' fit1 <- cfa(m1, data = HolzingerSwineford1939)
-#' fit1a <- cfa(m1, data = HolzingerSwineford1939, std.lv = TRUE) # Equivalent to fit1
-#' fit2 <- cfa(m2, data = HolzingerSwineford1939) # Not equivalent to or nested in fit1
-#' fit3 <- cfa(m3, data = HolzingerSwineford1939) # Nested in fit1 and fit1a
-#'
-#' tests <- net(fit1, fit1a, fit2, fit3)
-#' tests
-#' summary(tests)
-#' }
-#'
-#' @export
+##' Nesting and Equivalence Testing
+##'
+##' This test examines whether models are nested or equivalent based on Bentler
+##' and Satorra's (2010) procedure.
+##'
+##' The concept of nesting/equivalence should be the same regardless of
+##' estimation method. However, the particular method of testing
+##' nesting/equivalence (as described in Bentler & Satorra, 2010) employed by
+##' the net function analyzes summary statistics (model-implied means and
+##' covariance matrices, not raw data). In the case of robust methods like MLR,
+##' the raw data is only utilized for the robust adjustment to SE and chi-sq,
+##' and the net function only checks the unadjusted chi-sq for the purposes of
+##' testing nesting/equivalence.  This method does not apply to models that
+##' estimate thresholds for categorical data, so an error message will be issued
+##' if such a model is provided.
+##'
+##'
+##' @importFrom lavaan lavInspect
+##'
+##' @param \dots The \code{lavaan} objects used for test of nesting and
+##'   equivalence
+##' @param crit The upper-bound criterion for testing the equivalence of models.
+##'   Models are considered nested (or equivalent) if the difference between
+##'   their \eqn{\chi^2} fit statistics is less than this criterion.
+##'
+##' @return The \linkS4class{Net} object representing the outputs for nesting
+##'   and equivalent testing, including a logical matrix of test results and a
+##'   vector of degrees of freedom for each model.
+##'
+##' @author
+##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##' @references
+##' Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence.
+##' \emph{Psychological Methods, 15}(2), 111--123. doi:10.1037/a0019625
+##'
+##' @examples
+##'
+##' \dontrun{
+##' m1 <- ' visual  =~ x1 + x2 + x3
+##' 	       textual =~ x4 + x5 + x6
+##' 	       speed   =~ x7 + x8 + x9 '
+##'
+##'
+##' m2 <- ' f1  =~ x1 + x2 + x3 + x4
+##' 	       f2 =~ x5 + x6 + x7 + x8 + x9 '
+##'
+##' m3 <- ' visual  =~ x1 + x2 + x3
+##' 	       textual =~ eq*x4 + eq*x5 + eq*x6
+##' 	       speed   =~ x7 + x8 + x9 '
+##'
+##' fit1 <- cfa(m1, data = HolzingerSwineford1939)
+##' fit1a <- cfa(m1, data = HolzingerSwineford1939, std.lv = TRUE) # Equivalent to fit1
+##' fit2 <- cfa(m2, data = HolzingerSwineford1939) # Not equivalent to or nested in fit1
+##' fit3 <- cfa(m3, data = HolzingerSwineford1939) # Nested in fit1 and fit1a
+##'
+##' tests <- net(fit1, fit1a, fit2, fit3)
+##' tests
+##' summary(tests)
+##' }
+##'
+##' @export
 net <- function(..., crit = .0001) {
   ## put fitted objects in a list
   fitList <- list(...)
@@ -174,6 +180,12 @@ net <- function(..., crit = .0001) {
     stop(paste("The following arguments are not fitted lavaan objects:\n",
                paste(fitNames[notLavaan], collapse = "\t")))
   }
+
+  ## check for meanstructure
+  meanstructure <- sapply(fitList, function(x) lavInspect(x, "options")$meanstructure)
+  if (!(all(meanstructure) || !any(meanstructure)))
+    stop('Some (but not all) fitted lavaan objects include a mean structure. ',
+         'Please re-fit all models with the argument meanstructure=TRUE.')
 
   ## check whether any models include categorical outcomes
   catMod <- sapply(fitList, function(x) lavInspect(x, "options")$categorical)
@@ -260,7 +272,11 @@ x.within.y <- function(x, y, crit = .0001) {
 
   ## model-implied moments
   Sigma <- lavInspect(x, "cov.ov")
-  Mu <- lavInspect(x, "mean.ov")
+  if (lavInspect(x, "options")$meanstructure) {
+    Mu <- lavInspect(x, "mean.ov")
+  } else {
+    Mu <- NULL
+  }
   N <- lavInspect(x, "nobs")
 
   ## fit model and check that chi-squared < crit

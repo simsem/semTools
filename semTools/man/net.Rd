@@ -11,13 +11,13 @@ net(..., crit = 1e-04)
 equivalence}
 
 \item{crit}{The upper-bound criterion for testing the equivalence of models.
-Models are considered nested (or equivalent) if the difference between their
-chi-squared fit statistics is less than this criterion.}
+Models are considered nested (or equivalent) if the difference between
+their \eqn{\chi^2} fit statistics is less than this criterion.}
 }
 \value{
 The \linkS4class{Net} object representing the outputs for nesting
-and equivalent testing, including a logical matrix of test results and a
-vector of degrees of freedom for each model.
+  and equivalent testing, including a logical matrix of test results and a
+  vector of degrees of freedom for each model.
 }
 \description{
 This test examines whether models are nested or equivalent based on Bentler
@@ -62,11 +62,9 @@ summary(tests)
 
 }
 \references{
-Bentler, P. M., & Satorra, A. (2010). Testing model nesting and
-equivalence. \emph{Psychological Methods, 15}(2), 111--123.
-doi:10.1037/a0019625
+Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence.
+\emph{Psychological Methods, 15}(2), 111--123. doi:10.1037/a0019625
 }
 \author{
-Terrence D. Jorgensen (University of Amsterdam;
-\email{TJorgensen314@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

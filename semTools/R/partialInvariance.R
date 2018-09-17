@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 15 September 2018
+### Last updated: 17 September 2018
 
 
 ##' Partial Measurement Invariance Testing Across Groups
@@ -450,7 +450,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1,
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		obsmean <- sapply(lavInspect(fit0, "sampstat"), "[[", "mean")
+		obsmean <- sapply(lavInspect(fit0, "sampstat"), "[[", "mean") #FIXME: there might not be a mean structure
 		obsmean <- obsmean[,grouporder]
 		obsdiff <- obsmean[,2:ngroups, drop = FALSE] - matrix(obsmean[,1], nrow(obsmean), ngroups - 1)
 		obsdiff <- obsdiff[varfree, , drop = FALSE]
@@ -671,7 +671,7 @@ partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1,
 			varfree <- setdiff(varfree, c(free, fix))
 		}
 
-		obsmean <- sapply(lavInspect(fit0, "sampstat"), "[[", "mean")
+		obsmean <- sapply(lavInspect(fit0, "sampstat"), "[[", "mean") #FIXME: there might not be a mean structure
 		obsmean <- obsmean[,grouporder]
 		obsdiff <- obsmean[,2:ngroups, drop = FALSE] - matrix(obsmean[,1], nrow(obsmean), ngroups - 1)
 		obsdiff <- obsdiff[varfree, , drop = FALSE]

@@ -46,6 +46,5 @@ multiple models
 \code{\link{net}}
 }
 \author{
-Terrence D. Jorgensen (University of Amsterdam;
-\email{TJorgensen314@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

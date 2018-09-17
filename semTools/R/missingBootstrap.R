@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 June 2018
+### Last updated: 17 September 2018
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 
@@ -7,34 +7,34 @@
 ## "BootMiss" Class and Methods
 ## ----------------------------
 
-#' Class For the Results of Bollen-Stine Bootstrap with Incomplete Data
-#'
-#' This class contains the results of Bollen-Stine bootstrap with missing data.
-#'
-#'
-#' @name BootMiss-class
-#' @aliases BootMiss-class show,BootMiss-method summary,BootMiss-method
-#' hist,BootMiss-method
-#' @docType class
-#' @section Objects from the Class: Objects can be created via the
-#' \code{\link{bsBootMiss}} function.
-#' @slot time A list containing 2 \code{difftime} objects (\code{transform}
-#'  and \code{fit}), indicating the time elapsed for data transformation and
-#'  for fitting the model to bootstrap data sets, respectively.
-#' @slot transData Transformed data
-#' @slot bootDist The vector of \eqn{chi^2} values from bootstrap data sets
-#'  fitted by the target model
-#' @slot origChi The \eqn{chi^2} value from the original data set
-#' @slot df The degree of freedom of the model
-#' @slot bootP The \emph{p} value comparing the original \eqn{chi^2} with the
-#'  bootstrap distribution
-#' @author Terrence D. Jorgensen (University of Amsterdam;
-#' \email{TJorgensen314@@gmail.com})
-#' @seealso \code{\link{bsBootMiss}}
-#' @examples
-#'
-#' # See the example from the bsBootMiss function
-#'
+##' Class For the Results of Bollen-Stine Bootstrap with Incomplete Data
+##'
+##' This class contains the results of Bollen-Stine bootstrap with missing data.
+##'
+##'
+##' @name BootMiss-class
+##' @aliases BootMiss-class show,BootMiss-method summary,BootMiss-method
+##' hist,BootMiss-method
+##' @docType class
+##' @section Objects from the Class: Objects can be created via the
+##' \code{\link{bsBootMiss}} function.
+##' @slot time A list containing 2 \code{difftime} objects (\code{transform}
+##'  and \code{fit}), indicating the time elapsed for data transformation and
+##'  for fitting the model to bootstrap data sets, respectively.
+##' @slot transData Transformed data
+##' @slot bootDist The vector of \eqn{chi^2} values from bootstrap data sets
+##'  fitted by the target model
+##' @slot origChi The \eqn{chi^2} value from the original data set
+##' @slot df The degree of freedom of the model
+##' @slot bootP The \emph{p} value comparing the original \eqn{chi^2} with the
+##'  bootstrap distribution
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##' \email{TJorgensen314@@gmail.com})
+##' @seealso \code{\link{bsBootMiss}}
+##' @examples
+##'
+##' # See the example from the bsBootMiss function
+##'
 setClass("BootMiss", representation(time = "list",
                                     transData = "data.frame",
                                     bootDist = "vector",
@@ -42,10 +42,10 @@ setClass("BootMiss", representation(time = "list",
                                     df = "numeric",
                                     bootP = "numeric"))
 
-#' @rdname BootMiss-class
-#' @aliases show,BootMiss-method
-#' @importFrom stats pchisq
-#' @export
+##' @rdname BootMiss-class
+##' @aliases show,BootMiss-method
+##' @importFrom stats pchisq
+##' @export
 setMethod("show", "BootMiss",
 function(object) {
   cat("Chi-Squared = ", object@origChi, "\nDegrees of Freedom = ",
@@ -57,10 +57,10 @@ function(object) {
   invisible(object)
 })
 
-#' @rdname BootMiss-class
-#' @aliases summary,BootMiss-method
-#' @importFrom stats var
-#' @export
+##' @rdname BootMiss-class
+##' @aliases summary,BootMiss-method
+##' @importFrom stats var
+##' @export
 setMethod("summary", "BootMiss",
 function(object) {
   cat("Time elapsed to transform the data:\n")
@@ -77,22 +77,22 @@ function(object) {
   invisible(object)
 })
 
-#' @rdname BootMiss-class
-#' @aliases hist,BootMiss-method
-#' @importFrom stats qchisq dchisq quantile
-#' @param object,x object of class \code{BootMiss}
-#' @param ... Additional arguments to pass to \code{\link[graphics]{hist}}
-#' @param alpha alpha level used to draw confidence limits
-#' @param nd number of digits to display
-#' @param printLegend \code{logical}. If \code{TRUE} (default), a legend will
-#'  be printed with the histogram
-#' @param legendArgs \code{list} of arguments passed to the
-#'  \code{\link[graphics]{legend}} function.  The default argument is a list
-#'  placing the legend at the top-left of the figure.
-#' @return The \code{hist} method returns a list of \code{length == 2},
-#'  containing the arguments for the call to \code{hist} and the arguments
-#'  to the call for \code{legend}, respectively.
-#' @export
+##' @rdname BootMiss-class
+##' @aliases hist,BootMiss-method
+##' @importFrom stats qchisq dchisq quantile
+##' @param object,x object of class \code{BootMiss}
+##' @param ... Additional arguments to pass to \code{\link[graphics]{hist}}
+##' @param alpha alpha level used to draw confidence limits
+##' @param nd number of digits to display
+##' @param printLegend \code{logical}. If \code{TRUE} (default), a legend will
+##'  be printed with the histogram
+##' @param legendArgs \code{list} of arguments passed to the
+##'  \code{\link[graphics]{legend}} function.  The default argument is a list
+##'  placing the legend at the top-left of the figure.
+##' @return The \code{hist} method returns a list of \code{length == 2},
+##'  containing the arguments for the call to \code{hist} and the arguments
+##'  to the call for \code{legend}, respectively.
+##' @export
 setMethod("hist", "BootMiss",
 function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
          legendArgs = list(x = "topleft")) {
@@ -161,120 +161,120 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ## Constructor Function
 ## --------------------
 
-#' Bollen-Stine Bootstrap with the Existence of Missing Data
-#'
-#' Implement the Bollen and Stine's (1992) Bootstrap when missing observations
-#' exist. The implemented method is proposed by Savalei and Yuan (2009). This
-#' can be used in two ways. The first and easiest option is to fit the model to
-#' incomplete data in \code{lavaan} using the FIML estimator, then pass that
-#' \code{lavaan} object to \code{bsBootMiss}.
-#'
-#' The second is designed for users of other software packages (e.g., LISREL,
-#' EQS, Amos, or Mplus). Users can import their data, \eqn{\chi^2} value, and
-#' model-implied moments from another package, and they have the option of
-#' saving (or writing to a file) either the transformed data or bootstrapped
-#' samples of that data, which can be analyzed in other programs. In order to
-#' analyze the bootstrapped samples and return a \emph{p} value, users of other
-#' programs must still specify their model using lavaan syntax.
-#'
-#'
-#' @importFrom lavaan lavInspect parTable
-#' @param x A target \code{lavaan} object used in the Bollen-Stine bootstrap
-#' @param transformation The transformation methods in Savalei and Yuan (2009).
-#' There are three methods in the article, but only the first two are currently
-#' implemented here.  Use \code{transformation = 1} when there are few missing
-#' data patterns, each of which has a large size, such as in a
-#' planned-missing-data design.  Use \code{transformation = 2} when there are
-#' more missing data patterns. The currently unavailable
-#' \code{transformation = 3} would be used when several missing data patterns
-#' have n = 1.
-#' @param nBoot The number of bootstrap samples.
-#' @param model Optional. The target model if \code{x} is not provided.
-#' @param rawData Optional. The target raw data set if \code{x} is not
-#'  provided.
-#' @param Sigma Optional. The model-implied covariance matrix if \code{x} is
-#'  not provided.
-#' @param Mu Optional. The model-implied mean vector if \code{x} is not
-#'  provided.
-#' @param group Optional character string specifying the name of the grouping
-#'  variable in \code{rawData} if \code{x} is not provided.
-#' @param ChiSquared Optional. The model's \eqn{\chi^2} test statistic if
-#'  \code{x} is not provided.
-#' @param EMcov Optional, if \code{x} is not provided. The EM (or Two-Stage ML)
-#' estimated covariance matrix used to speed up Transformation 2 algorithm.
-#' @param transDataOnly Logical. If \code{TRUE}, the result will provide the
-#' transformed data only.
-#' @param writeTransData Logical. If \code{TRUE}, the transformed data set is
-#' written to a text file, \code{transDataOnly} is set to \code{TRUE}, and the
-#' transformed data is returned invisibly.
-#' @param bootSamplesOnly Logical. If \code{TRUE}, the result will provide
-#' bootstrap data sets only.
-#' @param writeBootData Logical. If \code{TRUE}, the stacked bootstrap data
-#' sets are written to a text file, \code{bootSamplesOnly} is set to
-#' \code{TRUE}, and the list of bootstrap data sets are returned invisibly.
-#' @param writeArgs Optional \code{list}. If \code{writeBootData = TRUE} or
-#' \code{writeBootData = TRUE}, user can pass arguments to the
-#' \code{\link[utils]{write.table}} function as a list.  Some default values
-#' are provided: \code{file} = "bootstrappedSamples.dat", \code{row.names} =
-#' \code{FALSE}, and \code{na} = "-999", but the user can override all of these
-#' by providing other values for those arguments in the \code{writeArgs} list.
-#' @param seed The seed number used in randomly drawing bootstrap samples.
-#' @param suppressWarn Logical. If \code{TRUE}, warnings from \code{lavaan}
-#' function will be suppressed when fitting the model to each bootstrap sample.
-#' @param showProgress Logical. Indicating whether to display a progress bar
-#' while fitting models to bootstrap samples.
-#' @param \dots The additional arguments in the \code{\link[lavaan]{lavaan}}
-#' function. See also \code{\link[lavaan]{lavOptions}}
-#' @return As a default, this function returns a \code{\linkS4class{BootMiss}}
-#' object containing the results of the bootstrap samples. Use \code{show},
-#' \code{summary}, or \code{hist} to examine the results. Optionally, the
-#' transformed data set is returned if \code{transDataOnly = TRUE}. Optionally,
-#' the bootstrap data sets are returned if \code{bootSamplesOnly = TRUE}.
-#' @author Terrence D. Jorgensen (University of Amsterdam;
-#' \email{TJorgensen314@@gmail.com})
-#'
-#' Syntax for transformations borrowed from http://www2.psych.ubc.ca/~vsavalei/
-#' @seealso \code{\linkS4class{BootMiss}}
-#' @references
-#'
-#' Bollen, K. A., & Stine, R. A. (1992). Bootstrapping goodness-of-fit measures
-#' in structural equation models. \emph{Sociological Methods &
-#' Research, 21}(2), 205--229. doi:10.1177/0049124192021002004
-#'
-#' Savalei, V., & Yuan, K.-H. (2009). On the model-based bootstrap with missing
-#' data: Obtaining a p-value for a test of exact fit. \emph{Multivariate
-#' Behavioral Research, 44}(6), 741--763. doi:10.1080/00273170903333590
-#' @examples
-#'
-#' \dontrun{
-#' dat1 <- HolzingerSwineford1939
-#' dat1$x5 <- ifelse(dat1$x1 <= quantile(dat1$x1, .3), NA, dat1$x5)
-#' dat1$x9 <- ifelse(is.na(dat1$x5), NA, dat1$x9)
-#'
-#' targetModel <- "
-#' visual  =~ x1 + x2 + x3
-#' textual =~ x4 + x5 + x6
-#' speed   =~ x7 + x8 + x9
-#' "
-#' targetFit <- sem(targetModel, dat1, meanstructure = TRUE, std.lv = TRUE,
-#'                  missing = "fiml", group = "school")
-#' summary(targetFit, fit = TRUE, standardized = TRUE)
-#'
-#' # The number of bootstrap samples should be much higher.
-#' temp <- bsBootMiss(targetFit, transformation = 1, nBoot = 10, seed = 31415)
-#'
-#' temp
-#' summary(temp)
-#' hist(temp)
-#' hist(temp, printLegend = FALSE) # suppress the legend
-#' ## user can specify alpha level (default: alpha = 0.05), and the number of
-#' ## digits to display (default: nd = 2).  Pass other arguments to hist(...),
-#' ## or a list of arguments to legend() via "legendArgs"
-#' hist(temp, alpha = .01, nd = 3, xlab = "something else", breaks = 25,
-#'      legendArgs = list("bottomleft", box.lty = 2))
-#' }
-#'
-#' @export
+##' Bollen-Stine Bootstrap with the Existence of Missing Data
+##'
+##' Implement the Bollen and Stine's (1992) Bootstrap when missing observations
+##' exist. The implemented method is proposed by Savalei and Yuan (2009). This
+##' can be used in two ways. The first and easiest option is to fit the model to
+##' incomplete data in \code{lavaan} using the FIML estimator, then pass that
+##' \code{lavaan} object to \code{bsBootMiss}.
+##'
+##' The second is designed for users of other software packages (e.g., LISREL,
+##' EQS, Amos, or Mplus). Users can import their data, \eqn{\chi^2} value, and
+##' model-implied moments from another package, and they have the option of
+##' saving (or writing to a file) either the transformed data or bootstrapped
+##' samples of that data, which can be analyzed in other programs. In order to
+##' analyze the bootstrapped samples and return a \emph{p} value, users of other
+##' programs must still specify their model using lavaan syntax.
+##'
+##'
+##' @importFrom lavaan lavInspect parTable
+##' @param x A target \code{lavaan} object used in the Bollen-Stine bootstrap
+##' @param transformation The transformation methods in Savalei and Yuan (2009).
+##' There are three methods in the article, but only the first two are currently
+##' implemented here.  Use \code{transformation = 1} when there are few missing
+##' data patterns, each of which has a large size, such as in a
+##' planned-missing-data design.  Use \code{transformation = 2} when there are
+##' more missing data patterns. The currently unavailable
+##' \code{transformation = 3} would be used when several missing data patterns
+##' have n = 1.
+##' @param nBoot The number of bootstrap samples.
+##' @param model Optional. The target model if \code{x} is not provided.
+##' @param rawData Optional. The target raw data set if \code{x} is not
+##'  provided.
+##' @param Sigma Optional. The model-implied covariance matrix if \code{x} is
+##'  not provided.
+##' @param Mu Optional. The model-implied mean vector if \code{x} is not
+##'  provided.
+##' @param group Optional character string specifying the name of the grouping
+##'  variable in \code{rawData} if \code{x} is not provided.
+##' @param ChiSquared Optional. The model's \eqn{\chi^2} test statistic if
+##'  \code{x} is not provided.
+##' @param EMcov Optional, if \code{x} is not provided. The EM (or Two-Stage ML)
+##' estimated covariance matrix used to speed up Transformation 2 algorithm.
+##' @param transDataOnly Logical. If \code{TRUE}, the result will provide the
+##' transformed data only.
+##' @param writeTransData Logical. If \code{TRUE}, the transformed data set is
+##' written to a text file, \code{transDataOnly} is set to \code{TRUE}, and the
+##' transformed data is returned invisibly.
+##' @param bootSamplesOnly Logical. If \code{TRUE}, the result will provide
+##' bootstrap data sets only.
+##' @param writeBootData Logical. If \code{TRUE}, the stacked bootstrap data
+##' sets are written to a text file, \code{bootSamplesOnly} is set to
+##' \code{TRUE}, and the list of bootstrap data sets are returned invisibly.
+##' @param writeArgs Optional \code{list}. If \code{writeBootData = TRUE} or
+##' \code{writeBootData = TRUE}, user can pass arguments to the
+##' \code{\link[utils]{write.table}} function as a list.  Some default values
+##' are provided: \code{file} = "bootstrappedSamples.dat", \code{row.names} =
+##' \code{FALSE}, and \code{na} = "-999", but the user can override all of these
+##' by providing other values for those arguments in the \code{writeArgs} list.
+##' @param seed The seed number used in randomly drawing bootstrap samples.
+##' @param suppressWarn Logical. If \code{TRUE}, warnings from \code{lavaan}
+##' function will be suppressed when fitting the model to each bootstrap sample.
+##' @param showProgress Logical. Indicating whether to display a progress bar
+##' while fitting models to bootstrap samples.
+##' @param \dots The additional arguments in the \code{\link[lavaan]{lavaan}}
+##' function. See also \code{\link[lavaan]{lavOptions}}
+##' @return As a default, this function returns a \code{\linkS4class{BootMiss}}
+##' object containing the results of the bootstrap samples. Use \code{show},
+##' \code{summary}, or \code{hist} to examine the results. Optionally, the
+##' transformed data set is returned if \code{transDataOnly = TRUE}. Optionally,
+##' the bootstrap data sets are returned if \code{bootSamplesOnly = TRUE}.
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##' \email{TJorgensen314@@gmail.com})
+##'
+##' Syntax for transformations borrowed from http://www2.psych.ubc.ca/~vsavalei/
+##' @seealso \code{\linkS4class{BootMiss}}
+##' @references
+##'
+##' Bollen, K. A., & Stine, R. A. (1992). Bootstrapping goodness-of-fit measures
+##' in structural equation models. \emph{Sociological Methods &
+##' Research, 21}(2), 205--229. doi:10.1177/0049124192021002004
+##'
+##' Savalei, V., & Yuan, K.-H. (2009). On the model-based bootstrap with missing
+##' data: Obtaining a p-value for a test of exact fit. \emph{Multivariate
+##' Behavioral Research, 44}(6), 741--763. doi:10.1080/00273170903333590
+##' @examples
+##'
+##' \dontrun{
+##' dat1 <- HolzingerSwineford1939
+##' dat1$x5 <- ifelse(dat1$x1 <= quantile(dat1$x1, .3), NA, dat1$x5)
+##' dat1$x9 <- ifelse(is.na(dat1$x5), NA, dat1$x9)
+##'
+##' targetModel <- "
+##' visual  =~ x1 + x2 + x3
+##' textual =~ x4 + x5 + x6
+##' speed   =~ x7 + x8 + x9
+##' "
+##' targetFit <- sem(targetModel, dat1, meanstructure = TRUE, std.lv = TRUE,
+##'                  missing = "fiml", group = "school")
+##' summary(targetFit, fit = TRUE, standardized = TRUE)
+##'
+##' # The number of bootstrap samples should be much higher.
+##' temp <- bsBootMiss(targetFit, transformation = 1, nBoot = 10, seed = 31415)
+##'
+##' temp
+##' summary(temp)
+##' hist(temp)
+##' hist(temp, printLegend = FALSE) # suppress the legend
+##' ## user can specify alpha level (default: alpha = 0.05), and the number of
+##' ## digits to display (default: nd = 2).  Pass other arguments to hist(...),
+##' ## or a list of arguments to legend() via "legendArgs"
+##' hist(temp, alpha = .01, nd = 3, xlab = "something else", breaks = 25,
+##'      legendArgs = list("bottomleft", box.lty = 2))
+##' }
+##'
+##' @export
 bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
                        Sigma, Mu, group, ChiSquared, EMcov,
                        writeTransData = FALSE, transDataOnly = FALSE,
@@ -300,8 +300,10 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
 
   ## If a lavaan object is supplied, the extracted values for rawData, Sigma, Mu,
   ## EMcov, and EMmeans will override any user-supplied arguments.
-  nG <- lavInspect(x, "ngroups")
   if (hasArg(x)) {
+    if (!lavInspect(x, "options")$meanstructure)
+      stop('You must fit the lavaan model with the argument "meanstructure=TRUE".')
+    nG <- lavInspect(x, "ngroups")
     if (nG == 1L) {
       rawData <- list(as.data.frame(lavInspect(x, "data")))
     } else rawData <- lapply(lavInspect(x, "data"), as.data.frame)
@@ -372,6 +374,7 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     if (unequalGroups) stop("Unequal number of groups in rawData, Sigma, Mu.
        For multiple-group models, rawData must be a list of data frames,
        NOT a single data frame with a \"group\" column.")
+    nG <- length(Sigma)
 
     ## In each group, check Sigma is symmetric and dimensions match rawData and Mu.
     for (g in seq_along(rawData)) {
@@ -792,7 +795,7 @@ getBootSample <- function(groupDat, group, group.label) {
 }
 
 ## fit the model to a single bootstrapped sample and return chi-squared
-#' @importFrom lavaan lavInspect
+##' @importFrom lavaan lavInspect
 fitBootSample <- function(dat, args, suppress) {
   args$data <- dat
   lavaanlavaan <- function(...) { lavaan::lavaan(...) }
