@@ -115,7 +115,7 @@
 #' @references
 #' Bollen, K. A. (1980). Issues in the comparative measurement of
 #' political democracy. \emph{American Sociological Review, 45}(3), 370--390.
-#' Retrieved from \url{http://www.jstor.org/stable/2095172}
+#' Retrieved from \url{https://www.jstor.org/stable/2095172}
 #'
 #' Bentler, P. M. (1972). A lower-bound method for the dimension-free
 #' measurement of internal consistency. \emph{Social Science Research, 1}(4),

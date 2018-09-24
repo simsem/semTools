@@ -50,7 +50,7 @@ obsolete. The utility functions \code{nullMx} and \code{saturateMx} will
 also no longer be supported. These have already been removed from
 \pkg{semTools}, except that \code{standardizeMx} remains deprecated due to
 the temporary depndency on it of the \pkg{semPlot} package.  The exception
-is that \code{\link[OpenMx]{mxStandardizeRAMpaths}} currently only provides
+is that \code{mxStandardizeRAMpaths} currently only provides
 standardized estimates of covariance-structure parameters, whereas
 \code{standardizeMx} also provides standardized means.
 }
