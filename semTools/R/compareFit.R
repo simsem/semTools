@@ -428,7 +428,7 @@ getFitSummary <- function(object, fit.measures = "default", return.diff = FALSE)
 
   ## or return differences in fit indices
   diffTab <- as.data.frame(do.call(cbind, lapply(fitTab, diff)))
-  rownames(diffTab) <- paste(object@name[-1], "-", object@name[-nrow(diffTab)])
+  rownames(diffTab) <- paste(object@name[-1], "-", object@name[-length(object@name)])
   diffTab
 }
 
