@@ -1154,12 +1154,13 @@ resid.lavaan.mi <- function(object, type = c("raw","cor")) {
     out <- list()
     for (g in group.label) {
       out[[g]] <- gp.resid.lavaan.mi(Observed = lapply(object@SampleStatsList[useImps], "[[", g),
-                                     N = N, Implied = Implied[[g]], type = type,
+                                     N = N[[g]], Implied = Implied[[g]], type = type,
                                      means = meanstructure, m = m, categ = categ)
     }
   } else {
     out <- gp.resid.lavaan.mi(Observed = object@SampleStatsList[useImps],
-                              N = N, Implied = Implied, type = type,
+                              N = lavListInspect(object, "nobs"),
+                              Implied = Implied, type = type,
                               means = meanstructure, m = m, categ = categ)
   }
   out
