@@ -834,6 +834,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                           warn = TRUE, debug = FALSE, return.fit = FALSE) {
 
   mc <- match.call(expand.dots = TRUE)
+  mc$group.equal <- call("c", eval(group.equal))
+  mc$long.equal <- call("c", eval(long.equal))
 
   ## -------------------------------
   ## Preliminary checks on arguments
