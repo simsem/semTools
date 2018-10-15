@@ -312,8 +312,9 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
   cat('\n')
 
   ## without any constraints, call it the configural model
-  if (length(object@call$group.equal) == 1L && object@call$group.equal == "" &&
-      length(object@call$long.equal) == 1L && object@call$long.equal == "") {
+  group_configural <- all(eval(object@call$group.equal) %in% c("", NULL))
+  long_configural <-  all(eval(object@call$long.equal) %in% c("", NULL))
+  if(group_configural & long_configural) {
     cat('\nThis model hypothesizes only configural invariance.\n\n')
     ## return pattern matrix
     return(invisible(lambda))
@@ -322,13 +323,13 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 
   ## constrained parameters across groups (+ partial exceptions)
   if (nG > 1L) {
-    if (length(object@call$group.equal) == 1L && object@call$group.equal == "") {
+    if(group_configural) {
       cat('No parameters were constrained to equality across groups.\n')
     } else {
       cat('The following types of parameter were constrained to',
           'equality across groups:\n\n')
-      for (i in object@call$group.equal) {
-        group.partial <- object@call$group.partial
+      for (i in eval(object@call$group.equal)) {
+        group.partial <- eval(object@call$group.partial)
         ## first, check for exceptions
         if (i == "loadings") {
           man.ind <- group.partial$rhs %in% rownames(object@specify[[1]]$lambda)
@@ -389,12 +390,12 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
   }
   ## constrained parameters across repeated measures (+ partial exceptions)
   if (length(object@call$longFacNames)) {
-    if (length(object@call$long.equal) == 1L && object@call$long.equal == "") {
+    if(long_configural) {
       cat('No parameters were constrained to equality across repeated measures:\n')
     } else {
       cat('The following types of parameter were constrained to equality',
           'across repeated measures:\n\n')
-      for (i in object@call$long.equal) {
+      for (i in eval(object@call$long.equal)) {
         long.partial <- object@call$long.partial
         ## first, check for exceptions
         if (i == "loadings") {
