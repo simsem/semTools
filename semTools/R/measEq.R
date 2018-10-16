@@ -312,8 +312,9 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
   cat('\n')
 
   ## without any constraints, call it the configural model
-  if (length(object@call$group.equal) == 1L && object@call$group.equal == "" &&
-      length(object@call$long.equal) == 1L && object@call$long.equal == "") {
+  no.group.equal <- length(object@call$group.equal) == 1L && object@call$group.equal == ""
+  no.long.equal <- length(object@call$long.equal) == 1L && object@call$long.equal == ""
+  if (no.group.equal && no.long.equal) {
     cat('\nThis model hypothesizes only configural invariance.\n\n')
     ## return pattern matrix
     return(invisible(lambda))
@@ -322,7 +323,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
 
   ## constrained parameters across groups (+ partial exceptions)
   if (nG > 1L) {
-    if (length(object@call$group.equal) == 1L && object@call$group.equal == "") {
+    if (no.group.equal) {
       cat('No parameters were constrained to equality across groups.\n')
     } else {
       cat('The following types of parameter were constrained to',
@@ -389,7 +390,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
   }
   ## constrained parameters across repeated measures (+ partial exceptions)
   if (length(object@call$longFacNames)) {
-    if (length(object@call$long.equal) == 1L && object@call$long.equal == "") {
+    if (no.long.equal) {
       cat('No parameters were constrained to equality across repeated measures:\n')
     } else {
       cat('The following types of parameter were constrained to equality',
@@ -604,6 +605,7 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##'           either raw \code{data} or summary statistics via \code{sample.cov}
 ##'           and (optionally) \code{sample.mean}. In order to include
 ##'           thresholds in the syntax, raw \code{data} must be provided.
+#FIXME: lavaan has a new sample.th= argument
 ##'           See \code{\link[lavaan]{lavaan}}.
 ##'     \item a fitted \code{\linkS4class{lavaan}} model (e.g., as returned by
 ##'           \code{\link[lavaan]{cfa}}) estimating the configural model
@@ -833,6 +835,19 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                           warn = TRUE, debug = FALSE, return.fit = FALSE) {
 
   mc <- match.call(expand.dots = TRUE)
+  ## evaluate promises that might change before being evaluated
+  ## (e.g., for-loops or Monte Carlo studies)
+  mc$ID.fac        <- eval(ID.fac)
+  mc$ID.cat        <- eval(ID.cat)
+  mc$ID.thr        <- eval(ID.thr)
+  mc$group         <- eval(group)
+  mc$group.equal   <- eval(group.equal)
+  mc$group.partial <- eval(group.partial)
+  mc$longFacNames  <- eval(longFacNames)
+  mc$longIndNames  <- eval(longIndNames)
+  mc$long.equal    <- eval(long.equal)
+  mc$long.partial  <- eval(long.partial)
+  mc$auto          <- eval(auto)
 
   ## -------------------------------
   ## Preliminary checks on arguments
