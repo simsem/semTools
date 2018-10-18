@@ -621,7 +621,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       }
     }
 
-    Table3 <- Table
+    Table3 <- Table[TS.order,]
     DF <- seq_len( length(TS) )
     if (asymptotic) {
       Table3$X2 <- TS
