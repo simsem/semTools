@@ -596,7 +596,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     }
 
     ## FIXME: experimentally add univariate EPCs for added parameters, as would accompany modification indices
-    if (epc && !is.null(add)) Table2$epc <- EPC.uni
+    if (epc && !is.null(add)) Table2$epc <- EPC.uni[r.idx]
 
     attr(Table2, "header") <- "univariate score tests:"
     OUT$uni <- Table2
