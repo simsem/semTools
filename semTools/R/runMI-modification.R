@@ -205,6 +205,10 @@ modindices.mi <- function(object,
       LIST$sepc.lv <- rowMeans(do.call(cbind, sepcList))
       sepcList <- lapply(object@miList[useImps], "[[", i = "sepc.all")
       LIST$sepc.all <- rowMeans(do.call(cbind, sepcList))
+      if ("sepc.nox" %in% colnames(object@miList[useImps][[1]])) {
+        sepcList <- lapply(object@miList[useImps], "[[", i = "sepc.nox")
+        LIST$sepc.nox <- rowMeans(do.call(cbind, sepcList))
+      }
     }
   } else {
 
