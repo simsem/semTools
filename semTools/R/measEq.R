@@ -31,7 +31,7 @@ measEq <- function(configural.model,
 
   #TODO: add argument to accept measEq.partial output, to continue sequence (or make and update() method?)
   if (is.character(group.partial)) {
-    if (group.partial == "") {
+    if (group.partial == "" && length(group.partial) == 1L) {
       group.partial <- data.frame(lhs = character(0), op = character(0), rhs = character(0))
     } else {
       group.partial <- lavaan::lavParseModelString(group.partial,
@@ -40,7 +40,7 @@ measEq <- function(configural.model,
     }
   } #TODO: else {extract information from a measEq.partial object}
   if (is.character(long.partial)) {
-    if (long.partial == "") {
+    if (long.partial == "" && length(long.partial) == 1L) {
       long.partial <- data.frame(lhs = character(0), op = character(0), rhs = character(0))
     } else {
       long.partial <- lavaan::lavParseModelString(long.partial,
@@ -924,7 +924,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
 
   ## convert *.partial strings to parTables
   if (is.character(group.partial)) {
-    if (group.partial == "") {
+    if (group.partial == "" && length(group.partial) == 1L) {
       group.partial <- data.frame(lhs = character(0), op = character(0), rhs = character(0))
     } else {
       group.partial <- lavaan::lavParseModelString(group.partial,
@@ -933,7 +933,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     }
   } #TODO: else {extract information from a measEq.partial object}
   if (is.character(long.partial)) {
-    if (long.partial == "") {
+    if (long.partial == "" && length(long.partial) == 1L) {
       long.partial <- data.frame(lhs = character(0), op = character(0), rhs = character(0))
     } else {
       long.partial <- lavaan::lavParseModelString(long.partial,

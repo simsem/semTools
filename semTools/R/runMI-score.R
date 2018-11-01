@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 15 September 2018
+### Last updated: 1 November 2018
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -385,6 +385,10 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     }
     FIT <- eval(as.call(oldCall))
 
+    ## obtain list of inverted Jacobians: within-impuation covariance matrices
+    R.model <- object@Model@con.jac[,,drop = FALSE]
+    nadd <- FIT@funList[[ which(useImps)[1] ]]$nadd
+
     ## pool gradients and information matrices
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
     infoList <- lapply(FIT@funList[useImps], "[[", i = "information")
@@ -401,7 +405,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       inv.W <- MASS::ginv(W)
     }
     ## relative increase in variance due to missing data
-    ariv <- (1 + 1/m)/nrow(B) * sum(diag(B %*% inv.W))
+    ariv <- (1 + 1/m)/nadd * sum(diag(B %*% inv.W))
 
     if (scale.W) {
       information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
@@ -410,9 +414,6 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       information <- W + B + (1/m)*B  # Enders (2010, p. 235) eq. 8.19
     }
 
-    ## obtain list of inverted Jacobians: within-impuation covariance matrices
-    R.model <- object@Model@con.jac[,,drop = FALSE]
-    nadd <- FIT@funList[[ which(useImps)[1] ]]$nadd
     if (nrow(R.model) > 0L) {
       R.model <- cbind(R.model, matrix(0, nrow(R.model), ncol = nadd))
       R.add   <- cbind(matrix(0, nrow = nadd, ncol = npar), diag(nadd))
@@ -476,7 +477,9 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       inv.W <- MASS::ginv(W)
     }
     ## relative increase in variance due to missing data
-    ariv <- (1 + 1/m)/nrow(B) * sum(diag(B %*% inv.W))
+    k <- length(release)
+    if (k == 0) k <- nrow(R)
+    ariv <- (1 + 1/m)/k * sum(diag(B %*% inv.W))
     if (scale.W) {
       information <- (1 + ariv) * W  # Enders (2010, p. 235) eqs. 8.20-21
     } else {
