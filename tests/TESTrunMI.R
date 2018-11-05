@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 August 2018
+### Last updated: 5 November 2018
 ### test runMI
 
 library(lavaan)
@@ -41,11 +41,11 @@ fitted(fit1)         # model-implied moments evaluated at pooled coefficients
 resid(fit1, type = "cor.bentler") # (average sampstats) - fitted
 nobs(fit1)
 
-anova(fit1)                   # pooled LRT by default (D3 statistic)
-anova(fit1, test = "D2")      # or pooled Wald test (D2 statistic)
-anova(fit1, asymptotic = TRUE, indices = TRUE)  # as chisq == F * df1, add indices
-anova(fit0, h1 = fit1, asymptotic = TRUE)  # compare fit
-anova(fit0, h1 = fit1, test = "D2")  # compare fit
+lavTestLRT.mi(fit1)                     # pooled LRT by default (D3 statistic)
+lavTestLRT.mi(fit1, test = "D2")        # or pooled Wald test (D2 statistic)
+lavTestLRT.mi(fit1, asymptotic = TRUE)  # as chisq == F * df1
+lavTestLRT.mi(fit0, h1 = fit1, asymptotic = TRUE)  # compare fit
+lavTestLRT.mi(fit0, h1 = fit1, test = "D2")  # compare fit using D2
 
 
 
@@ -63,16 +63,16 @@ resid(mgfit0, type = "cor.bentler") # (average sampstats) - fitted
 nobs(mgfit0)
 nobs(mgfit0, total = FALSE) # N per group
 
-anova(mgfit0)          # pooled LRT by default (D3 statistic)
-anova(mgfit0, asymptotic = TRUE, indices = TRUE)  # reported by Mplus
-anova(mgfit0, test = 'D2', indices = "all")        # add fit indices
-anova(mgfit0, h1 = mgfit1)           # compare fit
-anova(mgfit0, h1 = mgfit1, test = 'D2') # robustifies pooled naive statistic
-anova(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic
+lavTestLRT.mi(mgfit0)          # pooled LRT by default (D3 statistic)
+lavTestLRT.mi(mgfit0, asymptotic = TRUE)  # reported by Mplus
+lavTestLRT.mi(mgfit0, test = 'D2')        # use D2 method (necessary for categorical data)
+lavTestLRT.mi(mgfit0, h1 = mgfit1)           # compare fit
+lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2') # robustifies pooled naive statistic
+lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic
 
 
 ## use D1 to test a parametrically nested model (whether latent means are ==)
-anova(mgfit0, test = "D1", asymptotic = TRUE, constraints = '
+lavTestWald.mi(mgfit0, test = "D1", asymptotic = TRUE, constraints = '
       .p70. == 0
       .p71. == 0
       .p72. == 0')
@@ -92,12 +92,12 @@ lavTestWald(mgfitm, constraints = '
 
 
 ## Score test for metric invariance
-lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = TRUE)
-lavTestScore.mi(mgfit0, release = 1:6, type = "Rubin", scale.W = FALSE)
+lavTestScore.mi(mgfit0, release = 1:6, test = "D1", scale.W = TRUE)
+lavTestScore.mi(mgfit0, release = 1:6, test = "D1", scale.W = FALSE)
 ## compare univariate score test to modification indices
 lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7', epc = TRUE,
-                type = "Rubin", asymptotic = TRUE)
-modindices.mi(mgfit1, op = '~~', type = "Rubin")
+                test = "D1", asymptotic = TRUE)
+modindices.mi(mgfit1, op = '~~', test = "D1")
 ## match perfectly! (not if scale.W = TRUE)
 ## also comparable with D2 pooled results:
 lavTestScore.mi(mgfit1, add = 'x1 ~~ x9 ; x4 ~~ x7', asymptotic = TRUE)
@@ -292,7 +292,7 @@ runModels(logFile = NULL)
 
 
 ## -----------------------------------------------------
-## Investigate probelm with CFI when test is MV-adjusted
+## Investigate problem with CFI when test is MV-adjusted
 ## https://github.com/simsem/semTools/issues/29
 ## -----------------------------------------------------
 

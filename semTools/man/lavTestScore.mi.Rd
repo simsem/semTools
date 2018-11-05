@@ -5,7 +5,7 @@
 \title{Score Test for Multiple Imputations}
 \usage{
 lavTestScore.mi(object, add = NULL, release = NULL, test = c("D2",
-  "Rubin"), scale.W = FALSE, asymptotic = !is.null(add),
+  "D1"), scale.W = FALSE, asymptotic = is.null(add),
   univariate = TRUE, cumulative = FALSE, epc = FALSE,
   verbose = FALSE, warn = TRUE, information = "expected")
 }
@@ -21,12 +21,12 @@ constraints that should be released. The indices correspond to the order of
 the equality constraints as they appear in the parameter table.}
 
 \item{test}{\code{character} indicating which pooling method to use.
-\code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
- gradient and information, and those pooled values will be used to
- calculate modification indices in the usual manner. \code{"D2"} (default),
-\code{"LMRR"}, or \code{"Li.et.al"} indicate that modification indices
- calculated from each imputed data set will be pooled across imputations,
- as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).}
+\code{"D1"} indicates Li, Meng, Raghunathan, & Rubin's (1991) proposed Wald
+test will be applied to the gradient and information, and those pooled
+values will be used to calculate score-test statistics in the usual manner.
+\code{"D2"} (default) indicates that complete-data score-test statistics
+calculated from each imputed data set will be pooled across imputations,
+as described in Li et al. (1991) and Enders (2010).}
 
 \item{scale.W}{\code{logical}. If \code{FALSE} (default), the pooled
 information matrix is calculated as the weighted sum of the
@@ -89,9 +89,10 @@ See \code{\link[lavaan]{lavTestScore}} for details.
 Score test (or "Lagrange multiplier" test) for lavaan models fitted to
 multiple imputed data sets. Statistics for releasing one or more
 fixed or constrained parameters in model can be calculated by pooling
-the gradient and information matrices pooled across imputed data sets
-using Rubin's (1987) rules, or by pooling the score test statistics
-across imputed data sets (Li, Meng, Raghunathan, & Rubin, 1991).
+the gradient and information matrices pooled across imputed data sets,
+analogous to Li, Meng, Raghunathan, & Rubin's (1991) proposed Wald test, or
+by pooling the complete-data score-test statistics across imputed data sets
+(Li et al., 1991).
 }
 \examples{
  \dontrun{
@@ -120,8 +121,8 @@ out <- cfa.mi(HS.model, data = imps, group = "school", std.lv = TRUE)
 
 ## default test: Li et al.'s (1991) "D2" method
 lavTestScore.mi(out, cumulative = TRUE)
-## Rubin's rules
-lavTestScore.mi(out, test = "Rubin")
+## Li et al.'s (1991) "D1" method
+lavTestScore.mi(out, test = "D1")
 
 ## Mode 2: Score test for adding currently fixed-to-zero parameters
 lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
@@ -141,9 +142,6 @@ Bentler, P. M., & Chou, C.-P. (1992). Some new covariance structure model
   Significance levels from repeated \emph{p}-values with multiply-imputed
   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
   \url{https://www.jstor.org/stable/24303994}
-
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
 }
 \seealso{
 \code{\link[lavaan]{lavTestScore}}
@@ -154,7 +152,7 @@ Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 Adapted from \pkg{lavaan} source code, written by
   Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
-\code{test = "Rubin"} method proposed by
+\code{test = "D1"} method proposed by
   Maxwell Mansolf (University of California, Los Angeles;
   \email{mamansolf@gmail.com})
 }

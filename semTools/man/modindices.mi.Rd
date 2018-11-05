@@ -6,13 +6,13 @@
 \alias{modificationindices.mi}
 \title{Modification Indices for Multiple Imputations}
 \usage{
-modindices.mi(object, type = c("D2", "Rubin"), standardized = TRUE,
+modindices.mi(object, test = c("D2", "D1"), standardized = TRUE,
   cov.std = TRUE, information = "expected", power = FALSE,
   delta = 0.1, alpha = 0.05, high.power = 0.75, sort. = FALSE,
   minimum.value = 0, maximum.number = nrow(LIST), na.remove = TRUE,
   op = NULL)
 
-modificationIndices.mi(object, type = c("D2", "Rubin"),
+modificationIndices.mi(object, test = c("D2", "D1"),
   standardized = TRUE, cov.std = TRUE, information = "expected",
   power = FALSE, delta = 0.1, alpha = 0.05, high.power = 0.75,
   sort. = FALSE, minimum.value = 0, maximum.number = nrow(LIST),
@@ -21,13 +21,13 @@ modificationIndices.mi(object, type = c("D2", "Rubin"),
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}}
 
-\item{type}{\code{character} indicating which pooling method to use.
-\code{type = "D2"} (default) indicates that modification indices that were
+\item{test}{\code{character} indicating which pooling method to use.
+\code{test = "D2"} (default) indicates that modification indices that were
 calculated within each imputed data set will be pooled across imputations,
 as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
-\code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
-gradient and information, and those pooled values will be used to
-calculate modification indices in the usual manner.}
+\code{"D1"} indicates Li et al.'s (1991) proposed Wald test will be
+applied to the gradient and information, and those pooled values will be
+used to calculate modification indices in the usual manner.}
 
 \item{standardized}{\code{logical}. If \code{TRUE}, two extra columns
 (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values
@@ -37,7 +37,7 @@ column (\code{$sepc.all}), standardization is based on both the variances
 of both (continuous) observed and latent variables. (Residual) covariances
 are standardized using (residual) variances.}
 
-\item{cov.std}{\code{logical}. \code{TRUE} if \code{type == "D2"}.
+\item{cov.std}{\code{logical}. \code{TRUE} if \code{test == "D2"}.
 If \code{TRUE} (default), the (residual)
 observed covariances are scaled by the square-root of the diagonal elements
 of the \eqn{\Theta} matrix, and the (residual) latent covariances are
@@ -91,13 +91,13 @@ Modification indices (1-\emph{df} Lagrange multiplier tests) from a
 latent variable model fitted to multiple imputed data sets. Statistics
 for releasing one or more fixed or constrained parameters in model can
 be calculated by pooling the gradient and information matrices
-across imputed data sets using Rubin's (1987) rules, or by pooling the
-test statistics across imputed data sets (Li, Meng, Raghunathan, &
-Rubin, 1991).
+across imputed data sets in a method analogous to the Wald test proposed by
+Li, Meng, Raghunathan, & Rubin (1991), or by pooling the complete-data
+score-test statistics across imputed data sets (Li et al., 1991).
 }
 \note{
-When \code{type = "D2"}, each (S)EPC will be pooled by taking its
-  average across imputations. When \code{type = "Rubin"}, EPCs will be
+When \code{test = "D2"}, each (S)EPC will be pooled by taking its
+  average across imputations. When \code{test = "D1"}, EPCs will be
   calculated in the standard way using the pooled gradient and information,
   and SEPCs will be calculated by standardizing the EPCs using model-implied
   (residual) variances.
@@ -128,7 +128,7 @@ HS.model <- '
 out <- cfa.mi(HS.model, data = imps)
 
 modindices.mi(out) # default: Li et al.'s (1991) "D2" method
-modindices.mi(out, type = "Rubin") # Rubin's rules
+modindices.mi(out, test = "D1") # Li et al.'s (1991) "D1" method
 
 }
 
@@ -141,9 +141,6 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}.
   Significance levels from repeated \emph{p}-values with multiply-imputed
    data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
   \url{https://www.jstor.org/stable/24303994}
-
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
@@ -151,7 +148,7 @@ Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
   Adapted from \pkg{lavaan} source code, written by
   Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
-\code{type = "Rubin"} method proposed by
+\code{test = "D1"} method proposed by
   Maxwell Mansolf (University of California, Los Angeles;
   \email{mamansolf@gmail.com})
 }

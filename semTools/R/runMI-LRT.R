@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 September 2018
+### Last updated: 5 November 2018
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -211,8 +211,9 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
   if (robust && pool.robust) {
     ## pool both the naive and robust test statistics, return both to
     ## make output consistent across options
-    out.naive <- D2.LRT(object, h1 = h1, asymptotic = TRUE, pool.robust = FALSE)
-    out.robust <- D2.LRT(object, h1 = h1, asymptotic = TRUE,
+    out.naive <- D2.LRT(object, h1 = h1, asymptotic = asymptotic,
+                        pool.robust = FALSE)
+    out.robust <- D2.LRT(object, h1 = h1, asymptotic = asymptotic,
                          pool.robust = TRUE, LRTargs = dots)
     out <- c(out.naive, out.robust)
   } else if (test == "D2") {

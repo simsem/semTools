@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 15 September 2018
+### Last updated: 5 November 2018
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -9,9 +9,9 @@
 ##' latent variable model fitted to multiple imputed data sets. Statistics
 ##' for releasing one or more fixed or constrained parameters in model can
 ##' be calculated by pooling the gradient and information matrices
-##' across imputed data sets using Rubin's (1987) rules, or by pooling the
-##' test statistics across imputed data sets (Li, Meng, Raghunathan, &
-##' Rubin, 1991).
+##' across imputed data sets in a method analogous to the Wald test proposed by
+##' Li, Meng, Raghunathan, & Rubin (1991), or by pooling the complete-data
+##' score-test statistics across imputed data sets (Li et al., 1991).
 ##'
 ##' @name modindices.mi
 ##' @aliases modificationIndices.mi modificationindices.mi modindices.mi
@@ -20,13 +20,13 @@
 ##' @importFrom stats cov pchisq qchisq
 ##'
 ##' @param object An object of class \code{\linkS4class{lavaan.mi}}
-##' @param type \code{character} indicating which pooling method to use.
-##'   \code{type = "D2"} (default) indicates that modification indices that were
+##' @param test \code{character} indicating which pooling method to use.
+##'   \code{test = "D2"} (default) indicates that modification indices that were
 ##'   calculated within each imputed data set will be pooled across imputations,
 ##'   as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
-##'   \code{"Rubin"} indicates Rubin's (1987) rules will be applied to the
-##'   gradient and information, and those pooled values will be used to
-##'   calculate modification indices in the usual manner.
+##'   \code{"D1"} indicates Li et al.'s (1991) proposed Wald test will be
+##'   applied to the gradient and information, and those pooled values will be
+##'   used to calculate modification indices in the usual manner.
 ##' @param standardized \code{logical}. If \code{TRUE}, two extra columns
 ##'   (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values
 ##'   for the EPCs. In the first column (\code{$sepc.lv}), standardizization is
@@ -34,7 +34,7 @@
 ##'   column (\code{$sepc.all}), standardization is based on both the variances
 ##'   of both (continuous) observed and latent variables. (Residual) covariances
 ##'   are standardized using (residual) variances.
-##' @param cov.std \code{logical}. \code{TRUE} if \code{type == "D2"}.
+##' @param cov.std \code{logical}. \code{TRUE} if \code{test == "D2"}.
 ##'   If \code{TRUE} (default), the (residual)
 ##'   observed covariances are scaled by the square-root of the diagonal elements
 ##'   of the \eqn{\Theta} matrix, and the (residual) latent covariances are
@@ -70,8 +70,8 @@
 ##' @param op \code{character} string. Filter the output by selecting only those
 ##'   rows with operator \code{op}.
 ##'
-##' @note When \code{type = "D2"}, each (S)EPC will be pooled by taking its
-##'   average across imputations. When \code{type = "Rubin"}, EPCs will be
+##' @note When \code{test = "D2"}, each (S)EPC will be pooled by taking its
+##'   average across imputations. When \code{test = "D1"}, EPCs will be
 ##'   calculated in the standard way using the pooled gradient and information,
 ##'   and SEPCs will be calculated by standardizing the EPCs using model-implied
 ##'   (residual) variances.
@@ -84,7 +84,7 @@
 ##'   Adapted from \pkg{lavaan} source code, written by
 ##'   Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
 ##'
-##' \code{type = "Rubin"} method proposed by
+##' \code{test = "D1"} method proposed by
 ##'   Maxwell Mansolf (University of California, Los Angeles;
 ##'   \email{mamansolf@@gmail.com})
 ##'
@@ -96,9 +96,6 @@
 ##'   Significance levels from repeated \emph{p}-values with multiply-imputed
 ##'    data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
 ##'   \url{https://www.jstor.org/stable/24303994}
-##'
-##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-##'   New York, NY: Wiley.
 ##'
 ##' @examples
 ##'  \dontrun{
@@ -126,13 +123,13 @@
 ##' out <- cfa.mi(HS.model, data = imps)
 ##'
 ##' modindices.mi(out) # default: Li et al.'s (1991) "D2" method
-##' modindices.mi(out, type = "Rubin") # Rubin's rules
+##' modindices.mi(out, test = "D1") # Li et al.'s (1991) "D1" method
 ##'
 ##' }
 ##'
 ##' @export
 modindices.mi <- function(object,
-                          type = c("D2","Rubin"),
+                          test = c("D2","D1"),
 
                           standardized = TRUE,
                           cov.std = TRUE,
@@ -155,7 +152,7 @@ modindices.mi <- function(object,
   useSE[is.na(useSE)] <- FALSE
   useImps <- useSE & sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
-  type <- tolower(type[1])
+  test <- tolower(test[1])
   N <- lavListInspect(object, "ntotal")
   #FIXME: if (lavoptions$mimic == "EQS") N <- N - 1 # not in lavaan, why?
 
@@ -191,7 +188,7 @@ modindices.mi <- function(object,
 
 
   ## D2 pooling method
-  if (type == "d2") {
+  if (test == "d2") {
     chiList <- lapply(object@miList[useImps], "[[", i = "mi")
     ## imputations in columns, parameters in rows
     LIST$mi <- apply(do.call(cbind, chiList), 1, function(x) {
@@ -214,7 +211,7 @@ modindices.mi <- function(object,
 
     scoreOut <- lavTestScore.mi(object, add = cbind(LIST, user = 10L,
                                                     free = 1, start = 0),
-                                test = "Rubin", scale.W = FALSE,
+                                test = "d1", scale.W = FALSE,
                                 epc = TRUE, asymptotic = TRUE,
                                 information = information)$uni
     LIST$mi <- scoreOut$X2
