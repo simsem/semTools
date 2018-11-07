@@ -42,7 +42,7 @@ any observed variables in the \code{model}}
 }
 \value{
 a fitted \code{\linkS4class{lavaan}} object.  Additional
-  information is stored as a \code{list} in the \code{\@external} slot:
+  information is stored as a \code{list} in the \code{@external} slot:
   \itemize{
     \item \code{baseline.model}. a fitted \code{\linkS4class{lavaan}}
           object. Results of fitting an appropriate independence model for

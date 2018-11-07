@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 March 2018
+### Last updated: 8 November 2018
 ### new auxiliary function does NOT create a lavaanStar-class instance
 
 #' Implement Saturated Correlates with FIML
@@ -38,7 +38,7 @@
 #' @param ... additional arguments to pass to \code{\link[lavaan]{lavaan}}.
 #'
 #' @author
-#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 #'
 #' @references Enders, C. K. (2008). A note on the use of missing auxiliary
 #'   variables in full information maximum likelihood-based structural equation
@@ -46,7 +46,7 @@
 #'   doi:10.1080/10705510802154307
 #'
 #' @return a fitted \code{\linkS4class{lavaan}} object.  Additional
-#'   information is stored as a \code{list} in the \code{\@external} slot:
+#'   information is stored as a \code{list} in the \code{@@external} slot:
 #'   \itemize{
 #'     \item \code{baseline.model}. a fitted \code{\linkS4class{lavaan}}
 #'           object. Results of fitting an appropriate independence model for
