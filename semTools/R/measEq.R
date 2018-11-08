@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 September 2018
+### Last updated: 8 November 2018
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1650,6 +1650,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       if (g > 1L && ID.cat == "wu") {
 
         ## priority to freeing intercepts
+        #FIXME: binary indicators, latent mean arbitrarily freed, nesting problems
         if (nEqThr >= 1L && !equate.int) GLIST.values[[g]]$nu[i, 1] <- NA
 
         if ((nEqThr >= 2L || (nEqThr >= 1L && equate.int)) && !equate.resid) {
@@ -1688,7 +1689,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   ## longitudinal constraints (one group at a time, but same across groups)
   if (meanstructure) for (g in 1:nG) {
 
-    ## fix or free factor variances?
+    ## fix or free factor means?
     if (ID.fac == "uv") {
       GLIST.values[[g]]$alpha[ , 1] <- 0 # free below, if any loading is constrained
       ## freed when any loading is constrained to equality
@@ -1702,7 +1703,15 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
 
       ## which other variables are this same factor?
       longFacs <- names(longFacKey)[ which(longFacKey == longFacKey[f]) ]
-      if (length(longFacs) == 0L) next
+      if (length(longFacs) == 0L) {
+        ## not a longitudinal factor, set first group's mean to 0 for Millsap
+        if (ID.cat == "millsap" && g == 1L) GLIST.values[[g]]$alpha[f, 1] <- 0
+        next
+      }
+      ## first time a factor is measured, set first group's mean to 0 for Millsap
+      if (ID.cat == "millsap" && g == 1L && longFacs[1] == f) {
+        GLIST.values[[g]]$alpha[f, 1] <- 0
+      }
 
       ## assign labels
       equate.means <- "means" %in% long.equal &&
