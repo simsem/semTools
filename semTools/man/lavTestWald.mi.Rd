@@ -5,7 +5,7 @@
 \title{Wald Test for Multiple Imputations}
 \usage{
 lavTestWald.mi(object, constraints = NULL, test = c("D1", "D2"),
-  asymptotic = FALSE, scale.W = FALSE, verbose = FALSE,
+  asymptotic = FALSE, scale.W = !asymptotic, verbose = FALSE,
   warn = TRUE)
 }
 \arguments{
@@ -33,13 +33,14 @@ If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
 enough that the statistic will be asymptotically \eqn{\chi^2} distributed
 with \code{df1}.}
 
-\item{scale.W}{\code{logical}. If \code{FALSE} (default), the pooled
+\item{scale.W}{\code{logical}. If \code{FALSE}, the pooled
 asymptotic covariance matrix of model parameters is calculated as the
 weighted sum of the within-imputation and between-imputation components.
 Otherwise, the pooled asymptotic covariance matrix of model parameters is
 calculated by scaling the within-imputation component by the
-average relative increase in variance (ARIV; see Enders, 2010, p. 235).
-Not recommended, and ignored (irrelevant) if \code{test = "D2"}.}
+average relative increase in variance (ARIV; see Enders, 2010, p. 235),
+which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
+\code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.}
 
 \item{verbose}{\code{logical}. If \code{TRUE}, print the restriction
 matrix and the estimated restricted values.}

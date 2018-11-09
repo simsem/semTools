@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 September 2018
+### Last updated: 9 November 2018
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -45,13 +45,14 @@
 ##'   \code{df1} on the assumption that its \code{df2} is sufficiently large
 ##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
 ##'   with \code{df1}.
-##' @param scale.W \code{logical}. If \code{FALSE} (default), the pooled
+##' @param scale.W \code{logical}. If \code{FALSE}, the pooled
 ##'   asymptotic covariance matrix of model parameters is calculated as the
 ##'   weighted sum of the within-imputation and between-imputation components.
 ##'   Otherwise, the pooled asymptotic covariance matrix of model parameters is
 ##'   calculated by scaling the within-imputation component by the
-##'   average relative increase in variance (ARIV; see Enders, 2010, p. 235).
-##'   Not recommended, and ignored (irrelevant) if \code{test = "D2"}.
+##'   average relative increase in variance (ARIV; see Enders, 2010, p. 235),
+##'   which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
+##'   \code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.
 ##' @param verbose \code{logical}. If \code{TRUE}, print the restriction
 ##'   matrix and the estimated restricted values.
 ##' @param warn \code{logical}. If \code{TRUE}, print warnings if they occur.
@@ -128,7 +129,7 @@
 ##'
 ##' @export
 lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
-                           asymptotic = FALSE, scale.W = FALSE,
+                           asymptotic = FALSE, scale.W = !asymptotic,
                            verbose = FALSE, warn = TRUE) {
   stopifnot(inherits(object, "lavaan.mi"))
 

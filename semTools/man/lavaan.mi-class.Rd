@@ -21,7 +21,7 @@
 
 \S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE,
   level = 0.95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-  header = TRUE, scale.W = TRUE, asymptotic = FALSE,
+  header = TRUE, scale.W = !asymptotic, asymptotic = FALSE,
   add.attributes = TRUE)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
@@ -143,7 +143,7 @@ subsequently to \code{\link[lavaan]{lavTestLRT}}.}
 
 \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
- scale.W = FALSE, asymptotic = FALSE, add.attributes = TRUE)}: see
+ scale.W = !asymptotic, asymptotic = FALSE, add.attributes = TRUE)}: see
  \code{\link[lavaan]{parameterEstimates}} for details.
  By default, \code{summary} returns pooled point and \emph{SE}
  estimates, along with \emph{t} test statistics and their associated

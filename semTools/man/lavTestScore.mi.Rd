@@ -5,7 +5,7 @@
 \title{Score Test for Multiple Imputations}
 \usage{
 lavTestScore.mi(object, add = NULL, release = NULL, test = c("D2",
-  "D1"), scale.W = FALSE, asymptotic = is.null(add),
+  "D1"), scale.W = !asymptotic, asymptotic = is.null(add),
   univariate = TRUE, cumulative = FALSE, epc = FALSE,
   verbose = FALSE, warn = TRUE, information = "expected")
 }
@@ -28,12 +28,13 @@ values will be used to calculate score-test statistics in the usual manner.
 calculated from each imputed data set will be pooled across imputations,
 as described in Li et al. (1991) and Enders (2010).}
 
-\item{scale.W}{\code{logical}. If \code{FALSE} (default), the pooled
+\item{scale.W}{\code{logical}. If \code{FALSE}, the pooled
 information matrix is calculated as the weighted sum of the
 within-imputation and between-imputation components. Otherwise, the pooled
 information is calculated by scaling the within-imputation component by the
-average relative increase in variance (ARIV; see Enders, 2010, p. 235).
-Not recommended, and ignored (irrelevant) if \code{test = "D2"}.}
+average relative increase in variance (ARIV; see Enders, 2010, p. 235),
+which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
+\code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.}
 
 \item{asymptotic}{\code{logical}. If \code{FALSE} (default when using
 \code{add} to test adding fixed parameters to the model), the pooled test

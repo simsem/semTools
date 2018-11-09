@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 15 September 2018
+### Last updated: 9 November 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -134,7 +134,7 @@
 ##'
 ##' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
 ##'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-##'  scale.W = FALSE, asymptotic = FALSE, add.attributes = TRUE)}: see
+##'  scale.W = !asymptotic, asymptotic = FALSE, add.attributes = TRUE)}: see
 ##'  \code{\link[lavaan]{parameterEstimates}} for details.
 ##'  By default, \code{summary} returns pooled point and \emph{SE}
 ##'  estimates, along with \emph{t} test statistics and their associated
@@ -236,7 +236,7 @@ setMethod("show", "lavaan.mi", function(object) {
 ##' @importFrom lavaan lavListInspect parTable lavNames
 summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
-                              fmi = FALSE, header = TRUE, scale.W = TRUE,
+                              fmi = FALSE, header = TRUE, scale.W = !asymptotic,
                               asymptotic = FALSE, add.attributes = TRUE) {
   useImps <- sapply(object@convergence, "[[", i = "converged")
   m <- sum(useImps)
@@ -467,8 +467,8 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
     if (inherits(inv.W, "try-error")) {
       if (ncon == 0) {
         warning("Could not invert within-imputation covariance matrix. ",
-                "Generalized inverse used instead.\n",
-                "It may be safer to set `scale.W = FALSE'.")
+                "Generalized inverse used instead.\nIt may be ",
+                "safer to set `scale.W = FALSE' (and `asymptotic = TRUE').")
       }
       inv.W <- MASS::ginv(W)
     }
