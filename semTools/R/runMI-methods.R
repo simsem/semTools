@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 November 2018
+### Last updated: 14 November 2018
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -123,7 +123,7 @@
 ##'   See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
 ##'
 ##' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
-##'   fit.measures = "all", baseline.model = NULL)}: See lavaan's
+##'   fit.measures = "all", baseline.model = NULL, ...)}: See lavaan's
 ##'   \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
 ##'   to \code{\link{lavTestLRT.mi}} via \code{...}.}
 ##' \item{fitmeasures}{alias for \code{fitMeasures}.}
@@ -385,6 +385,7 @@ setMethod("summary", "lavaan.mi", summary.lavaan.mi)
 ##' @export
 setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
   if (total) return(lavListInspect(object, "ntotal"))
+  #FIXME: cluster N for multilevel?
   N <- lavListInspect(object, "norig")
   if (length(N) > 1L) names(N) <- lavListInspect(object, "group.label")
   N
@@ -491,6 +492,9 @@ setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
 
 ##' @importFrom lavaan lavListInspect lavTestLRT
 anova.lavaan.mi <- function(object, ...) {
+  ## save model names
+  objname <- deparse(substitute(object))
+  dotnames <- as.character(sapply(substitute(list(...))[-1], deparse))
 
   ## check class
   if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
@@ -502,13 +506,20 @@ anova.lavaan.mi <- function(object, ...) {
     if (length(idx.mi)) {
       mods <- dots[idx.mi]
       dots <- dots[-idx.mi]
-    } else mods <- NULL
+      ## save names for mods, so compareFit() doesn't break
+      modnames <- dotnames[idx.mi]
+      nonames <- which(names(mods) == "")
+      names(mods)[nonames] <- modnames[nonames]
+    } else {
+      mods <- NULL
+      modnames <- NULL
+    }
     LRT.names <- intersect(names(dots),
                            union(names(formals(lavTestLRT)),
                                  names(formals(lavTestLRT.mi))))
     dots <- if (length(LRT.names)) dots[LRT.names] else NULL
     if (!is.null(dots$h1)) {
-      mods <- c(mods, list(dots$h1))
+      #FIXME: this shouldn't be necessary: mods <- c(mods, list(h1 = dots$h1))
       dots$h1 <- NULL
     }
   } else mods <- NULL
@@ -521,9 +532,12 @@ anova.lavaan.mi <- function(object, ...) {
     argList <- c(list(object = object, h1 = mods[[1]]), dots)
     results <- do.call(lavTestLRT.mi, argList)
   } else if (length(mods) > 1L) {
-    argList <- c(list(object), mods, list(argsLRT = dots, indices = FALSE))
-    out <- do.call(compareFit, argList)
-    results <- getMethod("summary", "FitDiff")(out)$test.statistics
+    modList <- c(list(object), mods)
+    names(modList) <- c(objname, modnames)
+    argList <- c(modList, list(argsLRT = dots, indices = FALSE))
+    results <- do.call(compareFit, argList)@nested
+    class(results) <- c("lavaan.data.frame","data.frame")
+    attr(results, "heading") <- "Nested Model Comparisons\n"
   }
 
   results
@@ -535,8 +549,8 @@ setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 
 ##' @importFrom lavaan lavNames
 ##' @importFrom stats pchisq uniroot
-fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generic needs "..."
-                           baseline.model = NULL) {
+fitMeasures.mi <- function(object, fit.measures = "all",
+                           baseline.model = NULL, ...) {
 
   useImps <- sapply(object@convergence, "[[", i = "converged")
   lavoptions <- lavListInspect(object, "options")
@@ -558,13 +572,14 @@ fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generi
   }
 
   ## check for additional arguments
-  dots <- NULL #FIXME: list(...) once Yves accepts pull request
+  dots <- list(...)
   if (length(dots)) {
     LRT.names <- intersect(names(dots),
                            union(names(formals(lavTestLRT)),
                                  names(formals(lavTestLRT.mi))))
     dots <- if (length(LRT.names)) dots[LRT.names] else list(asymptotic = TRUE)
   } else dots <- list(asymptotic = TRUE)
+
   if (robust) {
     if (is.null(dots$pool.robust)) {
       pool.robust <- formals(lavTestLRT.mi)$pool.robust # default value
@@ -574,7 +589,8 @@ fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generi
   }
 
   ## pooled test statistic(s)
-  argList <- c(list(object = object), dots) #FIXME: make sure asymptotic = TRUE
+  argList <- c(list(object = object), dots)
+  argList$asymptotic <- TRUE # in case it wasn't set in list(...)
   out <- do.call(lavTestLRT.mi, argList)
 
   ## fit baseline model if necessary
@@ -606,6 +622,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", #FIXME: lavaan's generi
   ## pooled test statistic(s) for baseline model
   if (any(indices %in% incremental)) {
     argList <- c(list(object = baseFit), dots)
+    argList$asymptotic <- TRUE # in case it wasn't set in list(...)
     baseOut <- do.call(lavTestLRT.mi, argList)
   }
 

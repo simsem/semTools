@@ -16,7 +16,8 @@ must belong to the same class.}
 nested. See \code{\link{net}} for an empirical test of nesting.}
 
 \item{argsLRT}{\code{list} of arguments to pass to
-\code{\link[lavaan]{lavTestLRT}}, or to \code{\link{lavTestLRT.mi}} when
+\code{\link[lavaan]{lavTestLRT}}, as well as to
+\code{\link{lavTestLRT.mi}} and \code{\link{fitMeasures}} when
 comparing \code{\linkS4class{lavaan.mi}} models.}
 
 \item{indices}{\code{logical} indicating whether to return fit indices from

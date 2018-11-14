@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 29 August 2018
+### Last updated: 14 November 2018
 ### source code for compareFit() function and FitDiff class
 
 
@@ -95,17 +95,16 @@ setMethod("summary", signature(object = "FitDiff"),
 		cat("################### Nested Model Comparison #########################\n")
     out$test.statistics <- object@nested
     if (object@model.class == "lavaan") {
-      class(out$test.statistics) <- c("anova","data.frame")
       print(out$test.statistics, nd = nd)
     } else {
       class(out$test.statistics) <- c("lavaan.data.frame","data.frame")
-      stats::printCoefmat(out$test.statistics, has.Pvalue = TRUE, P.values = 3)
+      stats::printCoefmat(out$test.statistics, P.values = TRUE, has.Pvalue = TRUE)
     }
 		cat("\n")
   }
 
 
-  noFit <- ncol(object@fit) == 1L && names(object)[1] == "df"
+  noFit <- ncol(object@fit) == 1L && names(object@fit)[1] == "df"
   if (!noFit) {
     cat("####################### Model Fit Indices ###########################\n")
     ## this is the object to return (numeric, no printed daggers)
@@ -197,7 +196,8 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##' @param nested \code{logical} indicating whether the models in \code{...} are
 ##'   nested. See \code{\link{net}} for an empirical test of nesting.
 ##' @param argsLRT \code{list} of arguments to pass to
-##'   \code{\link[lavaan]{lavTestLRT}}, or to \code{\link{lavTestLRT.mi}} when
+##'   \code{\link[lavaan]{lavTestLRT}}, as well as to
+##'   \code{\link{lavTestLRT.mi}} and \code{\link{fitMeasures}} when
 ##'   comparing \code{\linkS4class{lavaan.mi}} models.
 ##' @param indices \code{logical} indicating whether to return fit indices from
 ##'   the \code{\link[lavaan]{fitMeasures}} function.
@@ -271,20 +271,39 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
     return(NULL)
   }
 
-	## collapse models into a single-level list
-	mods <- list(...)
-	if (any(sapply(mods, is.list))) mods <- unlist(mods)
+	## separate models from lists of models
+  dots <- list(...)
+	idx.list <- sapply(dots, is.list)
+	modLists <- dots[ idx.list]
+	mods     <- dots[!idx.list]
+	## capture names of any arguments passed via dots
+	allnames  <- sapply(substitute(list(...))[-1], deparse)
+	listnames <- allnames[ idx.list]
+	modnames  <- allnames[!idx.list]
 
 	## make sure models are named
-	mc <- as.list(match.call(expand.dots = TRUE)[-1])
-	mc <- mc[ !names(mc) %in% c("nested","argsLRT","indices","baseline.model") ]
-	if (is.null(names(mods))) {
-	  names(mods) <- as.character(mc)
-	} else {
-	  for (nn in seq_along(mods)) {
-	    if (names(mods)[nn] == "") names(mods)[nn] <- as.character(mc)[nn]
+	if (length(mods) && is.null(names(mods))) {
+	  names(mods) <- modnames
+	} else for (nn in seq_along(mods)) {
+	  if (names(mods)[nn] == "") names(mods)[nn] <- modnames[nn]
+	}
+	## make sure lists are named
+	if (length(modLists) && is.null(names(modLists))) {
+	  names(modLists) <- listnames
+	} else for (nn in seq_along(modLists)) {
+	  if (names(modLists)[nn] == "") names(modLists)[nn] <- listnames[nn]
+	}
+	## within each list, make sure models are named
+	for (i in seq_along(modLists)) {
+	  if (length(modLists[[i]]) && is.null(names(modLists[[i]]))) {
+	    names(modLists[[i]]) <- seq_along(modLists[[i]])
+	  } else for (nn in seq_along(modLists[[i]])) {
+	    if (names(modLists[[i]])[nn] == "") names(modLists[[i]])[nn] <- nn
 	  }
 	}
+
+	## collapse into a single list of models
+	if (length(modLists)) mods <- c(mods, unlist(modLists))
 
 	## check for lavaan models
 	not.lavaan <- !sapply(mods, inherits, what = c("lavaan","lavaanList"))
@@ -294,9 +313,23 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	if (length(modClass) > 1L) stop('All models must be of the same class (e.g.,',
 	                                ' cannot compare lavaan objects to lavaan.mi)')
 
+
+	## grab lavaan.mi options, if relevant
+	if (is.null(argsLRT$pool.robust)) {
+	  pool.robust <- formals(lavTestLRT.mi)$pool.robust # default value
+	} else {
+	  pool.robust <- argsLRT$pool.robust # user-specified value
+	}
+	if (is.null(argsLRT$test)) {
+	  test <- formals(lavTestLRT.mi)$test # default value
+	} else {
+	  test <- argsLRT$test # user-specified value
+	}
+
 	## FIT INDICES
 	if (indices) {
-	  fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model)
+	  fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model,
+	                    pool.robust = pool.robust, test = test)
 	  if (length(unique(sapply(fitList, length))) > 1L) {
 	    warning('fitMeasures() returned vectors of different lengths for different',
 	            ' models, probably because certain options are not the same. Check',
@@ -308,14 +341,20 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	  }
 	  fit <- as.data.frame(do.call(rbind, fitList))
 	} else {
-	  fitList <- sapply(mods, fitMeasures, fit.measures = "df")
-	  fit <- data.frame(df = fitList)
+	  fitList <- lapply(mods, fitMeasures, fit.measures = "df",
+	                    pool.robust = pool.robust, test = test)
+	  ## check for scaled tests
+	  nDF <- sapply(fitList, length)
+	  if (any(nDF != nDF[1])) stop('Some (but not all) models have robust tests,',
+	                               ' so they cannot be compared as nested models.')
+	  fit <- data.frame(df = sapply(fitList, "[",
+	                                i = if (any(nDF > 1L)) 2L else 1L))
 	}
 
 
 	## order models by increasing df (least-to-most constrained)
-	ord <- order(fit$df)
-	fit <- fit[ord, ]
+	ord <- order(fit$df) #FIXME: what if test == "mean.var.adjusted"?
+	fit <- fit[ord, , drop = FALSE]
 	mods <- mods[ord]
 
 	## TEST STATISTICS
@@ -326,11 +365,6 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	    argsLRT$object <- mods[[1]]
 	    nestedout <- do.call(lavTestLRT, c(mods[-1], argsLRT))
 	  } else if (inherits(mods[[1]], "lavaan.mi")) { #FIXME: generalize to lavaan.pool
-
-	    if (!is.null(mods$h1)) {
-	      mods <- c(mods, list(mods$h1))
-	      mods$h1 <- NULL
-	    }
 
 	    modsA <- mods[-1]
 	    modsB <- mods[-length(mods)]
@@ -345,9 +379,11 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 
 	      if (names(tempDiff)[1] == "F") {
 	        statNames <- c("F", "df1", "df2", "pvalue")
-	      } else if (any(grepl(pattern = "scaled", x = names(tempDiff)))) {
-	        statNames <- c("chisq.scaled", "df.scaled", "pvalue.scaled")
 	      } else statNames <- c("chisq", "df", "pvalue")
+	      ## check for scaled
+	      if (any(grepl(pattern = "scaled", x = names(tempDiff)))) {
+	        statNames <- paste0(statNames, ".scaled")
+	      }
 
 	      diffName <- paste(names(modsA)[i], "-", names(modsB)[i])
 	      fitDiff[[diffName]] <- tempDiff[statNames]
@@ -403,7 +439,7 @@ getFitSummary <- function(object, fit.measures = "default", return.diff = FALSE)
     ## robust or scaled test statistics?
     if (is.null(object@fit$cfi.scaled)) {
       fit.measures <- c("chisq","df","pvalue","rmsea","cfi","tli","srmr")
-    } else if (all(!is.na(object@fit$cfi.robust))) {
+    } else if (all(!is.na(object@fit$cfi.robust)) && !is.null(object@fit$cfi.robust)) {
       fit.measures <- c("chisq.scaled","df.scaled","pvalue.scaled",
                         "rmsea.robust","cfi.robust","tli.robust","srmr")
     } else {

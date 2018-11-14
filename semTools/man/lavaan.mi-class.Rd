@@ -34,10 +34,10 @@
 \S4method{anova}{lavaan.mi}(object, ...)
 
 \S4method{fitMeasures}{lavaan.mi}(object, fit.measures = "all",
-  baseline.model = NULL)
+  baseline.model = NULL, ...)
 
 \S4method{fitmeasures}{lavaan.mi}(object, fit.measures = "all",
-  baseline.model = NULL)
+  baseline.model = NULL, ...)
 
 \S4method{fitted}{lavaan.mi}(object)
 
@@ -132,7 +132,7 @@ subsequently to \code{\link[lavaan]{lavTestLRT}}.}
   See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
 
 \item{fitMeasures}{\code{signature(object = "lavaan.mi",
-  fit.measures = "all", baseline.model = NULL)}: See lavaan's
+  fit.measures = "all", baseline.model = NULL, ...)}: See lavaan's
   \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
   to \code{\link{lavTestLRT.mi}} via \code{...}.}
 \item{fitmeasures}{alias for \code{fitMeasures}.}
