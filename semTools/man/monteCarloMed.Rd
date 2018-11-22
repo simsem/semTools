@@ -116,6 +116,33 @@ AC <- matrix(c(1, .00002, .00003,
 monteCarloMed(med, coef1 = aparam, coef2 = b1param,
               coef3 = b2param, ACM = AC)
 
+
+## WORKING WITH lavaan MODELS. From the mediation tutorial:
+http://lavaan.ugent.be/tutorial/mediation.html
+
+set.seed(1234)
+X <- rnorm(100)
+M <- 0.5*X + rnorm(100)
+Y <- 0.7*M + rnorm(100)
+Data <- data.frame(X = X, Y = Y, M = M)
+model <- ' # direct effect
+Y ~ c*X
+# mediator
+M ~ a*X
+Y ~ b*M
+# indirect effect (a*b)
+ab := a*b
+# total effect
+total := c + (a*b)
+'
+fit <- sem(model, data = Data)
+
+med <- 'a*b'
+myParams <- c("a","b")
+myCoefs <- coef(fit)[myParams]
+myACM <- vcov(fit)[myParams, myParams]
+monteCarloMed(med, myCoefs, ACM = myACM)
+
 }
 \references{
 MacKinnon, D. P., Lockwood, C. M., & Williams, J. (2004). Confidence limits
