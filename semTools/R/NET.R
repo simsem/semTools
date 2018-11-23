@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 17 September 2018
+### Last updated: 23 November 2018
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -258,13 +258,18 @@ x.within.y <- function(x, y, crit = .0001) {
     stop("Models do not contain the same variables")
 
   ## check that the analyzed data matches
-  xData <- lavInspect(x, "data")
-  if (is.list(xData)) xData <- do.call(rbind, xData)
-  xData <- xData[ , order(Xnames)]
-  yData <- lavInspect(y, "data")
-  if (is.list(yData)) yData <- do.call(rbind, yData)
-  yData <- yData[ , order(Ynames)]
-  if (!identical(xData, yData)) stop("Models must apply to the same data")
+  xData <- sort(unlist(inspect(x, "sampstat")))
+  yData <- sort(unlist(inspect(y, "sampstat")))
+  if (!isTRUE(all.equal(xData, yData, tolerance = crit)))
+    stop("Sample statistics differ. Models must apply to the same data")
+  #FIXME: this method requires raw data
+  # xData <- lavInspect(x, "data")
+  # if (is.list(xData)) xData <- do.call(rbind, xData)
+  # xData <- xData[ , order(Xnames)]
+  # yData <- lavInspect(y, "data")
+  # if (is.list(yData)) yData <- do.call(rbind, yData)
+  # yData <- yData[ , order(Ynames)]
+  # if (!identical(xData, yData)) stop("Models must apply to the same data")
 
   ## check degrees of freedom support nesting structure
   if (lavInspect(x, "fit")["df"] < lavInspect(y, "fit")["df"])
@@ -278,6 +283,7 @@ x.within.y <- function(x, y, crit = .0001) {
     Mu <- NULL
   }
   N <- lavInspect(x, "nobs")
+  if (N != lavInspect(y, "nobs")) stop("Sample sizes differ. Models must apply to the same data")
 
   ## fit model and check that chi-squared < crit
 
@@ -285,7 +291,7 @@ x.within.y <- function(x, y, crit = .0001) {
                                                 sample.cov = Sigma,
                                                 sample.mean = Mu,
                                                 sample.nobs = N,
-                                                estimator = "ML",
+                                                estimator = "ML", #FIXME: Yves added sample.th= argument
                                                 se = "none", # to save time
                                                 test = "standard")))
   if(!lavInspect(newFit, "converged")) return(NA) else {
