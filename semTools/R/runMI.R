@@ -205,11 +205,23 @@ runMI <- function(model, data, fun = "lavaan", ...,
       }
     } else stop("Currently runMI only supports imputation by Amelia or mice")
   } else if (is.list(data)) {
+    if("mice" %in% (.packages())){
+      if(is.mids(data)){
+        m <- data$m
+        imputedData <- list()
+        for(i in 1:m){
+          imputedData[[i]] <- complete(data, i)
+        }
+        imputeCall <- list()
+        class(imputedData) <- "list"
+      }
+    } else {
     seed <- integer(length = 0)
     imputeCall <- list()
     imputedData <- data
     m <- length(data)
     class(imputedData) <- "list" # override inheritance (e.g., "mi" if Amelia)
+    }
   } else if (is(data, "lavaan.mi")) {
     seed <- data@seed
     imputeCall <- data@imputeCall
