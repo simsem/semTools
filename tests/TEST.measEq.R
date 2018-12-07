@@ -163,6 +163,47 @@ summary(syntax.cat)
 
 
 
+## -----------------------
+## Example 2b: Binary data
+## -----------------------
+
+## Unique issues with choosing defaults when following Wu & Estabrook (2016)
+##  - more models are equivalent to configural
+##  - 1. constrain threshold, why free intercept instead of variance?
+##      - either way, equivalent to configural
+##  - 2. constrain c("thresholds","loadings","intercepts"), less restricted
+##       model than (1.) because latent means and residual variances BOTH free
+
+myData <- read.table("http://www.statmodel.com/usersguide/chap5/ex5.16.dat")
+names(myData) <- c("u1","u2","u3","u4","u5","u6","x1","x2","x3","g")
+## can pretend longitudinal, use longFacNames from Ex. 2
+
+bin.mod <- '
+FU1 =~ u1 + u2 + u3
+FU2 =~ u4 + u5 + u6
+'
+bin.fit <- cfa(bin.mod, data = myData, ordered = paste0("u", 1:6),
+               std.lv = TRUE, group = "g", parameterization = "theta")
+
+mod.config <- measEq.syntax(configural.model = bin.fit, group = "g")
+mod.thresh <- measEq.syntax(configural.model = bin.fit,group = "g",
+                            group.equal = c("thresholds"))
+mod.metric <- measEq.syntax(configural.model = bin.fit, group = "g",
+                            group.equal = c("thresholds","loadings"))
+mod.scalar <- measEq.syntax(configural.model = bin.fit, group = "g",
+                            group.equal = c("thresholds","loadings","intercepts"))
+mod.strict <- measEq.syntax(configural.model = bin.fit, group = "g",
+                            group.equal = c("thresholds","loadings","intercepts","residuals"))
+
+cat(as.character(mod.config))
+cat(as.character(mod.thresh))
+cat(as.character(mod.metric))
+cat(as.character(mod.scalar))
+cat(as.character(mod.strict))
+
+
+
+
 ## ------------------------------
 ## Example 3: Higher-Order Factor
 ## ------------------------------

@@ -2416,6 +2416,8 @@ write.lavaan.syntax <- function(pmat, specify, value, label) {
         #                 paste(sapply(label, "[", i = x, j = 1),
         #                       collapse = ", "),
         #                 ")*1")
+        #FIXME: Did Yves fix this lavaanify() bug?
+
         param <- paste0(x, " ~ c(",
                         paste(sapply(label, "[", i = x, j = 1),
                               collapse = ", "),

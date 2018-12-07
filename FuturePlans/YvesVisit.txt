@@ -22,10 +22,3 @@ semTools function for testing invariance constraints
 - add parameter labels for multi-df modindices and epc-interest per item
 
 
-modification indices for lavaan.mi object
-- extended model not actually fit, so...
-	- evaluate score/Jacobian at pooled coefs?
-	- information available from inverted pooled ACOV?
-- easy to adapt lavTestScore() ?
-
-
