@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 September 2018
+### Last updated: 8 December 2018
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -205,22 +205,21 @@ runMI <- function(model, data, fun = "lavaan", ...,
       }
     } else stop("Currently runMI only supports imputation by Amelia or mice")
   } else if (is.list(data)) {
-    if("mice" %in% (.packages())){
-      if(is.mids(data)){
-        m <- data$m
-        imputedData <- list()
-        for(i in 1:m){
-          imputedData[[i]] <- complete(data, i)
-        }
-        imputeCall <- list()
-        class(imputedData) <- "list"
+    if (is.mids(data)) {
+      m <- data$m
+      imputedData <- list()
+      requireNamespace("mice")
+      if (!"package:mice" %in% search()) attachNamespace("mice")
+      for (i in 1:m) {
+        imputedData[[i]] <- mice::complete(data, action = i, include = FALSE)
       }
+      imputeCall <- list()
     } else {
-    seed <- integer(length = 0)
-    imputeCall <- list()
-    imputedData <- data
-    m <- length(data)
-    class(imputedData) <- "list" # override inheritance (e.g., "mi" if Amelia)
+      seed <- integer(length = 0)
+      imputeCall <- list()
+      imputedData <- data
+      m <- length(data)
+      class(imputedData) <- "list" # override inheritance (e.g., "mi" if Amelia)
     }
   } else if (is(data, "lavaan.mi")) {
     seed <- data@seed
