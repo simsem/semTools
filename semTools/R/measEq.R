@@ -1902,7 +1902,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         ## cross-loading has an equality-constrained intercept
         if (ID.fac == "uv") {
           ## factors this indicator measures
-          fs <- names(which(GLIST.specify[[g]]$lambda[i, ]))
+          fs <- colnames(GLIST.specify[[g]]$lambda)[ GLIST.specify[[g]]$lambda[i,] ]
           only.measures.1 <- length(fs) == 1L
           ## name(s) of longitudinal factor(s)
           LFN <- longFacKey[fs]
@@ -1927,7 +1927,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         GLIST.labels[[g]]$nu[i, 1] <- paste0(GLIST.labels[[g]]$nu[i, 1], ".g", g)
       } else if (ID.fac == "uv") {
         ## factors this indicator measures
-        fs <- names(which(GLIST.specify[[g]]$lambda[i, ]))
+        fs <- colnames(GLIST.specify[[g]]$lambda)[ GLIST.specify[[g]]$lambda[i,] ]
         only.measures.1 <- length(fs) == 1L
 
         ## free factor mean(s) other than group 1 only if an indicator without a
