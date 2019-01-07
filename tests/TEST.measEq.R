@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 23 August 2018
+### Last updated: 7 January 2019
 ### check measEq syntax-writing engine
 
 # devtools::install_github("simsem/semTools/semTools")
@@ -200,6 +200,37 @@ cat(as.character(mod.thresh))
 cat(as.character(mod.metric))
 cat(as.character(mod.scalar))
 cat(as.character(mod.strict))
+
+
+## better order
+test.seq <- list(strong = c("thresholds","loadings","intercepts"),
+                 means = "means", strict = "residuals", homo = "lv.variances")
+meq.list <- list()
+for (i in 0:length(test.seq)) {
+  if (i == 0L) {
+    meq.label <- "configural"
+    group.equal <- ""
+    long.equal <- ""
+  } else {
+    meq.label <- names(test.seq)[i]
+    group.equal <- unlist(test.seq[1:i])
+    # long.equal <- unlist(test.seq[1:i])
+  }
+  meq.list[[meq.label]] <- measEq.syntax(configural.model = bin.mod,
+                                         data = myData,
+                                         ordered = paste0("u", 1:6),
+                                         parameterization = "theta",
+                                         ID.fac = "std.lv",
+                                         ID.cat = "Wu.Estabrook.2016",
+                                         group = "g",
+                                         group.equal = group.equal,
+                                         #longFacNames = longFacNames,
+                                         #long.equal = long.equal,
+                                         return.fit = TRUE)
+}
+
+compareFit(meq.list)
+#TODO: add this example to the help page
 
 
 
