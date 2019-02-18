@@ -24,7 +24,7 @@ lavTestLRT(fit.metric, fit.config) # no problem
 fit.scalar <- cfa(model, data = datCat, group = "g",
                   group.equal = c("loadings","thresholds"),
                   parameterization = "theta", ordered = c("u1","u2","u3","u4"))
-lavTestLRT(fit.metric, fit.scalar)
+lavTestLRT(fit.metric, fit.scalar) # no problem
 
 
 
