@@ -332,6 +332,49 @@ for (i in 0:length(test.seq)) {
 
 compareFit(meq.list)
 
+
+## -----------------
+## Binary indicators
+## -----------------
+
+## borrow example data from Mplus user guide
+myData <- read.table("http://www.statmodel.com/usersguide/chap5/ex5.16.dat")
+names(myData) <- c("u1","u2","u3","u4","u5","u6","x1","x2","x3","g")
+bin.mod <- '
+  FU1 =~ u1 + u2 + u3
+  FU2 =~ u4 + u5 + u6
+'
+## Must SIMULTANEOUSLY constrain thresholds, loadings, and intercepts
+test.seq <- list(strong = c("thresholds","loadings","intercepts"),
+                 means = "means",
+                 strict = "residuals")
+meq.list <- list()
+for (i in 0:length(test.seq)) {
+  if (i == 0L) {
+    meq.label <- "configural"
+    group.equal <- ""
+    long.equal <- ""
+  } else {
+    meq.label <- names(test.seq)[i]
+    group.equal <- unlist(test.seq[1:i])
+    # long.equal <- unlist(test.seq[1:i])
+  }
+  meq.list[[meq.label]] <- measEq.syntax(configural.model = bin.mod,
+                                         data = myData,
+                                         ordered = paste0("u", 1:6),
+                                         parameterization = "theta",
+                                         ID.fac = "std.lv",
+                                         ID.cat = "Wu.Estabrook.2016",
+                                         group = "g",
+                                         group.equal = group.equal,
+                                         #longFacNames = longFacNames,
+                                         #long.equal = long.equal,
+                                         return.fit = TRUE)
+}
+
+compareFit(meq.list)
+
+
 }
 }
 \references{

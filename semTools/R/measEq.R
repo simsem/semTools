@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 November 2018
+### Last updated: 17 February 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -825,6 +825,50 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##'
 ##' compareFit(meq.list)
 ##'
+##'
+##' ## -----------------
+##' ## Binary indicators
+##' ## -----------------
+##'
+##' ## borrow example data from Mplus user guide
+##' myData <- read.table("http://www.statmodel.com/usersguide/chap5/ex5.16.dat")
+##' names(myData) <- c("u1","u2","u3","u4","u5","u6","x1","x2","x3","g")
+##' bin.mod <- '
+##'   FU1 =~ u1 + u2 + u3
+##'   FU2 =~ u4 + u5 + u6
+##' '
+##' ## Must SIMULTANEOUSLY constrain thresholds, loadings, and intercepts
+##' test.seq <- list(strong = c("thresholds","loadings","intercepts"),
+##'                  means = "means",
+##'                  strict = "residuals")
+##' meq.list <- list()
+##' for (i in 0:length(test.seq)) {
+##'   if (i == 0L) {
+##'     meq.label <- "configural"
+##'     group.equal <- ""
+##'     long.equal <- ""
+##'   } else {
+##'     meq.label <- names(test.seq)[i]
+##'     group.equal <- unlist(test.seq[1:i])
+##'     # long.equal <- unlist(test.seq[1:i])
+##'   }
+##'   meq.list[[meq.label]] <- measEq.syntax(configural.model = bin.mod,
+##'                                          data = myData,
+##'                                          ordered = paste0("u", 1:6),
+##'                                          parameterization = "theta",
+##'                                          ID.fac = "std.lv",
+##'                                          ID.cat = "Wu.Estabrook.2016",
+##'                                          group = "g",
+##'                                          group.equal = group.equal,
+##'                                          #longFacNames = longFacNames,
+##'                                          #long.equal = long.equal,
+##'                                          return.fit = TRUE)
+##' }
+##'
+##' compareFit(meq.list)
+##'
+#TODO: add ternary example? or note to start with EQ thresholds?
+##'
 ##' }
 ##' @export
 measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
@@ -1505,7 +1549,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       equate.resid <- "residuals" %in% long.equal &&
         !any(long.partial$lhs == longIndKey[i] &
                long.partial$rhs == longIndKey[i] &
-               long.partial$op == "~~")
+               long.partial$op == "~~") #FIXME: leave resid==0 for reference indicators
 
       if (i == longInds[1]) {
 

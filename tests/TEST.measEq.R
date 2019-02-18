@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 January 2019
+### Last updated: 17 February 2019
 ### check measEq syntax-writing engine
 
 # devtools::install_github("simsem/semTools/semTools")
@@ -230,7 +230,7 @@ for (i in 0:length(test.seq)) {
 }
 
 compareFit(meq.list)
-#TODO: add this example to the help page
+#TODO: check ID.cat = "millsap"
 
 
 
