@@ -205,15 +205,16 @@ runMI <- function(model, data, fun = "lavaan", ...,
       }
     } else stop("Currently runMI only supports imputation by Amelia or mice")
   } else if (is.list(data)) {
-    if (is.mids(data)) {
-      m <- data$m
-      imputedData <- list()
-      requireNamespace("mice")
-      if (!"package:mice" %in% search()) attachNamespace("mice")
-      for (i in 1:m) {
-        imputedData[[i]] <- mice::complete(data, action = i, include = FALSE)
+    ## check possibility that it is a mids object (inherits from list)
+    if (requireNamespace("mice", quietly = TRUE)) {
+      if (mice::is.mids(data)) {
+        m <- data$m
+        imputedData <- list()
+        for (i in 1:m) {
+          imputedData[[i]] <- mice::complete(data, action = i, include = FALSE)
+        }
+        imputeCall <- list()
       }
-      imputeCall <- list()
     } else {
       seed <- integer(length = 0)
       imputeCall <- list()
