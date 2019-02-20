@@ -6,239 +6,241 @@
 ### Last updated: 9 March 2018
 
 
-#' Pooled estimates and standard errors across M parcel-allocations: Combining
-#' sampling variability and parcel-allocation variability.
-#'
-#' This function employs an iterative algorithm to pick the number of random
-#' item-to-parcel allocations needed to meet user-defined stability criteria
-#' for a fitted structural equation model (SEM) (see "Details" below for more
-#' information). Pooled parameter and standard error estimates from this SEM
-#' can be outputted at this final selected number of allocations. Additionally,
-#' new indices (see Sterba & Rights, 2016) are outputted for assessing the
-#' relative contributions of parcel-allocation variability vs. sampling
-#' variability in each estimate. At each iteration, this function generates a
-#' given number of random item-to-parcel allocations using a modified version
-#' of the \code{\link{parcelAllocation}} function (Quick & Schoemann, 2012),
-#' fits a SEM to each allocation, pools results across allocations from that
-#' iteration, and then assesses whether stopping criteria are met. If stopping
-#' criteria are not met, the algorithm increments the number of allocations
-#' used (generating all new allocations).
-#'
-#' This is a modified version of \code{\link{parcelAllocation}}. It implements
-#' a new algorithm for choosing the number of allocations (\emph{M}),
-#' (described in Sterba & Rights (2016)), newly pools parameter estimate and
-#' standard error results across these \emph{M} allocations, and produces
-#' indices for assessing the relative contributions of parcel-allocation
-#' variability vs. sampling variability in each estimate. This function
-#' randomly generates a given number (\code{nAllocStart}) of item-to-parcel
-#' allocations, fits a SEM to each allocation, and then increments the number
-#' of allocations used (by \code{nAllocAdd}) until the pooled parameter
-#' estimates and pooled standard errors fulfill stopping criteria
-#' (\code{stopProp} and \code{stopValue}, defined above). Results from the
-#' model that was fit to the \emph{M} allocations are outputted.
-#'
-#' Additionally, this function newly outputs the proportion of allocations with
-#' solutions that converged (using a maximum likelihood estimator) as well as
-#' the proportion of allocations with solutions that were converged and proper.
-#' The converged and proper solutions among the final \emph{M} allocations are
-#' used in computing pooled results. The original parcelAllocation function
-#' could not be employed if any allocations yielded nonconverged solutions.
-#'
-#' For further details on the benefits of the random allocation of items to
-#' parcels, see Sterba (2011) and Sterba & MacCallum (2010).
-#'
-#' Additionally, after each iteration of the algorithm, information useful in
-#' monitoring the algorithm is outputted. The number of allocations used at
-#' that iteration, the proportion of pooled parameter estimates meeting
-#' stopping criteria at the previous iteration, the proportion of pooled
-#' standard errors meeting stopping criteria at the previous iteration, and the
-#' runtime of that iteration are outputted. When stopping criteria are
-#' satisfied, the full set of results are outputted.
-#'
-#' @importFrom stats sd pnorm pt qt runif pchisq
-#' @importFrom lavaan lavInspect
-#'
-#' @param nPerPar A list in which each element is a vector, corresponding to
-#' each factor, indicating sizes of parcels. If variables are left out of
-#' parceling, they should not be accounted for here (i.e., there should not be
-#' parcels of size "1").
-#' @param facPlc A list of vectors, each corresponding to a factor, specifying
-#' the item indicators of that factor (whether included in parceling or not).
-#' Either variable names or column numbers. Variables not listed will not be
-#' modeled or included in output datasets.
-#' @param nAllocStart The number of random allocations of items to parcels to
-#' generate in the first iteration of the algorithm.
-#' @param nAllocAdd The number of allocations to add with each iteration of the
-#' algorithm. Note that if only one iteration is desired, \code{nAllocAdd} can
-#' be set to \eqn{0} and results will be output for \code{nAllocStart}
-#'  allocationsonly.
-#' @param syntax lavaan syntax that defines the model.
-#' @param dataset Item-level dataset
-#' @param parceloutput Optional \code{character}. Path (folder/directory) where
-#' \emph{M} (the final selected number of allocations) parceled data sets will
-#' be outputted from the iteration where the algorithm met stopping criteria.
-#' Note for Windows users: file path must be specified using forward slashes
-#' (\code{/}), not backslashes (\code{\\}). See \code{\link[base]{path.expand}}
-#' for details.  If \code{NULL} (default), nothing is saved to disk.
-#' @param stopProp Value used in defining stopping criteria of the algorithm
-#' (\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of
-#' change (in any pooled parameter or pooled standard error estimate listed in
-#' \code{selectParam}) that is allowable from one iteration of the algorithm to
-#' the next. That is, change in pooled estimates and pooled standard errors
-#' from one iteration to the next must all be less than (\code{stopProp}) x
-#' (value from former iteration). Note that \code{stopValue} can override this
-#' criterion (see below). Also note that values less than .01 are unlikely to
-#' lead to more substantively meaningful precision. Also note that if only
-#' \code{stopValue} is a desired criterion, \code{stopProp} can be set to 0.
-#' @param stopValue Value used in defining stopping criteria of the algorithm
-#' (\eqn{\delta_b} in Sterba & Rights, 2016). \code{stopValue} is a minimum
-#' allowable amount of absolute change (in any pooled parameter or pooled
-#' standard error estimate listed in \code{selectParam}) from one iteration of
-#' the algorithm to the next. For a given pooled estimate or pooled standard
-#' error, \code{stopValue} is only invoked as a stopping criteria when the
-#' minimum change required by \code{stopProp} is less than \code{stopValue}.
-#' Note that values less than .01 are unlikely to lead to more substantively
-#' meaningful precision. Also note that if only \code{stopProp} is a desired
-#' criterion, \code{stopValue} can be set to 0.
-#' @param selectParam (Optional) A list of the pooled parameters to be used in
-#' defining stopping criteria (i.e., \code{stopProp} and \code{stopValue}).
-#' These parameters should appear in the order they are listed in the lavaan
-#' syntax. By default, all pooled parameters are used. Note that
-#' \code{selectParam} should only contain freely-estimated parameters. In one
-#' example from Sterba & Rights (2016) \code{selectParam} included all free
-#' parameters except item intercepts and in another example \code{selectParam}
-#' included only structural parameters.
-#' @param indices Optional \code{character} vector indicating the names of
-#' available \code{\link[lavaan]{fitMeasures}} to be included in the output.
-#' The first and second elements should be a chi-squared test statistic and its
-#' associated degrees of freedom, both of which will be added if missing. If
-#' \code{"default"}, the indices will be \code{c("chisq", "df", "cfi", "tli",
-#' "rmsea","srmr")}. If a robust test statistic is requested (see
-#' \code{\link[lavaan]{lavOptions}}), \code{c("chisq","df")} will be replaced
-#' by \code{c("chisq.scaled","df.scaled")}. For the output to include both the
-#' naive and robust test statistics, \code{indices} should include both, but
-#' put the scaled test statistics first, as in \code{indices =
-#' c("chisq.scaled", "df.scaled", "chisq", "df")}
-#' @param double (Optional) If set to \code{TRUE}, requires stopping criteria
-#' (\code{stopProp} and \code{stopValue}) to be met for all parameters (in
-#' \code{selectParam}) for two consecutive iterations of the algorithm. By
-#' default, this is set to \code{FALSE}, meaning stopping criteria need only be
-#' met at one iteration of the algorithm.
-#' @param names (Optional) A character vector containing the names of parceled
-#' variables.
-#' @param leaveout (Optional) A vector of variables to be left out of
-#' randomized parceling. Either variable names or column numbers are allowed.
-#' @param useTotalAlloc (Optional) If set to \code{TRUE}, function will output
-#' a separate set of results that uses all allocations created by the
-#' algorithm, rather than \emph{M} allocations (see "Allocations needed for
-#' stability" below). This distinction is further discussed in Sterba and
-#' Rights (2016).
-#' @param checkConv (Optional) If set to TRUE, function will output pooled
-#' estimates and standard errors from 10 iterations post-convergence.
-#' @param \dots Additional arguments to be passed to
-#' \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
-#'
-#' @return
-#' \item{Estimates}{A table containing pooled results across \emph{M}
-#' allocations at the iteration where stopping criteria were met. Columns
-#' correspond to individual parameter name, pooled estimate, pooled standard
-#' error, \emph{p}-value for a \emph{z}-test of the parameter, \emph{z}-based
-#' 95\% confidence interval, \emph{p}-value for a \emph{t}-test of the
-#' parameter (using degrees of freedom described in Sterba & Rights, 2016), and
-#' \emph{t}-based 95\% confidence interval for the parameter.}
-#' \item{Fit}{A table containing results related to model fit from the \emph{M}
-#' allocations at the iteration where stopping criteria were met. Columns
-#' correspond to fit index names, the average of each index across allocations,
-#' the standard deviation of each fit index across allocations, the maximum of
-#' each fit index across allocations, the minimum of each fit index across
-#' allocations, the range of each fit index across allocations, and the percent
-#' of the \emph{M} allocations where the chi-square test of absolute fit was
-#' significant.}
-#' \item{Proportion of converged and proper allocations}{A table
-#' containing the proportion of the final \emph{M} allocations that converged
-#' (using a maximum likelihood estimator) and the proportion of allocations
-#' that converged to proper solutions. Note that pooled estimates, pooled
-#' standard errors, and other results are computed using only the converged,
-#' proper allocations.}
-#' \item{Allocations needed for stability (M)}{The number of allocations
-#' (\emph{M}) at which the algorithm's stopping criteria (defined above) were
-#' met.}
-#' \item{Indices used to quantify uncertainty in estimates due to sample vs.
-#' allocation variability}{A table containing individual parameter names, an
-#' estimate of the proportion of total variance of a pooled parameter estimate
-#' that is attributable to parcel-allocation variability (PPAV), and an estimate
-#' of the ratio of the between-allocation variance of a pooled parameter
-#' estimate to the within-allocation variance (RPAV). See Sterba & Rights (2016)
-#' for more detail.}
-#' \item{Total runtime (minutes)}{The total runtime of the function, in minutes.
-#' Note that the total runtime will be greater when the specified model
-#' encounters convergence problems for some allocations, as is the case with the
-#' \code{\link{simParcel}} dataset used below.}
-#'
-#' @author
-#' Jason D. Rights (Vanderbilt University; \email{jason.d.rights@@vanderbilt.edu})
-#'
-#' The author would also like to credit Corbin Quick and Alexander Schoemann
-#' for providing the original parcelAllocation function on which this function
-#' is based.
-#'
-#' @seealso \code{\link{parcelAllocation}}, \code{\link{PAVranking}}
-#'
-#' @references Sterba, S. K. (2011). Implications of parcel-allocation
-#' variability for comparing fit of item-solutions and parcel-solutions.
-#' \emph{Structural Equation Modeling, 18}(4), 554--577.
-#' doi:10.1080/10705511.2011.607073
-#'
-#' Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates
-#' and model fit across random allocations of items to parcels.
-#' \emph{Multivariate Behavioral Research, 45}(2), 322--358.
-#' doi:10.1080/00273171003680302
-#'
-#' Sterba, S. K., & Rights, J. D. (2016). Accounting for parcel-allocation
-#' variability in practice: Combining sources of uncertainty and choosing the
-#' number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
-#' 296--313. doi:10.1080/00273171.2016.1144502
-#'
-#' @examples
-#'
-#' \dontrun{
-#' ## lavaan syntax: A 2 Correlated
-#' ## factor CFA model to be fit to parceled data
-#'
-#' parmodel <- '
-#'    f1 =~ NA*p1f1 + p2f1 + p3f1
-#'    f2 =~ NA*p1f2 + p2f2 + p3f2
-#'    p1f1 ~ 1
-#'    p2f1 ~ 1
-#'    p3f1 ~ 1
-#'    p1f2 ~ 1
-#'    p2f2 ~ 1
-#'    p3f2 ~ 1
-#'    p1f1 ~~ p1f1
-#'    p2f1 ~~ p2f1
-#'    p3f1 ~~ p3f1
-#'    p1f2 ~~ p1f2
-#'    p2f2 ~~ p2f2
-#'    p3f2 ~~ p3f2
-#'    f1 ~~ 1*f1
-#'    f2 ~~ 1*f2
-#'    f1 ~~ f2
-#' '
-#'
-#' ## specify items for each factor
-#' f1name <- colnames(simParcel)[1:9]
-#' f2name <- colnames(simParcel)[10:18]
-#'
-#' ## run function
-#' poolMAlloc(nPerPar = list(c(3,3,3), c(3,3,3)),
-#'            facPlc = list(f1name, f2name), nAllocStart = 10, AllocAdd = 10,
-#'            syntax = parmodel, dataset = simParcel, stopProp = .03,
-#'            stopValue = .03, selectParam = c(1:6, 13:18, 21),
-#'            names = list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"),
-#'            double = FALSE, useTotalAlloc = FALSE)
-#' }
-#'
-#' @export
+##' Pooled estimates and standard errors across M parcel-allocations: Combining
+##' sampling variability and parcel-allocation variability.
+##'
+##' This function employs an iterative algorithm to pick the number of random
+##' item-to-parcel allocations needed to meet user-defined stability criteria
+##' for a fitted structural equation model (SEM) (see "Details" below for more
+##' information). Pooled parameter and standard error estimates from this SEM
+##' can be outputted at this final selected number of allocations. Additionally,
+##' new indices (see Sterba & Rights, 2016) are outputted for assessing the
+##' relative contributions of parcel-allocation variability vs. sampling
+##' variability in each estimate. At each iteration, this function generates a
+##' given number of random item-to-parcel allocations using a modified version
+##' of the \code{\link{parcelAllocation}} function (Quick & Schoemann, 2012),
+##' fits a SEM to each allocation, pools results across allocations from that
+##' iteration, and then assesses whether stopping criteria are met. If stopping
+##' criteria are not met, the algorithm increments the number of allocations
+##' used (generating all new allocations).
+##'
+##' This is a modified version of \code{\link{parcelAllocation}}. It implements
+##' a new algorithm for choosing the number of allocations (\emph{M}),
+##' (described in Sterba & Rights (2016)), newly pools parameter estimate and
+##' standard error results across these \emph{M} allocations, and produces
+##' indices for assessing the relative contributions of parcel-allocation
+##' variability vs. sampling variability in each estimate. This function
+##' randomly generates a given number (\code{nAllocStart}) of item-to-parcel
+##' allocations, fits a SEM to each allocation, and then increments the number
+##' of allocations used (by \code{nAllocAdd}) until the pooled parameter
+##' estimates and pooled standard errors fulfill stopping criteria
+##' (\code{stopProp} and \code{stopValue}, defined above). Results from the
+##' model that was fit to the \emph{M} allocations are outputted.
+##'
+##' Additionally, this function newly outputs the proportion of allocations with
+##' solutions that converged (using a maximum likelihood estimator) as well as
+##' the proportion of allocations with solutions that were converged and proper.
+##' The converged and proper solutions among the final \emph{M} allocations are
+##' used in computing pooled results. The original parcelAllocation function
+##' could not be employed if any allocations yielded nonconverged solutions.
+##'
+##' For further details on the benefits of the random allocation of items to
+##' parcels, see Sterba (2011) and Sterba & MacCallum (2010).
+##'
+##' Additionally, after each iteration of the algorithm, information useful in
+##' monitoring the algorithm is outputted. The number of allocations used at
+##' that iteration, the proportion of pooled parameter estimates meeting
+##' stopping criteria at the previous iteration, the proportion of pooled
+##' standard errors meeting stopping criteria at the previous iteration, and the
+##' runtime of that iteration are outputted. When stopping criteria are
+##' satisfied, the full set of results are outputted.
+##'
+##' @importFrom stats sd pnorm pt qt runif pchisq
+##' @importFrom lavaan lavInspect
+##'
+##' @param nPerPar A list in which each element is a vector, corresponding to
+##' each factor, indicating sizes of parcels. If variables are left out of
+##' parceling, they should not be accounted for here (i.e., there should not be
+##' parcels of size "1").
+##' @param facPlc A list of vectors, each corresponding to a factor, specifying
+##' the item indicators of that factor (whether included in parceling or not).
+##' Either variable names or column numbers. Variables not listed will not be
+##' modeled or included in output datasets.
+##' @param nAllocStart The number of random allocations of items to parcels to
+##' generate in the first iteration of the algorithm.
+##' @param nAllocAdd The number of allocations to add with each iteration of the
+##' algorithm. Note that if only one iteration is desired, \code{nAllocAdd} can
+##' be set to \eqn{0} and results will be output for \code{nAllocStart}
+##'  allocationsonly.
+##' @param syntax lavaan syntax that defines the model.
+##' @param dataset Item-level dataset
+##' @param parceloutput Optional \code{character}. Path (folder/directory) where
+##' \emph{M} (the final selected number of allocations) parceled data sets will
+##' be outputted from the iteration where the algorithm met stopping criteria.
+##' Note for Windows users: file path must be specified using forward slashes
+##' (\code{/}), not backslashes (\code{\\}). See \code{\link[base]{path.expand}}
+##' for details.  If \code{NULL} (default), nothing is saved to disk.
+##' @param stopProp Value used in defining stopping criteria of the algorithm
+##' (\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of
+##' change (in any pooled parameter or pooled standard error estimate listed in
+##' \code{selectParam}) that is allowable from one iteration of the algorithm to
+##' the next. That is, change in pooled estimates and pooled standard errors
+##' from one iteration to the next must all be less than (\code{stopProp}) x
+##' (value from former iteration). Note that \code{stopValue} can override this
+##' criterion (see below). Also note that values less than .01 are unlikely to
+##' lead to more substantively meaningful precision. Also note that if only
+##' \code{stopValue} is a desired criterion, \code{stopProp} can be set to 0.
+##' @param stopValue Value used in defining stopping criteria of the algorithm
+##' (\eqn{\delta_b} in Sterba & Rights, 2016). \code{stopValue} is a minimum
+##' allowable amount of absolute change (in any pooled parameter or pooled
+##' standard error estimate listed in \code{selectParam}) from one iteration of
+##' the algorithm to the next. For a given pooled estimate or pooled standard
+##' error, \code{stopValue} is only invoked as a stopping criteria when the
+##' minimum change required by \code{stopProp} is less than \code{stopValue}.
+##' Note that values less than .01 are unlikely to lead to more substantively
+##' meaningful precision. Also note that if only \code{stopProp} is a desired
+##' criterion, \code{stopValue} can be set to 0.
+##' @param selectParam (Optional) A list of the pooled parameters to be used in
+##' defining stopping criteria (i.e., \code{stopProp} and \code{stopValue}).
+##' These parameters should appear in the order they are listed in the lavaan
+##' syntax. By default, all pooled parameters are used. Note that
+##' \code{selectParam} should only contain freely-estimated parameters. In one
+##' example from Sterba & Rights (2016) \code{selectParam} included all free
+##' parameters except item intercepts and in another example \code{selectParam}
+##' included only structural parameters.
+##' @param indices Optional \code{character} vector indicating the names of
+##' available \code{\link[lavaan]{fitMeasures}} to be included in the output.
+##' The first and second elements should be a chi-squared test statistic and its
+##' associated degrees of freedom, both of which will be added if missing. If
+##' \code{"default"}, the indices will be \code{c("chisq", "df", "cfi", "tli",
+##' "rmsea","srmr")}. If a robust test statistic is requested (see
+##' \code{\link[lavaan]{lavOptions}}), \code{c("chisq","df")} will be replaced
+##' by \code{c("chisq.scaled","df.scaled")}. For the output to include both the
+##' naive and robust test statistics, \code{indices} should include both, but
+##' put the scaled test statistics first, as in \code{indices =
+##' c("chisq.scaled", "df.scaled", "chisq", "df")}
+##' @param double (Optional) If set to \code{TRUE}, requires stopping criteria
+##' (\code{stopProp} and \code{stopValue}) to be met for all parameters (in
+##' \code{selectParam}) for two consecutive iterations of the algorithm. By
+##' default, this is set to \code{FALSE}, meaning stopping criteria need only be
+##' met at one iteration of the algorithm.
+##' @param names (Optional) A character vector containing the names of parceled
+##' variables.
+##' @param leaveout (Optional) A vector of variables to be left out of
+##' randomized parceling. Either variable names or column numbers are allowed.
+##' @param useTotalAlloc (Optional) If set to \code{TRUE}, function will output
+##' a separate set of results that uses all allocations created by the
+##' algorithm, rather than \emph{M} allocations (see "Allocations needed for
+##' stability" below). This distinction is further discussed in Sterba and
+##' Rights (2016).
+##' @param checkConv (Optional) If set to TRUE, function will output pooled
+##' estimates and standard errors from 10 iterations post-convergence.
+##' @param \dots Additional arguments to be passed to
+##' \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
+##'
+##' @return
+##' \item{Estimates}{A table containing pooled results across \emph{M}
+##' allocations at the iteration where stopping criteria were met. Columns
+##' correspond to individual parameter name, pooled estimate, pooled standard
+##' error, \emph{p}-value for a \emph{z}-test of the parameter, \emph{z}-based
+##' 95\% confidence interval, \emph{p}-value for a \emph{t}-test of the
+##' parameter (using degrees of freedom described in Sterba & Rights, 2016), and
+##' \emph{t}-based 95\% confidence interval for the parameter.}
+##' \item{Fit}{A table containing results related to model fit from the \emph{M}
+##' allocations at the iteration where stopping criteria were met. Columns
+##' correspond to fit index names, the average of each index across allocations,
+##' the standard deviation of each fit index across allocations, the maximum of
+##' each fit index across allocations, the minimum of each fit index across
+##' allocations, the range of each fit index across allocations, and the percent
+##' of the \emph{M} allocations where the chi-square test of absolute fit was
+##' significant.}
+##' \item{Proportion of converged and proper allocations}{A table
+##' containing the proportion of the final \emph{M} allocations that converged
+##' (using a maximum likelihood estimator) and the proportion of allocations
+##' that converged to proper solutions. Note that pooled estimates, pooled
+##' standard errors, and other results are computed using only the converged,
+##' proper allocations.}
+##' \item{Allocations needed for stability (M)}{The number of allocations
+##' (\emph{M}) at which the algorithm's stopping criteria (defined above) were
+##' met.}
+##' \item{Indices used to quantify uncertainty in estimates due to sample vs.
+##' allocation variability}{A table containing individual parameter names, an
+##' estimate of the proportion of total variance of a pooled parameter estimate
+##' that is attributable to parcel-allocation variability (PPAV), and an estimate
+##' of the ratio of the between-allocation variance of a pooled parameter
+##' estimate to the within-allocation variance (RPAV). See Sterba & Rights (2016)
+##' for more detail.}
+##' \item{Total runtime (minutes)}{The total runtime of the function, in minutes.
+##' Note that the total runtime will be greater when the specified model
+##' encounters convergence problems for some allocations, as is the case with the
+##' \code{\link{simParcel}} dataset used below.}
+##'
+##' @author
+##' Jason D. Rights (Vanderbilt University; \email{jason.d.rights@@vanderbilt.edu})
+##'
+##' The author would also like to credit Corbin Quick and Alexander Schoemann
+##' for providing the original parcelAllocation function on which this function
+##' is based.
+##'
+##' @seealso \code{\link{parcelAllocation}}, \code{\link{PAVranking}}
+##'
+##' @references
+##'
+##' Sterba, S. K. (2011). Implications of parcel-allocation
+##' variability for comparing fit of item-solutions and parcel-solutions.
+##' \emph{Structural Equation Modeling, 18}(4), 554--577.
+##' doi:10.1080/10705511.2011.607073
+##'
+##' Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates
+##' and model fit across random allocations of items to parcels.
+##' \emph{Multivariate Behavioral Research, 45}(2), 322--358.
+##' doi:10.1080/00273171003680302
+##'
+##' Sterba, S. K., & Rights, J. D. (2016). Accounting for parcel-allocation
+##' variability in practice: Combining sources of uncertainty and choosing the
+##' number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
+##' 296--313. doi:10.1080/00273171.2016.1144502
+##'
+##' @examples
+##'
+##' \dontrun{
+##' ## lavaan syntax: A 2 Correlated
+##' ## factor CFA model to be fit to parceled data
+##'
+##' parmodel <- '
+##'    f1 =~ NA*p1f1 + p2f1 + p3f1
+##'    f2 =~ NA*p1f2 + p2f2 + p3f2
+##'    p1f1 ~ 1
+##'    p2f1 ~ 1
+##'    p3f1 ~ 1
+##'    p1f2 ~ 1
+##'    p2f2 ~ 1
+##'    p3f2 ~ 1
+##'    p1f1 ~~ p1f1
+##'    p2f1 ~~ p2f1
+##'    p3f1 ~~ p3f1
+##'    p1f2 ~~ p1f2
+##'    p2f2 ~~ p2f2
+##'    p3f2 ~~ p3f2
+##'    f1 ~~ 1*f1
+##'    f2 ~~ 1*f2
+##'    f1 ~~ f2
+##' '
+##'
+##' ## specify items for each factor
+##' f1name <- colnames(simParcel)[1:9]
+##' f2name <- colnames(simParcel)[10:18]
+##'
+##' ## run function
+##' poolMAlloc(nPerPar = list(c(3,3,3), c(3,3,3)),
+##'            facPlc = list(f1name, f2name), nAllocStart = 10, AllocAdd = 10,
+##'            syntax = parmodel, dataset = simParcel, stopProp = .03,
+##'            stopValue = .03, selectParam = c(1:6, 13:18, 21),
+##'            names = list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"),
+##'            double = FALSE, useTotalAlloc = FALSE)
+##' }
+##'
+##' @export
 poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
                        parceloutput = NULL, syntax, dataset, stopProp, stopValue,
                        selectParam = NULL, indices = "default", double = FALSE,
@@ -361,8 +363,7 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
       }
       k1 <- 0.001
       for (i in 1:length(leaveout)) {
-        facPlc[leaveout[i]] <- facPlc[leaveout[i]] +
-          k1
+        facPlc[leaveout[i]] <- facPlc[leaveout[i]] + k1
         k1 <- k1 + 0.001
       }
     }
@@ -378,8 +379,7 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
       nPerPar2 <- c()
       for (i in 1:length(nPerPar)) {
         Onesp <- sum(facPlc > i & facPlc < i + 1)
-        nPerPar2 <- c(nPerPar2, nPerPar[i], rep(1,
-                                                Onesp), recursive = TRUE)
+        nPerPar2 <- c(nPerPar2, nPerPar[i], rep(1, Onesp), recursive = TRUE)
       }
       nPerPar <- nPerPar2
     }

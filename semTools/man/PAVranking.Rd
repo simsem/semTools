@@ -81,14 +81,6 @@ to: average likelihood ratio test (LRT) statistic for comparing Model A vs.
 Model B (null hypothesis is no difference in fit between Models A and B in
 the population), degrees of freedom (i.e. difference in the number of free
 parameters between Models A and B), as well as the standard deviation,
-maximum, and minimum of LRT statistics across allocations, and the percent of
-allocations where the LRT was significant (indicating preference for the more
-complex Model B). }
-\item{LRT Summary, Model A vs. Model B}{A table with columns corresponding
-to: average likelihood ratio test (LRT) statistic for comparing Model A vs.
-Model B (null hypothesis is no difference in fit between Models A and B in
-the population), degrees of freedom (i.e. difference in the number of free
-parameters between Models A and B), as well as the standard deviation,
 maximum, and minimum of LRT statistics across allocations, and the percent
 of allocations where the LRT was significant (indicating preference for the
 more complex Model B). }

@@ -6,7 +6,8 @@
 \usage{
 parcelAllocation(model, data, parcel.names, item.syntax, nAlloc = 100,
   fun = "sem", alpha = 0.05, fit.measures = c("chisq", "df", "cfi",
-  "tli", "rmsea", "srmr"), ..., show.progress = FALSE, do.fit = TRUE)
+  "tli", "rmsea", "srmr"), ..., show.progress = FALSE, do.fit = TRUE,
+  return.fit = FALSE)
 }
 \arguments{
 \item{model}{\code{\link[lavaan]{lavaan}} model syntax specifying the model
@@ -54,25 +55,25 @@ parceled data set, and the summary of results is returned (see the Value
 section below). If \code{FALSE}, the items are randomly parceled, but the
 model is not fit; instead, the \code{list} of \code{data.frame}s is
 returned (so assign it to an object).}
+
+\item{return.fit}{If \code{TRUE}, a \code{\link[lavaan]{lavaanList}} object
+is returned with the \code{list} of results across allocations}
 }
 \value{
-\item{Estimates}{A data frame containing results related to
-parameter estimates with columns corresponding to parameter names, average
-parameter estimates across allocations, the standard deviation of parameter
-estimates across allocations, the minimum parameter estimate across
-allocations, the maximum parameter estimate across allocations, the range of
-parameter estimates across allocations, and the proportions of allocations
-in which the parameter estimate is significant.} \item{SE}{A data frame
-containing results related to standard errors with columns corresponding to
-parameter names, average standard errors across allocations, the standard
-deviation of standard errors across allocations, the minimum standard error
-across allocations, the maximum standard error across allocations, and the
-range of standard errors across allocations.} \item{Fit}{A data frame
-containing results related to model fit with columns corresponding to fit
-index names, the average of each index across allocations, the standard
-deviation of each fit index across allocations, the minimum of each fit
-index across allocations, the maximum of each fit index across allocations,
-and the range of each fit index across allocations.}
+\item{Estimates}{A \code{data.frame} containing results related to
+    parameter estimates with columns corresponding to their names; average
+    and standard deviation across allocations; minimum, maximum, and range
+    across allocations; and the proportion of allocations in which each
+    parameter estimate was significant.}
+  \item{SE}{A \code{data.frame} containing results similar to
+    \code{Estimates}, but related to the standard errors of parameter
+    estimates.}
+  \item{Fit}{A \code{data.frame} containing results related to model fit,
+    with columns corresponding to fit index names; their average and
+    standard deviation across allocations; the minimum, maximum, and range
+    across allocations; and (if the test statistic or RMSEA is included in
+    \code{fit.measures}) the proportion of allocations in which each
+    test of (exact or close) fit was significant.}
 }
 \description{
 This function generates a given number of randomly generated item-to-parcel
@@ -84,10 +85,10 @@ This function implements the random item-to-parcel allocation procedure
 described in Sterba (2011) and Sterba and MacCallum (2010). The function
 takes a single data set with item-level data, randomly assigns items to
 parcels, fits a structural equation model to the parceled data (using
-\link[lavaan]{lavaan}), and repeats this process for a user-specified number
-of random allocations. Results from all fitted models are summarized in the
-output. For further details on the benefits of the random allocation of
-itesm to parcels, see Sterba (2011) and Sterba and MccCallum (2010).
+\link[lavaan]{lavaanList}), and repeats this process for a user-specified
+number of random allocations. Results from all fitted models are summarized
+in the output. For further details on the benefits of randomly allocating
+items to parcels, see Sterba (2011) and Sterba and MccCallum (2010).
 }
 \examples{
 
@@ -110,8 +111,25 @@ f2 =~ par4 + par5 + par6
 (parcel.names <- paste0("par", 1:6))
 
 \dontrun{
-parcelAllocation(mod.parcels, data = simParcel, parcel.names, item.syntax,
-                 nAlloc = 20, std.lv = TRUE, parallel = "snow", iseed = 12345)
+parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
+                 parcel.names = parcel.names, item.syntax = item.syntax,
+                 std.lv = TRUE,          # any addition lavaan arguments
+                 parallel = "snow", iseed = 12345)    # parallel options
+
+
+
+## POOL RESULTS by treating parcel allocations as multiple imputations
+set.seed(12345)
+## save list of data sets instead of fitting model yet
+dataList <- parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
+                             parcel.names = parcel.names,
+                             item.syntax = item.syntax,
+                             do.fit = FALSE)
+## now fit the model to each data set
+fit.parcels <- cfa.mi(mod.parcels, data = dataList, std.lv = TRUE)
+summary(fit.parcels) # uses Rubin's rules
+anova(fit.parcels)   # pooled test statistic
+class?lavaan.mi      # find more methods for pooling results
 }
 
 
