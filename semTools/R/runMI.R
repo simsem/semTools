@@ -214,8 +214,15 @@ runMI <- function(model, data, fun = "lavaan", ...,
           imputedData[[i]] <- mice::complete(data, action = i, include = FALSE)
         }
         imputeCall <- list()
+      } else {
+        seed <- integer(length = 0)
+        imputeCall <- list()
+        imputedData <- data
+        m <- length(data)
+        class(imputedData) <- "list" # override inheritance (e.g., "mi" if Amelia)
       }
     } else {
+      ## can't check for mice, so probably isn't mids
       seed <- integer(length = 0)
       imputeCall <- list()
       imputedData <- data
