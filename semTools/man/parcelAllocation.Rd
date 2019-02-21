@@ -6,8 +6,8 @@
 \usage{
 parcelAllocation(model, data, parcel.names, item.syntax, nAlloc = 100,
   fun = "sem", alpha = 0.05, fit.measures = c("chisq", "df", "cfi",
-  "tli", "rmsea", "srmr"), ..., show.progress = FALSE, do.fit = TRUE,
-  return.fit = FALSE)
+  "tli", "rmsea", "srmr"), ..., show.progress = FALSE, iseed = 12345,
+  do.fit = TRUE, return.fit = FALSE, warn = FALSE)
 }
 \arguments{
 \item{model}{\code{\link[lavaan]{lavaan}} model syntax specifying the model
@@ -45,10 +45,17 @@ to request from each fitted \code{\link[lavaan]{lavaan}} model.  See the
 output of \code{\link[lavaan]{fitMeasures}} for a list of available measures.}
 
 \item{\dots}{Additional arguments to be passed to
-\code{\link[lavaan]{lavaanList}}}
+\code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}}
 
 \item{show.progress}{If \code{TRUE}, show a \code{\link[utils]{txtProgressBar}}
 indicating how fast the model-fitting iterates over allocations.}
+
+\item{iseed}{(Optional) Random seed used for parceling items. When the same
+random seed is specified and the program is re-run, the same allocations
+will be generated. Using the same \code{iseed} argument will ensure the
+any model is fit to the same parcel allocations. \emph{Note}: When using
+\pkg{parallel} options, you must first type \code{RNGkind("L'Ecuyer-CMRG")}
+into the R Console, so that the seed will be controlled across cores.}
 
 \item{do.fit}{If \code{TRUE} (default), the \code{model} is fitted to each
 parceled data set, and the summary of results is returned (see the Value
@@ -58,6 +65,8 @@ returned (so assign it to an object).}
 
 \item{return.fit}{If \code{TRUE}, a \code{\link[lavaan]{lavaanList}} object
 is returned with the \code{list} of results across allocations}
+
+\item{warn}{Whether to print warnings when fitting \code{model} to each allocation}
 }
 \value{
 \item{Estimates}{A \code{data.frame} containing results related to
@@ -74,6 +83,9 @@ is returned with the \code{list} of results across allocations}
     across allocations; and (if the test statistic or RMSEA is included in
     \code{fit.measures}) the proportion of allocations in which each
     test of (exact or close) fit was significant.}
+  \item{Model}{A \code{\link[lavaan]{lavaanList}} object containing results
+    of the \code{model} fitted to each parcel allocation. Only returned if
+    \code{return.fit = TRUE}.}
 }
 \description{
 This function generates a given number of randomly generated item-to-parcel
@@ -111,15 +123,18 @@ f2 =~ par4 + par5 + par6
 (parcel.names <- paste0("par", 1:6))
 
 \dontrun{
+## override default random-number generator to use parallel options
+RNGkind("L'Ecuyer-CMRG")
+
 parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
                  parcel.names = parcel.names, item.syntax = item.syntax,
-                 std.lv = TRUE,          # any addition lavaan arguments
-                 parallel = "snow", iseed = 12345)    # parallel options
+                 std.lv = TRUE,       # any addition lavaan arguments
+                 parallel = "snow")   # parallel options
 
 
 
 ## POOL RESULTS by treating parcel allocations as multiple imputations
-set.seed(12345)
+
 ## save list of data sets instead of fitting model yet
 dataList <- parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
                              parcel.names = parcel.names,
@@ -142,7 +157,6 @@ f2 =~ par4 + par5 + par6
 ## names of parcels
 (parcel.names <- paste0("par", 1:6))
 
-set.seed(12345)
 parcelAllocation(mod.mg, data = simParcel, parcel.names, item.syntax,
                  std.lv = TRUE, group = "group", group.equal = "loadings",
                  nAlloc = 20, show.progress = TRUE)
@@ -157,7 +171,6 @@ f2 =~ f2item2 + f2item7 + f2item8
 ## names of parcels
 (parcel.names <- paste0("par", 1:3))
 
-set.seed(12345)
 parcelAllocation(mod.items, data = simParcel, parcel.names, item.syntax,
                  nAlloc = 20, std.lv = TRUE)
 
@@ -171,7 +184,6 @@ f2 =~ f2item2 + f2item7 + f2item8 + par4 + par5 + par6
 ## names of parcels
 (parcel.names <- paste0("par", 1:6))
 
-set.seed(12345)
 parcelAllocation(mod.mix, data = simParcel, parcel.names, item.syntax,
                  nAlloc = 20, std.lv = TRUE)
 
@@ -188,7 +200,8 @@ and model fit across random allocations of items to parcels.
 doi:10.1080/00273171003680302
 }
 \seealso{
-\code{\link{PAVranking}}, \code{\link{poolMAlloc}}
+\code{\link{PAVranking}} for comparing 2 models,
+  \code{\link{poolMAlloc}} for choosing the number of allocations
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 20 February 2019
+### Last updated: 21 February 2019
 
 
 ##' Random Allocation of Items to Parcels in a Structural Equation Model
@@ -17,8 +17,8 @@
 ##' in the output. For further details on the benefits of randomly allocating
 ##' items to parcels, see Sterba (2011) and Sterba and MccCallum (2010).
 ##'
-##' @importFrom stats sd
-##' @importFrom lavaan parTable lavInspect lavaanList lavaanify
+##' @importFrom stats sd qnorm
+##' @importFrom lavaan parTable lavInspect lavaanList lavaanify lavNames
 ##'
 ##' @param model \code{\link[lavaan]{lavaan}} model syntax specifying the model
 ##'   fit to (at least some) parceled data. Note that there can be a mixture of
@@ -47,9 +47,15 @@
 ##'   to request from each fitted \code{\link[lavaan]{lavaan}} model.  See the
 ##'   output of \code{\link[lavaan]{fitMeasures}} for a list of available measures.
 ##' @param \dots Additional arguments to be passed to
-##'   \code{\link[lavaan]{lavaanList}}
+##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}
 ##' @param show.progress If \code{TRUE}, show a \code{\link[utils]{txtProgressBar}}
 ##'   indicating how fast the model-fitting iterates over allocations.
+##' @param iseed (Optional) Random seed used for parceling items. When the same
+##'   random seed is specified and the program is re-run, the same allocations
+##'   will be generated. Using the same \code{iseed} argument will ensure the
+##'   any model is fit to the same parcel allocations. \emph{Note}: When using
+##'   \pkg{parallel} options, you must first type \code{RNGkind("L'Ecuyer-CMRG")}
+##'   into the R Console, so that the seed will be controlled across cores.
 ##' @param do.fit If \code{TRUE} (default), the \code{model} is fitted to each
 ##'   parceled data set, and the summary of results is returned (see the Value
 ##'   section below). If \code{FALSE}, the items are randomly parceled, but the
@@ -57,6 +63,7 @@
 ##'   returned (so assign it to an object).
 ##' @param return.fit If \code{TRUE}, a \code{\link[lavaan]{lavaanList}} object
 ##'   is returned with the \code{list} of results across allocations
+##' @param warn Whether to print warnings when fitting \code{model} to each allocation
 ##'
 ##' @return
 ##'   \item{Estimates}{A \code{data.frame} containing results related to
@@ -73,11 +80,15 @@
 ##'     across allocations; and (if the test statistic or RMSEA is included in
 ##'     \code{fit.measures}) the proportion of allocations in which each
 ##'     test of (exact or close) fit was significant.}
+##'   \item{Model}{A \code{\link[lavaan]{lavaanList}} object containing results
+##'     of the \code{model} fitted to each parcel allocation. Only returned if
+##'     \code{return.fit = TRUE}.}
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso \code{\link{PAVranking}}, \code{\link{poolMAlloc}}
+##' @seealso \code{\link{PAVranking}} for comparing 2 models,
+##'   \code{\link{poolMAlloc}} for choosing the number of allocations
 ##'
 ##' @references
 ##'
@@ -112,15 +123,18 @@
 ##' (parcel.names <- paste0("par", 1:6))
 ##'
 ##' \dontrun{
+##' ## override default random-number generator to use parallel options
+##' RNGkind("L'Ecuyer-CMRG")
+##'
 ##' parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
 ##'                  parcel.names = parcel.names, item.syntax = item.syntax,
-##'                  std.lv = TRUE,          # any addition lavaan arguments
-##'                  parallel = "snow", iseed = 12345)    # parallel options
+##'                  std.lv = TRUE,       # any addition lavaan arguments
+##'                  parallel = "snow")   # parallel options
 ##'
 ##'
 ##'
 ##' ## POOL RESULTS by treating parcel allocations as multiple imputations
-##' set.seed(12345)
+##'
 ##' ## save list of data sets instead of fitting model yet
 ##' dataList <- parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
 ##'                              parcel.names = parcel.names,
@@ -143,7 +157,6 @@
 ##' ## names of parcels
 ##' (parcel.names <- paste0("par", 1:6))
 ##'
-##' set.seed(12345)
 ##' parcelAllocation(mod.mg, data = simParcel, parcel.names, item.syntax,
 ##'                  std.lv = TRUE, group = "group", group.equal = "loadings",
 ##'                  nAlloc = 20, show.progress = TRUE)
@@ -158,7 +171,6 @@
 ##' ## names of parcels
 ##' (parcel.names <- paste0("par", 1:3))
 ##'
-##' set.seed(12345)
 ##' parcelAllocation(mod.items, data = simParcel, parcel.names, item.syntax,
 ##'                  nAlloc = 20, std.lv = TRUE)
 ##'
@@ -172,7 +184,6 @@
 ##' ## names of parcels
 ##' (parcel.names <- paste0("par", 1:6))
 ##'
-##' set.seed(12345)
 ##' parcelAllocation(mod.mix, data = simParcel, parcel.names, item.syntax,
 ##'                  nAlloc = 20, std.lv = TRUE)
 ##'
@@ -181,8 +192,8 @@ parcelAllocation <- function(model, data, parcel.names, item.syntax,
                              nAlloc = 100, fun = "sem", alpha = .05,
                              fit.measures = c("chisq","df","cfi",
                                               "tli","rmsea","srmr"), ...,
-                             show.progress = FALSE, do.fit = TRUE,
-                             return.fit = FALSE) {
+                             show.progress = FALSE, iseed = 12345,
+                             do.fit = TRUE, return.fit = FALSE, warn = FALSE) {
   if (nAlloc < 2) stop("Minimum of two allocations required.")
   if (!fun %in% c("sem","cfa","growth","lavaan"))
     stop("'fun' argument must be either 'lavaan', 'cfa', 'sem', or 'growth'")
@@ -216,11 +227,11 @@ parcelAllocation <- function(model, data, parcel.names, item.syntax,
               " syntax or a lavaan parameter table.  See ?lavaanify help page.")
 
   ## check that both models specify the same factors
-  factorNames <- lavaan::lavNames(PT, type = "lv")
-  if (!all(sort(lavaan::lavNames(item.PT, type = "lv")) == sort(factorNames))) {
+  factorNames <- lavNames(PT, type = "lv")
+  if (!all(sort(lavNames(item.PT, type = "lv")) == sort(factorNames))) {
     stop("'model' and 'item.syntax' arguments specify different factors.\n",
          "'model' specifies: ", paste(sort(factorNames), collapse = ", "), "\n",
-         "'item.syntax' specifies: ", paste(sort(lavaan::lavNames(item.PT,
+         "'item.syntax' specifies: ", paste(sort(lavNames(item.PT,
                                                                   type = "lv")),
                                             collapse = ", "))
   }
@@ -273,7 +284,8 @@ parcelAllocation <- function(model, data, parcel.names, item.syntax,
   if (!do.fit) return(dataList)
 
   ## fit parcel-level model to list of data sets
-  fitList <- lavaanList(model, dataList, cmd = fun, ...,
+  set.seed(iseed) # in case not using parallel
+  fitList <- lavaanList(model, dataList, cmd = fun, ..., warn = warn, iseed = iseed,
                         FUN = lavaan::fitMeasures, show.progress = show.progress)
   ## for which data sets did the model converge?
   conv <- fitList@meta$ok
@@ -361,7 +373,7 @@ parcelAllocation <- function(model, data, parcel.names, item.syntax,
   ## return output
   if (return.fit) {
     out$Model <- fitList
-    fitList@external$dataList <- dataList
+    out$Model@external$dataList <- dataList
   }
   out
 }
