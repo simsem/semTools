@@ -168,7 +168,8 @@ PAVranking(model0 = mod0, model1 = mod1, data = simParcel, nAlloc = 100,
 
 
 
-## POOL RESULTS by treating parcel allocations as multiple imputations
+## POOL RESULTS by treating parcel allocations as multiple imputations.
+## Details provided in Sterba & Rights (2016); see ?poolMAlloc.
 
 ## save list of data sets instead of fitting model yet
 dataList <- parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
@@ -196,6 +197,11 @@ Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates
 and model fit across repeated allocations of items to parcels.
 \emph{Multivariate Behavioral Research, 45}(2), 322--358.
 doi:10.1080/00273171003680302
+
+Sterba, S. K., & Rights, J. D. (2016). Accounting for parcel-allocation
+variability in practice: Combining sources of uncertainty and choosing the
+number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
+296--313. doi:10.1080/00273171.2016.1144502
 
 Sterba, S. K., & Rights, J. D. (2017). Effects of parceling on model
 selection: Parcel-allocation variability in model ranking.

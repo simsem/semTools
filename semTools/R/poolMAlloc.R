@@ -212,6 +212,10 @@
 ##' number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
 ##' 296--313. doi:10.1080/00273171.2016.1144502
 ##'
+##' Sterba, S. K., & Rights, J. D. (2017). Effects of parceling on model
+##' selection: Parcel-allocation variability in model ranking.
+##' \emph{Psychological Methods, 22}(1), 47--68. doi:10.1037/met0000067
+##'
 ##' @examples
 ##'
 ##' \dontrun{
@@ -252,7 +256,8 @@
 ##' }
 ##'
 ##' ## See examples on ?parcelAllocation and ?PAVranking for how to obtain
-##' ## pooled test statistics and other pooled lavaan output
+##' ## pooled test statistics and other pooled lavaan output.
+##' ## Details provided in Sterba & Rights (2016).
 ##'
 ##' @export
 poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
