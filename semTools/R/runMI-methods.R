@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 November 2018
+### Last updated: 20 February 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -537,7 +537,7 @@ anova.lavaan.mi <- function(object, ...) {
     argList <- c(modList, list(argsLRT = dots, indices = FALSE))
     results <- do.call(compareFit, argList)@nested
     class(results) <- c("lavaan.data.frame","data.frame")
-    attr(results, "heading") <- "Nested Model Comparisons\n"
+    attr(results, "header") <- "Nested Model Comparisons:"
   }
 
   results

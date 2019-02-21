@@ -4,204 +4,182 @@
 \alias{PAVranking}
 \title{Parcel-Allocation Variability in Model Ranking}
 \usage{
-PAVranking(nPerPar, facPlc, nAlloc = 100, parceloutput = 0, syntaxA,
-  syntaxB, dataset, names = NULL, leaveout = 0, seed = NA, ...)
+PAVranking(model0, model1, data, parcel.names, item.syntax, nAlloc = 100,
+  fun = "sem", alpha = 0.05, bic.crit = 10,
+  fit.measures = c("chisq", "df", "cfi", "tli", "rmsea", "srmr", "logl",
+  "aic", "bic", "bic2"), ..., show.progress = FALSE, iseed = 12345,
+  warn = FALSE)
 }
 \arguments{
-\item{nPerPar}{A list in which each element is a vector, corresponding to
-each factor, indicating sizes of parcels. If variables are left out of
-parceling, they should not be accounted for here (i.e., there should not be
-parcels of size "1").}
+\item{model0, model1}{\code{\link[lavaan]{lavaan}} model syntax specifying
+nested models (\code{model0} within \code{model1}) to be fitted
+to the same parceled data.  Note that there can be a mixture of
+items and parcels (even within the same factor), in case certain items
+should never be parceled. Can be a character string or parameter table.
+Also see \code{\link[lavaan]{lavaanify}} for more details.}
 
-\item{facPlc}{A list of vectors, each corresponding to a factor, specifying
-the item indicators of that factor (whether included in parceling or not).
-Either variable names or column numbers. Variables not listed will not be
-modeled or included in output datasets.}
+\item{data}{A \code{data.frame} containing all observed variables appearing
+in the \code{model}, as well as those in the \code{item.syntax} used to
+create parcels. If the data have missing values, multiple imputation
+before parceling is recommended: submit a stacked data set (with a variable
+for the imputation number, so they can be separateed later) and set
+\code{do.fit = FALSE} to return the list of \code{data.frame}s (one per
+allocation), each of which is a stacked, imputed data set with parcels.}
 
-\item{nAlloc}{The number of random allocations of items to parcels to
-generate.}
+\item{parcel.names}{\code{character} vector containing names of all parcels
+appearing as indicators in \code{model}.}
 
-\item{parceloutput}{folder where parceled data sets will be outputted (note
-for Windows users: file path must specified using forward slashes).}
+\item{item.syntax}{\link[lavaan]{lavaan} model syntax specifying the model
+that would be fit to all of the unparceled items, including items that
+should be randomly allocated to parcels appearing in \code{model}.}
 
-\item{syntaxA}{lavaan syntax for Model A. Note that, for likelihood ratio
-test (LRT) results to be interpreted, Model A should be nested within Model
-B (though the function will still provide results when Models A and B are
-nonnested).}
+\item{nAlloc}{The number of random items-to-parcels allocations to generate.}
 
-\item{syntaxB}{lavaan syntax for Model B. Note that, for likelihood ratio
-test (LRT) results to be appropriate, Model A should be nested within Model
-B (though the function will still provide results when Models A and B are
-nonnested).}
+\item{fun}{\code{character} string indicating the name of the
+\code{\link[lavaan]{lavaan}} function used to fit \code{model} to
+\code{data}. Can only take the values \code{"lavaan"}, \code{"sem"},
+\code{"cfa"}, or \code{"growth"}.}
 
-\item{dataset}{Item-level dataset}
+\item{alpha}{Alpha level used as criterion for significance.}
 
-\item{names}{(Optional) A character vector containing the names of parceled
-variables.}
+\item{bic.crit}{Criterion for assessing evidence in favor of one model
+over another.  See Rafferty (1995) for guidelines (default is "very
+strong evidence" in favor of the model with lower BIC).}
 
-\item{leaveout}{(Optional) A vector of variables to be left out of
-randomized parceling. Either variable names or column numbers are allowed.}
+\item{fit.measures}{\code{character} vector containing names of fit measures
+to request from each fitted \code{\link[lavaan]{lavaan}} model.  See the
+output of \code{\link[lavaan]{fitMeasures}} for a list of available measures.}
 
-\item{seed}{(Optional) Random seed used for parceling items. When the same
+\item{\dots}{Additional arguments to be passed to
+\code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}}
+
+\item{show.progress}{If \code{TRUE}, show a \code{\link[utils]{txtProgressBar}}
+indicating how fast each model-fitting iterates over allocations.}
+
+\item{iseed}{(Optional) Random seed used for parceling items. When the same
 random seed is specified and the program is re-run, the same allocations
 will be generated. The seed argument can be used to assess parcel-allocation
 variability in model ranking when considering more than two models. For each
 pair of models under comparison, the program should be rerun using the same
 random seed. Doing so ensures that multiple model comparisons will employ
-the same set of parcel datasets.}
+the same set of parcel datasets. \emph{Note}: When using \pkg{parallel}
+options, you must first type \code{RNGkind("L'Ecuyer-CMRG")} into the R
+Console, so that the seed will be controlled across cores.}
 
-\item{\dots}{Additional arguments to be passed to
-\code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}}
+\item{warn}{Whether to print warnings when fitting models to each allocation}
 }
 \value{
-\item{Estimates_A, Estimates_B}{A table containing results related
-to parameter estimates (in table Estimates_A for Model A and in table
-Estimates_B for Model B) with columns corresponding to parameter name,
-average parameter estimate across allocations, standard deviation of
-parameter estimate across allocations, the maximum parameter estimate across
-allocations, the minimum parameter estimate across allocations, the range of
-parameter estimates across allocations, and the percent of allocations in
-which the parameter estimate is significant.}
-\item{SE_A, SE_B}{A table containing results related to standard errors (in
-table SE_A for Model A and in table SE_B for Model B) with columns
-corresponding to parameter name, average standard error across allocations,
-the standard deviation of standard errors across allocations, the maximum
-standard error across allocations, the minimum standard error across
-allocations, and the range of standard errors across allocations.}
-\item{Fit_A, Fit_B}{A table containing results related to model fit (in
-table Fit_A for Model A and in table Fit_B for Model B) with columns
-corresponding to fit index name, the average of the fit index across
-allocations, the standard deviation of the fit index across allocations,
-the maximum of the fit index across allocations, the minimum of the fit
-index across allocations, the range of the fit index across allocations, and
-the percent of allocations where the chi-square test of absolute fit was
-significant.}
-\item{LRT Summary, Model A vs. Model B}{A table with columns corresponding
-to: average likelihood ratio test (LRT) statistic for comparing Model A vs.
-Model B (null hypothesis is no difference in fit between Models A and B in
-the population), degrees of freedom (i.e. difference in the number of free
-parameters between Models A and B), as well as the standard deviation,
-maximum, and minimum of LRT statistics across allocations, and the percent
-of allocations where the LRT was significant (indicating preference for the
-more complex Model B). }
-\item{Fit index differences}{A table containing percentage of allocations
-where Model A is preferred over Model B according to BIC, AIC, RMSEA, CFI,
-TLI and SRMR and where Model B is preferred over Model A according to the
-same indices. Also includes the average amount by which the given model is
-preferred (calculated only using allocations where it was preferred).}
-\item{Fit index difference histograms}{Histograms are automatically outputted
-showing the distribution of the differences (Model A - Model B) for each fit
-index and for the p-value of the likelihood ratio difference test.}
-\item{Percent of Allocations with | BIC Diff | > 10}{A table containing the
-percentage of allocations with (BIC for Model A) - (BIC for Model B) < -10,
-indicating "very strong evidence" to prefer Model A over Model B and the
-percentage of allocations with (BIC for Model A) - (BIC for Model B) > 10,
-indicating "very strong evidence" to prefer Model B over Model A (Raftery,
-1995).}
-\item{Converged and proper}{A table containing the proportion of allocations
-that converged for Model A, Model B, and both models, and the proportion of
-allocations with converged and proper solutions for Model A, Model B, and
-both models.}
+\item{model0.results}{Results returned by \code{\link{parcelAllocation}}
+  for \code{model0} (see the \bold{Value} section).}
+\item{model1.results}{Results returned by \code{\link{parcelAllocation}}
+  for \code{model1} (see the \bold{Value} section).}
+\item{model0.v.model1}{A \code{list} of model-comparison results, including
+  the following: \itemize{
+  \item{\code{LRT_Summary:}}{ The average likelihood ratio test across
+    allocations, as well as the \emph{SD}, minimum, maximum, range, and the
+    proportion of allocations for which the test was significant.}
+  \item{\code{Fit_Index_Differences:}}{ Differences in fit indices, organized
+    by what proportion favored each model and among those, what the average
+    difference was.}
+  \item{\code{Favored_by_BIC:}}{ The proportion of allocations in which each
+    model met the criterion (\code{bic.crit}) for a substantial difference
+    in fit.}
+  \item{\code{Convergence_Summary:}}{ The proportion of allocations in which
+    each model (and both models) converged on a solution.}
+  } Histograms are also printed to the current plot-output device.}
 }
 \description{
 This function quantifies and assesses the consequences of parcel-allocation
 variability for model ranking of structural equation models (SEMs) that
 differ in their structural specification but share the same parcel-level
-measurement specification (see Sterba & Rights, 2016). This function is a
-modified version of \code{\link{parcelAllocation}} which can be used with
-only one SEM in isolation. The \code{PAVranking} function repeatedly
-generates a specified number of random item-to-parcel allocations, and then
-fits two models to each allocation. Output includes summary information
+measurement specification (see Sterba & Rights, 2016). This function calls
+\code{\link{parcelAllocation}}---which can be used with only one SEM in
+isolation---to fit two (assumed) nested models to each of a specified number
+of random item-to-parcel allocations.  Output includes summary information
 about the distribution of model selection results (including plots) and the
 distribution of results for each model individually, across allocations
 within-sample. Note that this function can be used when selecting among more
 than two competing structural models as well (see instructions below
-involving \code{seed}).
+involving the \code{seed} argument).
 }
 \details{
-This is a modified version of \code{\link{parcelAllocation}} which was, in
-turn, based on the SAS macro \code{ParcelAlloc} (Sterba & MacCallum, 2010).
+This is based on a SAS macro \code{ParcelAlloc} (Sterba & MacCallum, 2010).
 The \code{PAVranking} function produces results discussed in Sterba and
 Rights (2016) relevant to the assessment of parcel-allocation variability in
 model selection and model ranking. Specifically, the \code{PAVranking}
-function first uses a modified version of parcelAllocation to generate a
-given number (\code{nAlloc}) of item-to-parcel allocations. Then,
-\code{PAVranking} provides the following new developments: specifying more
-than one SEM and producing results for Model A and Model B separately that
-summarize parcel allocation variability in estimates, standard errors, and
-fit indices. \code{PAVranking} also newly produces results summarizing
-parcel allocation variability in model selection index values and model
-ranking between Models A and B. Additionally, \code{PAVranking} newly allows
-for nonconverged solutions and outputs the proportion of allocations that
-converged as well as the proportion of proper solutions (results are
-summarized for converged and proper allocations only).
+function first calls \code{\link{parcelAllocation}} to generate a given
+number (\code{nAlloc}) of item-to-parcel allocations, fitting both specified
+models to each allocation, and providing summaryies of PAV for each model.
+Additionally, \code{PAVranking} provides the following new summaries:
+
+\itemize{
+  \item{PAV in model selection index values and model ranking between
+     Models \code{model0} and \code{model1}.}
+  \item{The proportion of allocations that converged and the proportion of
+    proper solutions (results are summarized for allocations with both
+    converged and proper  allocations only).}
+}
 
 For further details on the benefits of the random allocation of items to
 parcels, see Sterba (2011) and Sterba and MacCallum (2010).
 
+To test whether nested models have equivalent fit, results can be pooled
+across allocations using the same methods available for pooling results
+across multiple imputations of missing data (see \bold{Examples}).
+
 \emph{Note}: This function requires the \code{lavaan} package. Missing data
- codeneeds to be \code{NA}. If function returns \code{"Error in plot.new() :
-figure margins too large,"} user may need to increase size of the plot
-window and rerun.
+ must be coded as \code{NA}. If the function returns \code{"Error in
+ plot.new() : figure margins too large"}, the user may need to increase
+ size of the plot window (e.g., in RStudio) and rerun the function.
 }
 \examples{
 
+## Specify the item-level model (if NO parcels were created)
+## This must apply to BOTH competing models
+
+item.syntax <- c(paste0("f1 =~ f1item", 1:9),
+                 paste0("f2 =~ f2item", 1:9))
+cat(item.syntax, sep = "\\n")
+## Below, we reduce the size of this same model by
+## applying different parceling schemes
+
+## Specify a 2-factor CFA with correlated factors, using 3-indicator parcels
+mod1 <- '
+f1 =~ par1 + par2 + par3
+f2 =~ par4 + par5 + par6
+'
+## Specify a more restricted model with orthogonal factors
+mod0 <- '
+f1 =~ par1 + par2 + par3
+f2 =~ par4 + par5 + par6
+f1 ~~ 0*f2
+'
+## names of parcels (must apply to BOTH models)
+(parcel.names <- paste0("par", 1:6))
+
 \dontrun{
-## lavaan syntax for Model A: a 2 Uncorrelated
-## factor CFA model to be fit to parceled data
+## override default random-number generator to use parallel options
+RNGkind("L'Ecuyer-CMRG")
 
-parmodelA <- '
-   f1 =~ NA*p1f1 + p2f1 + p3f1
-   f2 =~ NA*p1f2 + p2f2 + p3f2
-   p1f1 ~ 1
-   p2f1 ~ 1
-   p3f1 ~ 1
-   p1f2 ~ 1
-   p2f2 ~ 1
-   p3f2 ~ 1
-   p1f1 ~~ p1f1
-   p2f1 ~~ p2f1
-   p3f1 ~~ p3f1
-   p1f2 ~~ p1f2
-   p2f2 ~~ p2f2
-   p3f2 ~~ p3f2
-   f1 ~~ 1*f1
-   f2 ~~ 1*f2
-   f1 ~~ 0*f2
-'
+PAVranking(model0 = mod0, model1 = mod1, data = simParcel, nAlloc = 100,
+           parcel.names = parcel.names, item.syntax = item.syntax,
+           std.lv = TRUE,       # any addition lavaan arguments
+           parallel = "snow")   # parallel options
 
-## lavaan syntax for Model B: a 2 Correlated
-## factor CFA model to be fit to parceled data
 
-parmodelB <- '
-   f1 =~ NA*p1f1 + p2f1 + p3f1
-   f2 =~ NA*p1f2 + p2f2 + p3f2
-   p1f1 ~ 1
-   p2f1 ~ 1
-   p3f1 ~ 1
-   p1f2 ~ 1
-   p2f2 ~ 1
-   p3f2 ~ 1
-   p1f1 ~~ p1f1
-   p2f1 ~~ p2f1
-   p3f1 ~~ p3f1
-   p1f2 ~~ p1f2
-   p2f2 ~~ p2f2
-   p3f2 ~~ p3f2
-   f1 ~~ 1*f1
-   f2 ~~ 1*f2
-   f1 ~~ f2
-'
 
-## specify items for each factor
-f1name <- colnames(simParcel)[1:9]
-f2name <- colnames(simParcel)[10:18]
+## POOL RESULTS by treating parcel allocations as multiple imputations
 
-## run function
-PAVranking(nPerPar = list(c(3,3,3), c(3,3,3)), facPlc = list(f1name,f2name),
-           nAlloc = 100, parceloutput = 0, leaveout = 0,
-           syntaxA = parmodelA, syntaxB = parmodelB, dataset = simParcel,
-           names = list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"))
+## save list of data sets instead of fitting model yet
+dataList <- parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
+                             parcel.names = parcel.names,
+                             item.syntax = item.syntax,
+                             do.fit = FALSE)
+## now fit each model to each data set
+fit0 <- cfa.mi(mod0, data = dataList, std.lv = TRUE)
+fit1 <- cfa.mi(mod1, data = dataList, std.lv = TRUE)
+anova(fit0, fit1)   # pooled test statistic comparing models
+class?lavaan.mi     # find more methods for pooling results
 }
 
 }
@@ -224,12 +202,9 @@ selection: Parcel-allocation variability in model ranking.
 \emph{Psychological Methods, 22}(1), 47--68. doi:10.1037/met0000067
 }
 \seealso{
-\code{\link{parcelAllocation}}, \code{\link{poolMAlloc}}
+\code{\link{parcelAllocation}} for fitting a single model,
+  \code{\link{poolMAlloc}} for choosing the number of allocations
 }
 \author{
-Jason D. Rights (Vanderbilt University; \email{jason.d.rights@vanderbilt.edu})
-
-The author would also like to credit Corbin Quick and Alexander Schoemann
-for providing the original parcelAllocation function on which this function
-is based.
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
