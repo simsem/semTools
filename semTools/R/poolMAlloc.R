@@ -1,9 +1,9 @@
 ### Authors:
 ### Jason D. Rights (Vanderbilt University; jason.d.rights@vanderbilt.edu)
 ### - based on research from/with Sonya Sterba
-### - adapted from parcelAllocation() by Corbin Quick and Alexander Schoemann
+### - adapted from OLD parcelAllocation() by Corbin Quick and Alexander Schoemann
 ### - additional "indices" argument added by Terrence D. Jorgensen
-### Last updated: 9 March 2018
+### Last updated: 21 February 2019
 
 
 ##' Pooled estimates and standard errors across M parcel-allocations: Combining
@@ -11,41 +11,46 @@
 ##'
 ##' This function employs an iterative algorithm to pick the number of random
 ##' item-to-parcel allocations needed to meet user-defined stability criteria
-##' for a fitted structural equation model (SEM) (see "Details" below for more
-##' information). Pooled parameter and standard error estimates from this SEM
-##' can be outputted at this final selected number of allocations. Additionally,
-##' new indices (see Sterba & Rights, 2016) are outputted for assessing the
-##' relative contributions of parcel-allocation variability vs. sampling
-##' variability in each estimate. At each iteration, this function generates a
-##' given number of random item-to-parcel allocations using a modified version
-##' of the \code{\link{parcelAllocation}} function (Quick & Schoemann, 2012),
-##' fits a SEM to each allocation, pools results across allocations from that
+##' for a fitted structural equation model (SEM) (see \bold{Details} below for
+##' more information). Pooled point and standard-error estimates from this SEM
+##' can be outputted at this final selected number of allocations (however, it
+##' is more efficient to save the allocations and treat them as multiple
+##' imputations using \code{\link{runMI}}; see \bold{See Also} for links with
+##' examples). Additionally, new indices (see Sterba & Rights, 2016) are
+##' outputted for assessing the relative contributions of parcel-allocation
+##' variability vs. sampling variability in each estimate. At each iteration,
+##' this function generates a given number of random item-to-parcel allocations,
+##' fits a SEM to each allocation, pools estimates across allocations from that
 ##' iteration, and then assesses whether stopping criteria are met. If stopping
 ##' criteria are not met, the algorithm increments the number of allocations
 ##' used (generating all new allocations).
 ##'
-##' This is a modified version of \code{\link{parcelAllocation}}. It implements
-##' a new algorithm for choosing the number of allocations (\emph{M}),
-##' (described in Sterba & Rights (2016)), newly pools parameter estimate and
-##' standard error results across these \emph{M} allocations, and produces
-##' indices for assessing the relative contributions of parcel-allocation
-##' variability vs. sampling variability in each estimate. This function
-##' randomly generates a given number (\code{nAllocStart}) of item-to-parcel
-##' allocations, fits a SEM to each allocation, and then increments the number
-##' of allocations used (by \code{nAllocAdd}) until the pooled parameter
-##' estimates and pooled standard errors fulfill stopping criteria
-##' (\code{stopProp} and \code{stopValue}, defined above). Results from the
-##' model that was fit to the \emph{M} allocations are outputted.
+##' For further details on the benefits of the random allocation of items to
+##' parcels, see Sterba (2011) and Sterba & MacCallum (2010).
 ##'
-##' Additionally, this function newly outputs the proportion of allocations with
+##' This function implements an algorithm for choosing the number of allocations
+##' (\emph{M}; described in Sterba & Rights, 2016), pools point and
+##' standard-error estimates across these \emph{M} allocations, and produces
+##' indices for assessing the relative contributions of parcel-allocation
+##' variability vs. sampling variability in each estimate.
+##'
+##' To obtain pooled test statistics for model fit or model comparison, the
+##' \codde{list} or parcel allocations can be passed to \code{\link{runMI}}
+##' (find \bold{Examples} on the help pages for \code{\link{parcelAllocation}}
+##' and \code{\link{PAVranking}}).
+##'
+##' This function randomly generates a given number (\code{nAllocStart}) of
+##' item-to-parcel allocations, fits a SEM to each allocation, and then
+##' increments the number of allocations used (by \code{nAllocAdd}) until the
+##' pooled point and standard-error estimates fulfill stopping criteria
+##' (\code{stopProp} and \code{stopValue}, defined above). A summary of results
+##' from the model that was fit to the \emph{M} allocations are returned.
+##'
+##' Additionally, this function outputs the proportion of allocations with
 ##' solutions that converged (using a maximum likelihood estimator) as well as
 ##' the proportion of allocations with solutions that were converged and proper.
 ##' The converged and proper solutions among the final \emph{M} allocations are
-##' used in computing pooled results. The original parcelAllocation function
-##' could not be employed if any allocations yielded nonconverged solutions.
-##'
-##' For further details on the benefits of the random allocation of items to
-##' parcels, see Sterba (2011) and Sterba & MacCallum (2010).
+##' used in computing pooled results.
 ##'
 ##' Additionally, after each iteration of the algorithm, information useful in
 ##' monitoring the algorithm is outputted. The number of allocations used at
@@ -182,7 +187,13 @@
 ##' for providing the original parcelAllocation function on which this function
 ##' is based.
 ##'
-##' @seealso \code{\link{parcelAllocation}}, \code{\link{PAVranking}}
+##' @seealso
+##'   \code{\link{runMI}} for treating allocations as multiple imputations to
+##'   pool results across allocations. See \bold{Examples} on help pages for:
+##'   \itemize{
+##'     \item{\code{\link{parcelAllocation}} for fitting a single model}
+##'     \item{\code{\link{PAVranking}} for comparing 2 models}
+##'   }
 ##'
 ##' @references
 ##'
@@ -233,12 +244,15 @@
 ##'
 ##' ## run function
 ##' poolMAlloc(nPerPar = list(c(3,3,3), c(3,3,3)),
-##'            facPlc = list(f1name, f2name), nAllocStart = 10, AllocAdd = 10,
+##'            facPlc = list(f1name, f2name), nAllocStart = 10, nAllocAdd = 10,
 ##'            syntax = parmodel, dataset = simParcel, stopProp = .03,
 ##'            stopValue = .03, selectParam = c(1:6, 13:18, 21),
 ##'            names = list("p1f1","p2f1","p3f1","p1f2","p2f2","p3f2"),
 ##'            double = FALSE, useTotalAlloc = FALSE)
 ##' }
+##'
+##' ## See examples on ?parcelAllocation and ?PAVranking for how to obtain
+##' ## pooled test statistics and other pooled lavaan output
 ##'
 ##' @export
 poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
@@ -246,6 +260,8 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
                        selectParam = NULL, indices = "default", double = FALSE,
                        checkConv = FALSE, names = "default", leaveout = 0,
                        useTotalAlloc = FALSE, ...) {
+  message('Note that more options for pooled results are available using the ',
+          'runMI() function (see Examples on ?parcelAllocation and ?PAVranking)')
   if (!is.null(parceloutput)) {
     if (!dir.exists(parceloutput)) stop('invalid directory:\n',
                                         paste(parceloutput), "\n\n")
