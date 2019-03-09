@@ -1,0 +1,275 @@
+
+
+--------------------------------------------
+IDEAS FOR semTools::permuteMeasEq() FUNCTION
+--------------------------------------------
+
+MIMIC papers:
+10.1080/00273170802620121
+10.1177/0146621611405984
+
+- add option nPermute = 0 
+	- set showProgress = FALSE
+- check for data (instead of sample.cov)
+- make getMIs public (new partialInvariance() function?)
+	- add EPC?
+	- add option for p.adjust
+	- move summ.mgcfa parameter labeling here (useful in general)
+- check AIC problem
+- add estimate of Monte Carlo SE as guideline for choosing nPermute
+  - borrow parcel-allocation method
+
+
+- FIX PARALLEL OPTIONS (maybe just add a library() call)
+	- consider redesigning the whole argument-passing strategy
+  - use with(dots, expr) instead of assigning arguments to objects within scope
+  - using lavaanList() should avoid all this complexity
+
+- check for robust test statistic, use mi.scaled?
+- anova() slot doesn't always match Δχ2 in permutation output because
+  Δχ2 is scaled, but permutation takes difference between scaled Δχ2s
+
+- add multivariate option to test items simultaneously across all groups?
+
+- For configural invariance, add follow-up using largest group-contribution to χ2
+	- no, it is contaminated when H0 is FALSE. Do pairwise comparisons instead.
+
+- update MIMIC method, possibly sequential?
+	(1) use constrained baseline to choose anchors (use MI/df ratio; Woods, 2009: 10.1177/0146621607314044)
+	(2) use free baseline (with anchors) to test DIF
+
+- create permuteOnce.long, summ.long, and getMIs.long functions.
+	- multigroup approach using Deng & Yuan correction?  10.1080/10705511.2014.950534
+
+- check whether indicators are categorical
+	- if binary, warning if testing loadings/thresholds separately
+
+- check that it is not a lavaan.mi object, and no bootstrapping requested
+
+- write a vignette to showcase all the functionality
+	- hacking in extra information for extra() or datafun() via freeParam (when "mimic") or covariates (when "mgcfa/long")
+	- using datafun to permute group/time even under a different modelType
+
+
+
+
+
+- Need to check all instances of "group", if they need to be changed to "block"
+  - miPowerFit() error with single group, ignore groups in multigroup
+
+
+============================
+Measurement Invariance suite
+============================
+
+New Measurement Invariance suite
+- add block.equal=T/F argument to measEq.syntax to test invariance across levels
+- empirical anchor selector
+  - minimum Woods (2009), maybe Achim & Carolin's 
+- partial / DIF tester
+  - Wald or forward LRT (requires anchors), score or backward LRT
+- add aux= argument to measEq.syntax() to signal calling auxiliary()
+
+
+semTools::partialInvariance()
+- argument for adding OR dropping (or Wald), rather than all output
+- make a separate function: findAnchors(), implementing Woods (2009) or Wang & Woods (2017)
+	- doi:10.1177/0146621607314044
+	- see psychotools package, Kopf & Zeileis methods
+	- have partialInvariance() call it to reduce number of fitted models
+- utilize getMIs function instead of fitting models?
+- argument to add fit indices as columns in output$results
+EVENTUALLY automate post-hoc steps in measurementInvariance() 
+	- add attributes like "level" and "partial" for checks, show/summary
+
+
+semTools::alignment()
+- pass configural model for a re-fitted lavaan model that is "aligned"
+- need delta, or just apply aligned latent means/variances as new fixed values?
+  - check whether SEs match Mplus' delta method
+
+
+New CFI for invariance tests?
+- general incremental-fit function accepts 2-3 models, returns vector of indices
+  - detect robust correction
+  - utilize Yves' new @saturated and @baseline slots when available
+
+
+==================
+Missing Data suite
+==================
+
+semTools::auxiliary()
+- allow fixed.x = TRUE
+  - set missing = "fiml.x"
+  - check for $exo, regress auxiliaries on them, correlate with endogenous
+- try setting PT$user == 9 for auxiliary parameters
+  - create lavaan branch, change coef(), parameterEstimates(), etc.
+- add example of alternative null model to help page
+- add argument to simply return extra syntax (for categorical?)
+
+
+semTools::bsBootMiss() additions:
+- allow for nested models instead of relying on saturated parent model
+- remove the "write" arguments
+- fix man page
+- use group.label to preserve group order?
+- add estimate of Monte Carlo SE as guideline for choosing nBoot
+- convince Yves to include in bootstrapLavaan rewrite
+
+
+semTools::twostage() edits/additions:
+- check why my point estimates and SEs are slightly different from Yves
+	- sample.cov.rescale?
+- check whether ACOV/Info is scaled correctly for chisq.scaled computation
+- add to anova() method options for fit indices
+	- utilize the fitMeasures() source code I stole for lavaan.mi
+- write methods: show, summary, coef, vcov, nobs, anova, fitted, resid, predict?
+- omit once in lavaan?  (use auxiliary() the same way as with FIML?)
+
+
+semTools::runMI()
+- lavTestScore.mi() and modindices.mi() should use mean-EPC even when test="D1"
+  - add EPCs to $uni table in add= mode, matching modindices()
+  - add standardized EPCs to lavTestScore
+- work with multilevel models:
+  - multilevel + multigroup structure: G1-W, G1-B, G2-W, G2-B, ... G*-W, G*-B
+  - need to adapt getSRMR, fitted, resid, maybe others
+- sampstat.lavaan.mi() no longer needed: use lavaanList slot @h1List 
+- allow fixed.x and conditional.x
+  - why does baseline model include a "dummy" variable when conditional.x?
+    - Yves removed this legacy code
+  - fix fitted.lavaan.mi(): lav_model_implied() output names differ (e.g., $res.cov, not $cov)
+- Rubin's rules are applied to user-defined parameters (:=).  Should they be
+  re-defined from pooled estimates? (can delta method be applied to pooled SEs?)
+- when h1 fits worse than h0 (on average across imputations)
+  - set LRT to NA instead of 0?
+  - or is this just Monte Carlo error when h0 is true?
+- document ... for fitMeasures() on class?lavaan.mi help page's Usage
+- add arguments to optionally exclude NPD and SE issues
+
+Plausible Values imputation
+- simulate factor scores from ACOV
+  - https://www.statmodel.com/download/Plausible.pdf
+- write blavPredict() for factor scores with missing data, small N
+  - also for latent item-responses? (LRESPONSES in Mplus)
+
+
+
+======================
+Miscellaneous semTools
+======================
+
+add moreFitIndices= argument to compareFit()
+
+semTools::miPowerFit()
+- optionally work with lavTestScore() output?
+  - https://groups.google.com/d/msg/lavaan/b2mB9kHUYho/vFad-F8UDgAJ
+- error with single group, ignore groups in multigroup
+
+
+semTools::chisqSmallN()
+- explains small-N correction
+https://www.frontiersin.org/articles/10.3389/fpsyg.2018.00580/full 
+- new stats for nonnormal data:
+http://dx.doi.org/10.1080/10705511.2016.1277726
+
+
+semTools::net()
+- fails using sample.cov= when trying to extract data: lavInspect(x, "data")
+- adapt for categorical data
+  - Mplus implication: http://www.statmodel.com/download/NET.pdf
+  - check thresholds for nesting (what about trade-off with intercepts?)
+  - given thresholds, can reproduce polychorics? 
+    - minimize parameter table, fit model as if continuous?
+  - even necessary to pass weight matrix?
+    - https://groups.google.com/d/msg/lavaan/KZFGMlCuCDo/ayI3MNDSAAAJ
+
+
+New function: convert ordinal CFA parameters to IRT
+- https://groups.google.com/d/msg/lavaan/RpZnNPQ3_kc/wawV4T-lAwAJ
+- https://groups.google.com/d/msg/lavaan/xeG7OuYcrMc/epJp14WlAwAJ
+
+
+New function: partialRsq()
+- calculate proportion of variance uniquely explained by each predictor
+- See SEMNET request:
+    Date:    Fri, 14 Sep 2018 13:02:30 +1000
+    From:    Michael Zyphur <mzyphur@GMAIL.COM>
+    Subject: Software for path-analytic variance computations?
+- also offer semipartialRsq()? or add semi-TRUE/FALSE option
+
+
+Add emmeans() support for observed/latent mean comparisons
+- already worked out:  https://github.com/yrosseel/lavaan/issues/133
+
+
+Send Sacha a pull request to get rid of semTools::standardizeMx()
+
+
+====================
+Changes to (b)lavaan
+====================
+
+How can we pass auxiliaries to lavCor for lavaan's first step in DWLS?
+How does lavaan allow for non-normality of continuous variables when mixed
+with ordinal?  Necessary to use a robust ACOV as the weight matrix?
+
+
+lavaan::lavNames()
+- add ... option level=1/2 or within/between?
+  - block is already available for this
+- somehow access @Data@ov.names.l list 
+
+
+lavOptions("missing")
+- makes "two.stage" public!
+
+
+lavaan::lavTestScore()
+- check EPCs for multiple groups
+- add SEPCs (also for lavaan.mi)
+- add EPCs to $uni
+- check reversed EPCs from Max's example
+
+
+lavaan::lavaanList()
+- create c() method to concatenate lavaanList() objects
+  - rather than starting over to get more permutations or parcel allocations
+      setMethod("c", "lavaanList",
+      function(x, ...) {
+          dots <- list(...)
+          x
+      })
+- copy update() method for class lavaanList
+
+
+lavaan:::lav_object_inspect_vcov()
+- When free parameters are constrained to zero, sometimes SEs are NA instead
+  of 0.  This unfortunately omits them from use in (e.g.) summary.lavaan.mi()
+    $ diag(OUT)[diag(OUT) < 0 & abs(diag(OUT)) < .Machine$double.eps] <- 0
+- Would this cause problems with inversion within lavaan.mi methods?
+
+
+blavaan::blavPPMC()
+- wrapper around blavaan:::postpred() to get posterior predictive distributions
+  of custom discrepancy functions (e.g., Levy, 2011)
+  - use it for blavFitIndices(fit, rescale = "mcmc")
+- assign class, write print/summary methods to display intervals (not full posteriors)
+
+
+Write tech doc for 2SML
+- full vignette in Rmd
+- also FIML and MI, auxiliary
+
+
+Add a tutorial page for common warnings that raise questions
+- NPD matrices / Heywood cases
+- x.idx for missing
+- bivariate tables empty
+
+http://lavaan.ugent.be/resources/related.html
+- update names for semTools and simsem
+- add blavaan
+
+
