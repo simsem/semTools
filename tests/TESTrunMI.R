@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 November 2018
+### Last updated: 16 March 2019
 ### test runMI
 
 library(lavaan)
@@ -109,12 +109,17 @@ modindices.mi(mgfit1, op = '~~')
 ## check lavaan.mi with multilevel data
 ## ------------------------------------
 
-Galo <- read.table("http://users.ugent.be/~yrosseel/lavaan/tubingen2017/Galo.dat")
+Galo <- read.table("https://users.ugent.be/~yrosseel/lavaan/kiel2018/Galo.dat")
 names(Galo) <- c("school", "sex", "galo", "advice", "feduc", "meduc",
                  "focc", "denom")
 
 # missing data
 Galo[Galo == 999] <- NA
+Galo$denom1 <- ifelse(Galo$denom == 1, 1, 0)
+Galo$denom2 <- ifelse(Galo$denom == 2, 1, 0)
+Galo$g <- ifelse(Galo$school < 30, "foo", "bar") # randomly assign schools to groups
+Galo$sch <- paste0("sch", Galo$school) # character IDs
+Galo <- Galo[sample(nrow(Galo)), ] # randomize rows so cluster IDs are out of order
 
 model <- '
 level: within
@@ -126,21 +131,50 @@ level: within
 level: between
   bses =~ a*focc + b*meduc + c*feduc
   advice ~ bc*bses + bb*galo
-  galo   ~ ba*bses + denom
+  galo   ~ ba*bses + denom1 + denom2
   feduc ~~ 0*feduc
 # defined parameters
   wi := wa * wb
   bi := ba * bb
 '
+G.in.L <- '
+level: within
+
+group: foo
+  galo ~ focc
+group: bar
+  galo ~ focc
+
+level: between
+
+group: foo
+  galo ~ focc
+group: bar
+  galo ~ focc
+'
+L.in.G <- ' group: foo
+level: within
+  galo ~ focc
+level: between
+  galo ~ focc
+
+group: bar
+
+level: within
+  galo ~ focc
+level: between
+  galo ~ focc
+'
+
 library(lavaan)
 fit <- sem(model, data = Galo, cluster = "school", fixed.x = FALSE,
-           missing = "fiml", std.lv = TRUE, h1 = TRUE)
-fitmg <- sem(model, data = Galo, cluster = "school", fixed.x = FALSE,
-             missing = "fiml", std.lv = TRUE, h1 = TRUE, group = "sex")
+           std.lv = TRUE, h1 = TRUE)
+fitmg <- sem(L.in.G, data = Galo, cluster = "sch", fixed.x = FALSE,
+             std.lv = TRUE, h1 = TRUE, group = "g")
 
 summary(fit, fit.measures = TRUE, standardized = TRUE)
 lavInspect(fit, "ngroups")
-lavInspect(fit, "nlevels") #fails
+lavInspect(fit, "nlevels")
 fit@Data@nlevels
 lavInspect(fit, "cov.lv")
 lavInspect(fit, "theta")

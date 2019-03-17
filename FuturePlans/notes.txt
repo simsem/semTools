@@ -8,7 +8,7 @@ MIMIC papers:
 10.1080/00273170802620121
 10.1177/0146621611405984
 
-- add option nPermute = 0 
+- add option nPermute = 0
 	- set showProgress = FALSE
 - check for data (instead of sample.cov)
 - make getMIs public (new partialInvariance() function?)
@@ -65,7 +65,7 @@ Measurement Invariance suite
 New Measurement Invariance suite
 - add block.equal=T/F argument to measEq.syntax to test invariance across levels
 - empirical anchor selector
-  - minimum Woods (2009), maybe Achim & Carolin's 
+  - minimum Woods (2009), maybe Achim & Carolin's
 - partial / DIF tester
   - Wald or forward LRT (requires anchors), score or backward LRT
 - add aux= argument to measEq.syntax() to signal calling auxiliary()
@@ -79,7 +79,7 @@ semTools::partialInvariance()
 	- have partialInvariance() call it to reduce number of fitted models
 - utilize getMIs function instead of fitting models?
 - argument to add fit indices as columns in output$results
-EVENTUALLY automate post-hoc steps in measurementInvariance() 
+EVENTUALLY automate post-hoc steps in measurementInvariance()
 	- add attributes like "level" and "partial" for checks, show/summary
 
 
@@ -135,7 +135,7 @@ semTools::runMI()
 - work with multilevel models:
   - multilevel + multigroup structure: G1-W, G1-B, G2-W, G2-B, ... G*-W, G*-B
   - need to adapt getSRMR, fitted, resid, maybe others
-- sampstat.lavaan.mi() no longer needed: use lavaanList slot @h1List 
+- sampstat.lavaan.mi() no longer needed: use lavaanList slot @h1List
 - allow fixed.x and conditional.x
   - why does baseline model include a "dummy" variable when conditional.x?
     - Yves removed this legacy code
@@ -147,6 +147,9 @@ semTools::runMI()
   - or is this just Monte Carlo error when h0 is true?
 - document ... for fitMeasures() on class?lavaan.mi help page's Usage
 - add arguments to optionally exclude NPD and SE issues
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'   imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.
+##'   Can include any of \code{c("no.conv", "no.se", "no.npd")}.
 
 Plausible Values imputation
 - simulate factor scores from ACOV
@@ -170,7 +173,7 @@ semTools::miPowerFit()
 
 semTools::chisqSmallN()
 - explains small-N correction
-https://www.frontiersin.org/articles/10.3389/fpsyg.2018.00580/full 
+https://www.frontiersin.org/articles/10.3389/fpsyg.2018.00580/full
 - new stats for nonnormal data:
 http://dx.doi.org/10.1080/10705511.2016.1277726
 
@@ -180,7 +183,7 @@ semTools::net()
 - adapt for categorical data
   - Mplus implication: http://www.statmodel.com/download/NET.pdf
   - check thresholds for nesting (what about trade-off with intercepts?)
-  - given thresholds, can reproduce polychorics? 
+  - given thresholds, can reproduce polychorics?
     - minimize parameter table, fit model as if continuous?
   - even necessary to pass weight matrix?
     - https://groups.google.com/d/msg/lavaan/KZFGMlCuCDo/ayI3MNDSAAAJ
@@ -219,7 +222,7 @@ with ordinal?  Necessary to use a robust ACOV as the weight matrix?
 lavaan::lavNames()
 - add ... option level=1/2 or within/between?
   - block is already available for this
-- somehow access @Data@ov.names.l list 
+- somehow access @Data@ov.names.l list
 
 
 lavOptions("missing")
