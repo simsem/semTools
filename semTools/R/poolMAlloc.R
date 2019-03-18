@@ -3,7 +3,7 @@
 ### - based on research from/with Sonya Sterba
 ### - adapted from OLD parcelAllocation() by Corbin Quick and Alexander Schoemann
 ### - additional "indices" argument added by Terrence D. Jorgensen
-### Last updated: 21 February 2019
+### Last updated: 18 March 2019
 
 
 ##' Pooled estimates and standard errors across M parcel-allocations: Combining
@@ -35,7 +35,7 @@
 ##' variability vs. sampling variability in each estimate.
 ##'
 ##' To obtain pooled test statistics for model fit or model comparison, the
-##' \codde{list} or parcel allocations can be passed to \code{\link{runMI}}
+##' \code{list} or parcel allocations can be passed to \code{\link{runMI}}
 ##' (find \bold{Examples} on the help pages for \code{\link{parcelAllocation}}
 ##' and \code{\link{PAVranking}}).
 ##'

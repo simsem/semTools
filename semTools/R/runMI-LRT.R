@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 5 November 2018
+### Last updated: 18 March 2019
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -32,7 +32,6 @@
 ##' @aliases lavTestLRT.mi
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
 ##' @importFrom stats cov pchisq pf
-##' @importFrom methods getMethod
 ##'
 ##' @param object,h1 An object of class \code{\linkS4class{lavaan.mi}}.
 ##'   \code{object} should be nested within (more constrained than) \code{h1}.
@@ -43,6 +42,15 @@
 ##'   calculated using each imputed data set, which will then be pooled across
 ##'   imputations, as described in Li, Meng, Raghunathan, & Rubin (1991).
 ##'   Find additional details in Enders (2010, chapter 8).
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'   imputations from pooled results.  Can include any of
+##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   default setting, which excludes any imputations that did not
+##'   converge or for which standard errors could not be computed.  The
+##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   yielded a nonpositive definite covariance matrix for observed or
+##'   latent variables, which would include any "improper solutions" such
+##'   as Heywood cases.
 ##' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
 ##'   will be returned as an \emph{F}-distributed statistic with numerator
 ##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
@@ -128,12 +136,24 @@
 ##'
 ##' @export
 lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
+                          omit.imps = c("no.conv","no.se"),
                           asymptotic = FALSE, pool.robust = FALSE, ...) {
   ## check class
   if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
-  useImps <- sapply(object@convergence, "[[", i = "converged")
-  nImps <- sum(useImps)
-  DF0 <- object@testList[[ which(useImps)[1] ]][[1]][["df"]]
+
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
+  m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
+  DF0 <- object@testList[[ useImps[1] ]][[1]][["df"]]
 
   ## model comparison?
   if (!is.null(h1)) {
@@ -141,14 +161,42 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
     if (lavListInspect(object, "options")$test != lavListInspect(h1, "options")$test) {
       stop('Different test statistics were requested for the 2 models.')
     }
-    if (any(useImps != sapply(h1@convergence, "[[", i = "converged")))
+
+    useImps1 <- rep(TRUE, length(h1@DataList))
+    if ("no.conv" %in% omit.imps) useImps1 <- sapply(h1@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps1 <- useImps1 & sapply(h1@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(h1@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(h1@convergence, "[[", i = "Heywood.ov")
+      useImps1 <- useImps1 & !(Heywood.lv | Heywood.ov)
+    }
+    m <- sum(useImps1)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps1 <- which(useImps1)
+
+    h0.not.h1 <- setdiff(useImps, useImps1)
+    if (length(h0.not.h1)) warn0 <- paste('\n\nFor the following imputations, ',
+                                          '"object" converged but not "h1":',
+                                          paste(h0.not.h1, collapse = ", "),
+                                          '\n\n')
+    h1.not.h0 <- setdiff(useImps1, useImps)
+    if (length(h1.not.h0)) warn1 <- paste('\n\nFor the following imputations, ',
+                                          '"h1" converged but not "object":',
+                                          paste(h1.not.h0, collapse = ", "),
+                                          '\n\n')
+    if (length(c(h0.not.h1, h1.not.h0)))
       warning('The models being compared did not converge on the same set of ',
-              'imputations. Likelihood ratio test conducted using only the ',
+              'imputations. ',
+              if (length(h0.not.h1)) warn0 else '',
+              if (length(h1.not.h0)) warn1 else '',
+              'Likelihood ratio test conducted using only the ',
               'imputations for which both models converged.')
-    useImps <- useImps & sapply(h1@convergence, "[[", i = "converged")
-    nImps <- sum(useImps)
+    useImps <- intersect(useImps, useImps1)
+    m <- length(useImps) # yes, redefine if necessary
+    if (m == 0L) stop('For no imputations did both models converge.')
+
     ## check DF
-    DF1 <- h1@testList[[ which(useImps)[1] ]][[1]][["df"]]
+    DF1 <- h1@testList[[ useImps[1] ]][[1]][["df"]]
     if (DF0 == DF1) stop("models have equal degrees of freedom")
     if (DF0 < DF1) {
       H0 <- h1
@@ -211,16 +259,17 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
   if (robust && pool.robust) {
     ## pool both the naive and robust test statistics, return both to
     ## make output consistent across options
-    out.naive <- D2.LRT(object, h1 = h1, asymptotic = asymptotic,
-                        pool.robust = FALSE)
-    out.robust <- D2.LRT(object, h1 = h1, asymptotic = asymptotic,
-                         pool.robust = TRUE, LRTargs = dots)
+    out.naive <- D2.LRT(object, h1 = h1, useImps = useImps,
+                        asymptotic = asymptotic, pool.robust = FALSE)
+    out.robust <- D2.LRT(object, h1 = h1, useImps = useImps, LRTargs = dots,
+                         asymptotic = asymptotic, pool.robust = TRUE)
     out <- c(out.naive, out.robust)
   } else if (test == "D2") {
-    out <- D2.LRT(object, h1 = h1, asymptotic = asymptotic,
+    out <- D2.LRT(object, h1 = h1, useImps = useImps, asymptotic = asymptotic,
                   pool.robust = pool.robust)
   } else if (test == "D3") {
-    out <- D3.LRT(object, h1 = h1, asymptotic = asymptotic)
+    out <- D3.LRT(object, h1 = h1, useImps = useImps, asymptotic = asymptotic,
+                  omit.imps = omit.imps)
   }
 
   ## If test statistic is negative, return without any indices or robustness
@@ -244,14 +293,14 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
 
   ## If robust statistics were not pooled above, robustify naive statistics
   if (robust & !pool.robust) {
-    out <- robustify(ChiSq = out, object, h1, useImps)
+    out <- robustify(ChiSq = out, object = object, h1 = h1, useImps = useImps)
     if (scaleshift) {
       extraWarn <- ' and shift parameter'
     } else if (lavListInspect(object, "options")$test == "mean.var.adjusted") {
       extraWarn <- ' and degrees of freedom'
     } else extraWarn <- ''
     message('Robust corrections are made by pooling the naive chi-squared ',
-            'statistic across ', nImps, ' imputations for which the model ',
+            'statistic across ', m, ' imputations for which the model ',
             'converged, then applying the average (across imputations) scaling',
             ' factor', extraWarn, ' to that pooled value. \n',
             'To instead pool the robust test statistics, set test = "D2" and ',
@@ -270,17 +319,8 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
 
 
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
-D2.LRT <- function(object, h1 = NULL, asymptotic = FALSE,
+D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
                    pool.robust = FALSE, LRTargs = list()) {
-  useImps <- sapply(object@convergence, "[[", i = "converged")
-  if (!is.null(h1)) {
-    if (any(useImps != sapply(h1@convergence, "[[", i = "converged")))
-      warning('The models being compared did not converge on the same set of ',
-              'imputations. Likelihood ratio test conducted using only the ',
-              'imputations for which both models converged.')
-    useImps <- useImps & sapply(h1@convergence, "[[", i = "converged")
-  }
-
   warn <- lavListInspect(object, "options")$warn
 
   if (pool.robust && !is.null(h1)) {
@@ -317,8 +357,10 @@ D2.LRT <- function(object, h1 = NULL, asymptotic = FALSE,
     noLRT <- sapply(FIT@funList, function(x) x[1] == "lavTestLRT() failed")
     if (all(noFit | noLRT)) stop("No success using lavTestScore() on any imputations.")
 
-    chiList <- sapply(FIT@funList[useImps & !(noFit | noLRT)], "[[", i = "chisq")
-    dfList <- sapply(FIT@funList[useImps & !(noFit | noLRT)], "[[", i = "df")
+    chiList <- sapply(FIT@funList[ intersect(which(!(noFit | noLRT)), useImps) ],
+                      "[[", i = "chisq")
+    dfList <- sapply(FIT@funList[ intersect(which(!(noFit | noLRT)), useImps) ],
+                     "[[", i = "df")
     out <- calculate.D2(chiList, DF = mean(dfList), asymptotic)
     names(out) <- paste0(names(out), ".scaled")
     class(out) <- c("lavaan.vector","numeric")
@@ -362,7 +404,8 @@ D2.LRT <- function(object, h1 = NULL, asymptotic = FALSE,
 
 ##' @importFrom lavaan parTable lavaan lavListInspect
 ##' @importFrom methods getMethod
-getLLs <- function(object, useImps, saturated = FALSE) {
+getLLs <- function(object, useImps, saturated = FALSE,
+                   omit.imps = c("no.conv","no.se")) {
   ## FIXME: lavaanList does not return info when fixed because no convergence!
   dataList <- object@DataList[useImps]
   lavoptions <- lavListInspect(object, "options")
@@ -373,7 +416,7 @@ getLLs <- function(object, useImps, saturated = FALSE) {
   if (length(cluster) == 0L) cluster <- NULL
 
   if (saturated) {
-    fit <- lavaan(parTable(object), data = dataList[[ which(useImps)[1] ]],
+    fit <- lavaan(parTable(object), data = dataList[[ useImps[1] ]],
                   slotOptions = lavoptions, group = group, cluster = cluster)
     ## use saturated parameter table as new model
     PT <- lavaan::lav_partable_unrestricted(fit)
@@ -397,7 +440,8 @@ getLLs <- function(object, useImps, saturated = FALSE) {
     PT$free <- 0L
     PT$user <- 1L
     ## fix them to pooled estimates
-    fixedValues <- getMethod("coef","lavaan.mi")(object, type = "user")
+    fixedValues <- getMethod("coef","lavaan.mi")(object, type = "user",
+                                                 omit.imps = omit.imps)
     PT$ustart <- fixedValues
     PT$start <- NULL
     PT$est <- NULL
@@ -415,36 +459,30 @@ getLLs <- function(object, useImps, saturated = FALSE) {
 
 ##' @importFrom stats pf pchisq
 ##' @importFrom lavaan lavListInspect parTable
-D3.LRT <- function(object, h1 = NULL, asymptotic = FALSE) {
+D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
+                   omit.imps = c("no.conv","no.se")) {
+  ## NOTE: Need to pass omit.imps= to getLLs(), which calls coef() method
+
   N <- lavListInspect(object, "ntotal")
-  useImps <- sapply(object@convergence, "[[", i = "converged")
-  # m <- length(object@testList)
-  nImps <- sum(useImps)
-  if (!is.null(h1)) {
-    if (any(useImps != sapply(h1@convergence, "[[", i = "converged")))
-      warning('The models being compared did not converge on the same set of ',
-              'imputations. Likelihood ratio test conducted using only the ',
-              'imputations for which both models converged.')
-    useImps <- useImps & sapply(h1@convergence, "[[", i = "converged")
-    nImps <- sum(useImps)
-  }
+  m <- length(useImps)
+
   if (is.null(h1)) {
-    DF <- object@testList[[ which(useImps)[1] ]][[1]][["df"]]
+    DF <- object@testList[[ useImps[1] ]][[1]][["df"]]
   } else {
-    DF1 <- h1@testList[[ which(useImps)[1] ]][[1]][["df"]]
-    DF0 <- object@testList[[ which(useImps)[1] ]][[1]][["df"]]
+    DF1 <- h1@testList[[ useImps[1] ]][[1]][["df"]]
+    DF0 <- object@testList[[ useImps[1] ]][[1]][["df"]]
     DF <- DF0 - DF1
     if (DF < 0) stop('The "object" model must be nested within (i.e., have ',
                      'fewer degrees of freedom than) the "h1" model.')
   }
 
   ## calculate m log-likelihoods under pooled H0 estimates
-  LL0 <- getLLs(object, useImps)
+  LL0 <- getLLs(object, useImps, omit.imps = omit.imps)
   ## calculate m log-likelihoods under pooled H1 estimates
   if (is.null(h1)) {
-    LL1 <- getLLs(object, useImps, saturated = TRUE)
+    LL1 <- getLLs(object, useImps, saturated = TRUE, omit.imps = omit.imps)
   } else {
-    LL1 <- getLLs(h1, useImps)
+    LL1 <- getLLs(h1, useImps, omit.imps = omit.imps)
   }
   #FIXME: check whether LL1 or LL0 returned errors?  add try()?
 
@@ -458,8 +496,8 @@ D3.LRT <- function(object, h1 = NULL, asymptotic = FALSE) {
                       sapply(h1@testList[useImps], function(x) x[[1]]$stat))
   }
   ## calculate average relative increase in variance
-  a <- DF*(nImps - 1)
-  ariv <- ((nImps + 1) / a) * (LRT_bar - LRT_con)
+  a <- DF*(m - 1)
+  ariv <- ((m + 1) / a) * (LRT_bar - LRT_con)
   test.stat <- LRT_con / (DF*(1 + ariv))
   if (is.na(test.stat)) stop('D3 test statistic could not be calculated. ',
                              'Try the D2 pooling method.') #FIXME: check whether model-implied Sigma is NPD

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 20 February 2019
+### Last updated: 18 March 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -54,23 +54,37 @@
 ##'        Information (FMI) for parameter estimates in the \code{summary}
 ##'        output (see \bold{Value} section).
 ##' @param asymptotic \code{logical}. If \code{FALSE} (typically a default, but
-##'       see \bold{Value} section for details using various methods), pooled
-##'       tests (of fit or pooled estimates) will be \emph{F} or \emph{t}
-##'       statistics with associated degrees of freedom (\emph{df}). If
-##'       \code{TRUE}, the (denominator) \emph{df} are assumed to be sufficiently
-##'       large for a \emph{t} statistic to follow a normal distribution, so it
-##'       is printed as a \emph{z} statisic; likewise, \emph{F} times its
-##'       numerator \emph{df} is printed, assumed to follow a \eqn{\chi^2}
-##'       distribution.
+##'        see \bold{Value} section for details using various methods), pooled
+##'        tests (of fit or pooled estimates) will be \emph{F} or \emph{t}
+##'        statistics with associated degrees of freedom (\emph{df}). If
+##'        \code{TRUE}, the (denominator) \emph{df} are assumed to be
+##'        sufficiently large for a \emph{t} statistic to follow a normal
+##'        distribution, so it is printed as a \emph{z} statisic; likewise,
+##'        \emph{F} times its numerator \emph{df} is printed, assumed to follow
+##'        a \eqn{\chi^2} distribution.
 ##' @param scale.W \code{logical}. If \code{TRUE} (default), the \code{vcov}
-##'       method will calculate the pooled covariance matrix by scaling the
-##'       within-imputation component by the ARIV (see Enders, 2010, p. 235,
-##'       for definition and formula). Otherwise, the pooled matrix is
-##'       calculated as the weighted sum of the within-imputation and
-##'       between-imputation components (see Enders, 2010, ch. 8, for details).
-##'       This in turn affects how the \code{summary} method calcualtes its
-##'       pooled standard errors, as well as the Wald test
-##'       (\code{\link{lavTestWald.mi}}).
+##'        method will calculate the pooled covariance matrix by scaling the
+##'        within-imputation component by the ARIV (see Enders, 2010, p. 235,
+##'        for definition and formula). Otherwise, the pooled matrix is
+##'        calculated as the weighted sum of the within-imputation and
+##'        between-imputation components (see Enders, 2010, ch. 8, for details).
+##'        This in turn affects how the \code{summary} method calcualtes its
+##'        pooled standard errors, as well as the Wald test
+##'        (\code{\link{lavTestWald.mi}}).
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'        imputations from pooled results.  Can include any of
+##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        default setting, which excludes any imputations that did not
+##'        converge or for which standard errors could not be computed.  The
+##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        yielded a nonpositive definite covariance matrix for observed or
+##'        latent variables, which would include any "improper solutions" such
+##'        as Heywood cases.  NPD solutions are not excluded by default because
+##'        they are likely to occur due to sampling error, especially in small
+##'        samples.  However, gross model misspecification could also cause
+##'        NPD solutions, users can compare pooled results with and without
+##'        this setting as a sensitivity analysis to see whether some
+##'        imputations warrant further investigation.
 ##' @param labels \code{logical} indicating whether the \code{coef} output
 ##'        should include parameter labels. Default is \code{TRUE}.
 ##' @param total \code{logical} (default: \code{TRUE}) indicating whether the
@@ -81,15 +95,17 @@
 ##'        under \code{coef}, \code{vcov}, and \code{residuals}.
 ##' @param fit.measures,baseline.model See \code{\link[lavaan]{fitMeasures}}.
 ##' @param ... Additional arguments passed to \code{\link{lavTestLRT.mi}}, or
-##'   subsequently to \code{\link[lavaan]{lavTestLRT}}.
+##'        subsequently to \code{\link[lavaan]{lavTestLRT}}.
 ##'
 ##' @return
 ##'
-##' \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE)}:
+##' \item{coef}{\code{signature(object = "lavaan.mi", type = "free",
+##'   labels = TRUE, omit.imps = c("no.conv","no.se"))}:
 ##'   See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
 ##'   averaged across imputed data sets; see Rubin, 1987).}
 ##'
 ##' \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
+##'   omit.imps = c("no.conv","no.se"),
 ##'   type = c("pooled","between","within","ariv"))}:  By default, returns the
 ##'   pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
 ##'   the within-imputations covariance matrix (\code{type = "within"}), the
@@ -97,21 +113,20 @@
 ##'   average relative increase in variance (\code{type = "ariv"}) due to
 ##'   missing data.}
 ##'
-##' \item{fitted.values}{\code{signature(object = "lavaan.mi")}: See
-##'   \code{\linkS4class{lavaan}}. Returns model-implied moments, evaluated at
-##'   the pooled point estimates.}
-##' \item{fitted}{\code{signature(object = "lavaan.mi")}:
-##'   alias for \code{fitted.values}}
+##' \item{fitted.values}{\code{signature(object = "lavaan.mi",
+##'   omit.imps = c("no.conv","no.se"))}: See \code{\linkS4class{lavaan}}.
+##'   Returns model-implied moments, evaluated at the pooled point estimates.}
+##' \item{fitted}{alias for \code{fitted.values}}
 ##'
-##' \item{residuals}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
+##' \item{residuals}{\code{signature(object = "lavaan.mi",
+##'   type = c("raw","cor"), omit.imps = c("no.conv","no.se"))}:
 ##'   See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
 ##'   the difference between the model-implied moments from \code{fitted.values}
 ##'   and the pooled observed moments (i.e., averaged across imputed data sets).
 ##'   Standardized residuals are also available, using Bollen's
 ##'   (\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's
 ##'   (\code{type = "cor.bentler"}) formulas.}
-##' \item{resid}{\code{signature(object = "lavaan.mi", type = c("raw","cor"))}:
-##'   alias for \code{residuals}}
+##' \item{resid}{alias for \code{residuals}}
 ##'
 ##' \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
 ##'   the total (default) sample size or a vector of group sample sizes
@@ -123,7 +138,8 @@
 ##'   See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
 ##'
 ##' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
-##'   fit.measures = "all", baseline.model = NULL, ...)}: See lavaan's
+##'   fit.measures = "all", baseline.model = NULL,
+##'   omit.imps = c("no.conv","no.se"), ...)}: See lavaan's
 ##'   \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
 ##'   to \code{\link{lavTestLRT.mi}} via \code{...}.}
 ##' \item{fitmeasures}{alias for \code{fitMeasures}.}
@@ -134,7 +150,8 @@
 ##'
 ##' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
 ##'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-##'  scale.W = !asymptotic, asymptotic = FALSE, add.attributes = TRUE)}: see
+##'  scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
+##'  asymptotic = FALSE, add.attributes = TRUE)}: see
 ##'  \code{\link[lavaan]{parameterEstimates}} for details.
 ##'  By default, \code{summary} returns pooled point and \emph{SE}
 ##'  estimates, along with \emph{t} test statistics and their associated
@@ -234,12 +251,24 @@ setMethod("show", "lavaan.mi", function(object) {
 
 ##' @importFrom stats pt qt pnorm qnorm
 ##' @importFrom lavaan lavListInspect parTable lavNames
+##' @importFrom methods getMethod
 summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
                               fmi = FALSE, header = TRUE, scale.W = !asymptotic,
+                              omit.imps = c("no.conv","no.se"),
                               asymptotic = FALSE, add.attributes = TRUE) {
-  useImps <- sapply(object@convergence, "[[", i = "converged")
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
   m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
   ## extract parameter table with attributes for printing
   PT <- parTable(object)
   myCols <- c("lhs","op","rhs","exo")
@@ -248,8 +277,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">")) # which rows can be standardized
 
-  # PE$est <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "est"))
-  PE$est <- getMethod("coef","lavaan.mi")(object, type = "all")
+  PE$est <- getMethod("coef","lavaan.mi")(object, type = "all",
+                                          omit.imps = omit.imps)
 
   if (lavListInspect(object, "options")$se == "none") {
     warning('pooled variances and tests unavailable when se="none" is requested')
@@ -264,7 +293,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                      if (se & !asymptotic) " test and CI.",
                      "\n")
   if (se) {
-    VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W)
+    VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W,
+                                          omit.imps = omit.imps)
     PE$se <- lavaan::lav_model_vcov_se(object@Model, VCOV = VCOV,
                                        lavpartable = object@ParTable)
     W <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "se")^2)
@@ -278,7 +308,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     } else {
       PE$t[free] <- PE$est[free] / PE$se[free]
       ## calculate df for t test
-      ## can't do finite-sample correction because Wald z tests have no df (see Enders, 2010, p. 231, eq. 8.13 & 8.14)
+      ## can't do finite-sample correction because Wald z tests have no df
+      ## (see Enders, 2010, p. 231, eq. 8.13 & 8.14)
       PE$df[free] <- (m - 1) * (1 + W[free] / Bm[free])^2
       ## if DF are obscenely large, set them to infinity for pretty printing
       PE$df <- ifelse(PE$df > 9999, Inf, PE$df)
@@ -394,8 +425,20 @@ setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
 
 
 ##' @importFrom lavaan parTable
-coef.lavaan.mi <- function(object, type = "free", labels = TRUE) {
-  useImps <- sapply(object@convergence, "[[", i = "converged")
+coef.lavaan.mi <- function(object, type = "free", labels = TRUE,
+                           omit.imps = c("no.conv","no.se")) {
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
+  m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
   PT <- parTable(object)
   if (type == "user" || type == "all") {
     type <- "user"
@@ -422,7 +465,19 @@ setMethod("coef", "lavaan.mi", coef.lavaan.mi)
 ##' @importFrom stats cov
 ##' @importFrom lavaan lavListInspect parTable
 vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
-                           scale.W = TRUE) {
+                           scale.W = TRUE, omit.imps = c("no.conv","no.se")) {
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
+  m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
   if (lavListInspect(object, "options")$se == "none") {
     warning('requested se="none", so only between-imputation (co)variance can',
             ' be computed')
@@ -435,11 +490,6 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
   PT <- parTable(object)
   ncon <- sum(PT$op == "==")
   npar <- max(PT$free) - ncon
-  useImps <- sapply(object@convergence, "[[", i = "converged")
-  m <- sum(useImps)
-
-  useSE <- sapply(object@convergence, "[[", i = "SE")
-  useSE[is.na(useSE)] <- FALSE
 
   coefList <- lapply(object@ParTableList[useImps], "[[", i = "est")
   B <- cov(do.call(rbind, coefList)[ , PT$free > 0L & !duplicated(PT$free)])
@@ -447,20 +497,10 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
   rownames(B) <- colnames(B) <- lavaan::lav_partable_labels(PT, type = "free")
   if (type == "between") return(B)
 
-  if (sum(useSE) == 0L) stop('Standard errors could not be computed in any ',
-                             'imputations, so it is not possible to calculate ',
-                             'the within-imputation portion of sampling variance.')
-  W <- Reduce("+", lapply(object@vcovList[useSE], function(x) x$vcov)) / sum(useSE)
+  W <- Reduce("+", lapply(object@vcovList[useImps], function(x) x$vcov)) / m
   class(W) <- c("lavaan.matrix.symmetric","matrix")
   dimnames(W) <- dimnames(B)
   if (type == "within") return(W)
-
-  if (!all(useImps == useSE))
-    warning('Between-imputation covariance matrix based on estimated parameters',
-            ' from ', m, ' converged solutions, but the mean within-imputation',
-            ' covariance matrix based on ', sum(useSE), ' solutions for which',
-            ' standard errors could be calculated.  Pooled total covariance',
-            ' matrix is therefore based on different imputed data sets.')
 
   ## check whether equality constraints prevent inversion of W
   if (scale.W || type == "ariv") {
@@ -549,10 +589,22 @@ setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 
 ##' @importFrom lavaan lavNames
 ##' @importFrom stats pchisq uniroot
-fitMeasures.mi <- function(object, fit.measures = "all",
-                           baseline.model = NULL, ...) {
+##' @importFrom methods getMethod
+fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
+                           omit.imps = c("no.conv","no.se"), ...) {
 
-  useImps <- sapply(object@convergence, "[[", i = "converged")
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
+  m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
   lavoptions <- lavListInspect(object, "options")
   robust <- lavoptions$test != "standard" #TODO: check for bootstrap test
   scaleshift <- lavoptions$test == "scaled.shifted"
@@ -616,7 +668,7 @@ fitMeasures.mi <- function(object, fit.measures = "all",
 
     baseImps <- sapply(baseFit@convergence, "[[", i = "converged")
     if (!all(baseImps)) warning('baseline.model did not converge for data set(s): ',
-                                which(useImps)[!baseImps])
+                                useImps[!baseImps])
   }
 
   ## pooled test statistic(s) for baseline model
@@ -929,7 +981,8 @@ fitMeasures.mi <- function(object, fit.measures = "all",
     nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
     #TODO: ov.names(.x) should account for conditional.x (res.cov, res.int, etc.)
 
-    R <- getMethod("resid", "lavaan.mi")(object, type = type)
+    R <- getMethod("resid", "lavaan.mi")(object, type = type,
+                                         omit.imps = omit.imps)
     index <- if (type == "raw") "cov" else "cor"
     include.diag <- type != "cor.bollen"
 
@@ -1017,9 +1070,20 @@ sampstat.lavaan.mi <- function(lst, means = FALSE, categ = FALSE, m = m) {
   out
 }
 ##' @importFrom lavaan lavListInspect lavNames
-fitted.lavaan.mi <- function(object) {
-  useImps <- sapply(object@convergence, "[[", i = "converged")
+##' @importFrom methods getMethod
+fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
   m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
   meanstructure <- lavListInspect(object, "meanstructure")
   categ <- lavListInspect(object, "categorical")
   nG <- lavListInspect(object, "ngroups")
@@ -1031,7 +1095,7 @@ fitted.lavaan.mi <- function(object) {
     ov.names <- object@Data@ov.names.l[[1]] # for first group (implies levels within groups?)
   } else ov.names <- lavNames(object)
 
-  est <- getMethod("coef", "lavaan.mi")(object)
+  est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
   imp <- lavaan::lav_model_implied(lavaan::lav_model_set_parameters(object@Model,
                                                                     x = est))
 
@@ -1140,11 +1204,23 @@ gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
   out
 }
 ##' @importFrom lavaan lavListInspect
-resid.lavaan.mi <- function(object, type = c("raw","cor")) {
+##' @importFrom methods getMethod
+resid.lavaan.mi <- function(object, type = c("raw","cor"),
+                            omit.imps = c("no.conv","no.se")) {
   ## @SampleStatsList is (for each imputation) output from:
   ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
-  useImps <- sapply(object@convergence, "[[", i = "converged")
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
   m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
   rescale <- lavListInspect(object, "options")$sample.cov.rescale
   meanstructure <- lavListInspect(object, "meanstructure")
   categ <- lavListInspect(object, "categorical")
@@ -1152,7 +1228,7 @@ resid.lavaan.mi <- function(object, type = c("raw","cor")) {
   ## check for type = "cor" ("cor.bollen") or "cor.bentler"
   if (type == "cor") type <- "cor.bollen"
   ## model-implied moments, already pooled
-  Implied <- getMethod("fitted", "lavaan.mi")(object)
+  Implied <- getMethod("fitted", "lavaan.mi")(object, omit.imps = omit.imps)
   ## Calculate residuals
   nG <- lavListInspect(object, "ngroups")
   nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")

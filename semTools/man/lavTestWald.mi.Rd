@@ -5,8 +5,8 @@
 \title{Wald Test for Multiple Imputations}
 \usage{
 lavTestWald.mi(object, constraints = NULL, test = c("D1", "D2"),
-  asymptotic = FALSE, scale.W = !asymptotic, verbose = FALSE,
-  warn = TRUE)
+  asymptotic = FALSE, scale.W = !asymptotic, omit.imps = c("no.conv",
+  "no.se"), verbose = FALSE, warn = TRUE)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}.}
@@ -41,6 +41,16 @@ calculated by scaling the within-imputation component by the
 average relative increase in variance (ARIV; see Enders, 2010, p. 235),
 which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
 \code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.}
+
+\item{omit.imps}{\code{character} vector specifying criteria for omitting
+imputations from pooled results.  Can include any of
+\code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+default setting, which excludes any imputations that did not
+converge or for which standard errors could not be computed.  The
+last option (\code{"no.npd"}) would exclude any imputations which
+yielded a nonpositive definite covariance matrix for observed or
+latent variables, which would include any "improper solutions" such
+as Heywood cases.}
 
 \item{verbose}{\code{logical}. If \code{TRUE}, print the restriction
 matrix and the estimated restricted values.}

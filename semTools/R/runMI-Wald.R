@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 9 November 2018
+### Last updated: 18 March 2019
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -53,6 +53,15 @@
 ##'   average relative increase in variance (ARIV; see Enders, 2010, p. 235),
 ##'   which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
 ##'   \code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'   imputations from pooled results.  Can include any of
+##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   default setting, which excludes any imputations that did not
+##'   converge or for which standard errors could not be computed.  The
+##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   yielded a nonpositive definite covariance matrix for observed or
+##'   latent variables, which would include any "improper solutions" such
+##'   as Heywood cases.
 ##' @param verbose \code{logical}. If \code{TRUE}, print the restriction
 ##'   matrix and the estimated restricted values.
 ##' @param warn \code{logical}. If \code{TRUE}, print warnings if they occur.
@@ -130,8 +139,21 @@
 ##' @export
 lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
                            asymptotic = FALSE, scale.W = !asymptotic,
+                           omit.imps = c("no.conv","no.se"),
                            verbose = FALSE, warn = TRUE) {
   stopifnot(inherits(object, "lavaan.mi"))
+
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
+  m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
 
   test <- tolower(test[1])
   if (test %in% c("d2", "LMRR", "Li.et.al")) test <- "D2"
@@ -142,10 +164,6 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
           lavListInspect(object, "options")$se, '"\n')
 
   if (test == "D2") {
-
-    useSE <- sapply(object@convergence, "[[", i = "SE")
-    useSE[is.na(useSE)] <- FALSE
-    useImps <- useSE & sapply(object@convergence, "[[", i = "converged")
 
     oldCall <- object@lavListCall
 
@@ -174,8 +192,9 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
     ## template to fill in pooled values
 
     ## at a minimum, pool the total score test
-    chiList <- sapply(FIT@funList[ useImps & !noStats ], "[[", i = 1)
-    DF <- FIT@funList[[ which(useImps & !noStats)[1] ]][[2]]
+    chiList <- sapply(FIT@funList[ intersect(useImps, which(!noStats)) ],
+                      "[[", i = 1)
+    DF <- FIT@funList[[ intersect(useImps, which(!noStats))[1] ]][[2]]
     out <- calculate.D2(chiList, DF = DF, asymptotic)
     class(out) <- c("lavaan.vector","numeric")
     return(out)
@@ -183,8 +202,6 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
 
 
   ## "borrowed" lavTestWald()
-  nImps <- sum(sapply(object@convergence, "[[", i = "converged"))
-  if (nImps == 1L) stop("model did not converge on any imputations")
   if (is.null(constraints) || nchar(constraints) == 0L) stop("constraints are empty")
 
   # remove == constraints from parTable, save as list
@@ -205,7 +222,7 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
   } else stop("no equality constraints found in constraints argument")
 
   # theta = free parameters only (equality-constrained allowed)
-  theta <- getMethod("coef", "lavaan.mi")(object) #object@optim$x
+  theta <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps) #object@optim$x
 
   # build constraint function
   ceq.function <- lavaan::lav_partable_constraints_ceq(partable = partable,
@@ -223,8 +240,8 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
   if (verbose) {cat("Restricted theta values:\n"); print(theta.r); cat("\n")}
 
   # get VCOV
-  VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W)
-
+  VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W,
+                                        omit.imps = omit.imps)
   # restricted vcov
   info.r  <- JAC %*% VCOV %*% t(JAC)
 
@@ -238,17 +255,19 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
     out <- c("chisq" = test.stat, df = DF,
              pvalue = pchisq(test.stat, df = DF, lower.tail = FALSE))
   } else {
-    W <- getMethod("vcov", "lavaan.mi")(object, type = "within")
-    B <- getMethod("vcov", "lavaan.mi")(object, type = "between")
+    W <- getMethod("vcov", "lavaan.mi")(object, type = "within",
+                                        omit.imps = omit.imps)
+    B <- getMethod("vcov", "lavaan.mi")(object, type = "between",
+                                        omit.imps = omit.imps)
     #FIXME: only valid for linear constraints?
     ## restricted B & W components of VCOV
     W.r  <- JAC %*% W %*% t(JAC)
     B.r  <- JAC %*% B %*% t(JAC)
     ## relative increase in variance due to missing data
     W.inv <- MASS::ginv(W.r)
-    ariv <- (1 + 1/nImps) * sum(diag(B.r %*% W.inv)) / DF
+    ariv <- (1 + 1/m) * sum(diag(B.r %*% W.inv)) / DF
     ## calculate denominator DF for F statistic
-    a <- DF*(nImps - 1)
+    a <- DF*(m - 1)
     if (a > 4) {
       v2 <- 4 + (a - 4) * (1 + (1 - 2/a)*(1 / ariv))^2 # Enders (eq. 8.24)
     } else {

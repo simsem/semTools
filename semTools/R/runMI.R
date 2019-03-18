@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 December 2018
+### Last updated: 18 March 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -17,6 +17,7 @@
 ##'
 ##' @aliases runMI lavaan.mi cfa.mi sem.mi growth.mi
 ##' @importFrom lavaan lavInspect parTable
+##' @importFrom methods getMethod
 ##'
 ##' @param model The analysis model can be specified using lavaan
 ##'   \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
@@ -330,7 +331,10 @@ runMI <- function(model, data, fun = "lavaan", ...,
     }
   } else fit@funList <- list()
 
-  fit@ParTable$start <- getMethod("coef", "lavaan.mi")(fit, type = "user", labels = FALSE)
+  NewStartVals <- try(getMethod("coef", "lavaan.mi")(fit, type = "user",
+                                                          labels = FALSE),
+                           silent = TRUE)
+  if (!inherits(NewStartVals, "try-error")) fit@ParTable$start <- NewStartVals
   fit
 }
 

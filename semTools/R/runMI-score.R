@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 9 November 2018
+### Last updated: 18 March 2019
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -48,6 +48,15 @@
 ##'  average relative increase in variance (ARIV; see Enders, 2010, p. 235),
 ##'  which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
 ##'  \code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'  imputations from pooled results.  Can include any of
+##'  \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'  default setting, which excludes any imputations that did not
+##'  converge or for which standard errors could not be computed.  The
+##'  last option (\code{"no.npd"}) would exclude any imputations which
+##'  yielded a nonpositive definite covariance matrix for observed or
+##'  latent variables, which would include any "improper solutions" such
+##'  as Heywood cases.
 ##' @param asymptotic \code{logical}. If \code{FALSE} (default when using
 ##'  \code{add} to test adding fixed parameters to the model), the pooled test
 ##'  will be returned as an \emph{F}-distributed variable with numerator
@@ -155,6 +164,7 @@
 ##' @export
 lavTestScore.mi <- function(object, add = NULL, release = NULL,
                             test = c("D2","D1"), scale.W = !asymptotic,
+                            omit.imps = c("no.conv","no.se"),
                             asymptotic = is.null(add), # as F or chi-squared
                             univariate = TRUE, cumulative = FALSE,
                             #standardized = TRUE, #FIXME: add std.lv and std.all if(epc)?
@@ -163,10 +173,18 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
   stopifnot(inherits(object, "lavaan.mi"))
   lavoptions <- object@Options
 
-  useSE <- sapply(object@convergence, "[[", i = "SE")
-  useSE[is.na(useSE)] <- FALSE
-  useImps <- useSE & sapply(object@convergence, "[[", i = "converged")
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
   m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
   test <- toupper(test[1])
   if (!test %in% c("D2","D1")) stop('Invalid choice of "test" argument.')
 
@@ -219,10 +237,11 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     if (all(noScores)) stop("No success using lavTestScore() on any imputations.")
 
     ## template to fill in pooled values
-    OUT <- FIT@funList[[ which(useImps & !noScores)[1] ]]
+    OUT <- FIT@funList[[ intersect(useImps, which(!noScores))[1] ]]
 
     ## at a minimum, pool the total score test
-    chiList <- sapply(FIT@funList[useImps & !noScores], function(x) x$test$X2)
+    chiList <- sapply(FIT@funList[intersect(useImps, which(!noScores))],
+                      function(x) x$test$X2)
     chiPooled <- calculate.D2(chiList, DF = OUT$test$df, asymptotic)
     OUT$test$X2 <- chiPooled[1]
     if (!asymptotic) {
@@ -242,7 +261,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
         OUT$uni$p.value <- NA
       }
       for (i in 1:nrow(OUT$uni)) {
-        chiList <- sapply(FIT@funList[useImps & !noScores],
+        chiList <- sapply(FIT@funList[intersect(useImps, which(!noScores))],
                           function(x) x$uni$X2[i] )
         chiPooled <- calculate.D2(chiList, DF = OUT$uni$df[i], asymptotic)
         if (!asymptotic) {
@@ -264,7 +283,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
         OUT$cumulative$p.value <- NA
       }
       for (i in 1:nrow(OUT$cumulative)) {
-        chiList <- sapply(FIT@funList[useImps & !noScores],
+        chiList <- sapply(FIT@funList[intersect(useImps, which(!noScores))],
                           function(x) x$cumulative$X2[i] )
         chiPooled <- calculate.D2(chiList, DF = OUT$cumulative$df[i], asymptotic)
         if (!asymptotic) {
@@ -278,11 +297,11 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
     ## EPCs?
     if (epc) {
-      estList <- lapply(FIT@funList[useImps & !noScores],
+      estList <- lapply(FIT@funList[intersect(useImps, which(!noScores))],
                         function(x) x$epc$est)
       OUT$epc$est <- rowMeans(do.call(cbind, estList))
 
-      epcList <- lapply(FIT@funList[useImps & !noScores],
+      epcList <- lapply(FIT@funList[intersect(useImps, which(!noScores))],
                         function(x) x$epc$epc)
       OUT$epc$epc <- rowMeans(do.call(cbind, epcList))
 
@@ -385,7 +404,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
     ## obtain list of inverted Jacobians: within-impuation covariance matrices
     R.model <- object@Model@con.jac[,,drop = FALSE]
-    nadd <- FIT@funList[[ which(useImps)[1] ]]$nadd
+    nadd <- FIT@funList[[ useImps[1] ]]$nadd
 
     ## pool gradients and information matrices
     gradList <- lapply(FIT@funList[useImps], "[[", i = "gradient")
@@ -430,7 +449,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       r.idx <- seq_len(nadd)
     }
 
-    PT <- FIT@funList[[ which(useImps)[1] ]]$parTable
+    PT <- FIT@funList[[ useImps[1] ]]$parTable
     if (is.null(PT$group)) PT$group <- PT$block
     # lhs/rhs
     lhs <- lavaan::lav_partable_labels(PT)[ PT$user == 10L ]
@@ -673,7 +692,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     EPC.all <- -1 * as.numeric(score %*%  Z1.plus1)
 
     # create epc table for the 'free' parameters
-    myCoefs <- getMethod("coef","lavaan.mi")(object)
+    myCoefs <- getMethod("coef","lavaan.mi")(object, omit.imps = omit.imps)
     myCols <- c("lhs","op","rhs","group")
     if (ngroups > 1L) myCols <- c(myCols, "block","group")
     if (nlevels > 1L) myCols <- c(myCols, "block","level")

@@ -140,7 +140,7 @@
 ##'
 ##' @export
 plausibleValues <- function(object, nDraws = 20L, seed = 12345,
-                            omit.imps = "no.conv", ...) {
+                            omit.imps = c("no.conv","no.se"), ...) {
 
   if (class(object) == "lavaan") {
     ## generate vector of seeds
@@ -318,7 +318,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
 
 ## draw plausible values from a lavaan.mi object
 ##' @importFrom lavaan lavInspect lavPredict
-plaus.mi <- function(object, seeds = 1:5, omit.imps = "no.conv", ...) {
+plaus.mi <- function(object, seeds = 1:5, omit.imps = c("no.conv","no.se"), ...) {
   stopifnot(inherits(object, "lavaan.mi"))
 
   useImps <- rep(TRUE, length(object@DataList))

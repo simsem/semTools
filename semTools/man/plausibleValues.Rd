@@ -5,7 +5,7 @@
 \title{Plausible-Values Imputation of Factor Scores Estimated from a lavaan Model}
 \usage{
 plausibleValues(object, nDraws = 20L, seed = 12345,
-  omit.imps = "no.conv", ...)
+  omit.imps = c("no.conv", "no.se"), ...)
 }
 \arguments{
 \item{object}{A fitted model of class \code{\linkS4class{lavaan}},

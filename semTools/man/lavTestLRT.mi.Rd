@@ -5,7 +5,8 @@
 \title{Likelihood Ratio Test for Multiple Imputations}
 \usage{
 lavTestLRT.mi(object, h1 = NULL, test = c("D3", "D2"),
-  asymptotic = FALSE, pool.robust = FALSE, ...)
+  omit.imps = c("no.conv", "no.se"), asymptotic = FALSE,
+  pool.robust = FALSE, ...)
 }
 \arguments{
 \item{object, h1}{An object of class \code{\linkS4class{lavaan.mi}}.
@@ -18,6 +19,16 @@ or \code{"Li.et.al"} requests the complete-data LRT statistic should be
 calculated using each imputed data set, which will then be pooled across
 imputations, as described in Li, Meng, Raghunathan, & Rubin (1991).
 Find additional details in Enders (2010, chapter 8).}
+
+\item{omit.imps}{\code{character} vector specifying criteria for omitting
+imputations from pooled results.  Can include any of
+\code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+default setting, which excludes any imputations that did not
+converge or for which standard errors could not be computed.  The
+last option (\code{"no.npd"}) would exclude any imputations which
+yielded a nonpositive definite covariance matrix for observed or
+latent variables, which would include any "improper solutions" such
+as Heywood cases.}
 
 \item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
 will be returned as an \emph{F}-distributed statistic with numerator

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 5 November 2018
+### Last updated: 18 March 2019
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -27,6 +27,15 @@
 ##'   \code{"D1"} indicates Li et al.'s (1991) proposed Wald test will be
 ##'   applied to the gradient and information, and those pooled values will be
 ##'   used to calculate modification indices in the usual manner.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'    imputations from pooled results.  Can include any of
+##'    \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'    default setting, which excludes any imputations that did not
+##'    converge or for which standard errors could not be computed.  The
+##'    last option (\code{"no.npd"}) would exclude any imputations which
+##'    yielded a nonpositive definite covariance matrix for observed or
+##'    latent variables, which would include any "improper solutions" such
+##'    as Heywood cases.
 ##' @param standardized \code{logical}. If \code{TRUE}, two extra columns
 ##'   (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values
 ##'   for the EPCs. In the first column (\code{$sepc.lv}), standardizization is
@@ -130,6 +139,7 @@
 ##' @export
 modindices.mi <- function(object,
                           test = c("D2","D1"),
+                          omit.imps = c("no.conv","no.se"),
 
                           standardized = TRUE,
                           cov.std = TRUE,
@@ -148,16 +158,22 @@ modindices.mi <- function(object,
                           na.remove = TRUE,
                           op = NULL) {
   stopifnot(inherits(object, "lavaan.mi"))
-  useSE <- sapply(object@convergence, "[[", i = "SE")
-  useSE[is.na(useSE)] <- FALSE
-  useImps <- useSE & sapply(object@convergence, "[[", i = "converged")
+
+  useImps <- rep(TRUE, length(object@DataList))
+  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+  if ("no.npd" %in% omit.imps) {
+    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+  }
   m <- sum(useImps)
+  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+  useImps <- which(useImps)
+
   test <- tolower(test[1])
   N <- lavListInspect(object, "ntotal")
   #FIXME: if (lavoptions$mimic == "EQS") N <- N - 1 # not in lavaan, why?
-
-  ## check if model has converged
-  if (m == 0L) stop("No models converged. Modification indices unavailable.")
 
   # not ready for estimator = "PML"
   if (object@Options$estimator == "PML") {
@@ -168,18 +184,18 @@ modindices.mi <- function(object,
   if (power) standardized <- TRUE
 
   ## use first available modification indices as template to store pooled results
-  ngroups <- lavaan::lavInspect(object, "ngroups")
+  ngroups <- lavListInspect(object, "ngroups")
   nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
   myCols <- c("lhs","op","rhs")
   if (ngroups > 1L) myCols <- c(myCols,"block","group")
   if (nlevels > 1L) myCols <- c(myCols,"block","level")
   myCols <- unique(myCols)
 
-  for (i in which(useImps)) {
-    LIST <- object@miList[[ which(useImps)[i] ]][myCols]
+  for (i in useImps) {
+    LIST <- object@miList[[i]][myCols]
     nR <- try(nrow(LIST), silent = TRUE)
     if (class(nR) == "try-error" || is.null(nR)) {
-      if (i == max(which(useImps))) {
+      if (i == max(useImps)) {
         stop("No modification indices could be computed for any imputations.")
       } else next
     } else break
@@ -211,8 +227,8 @@ modindices.mi <- function(object,
 
     scoreOut <- lavTestScore.mi(object, add = cbind(LIST, user = 10L,
                                                     free = 1, start = 0),
-                                test = "d1", scale.W = FALSE,
-                                epc = TRUE, asymptotic = TRUE,
+                                test = "d1", omit.imps = omit.imps,
+                                epc = TRUE, scale.W = FALSE, asymptotic = TRUE,
                                 information = information)$uni
     LIST$mi <- scoreOut$X2
     LIST$epc <- scoreOut$epc
@@ -222,7 +238,8 @@ modindices.mi <- function(object,
       ## Need full parameter table for lavaan::standardizedSolution()
       ## Merge parameterEstimates() with modindices()
       oldPE <- getMethod("summary","lavaan.mi")(object, se = FALSE,
-                                                add.attributes = FALSE)
+                                                add.attributes = FALSE,
+                                                omit.imps = omit.imps)
       PE <- lavaan::lav_partable_merge(oldPE, cbind(LIST, est = 0),
                                        remove.duplicated = TRUE, warn = FALSE)
       ## merge EPCs, using parameter labels (unavailable for estimates)

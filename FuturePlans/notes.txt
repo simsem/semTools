@@ -146,16 +146,10 @@ semTools::runMI()
   - set LRT to NA instead of 0?
   - or is this just Monte Carlo error when h0 is true?
 - document ... for fitMeasures() on class?lavaan.mi help page's Usage
-- add arguments to optionally exclude NPD and SE issues
-##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'   imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.
-##'   Can include any of \code{c("no.conv", "no.se", "no.npd")}.
 
-Plausible Values imputation
-- simulate factor scores from ACOV
-  - https://www.statmodel.com/download/Plausible.pdf
-- write blavPredict() for factor scores with missing data, small N
-  - also for latent item-responses? (LRESPONSES in Mplus)
+
+semTools::plausibleValues()
+- add latent item-responses (LRESPONSES in Mplus) when available in blavaan
 
 
 

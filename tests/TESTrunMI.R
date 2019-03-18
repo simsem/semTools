@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 16 March 2019
+### Last updated: 18 March 2019
 ### test runMI
 
 library(lavaan)
@@ -189,9 +189,13 @@ for (i in 1:m) {
 }
 
 library(semTools)
+fit <- sem(model, data = imputedData[[1]], cluster = "school", fixed.x = FALSE,
+           std.lv = TRUE, h1 = TRUE) # runs fine
+fitList <- semList(model, dataList = imputedData, cluster = "school",
+                   fixed.x = FALSE, std.lv = TRUE, h1 = TRUE) # runs fine
 fit.mi <- sem.mi(model, data = imputedData, cluster = "school", fixed.x = FALSE,
-                 std.lv = TRUE)
-## runs fine, check methods
+                 std.lv = TRUE, h1 = TRUE) # why does this fail?
+## check methods
 fit.mi
 summary(fit.mi, ci = TRUE, standardized = TRUE, rsquare = TRUE, fmi = TRUE)
 coef(fit.mi)
