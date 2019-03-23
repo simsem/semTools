@@ -145,7 +145,6 @@ semTools::runMI()
 - when h1 fits worse than h0 (on average across imputations)
   - set LRT to NA instead of 0?
   - or is this just Monte Carlo error when h0 is true?
-- document ... for fitMeasures() on class?lavaan.mi help page's Usage
 
 
 semTools::plausibleValues()
@@ -174,6 +173,8 @@ http://dx.doi.org/10.1080/10705511.2016.1277726
 
 semTools::net()
 - fails using sample.cov= when trying to extract data: lavInspect(x, "data")
+- if (nclusters > 1L) test only one block (all groups)
+  - default level=1L, optional level=2L
 - adapt for categorical data
   - Mplus implication: http://www.statmodel.com/download/NET.pdf
   - check thresholds for nesting (what about trade-off with intercepts?)

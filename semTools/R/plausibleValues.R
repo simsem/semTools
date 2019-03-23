@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 16 March 2019
+### Last updated: 23 March 2019
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -132,8 +132,11 @@
 ##'     fb ~ w1 + w2
 ##' '
 ##' msem <- sem(model, data = Demo.twolevel, cluster = "cluster")
-##' mlPVs <- plausibleValues(msem, nDraws = 3)
-##' lapply(mlPVs, head)
+##' mlPVs <- plausibleValues(msem, nDraws = 3) # both levels by default
+##' lapply(mlPVs, head, n = 10)
+##' ## only Level 1
+##' mlPV1 <- plausibleValues(msem, nDraws = 3, level = 1)
+##' lapply(mlPV1, head)
 ##' ## only Level 2
 ##' mlPV2 <- plausibleValues(msem, nDraws = 3, level = 2)
 ##' lapply(mlPV2, head)
@@ -280,15 +283,22 @@ plaus.lavaan <- function(seed = 1, object, ...) {
       dd <- data.frame(PV[[gg]])
       ## add groups if multiple
       dd[ , group] <- group.label[gg]
+      dd <- dd[ , c(group, setdiff(names(dd), group)), drop = FALSE ]
       ## attach row indices from original data for optional merging
-      if (!only.L2) dd$case.idx <- lavInspect(object, "case.idx")[[gg]]
+      if (only.L2) {
+        dd[ , cluster] <- lavInspect(object, "cluster.id")[[gg]]
+        dd <- dd[ , c(cluster, setdiff(names(dd), cluster)), drop = FALSE ]
+      } else {
+        dd <- cbind(case.idx = lavInspect(object, "case.idx")[[gg]], dd)
+      }
 
       ## attach cluster IDs, if multilevel and no level requested
       if (bothLevels) {
-        dd[ , cluster] <- lavInspect(object, "cluster.idx")[[gg]]
+        dd[ , cluster] <- lavInspect(object, "cluster.label")[[gg]]
+
         d2 <- data.frame(PV2[[gg]])
         d2[ , group] <- group.label[gg]
-        d2[ , cluster] <- object@Data@Lp[[gg]]$cluster.id[[2]] #TODO: lavInspect()?
+        d2[ , cluster] <- lavInspect(object, "cluster.id")[[gg]]
 
         dd <- merge(dd, d2, by = c(group, cluster), all = TRUE)
       }
@@ -301,12 +311,19 @@ plaus.lavaan <- function(seed = 1, object, ...) {
 
     PV <- data.frame(PV)
     ## attach row indices from original data for optional merging
-    if (!only.L2) PV$case.idx <- lavInspect(object, "case.idx")
+    if (only.L2) {
+      PV[ , cluster] <- lavInspect(object, "cluster.id")
+      PV <- PV[ , c(cluster, setdiff(names(PV), cluster)), drop = FALSE ]
+    } else {
+      PV <- cbind(case.idx = lavInspect(object, "case.idx"), PV)
+    }
     ## attach cluster IDs, if multilevel and no level requested
     if (bothLevels) {
-      PV[ , cluster] <- lavInspect(object, "cluster.idx")
+      PV[ , cluster] <- lavInspect(object, "cluster.label")
+
       PV2 <- data.frame(PV2)
-      PV2[ , cluster] <- object@Data@Lp[[1]]$cluster.id[[2]] #TODO: lavInspect()?
+      PV2[ , cluster] <- lavInspect(object, "cluster.id")
+
       PV <- merge(PV, PV2, by = cluster, all = TRUE)
     }
 
