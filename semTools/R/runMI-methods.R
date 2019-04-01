@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 18 March 2019
+### Last updated: 1 April 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -606,8 +606,6 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
   useImps <- which(useImps)
 
   lavoptions <- lavListInspect(object, "options")
-  robust <- lavoptions$test != "standard" #TODO: check for bootstrap test
-  scaleshift <- lavoptions$test == "scaled.shifted"
 
   if (!is.character(fit.measures)) stop("'fit.measures' must be a character ",
                                         "string specifying name(s) of desired ",
@@ -632,7 +630,10 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     dots <- if (length(LRT.names)) dots[LRT.names] else list(asymptotic = TRUE)
   } else dots <- list(asymptotic = TRUE)
 
+  robust <- lavoptions$test != "standard" #TODO: check for bootstrap test
+  scaleshift <- lavoptions$test == "scaled.shifted"
   if (robust) {
+    ## assign pool.robust option to object
     if (is.null(dots$pool.robust)) {
       pool.robust <- formals(lavTestLRT.mi)$pool.robust # default value
     } else {
@@ -643,7 +644,10 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
   ## pooled test statistic(s)
   argList <- c(list(object = object), dots)
   argList$asymptotic <- TRUE # in case it wasn't set in list(...)
+  argList$omit.imps <- omit.imps
   out <- do.call(lavTestLRT.mi, argList)
+  ## check for scaled test statistic (if not, set robust=FALSE)
+  if (robust && is.na(out["chisq.scaled"])) robust <- FALSE
 
   ## fit baseline model if necessary
   if (any(indices %in% incremental)) {
@@ -675,6 +679,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
   if (any(indices %in% incremental)) {
     argList <- c(list(object = baseFit), dots)
     argList$asymptotic <- TRUE # in case it wasn't set in list(...)
+    argList$omit.imps <- setdiff(omit.imps, "no.se") # se="none" in baseFit
     baseOut <- do.call(lavTestLRT.mi, argList)
   }
 
@@ -701,16 +706,13 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     out <- c(out, baseline.chisq = bX2, baseline.df = bDF,
              baseline.pvalue = baseOut[["pvalue"]])
     if (robust) {
-      if (!pool.robust) baseOut <- robustify(ChiSq = baseOut, object = baseFit)
       out["baseline.chisq.scaled"] <- bX2.sc <- baseOut[["chisq.scaled"]]
       out["baseline.df.scaled"]    <- bDF.sc <- baseOut[["df.scaled"]]
       out["baseline.pvalue.scaled"] <- baseOut[["pvalue.scaled"]]
       if (!pool.robust) {
         cb <- baseOut[["chisq.scaling.factor"]]
         out["baseline.chisq.scaling.factor"] <- cb
-        if (scaleshift) {
-          out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
-        }
+        if (scaleshift) out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
       }
     }
   }
@@ -937,7 +939,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
           ## p value
           ########## To be discovered?
         }
-      } else if (scaleshift) {
+      } else if (robust & scaleshift) {
         ## naive only
         out["rmsea.scaled"] <- sqrt( max(0, (X2.sc/N)/DF - 1/N) ) * sqrt(nG)
         ## lower confidence limit
