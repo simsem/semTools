@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 23 March 2019
+### Last updated: 10 April 2019
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -40,7 +40,7 @@
 ##' draw \code{nDraws} plausible values from each imputation.  Step 2 would
 ##' then take into account uncertainty about both missing values and factor
 ##' scores.  Bayesian methods can also be used to generate factor scores, as
-##' available with the \code{\pkg{blavaan}} package, in which case plausible
+##' available with the \pkg{blavaan} package, in which case plausible
 ##' values are simply saved parameters from the posterior distribution. See
 ##' Asparouhov and Muthen (2010) for further technical details and references.
 ##'
@@ -356,9 +356,9 @@ plaus.mi <- function(object, seeds = 1:5, omit.imps = c("no.conv","no.se"), ...)
     if (oldCall$parallel == "snow") {
       oldCall$parallel <- "no"
       oldCall$ncpus <- 1L
-      if (warn) warning("Unable to pass lavaan::lavPredict() arguments ",
-                        "when parallel='snow'. Switching to parallel='no'.",
-                        " Unless using Windows, parallel='multicore' works.")
+      message("Unable to pass lavaan::lavPredict() arguments ",
+              "when parallel='snow'. Switching to parallel='no'.",
+              " Unless using Windows, parallel='multicore' should work.")
     }
   }
   ## call lavaanList() again to run lavTestScore() on each imputation

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 23 November 2018
+### Last updated: 10 April 2019
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -258,8 +258,8 @@ x.within.y <- function(x, y, crit = .0001) {
     stop("Models do not contain the same variables")
 
   ## check that the analyzed data matches
-  xData <- sort(unlist(inspect(x, "sampstat")))
-  yData <- sort(unlist(inspect(y, "sampstat")))
+  xData <- sort(unlist(lavInspect(x, "sampstat")))
+  yData <- sort(unlist(lavInspect(y, "sampstat")))
   if (!isTRUE(all.equal(xData, yData, tolerance = crit)))
     stop("Sample statistics differ. Models must apply to the same data")
   #FIXME: this method requires raw data
