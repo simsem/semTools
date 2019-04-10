@@ -1,11 +1,11 @@
 ### Corbin Quick, Alex Schoemann, James Selig, Terrence D. Jorgnensen
-### Last updated: 22 November 2018
+### Last updated: 10 April 2019
 
 ## FIXME: work out a path-analysis example like slide 25:
 ## http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 ## add example to help page, to illustrate a complex function of parameters
-#
-#
+
+
 ##' Monte Carlo Confidence Intervals to Test Complex Indirect Effects
 ##'
 ##' This function takes an expression for an indirect effect, the parameters and
@@ -136,7 +136,7 @@
 ##'
 ##'
 ##' ## WORKING WITH lavaan MODELS. From the mediation tutorial:
-##' http://lavaan.ugent.be/tutorial/mediation.html
+##' ## http://lavaan.ugent.be/tutorial/mediation.html
 ##'
 ##' set.seed(1234)
 ##' X <- rnorm(100)

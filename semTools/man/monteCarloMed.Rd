@@ -118,7 +118,7 @@ monteCarloMed(med, coef1 = aparam, coef2 = b1param,
 
 
 ## WORKING WITH lavaan MODELS. From the mediation tutorial:
-http://lavaan.ugent.be/tutorial/mediation.html
+## http://lavaan.ugent.be/tutorial/mediation.html
 
 set.seed(1234)
 X <- rnorm(100)

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 April 2019
+### Last updated: 10 April 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -161,7 +161,9 @@
 ##'                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
 ##'                  })
 ##' summary(catout)
-##' fitMeasures(catout, fit.measures = c("rmsea","srmr")) # scaled versions too
+##' LavTestLRT(catout, test = "D2", pool.robust = TRUE)
+##' fitMeasures(catout, fit.measures = c("rmsea","srmr","cfi"),
+##'             test = "D2", pool.robust = TRUE)
 ##'
 ##' ## extract custom output
 ##' sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation

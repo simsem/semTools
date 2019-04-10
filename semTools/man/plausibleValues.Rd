@@ -116,8 +116,11 @@ model <- '
     fb ~ w1 + w2
 '
 msem <- sem(model, data = Demo.twolevel, cluster = "cluster")
-mlPVs <- plausibleValues(msem, nDraws = 3)
-lapply(mlPVs, head)
+mlPVs <- plausibleValues(msem, nDraws = 3) # both levels by default
+lapply(mlPVs, head, n = 10)
+## only Level 1
+mlPV1 <- plausibleValues(msem, nDraws = 3, level = 1)
+lapply(mlPV1, head)
 ## only Level 2
 mlPV2 <- plausibleValues(msem, nDraws = 3, level = 2)
 lapply(mlPV2, head)

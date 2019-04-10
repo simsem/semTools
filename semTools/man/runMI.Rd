@@ -161,7 +161,7 @@ lapply(datCat, class)
 set.seed(123)
 for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
 
-catout <- cfa.mi(' f =~ u1 + u2 + u3 + u4 ', data = datCat,
+catout <- cfa.mi(' f =~ 1*u1 + 1*u2 + 1*u3 + 1*u4 ', data = datCat,
                  m = 3, seed = 456,
                  miArgs = list(ords = paste0("u", 1:8), noms = "g"),
                  FUN = function(fit) {
@@ -169,7 +169,9 @@ catout <- cfa.mi(' f =~ u1 + u2 + u3 + u4 ', data = datCat,
                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
                  })
 summary(catout)
-fitMeasures(catout, indices = "all") # scaled versions of indices, too
+LavTestLRT(catout, test = "D2", pool.robust = TRUE)
+fitMeasures(catout, fit.measures = c("rmsea","srmr","cfi"),
+            test = "D2", pool.robust = TRUE)
 
 ## extract custom output
 sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
