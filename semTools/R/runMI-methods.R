@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 April 2019
+### Last updated: 6 May 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -587,7 +587,7 @@ anova.lavaan.mi <- function(object, ...) {
 ##' @export
 setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 
-##' @importFrom lavaan lavNames
+##' @importFrom lavaan lavNames lavListInspect
 ##' @importFrom stats pchisq uniroot
 ##' @importFrom methods getMethod
 fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
@@ -847,7 +847,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
   N <- lavListInspect(object, "ntotal")
   Ns <- lavListInspect(object, "nobs")
   nG <- lavListInspect(object, "ngroups")
-  nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+  nlevels <- lavListInspect(object, "nlevels")
   nVars <- length(lavNames(object))
   if (!(lavoptions$likelihood == "normal" |
         lavoptions$estimator %in% c("ML","PML","FML"))) {
@@ -980,7 +980,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     meanstructure <- lavListInspect(object, "meanstructure")
     N <- lavListInspect(object, "ntotal")
     nG <- lavListInspect(object, "ngroups")
-    nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+    nlevels <- lavListInspect(object, "nlevels")
     #TODO: ov.names(.x) should account for conditional.x (res.cov, res.int, etc.)
 
     R <- getMethod("resid", "lavaan.mi")(object, type = type,
@@ -1007,8 +1007,8 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       RR <- R[[level]][[index]][lower.tri(R[[level]][[index]], diag = FALSE)]^2
       if (include.diag)  RR <- c(RR, diag(R[[level]][[index]])[vv]^2)
       if (meanstructure) RR <- c(RR, R[[level]]$mean[vv]^2)
-      nclusters <- object@Data@Lp[[1]]$nclusters #TODO: add this to lavInspect
-      names(nclusters) <- c("within", lavListInspect(object, "cluster")) #FIXME: only works for 2 levels
+      nclusters <- c(within = N)
+      nclusters[lavListInspect(object, "cluster")] <- lavListInspect(object, "nclusters") #FIXME: only adds level 2
       n.per.group <- nclusters[[level]]
 
     } else {
@@ -1016,7 +1016,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       RR <- R[[index]][lower.tri(R[[index]], diag = FALSE)]^2
       RR <- c(RR, diag(R[[index]])[vv]^2)
       if (meanstructure) RR <- c(RR, R$mean[vv]^2)
-      n.per.group <- 1L
+      n.per.group <- N
     }
 
     SS <- if (nG > 1L) sqrt(sapply(RR, mean)) else sqrt(mean(RR))
@@ -1089,7 +1089,7 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
   meanstructure <- lavListInspect(object, "meanstructure")
   categ <- lavListInspect(object, "categorical")
   nG <- lavListInspect(object, "ngroups")
-  nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+  nlevels <- lavListInspect(object, "nlevels")
   #TODO: account for fixed.x and conditional.x (res.cov, res.int, etc.)
   if (nG > 1L) {
     ov.names <- object@Data@ov.names #FIXME: assumes never nG > 1 && nlevels > 1
@@ -1233,7 +1233,7 @@ resid.lavaan.mi <- function(object, type = c("raw","cor"),
   Implied <- getMethod("fitted", "lavaan.mi")(object, omit.imps = omit.imps)
   ## Calculate residuals
   nG <- lavListInspect(object, "ngroups")
-  nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+  nlevels <- lavListInspect(object, "nlevels")
   if (nG > 1L || nlevels > 1L) {
     if (nG > 1L) {
       group.label <- lavListInspect(object, "group.label")

@@ -58,7 +58,7 @@ also accepts an object of class \code{\linkS4class{lavaan.mi}}, and will
 draw \code{nDraws} plausible values from each imputation.  Step 2 would
 then take into account uncertainty about both missing values and factor
 scores.  Bayesian methods can also be used to generate factor scores, as
-available with the \code{\pkg{blavaan}} package, in which case plausible
+available with the \pkg{blavaan} package, in which case plausible
 values are simply saved parameters from the posterior distribution. See
 Asparouhov and Muthen (2010) for further technical details and references.
 

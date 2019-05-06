@@ -1,5 +1,5 @@
 Package: semTools
-Version: 0.5-1.917
+Version: 0.5-1.918
 Title: Useful Tools for Structural Equation Modeling
 Description: Provides useful tools for structural equation modeling.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
@@ -34,5 +34,5 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2019-04-10
+Date/Publication: 2019-05-06
 RoxygenNote: 6.1.1
