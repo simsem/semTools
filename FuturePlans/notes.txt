@@ -156,6 +156,9 @@ semTools::plausibleValues()
 Miscellaneous semTools
 ======================
 
+allow reliability() et al. to accept lavaan.mi pooled coefs
+- @GLIST is a flat list, not a list of lists per group
+
 add moreFitIndices= argument to compareFit()
 
 semTools::miPowerFit()
