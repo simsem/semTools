@@ -1241,13 +1241,26 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       ## end loops
     }
   }
+  ## check for any cross-loadings
+  #TODO: special check for bifactor models possible? Find factors whose indicators all cross-load...
+  anyXload <- FALSE
+  for (g in 1:nG) {
+    if (any(apply(GLIST.specify[[g]]$lambda, 1, sum) > 1)) anyXload <- TRUE
+  }
   ## can the effects-coding identification method be used?
-  if (ID.fac == "fx") {
-    for (g in 1:nG) {
-      if (any(apply(GLIST.specify[[g]]$lambda, 1, sum) > 1))
-        stop("Effects-coding method of factor identification (\"ID.fac\") ",
-             "unavailable in models with cross-loadings.")
-    }
+  if (ID.fac == "fx" && anyXload) {
+    stop('Effects-coding method of factor identification ',
+         '("ID.fac") unavailable in models with cross-loadings.')
+  }
+  ## Warn about constraining intercepts but not means
+  freeMeans <- ("intercepts" %in% group.equal && !("means" %in% group.equal)) ||
+               ("intercepts" %in% long.equal  && !("means" %in% long.equal) )
+  if (ID.fac == "uv" && anyXload && freeMeans) {
+    warning('A factor\'s mean cannot be freed unless it has at least one ',
+            'indicator without a cross-loading whose intercept is constrained ',
+            'to equality. Use cat(as.character()) to check whether the syntax ',
+            'returned by measEq.syntax() must be manually adapted to free the ',
+            'necessary latent means.')
   }
 
 
