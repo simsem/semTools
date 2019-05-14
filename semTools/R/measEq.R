@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 17 February 2019
+### Last updated: 14 May 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -937,12 +937,15 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   ## check lavaan arguments
   if (!is.null(dots$model)) stop('A model should be specified only with the ',
                                  '"configural.model=" argument, not "model=".')
-  if (is.null(dots$sample.mean) && is.null(dots$data)) {
-    dots$meanstructure <- FALSE
-    mc$meanstructure <- FALSE
-  } else {
-    dots$meanstructure <- TRUE
-    mc$meanstructure <- TRUE
+  if (is.null(dots$meanstructure)) {
+    constrMeanStr <- c("intercepts","means") %in% c(group.equal, long.equal)
+    if (is.null(dots$sample.mean) && is.null(dots$data) && !any(constrMeanStr)) {
+      dots$meanstructure <- FALSE
+      mc$meanstructure <- FALSE
+    } else {
+      dots$meanstructure <- TRUE
+      mc$meanstructure <- TRUE
+    }
   }
 
   ## lavaan template from configural model

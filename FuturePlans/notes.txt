@@ -258,6 +258,10 @@ blavaan::blavPPMC()
   - use it for blavFitIndices(fit, rescale = "mcmc")
 - assign class, write print/summary methods to display intervals (not full posteriors)
 
+blavaan::blavInspect()
+- add options "perc.npd" for theta and psi
+  - analogous to lavaan::lavInspect(fit, "post.check")
+- check det() for each iter when EAP/MAP is NPD
 
 Write tech doc for 2SML
 - full vignette in Rmd

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 April 2019
+### Last updated: 12 May 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -188,7 +188,11 @@ runMI <- function(model, data, fun = "lavaan", ...,
   seed <- as.integer(seed[1])
   ## Create (or acknowledge) list of imputed data sets
   imputedData <- NULL
-  if (is.data.frame(data)) {
+  if (missing(data)) {
+    #TODO: check for summary statistics
+    #TODO: make lavaanList() accept lists of summary stats
+
+  } else if (is.data.frame(data)) {
     if (miPackage[1] == "Amelia") {
       requireNamespace("Amelia")
       if (!"package:Amelia" %in% search()) attachNamespace("Amelia")
