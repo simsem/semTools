@@ -50,11 +50,13 @@ only if \code{test = "D2"} and \code{pool.robust = TRUE}}
 }
 \value{
 A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
-  statistic, depending on the \code{asymptotic} argument), the degrees of
-  freedom (numerator and denominator, if \code{asymptotic = FALSE}), and a
-  \emph{p} value. Robust statistics will also include the average (across)
-  imputations) scaling factor and (if relevant) shift parameter(s), unless
-  \code{pool.robust = TRUE}.
+  statistic, depending on the \code{asymptotic} argument), its degrees of
+  freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
+  \emph{p} value, and 2 missing-data diagnostics: the relative invrease
+  in variance (RIV, or average for multiparameter tests: ARIV) and the
+  fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
+  will also include the average (across imputations) scaling factor and
+  (if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
 }
 \description{
 Likelihood ratio test (LRT) for lavaan models fitted to multiple imputed

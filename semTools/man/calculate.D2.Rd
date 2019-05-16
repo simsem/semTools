@@ -25,7 +25,9 @@ with \code{df1}.}
 }
 \value{
 A \code{numeric} vector containing the test statistic, \emph{df},
-  and a \emph{p} value.
+  its \emph{p} value, and 2 missing-data diagnostics: the relative invrease
+  in variance (RIV, or average for multiparameter tests: ARIV) and the
+  fraction missing information (FMI = ARIV / (1 + ARIV)).
 }
 \description{
 This is a utility function used to calculate the "D2" statistic for pooling

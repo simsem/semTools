@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 May 2019
+### Last updated: 16 May 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -427,7 +427,9 @@ growth.mi <- function(model, data, ...,
 ##'   with \code{df1}.
 ##'
 ##' @return A \code{numeric} vector containing the test statistic, \emph{df},
-##'   and a \emph{p} value.
+##'   its \emph{p} value, and 2 missing-data diagnostics: the relative invrease
+##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
+##'   fraction missing information (FMI = ARIV / (1 + ARIV)).
 ##'
 ##' @seealso \code{\link{lavTestLRT.mi}}, \code{\link{lavTestWald.mi}},
 ##'   \code{\link{lavTestScore.mi}}
@@ -488,11 +490,13 @@ calculate.D2 <- function(w, DF = 0L, asymptotic = FALSE) {
   if (test.stat < 0) test.stat <- 0
   if (asymptotic) {
     out <- c("chisq" = test.stat * DF, df = DF,
-             pvalue = pchisq(test.stat * DF, df = DF, lower.tail = FALSE))
+             pvalue = pchisq(test.stat * DF, df = DF, lower.tail = FALSE),
+             ariv = ariv, fmi = ariv / (1 + ariv))
   } else {
     v3 <- DF^(-3 / nImps) * (nImps - 1) * (1 + (1 / ariv))^2
     out <- c("F" = test.stat, df1 = DF, df2 = v3,
-             pvalue = pf(test.stat, df1 = DF, df2 = v3, lower.tail = FALSE))
+             pvalue = pf(test.stat, df1 = DF, df2 = v3, lower.tail = FALSE),
+             ariv = ariv, fmi = ariv / (1 + ariv))
   }
   class(out) <- c("lavaan.vector","numeric")
   out

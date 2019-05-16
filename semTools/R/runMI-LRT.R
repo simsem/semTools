@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 18 March 2019
+### Last updated: 16 May 2019
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -69,11 +69,13 @@
 ##'
 ##' @return
 ##'   A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
-##'   statistic, depending on the \code{asymptotic} argument), the degrees of
-##'   freedom (numerator and denominator, if \code{asymptotic = FALSE}), and a
-##'   \emph{p} value. Robust statistics will also include the average (across)
-##'   imputations) scaling factor and (if relevant) shift parameter(s), unless
-##'   \code{pool.robust = TRUE}.
+##'   statistic, depending on the \code{asymptotic} argument), its degrees of
+##'   freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
+##'   \emph{p} value, and 2 missing-data diagnostics: the relative invrease
+##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
+##'   fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
+##'   will also include the average (across imputations) scaling factor and
+##'   (if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam;
@@ -507,7 +509,8 @@ D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
   }
   if (asymptotic) {
     out <- c("chisq" = test.stat * DF, df = DF,
-             pvalue = pchisq(test.stat * DF, df = DF, lower.tail = FALSE))
+             pvalue = pchisq(test.stat * DF, df = DF, lower.tail = FALSE),
+             ariv = ariv, fmi = ariv / (1 + ariv))
   } else {
     ## F statistic
     if (a > 4) {
@@ -517,7 +520,8 @@ D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
       # v4 <- (DF + 1)*(m - 1)*(1 + (1 / ariv))^2 / 2 # Grund et al. (eq. 9)
     }
     out <- c("F" = test.stat, df1 = DF, df2 = v4,
-             pvalue = pf(test.stat, df1 = DF, df2 = v4, lower.tail = FALSE))
+             pvalue = pf(test.stat, df1 = DF, df2 = v4, lower.tail = FALSE),
+             ariv = ariv, fmi = ariv / (1 + ariv))
   }
   ## add log-likelihood and AIC/BIC for target model
   if (is.null(h1)) {

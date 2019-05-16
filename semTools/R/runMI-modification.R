@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 18 March 2019
+### Last updated: 16 May 2019
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -15,7 +15,7 @@
 ##'
 ##' @name modindices.mi
 ##' @aliases modificationIndices.mi modificationindices.mi modindices.mi
-##' @importFrom lavaan lavInspect lavListInspect
+##' @importFrom lavaan lavInspect lavListInspect lavNames
 ##' @importFrom methods getMethod
 ##' @importFrom stats cov pchisq qchisq
 ##'
@@ -96,6 +96,7 @@
 ##' \code{test = "D1"} method proposed by
 ##'   Maxwell Mansolf (University of California, Los Angeles;
 ##'   \email{mamansolf@@gmail.com})
+#FIXME: replace note with reference once accepted paper has a DOI
 ##'
 ##' @references
 ##'   Enders, C. K. (2010). \emph{Applied missing data analysis}.
@@ -207,9 +208,13 @@ modindices.mi <- function(object,
   if (test == "d2") {
     chiList <- lapply(object@miList[useImps], "[[", i = "mi")
     ## imputations in columns, parameters in rows
-    LIST$mi <- apply(do.call(cbind, chiList), 1, function(x) {
-      calculate.D2(x, DF = 1, asymptotic = TRUE)[1]
+    pooledList <- apply(do.call(cbind, chiList), 1, function(x) {
+      calculate.D2(x, DF = 1, asymptotic = TRUE)
     })
+    LIST$mi <- pooledList[1, ] # could be "F" or "chisq"
+    ## diagnostics
+    LIST$riv <- pooledList["ariv", ]
+    LIST$fmi <- pooledList["fmi", ]
     ## also take average of epc & sepc.all
     epcList <- lapply(object@miList[useImps], "[[", i = "epc")
     LIST$epc <- rowMeans(do.call(cbind, epcList))
@@ -231,7 +236,9 @@ modindices.mi <- function(object,
                                 epc = TRUE, scale.W = FALSE, asymptotic = TRUE,
                                 information = information)$uni
     LIST$mi <- scoreOut$X2
-    LIST$epc <- scoreOut$epc
+    LIST$riv <- scoreOut$riv
+    LIST$fmi <- scoreOut$fmi
+    LIST$epc <- scoreOut$epc #FIXME: use average across imputations?
 
     # standardize?
     if (standardized) {
@@ -281,9 +288,20 @@ modindices.mi <- function(object,
                                                              partable = PE,
                                                              GLIST = object@GLIST,
                                                              est = abs(EPC))$est.std
+      fixed.x <- lavListInspect(object, "options")$fixed.x && length(lavNames(object, "ov.x"))
+      if (fixed.x) {
+        PE$sepc.nox <- EPC.sign * lavaan::standardizedSolution(object, se = FALSE,
+                                                               type = "std.nox",
+                                                               cov.std = cov.std,
+                                                               partable = PE,
+                                                               GLIST = object@GLIST,
+                                                               est = abs(EPC))$est.std
+      }
+
       if (length(small.idx) > 0L) {
         PE$sepc.lv[small.idx] <- 0
         PE$sepc.all[small.idx] <- 0
+        if (fixed.x) PE$sepc.nox[small.idx] <- 0
       }
       ## remove unnecessary columns, then merge
       if (is.null(LIST$block)) PE$block <- NULL

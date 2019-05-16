@@ -7,8 +7,8 @@
 lavTestScore.mi(object, add = NULL, release = NULL, test = c("D2",
   "D1"), scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
   asymptotic = is.null(add), univariate = TRUE, cumulative = FALSE,
-  epc = FALSE, verbose = FALSE, warn = TRUE,
-  information = "expected")
+  epc = FALSE, standardized = epc, cov.std = epc, verbose = FALSE,
+  warn = TRUE, information = "expected")
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}.}
@@ -72,6 +72,12 @@ were released. For EPCs associated with a particular (1-\emph{df})
 constraint, only specify one parameter in \code{add} or one constraint in
 \code{release}.}
 
+\item{standardized}{If \code{TRUE}, two extra columns (\code{sepc.lv} and
+\code{sepc.all}) in the \code{$epc} table will contain standardized values
+for the EPCs. See \code{\link{lavTestScore}}.}
+
+\item{cov.std}{\code{logical}. See \code{\link{standardizedSolution}}.}
+
 \item{verbose}{\code{logical}. Not used for now.}
 
 \item{warn}{\code{logical}. If \code{TRUE}, print warnings if they occur.}
@@ -85,14 +91,20 @@ control of Type I errors.}
 A list containing at least one \code{data.frame}:
  \itemize{
    \item{\code{$test}: The total score test, with columns for the score
-     test statistic (\code{X2}), the degrees of freedom (\code{df}), and
-     a \emph{p} value under the \eqn{\chi^2} distribution (\code{p.value}).}
+     test statistic (\code{X2}), its degrees of freedom (\code{df}), its
+     \emph{p} value under the \eqn{\chi^2} distribution (\code{p.value}),
+     and if \code{asymptotic=FALSE}, the average relative invrease in
+     variance (ARIV) used to calculate the denominator \emph{df} is also
+     returned as a missing-data diagnostic, along with the fraction missing
+     information (FMI = ARIV / (1 + ARIV)).}
    \item{\code{$uni}: Optional (if \code{univariate=TRUE}).
-     Each 1-\emph{df} score test, equivalent to modification indices.}
+     Each 1-\emph{df} score test, equivalent to modification indices. Also
+     includes EPCs if \code{epc=TRUE}, and RIV and FMI if
+     \code{asymptotic=FALSE}.}
    \item{\code{$cumulative}: Optional (if \code{cumulative=TRUE}).
-     Cumulative score tests.}
+     Cumulative score tests, with ARIV and FMI if \code{asymptotic=FALSE}.}
    \item{\code{$epc}: Optional (if \code{epc=TRUE}). Parameter estimates,
-     expected parameter changes, and expected parameter values if all
+     expected parameter changes, and expected parameter values if ALL
      the tested constraints were freed.}
  }
 See \code{\link[lavaan]{lavTestScore}} for details.

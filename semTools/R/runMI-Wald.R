@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 18 March 2019
+### Last updated: 16 May 2019
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -70,7 +70,11 @@
 ##'   A vector containing the Wald test statistic (either an \code{F} or
 ##'   \eqn{\chi^2} statistic, depending on the \code{asymptotic} argument),
 ##'   the degrees of freedom (numerator and denominator, if
-##'   \code{asymptotic = FALSE}), and a \emph{p} value.
+##'   \code{asymptotic = FALSE}), and a \emph{p} value. If
+##'   \code{asymptotic = FALSE}, the relative invrease in variance (RIV, or
+##'   average for multiparameter tests: ARIV) used to calculate the denominator
+##'   \emph{df} is also returned as a missing-data diagnostic, along with the
+##'   fraction missing information (FMI = ARIV / (1 + ARIV)).
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam;
@@ -156,7 +160,7 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
   useImps <- which(useImps)
 
   test <- tolower(test[1])
-  if (test %in% c("d2", "LMRR", "Li.et.al")) test <- "D2"
+  if (test %in% c("d2", "lmrr", "li.et.al")) test <- "D2"
   if (test %in% c("d1", "rubin")) test <- "D1"
   if (!test %in% c("D1","D2")) stop('Invalid choice of "test" argument.')
 
@@ -274,7 +278,8 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
       v2 <- a*(1 + 1/DF) * (1 + 1/ariv)^2 / 2 # Enders (eq. 8.25)
     }
     out <- c("F" = test.stat / DF, df1 = DF, df2 = v2,
-             pvalue = pf(test.stat / DF, df1 = DF, df2 = v2, lower.tail = FALSE))
+             pvalue = pf(test.stat / DF, df1 = DF, df2 = v2, lower.tail = FALSE),
+             ariv = ariv, fmi = ariv / (1 + ariv))
   }
 
   class(out) <- c("lavaan.vector","numeric")

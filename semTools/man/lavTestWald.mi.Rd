@@ -61,7 +61,11 @@ matrix and the estimated restricted values.}
 A vector containing the Wald test statistic (either an \code{F} or
   \eqn{\chi^2} statistic, depending on the \code{asymptotic} argument),
   the degrees of freedom (numerator and denominator, if
-  \code{asymptotic = FALSE}), and a \emph{p} value.
+  \code{asymptotic = FALSE}), and a \emph{p} value. If
+  \code{asymptotic = FALSE}, the relative invrease in variance (RIV, or
+  average for multiparameter tests: ARIV) used to calculate the denominator
+  \emph{df} is also returned as a missing-data diagnostic, along with the
+  fraction missing information (FMI = ARIV / (1 + ARIV)).
 }
 \description{
 Wald test for testing a linear hypothesis about the parameters of lavaan

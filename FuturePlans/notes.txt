@@ -129,9 +129,7 @@ semTools::twostage() edits/additions:
 
 
 semTools::runMI()
-- lavTestScore.mi() and modindices.mi() should use mean-EPC even when test="D1"
-  - add EPCs to $uni table in add= mode, matching modindices()
-  - add standardized EPCs to lavTestScore
+- lavTestScore.mi() and modindices.mi() "should" use mean-EPC even when test="D1"
 - work with multilevel models:
   - multilevel + multigroup structure: G1-W, G1-B, G2-W, G2-B, ... G*-W, G*-B
   - need to adapt getSRMR, fitted, resid, maybe others
