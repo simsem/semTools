@@ -1,144 +1,143 @@
-## Title: Compute more fit indices
-## Authors: Terrence Jorgensen <TJorgensen314@gmail.com>
-##          Sunthud Pornprasertmanit <psunthud@ku.edu>,
-##          Aaron Boulton <aboulton@ku.edu>,
-##          Ruben Arslan <rubenarslan@gmail.com>
-## Last updated: 2 June 2018
-## Description: Calculations for promising alternative fit indices
-##----------------------------------------------------------------------------
+### Title: Compute more fit indices
+### Authors: Terrence D. Jorgensen <TJorgensen314@gmail.com>
+###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
+###          Aaron Boulton <aboulton@ku.edu>,
+###          Ruben Arslan <rubenarslan@gmail.com>
+### Last updated: 17 May 2019
+### Description: Calculations for promising alternative fit indices
 
 
 
-#' Calculate more fit indices
-#'
-#' Calculate more fit indices that are not already provided in lavaan.
-#'
-#' Gamma Hat (gammaHat; West, Taylor, & Wu, 2012) is a global fit index which
-#' can be computed (assuming equal number of indicators across groups) by
-#'
-#' \deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N}} ,}
-#'
-#' where \eqn{p} is the number of variables in the model, \eqn{\chi^{2}_{k}} is
-#' the \eqn{\chi^2} test statistic value of the target model, \eqn{df_{k}} is
-#' the degree of freedom when fitting the target model, and \eqn{N} is the
-#' sample size (or sample size minus the number of groups if \code{mimic} is
-#' set to \code{"EQS"}).
-#'
-#' Adjusted Gamma Hat (adjGammaHat; West, Taylor, & Wu, 2012) is a global fit
-#' index which can be computed by
-#'
-#' \deqn{ adjGammaHat = \left(1 - \frac{K \times p \times (p + 1)}{2 \times
-#' df_{k}} \right) \times \left( 1 - gammaHat \right) ,}
-#'
-#' where \eqn{K} is the number of groups (please refer to Dudgeon, 2004 for the
-#' multiple-group adjustment for agfi*).
-#'
-#' Corrected Akaike Information Criterion (aic.smallN; Burnham & Anderson,
-#' 2003) is a corrected version of AIC for small sample size, often abbreviated
-#' AICc:
-#'
-#' \deqn{ aic.smallN = AIC + \frac{2k(k + 1)}{N - k - 1},}
-#'
-#' where \eqn{AIC} is the original AIC: \eqn{-2 \times LL + 2k} (where \eqn{k}
-#' = the number of estimated parameters in the target model). Note that AICc is
-#' a small-sample correction derived for univariate regression models, so it is
-#' probably \emph{not} appropriate for comparing SEMs.
-#'
-#' Corrected Bayesian Information Criterion (bic.priorN; Kuha, 2004) is similar
-#' to BIC but explicitly specifying the sample size on which the prior is based
-#' (\eqn{N_{prior}}).
-#'
-#' \deqn{ bic.priorN = f + k\log{(1 + N/N_{prior})},}
-#'
-#' Stochastic information criterion (SIC; Preacher, 2006) is similar to AIC or
-#' BIC. This index will account for model complexity in the model's function
-#' form, in addition to the number of free parameters. This index will be
-#' provided only when the \eqn{\chi^2} value is not scaled. The SIC can be
-#' computed by
-#'
-#' \deqn{ sic = \frac{1}{2}\left(f - \log{\det{I(\hat{\theta})}}\right),}
-#'
-#' where \eqn{I(\hat{\theta})} is the information matrix of the parameters.
-#'
-#' Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for
-#' model selection similar to AIC or BIC.
-#'
-#' \deqn{ hqc = f + 2k\log{(\log{N})},}
-#'
-#' Note that if Satorra--Bentler or Yuan--Bentler's method is used, the fit
-#' indices using the scaled \eqn{\chi^2} values are also provided.
-#'
-#' See \code{\link{nullRMSEA}} for the further details of the computation of
-#' RMSEA of the null model.
-#'
-#'
-#' @importFrom lavaan lavInspect
-#'
-#' @param object The lavaan model object provided after running the \code{cfa},
-#' \code{sem}, \code{growth}, or \code{lavaan} functions.
-#' @param fit.measures Additional fit measures to be calculated. All additional
-#' fit measures are calculated by default
-#' @param nPrior The sample size on which prior is based. This argument is used
-#' to compute BIC*.
-#' @return \enumerate{
-#'  \item \code{gammaHat}: Gamma Hat
-#'  \item \code{adjGammaHat}: Adjusted Gamma Hat
-#'  \item \code{baseline.rmsea}: RMSEA of the Baseline (Null) Model
-#'  \item \code{aic.smallN}: Corrected (for small sample size) Akaike Information Criterion
-#'  \item \code{bic.priorN}: Bayesian Information Criterion with specified prior sample size
-#'  \item \code{sic}: Stochastic Information Criterion
-#'  \item \code{hqc}: Hannan-Quinn Information Criterion
-#'  \item \code{gammaHat.scaled}: Gamma Hat using scaled \eqn{\chi^2}
-#'  \item \code{adjGammaHat.scaled}: Adjusted Gamma Hat using scaled \eqn{\chi^2}
-#'  \item \code{baseline.rmsea.scaled}: RMSEA of the Baseline (Null) Model using scaled \eqn{\chi^2}
-#' }
-#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
-#'
-#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
-#'
-#' Aaron Boulton (University of North Carolina, Chapel Hill; \email{aboulton@@email.unc.edu})
-#'
-#' Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@@gmail.com})
-#'
-#' Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
-#'
-#' @seealso \itemize{ \item \code{\link{miPowerFit}} For the modification
-#' indices and their power approach for model fit evaluation \item
-#' \code{\link{nullRMSEA}} For RMSEA of the null model }
-#'
-#' @references Burnham, K., & Anderson, D. (2003). \emph{Model selection and
-#' multimodel inference: A practical--theoretic approach}. New York, NY:
-#' Springer--Verlag.
-#'
-#' Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample
-#' RMSEA adjustment to other noncentrality parameter-based statistic.
-#' \emph{Structural Equation Modeling, 11}(3), 305--319.
-#' doi:10.1207/s15328007sem1103_1
-#'
-#' Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance.
-#' \emph{Sociological Methods Research, 33}(2), 188--229.
-#' doi:10.1177/0049124103262065
-#'
-#' Preacher, K. J. (2006). Quantifying parsimony in structural equation
-#' modeling. \emph{Multivariate Behavioral Research, 43}(3), 227-259.
-#' doi:10.1207/s15327906mbr4103_1
-#'
-#' West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection
-#' in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of
-#' Structural Equation Modeling} (pp. 209--231). New York, NY: Guilford.
-#' @examples
-#'
-#' HS.model <- ' visual  =~ x1 + x2 + x3
-#'               textual =~ x4 + x5 + x6
-#'               speed   =~ x7 + x8 + x9 '
-#'
-#' fit <- cfa(HS.model, data = HolzingerSwineford1939)
-#' moreFitIndices(fit)
-#'
-#' fit2 <- cfa(HS.model, data = HolzingerSwineford1939, estimator = "mlr")
-#' moreFitIndices(fit2)
-#'
-#' @export
+##' Calculate more fit indices
+##'
+##' Calculate more fit indices that are not already provided in lavaan.
+##'
+##' Gamma Hat (gammaHat; West, Taylor, & Wu, 2012) is a global fit index which
+##' can be computed (assuming equal number of indicators across groups) by
+##'
+##' \deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N}} ,}
+##'
+##' where \eqn{p} is the number of variables in the model, \eqn{\chi^{2}_{k}} is
+##' the \eqn{\chi^2} test statistic value of the target model, \eqn{df_{k}} is
+##' the degree of freedom when fitting the target model, and \eqn{N} is the
+##' sample size (or sample size minus the number of groups if \code{mimic} is
+##' set to \code{"EQS"}).
+##'
+##' Adjusted Gamma Hat (adjGammaHat; West, Taylor, & Wu, 2012) is a global fit
+##' index which can be computed by
+##'
+##' \deqn{ adjGammaHat = \left(1 - \frac{K \times p \times (p + 1)}{2 \times
+##' df_{k}} \right) \times \left( 1 - gammaHat \right) ,}
+##'
+##' where \eqn{K} is the number of groups (please refer to Dudgeon, 2004 for the
+##' multiple-group adjustment for agfi*).
+##'
+##' Corrected Akaike Information Criterion (aic.smallN; Burnham & Anderson,
+##' 2003) is a corrected version of AIC for small sample size, often abbreviated
+##' AICc:
+##'
+##' \deqn{ aic.smallN = AIC + \frac{2k(k + 1)}{N - k - 1},}
+##'
+##' where \eqn{AIC} is the original AIC: \eqn{-2 \times LL + 2k} (where \eqn{k}
+##' = the number of estimated parameters in the target model). Note that AICc is
+##' a small-sample correction derived for univariate regression models, so it is
+##' probably \emph{not} appropriate for comparing SEMs.
+##'
+##' Corrected Bayesian Information Criterion (bic.priorN; Kuha, 2004) is similar
+##' to BIC but explicitly specifying the sample size on which the prior is based
+##' (\eqn{N_{prior}}).
+##'
+##' \deqn{ bic.priorN = f + k\log{(1 + N/N_{prior})},}
+##'
+##' Stochastic information criterion (SIC; Preacher, 2006) is similar to AIC or
+##' BIC. This index will account for model complexity in the model's function
+##' form, in addition to the number of free parameters. This index will be
+##' provided only when the \eqn{\chi^2} value is not scaled. The SIC can be
+##' computed by
+##'
+##' \deqn{ sic = \frac{1}{2}\left(f - \log{\det{I(\hat{\theta})}}\right),}
+##'
+##' where \eqn{I(\hat{\theta})} is the information matrix of the parameters.
+##'
+##' Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for
+##' model selection similar to AIC or BIC.
+##'
+##' \deqn{ hqc = f + 2k\log{(\log{N})},}
+##'
+##' Note that if Satorra--Bentler or Yuan--Bentler's method is used, the fit
+##' indices using the scaled \eqn{\chi^2} values are also provided.
+##'
+##' See \code{\link{nullRMSEA}} for the further details of the computation of
+##' RMSEA of the null model.
+##'
+##'
+##' @importFrom lavaan lavInspect
+##'
+##' @param object The lavaan model object provided after running the \code{cfa},
+##' \code{sem}, \code{growth}, or \code{lavaan} functions.
+##' @param fit.measures Additional fit measures to be calculated. All additional
+##' fit measures are calculated by default
+##' @param nPrior The sample size on which prior is based. This argument is used
+##' to compute BIC*.
+##' @return \enumerate{
+##'  \item \code{gammaHat}: Gamma Hat
+##'  \item \code{adjGammaHat}: Adjusted Gamma Hat
+##'  \item \code{baseline.rmsea}: RMSEA of the Baseline (Null) Model
+##'  \item \code{aic.smallN}: Corrected (for small sample size) Akaike Information Criterion
+##'  \item \code{bic.priorN}: Bayesian Information Criterion with specified prior sample size
+##'  \item \code{sic}: Stochastic Information Criterion
+##'  \item \code{hqc}: Hannan-Quinn Information Criterion
+##'  \item \code{gammaHat.scaled}: Gamma Hat using scaled \eqn{\chi^2}
+##'  \item \code{adjGammaHat.scaled}: Adjusted Gamma Hat using scaled \eqn{\chi^2}
+##'  \item \code{baseline.rmsea.scaled}: RMSEA of the Baseline (Null) Model using scaled \eqn{\chi^2}
+##' }
+##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
+##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##' Aaron Boulton (University of North Carolina, Chapel Hill; \email{aboulton@@email.unc.edu})
+##'
+##' Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@@gmail.com})
+##'
+##' Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
+##'
+##' @seealso \itemize{ \item \code{\link{miPowerFit}} For the modification
+##' indices and their power approach for model fit evaluation \item
+##' \code{\link{nullRMSEA}} For RMSEA of the null model }
+##'
+##' @references Burnham, K., & Anderson, D. (2003). \emph{Model selection and
+##' multimodel inference: A practical--theoretic approach}. New York, NY:
+##' Springer--Verlag.
+##'
+##' Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample
+##' RMSEA adjustment to other noncentrality parameter-based statistic.
+##' \emph{Structural Equation Modeling, 11}(3), 305--319.
+##' doi:10.1207/s15328007sem1103_1
+##'
+##' Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance.
+##' \emph{Sociological Methods Research, 33}(2), 188--229.
+##' doi:10.1177/0049124103262065
+##'
+##' Preacher, K. J. (2006). Quantifying parsimony in structural equation
+##' modeling. \emph{Multivariate Behavioral Research, 43}(3), 227-259.
+##' doi:10.1207/s15327906mbr4103_1
+##'
+##' West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection
+##' in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of
+##' Structural Equation Modeling} (pp. 209--231). New York, NY: Guilford.
+##' @examples
+##'
+##' HS.model <- ' visual  =~ x1 + x2 + x3
+##'               textual =~ x4 + x5 + x6
+##'               speed   =~ x7 + x8 + x9 '
+##'
+##' fit <- cfa(HS.model, data = HolzingerSwineford1939)
+##' moreFitIndices(fit)
+##'
+##' fit2 <- cfa(HS.model, data = HolzingerSwineford1939, estimator = "mlr")
+##' moreFitIndices(fit2)
+##'
+##' @export
 moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   ## check for validity of user-specified "fit.measures" argument
   fit.choices <- c("gammaHat","adjGammaHat","baseline.rmsea",
@@ -205,68 +204,68 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 
 
 
-#' Calculate the RMSEA of the null model
-#'
-#' Calculate the RMSEA of the null (baseline) model
-#'
-#' RMSEA of the null model is calculated similar to the formula provided in the
-#' \code{lavaan} package. The standard formula of RMSEA is
-#'
-#' \deqn{ RMSEA =\sqrt{\frac{\chi^2}{N \times df} - \frac{1}{N}} \times
-#' \sqrt{G} }
-#'
-#' where \eqn{\chi^2} is the chi-square test statistic value of the target
-#' model, \eqn{N} is the total sample size, \eqn{df} is the degree of freedom
-#' of the hypothesized model, \eqn{G} is the number of groups. Kenny proposed
-#' in his website that
-#'
-#' "A reasonable rule of thumb is to examine the RMSEA for the null model and
-#' make sure that is no smaller than 0.158. An RMSEA for the model of 0.05 and
-#' a TLI of .90, implies that the RMSEA of the null model is 0.158.  If the
-#' RMSEA for the null model is less than 0.158, an incremental measure of fit
-#' may not be that informative."
-#'
-#' See also \url{http://davidakenny.net/cm/fit.htm}
-#'
-#'
-#' @importFrom lavaan lavInspect
-#'
-#' @param object The lavaan model object provided after running the \code{cfa},
-#' \code{sem}, \code{growth}, or \code{lavaan} functions.
-#' @param scaled If \code{TRUE}, the scaled (or robust, if available) RMSEA
-#'   is returned. Ignored if a robust test statistic was not requested.
-#' @param silent If \code{TRUE}, do not print anything on the screen.
-#'
-#' @return A value of RMSEA of the null model (a \code{numeric} vector)
-#'   returned invisibly.
-#'
-#' @author
-#' Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@@gmail.com})
-#'
-#' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
-#'
-#' @seealso
-#' \itemize{
-#'   \item \code{\link{miPowerFit}} For the modification indices and their
-#'      power approach for model fit evaluation
-#'   \item \code{\link{moreFitIndices}} For other fit indices
-#' }
-#'
-#' @references Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The
-#' performance of RMSEA in models with small degrees of freedom.
-#' \emph{Sociological Methods Research, 44}(3), 486--507.
-#' doi:10.1177/0049124114543236
-#'
-#' @examples
-#'
-#' HS.model <- ' visual  =~ x1 + x2 + x3
-#'               textual =~ x4 + x5 + x6
-#'               speed   =~ x7 + x8 + x9 '
-#'
-#' fit <- cfa(HS.model, data = HolzingerSwineford1939)
-#' nullRMSEA(fit)
-#'
-#' @export
+##' Calculate the RMSEA of the null model
+##'
+##' Calculate the RMSEA of the null (baseline) model
+##'
+##' RMSEA of the null model is calculated similar to the formula provided in the
+##' \code{lavaan} package. The standard formula of RMSEA is
+##'
+##' \deqn{ RMSEA =\sqrt{\frac{\chi^2}{N \times df} - \frac{1}{N}} \times
+##' \sqrt{G} }
+##'
+##' where \eqn{\chi^2} is the chi-square test statistic value of the target
+##' model, \eqn{N} is the total sample size, \eqn{df} is the degree of freedom
+##' of the hypothesized model, \eqn{G} is the number of groups. Kenny proposed
+##' in his website that
+##'
+##' "A reasonable rule of thumb is to examine the RMSEA for the null model and
+##' make sure that is no smaller than 0.158. An RMSEA for the model of 0.05 and
+##' a TLI of .90, implies that the RMSEA of the null model is 0.158.  If the
+##' RMSEA for the null model is less than 0.158, an incremental measure of fit
+##' may not be that informative."
+##'
+##' See also \url{http://davidakenny.net/cm/fit.htm}
+##'
+##'
+##' @importFrom lavaan lavInspect
+##'
+##' @param object The lavaan model object provided after running the \code{cfa},
+##' \code{sem}, \code{growth}, or \code{lavaan} functions.
+##' @param scaled If \code{TRUE}, the scaled (or robust, if available) RMSEA
+##'   is returned. Ignored if a robust test statistic was not requested.
+##' @param silent If \code{TRUE}, do not print anything on the screen.
+##'
+##' @return A value of RMSEA of the null model (a \code{numeric} vector)
+##'   returned invisibly.
+##'
+##' @author
+##' Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@@gmail.com})
+##'
+##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##' @seealso
+##' \itemize{
+##'   \item \code{\link{miPowerFit}} For the modification indices and their
+##'      power approach for model fit evaluation
+##'   \item \code{\link{moreFitIndices}} For other fit indices
+##' }
+##'
+##' @references Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The
+##' performance of RMSEA in models with small degrees of freedom.
+##' \emph{Sociological Methods Research, 44}(3), 486--507.
+##' doi:10.1177/0049124114543236
+##'
+##' @examples
+##'
+##' HS.model <- ' visual  =~ x1 + x2 + x3
+##'               textual =~ x4 + x5 + x6
+##'               speed   =~ x7 + x8 + x9 '
+##'
+##' fit <- cfa(HS.model, data = HolzingerSwineford1939)
+##' nullRMSEA(fit)
+##'
+##' @export
 nullRMSEA <- function(object, scaled = FALSE, silent = FALSE) {
   fit <- lavaan::update(object, model = lavaan::lav_partable_independence(object))
 	fits <- lavaan::fitMeasures(fit, fit.measures = c("rmsea","rmsea.scaled",
@@ -294,8 +293,8 @@ nullRMSEA <- function(object, scaled = FALSE, silent = FALSE) {
 ## f = minimized discrepancy function
 ## lresults = lavaan sem output object
 sic <- function(f, lresults = NULL) {
-
-  E.inv <- lavaan::lavTech(lresults, "inverted.information")
+  ## p. 596 of doi:10.1007/s10519-004-5587-0 says to use observed Fisher information
+  E.inv <- lavaan::lavTech(lresults, "inverted.information.observed")
   if (inherits(E.inv, "try-error")) {
     return(as.numeric(NA))
   }
@@ -316,58 +315,58 @@ sic <- function(f, lresults = NULL) {
 
 
 
-#' \emph{k}-factor correction for \eqn{chi^2} test statistic
-#'
-#' Calculate \emph{k}-factor correction for \eqn{chi^2} model-fit test
-#' statistic to adjust for small sample size.
-#'
-#' The \emph{k}-factor correction (Nevitt & Hancock, 2004) is a global fit
-#' index which can be computed by:
-#'
-#' \deqn{ kc = 1 - \frac{2 \times P + 4 \times K + 5}{6 \times N}}
-#'
-#' where \eqn{N} is the sample size when using normal likelihood, or \eqn{N -
-#' 1} when using \code{likelihood = 'wishart'}.
-#'
-#'
-#' @importFrom lavaan lavInspect
-#' @importFrom stats pchisq
-#'
-#' @param fit0 The lavaan model object provided after running the \code{cfa},
-#' \code{sem}, \code{growth}, or \code{lavaan} functions.
-#' @param fit1 Optional additional \linkS4class{lavaan} model, in which
-#' \code{fit0} is nested.  If \code{fit0} has fewer \emph{df} than \code{fit1},
-#' the models will be swapped, still on the assumption that they are nested.
-#' @param \dots Additional arguments to the \code{\link[lavaan]{lavTestLRT}}
-#' function.
-#' @return A numeric vector including the unadjusted (naive) chi-squared test
-#' statistic, the \emph{k}-factor correction, the corrected test statistic, the
-#' \emph{df} for the test, and the \emph{p} value for the test under the null
-#' hypothesis that the model fits perfectly (or that the 2 models have
-#' equivalent fit).
-#' @author Terrence D. Jorgensen (University of Amsterdam;
-#' \email{TJorgensen314@@gmail.com})
-#' @references Nevitt, J., & Hancock, G. R. (2004). Evaluating small sample
-#' approaches for model test statistics in structural equation modeling.
-#' \emph{Multivariate Behavioral Research, 39}(3), 439--478.
-#' doi:10.1207/S15327906MBR3903_3
-#' @examples
-#'
-#' HS.model <- '
-#'     visual  =~ x1 + b1*x2 + x3
-#'     textual =~ x4 + b2*x5 + x6
-#'     speed   =~ x7 + b3*x8 + x9
-#' '
-#' fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
-#' ## test a single model (implicitly compared to a saturated model)
-#' chisqSmallN(fit1)
-#'
-#' ## fit a more constrained model
-#' fit0 <- cfa(HS.model, data = HolzingerSwineford1939, orthogonal = TRUE)
-#' ## compare 2 models
-#' chisqSmallN(fit1, fit0)
-#'
-#' @export
+##' \emph{k}-factor correction for \eqn{chi^2} test statistic
+##'
+##' Calculate \emph{k}-factor correction for \eqn{chi^2} model-fit test
+##' statistic to adjust for small sample size.
+##'
+##' The \emph{k}-factor correction (Nevitt & Hancock, 2004) is a global fit
+##' index which can be computed by:
+##'
+##' \deqn{ kc = 1 - \frac{2 \times P + 4 \times K + 5}{6 \times N}}
+##'
+##' where \eqn{N} is the sample size when using normal likelihood, or \eqn{N -
+##' 1} when using \code{likelihood = 'wishart'}.
+##'
+##'
+##' @importFrom lavaan lavInspect
+##' @importFrom stats pchisq
+##'
+##' @param fit0 The lavaan model object provided after running the \code{cfa},
+##' \code{sem}, \code{growth}, or \code{lavaan} functions.
+##' @param fit1 Optional additional \linkS4class{lavaan} model, in which
+##' \code{fit0} is nested.  If \code{fit0} has fewer \emph{df} than \code{fit1},
+##' the models will be swapped, still on the assumption that they are nested.
+##' @param \dots Additional arguments to the \code{\link[lavaan]{lavTestLRT}}
+##' function.
+##' @return A numeric vector including the unadjusted (naive) chi-squared test
+##' statistic, the \emph{k}-factor correction, the corrected test statistic, the
+##' \emph{df} for the test, and the \emph{p} value for the test under the null
+##' hypothesis that the model fits perfectly (or that the 2 models have
+##' equivalent fit).
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##' \email{TJorgensen314@@gmail.com})
+##' @references Nevitt, J., & Hancock, G. R. (2004). Evaluating small sample
+##' approaches for model test statistics in structural equation modeling.
+##' \emph{Multivariate Behavioral Research, 39}(3), 439--478.
+##' doi:10.1207/S15327906MBR3903_3
+##' @examples
+##'
+##' HS.model <- '
+##'     visual  =~ x1 + b1*x2 + x3
+##'     textual =~ x4 + b2*x5 + x6
+##'     speed   =~ x7 + b3*x8 + x9
+##' '
+##' fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
+##' ## test a single model (implicitly compared to a saturated model)
+##' chisqSmallN(fit1)
+##'
+##' ## fit a more constrained model
+##' fit0 <- cfa(HS.model, data = HolzingerSwineford1939, orthogonal = TRUE)
+##' ## compare 2 models
+##' chisqSmallN(fit1, fit0)
+##'
+##' @export
 chisqSmallN <- function(fit0, fit1 = NULL, ...) {
   ## if there are 2 models, order them by DF
   if (!is.null(fit1)) {
