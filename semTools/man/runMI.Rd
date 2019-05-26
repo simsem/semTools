@@ -169,7 +169,7 @@ catout <- cfa.mi(' f =~ 1*u1 + 1*u2 + 1*u3 + 1*u4 ', data = datCat,
                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
                  })
 summary(catout)
-LavTestLRT(catout, test = "D2", pool.robust = TRUE)
+lavTestLRT.mi(catout, test = "D2", pool.robust = TRUE)
 fitMeasures(catout, fit.measures = c("rmsea","srmr","cfi"),
             test = "D2", pool.robust = TRUE)
 
