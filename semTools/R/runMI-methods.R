@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 23 May 2019
+### Last updated: 1 June 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -1100,6 +1100,7 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
   est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
   setpar <- lavaan::lav_model_set_parameters(object@Model, x = est)
   imp <- lavaan::lav_model_implied(setpar)
+  if (categ) th.idx <- lavListInspect(object, "th.idx")
 
   #TODO: adapt to multilevel, multigroup, or both
 
@@ -1114,7 +1115,6 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
     }
     names(ov.names) <- group.label
     for (i in seq_along(imp)) names(imp[[i]]) <- group.label
-    if (categ) names(setpar@th.idx) <- group.label
     for (g in group.label) {
       out[[g]]$cov <- imp$cov[[g]]
       dimnames(out[[g]]$cov) <- list(ov.names[[g]], ov.names[[g]])
@@ -1130,7 +1130,7 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
       #                                       means = TRUE, categ = categ, m = m)$mean
       # }
       if (categ) {
-        out[[g]]$th <- imp$th[[g]][ setpar@th.idx[[g]] ]
+        out[[g]]$th <- imp$th[[g]][ th.idx[[g]] ]
         names(out[[g]]$th) <- lavNames(object, "th")
         class(out[[g]]$th) <- c("lavaan.vector","numeric")
       }
@@ -1150,7 +1150,7 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
     #                                  means = TRUE, categ = categ, m = m)$mean
     # }
     if (categ) {
-      out$th <- imp$th[[1]][ setpar@th.idx[[1]] ]
+      out$th <- imp$th[[1]][th.idx]
       names(out$th) <- lavNames(object, "th")
       class(out$th) <- c("lavaan.vector","numeric")
     }
