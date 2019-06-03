@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 16 May 2019
+### Last updated: 3 June 2019
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -418,20 +418,26 @@ getLLs <- function(object, useImps, saturated = FALSE,
   if (length(cluster) == 0L) cluster <- NULL
 
   if (saturated) {
-    fit <- lavaan(parTable(object), data = dataList[[ useImps[1] ]],
-                  slotOptions = lavoptions, group = group, cluster = cluster)
-    ## use saturated parameter table as new model
-    PT <- lavaan::lav_partable_unrestricted(fit)
-    ## fit saturated parameter table to each imputation, return estimates
-    satParams <- lapply(object@DataList[useImps], function(d) {
-      parTable(lavaan(model = PT, data = d, slotOptions = lavoptions,
-                      group = group, cluster = cluster))$est
-    })
+    #FIXME: below is legacy code, no longer needed?
+    # fit <- lavaan(parTable(object), data = dataList[[ useImps[1] ]],
+    #               slotOptions = lavoptions, group = group, cluster = cluster)
+    # ## use saturated parameter table as new model
+    # PT <- lavaan::lav_partable_unrestricted(fit)
+    # ## fit saturated parameter table to each imputation, return estimates
+    # satParams <- lapply(object@DataList[useImps], function(d) {
+    #   parTable(lavaan(model = PT, data = d, slotOptions = lavoptions,
+    #                   group = group, cluster = cluster))$est
+    # })
+    # ## fix them to pooled estimates
+    # PT$ustart <- colMeans(do.call(rbind, satParams))
+
+    PT <- object@h1List[[ useImps[1] ]]$PT
+    coefList <- lapply(object@h1List[useImps], function(x) x$PT$ustart)
+    PT$ustart <- colMeans(do.call(rbind, coefList))
+
     ## set all parameters fixed
     PT$free <- 0L
     PT$user <- 1L
-    ## fix them to pooled estimates
-    PT$ustart <- colMeans(do.call(rbind, satParams))
     PT$start <- NULL
     PT$est <- NULL
     PT$se <- NULL
@@ -453,7 +459,7 @@ getLLs <- function(object, useImps, saturated = FALSE,
     PT <- PT[params, ]
   }
   ## return log-likelihoods
-  sapply(object@DataList[useImps], function(d) {
+  sapply(dataList, function(d) {
     lavaan::logLik(lavaan(PT, data = d, slotOptions = lavoptions,
                           group = group, cluster = cluster))
   })

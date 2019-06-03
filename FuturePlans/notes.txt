@@ -129,24 +129,20 @@ semTools::twostage() edits/additions:
 
 
 semTools::runMI()
+- work with multilevel models? (need example that works)
 - lavTestScore.mi() and modindices.mi() "should" use mean-EPC even when test="D1"
-- work with multilevel models:
-  - multilevel + multigroup structure: G1-W, G1-B, G2-W, G2-B, ... G*-W, G*-B
-  - need to adapt getSRMR, fitted, resid, maybe others
-- sampstat.lavaan.mi() no longer needed: use lavaanList slot @h1List
-- allow fixed.x and conditional.x
-  - why does baseline model include a "dummy" variable when conditional.x?
-    - Yves removed this legacy code
-  - fix fitted.lavaan.mi(): lav_model_implied() output names differ (e.g., $res.cov, not $cov)
 - Rubin's rules are applied to user-defined parameters (:=).  Should they be
   re-defined from pooled estimates? (can delta method be applied to pooled SEs?)
 - when h1 fits worse than h0 (on average across imputations)
   - set LRT to NA instead of 0?
   - or is this just Monte Carlo error when h0 is true?
+- adapt lavResiduals() for imputations?  NEEDS RESEARCH
+  - potentially, treat residuals as estimates, pool SEs & tests as usual
 
 
 semTools::plausibleValues()
 - add latent item-responses (LRESPONSES in Mplus) when available in blavaan
+- set append.data=TRUE and assemble=TRUE to simplify code, return with data by default
 
 
 

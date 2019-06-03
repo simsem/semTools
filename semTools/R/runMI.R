@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 23 May 2019
+### Last updated: 3 June 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -263,6 +263,9 @@ runMI <- function(model, data, fun = "lavaan", ...,
     }
     list(sampstat = lavaan::lavInspect(obj, "sampstat"),
          coefMats = lavaan::lavInspect(obj, "est"),
+         satPT = data.frame(lavaan::lav_partable_unrestricted(obj),
+                            #FIXME: do starting values ALWAYS == estimates?
+                            stringsAsFactors = FALSE),
          modindices = try(lavaan::modindices(obj), silent = TRUE),
          GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all and in simsem
          converged = converged, SE = se.test,
@@ -273,14 +276,14 @@ runMI <- function(model, data, fun = "lavaan", ...,
   lavListCall <- list(lavaan::lavaanList, model = model, dataList = imputedData,
                       cmd = fun)
   lavListCall <- c(lavListCall, dots)
-  lavListCall$store.slots <- c("partable","vcov","test")
+  lavListCall$store.slots <- c("partable","vcov","test","h1")
   lavListCall$FUN <- if (is.null(dots$FUN)) .getOutput. else function(obj) {
     temp1 <- .getOutput.(obj)
     temp2 <- dots$FUN(obj)
     if (!is.list(temp2)) temp2 <- list(userFUN1 = temp2)
     if (is.null(names(temp2))) names(temp2) <- paste0("userFUN", 1:length(temp2))
     duplicatedNames <- which(sapply(names(temp2), function(x) {
-      x %in% c("sampstat","coefMats","modindices","converged",
+      x %in% c("sampstat","coefMats","satPT","modindices","converged",
                "SE","Heywood.lv","Heywood.ov","GLIST")
     }))
     for (i in duplicatedNames) names(temp2)[i] <- paste0("userFUN", i)
@@ -290,6 +293,9 @@ runMI <- function(model, data, fun = "lavaan", ...,
   ## Store custom @DataList and @SampleStatsList
   fit@SampleStatsList <- lapply(fit@funList, "[[", i = "sampstat")
   fit@DataList <- imputedData
+  ## add parameter table to @h1List
+  for (i in 1:m) fit@h1List[[i]] <- c(fit@h1List[[i]],
+                                      list(PT = fit@funList[[i]]$satPT))
   ## assign class and add new slots
   fit <- as(fit, "lavaan.mi")
   fit@coefList <- lapply(fit@funList, "[[", i = "coefMats")
@@ -324,7 +330,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
   ## keep any remaining funList slots (if allowing users to supply custom FUN)
   funNames <- names(fit@funList[[1]])
   keepIndex <- which(!sapply(funNames, function(x) {
-    x %in% c("sampstat","coefMats","modindices","converged",
+    x %in% c("sampstat","coefMats","satPT","modindices","converged",
              "SE","Heywood.lv","Heywood.ov","GLIST")
   }))
   if (length(keepIndex)) {

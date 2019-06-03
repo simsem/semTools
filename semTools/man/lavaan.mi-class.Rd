@@ -228,6 +228,10 @@ model}
 \item{\code{vcovList}}{See \code{\linkS4class{lavaanList}}}
 
 \item{\code{testList}}{See \code{\linkS4class{lavaanList}}}
+
+\item{\code{h1List}}{See \code{\linkS4class{lavaanList}}. An additional element is
+added to the \code{list}: \code{$PT} is the "saturated" model's parameter
+table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
 }}
 
 \section{Objects from the Class}{

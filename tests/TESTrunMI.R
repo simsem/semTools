@@ -46,7 +46,7 @@ lavTestLRT.mi(fit1, test = "D2")        # or pooled Wald test (D2 statistic)
 lavTestLRT.mi(fit1, asymptotic = TRUE)  # as chisq == F * df1
 lavTestLRT.mi(fit0, h1 = fit1, asymptotic = TRUE)  # compare fit
 lavTestLRT.mi(fit0, h1 = fit1, test = "D2")  # compare fit using D2
-
+fitMeasures(fit1)
 
 
 ## fit multigroup model
@@ -63,12 +63,14 @@ resid(mgfit0, type = "cor.bentler") # (average sampstats) - fitted
 nobs(mgfit0)
 nobs(mgfit0, total = FALSE) # N per group
 
-lavTestLRT.mi(mgfit0)          # pooled LRT by default (D3 statistic)
-lavTestLRT.mi(mgfit0, asymptotic = TRUE)  # reported by Mplus
-lavTestLRT.mi(mgfit0, test = 'D2')        # use D2 method (necessary for categorical data)
+lavTestLRT.mi(mgfit0)              # pooled LRT by default (D3 statistic)
+lavTestLRT.mi(mgfit0, test = 'D2') # use D2 method (necessary for categorical data)
+lavTestLRT.mi(mgfit0, test = 'D2', pool.robust = TRUE)
+lavTestLRT.mi(mgfit0, test = 'D2', pool.robust = TRUE, asymptotic = TRUE)
 lavTestLRT.mi(mgfit0, h1 = mgfit1)           # compare fit
 lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2') # robustifies pooled naive statistic
 lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic
+fitMeasures(mgfit1)
 
 
 ## use D1 to test a parametrically nested model (whether latent means are ==)
@@ -105,72 +107,103 @@ modindices.mi(mgfit1, op = '~~')
 
 
 
+## -------------------------
+## fixed.x and conditional.x
+## -------------------------
+
+## Using help-page example
+data(datCat)
+datCat$u2 <- as.integer(datCat$u2) # mixture of ordered/continuous indicators
+datCat$u3 <- as.integer(datCat$u3)
+datCat$u5 <- as.integer(datCat$u5) # exogenous predictors must be numeric
+datCat$u6 <- as.integer(datCat$u6)
+
+## impose missing values
+set.seed(456)
+for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
+catimps <- amelia(datCat, m = 20, ords = paste0("u", 1:8), noms = "g")$imputations
+
+catmod <- '
+f =~ 1*u1 + 1*u2 + 1*u3 + 1*u4
+u1 + u2 ~ u5 + u6
+'
+fitx <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = FALSE)
+fitxg <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = FALSE,
+                group = "g")
+fit.x <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = TRUE)
+fit.xg <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = TRUE,
+                 group = "g")
+
+fitted(fitx)
+resid.lavaan.mi(fitx)
+resid.lavaan.mi(fitx, type = "crmr")
+resid.lavaan.mi(fitx, type = "srmr")
+fitMeasures(fitx, fit.measures = "rmr")
+
+fitted(fitxg)
+resid.lavaan.mi(fitxg)
+resid.lavaan.mi(fitxg, type = "crmr")
+resid.lavaan.mi(fitxg, type = "srmr")
+fitMeasures(fitxg, fit.measures = "rmr")
+
+fitted(fit.x)
+resid.lavaan.mi(fit.x)
+resid.lavaan.mi(fit.x, type = "crmr")
+resid.lavaan.mi(fit.x, type = "srmr")
+fitMeasures(fit.x, fit.measures = "rmr")
+
+fitted(fit.xg)
+resid.lavaan.mi(fit.xg)
+resid.lavaan.mi(fit.xg, type = "crmr")
+resid.lavaan.mi(fit.xg, type = "srmr")
+fitMeasures(fit.xg, fit.measures = "rmr")
+
+
+
 ## ------------------------------------
 ## check lavaan.mi with multilevel data
 ## ------------------------------------
 
-Galo <- read.table("https://users.ugent.be/~yrosseel/lavaan/kiel2018/Galo.dat")
-names(Galo) <- c("school", "sex", "galo", "advice", "feduc", "meduc",
-                 "focc", "denom")
-
-# missing data
-Galo[Galo == 999] <- NA
-Galo$denom1 <- ifelse(Galo$denom == 1, 1, 0)
-Galo$denom2 <- ifelse(Galo$denom == 2, 1, 0)
-Galo$g <- ifelse(Galo$school < 30, "foo", "bar") # randomly assign schools to groups
-Galo$sch <- paste0("sch", Galo$school) # character IDs
-Galo <- Galo[sample(nrow(Galo)), ] # randomize rows so cluster IDs are out of order
+data(Demo.twolevel)
+Demo.twolevel$id <-  paste0("id", Demo.twolevel$cluster) # character IDs
+## assign clusters to arbitrary groups
+Demo.twolevel$g <- ifelse(Demo.twolevel$cluster %% 2L, "foo", "bar")
+## randomize rows so cluster IDs are out of order
+set.seed(123)
+Demo.twolevel <- Demo.twolevel[sample(nrow(Demo.twolevel)), ]
+## create missing data
+set.seed(456)
+Demo.twolevel$y1[sample(nrow(Demo.twolevel), size = .1*nrow(Demo.twolevel)) ] <- NA
 
 model <- '
 level: within
-  wses =~ a*focc + b*meduc + c*feduc
-  advice ~ wc*wses + wb*galo
-  galo   ~ wa*wses
-  # residual correlation
-  focc ~~ feduc
+  fw =~ y1 + y2 + y3
+  fw ~ x1 + x2 + x3
 level: between
-  bses =~ a*focc + b*meduc + c*feduc
-  advice ~ bc*bses + bb*galo
-  galo   ~ ba*bses + denom1 + denom2
-  feduc ~~ 0*feduc
-# defined parameters
-  wi := wa * wb
-  bi := ba * bb
+  fb =~ y1 + y2 + y3
+  fb ~ w1 + w2
 '
-G.in.L <- '
+model2 <- ' group: foo
 level: within
-
-group: foo
-  galo ~ focc
-group: bar
-  galo ~ focc
-
+  fw =~ y1 + y2 + y3
+  fw ~ x1 + x2 + x3
 level: between
-
-group: foo
-  galo ~ focc
-group: bar
-  galo ~ focc
-'
-L.in.G <- ' group: foo
-level: within
-  galo ~ focc
-level: between
-  galo ~ focc
+  fb =~ y1 + y2 + y3
+  fb ~ w1 + w2
 
 group: bar
 
 level: within
-  galo ~ focc
+  fw =~ y1 + y2 + y3
+  fw ~ x1 + x2 + x3
 level: between
-  galo ~ focc
+  fb =~ y1 + y2 + y3
+  fb ~ w1 + w2
 '
 
 library(lavaan)
-fit <- sem(model, data = Galo, cluster = "school", fixed.x = FALSE,
-           std.lv = TRUE, h1 = TRUE)
-fitmg <- sem(L.in.G, data = Galo, cluster = "sch", fixed.x = FALSE,
-             std.lv = TRUE, h1 = TRUE, group = "g")
+fit <- sem(model, data = Demo.twolevel, cluster = "cluster")
+fitmg <- sem(model2, data = Demo.twolevel, cluster = "id", group = "g")
 
 summary(fit, fit.measures = TRUE, standardized = TRUE)
 lavInspect(fit, "ngroups")
@@ -182,19 +215,16 @@ lavInspect(fit, "theta")
 ## impute data
 library(mice)
 m <- 5
-mice.out <- mice(Galo, m = m, diagnostics = TRUE)
+mice.out <- mice(Demo.twolevel, m = m, diagnostics = TRUE)
 imputedData <- list()
 for (i in 1:m) {
   imputedData[[i]] <- complete(data = mice.out, action = i, include = FALSE)
 }
 
 library(semTools)
-fit <- sem(model, data = imputedData[[1]], cluster = "school", fixed.x = FALSE,
-           std.lv = TRUE, h1 = TRUE) # runs fine
-fitList <- semList(model, dataList = imputedData, cluster = "school",
-                   fixed.x = FALSE, std.lv = TRUE, h1 = TRUE) # runs fine
-fit.mi <- sem.mi(model, data = imputedData, cluster = "school", fixed.x = FALSE,
-                 std.lv = TRUE, h1 = TRUE) # why does this fail?
+fit <- sem(model, data = imputedData[[1]], cluster = "id") # runs fine
+fitList <- semList(model, dataList = imputedData, cluster = "id") # no convergence
+fit.mi <- sem.mi(model, data = imputedData, cluster = "id") # why does this fail?
 ## check methods
 fit.mi
 summary(fit.mi, ci = TRUE, standardized = TRUE, rsquare = TRUE, fmi = TRUE)

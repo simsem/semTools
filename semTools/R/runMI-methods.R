@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 June 2019
+### Last updated: 3 June 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -46,6 +46,9 @@
 ##' @slot ParTableList See \code{\linkS4class{lavaanList}}
 ##' @slot vcovList See \code{\linkS4class{lavaanList}}
 ##' @slot testList See \code{\linkS4class{lavaanList}}
+##' @slot h1List See \code{\linkS4class{lavaanList}}. An additional element is
+##'   added to the \code{list}: \code{$PT} is the "saturated" model's parameter
+##'   table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.
 ##'
 ##' @param object An object of class \code{lavaan.mi}
 ##' @param se,ci,level,standardized,rsquare,header,add.attributes See
@@ -587,9 +590,82 @@ anova.lavaan.mi <- function(object, ...) {
 ##' @export
 setMethod("anova", "lavaan.mi", anova.lavaan.mi)
 
+
+##' @importFrom lavaan lavListInspect lavNames
+##' @importFrom methods getMethod
+## utility function called within fitMeasures.mi()
+getSRMR <- function(object, type = "cor.bentler", level = "within",
+                    include.mean = TRUE, omit.imps = c("no.conv","no.se")) {
+  conditional.x <- lavListInspect(object, "options")$conditional.x
+  include.mean <- include.mean && lavListInspect(object, "meanstructure")
+  include.diag <- type %in% c("cor.bentler","raw")
+  mplus <- type == "mplus"
+  if (mplus) type <- "cor.bollen"
+
+  ## how many blocks to loop over
+  nG <- lavListInspect(object, "ngroups")
+  nlevels <- lavListInspect(object, "nlevels")
+  ## save relevant sample sizes
+  if (nlevels > 1L && level != "within") {
+    n.per.group <- lavListInspect(object, "nclusters") #FIXME: only works for 2 levels
+    N <- sum(n.per.group)
+  } else {
+    n.per.group <- lavListInspect(object, "nobs")
+    N <- lavListInspect(object, "ntotal")
+  }
+
+  ## grab residuals
+  R <- getMethod("resid", "lavaan.mi")(object, type = type,
+                                       omit.imps = omit.imps)
+  if (mplus) Rd <- getMethod("resid", "lavaan.mi")(object, type = "cor.bentler",
+                                                   omit.imps = omit.imps)
+  ## restructure, if necessary
+  if (nG == 1L) {
+    loopBlocks <- 1L
+
+    ## extract relevant level
+    if (nlevels > 1L) {
+      R <- R[[level]]
+      if (mplus) Rd <- Rd[[level]]
+    }
+    ## to loop over blocks
+    R <- list(R)
+    if (mplus) Rd <- list(Rd)
+
+
+  ## multiple groups AND multilevel
+  } else if (nlevels > 1L) {
+    loopBlocks <- 2*(1:nG)
+    if (level == "within") loopBlocks <- loopBlocks - 1L
+    R <- R[loopBlocks]
+    if (mplus) Rd <- Rd[loopBlocks]
+
+  } else loopBlocks <- 1:nG # no restructure necessary for multigroup 1-level models
+
+
+  ## store vector of squared residuals
+  RR <- vector("list", nG)
+  for (b in loopBlocks) {
+    index <- if (conditional.x) "res.cov" else "cov"
+
+    RR[[b]] <- R[[b]][[index]][lower.tri(R[[b]][[index]], diag = FALSE)]^2
+    ## only capture means/variances of numeric modeled variables (not conditional.x)
+    vv <- intersect(lavNames(object, type = "ov.num", block = b),
+                    lavNames(object, type = "ov.model", block = b))
+    if (include.diag)  RR[[b]] <- c(RR[[b]], diag(R[[b]][[index]])[vv]^2)
+    if (mplus)  RR[[b]] <- c(RR[[b]], diag(Rd[[b]][[index]])[vv]^2)
+
+    if (include.mean) {
+      index <- if (conditional.x) "res.int" else "mean"
+      RR[[b]] <- c(RR[[b]], R[[b]][[index]][vv]^2)
+    }
+  }
+
+  ## take weighted average of group means
+  as.numeric( (n.per.group %*% sqrt(sapply(RR, mean))) / N )
+}
 ##' @importFrom lavaan lavNames lavListInspect
 ##' @importFrom stats pchisq uniroot
-##' @importFrom methods getMethod
 fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
                            omit.imps = c("no.conv","no.se"), ...) {
 
@@ -619,422 +695,403 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     indices <- grep(pattern = paste(c(incremental, "mfi","rmsea",
                                       "gammaHat","rmr"), collapse = "|"),
                     x = fit.measures, ignore.case = TRUE, value = TRUE)
+    indices <- tolower(indices)
   }
 
-  ## check for additional arguments
-  dots <- list(...)
-  if (length(dots)) {
-    LRT.names <- intersect(names(dots),
-                           union(names(formals(lavTestLRT)),
-                                 names(formals(lavTestLRT.mi))))
-    dots <- if (length(LRT.names)) dots[LRT.names] else list(asymptotic = TRUE)
-  } else dots <- list(asymptotic = TRUE)
+  ## CHI-SQUARED-BASED FIT INDICES
+  if (any(!grepl(pattern = "rmr", x = indices))) {
 
-  robust <- lavoptions$test != "standard" #TODO: check for bootstrap test
-  scaleshift <- lavoptions$test == "scaled.shifted"
-  if (robust) {
-    ## assign pool.robust option to object
-    if (is.null(dots$pool.robust)) {
-      pool.robust <- formals(lavTestLRT.mi)$pool.robust # default value
-    } else {
-      pool.robust <- dots$pool.robust # user-specified value
-    }
-  }
+    ## check for additional arguments
+    dots <- list(...)
+    if (length(dots)) {
+      LRT.names <- intersect(names(dots),
+                             union(names(formals(lavTestLRT)),
+                                   names(formals(lavTestLRT.mi))))
+      dots <- if (length(LRT.names)) dots[LRT.names] else list(asymptotic = TRUE)
+    } else dots <- list(asymptotic = TRUE)
 
-  ## pooled test statistic(s)
-  argList <- c(list(object = object), dots)
-  argList$asymptotic <- TRUE # in case it wasn't set in list(...)
-  argList$omit.imps <- omit.imps
-  out <- do.call(lavTestLRT.mi, argList)
-  ## check for scaled test statistic (if not, set robust=FALSE)
-  if (robust && is.na(out["chisq.scaled"])) robust <- FALSE
-
-  ## fit baseline model if necessary
-  if (any(indices %in% incremental)) {
-    if (inherits(baseline.model, "lavaan.mi")) {
-      baseFit <- baseline.model
-    } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
-      baseFit <- object@external$baseline.model
-    } else {
-      PTb <- lavaan::lav_partable_independence(lavdata = object@Data,
-                                               lavoptions = lavoptions)
-      # FIXME: shouldn't need this line, but lav_partable_merge() fails when
-      #        lavaan:::lav_object_extended() returns a NULL slot instead of "plabel"
-      PTb$plabel <- paste0(".p", PTb$id, ".")
-      group <- lavListInspect(object, "group")
-      if (length(group) == 0L) group <- NULL
-      baseFit <- runMI(model = PTb, data = object@DataList[useImps],
-                       group = group, se = "none", # to save time
-                       test = lavoptions$test, estimator = lavoptions$estimator,
-                       ordered = lavListInspect(object, "ordered"),
-                       parameterization = lavoptions$parameterization)
+    robust <- lavoptions$test != "standard" #TODO: check for bootstrap test
+    scaleshift <- lavoptions$test == "scaled.shifted"
+    if (robust) {
+      ## assign pool.robust option to object
+      if (is.null(dots$pool.robust)) {
+        pool.robust <- formals(lavTestLRT.mi)$pool.robust # default value
+      } else {
+        pool.robust <- dots$pool.robust # user-specified value
+      }
     }
 
-    baseImps <- sapply(baseFit@convergence, "[[", i = "converged")
-    if (!all(baseImps)) warning('baseline.model did not converge for data set(s): ',
-                                useImps[!baseImps])
-  }
-
-  ## pooled test statistic(s) for baseline model
-  if (any(indices %in% incremental)) {
-    argList <- c(list(object = baseFit), dots)
+    ## pooled test statistic(s)
+    argList <- c(list(object = object), dots)
     argList$asymptotic <- TRUE # in case it wasn't set in list(...)
-    argList$omit.imps <- setdiff(omit.imps, "no.se") # se="none" in baseFit
-    baseOut <- do.call(lavTestLRT.mi, argList)
-  }
+    argList$omit.imps <- omit.imps
+    out <- do.call(lavTestLRT.mi, argList)
+    ## check for scaled test statistic (if not, set robust=FALSE)
+    if (robust && is.na(out["chisq.scaled"])) robust <- FALSE
 
-
-  X2 <- out[["chisq"]]
-  DF <- out[["df"]]
-  if (robust) {
-    X2.sc <- out[["chisq.scaled"]]
-    DF.sc <- out[["df.scaled"]] ## for mean.var.adjusted, mean DF across imputations
-    if (!pool.robust) ch <- out[["chisq.scaling.factor"]] ## mean c_hat across imputations
-    if (X2 < .Machine$double.eps && DF == 0) ch <- 0
-    ## for RMSEA
-    if ("rmsea" %in% indices) {
-      d <- mean(sapply(object@testList[useImps],
-                       function(x) sum(x[[2]][["trace.UGamma"]])))
-      if (is.na(d) || d == 0) d <- NA # FIXME: only relevant when mean.var.adjusted?
-    }
-  }
-
-  ## for CFI, TLI, etc.
-  if (any(indices %in% incremental)) {
-    bX2 <- baseOut[["chisq"]]
-    bDF <- baseOut[["df"]]
-    out <- c(out, baseline.chisq = bX2, baseline.df = bDF,
-             baseline.pvalue = baseOut[["pvalue"]])
-    if (robust) {
-      out["baseline.chisq.scaled"] <- bX2.sc <- baseOut[["chisq.scaled"]]
-      out["baseline.df.scaled"]    <- bDF.sc <- baseOut[["df.scaled"]]
-      out["baseline.pvalue.scaled"] <- baseOut[["pvalue.scaled"]]
-      if (!pool.robust) {
-        cb <- baseOut[["chisq.scaling.factor"]]
-        out["baseline.chisq.scaling.factor"] <- cb
-        if (scaleshift) out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
-      }
-    }
-  }
-
-  if ("cfi" %in% indices) {
-    t1 <- max(X2 - DF, 0)
-    t2 <- max(X2 - DF, bX2 - bDF, 0)
-    out["cfi"] <- if(t1 == 0 && t2 == 0) 1 else 1 - t1/t2
-    if (robust) {
-      ## scaled
-      t1 <- max(X2.sc - DF.sc, 0)
-      t2 <- max(X2.sc - DF.sc, bX2.sc - bDF.sc, 0)
-      if (is.na(t1) || is.na(t2)) {
-        out["cfi.scaled"] <- NA
-      } else if (t1 == 0 && t2 == 0) {
-        out["cfi.scaled"] <- 1
-      } else out["cfi.scaled"] <- 1 - t1/t2
-      ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (!pool.robust & lavoptions$test %in%
-          c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
-        t1 <- max(X2 - ch*DF, 0)
-        t2 <- max(X2 - ch*DF, bX2 - cb*bDF, 0)
-        if (is.na(t1) || is.na(t2)) {
-          out["cfi.robust"] <- NA
-        } else if (t1 == 0 && t2 == 0) {
-          out["cfi.robust"] <- 1
-        } else out["cfi.robust"] <- 1 - t1/t2
-      }
-    }
-  }
-  if ("rni" %in% indices) {
-    t1 <- X2 - DF
-    t2 <- bX2 - bDF
-    out["rni"] <- if (t2 == 0) NA else 1 - t1/t2
-    if (robust) {
-      ## scaled
-      t1 <- X2.sc - DF.sc
-      t2 <- bX2.sc - bDF.sc
-      if (is.na(t1) || is.na(t2)) {
-        out["rni.scaled"] <- NA
-      } else if (t2 == 0) {
-        out["rni.scaled"] <- NA
-      } else out["rni.scaled"] <- 1 - t1/t2
-      ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (!pool.robust & lavoptions$test %in%
-          c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
-        t1 <- X2 - ch*DF
-        t2 <- bX2 - cb*bDF
-        if (is.na(t1) || is.na(t2)) {
-          out["rni.robust"] <- NA
-        } else if (t1 == 0 && t2 == 0) {
-          out["rni.robust"] <- NA
-        } else out["rni.robust"] <- 1 - t1/t2
-      }
-    }
-  }
-  if (any(indices %in% c("tli","nnfi"))) {
-    t1 <- (X2 - DF)*bDF
-    t2 <- (bX2 - bDF)*DF
-    out["tli"] <- out["nnfi"] <- if (DF > 0) 1 - t1/t2 else 1
-    if (robust) {
-      ## scaled
-      t1 <- (X2.sc - DF.sc)*bDF.sc
-      t2 <- (bX2.sc - bDF.sc)*DF.sc
-      if (is.na(t1) || is.na(t2)) {
-        out["tli.scaled"] <- out["nnfi.scaled"] <- NA
-      } else if (DF > 0 && t2 != 0) {
-        out["tli.scaled"] <- out["nnfi.scaled"] <- 1 - t1/t2
+    ## fit baseline model if necessary
+    if (any(indices %in% incremental)) {
+      if (inherits(baseline.model, "lavaan.mi")) {
+        baseFit <- baseline.model
+      } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
+        baseFit <- object@external$baseline.model
       } else {
-        out["tli.scaled"] <- out["nnfi.scaled"] <- 1
+        PTb <- lavaan::lav_partable_independence(lavdata = object@Data,
+                                                 lavoptions = lavoptions)
+        # FIXME: shouldn't need this line, but lav_partable_merge() fails when
+        #        lavaan:::lav_object_extended() returns a NULL slot instead of "plabel"
+        PTb$plabel <- paste0(".p", PTb$id, ".")
+        group <- lavListInspect(object, "group")
+        if (length(group) == 0L) group <- NULL
+        baseFit <- runMI(model = PTb, data = object@DataList[useImps],
+                         group = group, se = "none", # to save time
+                         test = lavoptions$test, estimator = lavoptions$estimator,
+                         ordered = lavListInspect(object, "ordered"),
+                         parameterization = lavoptions$parameterization)
       }
-      ## Brosseau-Liard & Savalei MBR 2014, equation 15
-      if (!pool.robust & lavoptions$test %in%
-          c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
-        t1 <- (X2 - ch*DF)*bDF
-        t2 <- (bX2 - cb*bDF)*DF
+
+      baseImps <- sapply(baseFit@convergence, "[[", i = "converged")
+      if (!all(baseImps)) warning('baseline.model did not converge for data set(s): ',
+                                  useImps[!baseImps])
+    }
+
+    ## pooled test statistic(s) for baseline model
+    if (any(indices %in% incremental)) {
+      argList <- c(list(object = baseFit), dots)
+      argList$asymptotic <- TRUE # in case it wasn't set in list(...)
+      argList$omit.imps <- setdiff(omit.imps, "no.se") # se="none" in baseFit
+      baseOut <- do.call(lavTestLRT.mi, argList)
+    }
+
+
+    X2 <- out[["chisq"]]
+    DF <- out[["df"]]
+    if (robust) {
+      X2.sc <- out[["chisq.scaled"]]
+      DF.sc <- out[["df.scaled"]] ## for mean.var.adjusted, mean DF across imputations
+      if (!pool.robust) ch <- out[["chisq.scaling.factor"]] ## mean c_hat across imputations
+      if (X2 < .Machine$double.eps && DF == 0) ch <- 0
+      ## for RMSEA
+      if ("rmsea" %in% indices) {
+        d <- mean(sapply(object@testList[useImps],
+                         function(x) sum(x[[2]][["trace.UGamma"]])))
+        if (is.na(d) || d == 0) d <- NA # FIXME: only relevant when mean.var.adjusted?
+      }
+    }
+
+    ## for CFI, TLI, etc.
+    if (any(indices %in% incremental)) {
+      bX2 <- baseOut[["chisq"]]
+      bDF <- baseOut[["df"]]
+      out <- c(out, baseline.chisq = bX2, baseline.df = bDF,
+               baseline.pvalue = baseOut[["pvalue"]])
+      if (robust) {
+        out["baseline.chisq.scaled"] <- bX2.sc <- baseOut[["chisq.scaled"]]
+        out["baseline.df.scaled"]    <- bDF.sc <- baseOut[["df.scaled"]]
+        out["baseline.pvalue.scaled"] <- baseOut[["pvalue.scaled"]]
+        if (!pool.robust) {
+          cb <- baseOut[["chisq.scaling.factor"]]
+          out["baseline.chisq.scaling.factor"] <- cb
+          if (scaleshift) out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
+        }
+      }
+    }
+
+    if ("cfi" %in% indices) {
+      t1 <- max(X2 - DF, 0)
+      t2 <- max(X2 - DF, bX2 - bDF, 0)
+      out["cfi"] <- if(t1 == 0 && t2 == 0) 1 else 1 - t1/t2
+      if (robust) {
+        ## scaled
+        t1 <- max(X2.sc - DF.sc, 0)
+        t2 <- max(X2.sc - DF.sc, bX2.sc - bDF.sc, 0)
         if (is.na(t1) || is.na(t2)) {
-          out["tli.robust"] <- out["nnfi.robust"] <- NA
+          out["cfi.scaled"] <- NA
         } else if (t1 == 0 && t2 == 0) {
-          out["tli.robust"] <- out["nnfi.robust"] <- 1 - t1/t2
-        } else out["tli.robust"] <- out["nnfi.robust"] <- 1
-      }
-    }
-  }
-  if ("rfi" %in% indices) {
-    if (DF > 0) {
-      t2 <- bX2 / bDF
-      t1 <- t2 - X2/DF
-      out["rfi"] <- if (t1 < 0 || t2 < 0) 1 else t1/t2
-    } else out["rfi"] <- 1
-    if (robust) {
-      if (DF > 0) {
-        t2 <- bX2.sc / bDF.sc
-        t1 <- t2 - X2.sc/DF.sc
-        out["rfi.scaled"] <- if (t1 < 0 || t2 < 0) 1 else t1/t2
-      } else out["rfi.scaled"] <- 1
-    }
-  }
-  if ("nfi" %in% indices) {
-    if (DF > 0) {
-      t1 <- bX2 - X2
-      t2 <- bX2
-      out["nfi"] <- t1 / t2
-    } else out["nfi"] <- 1
-    if (robust) out["nfi.scaled"] <- (bX2.sc - X2.sc) / bX2.sc
-  }
-  if ("pnfi" %in% indices) {
-    t1 <- bX2 - X2
-    t2 <- bX2
-    out["pnfi"] <- (DF / bDF) * t1/t2
-    if (robust) {
-      t1 <- bX2.sc - X2.sc
-      t2 <- bX2.sc
-      out["pnfi.scaled"] <- (DF / bDF) * t1/t2
-    }
-  }
-  if ("ifi" %in% indices) {
-    t1 <- bX2 - X2
-    t2 <- bX2 - DF
-    out["ifi"] <- if (t2 < 0) 1 else t1/t2
-    if (robust) {
-      t1 <- bX2.sc - X2.sc
-      t2 <- bX2.sc - DF.sc
-      if (is.na(t2)) {
-        out["ifi.scaled"] <- NA
-      } else if (t2 < 0) {
-        out["ifi.scaled"] <- 1
-      } else out["ifi.scaled"] <- t1/t2
-    }
-  }
-
-  N <- lavListInspect(object, "ntotal")
-  Ns <- lavListInspect(object, "nobs")
-  nG <- lavListInspect(object, "ngroups")
-  nlevels <- lavListInspect(object, "nlevels")
-  nVars <- length(lavNames(object))
-  if (!(lavoptions$likelihood == "normal" |
-        lavoptions$estimator %in% c("ML","PML","FML"))) {
-    N <- N - nG
-    Ns <- Ns - 1
-  }
-
-  if ("mfi" %in% indices) {
-    out["mfi"] <- exp(-0.5 * (X2 - DF) / N)
-  }
-
-  if ("rmsea" %in% indices) {
-    N.RMSEA <- max(N, X2*4) # FIXME: good strategy??
-
-    if (is.na(X2) || is.na(DF)) {
-      out["rmsea"] <- as.numeric(NA)
-    } else if (DF > 0) {
-      getLambda <- function(lambda, chi, df, p) pchisq(chi, df, ncp=lambda) - p
-
-      out["rmsea"] <- sqrt( max(0, (X2/N)/DF - 1/N) ) * sqrt(nG)
-      ## lower confidence limit
-      if (getLambda(0, X2, DF, .95) < 0.0) out["rmsea.ci.lower"] <- 0 else {
-        lambda.l <- try(uniroot(f = getLambda, chi = X2, df = DF, p = .95,
-                                lower = 0, upper = X2)$root, silent = TRUE)
-        if (inherits(lambda.l, "try-error")) lambda.l <- NA
-        out["rmsea.ci.lower"] <- sqrt( lambda.l/(N*DF) ) * sqrt(nG)
-      }
-      ## upper confidence limit
-      if (getLambda(N.RMSEA, X2, DF, .05) > 0 || getLambda(0, X2, DF, .05) < 0) {
-        out["rmsea.ci.upper"] <- 0
-      } else {
-        lambda.u <- try(uniroot(f = getLambda, chi = X2, df = DF, p = .05,
-                                lower = 0, upper = N.RMSEA)$root, silent = TRUE)
-        if (inherits(lambda.u, "try-error")) lambda.u <- NA
-        out["rmsea.ci.upper"] <- sqrt( lambda.u/(N*DF) ) * sqrt(nG)
-      }
-      ## p value
-      out["rmsea.pvalue"] <- pchisq(X2, DF, ncp = N*DF*0.05^2/nG,
-                                    lower.tail = FALSE)
-
-      ## Scaled versions (naive and robust)
-      if (robust & !scaleshift) {
-        ## naive
-        out["rmsea.scaled"] <- sqrt( max(0, (X2/N)/d - 1/N) ) * sqrt(nG)
-        ## lower confidence limit
-        if (DF.sc < 1 | getLambda(0, X2, DF.sc, .95) < 0.0) {
-          out["rmsea.ci.lower.scaled"] <- 0
-        } else {
-          lambda.l <- try(uniroot(f = getLambda, chi = X2, df = DF.sc, p = .95,
-                                  lower = 0, upper = X2)$root, silent = TRUE)
-          if (inherits(lambda.l, "try-error")) lambda.l <- NA
-          out["rmsea.ci.lower.scaled"] <- sqrt( lambda.l/(N*DF) ) * sqrt(nG)
-        }
-        ## upper confidence limit
-        if (DF.sc < 1 | getLambda(N.RMSEA, X2, DF.sc, .05) > 0.0) {
-          out["rmsea.ci.upper.scaled"] <- 0
-        } else {
-          lambda.u <- try(uniroot(f = getLambda, chi = X2, df = DF.sc, p = .05,
-                                  lower = 0, upper = N.RMSEA)$root, silent = TRUE)
-          if (inherits(lambda.u, "try-error")) lambda.u <- NA
-          out["rmsea.ci.upper.scaled"] <- sqrt( lambda.u/(N*DF) ) * sqrt(nG)
-        }
-        ## p value
-        out["rmsea.pvalue.scaled"] <- pchisq(X2, DF.sc, ncp = N*DF.sc*0.05^2/nG,
-                                             lower.tail = FALSE)
-
+          out["cfi.scaled"] <- 1
+        } else out["cfi.scaled"] <- 1 - t1/t2
+        ## Brosseau-Liard & Savalei MBR 2014, equation 15
         if (!pool.robust & lavoptions$test %in%
             c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
-          ## robust
-          out["rmsea.robust"] <- sqrt( max(0, (X2/N)/DF - ch/N ) ) * sqrt(nG)
+          t1 <- max(X2 - ch*DF, 0)
+          t2 <- max(X2 - ch*DF, bX2 - cb*bDF, 0)
+          if (is.na(t1) || is.na(t2)) {
+            out["cfi.robust"] <- NA
+          } else if (t1 == 0 && t2 == 0) {
+            out["cfi.robust"] <- 1
+          } else out["cfi.robust"] <- 1 - t1/t2
+        }
+      }
+    }
+    if ("rni" %in% indices) {
+      t1 <- X2 - DF
+      t2 <- bX2 - bDF
+      out["rni"] <- if (t2 == 0) NA else 1 - t1/t2
+      if (robust) {
+        ## scaled
+        t1 <- X2.sc - DF.sc
+        t2 <- bX2.sc - bDF.sc
+        if (is.na(t1) || is.na(t2)) {
+          out["rni.scaled"] <- NA
+        } else if (t2 == 0) {
+          out["rni.scaled"] <- NA
+        } else out["rni.scaled"] <- 1 - t1/t2
+        ## Brosseau-Liard & Savalei MBR 2014, equation 15
+        if (!pool.robust & lavoptions$test %in%
+            c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
+          t1 <- X2 - ch*DF
+          t2 <- bX2 - cb*bDF
+          if (is.na(t1) || is.na(t2)) {
+            out["rni.robust"] <- NA
+          } else if (t1 == 0 && t2 == 0) {
+            out["rni.robust"] <- NA
+          } else out["rni.robust"] <- 1 - t1/t2
+        }
+      }
+    }
+    if (any(indices %in% c("tli","nnfi"))) {
+      t1 <- (X2 - DF)*bDF
+      t2 <- (bX2 - bDF)*DF
+      out["tli"] <- out["nnfi"] <- if (DF > 0) 1 - t1/t2 else 1
+      if (robust) {
+        ## scaled
+        t1 <- (X2.sc - DF.sc)*bDF.sc
+        t2 <- (bX2.sc - bDF.sc)*DF.sc
+        if (is.na(t1) || is.na(t2)) {
+          out["tli.scaled"] <- out["nnfi.scaled"] <- NA
+        } else if (DF > 0 && t2 != 0) {
+          out["tli.scaled"] <- out["nnfi.scaled"] <- 1 - t1/t2
+        } else {
+          out["tli.scaled"] <- out["nnfi.scaled"] <- 1
+        }
+        ## Brosseau-Liard & Savalei MBR 2014, equation 15
+        if (!pool.robust & lavoptions$test %in%
+            c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
+          t1 <- (X2 - ch*DF)*bDF
+          t2 <- (bX2 - cb*bDF)*DF
+          if (is.na(t1) || is.na(t2)) {
+            out["tli.robust"] <- out["nnfi.robust"] <- NA
+          } else if (t1 == 0 && t2 == 0) {
+            out["tli.robust"] <- out["nnfi.robust"] <- 1 - t1/t2
+          } else out["tli.robust"] <- out["nnfi.robust"] <- 1
+        }
+      }
+    }
+    if ("rfi" %in% indices) {
+      if (DF > 0) {
+        t2 <- bX2 / bDF
+        t1 <- t2 - X2/DF
+        out["rfi"] <- if (t1 < 0 || t2 < 0) 1 else t1/t2
+      } else out["rfi"] <- 1
+      if (robust) {
+        if (DF > 0) {
+          t2 <- bX2.sc / bDF.sc
+          t1 <- t2 - X2.sc/DF.sc
+          out["rfi.scaled"] <- if (t1 < 0 || t2 < 0) 1 else t1/t2
+        } else out["rfi.scaled"] <- 1
+      }
+    }
+    if ("nfi" %in% indices) {
+      if (DF > 0) {
+        t1 <- bX2 - X2
+        t2 <- bX2
+        out["nfi"] <- t1 / t2
+      } else out["nfi"] <- 1
+      if (robust) out["nfi.scaled"] <- (bX2.sc - X2.sc) / bX2.sc
+    }
+    if ("pnfi" %in% indices) {
+      t1 <- bX2 - X2
+      t2 <- bX2
+      out["pnfi"] <- (DF / bDF) * t1/t2
+      if (robust) {
+        t1 <- bX2.sc - X2.sc
+        t2 <- bX2.sc
+        out["pnfi.scaled"] <- (DF / bDF) * t1/t2
+      }
+    }
+    if ("ifi" %in% indices) {
+      t1 <- bX2 - X2
+      t2 <- bX2 - DF
+      out["ifi"] <- if (t2 < 0) 1 else t1/t2
+      if (robust) {
+        t1 <- bX2.sc - X2.sc
+        t2 <- bX2.sc - DF.sc
+        if (is.na(t2)) {
+          out["ifi.scaled"] <- NA
+        } else if (t2 < 0) {
+          out["ifi.scaled"] <- 1
+        } else out["ifi.scaled"] <- t1/t2
+      }
+    }
+
+    N <- lavListInspect(object, "ntotal")
+    Ns <- lavListInspect(object, "nobs")
+    nG <- lavListInspect(object, "ngroups")
+    nVars <- length(lavNames(object))
+    if (!(lavoptions$likelihood == "normal" |
+          lavoptions$estimator %in% c("ML","PML","FML"))) {
+      N <- N - nG
+      Ns <- Ns - 1
+    }
+
+    if ("mfi" %in% indices) {
+      out["mfi"] <- exp(-0.5 * (X2 - DF) / N)
+    }
+
+    if ("rmsea" %in% indices) {
+      N.RMSEA <- max(N, X2*4) # FIXME: good strategy??
+
+      if (is.na(X2) || is.na(DF)) {
+        out["rmsea"] <- as.numeric(NA)
+      } else if (DF > 0) {
+        getLambda <- function(lambda, chi, df, p) pchisq(chi, df, ncp=lambda) - p
+
+        out["rmsea"] <- sqrt( max(0, (X2/N)/DF - 1/N) ) * sqrt(nG)
+        ## lower confidence limit
+        if (getLambda(0, X2, DF, .95) < 0.0) out["rmsea.ci.lower"] <- 0 else {
+          lambda.l <- try(uniroot(f = getLambda, chi = X2, df = DF, p = .95,
+                                  lower = 0, upper = X2)$root, silent = TRUE)
+          if (inherits(lambda.l, "try-error")) lambda.l <- NA
+          out["rmsea.ci.lower"] <- sqrt( lambda.l/(N*DF) ) * sqrt(nG)
+        }
+        ## upper confidence limit
+        if (getLambda(N.RMSEA, X2, DF, .05) > 0 || getLambda(0, X2, DF, .05) < 0) {
+          out["rmsea.ci.upper"] <- 0
+        } else {
+          lambda.u <- try(uniroot(f = getLambda, chi = X2, df = DF, p = .05,
+                                  lower = 0, upper = N.RMSEA)$root, silent = TRUE)
+          if (inherits(lambda.u, "try-error")) lambda.u <- NA
+          out["rmsea.ci.upper"] <- sqrt( lambda.u/(N*DF) ) * sqrt(nG)
+        }
+        ## p value
+        out["rmsea.pvalue"] <- pchisq(X2, DF, ncp = N*DF*0.05^2/nG,
+                                      lower.tail = FALSE)
+
+        ## Scaled versions (naive and robust)
+        if (robust & !scaleshift) {
+          ## naive
+          out["rmsea.scaled"] <- sqrt( max(0, (X2/N)/d - 1/N) ) * sqrt(nG)
           ## lower confidence limit
-          if (DF.sc < 1 | getLambda(0, X2.sc, DF.sc, .95) < 0.0) {
-            out["rmsea.ci.lower.robust"] <- 0
+          if (DF.sc < 1 | getLambda(0, X2, DF.sc, .95) < 0.0) {
+            out["rmsea.ci.lower.scaled"] <- 0
           } else {
-            lambda.l <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .95,
+            lambda.l <- try(uniroot(f = getLambda, chi = X2, df = DF.sc, p = .95,
                                     lower = 0, upper = X2)$root, silent = TRUE)
             if (inherits(lambda.l, "try-error")) lambda.l <- NA
-            out["rmsea.ci.lower.robust"] <- sqrt( (ch*lambda.l)/(N*DF.sc) ) * sqrt(nG)
+            out["rmsea.ci.lower.scaled"] <- sqrt( lambda.l/(N*DF) ) * sqrt(nG)
+          }
+          ## upper confidence limit
+          if (DF.sc < 1 | getLambda(N.RMSEA, X2, DF.sc, .05) > 0.0) {
+            out["rmsea.ci.upper.scaled"] <- 0
+          } else {
+            lambda.u <- try(uniroot(f = getLambda, chi = X2, df = DF.sc, p = .05,
+                                    lower = 0, upper = N.RMSEA)$root, silent = TRUE)
+            if (inherits(lambda.u, "try-error")) lambda.u <- NA
+            out["rmsea.ci.upper.scaled"] <- sqrt( lambda.u/(N*DF) ) * sqrt(nG)
+          }
+          ## p value
+          out["rmsea.pvalue.scaled"] <- pchisq(X2, DF.sc, ncp = N*DF.sc*0.05^2/nG,
+                                               lower.tail = FALSE)
+
+          if (!pool.robust & lavoptions$test %in%
+              c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
+            ## robust
+            out["rmsea.robust"] <- sqrt( max(0, (X2/N)/DF - ch/N ) ) * sqrt(nG)
+            ## lower confidence limit
+            if (DF.sc < 1 | getLambda(0, X2.sc, DF.sc, .95) < 0.0) {
+              out["rmsea.ci.lower.robust"] <- 0
+            } else {
+              lambda.l <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .95,
+                                      lower = 0, upper = X2)$root, silent = TRUE)
+              if (inherits(lambda.l, "try-error")) lambda.l <- NA
+              out["rmsea.ci.lower.robust"] <- sqrt( (ch*lambda.l)/(N*DF.sc) ) * sqrt(nG)
+            }
+            ## upper confidence limit
+            if (DF.sc < 1 | getLambda(N.RMSEA, X2.sc, DF.sc, .05) > 0.0) {
+              out["rmsea.ci.upper.robust"] <- 0
+            } else {
+              lambda.u <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .05,
+                                      lower = 0, upper = N.RMSEA)$root, silent = TRUE)
+              if (inherits(lambda.u, "try-error")) lambda.u <- NA
+              out["rmsea.ci.upper.robust"] <- sqrt( (ch*lambda.u)/(N*DF.sc) ) * sqrt(nG)
+            }
+            ## p value
+            ########## To be discovered?
+          }
+        } else if (robust & scaleshift) {
+          ## naive only
+          out["rmsea.scaled"] <- sqrt( max(0, (X2.sc/N)/DF - 1/N) ) * sqrt(nG)
+          ## lower confidence limit
+          if (DF.sc < 1 | getLambda(0, X2.sc, DF.sc, .95) < 0.0) {
+            out["rmsea.ci.lower.scaled"] <- 0
+          } else {
+            lambda.l <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .95,
+                                    lower = 0, upper = X2.sc)$root, silent = TRUE)
+            if (inherits(lambda.l, "try-error")) lambda.l <- NA
+            out["rmsea.ci.lower.scaled"] <- sqrt( lambda.l/(N*DF.sc) ) * sqrt(nG)
           }
           ## upper confidence limit
           if (DF.sc < 1 | getLambda(N.RMSEA, X2.sc, DF.sc, .05) > 0.0) {
-            out["rmsea.ci.upper.robust"] <- 0
+            out["rmsea.ci.upper.scaled"] <- 0
           } else {
             lambda.u <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .05,
                                     lower = 0, upper = N.RMSEA)$root, silent = TRUE)
             if (inherits(lambda.u, "try-error")) lambda.u <- NA
-            out["rmsea.ci.upper.robust"] <- sqrt( (ch*lambda.u)/(N*DF.sc) ) * sqrt(nG)
+            out["rmsea.ci.upper.scaled"] <- sqrt( lambda.u/(N*DF.sc) ) * sqrt(nG)
           }
           ## p value
-          ########## To be discovered?
+          out["rmsea.pvalue.scaled"] <- pchisq(X2.sc, DF.sc, ncp = N*DF.sc*0.05^2/nG,
+                                               lower.tail = FALSE)
         }
-      } else if (robust & scaleshift) {
-        ## naive only
-        out["rmsea.scaled"] <- sqrt( max(0, (X2.sc/N)/DF - 1/N) ) * sqrt(nG)
-        ## lower confidence limit
-        if (DF.sc < 1 | getLambda(0, X2.sc, DF.sc, .95) < 0.0) {
-          out["rmsea.ci.lower.scaled"] <- 0
-        } else {
-          lambda.l <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .95,
-                                  lower = 0, upper = X2.sc)$root, silent = TRUE)
-          if (inherits(lambda.l, "try-error")) lambda.l <- NA
-          out["rmsea.ci.lower.scaled"] <- sqrt( lambda.l/(N*DF.sc) ) * sqrt(nG)
-        }
-        ## upper confidence limit
-        if (DF.sc < 1 | getLambda(N.RMSEA, X2.sc, DF.sc, .05) > 0.0) {
-          out["rmsea.ci.upper.scaled"] <- 0
-        } else {
-          lambda.u <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .05,
-                                  lower = 0, upper = N.RMSEA)$root, silent = TRUE)
-          if (inherits(lambda.u, "try-error")) lambda.u <- NA
-          out["rmsea.ci.upper.scaled"] <- sqrt( lambda.u/(N*DF.sc) ) * sqrt(nG)
-        }
-        ## p value
-        out["rmsea.pvalue.scaled"] <- pchisq(X2.sc, DF.sc, ncp = N*DF.sc*0.05^2/nG,
-                                             lower.tail = FALSE)
       }
     }
-  }
 
-  if ("gammaHat" %in% indices) {
-    out["gammaHat"] <- nVars / (nVars + 2*((X2 - DF) / N))
-    out["adjGammaHat"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF) * (1 - out["gammaHat"])
-    if (robust) {
-      out["gammaHat.scaled"] <- nVars / (nVars + 2*((X2.sc - DF.sc) / N))
-      out["adjGammaHat.scaled"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF.sc) * (1 - out["gammaHat.scaled"])
-    }
-  }
-
-  getSRMR <- function(object, type, level = "within") {
-    meanstructure <- lavListInspect(object, "meanstructure")
-    N <- lavListInspect(object, "ntotal")
-    nG <- lavListInspect(object, "ngroups")
-    nlevels <- lavListInspect(object, "nlevels")
-    #TODO: ov.names(.x) should account for conditional.x (res.cov, res.int, etc.)
-
-    R <- getMethod("resid", "lavaan.mi")(object, type = type,
-                                         omit.imps = omit.imps)
-    index <- if (type == "raw") "cov" else "cor"
-    include.diag <- type != "cor.bollen"
-
-    if (nG > 1L) {
-      vv.g <- object@Data@ov.names #FIXME: assumes never nG > 1 && nlevels > 1
-      RR <- list()
-      for (g in 1:nG) {
-        vv <- vv.g[[g]]
-        RR[[g]] <- R[[g]][[index]][lower.tri(R[[g]][[index]], diag = FALSE)]^2
-        if (include.diag)  RR[[g]] <- c(RR[[g]], diag(R[[g]][[index]])[vv]^2)
-        if (meanstructure) RR[[g]] <- c(RR[[g]], R[[g]]$mean[vv]^2)
+    if ("gammaHat" %in% indices) {
+      out["gammaHat"] <- nVars / (nVars + 2*((X2 - DF) / N))
+      out["adjGammaHat"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF) * (1 - out["gammaHat"])
+      if (robust) {
+        out["gammaHat.scaled"] <- nVars / (nVars + 2*((X2.sc - DF.sc) / N))
+        out["adjGammaHat.scaled"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF.sc) * (1 - out["gammaHat.scaled"])
       }
-      n.per.group <- lavListInspect(object, "nobs")
-
-    } else if (nlevels > 1L) { #FIXME: needs to allow multiple levels & groups
-      vv.l <- object@Data@ov.names.l[[1]]
-      names(vv.l) <- c("within", lavListInspect(object, "cluster")) #FIXME: only works for 2 levels
-      vv <- vv.l[[level]]
-
-      RR <- R[[level]][[index]][lower.tri(R[[level]][[index]], diag = FALSE)]^2
-      if (include.diag)  RR <- c(RR, diag(R[[level]][[index]])[vv]^2)
-      if (meanstructure) RR <- c(RR, R[[level]]$mean[vv]^2)
-      nclusters <- c(within = N)
-      nclusters[lavListInspect(object, "cluster")] <- lavListInspect(object, "nclusters") #FIXME: only adds level 2
-      n.per.group <- nclusters[[level]]
-
-    } else {
-      vv <- lavNames(object, type = "ov.num") #FIXME: not "ov" because always ignore correlation==1?
-      RR <- R[[index]][lower.tri(R[[index]], diag = FALSE)]^2
-      RR <- c(RR, diag(R[[index]])[vv]^2)
-      if (meanstructure) RR <- c(RR, R$mean[vv]^2)
-      n.per.group <- N
     }
 
-    SS <- if (nG > 1L) sqrt(sapply(RR, mean)) else sqrt(mean(RR))
-    as.numeric( (n.per.group %*% SS) / N )
-  }
+    ## END CHI-SQUARED-BASED FIT INDICES
+  } else out <- numeric(0)
 
-  if (any(c("rmr","srmr","crmr") %in% indices)) {
-    if (nlevels > 1L) {
+
+  ## RESIDUALS-BASED FIT INDICES
+
+  if (any(grepl(pattern = "rmr", x = indices))) {
+    if (lavListInspect(object, "nlevels") > 1L) {
       out["srmr"] <- NA # to preserve the order in lavaan output
-      out["srmr_within"] <- getSRMR(object, type = "cor", level = "within")
-      out["srmr_between"] <- getSRMR(object, type = "cor",
-                                     level = lavListInspect(object, "cluster"))
+      out["srmr_within"] <- getSRMR(object, type = "cor", include.mean = FALSE,
+                                    level = "within", omit.imps = omit.imps)
+      out["srmr_between"] <- getSRMR(object, type = "cor", include.mean = FALSE,
+                                     level = lavListInspect(object, "cluster"),
+                                     omit.imps = omit.imps)
       out["srmr"] <- out["srmr_within"] + out["srmr_between"]
     } else {
-      out["rmr"] <- getSRMR(object, type = "raw")
-      out["crmr"] <- getSRMR(object, type = "cor.bollen")
-      out["srmr"] <- getSRMR(object, type = "cor.bentler")
+      out["rmr"] <- getSRMR(object, type = "raw", include.mean = TRUE,
+                            omit.imps = omit.imps)
+      out["rmr_nomean"] <- getSRMR(object, type = "raw", include.mean = FALSE,
+                                   omit.imps = omit.imps)
+      out["srmr_bentler"] <- out["srmr"] <- getSRMR(object, type = "cor.bentler",
+                                                    include.mean = TRUE,
+                                                    omit.imps = omit.imps)
+      out["srmr_bentler_nomean"] <- getSRMR(object, type = "cor.bentler",
+                                            include.mean = FALSE,
+                                            omit.imps = omit.imps)
+      out["crmr"] <- getSRMR(object, type = "cor.bollen", include.mean = TRUE,
+                             omit.imps = omit.imps)
+      out["crmr_nomean"] <- getSRMR(object, type = "cor.bollen",
+                                    include.mean = FALSE, omit.imps = omit.imps)
+      out["srmr_mplus"] <- getSRMR(object, type = "mplus", include.mean = TRUE,
+                                   omit.imps = omit.imps)
+      out["srmr_mplus_nomean"] <- getSRMR(object, type = "mplus",
+                                          include.mean = FALSE,
+                                          omit.imps = omit.imps)
     }
+    ## END RESIDUALS-BASED FIT INDICES
   }
 
 
@@ -1062,15 +1119,6 @@ setMethod("fitMeasures", "lavaan.mi", fitMeasures.mi)
 setMethod("fitmeasures", "lavaan.mi", fitMeasures.mi)
 
 
-## function to pool each group's list of sample stats
-sampstat.lavaan.mi <- function(lst, means = FALSE, categ = FALSE, m = m) {
-  ## average sample stats across imputations
-  out <- list(cov = Reduce("+", lapply(lst, "[[", i = "cov")) / m)
-  if (means) out$mean <- Reduce("+", lapply(lst, "[[", i = "mean")) / m
-  if (categ) out$th <- Reduce("+", lapply(lst, "[[", i = "th")) / m
-  #TODO: add others for conditional.x (e.g., slopes) ONLY if necessary
-  out
-}
 ##' @importFrom lavaan lavListInspect lavNames
 ##' @importFrom methods getMethod
 fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
@@ -1086,76 +1134,90 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
 
-  meanstructure <- lavListInspect(object, "meanstructure")
-  categ <- lavListInspect(object, "categorical")
+  ## how many blocks to loop over
   nG <- lavListInspect(object, "ngroups")
   nlevels <- lavListInspect(object, "nlevels")
-  #TODO: account for fixed.x and conditional.x (res.cov, res.int, etc.)
-  if (nG > 1L) {
-    ov.names <- object@Data@ov.names #FIXME: assumes never nG > 1 && nlevels > 1
-  } else if (nlevels > 1L) {
-    ov.names <- object@Data@ov.names.l[[1]] # for first group (implies levels within groups?)
-  } else ov.names <- lavNames(object)
+  nBlocks <- nG * nlevels #FIXME: always?
+  group.label <- if (nG > 1L) lavListInspect(object, "group.label") else NULL
+  clus.label <- if (nlevels > 1L) c("within", lavListInspect(object, "cluster")) else NULL
+  if (nBlocks > 1L) {
+    block.label <- paste(rep(group.label, each = nlevels), clus.label,
+                         sep = if (nG > 1L && nlevels > 1L) "_" else "")
+  }
 
   est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
   setpar <- lavaan::lav_model_set_parameters(object@Model, x = est)
-  imp <- lavaan::lav_model_implied(setpar)
-  if (categ) th.idx <- lavListInspect(object, "th.idx")
+  impMats <- lavaan::lav_model_implied(setpar)
+  if (lavListInspect(object, "categorical")) {
+    th.idx <- lavListInspect(object, "th.idx") # to select $(res.)th
+    if (nBlocks == 1L) th.idx <- list(th.idx)  # to loop over
+    #FIXME when multilevel accepts categorical
+  }
 
   #TODO: adapt to multilevel, multigroup, or both
+  ## loop over (blocks and) moments
+  Implied <- vector("list", nBlocks)
+  for (b in 1:nBlocks) {
+    for (nm in names(impMats)) {
 
-  out <- list()
-  if (nG > 1L || nlevels > 1L) {
-    #FIXME: assumes never nG > 1 && nlevels > 1
-    if (nG > 1L) {
-      group.label <- lavListInspect(object, "group.label")
-    }
-    if (nlevels > 1L) {
-      group.label <- c("within", lavListInspect(object, "cluster")) #FIXME: only works for 2 levels
-    }
-    names(ov.names) <- group.label
-    for (i in seq_along(imp)) names(imp[[i]]) <- group.label
-    for (g in group.label) {
-      out[[g]]$cov <- imp$cov[[g]]
-      dimnames(out[[g]]$cov) <- list(ov.names[[g]], ov.names[[g]])
-      class(out[[g]]$cov) <- c("lavaan.matrix.symmetric","matrix")
-      if (meanstructure) {
-        out[[g]]$mean <- as.numeric(imp$mean[[g]])
-        names(out[[g]]$mean) <- ov.names[[g]]
-        class(out[[g]]$mean) <- c("lavaan.vector","numeric")
+      ## skip any empty objects
+      if (is.null(impMats[[nm]][[b]])) next
+
+      Implied[[b]][[nm]] <- impMats[[nm]][[b]]
+
+      ## assign names and classes
+      if (nm %in% c("cov","res.cov")) {
+        NAMES <- lavNames(object, type = "ov.model", block = b)
+        dimnames(Implied[[b]][[nm]]) <- list(NAMES, NAMES)
+        class(Implied[[b]][[nm]]) <- c("lavaan.matrix.symmetric","matrix")
+
+      } else if (nm %in% c("mean","res.int")) {
+        Implied[[b]][[nm]] <- as.numeric(Implied[[b]][[nm]]) # remove matrix
+        names(Implied[[b]][[nm]]) <- lavNames(object, type = "ov.model", block = b)
+        class(Implied[[b]][[nm]]) <- c("lavaan.vector","numeric")
+
+      } else if (nm %in% c("th","res.th")) {
+        #FIXME: When lavaan allows multilevel categorical, thresholds only
+        ##      apply once (not to each level, like for all groups).
+        ##      Will lavaan return a vector of zeros for all but "within"?
+        ##      If not, it will not exist for each block, so count over groups.
+        Implied[[b]][[nm]] <- as.numeric(Implied[[b]][[nm]])[ th.idx[[b]] ] # remove matrix & numeric -means
+        names(Implied[[b]][[nm]]) <- lavNames(object, type = "th",
+                                              block = b) #FIXME?
+        class(Implied[[b]][[nm]]) <- c("lavaan.vector","numeric")
+
+      } else if (nm == "group.w") {
+        ## Only for (D)WLS estimation, but when is it relevant?
+        ## For now, assign no names/class
+
+
+      ## The remaining only exist when conditional.x
+      } else if (nm %in% c("slopes","res.slopes")) {
+        dimnames(Implied[[b]][[nm]]) <- list(lavNames(object, type = "ov.nox", block = b),
+                                             lavNames(object, type = "ov.x", block = b))
+        class(Implied[[b]][[nm]]) <- c("lavaan.matrix","matrix")
+
+      } else if (nm == "cov.x") {
+        NAMES <- lavNames(object, type = "ov.x", block = b)
+        dimnames(Implied[[b]][[nm]]) <- list(NAMES, NAMES)
+        class(Implied[[b]][[nm]]) <- c("lavaan.matrix.symmetric","matrix")
+
+      } else if (nm == "mean.x") {
+        Implied[[b]][[nm]] <- as.numeric(Implied[[b]][[nm]]) # remove matrix
+        names(Implied[[b]][[nm]]) <- lavNames(object, type = "ov.x", block = b)
+        class(Implied[[b]][[nm]]) <- c("lavaan.vector","numeric")
       }
-      #TODO: omit "else" to match new lavaan::fitted output, which excludes $mean if !meanstructure
-      # else {
-      #   out[[g]]$mean <- sampstat.lavaan.mi(lapply(object@SampleStatsList[useImps], "[[", g),
-      #                                       means = TRUE, categ = categ, m = m)$mean
-      # }
-      if (categ) {
-        out[[g]]$th <- imp$th[[g]][ th.idx[[g]] ]
-        names(out[[g]]$th) <- lavNames(object, "th")
-        class(out[[g]]$th) <- c("lavaan.vector","numeric")
-      }
-    }
-  } else {
-    out$cov <- imp$cov[[1]]
-    dimnames(out$cov) <- list(ov.names, ov.names)
-    class(out$cov) <- c("lavaan.matrix.symmetric","matrix")
-    if (meanstructure) {
-      out$mean <- as.numeric(imp$mean[[1]])
-      names(out$mean) <- ov.names
-      class(out$mean) <- c("lavaan.vector","numeric")
-    }
-    #TODO: omit "else" to match new lavaan::fitted output, which excludes $mean if !meanstructure
-    # else {
-    #   out$mean <- sampstat.lavaan.mi(object@SampleStatsList[useImps],
-    #                                  means = TRUE, categ = categ, m = m)$mean
-    # }
-    if (categ) {
-      out$th <- imp$th[[1]][th.idx]
-      names(out$th) <- lavNames(object, "th")
-      class(out$th) <- c("lavaan.vector","numeric")
+
+    ## end loops
     }
   }
-  out
+
+  ## drop list for 1 block, or add labels for multiple
+  if (nBlocks == 1L)  {
+    Implied <- Implied[[1]]
+  } else names(Implied) <- block.label
+
+  Implied
 }
 ##' @name lavaan.mi-class
 ##' @aliases fitted,lavaan.mi-method
@@ -1168,46 +1230,9 @@ setMethod("fitted.values", "lavaan.mi", fitted.lavaan.mi)
 
 
 
-## function to calculate residuals for one group
-##' @importFrom stats cov2cor
-gp.resid.lavaan.mi <- function(Observed, N, Implied, type,
-                               means = FALSE, categ = FALSE, m) {
-  obsMats <- sampstat.lavaan.mi(Observed, means = means, categ = categ, m = m)
-  ## average sample stats across imputations
-  S_mean <- if (is.null(N)) obsMats$cov else (obsMats$cov * ((N - 1L) / N))
-  if (means) M_mean <- obsMats$mean
-  if (categ) Th_mean <- obsMats$th
-
-  if (type == "raw") {
-    out <- list(cov = S_mean - Implied$cov)
-    if (means) out$mean <- M_mean - Implied$mean
-    #TODO: omit "else" to match new lavaan::fitted output, which excludes $mean if !meanstructure
-    # else {
-    #   out$mean <- rep(0, nrow(out$cov))
-    #   names(out$mean) <- rownames(out$cov)
-    # }
-    if (categ) out$th <- Th_mean - Implied$th
-    return(out)
-  } else if (type == "cor.bollen") {
-    out <- list(cor = cov2cor(S_mean) - cov2cor(Implied$cov))
-    if (means) {
-      std.obs.M <- M_mean / sqrt(diag(S_mean))
-      std.mod.M <- Implied$mean / sqrt(diag(Implied$cov))
-      out$mean <- std.obs.M - std.mod.M
-    }
-  } else if (type == "cor.bentler") {
-    SDs <- diag(sqrt(diag(S_mean)))
-    dimnames(SDs) <- dimnames(S_mean)
-    out <- list(cor = solve(SDs) %*% (S_mean - Implied$cov) %*% solve(SDs))
-    class(out$cor) <- c("lavaan.matrix.symmetric","matrix")
-    if (means) out$mean <- (M_mean - Implied$mean) / diag(SDs)
-  } else stop("argument 'type' must be 'raw', 'cor', 'cor.bollen', ",
-              "or 'cor.bentler'.")
-  if (categ) out$th <- Th_mean - Implied$th
-  out
-}
 ##' @importFrom lavaan lavListInspect
 ##' @importFrom methods getMethod
+##' @importFrom stats cov2cor
 resid.lavaan.mi <- function(object, type = c("raw","cor"),
                             omit.imps = c("no.conv","no.se")) {
   ## @SampleStatsList is (for each imputation) output from:
@@ -1224,42 +1249,136 @@ resid.lavaan.mi <- function(object, type = c("raw","cor"),
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
 
-  rescale <- lavListInspect(object, "options")$sample.cov.rescale
-  meanstructure <- lavListInspect(object, "meanstructure")
-  categ <- lavListInspect(object, "categorical")
+  ## check type options
   type <- tolower(type[1])
-  ## check for type = "cor" ("cor.bollen") or "cor.bentler"
-  if (type == "cor") type <- "cor.bollen"
-  ## model-implied moments, already pooled
-  Implied <- getMethod("fitted", "lavaan.mi")(object, omit.imps = omit.imps)
-  ## Calculate residuals
+  if (type %in% c("raw","rmr")) {
+    type = "raw"
+  } else if (type %in% c("cor","cor.bollen","crmr")) {
+    type <- "cor.bollen"
+  } else if (type %in% c("cor.bentler","cor.eqs","srmr")) {
+    type <- "cor.bentler"
+  } else stop('type="', type, '" not supported for lavaan.mi objects')
+
+  ## how many blocks to loop over
   nG <- lavListInspect(object, "ngroups")
   nlevels <- lavListInspect(object, "nlevels")
-  if (nG > 1L || nlevels > 1L) {
-    if (nG > 1L) {
-      group.label <- lavListInspect(object, "group.label")
-      if (rescale) {
-        N <- lavListInspect(object, "nobs")
-        names(N) <- group.label
-      } else N <- NULL
-    }
-    if (nlevels > 1L) {
-      group.label <- c("within", lavListInspect(object, "cluster")) #FIXME: only works for 2 levels
-      N <- NULL #FIXME: likelihood="wishart" does not change chisq in 0.6-3.1297
-    }
-    out <- list()
-    for (g in group.label) {
-      out[[g]] <- gp.resid.lavaan.mi(Observed = lapply(object@SampleStatsList[useImps], "[[", g),
-                                     N = N[[g]], Implied = Implied[[g]], type = type,
-                                     means = meanstructure, m = m, categ = categ)
-    }
-  } else {
-    out <- gp.resid.lavaan.mi(Observed = object@SampleStatsList[useImps],
-                              N = lavListInspect(object, "nobs"),
-                              Implied = Implied, type = type,
-                              means = meanstructure, m = m, categ = categ)
+  nBlocks <- nG * nlevels #FIXME: always?
+  group.label <- if (nG > 1L) lavListInspect(object, "group.label") else NULL
+  clus.label <- if (nlevels > 1L) c("within", lavListInspect(object, "cluster")) else NULL
+  if (nBlocks > 1L) {
+      block.label <- paste(rep(group.label, each = nlevels), clus.label,
+                           sep = if (nG > 1L && nlevels > 1L) "_" else "")
   }
-  out
+
+  if (lavListInspect(object, "categorical")) {
+    th.idx <- lavListInspect(object, "th.idx") # to select $(res.)th
+    if (nBlocks == 1L) th.idx <- list(th.idx)  # to loop over
+    #FIXME when multilevel accepts categorical
+  }
+
+  ## H0-model-implied moments, already pooled
+  ## (moments-list nested in block-list)
+  Implied <- getMethod("fitted", "lavaan.mi")(object, omit.imps = omit.imps)
+  if (nBlocks == 1L) Implied <- list(Implied) # store single block in a block-list
+
+  ## template to store observed moments & residuals
+  RES <- OBS <- vector("list", nBlocks)
+
+  ## loop over (blocks and) moments
+  for (b in 1:nBlocks) {
+    for (nm in names(Implied[[b]])) {
+
+      ## skip if Implied element is not part of the saturated list
+      if (is.null(object@h1List[[ useImps[1] ]]$implied[[nm]][[b]])) next
+
+      ## H1 (saturated model) implied moments
+      ## (block-list nested in moments-list)
+      momentList <- lapply(object@h1List[useImps],
+                           function(x) x$implied[[nm]][[b]])
+      OBS[[b]][[nm]] <- Reduce("+", momentList) / m
+      #TODO: unnecessary calculation if standardized and nm %in% c("th","slopes")
+
+      ## remove numeric -means from thresholds
+      if (nm %in% c("th","res.th")) OBS[[b]][[nm]] <- as.numeric(OBS[[b]][[nm]])[ th.idx[[b]] ]
+
+      ## calculate residuals
+      if (type == "raw") {
+        RES[[b]][[nm]] <- OBS[[b]][[nm]] - Implied[[b]][[nm]]
+        class(RES[[b]][[nm]]) <- class(Implied[[b]][[nm]])
+
+
+        ## correlation residuals
+      } else if (type == "cor.bollen") {
+
+        if (nm %in% c("cov","res.cov")) {
+          RES[[b]][[nm]] <- cov2cor(OBS[[b]][[nm]]) - cov2cor(Implied[[b]][[nm]])
+          class(RES[[b]][[nm]]) <- c("lavaan.matrix.symmetric","matrix")
+
+          ## mean structure
+        } else if (nm == "mean") {
+          std.obs.M <- OBS[[b]][[nm]] / sqrt(diag(OBS[[b]]$cov))
+          std.mod.M <- Implied[[b]][[nm]] / sqrt(diag(Implied[[b]]$cov))
+          RES[[b]][[nm]] <- std.obs.M - std.mod.M
+          class(RES[[b]][[nm]]) <- c("lavaan.vector","numeric")
+        } else if (nm == "res.int") {
+          std.obs.M <- OBS[[b]][[nm]] / sqrt(diag(OBS[[b]]$res.cov))
+          std.mod.M <- Implied[[b]][[nm]] / sqrt(diag(Implied[[b]]$res.cov))
+          RES[[b]][[nm]] <- std.obs.M - std.mod.M
+          class(RES[[b]][[nm]]) <- c("lavaan.vector","numeric")
+
+          ## thresholds, slopes, cov.x, mean.x
+        } else {
+          #FIXME: lavaan currently (0.6-4.1399) returns nothing
+          next
+        }
+
+
+        ## standardized (by observed SDs) residuals
+      } else if (type == "cor.bentler") {
+
+        if (nm %in% c("cov","mean")) {
+          SDs <- diag(sqrt(diag(OBS[[b]]$cov)))
+          dimnames(SDs) <- dimnames(OBS[[b]][[nm]])
+        } else if (nm %in% c("res.cov","res.int")) {
+          SDs <- diag(sqrt(diag(OBS[[b]]$res.cov)))
+          dimnames(SDs) <- dimnames(OBS[[b]][[nm]])
+        } else {
+          #FIXME: lavaan currently (0.6-4.1399) returns nothing for "th" or "slopes"
+          next
+        }
+
+
+        if (nm %in% c("cov","res.cov")) {
+          RES[[b]][[nm]] <- solve(SDs) %*% (OBS[[b]][[nm]] - Implied[[b]][[nm]]) %*% solve(SDs)
+          class(RES[[b]][[nm]]) <- c("lavaan.matrix.symmetric","matrix")
+        } else if (nm %in% c("mean","res.int")) {
+          RES[[b]][[nm]] <- (OBS[[b]][[nm]] - Implied[[b]][[nm]]) / diag(SDs)
+          class(RES[[b]][[nm]]) <- c("lavaan.vector","numeric")
+        }
+
+      }
+
+      ## copy names from fitted() results
+      if (is.null(dim(RES[[b]][[nm]]))) {
+        names(RES[[b]][[nm]]) <- names(Implied[[b]][[nm]])
+      } else dimnames(RES[[b]][[nm]]) <- dimnames(Implied[[b]][[nm]])
+
+    ## end loop over moments
+    }
+
+    ## add type to beginning of each block's list
+    RES[[b]] <- c(list(type = type), RES[[b]])
+
+    #TODO: Rename (res.)cov to (res.)cor?  lavResiduals() does not
+
+  }
+
+  ## drop list for 1 block
+  if (nBlocks == 1L) {
+    RES <- RES[[1]]
+  } else names(RES) <- block.label #FIXME: will lavaan do this in the future?
+
+  RES
 }
 ##' @name lavaan.mi-class
 ##' @aliases residuals,lavaan.mi-method
