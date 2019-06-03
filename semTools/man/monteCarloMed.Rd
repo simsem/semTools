@@ -138,6 +138,10 @@ total := c + (a*b)
 fit <- sem(model, data = Data)
 
 med <- 'a*b'
+## Automatically extract information from lavaan object
+monteCarloMed(med, object = fit)
+
+## or (unnecessary) manually extract the information first
 myParams <- c("a","b")
 myCoefs <- coef(fit)[myParams]
 myACM <- vcov(fit)[myParams, myParams]

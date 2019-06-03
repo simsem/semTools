@@ -1,5 +1,5 @@
 ### Corbin Quick, Alex Schoemann, James Selig, Terrence D. Jorgnensen
-### Last updated: 10 April 2019
+### Last updated: 3 June 2019
 
 ## FIXME: work out a path-analysis example like slide 25:
 ## http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
@@ -156,6 +156,10 @@
 ##' fit <- sem(model, data = Data)
 ##'
 ##' med <- 'a*b'
+##' ## Automatically extract information from lavaan object
+##' monteCarloMed(med, object = fit)
+##'
+##' ## or (unnecessary) manually extract the information first
 ##' myParams <- c("a","b")
 ##' myCoefs <- coef(fit)[myParams]
 ##' myACM <- vcov(fit)[myParams, myParams]
