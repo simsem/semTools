@@ -2,7 +2,7 @@
 % Please edit documentation in R/probeInteraction.R
 \name{plotProbe}
 \alias{plotProbe}
-\title{Plot the graphs for probing latent interaction}
+\title{Plot a latent interaction}
 \usage{
 plotProbe(object, xlim, xlab = "Indepedent Variable",
   ylab = "Dependent Variable", legend = TRUE, legendArgs = list(),
@@ -32,7 +32,9 @@ None. This function will plot the simple main effect only.
 }
 \description{
 This function will plot the line graphs representing the simple effect of
-the independent variable given the values of the moderator.
+the independent variable given the values of the moderator. For multigroup
+models, it will only generate a plot for 1 group, as specified in the
+function used to obtain the first argument.
 }
 \examples{
 

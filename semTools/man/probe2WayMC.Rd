@@ -5,7 +5,7 @@
 \title{Probing two-way interaction on the no-centered or mean-centered latent
 interaction}
 \usage{
-probe2WayMC(fit, nameX, nameY, modVar, valProbe)
+probe2WayMC(fit, nameX, nameY, modVar, valProbe, group)
 }
 \arguments{
 \item{fit}{The lavaan model object used to evaluate model fit}
@@ -22,6 +22,10 @@ probed.}
 
 \item{valProbe}{The values of the moderator that will be used to probe the
 effect of the other independent factor.}
+
+\item{group}{In multigroup models, the label of the group for which the
+results will be returned. Must correspond to one of
+\code{\link[lavaan]{lavInspect}(fit, "group.label")}.}
 }
 \value{
 A list with two elements:
@@ -149,4 +153,6 @@ Statistics, 31}(4), 437--448. doi:10.3102/10769986031004437
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

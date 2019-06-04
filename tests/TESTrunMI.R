@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 18 March 2019
+### Last updated: 3 June 2019
 ### test runMI
 
 library(lavaan)
@@ -121,6 +121,7 @@ datCat$u6 <- as.integer(datCat$u6)
 ## impose missing values
 set.seed(456)
 for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
+library(Amelia)
 catimps <- amelia(datCat, m = 20, ords = paste0("u", 1:8), noms = "g")$imputations
 
 catmod <- '
@@ -135,29 +136,30 @@ fit.xg <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = TRUE,
                  group = "g")
 
 fitted(fitx)
-resid.lavaan.mi(fitx)
-resid.lavaan.mi(fitx, type = "crmr")
-resid.lavaan.mi(fitx, type = "srmr")
+resid(fitx)
+resid(fitx, type = "crmr")
+resid(fitx, type = "srmr")
 fitMeasures(fitx, fit.measures = "rmr")
 
 fitted(fitxg)
-resid.lavaan.mi(fitxg)
-resid.lavaan.mi(fitxg, type = "crmr")
-resid.lavaan.mi(fitxg, type = "srmr")
+resid(fitxg)
+resid(fitxg, type = "crmr")
+resid(fitxg, type = "srmr")
 fitMeasures(fitxg, fit.measures = "rmr")
 
 fitted(fit.x)
-resid.lavaan.mi(fit.x)
-resid.lavaan.mi(fit.x, type = "crmr")
-resid.lavaan.mi(fit.x, type = "srmr")
+resid(fit.x)
+resid(fit.x, type = "crmr")
+resid(fit.x, type = "srmr")
 fitMeasures(fit.x, fit.measures = "rmr")
 
 fitted(fit.xg)
-resid.lavaan.mi(fit.xg)
-resid.lavaan.mi(fit.xg, type = "crmr")
-resid.lavaan.mi(fit.xg, type = "srmr")
+resid(fit.xg)
+resid(fit.xg, type = "crmr")
+resid(fit.xg, type = "srmr")
 fitMeasures(fit.xg, fit.measures = "rmr")
 
+summary(fit.xg, stand=TRUE) # only problem left: standardizing requires cov.x
 
 
 ## ------------------------------------

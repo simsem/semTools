@@ -1,4 +1,4 @@
-## Last updated: 28 August 2018
+## Last updated: 4 June 2018
 
 ## List of functions, organized by author(s)
 export(
@@ -12,7 +12,7 @@ export(
   miPowerFit,
   plotRMSEAdist, findRMSEApower, findRMSEAsamplesize,
   plotProbe, ### with Terrence
-  probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC,
+  probe2WayMC, probe2WayRC, probe3WayMC, probe3WayRC,    ## with additions from Terrence
   reliabilityL2, maximalRelia,
   partialInvariance, partialInvarianceCat,
 
@@ -31,16 +31,17 @@ export(
   plotRMSEApower, tukeySEM,
 
   ## Jason D. Rights
-  PAVranking, poolMAlloc,
+  poolMAlloc,
 
   ## Terrence
   bsBootMiss, net, chisqSmallN,
   permuteMeasEq, measEq.syntax,
   twostage, lavaan.2stage, cfa.2stage, sem.2stage, growth.2stage,
   runMI, lavaan.mi, cfa.mi, sem.mi, growth.mi,
+  plausibleValues,
   lavTestLRT.mi, lavTestWald.mi, lavTestScore.mi, modindices.mi, calculate.D2,
   auxiliary, lavaan.auxiliary, cfa.auxiliary, sem.auxiliary, growth.auxiliary,
-  parcelAllocation,
+  parcelAllocation, PAVranking,
   ## with Alex, Corbin, and James Selig
   monteCarloMed,
   ## with Alex
@@ -60,6 +61,6 @@ export(
   kd,
 
   ## Corbin Quick
-  splitSample, lisrel2lavaan ## lisrel2lavaan is deprecated, being phased out
+  splitSample, lisrel2lavaan ## lisrel2lavaan was deprecated, now removed
 
 )
