@@ -9,7 +9,8 @@
 \alias{update,measEq.syntax-method}
 \title{Class for Representing a Measurement-Equivalence Model}
 \usage{
-\S4method{as.character}{measEq.syntax}(x, package = "lavaan")
+\S4method{as.character}{measEq.syntax}(x, package = "lavaan",
+  single = TRUE)
 
 \S4method{show}{measEq.syntax}(object)
 
@@ -22,6 +23,12 @@
 
 \item{package}{\code{character} indicating the package for which the
 syntax should be generated.  Currently, only \code{"lavaan"}.}
+
+\item{single}{\code{logical} indicating whether to concatenate lavaan
+\code{\link[lavaan]{model.syntax}} into a single \code{character} string.
+Setting \code{FALSE} will return a vector of strings, which may be
+convenient (or even necessary to prevent an error) in
+models with long variable names, many variables, or many groups.}
 
 \item{verbose}{\code{logical} indicating whether to print a summary to the
 screen (default). If \code{FALSE}, only a pattern matrix is returned.}

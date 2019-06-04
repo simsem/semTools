@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 May 2019
+### Last updated: 4 June 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -109,6 +109,11 @@ measEq <- function(configural.model,
 ##' @param x,object an object of class \code{measEq.syntax}
 ##' @param package \code{character} indicating the package for which the
 ##'   syntax should be generated.  Currently, only \code{"lavaan"}.
+##' @param single \code{logical} indicating whether to concatenate lavaan
+##'   \code{\link[lavaan]{model.syntax}} into a single \code{character} string.
+##'   Setting \code{FALSE} will return a vector of strings, which may be
+##'   convenient (or even necessary to prevent an error) in
+##'   models with long variable names, many variables, or many groups.
 ##' @param verbose \code{logical} indicating whether to print a summary to the
 ##'   screen (default). If \code{FALSE}, only a pattern matrix is returned.
 ##' @param ... Additional arguments to the \code{call}, or arguments with
@@ -155,7 +160,8 @@ setClass("measEq.syntax", slots = c(package = "character", # lavaan, OpenMx in t
 ##' @rdname measEq.syntax-class
 ##' @aliases as.character,measEq.syntax-method
 ##' @export
-setMethod("as.character", "measEq.syntax", function(x, package = "lavaan") {
+setMethod("as.character", "measEq.syntax", function(x, package = "lavaan",
+                                                    single = TRUE) {
 
   pmatList <- c("lambda","tau","nu","delta","theta","alpha","psi")
     #TODO: if (package = "OpenMx") concatenate matrices for RAM specification
@@ -192,7 +198,8 @@ setMethod("as.character", "measEq.syntax", function(x, package = "lavaan") {
                                          x@constraints, "")
 
   ## convert GLIST objects to a character string
-  paste(script, collapse = "\n")
+  if (single) return(paste(script, collapse = "\n"))
+  script
 })
 
 ##' @rdname measEq.syntax-class
