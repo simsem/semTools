@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 June 2019
+### Last updated: 7 June 2019
 ### test runMI
 
 library(lavaan)
@@ -159,6 +159,9 @@ resid(fit.xg, type = "crmr")
 resid(fit.xg, type = "srmr")
 fitMeasures(fit.xg, fit.measures = "rmr")
 
+summary(fitx, stand=TRUE) # only problem left: standardizing requires cov.x
+summary(fitxg, stand=TRUE) # only problem left: standardizing requires cov.x
+summary(fit.x, stand=TRUE) # only problem left: standardizing requires cov.x
 summary(fit.xg, stand=TRUE) # only problem left: standardizing requires cov.x
 
 

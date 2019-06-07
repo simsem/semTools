@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 June 2019
+### Last updated: 7 June 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -272,6 +272,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
 
+  lavoptions <- lavListInspect(object, "options")
+
   ## extract parameter table with attributes for printing
   PT <- parTable(object)
   myCols <- c("lhs","op","rhs","exo")
@@ -283,7 +285,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   PE$est <- getMethod("coef","lavaan.mi")(object, type = "all",
                                           omit.imps = omit.imps)
 
-  if (lavListInspect(object, "options")$se == "none") {
+  if (lavoptions$se == "none") {
     warning('pooled variances and tests unavailable when se="none" is requested')
     se <- FALSE
   }
@@ -328,26 +330,36 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
 
   if (is.logical(standardized)) {
     if (standardized) {
-      PE$std.lv[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
-                                                      type = "std.lv",
-                                                      GLIST = object@GLIST,
-                                                      est = PE$est)$est.std
-      PE$std.all[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
-                                                       type = "std.all",
-                                                       GLIST = object@GLIST,
-                                                       est = PE$est)$est.std
-    }
-  } else if (tolower(as.character(standardized)[1]) == "std.lv") {
+      standardized <- c("std.lv","std.all")
+      if (lavoptions$fixed.x || lavoptions$conditional.x) {
+        standardized <- c(standardized, "std.nox")
+      }
+    } standardized <- NULL
+  } else standardized <- tolower(as.character(standardized))
+  ## reset @Model slot with pooled estimates
+  if (length(standardized)) {
+    est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+    object@Model <- lavaan::lav_model_set_parameters(object@Model, x = est)
+  }
+  if ("std.lv" %in% standardized) {
     PE$std.lv[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
                                                     type = "std.lv",
                                                     GLIST = object@GLIST,
                                                     est = PE$est)$est.std
-  } else if (tolower(as.character(standardized)[1]) == "std.all") {
+  }
+  if ("std.all" %in% standardized) {
     PE$std.all[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
                                                      type = "std.all",
                                                      GLIST = object@GLIST,
                                                      est = PE$est)$est.std
   }
+  if ("std.nox" %in% standardized) {
+    PE$std.nox[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
+                                                     type = "std.nox",
+                                                     GLIST = object@GLIST,
+                                                     est = PE$est)$est.std
+  }
+
   if (fmi) {
     PE$fmi[free] <- Bm[free] / Tot[free]
     PE$riv[free] <- Bm[free] / W[free] # (Enders, 2010, p. 226, eq. 8.10)
@@ -361,16 +373,15 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     PE$label <- PT$label
     #FIXME: no longer needed?  PE$exo <- 0L
     class(PE) <- c("lavaan.parameterEstimates","lavaan.data.frame","data.frame")
-    lavops <- lavListInspect(object, "options")
-    attr(PE, "information") <- lavops$information
-    attr(PE, "se") <- lavops$se
+    attr(PE, "information") <- lavoptions$information
+    attr(PE, "se") <- lavoptions$se
     attr(PE, "group.label") <- lavListInspect(object, "group.label")
     attr(PE, "level.label") <- object@Data@level.label #FIXME: lavListInspect?
-    attr(PE, "bootstrap") <- lavops$bootstrap
+    attr(PE, "bootstrap") <- lavoptions$bootstrap
     attr(PE, "bootstrap.successful") <- 0L #FIXME: assumes none. Implement Wei & Fan's mixing method?
-    attr(PE, "missing") <- lavops$missing
-    attr(PE, "observed.information") <- lavops$observed.information
-    attr(PE, "h1.information") <- lavops$h1.information
+    attr(PE, "missing") <- lavoptions$missing
+    attr(PE, "observed.information") <- lavoptions$observed.information
+    attr(PE, "h1.information") <- lavoptions$h1.information
     attr(PE, "header") <- header
     # FIXME: lavaan may add more!!
     if (fmi) cat("\n", messRIV, sep = "")

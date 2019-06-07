@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 June 2019
+### Last updated: 7 June 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -177,13 +177,6 @@ runMI <- function(model, data, fun = "lavaan", ...,
                   m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
   CALL <- match.call()
   dots <- list(...)
-  # if (!is.null(dots$fixed.x)) {
-  #   if (dots$fixed.x) warning('fixed.x set to FALSE')
-  # }
-  # if (!is.null(dots$conditional.x)) {
-  #   if (dots$conditional.x) warning('conditional.x set to FALSE')
-  # }
-  # dots$conditional.x <- FALSE
 
   seed <- as.integer(seed[1])
   ## Create (or acknowledge) list of imputed data sets
@@ -322,6 +315,8 @@ runMI <- function(model, data, fun = "lavaan", ...,
       fit@GLIST[[mat]] <- Reduce("+", matList) / length(matList)
     }
     names(fit@GLIST) <- names(fit@funList[[firstConv]][["GLIST"]])
+    ## also store in @Model slot, to be found by lav_standardize_*()
+    fit@Model@GLIST <- fit@GLIST
   } else {
     fit@GLIST <- list()
     warning('The model did not converge for any imputed data sets.')
