@@ -25,8 +25,8 @@ used. If "default", the value is set depending on the estimator and the
 mimic option (see details in \link[lavaan]{lavCor}).}
 
 \item{ordered}{Character vector. Only used if object is a \code{data.frame}.
-Treat these variables as ordered (ordinal) variables. Importantly, all other
-variables will be treated as numeric (unless \code{is.ordered == TRUE} in
+Treat these variables as ordered (ordinal) variables. Importantly, all
+other variables will be treated as numeric (unless \code{is.ordered} in
 \code{data}). (see also \link[lavaan]{lavCor})}
 
 \item{absolute}{logical. Whether HTMT values should be estimated based on
@@ -34,19 +34,19 @@ absolute correlations (recommended and default is \code{TRUE})}
 }
 \value{
 A matrix showing HTMT values (i.e., discriminant validity) between
-each pair of factors
+  each pair of factors
 }
 \description{
 This function assesses discriminant validity through the
 heterotrait-monotrait ratio (HTMT) of the correlations (Henseler, Ringlet &
-Sarstedt, 2015). Specifically, it assesses the average correlation among
-indicators across constructs (i.e. heterotrait-heteromethod correlations),
-relative to the average correlation among indicators within the same
-construct (i.e. monotrait-heteromethod correlations). The resulting HTMT
-values are interpreted as estimates of inter-construct correlations.
-Absolute values of the correlations are recommended to calculate the HTMT
-matrix. Correlations are estimated using the lavCor function in the lavaan
-package.
+Sarstedt, 2015). Specifically, it assesses the geometric-mean correlation
+among indicators across constructs (i.e. heterotrait-heteromethod
+correlations) relative to the geometric-mean correlation among indicators
+within the same construct (i.e. monotrait-heteromethod correlations).
+The resulting HTMT values are interpreted as estimates of inter-construct
+correlations. Absolute values of the correlations are recommended to
+calculate the HTMT matrix. Correlations are estimated using the
+\code{\link[lavaan]{lavCor}} function in the \pkg{lavaan} package.
 }
 \examples{
 
@@ -59,10 +59,10 @@ htmt(HS.model, dat)
 
 }
 \references{
-Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new
-criterion for assessing discriminant validity in variance-based structural
-equation modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
-115--135. doi:10.1007/s11747-014-0403-8
+Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for
+  assessing discriminant validity in variance-based structural equation
+  modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
+  115--135. doi:10.1007/s11747-014-0403-8
 }
 \author{
 Ylenio Longo (University of Nottingham; \email{yleniolongo@gmail.com})
