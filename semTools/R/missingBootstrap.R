@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 17 September 2018
+### Last updated: 11 June 2019
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 
@@ -121,11 +121,11 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
                      " same precision as your requested alpha level (alpha = ",
                      alpha, ")"))
     }
-    pVal <- round(x@bootP, nd)
+
     if (x@bootP < (1 / 10^nd)) {
       pVal <- paste(c("< .", rep(0, nd - 1),"1"), collapse = "")
     } else {
-      paste("=", round(x@bootP, nd))
+      pVal <- paste("=", round(x@bootP, nd))
     }
 
     if (is.null(legendArgs$box.lty)) legendArgs$box.lty <- 0

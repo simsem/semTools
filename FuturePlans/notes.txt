@@ -130,7 +130,6 @@ semTools::twostage() edits/additions:
 
 semTools::runMI()
 - work with multilevel models? (need example that works)
-- summary(standardized="std.all"/"std.nox") fails when conditional.x
 - lavTestScore.mi() and modindices.mi() "should" use mean-EPC even when test="D1"
 - Rubin's rules are applied to user-defined parameters (:=).  Should they be
   re-defined from pooled estimates? (can delta method be applied to pooled SEs?)

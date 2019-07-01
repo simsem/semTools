@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 June 2019
+### Last updated: 13 June 2019
 ### test runMI
 
 library(lavaan)
@@ -169,6 +169,8 @@ summary(fit.xg, stand=TRUE) # only problem left: standardizing requires cov.x
 ## check lavaan.mi with multilevel data
 ## ------------------------------------
 
+library(lavaan)
+
 data(Demo.twolevel)
 Demo.twolevel$id <-  paste0("id", Demo.twolevel$cluster) # character IDs
 ## assign clusters to arbitrary groups
@@ -206,7 +208,6 @@ level: between
   fb ~ w1 + w2
 '
 
-library(lavaan)
 fit <- sem(model, data = Demo.twolevel, cluster = "cluster")
 fitmg <- sem(model2, data = Demo.twolevel, cluster = "id", group = "g")
 
