@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 June 2019
+### Last updated: 2 July 2019
 ### test runMI
 
 library(lavaan)
@@ -169,6 +169,8 @@ summary(fit.xg, stand=TRUE) # only problem left: standardizing requires cov.x
 ## check lavaan.mi with multilevel data
 ## ------------------------------------
 
+library(lavaan)
+
 data(Demo.twolevel)
 Demo.twolevel$id <-  paste0("id", Demo.twolevel$cluster) # character IDs
 ## assign clusters to arbitrary groups
@@ -182,31 +184,30 @@ Demo.twolevel$y1[sample(nrow(Demo.twolevel), size = .1*nrow(Demo.twolevel)) ] <-
 
 model <- '
 level: within
-  fw =~ y1 + y2 + y3
+  fw =~ y1 + L2*y2 + L3*y3
   fw ~ x1 + x2 + x3
 level: between
-  fb =~ y1 + y2 + y3
-  fb ~ w1 + w2
+  fb =~ y1 + L2*y2 + L3*y3
+  fb ~ b1*w1 + b2*w2
 '
 model2 <- ' group: foo
 level: within
-  fw =~ y1 + y2 + y3
+  fw =~ y1 + L2*y2 + L3*y3
   fw ~ x1 + x2 + x3
 level: between
-  fb =~ y1 + y2 + y3
+  fb =~ y1 + L2*y2 + L3*y3
   fb ~ w1 + w2
 
 group: bar
 
 level: within
-  fw =~ y1 + y2 + y3
+  fw =~ y1 + L2*y2 + L3*y3
   fw ~ x1 + x2 + x3
 level: between
-  fb =~ y1 + y2 + y3
+  fb =~ y1 + L2*y2 + L3*y3
   fb ~ w1 + w2
 '
 
-library(lavaan)
 fit <- sem(model, data = Demo.twolevel, cluster = "cluster")
 fitmg <- sem(model2, data = Demo.twolevel, cluster = "id", group = "g")
 
@@ -240,8 +241,8 @@ fitted(fit.mi)
 resid(fit.mi, type = "cor") # works, but resid(fit) generates an error
 modindices.mi(fit.mi) # modindices(fit) also generates an error
 lavTestScore.mi(fit.mi, test = "D2") # lavTestScore(fit, epc = T) generates an error, expects a "group" column
-lavTestScore.mi(fit.mi, test = "rubin") # very different results
-lavTestWald.mi(fit.mi, constraints = 'wa == ba ; wb == bb')
+lavTestScore.mi(fit.mi, test = "D1") # very different results
+lavTestWald.mi(fit.mi, constraints = 'b1 == b2')
 lavTestLRT.mi(fit.mi, test = "D2")
 anova(fit.mi) # D3 takes an obscenely long time
 anova(fit.mi, asymptotic = TRUE) # comparable to anova(fit)

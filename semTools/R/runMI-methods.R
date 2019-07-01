@@ -334,7 +334,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
       if (lavoptions$fixed.x || lavoptions$conditional.x) {
         standardized <- c(standardized, "std.nox")
       }
-    } standardized <- NULL
+    } else standardized <- NULL
   } else standardized <- tolower(as.character(standardized))
   ## reset @Model slot with pooled estimates
   if (length(standardized)) {

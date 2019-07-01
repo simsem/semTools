@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 16 May 2019
+### Last updated: 1 July 2019
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -438,6 +438,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       list(gradient = lavaan::lavInspect(obj2, "gradient"),
            information = lavaan::lavInspect(obj2, paste("information",
                                                         information, sep = ".")),
+           #TODO: Max wants to calculate EPCs as averages across imputations.
+           #      Run lavTestScore(epc=TRUE) here?  or be consistent...
            nadd = nrow(ADD), parTable = lavaan::parTable(obj2))
     }
     FIT <- eval(as.call(oldCall))
@@ -631,7 +633,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       TS[r] <- as.numeric(N * t(score) %*%  Z1.plus1 %*% score)
 
       ## FIXME: experimentally add univariate EPCs for added parameters, as would accompany modification indices
-      if (epc && !is.null(add)) EPC.uni[r] <- -1 * utils::tail(as.numeric(score %*%  Z1.plus1), n = nrow(R))[r]
+      if (epc && !is.null(add)) EPC.uni[r] <- 1 * utils::tail(as.numeric(score %*%  Z1.plus1), n = nrow(R))[r]
     }
 
     Table2 <- Table
@@ -736,7 +738,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                  rbind(t(R1), matrix(0, nrow(R1), nrow(R1))) )
     Z1.plus <- MASS::ginv(Z1)
     Z1.plus1 <- Z1.plus[ 1:nrow(information), 1:nrow(information) ]
-    EPC.all <- -1 * as.numeric(score %*%  Z1.plus1)
+    EPC.all <- 1 * as.numeric(score %*%  Z1.plus1)
 
     # create epc table for the 'free' parameters
     myCoefs <- getMethod("coef","lavaan.mi")(object, omit.imps = omit.imps)
