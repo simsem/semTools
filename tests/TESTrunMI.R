@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 July 2019
+### Last updated: 3 July 2019
 ### test runMI
 
 library(lavaan)
@@ -136,27 +136,27 @@ fit.xg <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = TRUE,
                  group = "g")
 
 fitted(fitx)
-resid(fitx)
-resid(fitx, type = "crmr")
-resid(fitx, type = "srmr")
+resid.lavaan.mi(fitx)
+resid.lavaan.mi(fitx, type = "crmr")
+resid.lavaan.mi(fitx, type = "srmr")
 fitMeasures(fitx, fit.measures = "rmr")
 
 fitted(fitxg)
-resid(fitxg)
-resid(fitxg, type = "crmr")
-resid(fitxg, type = "srmr")
+resid.lavaan.mi(fitxg)
+resid.lavaan.mi(fitxg, type = "crmr")
+resid.lavaan.mi(fitxg, type = "srmr")
 fitMeasures(fitxg, fit.measures = "rmr")
 
 fitted(fit.x)
-resid(fit.x)
-resid(fit.x, type = "crmr")
-resid(fit.x, type = "srmr")
+resid.lavaan.mi(fit.x)
+resid.lavaan.mi(fit.x, type = "crmr")
+resid.lavaan.mi(fit.x, type = "srmr")
 fitMeasures(fit.x, fit.measures = "rmr")
 
 fitted(fit.xg)
-resid(fit.xg)
-resid(fit.xg, type = "crmr")
-resid(fit.xg, type = "srmr")
+resid.lavaan.mi(fit.xg)
+resid.lavaan.mi(fit.xg, type = "crmr")
+resid.lavaan.mi(fit.xg, type = "srmr")
 fitMeasures(fit.xg, fit.measures = "rmr")
 
 summary(fitx, stand=TRUE) # only problem left: standardizing requires cov.x
@@ -228,9 +228,9 @@ for (i in 1:m) {
 }
 
 library(semTools)
-fit <- sem(model, data = imputedData[[1]], cluster = "id") # runs fine
-fitList <- semList(model, dataList = imputedData, cluster = "id") # no convergence
-fit.mi <- sem.mi(model, data = imputedData, cluster = "id") # why does this fail?
+fit <- sem(model, data = imputedData[[1]], cluster = "id")
+fitList <- semList(model, dataList = imputedData, cluster = "id")
+fit.mi <- sem.mi(model, data = imputedData, cluster = "id")
 ## check methods
 fit.mi
 summary(fit.mi, ci = TRUE, standardized = TRUE, rsquare = TRUE, fmi = TRUE)
@@ -238,17 +238,33 @@ coef(fit.mi)
 vcov(fit.mi)
 nobs(fit.mi)
 fitted(fit.mi)
-resid(fit.mi, type = "cor") # works, but resid(fit) generates an error
+resid.lavaan.mi(fit.mi, type = "cor") # works, but resid(fit) generates an error
 modindices.mi(fit.mi) # modindices(fit) also generates an error
 lavTestScore.mi(fit.mi, test = "D2") # lavTestScore(fit, epc = T) generates an error, expects a "group" column
 lavTestScore.mi(fit.mi, test = "D1") # very different results
 lavTestWald.mi(fit.mi, constraints = 'b1 == b2')
+lavTestWald.mi(fit.mi, constraints = 'b1 == b2', test = "D2")
 lavTestLRT.mi(fit.mi, test = "D2")
 anova(fit.mi) # D3 takes an obscenely long time
 anova(fit.mi, asymptotic = TRUE) # comparable to anova(fit)
+fitMeasures(fit.mi, fit.measures = c("rmsea","rmr","aic")) # fails on rmr: lavListInspect("nclusters")
+fitMeasures(fit.mi, fit.measures = c("rmsea","aic"))
 fitMeasures(fit.mi) # fails to fit the baseline.model
-fitMeasures(fit.mi, fit.measures = c("rmsea","rmr","aic"))
-
+basemod <- '
+level: within
+  y1 ~~ y1
+  y2 ~~ y2
+  y3 ~~ y3
+  y1 + y2 + y3 ~ x1 + x2 + x3
+level: between
+  y1 ~~ y1
+  y2 ~~ y2
+  y3 ~~ y3
+  y1 + y2 + y3 ~ 1 + w1 + w2
+'
+base.mi <- lavaan.mi(basemod, data = imputedData, cluster = "id")
+fitMeasures(fit.mi, baseline.model = base.mi, fit.measures = "cfi",
+            test = "D2")
 
 
 ## -------------------------------------

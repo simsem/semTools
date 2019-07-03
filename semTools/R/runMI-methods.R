@@ -279,7 +279,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   myCols <- c("lhs","op","rhs","exo")
   if (lavListInspect(object, "ngroups") > 1L) myCols <- c(myCols,"block","group")
   if (lavListInspect(object, "nlevels") > 1L) myCols <- c(myCols,"block","level")
-  PE <- PT[ , myCols]
+  PE <- PT[ , unique(myCols)]
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">")) # which rows can be standardized
 
@@ -332,7 +332,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   if (is.logical(standardized)) {
     if (standardized) {
       standardized <- c("std.lv","std.all")
-      if (length(lavNames(object, "ov.x") && lavoptions$fixed.x) {
+      if (length(lavNames(object, "ov.x")) && lavoptions$fixed.x) {
         standardized <- c(standardized, "std.nox")
       }
     } else standardized <- NULL
@@ -377,7 +377,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     attr(PE, "information") <- lavoptions$information
     attr(PE, "se") <- lavoptions$se
     attr(PE, "group.label") <- lavListInspect(object, "group.label")
-    attr(PE, "level.label") <- object@Data@level.label #FIXME: lavListInspect?
+    attr(PE, "level.label") <- lavListInspect(object, "cluster")
     attr(PE, "bootstrap") <- lavoptions$bootstrap
     attr(PE, "bootstrap.successful") <- 0L #FIXME: assumes none. Implement Wei & Fan's mixing method?
     attr(PE, "missing") <- lavoptions$missing
@@ -397,7 +397,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     rsqPE <- PE[PE$lhs == PE$rhs & PE$op == "~~" & isEndo, ]
     rsqPE$op <- "r2"
     for (i in which(!sapply(colnames(PE),
-                            function(x) x %in% c("lhs","op","rhs","block","group","est","exo")))) {
+                            function(x) x %in% c("lhs","op","rhs","block",
+                                                 "level","group","est","exo")))) {
       rsqPE[ , i] <- NA
     }
     STD <- lavaan::standardizedSolution(object, se = FALSE, type = "std.all",
