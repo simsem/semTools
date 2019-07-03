@@ -377,7 +377,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     attr(PE, "information") <- lavoptions$information
     attr(PE, "se") <- lavoptions$se
     attr(PE, "group.label") <- lavListInspect(object, "group.label")
-    attr(PE, "level.label") <- lavListInspect(object, "cluster")
+    attr(PE, "level.label") <- c("within", lavListInspect(object, "cluster"))
     attr(PE, "bootstrap") <- lavoptions$bootstrap
     attr(PE, "bootstrap.successful") <- 0L #FIXME: assumes none. Implement Wei & Fan's mixing method?
     attr(PE, "missing") <- lavoptions$missing
