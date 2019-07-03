@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 16 May 2019
+### Last updated: 3 July 2019
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -223,11 +223,13 @@ modindices.mi <- function(object,
       LIST$sepc.lv <- rowMeans(do.call(cbind, sepcList))
       sepcList <- lapply(object@miList[useImps], "[[", i = "sepc.all")
       LIST$sepc.all <- rowMeans(do.call(cbind, sepcList))
-      if ("sepc.nox" %in% colnames(object@miList[useImps][[1]])) {
+      fixed.x <- lavListInspect(object, "options")$fixed.x && length(lavNames(object, "ov.x"))
+      if (fixed.x && "sepc.nox" %in% colnames(object@miList[useImps][[1]])) {
         sepcList <- lapply(object@miList[useImps], "[[", i = "sepc.nox")
         LIST$sepc.nox <- rowMeans(do.call(cbind, sepcList))
       }
     }
+
   } else {
 
     scoreOut <- lavTestScore.mi(object, add = cbind(LIST, user = 10L,
@@ -253,6 +255,12 @@ modindices.mi <- function(object,
       rownames(LIST) <- paste0(LIST$lhs, LIST$op, LIST$rhs, ".g", LIST$group) #FIXME: multilevel?
       rownames(PE) <- paste0(PE$lhs, PE$op, PE$rhs, ".g", PE$group)
       PE[rownames(LIST), "epc"] <- LIST$epc
+      ## need "exo" column?
+      PT <- parTable(object)
+      if ("exo" %in% names(PT)) {
+        rownames(PT) <- paste0(PT$lhs, PT$op, PT$rhs, ".g", PT$group)
+        PE[rownames(PT), "exo"] <- PT$exo
+      } else PE$exo <- 0L
       rownames(LIST) <- NULL
       rownames(PE) <- NULL
 
@@ -308,6 +316,7 @@ modindices.mi <- function(object,
       PE$est <- NULL
       PE$mi <- NULL
       PE$epc <- NULL
+      PE$exo <- NULL
       LIST <- merge(LIST, PE, sort = FALSE)
       class(LIST) <- c("lavaan.data.frame","data.frame")
     }

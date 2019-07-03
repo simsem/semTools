@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 June 2019
+### Last updated: 3 July 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -278,6 +278,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   PT <- parTable(object)
   myCols <- c("lhs","op","rhs","exo")
   if (lavListInspect(object, "ngroups") > 1L) myCols <- c(myCols,"block","group")
+  if (lavListInspect(object, "nlevels") > 1L) myCols <- c(myCols,"block","level")
   PE <- PT[ , myCols]
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">")) # which rows can be standardized
@@ -331,7 +332,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   if (is.logical(standardized)) {
     if (standardized) {
       standardized <- c("std.lv","std.all")
-      if (lavoptions$fixed.x || lavoptions$conditional.x) {
+      if (length(lavNames(object, "ov.x") && lavoptions$fixed.x) {
         standardized <- c(standardized, "std.nox")
       }
     } else standardized <- NULL

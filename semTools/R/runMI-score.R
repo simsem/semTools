@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 July 2019
+### Last updated: 3 July 2019
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -742,10 +742,10 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
     # create epc table for the 'free' parameters
     myCoefs <- getMethod("coef","lavaan.mi")(object, omit.imps = omit.imps)
-    myCols <- c("lhs","op","rhs","group")
+    myCols <- c("lhs","op","rhs","user")
     if (ngroups > 1L) myCols <- c(myCols, "block","group")
     if (nlevels > 1L) myCols <- c(myCols, "block","level")
-    myCols <- c(unique(myCols), "user","free","label","plabel")
+    myCols <- c(unique(myCols), "free","exo","label","plabel")
     LIST <- if (!is.null(add) && nchar(add) > 0L) {
       PT[ , myCols]
     } else parTable(object)[ , myCols]
@@ -813,6 +813,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
     LIST$free[ LIST$user == 10L ] <- 0
     LIST$user <- NULL
+    LIST$exo <- NULL
 
     DF <- if (asymptotic) OUT$test$df else OUT$test$df1
     attr(LIST, "header") <- paste0("expected parameter changes (epc) and ",
