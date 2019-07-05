@@ -105,10 +105,27 @@
 ##'
 ##'
 ##' @importFrom lavaan lavInspect lavNames
-##' @param object The lavaan model object provided after running the \code{cfa},
-##' \code{sem}, \code{growth}, or \code{lavaan} functions.
+##' @param object A \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
+##'   exogenous common factors (i.e., a CFA model).
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'        imputations from pooled results.  Can include any of
+##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        default setting, which excludes any imputations that did not
+##'        converge or for which standard errors could not be computed.  The
+##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        yielded a nonpositive definite covariance matrix for observed or
+##'        latent variables, which would include any "improper solutions" such
+##'        as Heywood cases.  NPD solutions are not excluded by default because
+##'        they are likely to occur due to sampling error, especially in small
+##'        samples.  However, gross model misspecification could also cause
+##'        NPD solutions, users can compare pooled results with and without
+##'        this setting as a sensitivity analysis to see whether some
+##'        imputations warrant further investigation.
+##'
 ##' @return Reliability values (coefficient alpha, coefficients omega, average
-##' variance extracted) of each factor in each group
+##'   variance extracted) of each factor in each group
+##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
 ##' Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
@@ -116,6 +133,7 @@
 ##' @seealso \code{\link{reliabilityL2}} for reliability value of a desired
 ##' second-order factor, \code{\link{maximalRelia}} for the maximal reliability
 ##' of weighted composite
+##'
 ##' @references
 ##' Bollen, K. A. (1980). Issues in the comparative measurement of
 ##' political democracy. \emph{American Sociological Review, 45}(3), 370--390.
@@ -147,6 +165,7 @@
 ##' covariance structure analysis with nonlinear constraints \emph{British
 ##' Journal of Mathematical and Statistical Psychology, 54}(2), 315--323.
 ##' doi:10.1348/000711001159582
+##'
 ##' @examples
 ##'
 ##' library(lavaan)
@@ -159,8 +178,7 @@
 ##' reliability(fit)
 ##'
 ##' @export
-reliability <- function(object, #TODO: add/change argument descriptions
-                        omit.imps = c("no.conv","no.se")) {
+reliability <- function(object, omit.imps = c("no.conv","no.se")) {
 
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
   nlevels <- lavInspect(object, "nlevels")
@@ -201,12 +219,13 @@ reliability <- function(object, #TODO: add/change argument descriptions
     coefList <- object@coefList[useImps]
     phiList <- object@phiList[useImps]
     ## add block-level list per imputation?
-    if (nblocks == 1L) for (i in 1:m) {
+    if (nblocks == 1L) {
       param <- list(param)
-      coefList[[i]] <- list(coefList[[i]])
-      phiList[[i]] <- list(phiList[[i]])
+      for (i in 1:m) {
+        coefList[[i]] <- list(coefList[[i]])
+        phiList[[i]] <- list(phiList[[i]])
+      }
     }
-
     S <- vector("list", nblocks) # pooled observed covariance matrix
     ve <- vector("list", nblocks)
     ## loop over blocks
@@ -391,15 +410,35 @@ reliability <- function(object, #TODO: add/change argument descriptions
 ##'
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param object The lavaan model object provided after running the \code{cfa},
-##' \code{sem}, \code{growth}, or \code{lavaan} functions that has a
-##' second-order factor
-##' @param secondFactor The name of the second-order factor
+##' @param object A \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object, expected to contain a least one
+##'   exogenous higher-order common factor.
+##' @param secondFactor The name of a single second-order factor in the
+##'   model fitted in \code{object}. The function must be called multiple
+##'   times to estimate reliability for each higher-order factor.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'        imputations from pooled results.  Can include any of
+##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        default setting, which excludes any imputations that did not
+##'        converge or for which standard errors could not be computed.  The
+##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        yielded a nonpositive definite covariance matrix for observed or
+##'        latent variables, which would include any "improper solutions" such
+##'        as Heywood cases.  NPD solutions are not excluded by default because
+##'        they are likely to occur due to sampling error, especially in small
+##'        samples.  However, gross model misspecification could also cause
+##'        NPD solutions, users can compare pooled results with and without
+##'        this setting as a sensitivity analysis to see whether some
+##'        imputations warrant further investigation.
+##'
 ##' @return Reliability values at Levels 1 and 2 of the second-order factor, as
-##' well as the partial reliability value at Level 1
+##'   well as the partial reliability value at Level 1
+##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
-##' @seealso \code{\link{reliability}} for the reliability of the first-order
-##' factors.
+##'
+##' @seealso
+##'   \code{\link{reliability}} for the reliability of the first-order factors.
+##'
 ##' @examples
 ##'
 ##' library(lavaan)
@@ -414,35 +453,93 @@ reliability <- function(object, #TODO: add/change argument descriptions
 ##' reliabilityL2(fit6, "higher")
 ##'
 ##' @export
-reliabilityL2 <- function(object, secondFactor) {
-	param <- lavInspect(object, "est")
-	ngroups <- lavInspect(object, "ngroups")
-	name <- names(param)
-	if (ngroups == 1L) {
-		ly <- param[name == "lambda"]
-	} else {
-		ly <- lapply(param, "[[", "lambda")
-	}
-	ve <- lavInspect(object, "cov.lv")
-	if (ngroups == 1L) ve <- list(ve)
-	if (ngroups == 1L) {
-		ps <- param[name == "psi"]
-		te <- param[name == "theta"]
-		be <- param[name == "beta"]
-	} else {
-		ps <- lapply(param, "[[", "psi")
-		te <- lapply(param, "[[", "theta")
-		be <- lapply(param, "[[", "beta")
-	}
-	SigmaHat <- lavInspect(object, "cov.ov")
-	if (ngroups == 1L) {
-		SigmaHat <- list(SigmaHat)
-		S <- list(lavInspect(object, "sampstat")$cov)
-	} else {
-		S <- lapply(lavInspect(object, "sampstat"), function(x) x$cov)
-	}
+reliabilityL2 <- function(object, secondFactor,
+                          omit.imps = c("no.conv","no.se")) {
+  secondFactor <- as.character(secondFactor)[1] # only one at a time
+
+  ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
+  nlevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nlevels #FIXME: always true?
+  group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
+  #FIXME? lavInspect(object, "level.labels")
+  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  if (nblocks > 1L) {
+    block.label <- paste(rep(group.label, each = nlevels), clus.label,
+                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+  }
+
+  ## parameters in GLIST format (not flat, need block-level list)
+  if (inherits(object, "lavaan")) {
+    param <- lavInspect(object, "est")
+    ve <- lavInspect(object, "cov.lv") # model-implied latent covariance matrix
+    S <- object@h1$implied$cov # observed sample covariance matrix (already a list)
+
+    if (nblocks == 1L) {
+      param <- list(param)
+      ve <- list(ve)
+    }
+
+  } else if (inherits(object, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(object@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+    param <- object@coefList[[ useImps[1] ]] # first admissible as template
+    coefList <- object@coefList[useImps]
+    phiList <- object@phiList[useImps]
+    ## add block-level list per imputation?
+    if (nblocks == 1L) {
+      param <- list(param)
+      for (i in 1:m) {
+        coefList[[i]] <- list(coefList[[i]])
+        phiList[[i]] <- list(phiList[[i]])
+      }
+    }
+
+    S <- vector("list", nblocks) # pooled observed covariance matrix
+    ve <- vector("list", nblocks)
+    ## loop over blocks
+    for (b in 1:nblocks) {
+
+      ## param:  loop over GLIST elements
+      for (mat in names(param[[b]])) {
+        matList <- lapply(coefList, function(i) i[[b]][[mat]])
+        param[[b]][[mat]] <- Reduce("+", matList) / length(matList)
+      } # mat
+
+      ## pooled observed covariance matrix
+      covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
+      S[[b]] <- Reduce("+", covList) / m
+
+      ## pooled model-implied latent covariance matrix
+      ve[[b]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
+
+    } # b
+
+  }
+
+  if (nblocks == 1L) {
+    SigmaHat <- getMethod("fitted", class(object))(object)["cov"] # retain list format
+  } else {
+    SigmaHat <- sapply(getMethod("fitted", class(object))(object),
+                       "[[", "cov", simplify = FALSE)
+  }
+
+  ly <- lapply(param, "[[", "lambda")
+  te <- lapply(param, "[[", "theta")
+  ps <- lapply(param, "[[", "psi")
+	be <- lapply(param, "[[", "beta")
+
 	result <- list()
-	for (i in 1:ngroups) {
+	for (i in 1:nblocks) {
 
 		# Prepare for higher-order reliability
 		l2var <- ve[[i]][secondFactor, secondFactor, drop = FALSE]
@@ -452,7 +549,7 @@ reliabilityL2 <- function(object, secondFactor) {
 		errorl2 <- sum(ps[[i]][indexl2, indexl2, drop = FALSE])
 
 		# Prepare for lower-order reliability
-		indexl1 <- which(apply(ly[[i]][,indexl2], 1, function(x) sum(x != 0)) > 0)
+		indexl1 <- which(apply(ly[[i]][,indexl2, drop = FALSE], 1, function(x) sum(x != 0)) > 0)
 		l1load <- ly[[i]][,indexl2] %*% as.matrix(be[[1]][indexl2, secondFactor, drop = FALSE])
 		commonl1 <- (sum(l1load)^2) * l2var
 		errorl1 <- sum(te[[i]][indexl1, indexl1, drop = FALSE])
@@ -479,11 +576,11 @@ reliabilityL2 <- function(object, secondFactor) {
 		partialOmegaL1 <- commonl1 / (commonl1 + errorl1)
 		result[[i]] <- c(omegaL1 = omegaL1, omegaL2 = omegaL2, partialOmegaL1 = partialOmegaL1)
 	}
-	if (ngroups == 1L) {
-		result <- result[[1]]
-	} else {
-		names(result) <- lavInspect(object, "group.label")
-	}
+
+	if (nblocks == 1L) {
+	  result <- result[[1]]
+	} else names(result) <- block.label
+
 	result
 }
 

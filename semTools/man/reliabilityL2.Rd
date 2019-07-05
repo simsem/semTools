@@ -4,18 +4,35 @@
 \alias{reliabilityL2}
 \title{Calculate the reliability values of a second-order factor}
 \usage{
-reliabilityL2(object, secondFactor)
+reliabilityL2(object, secondFactor, omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{object}{The lavaan model object provided after running the \code{cfa},
-\code{sem}, \code{growth}, or \code{lavaan} functions that has a
-second-order factor}
+\item{object}{A \code{\linkS4class{lavaan}} or
+\code{\linkS4class{lavaan.mi}} object, expected to contain a least one
+exogenous higher-order common factor.}
 
-\item{secondFactor}{The name of the second-order factor}
+\item{secondFactor}{The name of a single second-order factor in the
+model fitted in \code{object}. The function must be called multiple
+times to estimate reliability for each higher-order factor.}
+
+\item{omit.imps}{\code{character} vector specifying criteria for omitting
+imputations from pooled results.  Can include any of
+\code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+default setting, which excludes any imputations that did not
+converge or for which standard errors could not be computed.  The
+last option (\code{"no.npd"}) would exclude any imputations which
+yielded a nonpositive definite covariance matrix for observed or
+latent variables, which would include any "improper solutions" such
+as Heywood cases.  NPD solutions are not excluded by default because
+they are likely to occur due to sampling error, especially in small
+samples.  However, gross model misspecification could also cause
+NPD solutions, users can compare pooled results with and without
+this setting as a sensitivity analysis to see whether some
+imputations warrant further investigation.}
 }
 \value{
 Reliability values at Levels 1 and 2 of the second-order factor, as
-well as the partial reliability value at Level 1
+  well as the partial reliability value at Level 1
 }
 \description{
 Calculate the reliability values (coefficient omega) of a second-order
@@ -91,8 +108,7 @@ reliabilityL2(fit6, "higher")
 
 }
 \seealso{
-\code{\link{reliability}} for the reliability of the first-order
-factors.
+\code{\link{reliability}} for the reliability of the first-order factors.
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
