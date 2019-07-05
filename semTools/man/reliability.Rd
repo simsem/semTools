@@ -4,7 +4,7 @@
 \alias{reliability}
 \title{Calculate reliability values of factors}
 \usage{
-reliability(object)
+reliability(object, omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
 \item{object}{The lavaan model object provided after running the \code{cfa},

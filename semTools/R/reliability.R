@@ -1,6 +1,10 @@
 ### Sunthud Pornprasertmanit , Yves Rosseel
-### Last updated: 6 May 2019
+### Last updated: 5 July 2019
 
+
+## -------------
+## reliability()
+## -------------
 
 
 ##' Calculate reliability values of factors
@@ -155,36 +159,93 @@
 ##' reliability(fit)
 ##'
 ##' @export
-reliability <- function(object) {
-	param <- lavInspect(object, "est")
-	ngroup <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
-	categorical <- length(lavNames(object, "ov.ord"))
-	if (ngroup == 1L) {
-		ly <- param["lambda"] # retain list format
-	} else {
-		ly <- lapply(param, "[[", "lambda")
-	}
-	ps <- lavInspect(object, "cov.lv")
-	if (ngroup == 1L) {
-	  ps <- list(ps)
-		te <- param["theta"] # retain list format
-	} else {
-		te <- lapply(param, "[[", "theta")
-	}
-	SigmaHat <- lavInspect(object, "cov.ov")
-	if (ngroup == 1L) SigmaHat <- list(SigmaHat)
-	threshold <- NULL
-	if (ngroup == 1L) {
-    S <- list(lavInspect(object, "sampstat")$cov)
-	} else {
-		S <- lapply(lavInspect(object, "sampstat"), function(x) x$cov)
-	}
-	if (categorical) threshold <- getThreshold(object)
-	flag <- FALSE
+reliability <- function(object, #TODO: add/change argument descriptions
+                        omit.imps = c("no.conv","no.se")) {
+
+  ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
+  nlevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nlevels #FIXME: always true?
+  group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
+  #FIXME? lavInspect(object, "level.labels")
+  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  if (nblocks > 1L) {
+    block.label <- paste(rep(group.label, each = nlevels), clus.label,
+                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+  }
+
+  ## parameters in GLIST format (not flat, need block-level list)
+  if (inherits(object, "lavaan")) {
+    param <- lavInspect(object, "est")
+    ve <- lavInspect(object, "cov.lv") # model-implied latent covariance matrix
+    S <- object@h1$implied$cov # observed sample covariance matrix (already a list)
+
+    if (nblocks == 1L) {
+      param <- list(param)
+      ve <- list(ve)
+    }
+
+  } else if (inherits(object, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(object@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+    param <- object@coefList[[ useImps[1] ]] # first admissible as template
+    coefList <- object@coefList[useImps]
+    phiList <- object@phiList[useImps]
+    ## add block-level list per imputation?
+    if (nblocks == 1L) for (i in 1:m) {
+      param <- list(param)
+      coefList[[i]] <- list(coefList[[i]])
+      phiList[[i]] <- list(phiList[[i]])
+    }
+
+    S <- vector("list", nblocks) # pooled observed covariance matrix
+    ve <- vector("list", nblocks)
+    ## loop over blocks
+    for (b in 1:nblocks) {
+
+      ## param:  loop over GLIST elements
+      for (mat in names(param[[b]])) {
+        matList <- lapply(coefList, function(i) i[[b]][[mat]])
+        param[[b]][[mat]] <- Reduce("+", matList) / length(matList)
+      } # mat
+
+      ## pooled observed covariance matrix
+      covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
+      S[[b]] <- Reduce("+", covList) / m
+
+      ## pooled model-implied latent covariance matrix
+      ve[[b]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
+
+    } # b
+
+  }
+
+  if (nblocks == 1L) {
+    SigmaHat <- getMethod("fitted", class(object))(object)["cov"] # retain list format
+  } else {
+    SigmaHat <- sapply(getMethod("fitted", class(object))(object),
+                       "[[", "cov", simplify = FALSE)
+  }
+
+  ly <- lapply(param, "[[", "lambda")
+  te <- lapply(param, "[[", "theta")
+
+	categorical <- lavInspect(object, "categorical")
+	threshold <- if (categorical) getThreshold(object) else NULL
+
 	result <- list()
-	for (i in 1:ngroup) {
-		common <- (apply(ly[[i]], 2, sum)^2) * diag(ps[[i]])
-		truevar <- ly[[i]] %*% ps[[i]] %*% t(ly[[i]])
+	for (i in 1:nblocks) {
+		common <- (apply(ly[[i]], 2, sum)^2) * diag(ve[[i]])
+		truevar <- ly[[i]] %*% ve[[i]] %*% t(ly[[i]])
 		error <- rep(NA, length(common))
 		alpha <- rep(NA, length(common))
 		total <- rep(NA, length(common))
@@ -198,7 +259,7 @@ reliability <- function(object) {
 			alpha[j] <- computeAlpha(sigma, length(index))
 			total[j] <- sum(sigma)
 			impliedTotal[j] <- sum(SigmaHat[[i]][index, index, drop = FALSE])
-			faccontrib <- ly[[i]][,j, drop = FALSE] %*% ps[[i]][j,j, drop = FALSE] %*% t(ly[[i]][,j, drop = FALSE])
+			faccontrib <- ly[[i]][,j, drop = FALSE] %*% ve[[i]][j,j, drop = FALSE] %*% t(ly[[i]][,j, drop = FALSE])
 			truefac <- diag(faccontrib[index, index, drop = FALSE])
 			commonfac <- sum(faccontrib[index, index, drop = FALSE])
 			trueitem <- diag(truevar[index, index, drop = FALSE])
@@ -252,18 +313,21 @@ reliability <- function(object) {
 		result[[i]] <- rbind(alpha = alpha, omega = omega1, omega2 = omega2,
 		                     omega3 = omega3, avevar = avevar)[ , !singleIndicator]
 	}
-	if (flag) warning("The alpha and the average variance extracted are ",
-	                  "calculated from polychoric (polyserial) correlations, ",
-	                  "not from Pearson correlations.\n")
-	if (ngroup == 1L) {
+	if (categorical) message("The alpha and the average variance extracted are ",
+	                         "calculated from polychoric (polyserial) ",
+	                         "correlations, not from Pearson correlations.\n")
+	if (nblocks == 1L) {
 		result <- result[[1]]
-	} else {
-		names(result) <- lavInspect(object, "group.label")
-	}
+	} else names(result) <- block.label
+
 	result
 }
 
 
+
+## ---------------
+## reliabilityL2()
+## ---------------
 
 ##' Calculate the reliability values of a second-order factor
 ##'
@@ -352,16 +416,16 @@ reliability <- function(object) {
 ##' @export
 reliabilityL2 <- function(object, secondFactor) {
 	param <- lavInspect(object, "est")
-	ngroup <- lavInspect(object, "ngroups")
+	ngroups <- lavInspect(object, "ngroups")
 	name <- names(param)
-	if (ngroup == 1L) {
+	if (ngroups == 1L) {
 		ly <- param[name == "lambda"]
 	} else {
 		ly <- lapply(param, "[[", "lambda")
 	}
 	ve <- lavInspect(object, "cov.lv")
-	if (ngroup == 1L) ve <- list(ve)
-	if (ngroup == 1L) {
+	if (ngroups == 1L) ve <- list(ve)
+	if (ngroups == 1L) {
 		ps <- param[name == "psi"]
 		te <- param[name == "theta"]
 		be <- param[name == "beta"]
@@ -371,14 +435,14 @@ reliabilityL2 <- function(object, secondFactor) {
 		be <- lapply(param, "[[", "beta")
 	}
 	SigmaHat <- lavInspect(object, "cov.ov")
-	if (ngroup == 1L) {
+	if (ngroups == 1L) {
 		SigmaHat <- list(SigmaHat)
 		S <- list(lavInspect(object, "sampstat")$cov)
 	} else {
 		S <- lapply(lavInspect(object, "sampstat"), function(x) x$cov)
 	}
 	result <- list()
-	for (i in 1:ngroup) {
+	for (i in 1:ngroups) {
 
 		# Prepare for higher-order reliability
 		l2var <- ve[[i]][secondFactor, secondFactor, drop = FALSE]
@@ -415,7 +479,7 @@ reliabilityL2 <- function(object, secondFactor) {
 		partialOmegaL1 <- commonl1 / (commonl1 + errorl1)
 		result[[i]] <- c(omegaL1 = omegaL1, omegaL2 = omegaL2, partialOmegaL1 = partialOmegaL1)
 	}
-	if (ngroup == 1L) {
+	if (ngroups == 1L) {
 		result <- result[[1]]
 	} else {
 		names(result) <- lavInspect(object, "group.label")
@@ -424,6 +488,10 @@ reliabilityL2 <- function(object, secondFactor) {
 }
 
 
+
+## --------------
+## maximalRelia()
+## --------------
 
 ##' Calculate maximal reliability
 ##'
@@ -514,17 +582,17 @@ reliabilityL2 <- function(object, secondFactor) {
 ##' @export
 maximalRelia <- function(object) {
   param <- lavInspect(object, "est")
-  ngroup <- lavInspect(object, "ngroups")
+  ngroups <- lavInspect(object, "ngroups")
   categorical <- length(lavNames(object, "ov.ord"))
   name <- names(param)
-  if (ngroup == 1L) {
+  if (ngroups == 1L) {
     ly <- param[name == "lambda"]
   } else {
     ly <- lapply(param, "[[", "lambda")
   }
   ps <- lavInspect(object, "cov.lv")
   SigmaHat <- lavInspect(object, "cov.ov")
-  if (ngroup == 1L) {
+  if (ngroups == 1L) {
     ps <- list(ps)
     SigmaHat <- list(SigmaHat)
     S <- list(lavInspect(object, "sampstat")$cov)
@@ -535,7 +603,7 @@ maximalRelia <- function(object) {
   result <- list()
   if (categorical) threshold <- getThreshold(object) # change to lavInspect(object, "th")?
   ## No, it is a list per item, rather than a single vector
-  for (i in 1:ngroup) {
+  for (i in 1:ngroups) {
     truevar <- ly[[i]] %*% ps[[i]] %*% t(ly[[i]])
     varnames <- colnames(truevar)
     if (categorical) {
@@ -547,7 +615,7 @@ maximalRelia <- function(object) {
       result[[i]] <- calcMaximalRelia(truevar, S[[i]], varnames)
     }
   }
-  if (ngroup == 1L) {
+  if (ngroups == 1L) {
     result <- result[[1]]
   } else {
     names(result) <- lavInspect(object, "group.label")
@@ -630,16 +698,17 @@ p2 <- function(t1, t2, r) {
 #' @importFrom lavaan lavInspect lavNames
 getThreshold <- function(object) {
 	ngroups <- lavInspect(object, "ngroups")
-	thresholds <- lavInspect(object, "thresholds")
 	ordnames <- lavNames(object, "ov.ord")
 
 	if (ngroups == 1L) {
+	  thresholds <- fitted(object)$th
 	  result <- lapply(ordnames,
 	                   function(nn) thresholds[grepl(nn, names(thresholds))])
 	  names(result) <- ordnames
 
 	} else {
-		result <- list()
+	  thresholds <- sapply(fitted(object), "[[", i = "th", simplify = FALSE)
+	  result <- list()
 		group.label <- lavInspect(object, "group.label")
 
 		for (g in 1:ngroups) {
