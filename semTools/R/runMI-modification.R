@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 3 July 2019
+### Last updated: 5 July 2019
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -247,7 +247,7 @@ modindices.mi <- function(object,
       ## Need full parameter table for lavaan::standardizedSolution()
       ## Merge parameterEstimates() with modindices()
       oldPE <- getMethod("summary","lavaan.mi")(object, se = FALSE,
-                                                add.attributes = FALSE,
+                                                output = "data.frame",
                                                 omit.imps = omit.imps)
       PE <- lavaan::lav_partable_merge(oldPE, cbind(LIST, est = 0),
                                        remove.duplicated = TRUE, warn = FALSE)
@@ -284,17 +284,22 @@ modindices.mi <- function(object,
       # get the sign
       EPC.sign <- sign(PE$epc)
 
+      ## pooled estimates for standardizedSolution()
+      pooledest <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+      ## update @Model@GLIST for standardizedSolution(..., GLIST=)
+      object@Model <- lavaan::lav_model_set_parameters(object@Model, x = pooledest)
+
       PE$sepc.lv <- EPC.sign * lavaan::standardizedSolution(object, se = FALSE,
                                                             type = "std.lv",
                                                             cov.std = cov.std,
                                                             partable = PE,
-                                                            GLIST = object@GLIST,
+                                                            GLIST = object@Model@GLIST,
                                                             est = abs(EPC))$est.std
       PE$sepc.all <- EPC.sign * lavaan::standardizedSolution(object, se = FALSE,
                                                              type = "std.all",
                                                              cov.std = cov.std,
                                                              partable = PE,
-                                                             GLIST = object@GLIST,
+                                                             GLIST = object@Model@GLIST,
                                                              est = abs(EPC))$est.std
       fixed.x <- lavListInspect(object, "options")$fixed.x && length(lavNames(object, "ov.x"))
       if (fixed.x) {
@@ -302,7 +307,7 @@ modindices.mi <- function(object,
                                                                type = "std.nox",
                                                                cov.std = cov.std,
                                                                partable = PE,
-                                                               GLIST = object@GLIST,
+                                                               GLIST = object@Model@GLIST,
                                                                est = abs(EPC))$est.std
       }
 

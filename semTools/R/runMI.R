@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 June 2019
+### Last updated: 5 July 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -97,7 +97,7 @@
 ##' cbind(impute.within = coef(out1), impute.first = coef(out2))
 ##'
 ##' summary(out1)
-##' summary(out1, ci = FALSE, fmi = TRUE, add.attributes = FALSE)
+##' summary(out1, ci = FALSE, fmi = TRUE, output = "data.frame")
 ##' summary(out1, ci = FALSE, stand = TRUE, rsq = TRUE)
 ##'
 ##' ## model fit. D3 includes information criteria
@@ -244,7 +244,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
     if (converged) {
       se <- lavaan::parTable(obj)$se
       se.test <- all(!is.na(se)) & all(se >= 0) & any(se != 0)
-      if (lavaan::lavInspect(obj, "ngroups") == 1L && obj@Data@nlevels == 1L) { #FIXME: request lavInspect(fit, "nlevels")
+      if (lavaan::lavInspect(obj, "ngroups") == 1L && lavaan::lavInspect(obj, "nlevels") == 1L) {
         Heywood.lv <- det(lavaan::lavInspect(obj, "cov.lv")) <= 0
         Heywood.ov <- det(lavaan::lavInspect(obj, "theta")) <= 0
       } else {
@@ -260,7 +260,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
                             #FIXME: do starting values ALWAYS == estimates?
                             stringsAsFactors = FALSE),
          modindices = try(lavaan::modindices(obj), silent = TRUE),
-         GLIST = obj@Model@GLIST, # FIXME: @Model slot may disappear; need GLIST for std.all and in simsem
+         cov.lv = lavaan::lavInspect(obj, "cov.lv"), #TODO: calculate from pooled estimates for reliability()
          converged = converged, SE = se.test,
          Heywood.lv = Heywood.lv, Heywood.ov = Heywood.ov)
   }
@@ -269,7 +269,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
   lavListCall <- list(lavaan::lavaanList, model = model, dataList = imputedData,
                       cmd = fun)
   lavListCall <- c(lavListCall, dots)
-  lavListCall$store.slots <- c("partable","vcov","test","h1")
+  lavListCall$store.slots <- c("partable","vcov","test","h1") #TODO: add @baselineList
   lavListCall$FUN <- if (is.null(dots$FUN)) .getOutput. else function(obj) {
     temp1 <- .getOutput.(obj)
     temp2 <- dots$FUN(obj)
@@ -277,7 +277,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
     if (is.null(names(temp2))) names(temp2) <- paste0("userFUN", 1:length(temp2))
     duplicatedNames <- which(sapply(names(temp2), function(x) {
       x %in% c("sampstat","coefMats","satPT","modindices","converged",
-               "SE","Heywood.lv","Heywood.ov","GLIST")
+               "SE","Heywood.lv","Heywood.ov","cov.lv")
     }))
     for (i in duplicatedNames) names(temp2)[i] <- paste0("userFUN", i)
     c(temp1, temp2)
@@ -293,6 +293,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
   fit <- as(fit, "lavaan.mi")
   fit@coefList <- lapply(fit@funList, "[[", i = "coefMats")
   fit@miList <- lapply(fit@funList, "[[", i = "modindices")
+  fit@phiList <- lapply(fit@funList, "[[", i = "cov.lv")
   fit@seed <- seed
   fit@call <- CALL
   fit@lavListCall <- lavListCall
@@ -303,30 +304,15 @@ runMI <- function(model, data, fun = "lavaan", ...,
   if (length(nonConv)) for (i in nonConv) {
     convList[[i]] <- list(converged = FALSE, SE = NA, Heywood.lv = NA, Heywood.ov = NA)
   }
-
   fit@convergence <- lapply(convList, function(x) do.call(c, x))
   conv <- which(sapply(fit@convergence, "[", i = "converged"))
-  if (length(conv)) {
-    firstConv <- conv[1]
-    fit@GLIST <- list()
-    ## loop over GLIST elements
-    for (mat in seq_along(fit@funList[[firstConv]][["GLIST"]])) {
-      matList <- lapply(fit@funList[conv], function(x) x$GLIST[[mat]])
-      fit@GLIST[[mat]] <- Reduce("+", matList) / length(matList)
-    }
-    names(fit@GLIST) <- names(fit@funList[[firstConv]][["GLIST"]])
-    ## also store in @Model slot, to be found by lav_standardize_*()
-    fit@Model@GLIST <- fit@GLIST
-  } else {
-    fit@GLIST <- list()
-    warning('The model did not converge for any imputed data sets.')
-  }
+  if (!length(conv)) warning('The model did not converge for any imputed data sets.')
 
   ## keep any remaining funList slots (if allowing users to supply custom FUN)
   funNames <- names(fit@funList[[1]])
   keepIndex <- which(!sapply(funNames, function(x) {
     x %in% c("sampstat","coefMats","satPT","modindices","converged",
-             "SE","Heywood.lv","Heywood.ov","GLIST")
+             "SE","Heywood.lv","Heywood.ov","cov.lv")
   }))
   if (length(keepIndex)) {
     fit@funList <- lapply(fit@funList, "[", i = keepIndex)

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 July 2019
+### Last updated: 5 July 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -21,7 +21,9 @@
 ##'
 ##' @slot coefList \code{list} of estimated coefficients in matrix format (one
 ##'   per imputation) as output by \code{\link[lavaan]{lavInspect}(fit, "est")}
-##' @slot GLIST pooled \code{list} of coefficients in GLIST format
+##' @slot phiList \code{list} of model-implied latent-variable covariance
+##'   matrices (one per imputation) as output by
+##'   \code{\link[lavaan]{lavInspect}(fit, "cov.lv")}
 ##' @slot miList \code{list} of modification indices output by
 ##'   \code{\link[lavaan]{modindices}}
 ##' @slot seed \code{integer} seed set before running imputations
@@ -51,8 +53,9 @@
 ##'   table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.
 ##'
 ##' @param object An object of class \code{lavaan.mi}
-##' @param se,ci,level,standardized,rsquare,header,add.attributes See
-##'        \code{\link[lavaan]{parameterEstimates}}.
+##' @param se,ci,level,standardized,rsquare,header,output See
+##'        \code{\link[lavaan]{parameterEstimates}}. \code{output}
+##'        can also be passed to \code{\link[lavaan]{fitMeasures}}.
 ##' @param fmi \code{logical} indicating whether to include the Fraction Missing
 ##'        Information (FMI) for parameter estimates in the \code{summary}
 ##'        output (see \bold{Value} section).
@@ -97,6 +100,8 @@
 ##'        it used for. Find detailed descriptions in the \bold{Value} section
 ##'        under \code{coef}, \code{vcov}, and \code{residuals}.
 ##' @param fit.measures,baseline.model See \code{\link[lavaan]{fitMeasures}}.
+##'        \code{summary(object, fit.measures = TRUE)} will print (but not
+##'        return) a table of fit measures to the console.
 ##' @param ... Additional arguments passed to \code{\link{lavTestLRT.mi}}, or
 ##'        subsequently to \code{\link[lavaan]{lavTestLRT}}.
 ##'
@@ -141,7 +146,7 @@
 ##'   See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
 ##'
 ##' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
-##'   fit.measures = "all", baseline.model = NULL,
+##'   fit.measures = "all", baseline.model = NULL, output = "vector",
 ##'   omit.imps = c("no.conv","no.se"), ...)}: See lavaan's
 ##'   \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
 ##'   to \code{\link{lavTestLRT.mi}} via \code{...}.}
@@ -154,8 +159,8 @@
 ##' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
 ##'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
 ##'  scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
-##'  asymptotic = FALSE, add.attributes = TRUE)}: see
-##'  \code{\link[lavaan]{parameterEstimates}} for details.
+##'  asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE)}:
+##'  see \code{\link[lavaan]{parameterEstimates}} for details.
 ##'  By default, \code{summary} returns pooled point and \emph{SE}
 ##'  estimates, along with \emph{t} test statistics and their associated
 ##'  \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
@@ -166,9 +171,11 @@
 ##'  \emph{R}-squared for endogenous variables can be requested, as well as the
 ##'  Fraction Missing Information (FMI) for parameter estimates. By default, the
 ##'  output will appear like \code{lavaan}'s \code{summary} output, but if
-##'  \code{add.attributes = FALSE}, the returned \code{data.frame} will resemble
+##'  \code{output == "data.frame"}, the returned \code{data.frame} will resemble
 ##'  the \code{parameterEstimates} output. The \code{scale.W} argument is
-##'  passed to \code{vcov} (see description above).}
+##'  passed to \code{vcov} (see description above).
+##'  Setting \code{fit.measures=TRUE} will additionally print fit measures to
+##'  the console, but they will not be returned.}
 ##'
 ##' @section Objects from the Class: See the \code{\link{runMI}} function for
 ##'   details. Wrapper functions include \code{\link{lavaan.mi}},
@@ -203,7 +210,7 @@
 ##'
 setClass("lavaan.mi", contains = "lavaanList",
          slots = c(coefList = "list",     # coefficients in matrix format
-                   GLIST = "list",        # list of pooled coefs in GLIST format
+                   phiList = "list",      # list of model-implied latent covariance matrices
                    miList = "list",       # modification indices
                    seed = "integer",      # seed set before running imputations
                    lavListCall = "list",  # store actual call to lavaanList
@@ -257,9 +264,10 @@ setMethod("show", "lavaan.mi", function(object) {
 ##' @importFrom methods getMethod
 summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
-                              fmi = FALSE, header = TRUE, scale.W = !asymptotic,
+                              fmi = FALSE, scale.W = !asymptotic,
                               omit.imps = c("no.conv","no.se"),
-                              asymptotic = FALSE, add.attributes = TRUE) {
+                              asymptotic = FALSE, header = TRUE,
+                              output = "text", fit.measures = FALSE) {
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
   if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -337,27 +345,30 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
       }
     } else standardized <- NULL
   } else standardized <- tolower(as.character(standardized))
-  ## reset @Model slot with pooled estimates
-  if (length(standardized)) {
+
+  if (length(standardized) || rsquare) {
+    ## pooled estimates for standardizedSolution()
     est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+    ## updates @Model@GLIST for standardizedSolution(..., GLIST=)
     object@Model <- lavaan::lav_model_set_parameters(object@Model, x = est)
   }
+
   if ("std.lv" %in% standardized) {
     PE$std.lv[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
                                                     type = "std.lv",
-                                                    GLIST = object@GLIST,
+                                                    GLIST = object@Model@GLIST,
                                                     est = PE$est)$est.std
   }
   if ("std.all" %in% standardized) {
     PE$std.all[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
                                                      type = "std.all",
-                                                     GLIST = object@GLIST,
+                                                     GLIST = object@Model@GLIST,
                                                      est = PE$est)$est.std
   }
   if ("std.nox" %in% standardized) {
     PE$std.nox[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
                                                      type = "std.nox",
-                                                     GLIST = object@GLIST,
+                                                     GLIST = object@Model@GLIST,
                                                      est = PE$est)$est.std
   }
 
@@ -370,7 +381,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                      "(when FMI(1) > 50%).\n\n")
   }
   ## fancy or not?
-  if (add.attributes) {
+  if (output == "text") {
     PE$label <- PT$label
     #FIXME: no longer needed?  PE$exo <- 0L
     class(PE) <- c("lavaan.parameterEstimates","lavaan.data.frame","data.frame")
@@ -402,22 +413,28 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
       rsqPE[ , i] <- NA
     }
     STD <- lavaan::standardizedSolution(object, se = FALSE, type = "std.all",
-                                        GLIST = object@GLIST, est = PE$est)
+                                        GLIST = object@Model@GLIST, est = PE$est)
     isEndoSTD <- sapply(STD$lhs, function(x) x %in% endoNames)
     std.all <- STD$est.std[STD$lhs == STD$rhs & STD$op == "~~" & isEndoSTD]
     rsqPE$est <- ifelse(std.all < 0, NA, 1 - std.all) # negative variances
-    if (add.attributes) rsqPE$label <- ""
+    if (output == "text") rsqPE$label <- ""
     PE <- rbind(PE, rsqPE)
   }
 
-  if (!add.attributes) PE <- PE[!(PE$op %in% c("==","<",">")), ]
+  if (output == "data.frame") PE <- PE[!(PE$op %in% c("==","<",">")), ]
   rownames(PE) <- NULL
-  if (add.attributes) {
+
+  if (output == "text") {
     getMethod("show", "lavaan.mi")(object)
     cat(messPool)
   }
-  ## FIXME: ask Yves to make this accessible somehow, or hack it?
-  # if (fit.measures) lavaan:::print.fit.measures(fitMeasures(object))
+  if (fit.measures) {
+    indices <- c("chisq","df","pvalue","cfi","tli","rmsea","srmr")
+    try(print(fitMeasures(object, fit.measures = indices,
+                          output = "text"), add.h0 = TRUE),
+        silent = TRUE)
+  }
+
   PE
 }
 ##' @name lavaan.mi-class
@@ -680,7 +697,8 @@ getSRMR <- function(object, type = "cor.bentler", level = "within",
 ##' @importFrom lavaan lavNames lavListInspect
 ##' @importFrom stats pchisq uniroot
 fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
-                           omit.imps = c("no.conv","no.se"), ...) {
+                           output = "vector", omit.imps = c("no.conv","no.se"),
+                           ...) {
 
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -696,19 +714,18 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
 
   lavoptions <- lavListInspect(object, "options")
 
-  if (!is.character(fit.measures)) stop("'fit.measures' must be a character ",
-                                        "string specifying name(s) of desired ",
-                                        "fit indices.")
+  fit.measures <- tolower(fit.measures)
   if (length(fit.measures) == 0L) fit.measures <- "all"
   ## narrow down fit indices
   incremental <- c("cfi","tli","nnfi","rfi","nfi","pnfi","ifi","rni")
-  if ("all" %in% tolower(fit.measures)) {
-    indices <- c(incremental, "mfi","rmsea","gammaHat","rmr")
+  if ("all" %in% fit.measures) {
+    indices <- c("chisq","df","pvalue","scaling", incremental,
+                 "rmsea","rmr","mfi","gammahat")
   } else {
-    indices <- grep(pattern = paste(c(incremental, "mfi","rmsea",
-                                      "gammaHat","rmr"), collapse = "|"),
+    indices <- grep(pattern = paste(c("chisq","df","pvalue","scaling",
+                                      incremental, "mfi","rmsea",
+                                      "gammahat","rmr"), collapse = "|"),
                     x = fit.measures, ignore.case = TRUE, value = TRUE)
-    indices <- tolower(indices)
   }
 
   ## CHI-SQUARED-BASED FIT INDICES
@@ -1059,7 +1076,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       }
     }
 
-    if ("gammaHat" %in% indices) {
+    if ("gammahat" %in% indices) {
       out["gammaHat"] <- nVars / (nVars + 2*((X2 - DF) / N))
       out["adjGammaHat"] <- 1 - (((nG * nVars * (nVars + 1)) / 2) / DF) * (1 - out["gammaHat"])
       if (robust) {
@@ -1117,6 +1134,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     fits <- fits[which(!is.na(names(fits)))]
   }
   class(fits) <- c("lavaan.vector","numeric")
+  if (output == "text") class(fits) <- c("fitMeasures", class(fits))
   fits
 }
 ##' @name lavaan.mi-class

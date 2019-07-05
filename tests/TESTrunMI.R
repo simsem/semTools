@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 July 2019
+### Last updated: 5 July 2019
 ### test runMI
 
 library(lavaan)
@@ -47,6 +47,10 @@ lavTestLRT.mi(fit1, asymptotic = TRUE)  # as chisq == F * df1
 lavTestLRT.mi(fit0, h1 = fit1, asymptotic = TRUE)  # compare fit
 lavTestLRT.mi(fit0, h1 = fit1, test = "D2")  # compare fit using D2
 fitMeasures(fit1)
+
+lavTestScore.mi(fit0, epc = TRUE)
+modindices.mi(fit1)
+
 
 
 ## fit multigroup model
@@ -136,27 +140,27 @@ fit.xg <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = TRUE,
                  group = "g")
 
 fitted(fitx)
-resid.lavaan.mi(fitx)
-resid.lavaan.mi(fitx, type = "crmr")
-resid.lavaan.mi(fitx, type = "srmr")
+resid(fitx)
+resid(fitx, type = "crmr")
+resid(fitx, type = "srmr")
 fitMeasures(fitx, fit.measures = "rmr")
 
 fitted(fitxg)
-resid.lavaan.mi(fitxg)
-resid.lavaan.mi(fitxg, type = "crmr")
-resid.lavaan.mi(fitxg, type = "srmr")
+resid(fitxg)
+resid(fitxg, type = "crmr")
+resid(fitxg, type = "srmr")
 fitMeasures(fitxg, fit.measures = "rmr")
 
 fitted(fit.x)
-resid.lavaan.mi(fit.x)
-resid.lavaan.mi(fit.x, type = "crmr")
-resid.lavaan.mi(fit.x, type = "srmr")
+resid(fit.x)
+resid(fit.x, type = "crmr")
+resid(fit.x, type = "srmr")
 fitMeasures(fit.x, fit.measures = "rmr")
 
 fitted(fit.xg)
-resid.lavaan.mi(fit.xg)
-resid.lavaan.mi(fit.xg, type = "crmr")
-resid.lavaan.mi(fit.xg, type = "srmr")
+resid(fit.xg)
+resid(fit.xg, type = "crmr")
+resid(fit.xg, type = "srmr")
 fitMeasures(fit.xg, fit.measures = "rmr")
 
 summary(fitx, stand=TRUE) # only problem left: standardizing requires cov.x
@@ -184,11 +188,15 @@ Demo.twolevel$y1[sample(nrow(Demo.twolevel), size = .1*nrow(Demo.twolevel)) ] <-
 
 model <- '
 level: within
-  fw =~ y1 + L2*y2 + L3*y3
+  fw =~ y1 + L2w*y2 + L3w*y3
   fw ~ x1 + x2 + x3
 level: between
-  fb =~ y1 + L2*y2 + L3*y3
+  fb =~ y1 + L2b*y2 + L3b*y3
   fb ~ b1*w1 + b2*w2
+
+## constraints
+L2w == L2b
+L3w == L3b
 '
 model2 <- ' group: foo
 level: within
@@ -208,15 +216,24 @@ level: between
   fb ~ w1 + w2
 '
 
-fit <- sem(model, data = Demo.twolevel, cluster = "cluster")
-fitmg <- sem(model2, data = Demo.twolevel, cluster = "id", group = "g")
+fit2 <- sem(model, data = Demo.twolevel, cluster = "cluster")
+mgfit2 <- sem(model2, data = Demo.twolevel, cluster = "id", group = "g")
 
-summary(fit, fit.measures = TRUE, standardized = TRUE)
-lavInspect(fit, "ngroups")
-lavInspect(fit, "nlevels")
-fit@Data@nlevels
-lavInspect(fit, "cov.lv")
-lavInspect(fit, "theta")
+summary(fit2, fit.measures = TRUE, standardized = TRUE)
+lavInspect(fit2, "ngroups")
+lavInspect(fit2, "nlevels")
+lavInspect(fit2, "cluster")
+lavInspect(fit2, "nclusters")
+lavInspect(fit2, "ncluster.size")
+lavInspect(fit2, "cluster.size")
+lavInspect(fit2, "cluster.sizes")
+lavInspect(fit2, "average.cluster.size")
+lavInspect(fit2, "cluster.id")
+lavInspect(fit2, "cluster.idx")
+lavInspect(fit2, "cluster.label")
+
+lavInspect(fit2, "cov.lv")
+lavInspect(fit2, "theta")
 
 ## impute data
 library(mice)
@@ -228,28 +245,28 @@ for (i in 1:m) {
 }
 
 library(semTools)
-fit <- sem(model, data = imputedData[[1]], cluster = "id")
-fitList <- semList(model, dataList = imputedData, cluster = "id")
-fit.mi <- sem.mi(model, data = imputedData, cluster = "id")
+fit2 <- sem(model, data = imputedData[[1]], cluster = "id")
+fitList2 <- semList(model, dataList = imputedData, cluster = "id")
+fit2.mi <- sem.mi(model, data = imputedData, cluster = "id")
 ## check methods
-fit.mi
-summary(fit.mi, ci = TRUE, standardized = TRUE, rsquare = TRUE, fmi = TRUE)
-coef(fit.mi)
-vcov(fit.mi)
-nobs(fit.mi)
-fitted(fit.mi)
-resid.lavaan.mi(fit.mi, type = "cor") # works, but resid(fit) generates an error
-modindices.mi(fit.mi) # modindices(fit) also generates an error
-lavTestScore.mi(fit.mi, test = "D2") # lavTestScore(fit, epc = T) generates an error, expects a "group" column
-lavTestScore.mi(fit.mi, test = "D1") # very different results
-lavTestWald.mi(fit.mi, constraints = 'b1 == b2')
-lavTestWald.mi(fit.mi, constraints = 'b1 == b2', test = "D2")
-lavTestLRT.mi(fit.mi, test = "D2")
-anova(fit.mi) # D3 takes an obscenely long time
-anova(fit.mi, asymptotic = TRUE) # comparable to anova(fit)
-fitMeasures(fit.mi, fit.measures = c("rmsea","rmr","aic")) # fails on rmr: lavListInspect("nclusters")
-fitMeasures(fit.mi, fit.measures = c("rmsea","aic"))
-fitMeasures(fit.mi) # fails to fit the baseline.model
+fit2.mi
+summary(fit2.mi, ci = TRUE, standardized = TRUE, rsquare = TRUE, fmi = TRUE)
+coef(fit2.mi)
+vcov(fit2.mi)
+nobs(fit2.mi)
+fitted(fit2.mi)
+resid(fit2.mi, type = "cor")
+modindices.mi(fit2.mi) # error reported:  https://github.com/yrosseel/lavaan/issues/149
+lavTestScore.mi(fit2.mi, test = "D2")
+lavTestScore.mi(fit2.mi, test = "D1") # very different results
+lavTestWald.mi(fit2.mi, constraints = 'b1 == b2')
+lavTestWald.mi(fit2.mi, constraints = 'b1 == b2', test = "D2")
+lavTestLRT.mi(fit2.mi, test = "D2")
+anova(fit2.mi)
+anova(fit2.mi, asymptotic = TRUE) # comparable to anova(fit)
+fitMeasures(fit2.mi) # fails to fit the baseline.model
+##    Error in lav_partable_indep_or_unrestricted(lavobject = lavobject, lavdata = lavdata,  :
+##    trying to get slot "YLp" from an object of a basic class ("NULL") with no slots
 basemod <- '
 level: within
   y1 ~~ y1
@@ -263,14 +280,15 @@ level: between
   y1 + y2 + y3 ~ 1 + w1 + w2
 '
 base.mi <- lavaan.mi(basemod, data = imputedData, cluster = "id")
-fitMeasures(fit.mi, baseline.model = base.mi, fit.measures = "cfi",
-            test = "D2")
+fitMeasures(fit2.mi, baseline.model = base.mi, test = "D2") # works now
+
 
 
 ## -------------------------------------
 ## check lavaan.mi with sampling weights
 ## -------------------------------------
 
+library(lavaan)
 example(cfa)
 ## use agemo as weights (internally rescaled)
 fit.w <- update(fit, sampling.weights = "agemo")
@@ -316,6 +334,7 @@ set.seed(12345)
 HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
 imps <- HS.amelia$imputations
 ## fit model both ways
+library(semTools)
 mi <- cfa.mi(HS.model, data = imps)
 mi.w <- cfa.mi(HS.model, data = imps, sampling.weights = "agemo")
 data.frame(unweighted = coef(mi), weighted = coef(mi.w))

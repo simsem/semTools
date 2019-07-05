@@ -105,7 +105,7 @@ out2 <- cfa.mi(HS.model, data = imps)
 cbind(impute.within = coef(out1), impute.first = coef(out2))
 
 summary(out1)
-summary(out1, ci = FALSE, fmi = TRUE, add.attributes = FALSE)
+summary(out1, ci = FALSE, fmi = TRUE, output = "data.frame")
 summary(out1, ci = FALSE, stand = TRUE, rsq = TRUE)
 
 ## model fit. D3 includes information criteria

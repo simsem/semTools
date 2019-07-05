@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 July 2019
+### Last updated: 5 July 2019
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -781,17 +781,22 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       # get the sign
       EPC.sign <- sign(LIST$epc)
 
+      ## pooled estimates for standardizedSolution()
+      pooledest <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+      ## update @Model@GLIST for standardizedSolution(..., GLIST=)
+      object@Model <- lavaan::lav_model_set_parameters(object@Model, x = pooledest)
+
       LIST$sepc.lv <- EPC.sign * lavaan::standardizedSolution(object, se = FALSE,
                                                               type = "std.lv",
                                                               cov.std = cov.std,
                                                               partable = LIST,
-                                                              GLIST = object@GLIST,
+                                                              GLIST = object@Model@GLIST,
                                                               est = abs(EPC))$est.std
       LIST$sepc.all <- EPC.sign * lavaan::standardizedSolution(object, se = FALSE,
                                                                type = "std.all",
                                                                cov.std = cov.std,
                                                                partable = LIST,
-                                                               GLIST = object@GLIST,
+                                                               GLIST = object@Model@GLIST,
                                                                est = abs(EPC))$est.std
       fixed.x <- lavListInspect(object, "options")$fixed.x && length(lavNames(object, "ov.x"))
       if (fixed.x) {
@@ -799,7 +804,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                                                                  type = "std.nox",
                                                                  cov.std = cov.std,
                                                                  partable = LIST,
-                                                                 GLIST = object@GLIST,
+                                                                 GLIST = object@Model@GLIST,
                                                                  est = abs(EPC))$est.std
       }
 

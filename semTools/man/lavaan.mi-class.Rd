@@ -21,8 +21,9 @@
 
 \S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE,
   level = 0.95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-  header = TRUE, scale.W = !asymptotic, omit.imps = c("no.conv",
-  "no.se"), asymptotic = FALSE, add.attributes = TRUE)
+  scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
+  asymptotic = FALSE, header = TRUE, output = "text",
+  fit.measures = FALSE)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
@@ -35,10 +36,12 @@
 \S4method{anova}{lavaan.mi}(object, ...)
 
 \S4method{fitMeasures}{lavaan.mi}(object, fit.measures = "all",
-  baseline.model = NULL, omit.imps = c("no.conv", "no.se"), ...)
+  baseline.model = NULL, output = "vector", omit.imps = c("no.conv",
+  "no.se"), ...)
 
 \S4method{fitmeasures}{lavaan.mi}(object, fit.measures = "all",
-  baseline.model = NULL, omit.imps = c("no.conv", "no.se"), ...)
+  baseline.model = NULL, output = "vector", omit.imps = c("no.conv",
+  "no.se"), ...)
 
 \S4method{fitted}{lavaan.mi}(object, omit.imps = c("no.conv", "no.se"))
 
@@ -54,8 +57,9 @@
 \arguments{
 \item{object}{An object of class \code{lavaan.mi}}
 
-\item{se, ci, level, standardized, rsquare, header, add.attributes}{See
-\code{\link[lavaan]{parameterEstimates}}.}
+\item{se, ci, level, standardized, rsquare, header, output}{See
+\code{\link[lavaan]{parameterEstimates}}. \code{output}
+can also be passed to \code{\link[lavaan]{fitMeasures}}.}
 
 \item{fmi}{\code{logical} indicating whether to include the Fraction Missing
 Information (FMI) for parameter estimates in the \code{summary}
@@ -96,6 +100,10 @@ distribution, so it is printed as a \emph{z} statisic; likewise,
 \emph{F} times its numerator \emph{df} is printed, assumed to follow
 a \eqn{\chi^2} distribution.}
 
+\item{fit.measures, baseline.model}{See \code{\link[lavaan]{fitMeasures}}.
+\code{summary(object, fit.measures = TRUE)} will print (but not
+return) a table of fit measures to the console.}
+
 \item{total}{\code{logical} (default: \code{TRUE}) indicating whether the
 \code{nobs} method should return the total sample size or (if
 \code{FALSE}) a vector of group sample sizes.}
@@ -109,8 +117,6 @@ should include parameter labels. Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to \code{\link{lavTestLRT.mi}}, or
 subsequently to \code{\link[lavaan]{lavTestLRT}}.}
-
-\item{fit.measures, baseline.model}{See \code{\link[lavaan]{fitMeasures}}.}
 }
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free",
@@ -152,7 +158,7 @@ subsequently to \code{\link[lavaan]{lavTestLRT}}.}
   See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
 
 \item{fitMeasures}{\code{signature(object = "lavaan.mi",
-  fit.measures = "all", baseline.model = NULL,
+  fit.measures = "all", baseline.model = NULL, output = "vector",
   omit.imps = c("no.conv","no.se"), ...)}: See lavaan's
   \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
   to \code{\link{lavTestLRT.mi}} via \code{...}.}
@@ -165,8 +171,8 @@ subsequently to \code{\link[lavaan]{lavTestLRT}}.}
 \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
  scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
- asymptotic = FALSE, add.attributes = TRUE)}: see
- \code{\link[lavaan]{parameterEstimates}} for details.
+ asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE)}:
+ see \code{\link[lavaan]{parameterEstimates}} for details.
  By default, \code{summary} returns pooled point and \emph{SE}
  estimates, along with \emph{t} test statistics and their associated
  \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
@@ -177,9 +183,11 @@ subsequently to \code{\link[lavaan]{lavTestLRT}}.}
  \emph{R}-squared for endogenous variables can be requested, as well as the
  Fraction Missing Information (FMI) for parameter estimates. By default, the
  output will appear like \code{lavaan}'s \code{summary} output, but if
- \code{add.attributes = FALSE}, the returned \code{data.frame} will resemble
+ \code{output == "data.frame"}, the returned \code{data.frame} will resemble
  the \code{parameterEstimates} output. The \code{scale.W} argument is
- passed to \code{vcov} (see description above).}
+ passed to \code{vcov} (see description above).
+ Setting \code{fit.measures=TRUE} will additionally print fit measures to
+ the console, but they will not be returned.}
 }
 \description{
 This class extends the \code{\linkS4class{lavaanList}} class, created by
@@ -192,7 +200,9 @@ data sets are multiple imputations of missing data.
 \item{\code{coefList}}{\code{list} of estimated coefficients in matrix format (one
 per imputation) as output by \code{\link[lavaan]{lavInspect}(fit, "est")}}
 
-\item{\code{GLIST}}{pooled \code{list} of coefficients in GLIST format}
+\item{\code{phiList}}{\code{list} of model-implied latent-variable covariance
+matrices (one per imputation) as output by
+\code{\link[lavaan]{lavInspect}(fit, "cov.lv")}}
 
 \item{\code{miList}}{\code{list} of modification indices output by
 \code{\link[lavaan]{modindices}}}

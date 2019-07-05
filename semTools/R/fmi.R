@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 25 June 2018
+### Last updated: 5 July 2019
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -149,7 +149,7 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
   } else {
     fit <- lavaan.mi(model, data, group = group, ordered = ordvars, auto.th = TRUE)
     comb.results <- getMethod("summary","lavaan.mi")(fit, fmi = TRUE, ci = FALSE,
-                                                     add.attributes = FALSE)
+                                                     output = "data.frame")
     nG <- lavListInspect(fit, "ngroups")
     if (nG == 1L) comb.results$group <- 1L
     group.label <- lavListInspect(fit, "group.label")
