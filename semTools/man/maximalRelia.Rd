@@ -4,16 +4,32 @@
 \alias{maximalRelia}
 \title{Calculate maximal reliability}
 \usage{
-maximalRelia(object)
+maximalRelia(object, omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{object}{The lavaan model object provided after running the \code{cfa},
-\code{sem}, \code{growth}, or \code{lavaan} functions.}
+\item{object}{A \code{\linkS4class{lavaan}} or
+\code{\linkS4class{lavaan.mi}} object, expected to contain only
+exogenous common factors (i.e., a CFA model).}
+
+\item{omit.imps}{\code{character} vector specifying criteria for omitting
+imputations from pooled results.  Can include any of
+\code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+default setting, which excludes any imputations that did not
+converge or for which standard errors could not be computed.  The
+last option (\code{"no.npd"}) would exclude any imputations which
+yielded a nonpositive definite covariance matrix for observed or
+latent variables, which would include any "improper solutions" such
+as Heywood cases.  NPD solutions are not excluded by default because
+they are likely to occur due to sampling error, especially in small
+samples.  However, gross model misspecification could also cause
+NPD solutions, users can compare pooled results with and without
+this setting as a sensitivity analysis to see whether some
+imputations warrant further investigation.}
 }
 \value{
 Maximal reliability values of each group. The maximal-reliability
-weights are also provided. Users may extracted the weighted by the
-\code{attr} function (see example below).
+  weights are also provided. Users may extracted the weighted by the
+  \code{attr} function (see example below).
 }
 \description{
 Calculate maximal reliability of a scale
@@ -94,7 +110,7 @@ equation modeling} (pp. 472--494). New York, NY: Guilford.
 }
 \seealso{
 \code{\link{reliability}} for reliability of an unweighted
-composite score
+  composite score
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})

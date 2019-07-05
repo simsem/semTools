@@ -651,14 +651,33 @@ reliabilityL2 <- function(object, secondFactor,
 ##'
 ##' @importFrom lavaan lavInspect lavNames
 ##'
-##' @param object The lavaan model object provided after running the \code{cfa},
-##' \code{sem}, \code{growth}, or \code{lavaan} functions.
+##' @param object A \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
+##'   exogenous common factors (i.e., a CFA model).
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'        imputations from pooled results.  Can include any of
+##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        default setting, which excludes any imputations that did not
+##'        converge or for which standard errors could not be computed.  The
+##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        yielded a nonpositive definite covariance matrix for observed or
+##'        latent variables, which would include any "improper solutions" such
+##'        as Heywood cases.  NPD solutions are not excluded by default because
+##'        they are likely to occur due to sampling error, especially in small
+##'        samples.  However, gross model misspecification could also cause
+##'        NPD solutions, users can compare pooled results with and without
+##'        this setting as a sensitivity analysis to see whether some
+##'        imputations warrant further investigation.
+##'
 ##' @return Maximal reliability values of each group. The maximal-reliability
-##' weights are also provided. Users may extracted the weighted by the
-##' \code{attr} function (see example below).
+##'   weights are also provided. Users may extracted the weighted by the
+##'   \code{attr} function (see example below).
+##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
 ##' @seealso \code{\link{reliability}} for reliability of an unweighted
-##' composite score
+##'   composite score
+##'
 ##' @references
 ##' Li, H. (1997). A unifying expression for the maximal reliability of a linear
 ##' composite. \emph{Psychometrika, 62}(2), 245--249. doi:10.1007/BF02295278
@@ -666,6 +685,7 @@ reliabilityL2 <- function(object, secondFactor,
 ##' Raykov, T. (2012). Scale construction and development using structural
 ##' equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of structural
 ##' equation modeling} (pp. 472--494). New York, NY: Guilford.
+##'
 ##' @examples
 ##'
 ##' total <- 'f =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 '
@@ -677,31 +697,91 @@ reliabilityL2 <- function(object, secondFactor,
 ##' attr(mr, "weight")
 ##'
 ##' @export
-maximalRelia <- function(object) {
-  param <- lavInspect(object, "est")
-  ngroups <- lavInspect(object, "ngroups")
-  categorical <- length(lavNames(object, "ov.ord"))
-  name <- names(param)
-  if (ngroups == 1L) {
-    ly <- param[name == "lambda"]
-  } else {
-    ly <- lapply(param, "[[", "lambda")
+maximalRelia <- function(object, omit.imps = c("no.conv","no.se")) {
+  ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
+  nlevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nlevels #FIXME: always true?
+  group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
+  #FIXME? lavInspect(object, "level.labels")
+  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  if (nblocks > 1L) {
+    block.label <- paste(rep(group.label, each = nlevels), clus.label,
+                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
   }
-  ps <- lavInspect(object, "cov.lv")
-  SigmaHat <- lavInspect(object, "cov.ov")
-  if (ngroups == 1L) {
-    ps <- list(ps)
-    SigmaHat <- list(SigmaHat)
-    S <- list(lavInspect(object, "sampstat")$cov)
-  } else {
-    S <- lapply(lavInspect(object, "sampstat"), function(x) x$cov)
+
+  ## parameters in GLIST format (not flat, need block-level list)
+  if (inherits(object, "lavaan")) {
+    param <- lavInspect(object, "est")
+    ve <- lavInspect(object, "cov.lv") # model-implied latent covariance matrix
+    S <- object@h1$implied$cov # observed sample covariance matrix (already a list)
+
+    if (nblocks == 1L) {
+      param <- list(param)
+      ve <- list(ve)
+    }
+
+  } else if (inherits(object, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(object@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+    param <- object@coefList[[ useImps[1] ]] # first admissible as template
+    coefList <- object@coefList[useImps]
+    phiList <- object@phiList[useImps]
+    ## add block-level list per imputation?
+    if (nblocks == 1L) {
+      param <- list(param)
+      for (i in 1:m) {
+        coefList[[i]] <- list(coefList[[i]])
+        phiList[[i]] <- list(phiList[[i]])
+      }
+    }
+    S <- vector("list", nblocks) # pooled observed covariance matrix
+    ve <- vector("list", nblocks)
+    ## loop over blocks
+    for (b in 1:nblocks) {
+
+      ## param:  loop over GLIST elements
+      for (mat in names(param[[b]])) {
+        matList <- lapply(coefList, function(i) i[[b]][[mat]])
+        param[[b]][[mat]] <- Reduce("+", matList) / length(matList)
+      } # mat
+
+      ## pooled observed covariance matrix
+      covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
+      S[[b]] <- Reduce("+", covList) / m
+
+      ## pooled model-implied latent covariance matrix
+      ve[[b]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
+
+    } # b
+
   }
-  threshold <- NULL
+
+  if (nblocks == 1L) {
+    SigmaHat <- getMethod("fitted", class(object))(object)["cov"] # retain list format
+  } else {
+    SigmaHat <- sapply(getMethod("fitted", class(object))(object),
+                       "[[", "cov", simplify = FALSE)
+  }
+
+  ly <- lapply(param, "[[", "lambda")
+  te <- lapply(param, "[[", "theta")
+
+  categorical <- lavInspect(object, "categorical")
+  threshold <- if (categorical) getThreshold(object) else NULL
+
   result <- list()
-  if (categorical) threshold <- getThreshold(object) # change to lavInspect(object, "th")?
-  ## No, it is a list per item, rather than a single vector
-  for (i in 1:ngroups) {
-    truevar <- ly[[i]] %*% ps[[i]] %*% t(ly[[i]])
+  for (i in 1:nblocks) {
+    truevar <- ly[[i]] %*% ve[[i]] %*% t(ly[[i]])
     varnames <- colnames(truevar)
     if (categorical) {
       invstdvar <- 1 / sqrt(diag(SigmaHat[[i]]))
@@ -712,11 +792,11 @@ maximalRelia <- function(object) {
       result[[i]] <- calcMaximalRelia(truevar, S[[i]], varnames)
     }
   }
-  if (ngroups == 1L) {
+
+  if (nblocks == 1L) {
     result <- result[[1]]
-  } else {
-    names(result) <- lavInspect(object, "group.label")
-  }
+  } else names(result) <- block.label
+
   result
 }
 
