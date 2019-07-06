@@ -1,4 +1,4 @@
-# semTools 0.5-2
+# semTools 0.5-2 (development version on GitHub)
 
 - Requires `lavaan` version 0.6-4
 - Minor bug fixes
@@ -12,7 +12,7 @@
 
 - Allow multigroup models in `plotProbe()` and related latent-interaction functions.
 
-# semTools 0.5-1 (25 September 2018)
+# semTools 0.5-1 (on CRAN 25 September 2018)
 
 - Requires `lavaan` version 0.6-3
 - Minor bug fixes
@@ -35,7 +35,7 @@
     - Find many more details [posted on the lavaan forum](https://groups.google.com/d/msg/lavaan/oKwP0_6-i1g/i0jGCU-LBwAJ) (the Google group).
 
 
-# semTools 0.5-0 (1 July 2018)
+# semTools 0.5-0 (on CRAN 1 July 2018)
 
 - Requires `lavaan` version 0.6-1
 - Minor bugs fixed
