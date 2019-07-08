@@ -230,7 +230,6 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
 
   ## check for robust
   robust <- lavListInspect(object, "options")$test != "standard"
-  #TODO: check for bollen-stine bootstrap test
   if (!robust) pool.robust <- FALSE
 
   scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"

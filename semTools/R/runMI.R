@@ -178,6 +178,18 @@ runMI <- function(model, data, fun = "lavaan", ...,
   CALL <- match.call()
   dots <- list(...)
 
+  ## check for (Bollen-Stine) bootstrap request
+  if (all(!is.null(dots$test),
+          tolower(dots$test) %in% c("boot","bootstrap","bollen.stine")) ||
+      all(!is.null(dots$se), tolower(dots$se) %in% c("boot","bootstrap"))) {
+    stop('Bootstraping unavailable (and not recommended) in combination with ',
+         'multiple imputations. For bootstrap confidence intervals of indirect',
+         ' effects, see the ?semTools::monteCarloMed help page. To bootstrap ',
+         'within each imputation, users can pass a custom function to the ',
+         'FUN= argument (see ?lavaanList) to save bootstrap distributions in ',
+         'the @funList slot, then manually combine afterward.')
+  }
+
   seed <- as.integer(seed[1])
   ## Create (or acknowledge) list of imputed data sets
   imputedData <- NULL
