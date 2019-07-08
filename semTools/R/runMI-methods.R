@@ -741,8 +741,21 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       dots <- if (length(LRT.names)) dots[LRT.names] else list(asymptotic = TRUE)
     } else dots <- list(asymptotic = TRUE)
 
-    robust <- lavoptions$test != "standard" #TODO: check for bootstrap test
-    scaleshift <- lavoptions$test == "scaled.shifted"
+    ## check test options (adapted from lavTestLRT.mi, limits duplicate warnings)
+    test <- dots$test
+    if (is.null(test)) {
+      test <- "d3" # default
+    } else test <- tolower(test[1])
+    if (tolower(test) %in% c("mr","meng.rubin","likelihood","lrt","mplus","d3")) test <- "D3"
+    if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald","d2")) test <- "D2"
+    if (test == "D3" && !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
+      message('"D3" only available using maximum likelihood estimation. ',
+              'Changed test to "D2".')
+      test <- "D2"
+    }
+
+    ## check for robust
+    robust <- lavoptions$test != "standard"
     if (robust) {
       ## assign pool.robust option to object
       if (is.null(dots$pool.robust)) {
@@ -750,7 +763,28 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       } else {
         pool.robust <- dots$pool.robust # user-specified value
       }
+    } else dots$pool.robust <- pool.robust <- FALSE
+
+    scaleshift <- lavoptions$test == "scaled.shifted"
+    if (scaleshift) {
+      if (test == "D3" | !pool.robust)
+        message("If test = 'scaled.shifted' (estimator = 'WLSMV' or 'MLMV'), ",
+                "model comparison is only available by (re)setting test = 'D2' ",
+                "and pool.robust = TRUE.\n",
+                "Control more options by passing arguments to lavTestLRT() via ",
+                "the '...' argument.\n")
+      dots$pool.robust <- pool.robust <- TRUE
+      test <- 'D2'
     }
+
+    if (pool.robust && test == "D3") {
+      message('pool.robust = TRUE is only applicable when test = "D2". ',
+              'Changed test to "D2".')
+      test <- "D2"
+    }
+
+    dots$test <- test
+
 
     ## pooled test statistic(s)
     argList <- c(list(object = object), dots)
@@ -776,7 +810,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
         group <- lavListInspect(object, "group")
         if (length(group) == 0L) group <- NULL
         cluster <- lavListInspect(object, "cluster")
-        if (length(cluster) == 0L) group <- NULL
+        if (length(cluster) == 0L) cluster <- NULL
         baseFit <- runMI(model = PTb, data = object@DataList[useImps],
                          group = group, cluster = cluster,
                          test = lavoptions$test, estimator = lavoptions$estimator,

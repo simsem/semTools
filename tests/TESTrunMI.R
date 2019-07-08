@@ -74,7 +74,7 @@ lavTestLRT.mi(mgfit0, test = 'D2', pool.robust = TRUE, asymptotic = TRUE)
 lavTestLRT.mi(mgfit0, h1 = mgfit1)           # compare fit
 lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2') # robustifies pooled naive statistic
 lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic
-fitMeasures(mgfit1)
+fitMeasures(mgfit1, output = "text")
 
 
 ## use D1 to test a parametrically nested model (whether latent means are ==)
