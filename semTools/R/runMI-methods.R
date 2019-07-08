@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 July 2019
+### Last updated: 8 July 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -51,6 +51,7 @@
 ##' @slot h1List See \code{\linkS4class{lavaanList}}. An additional element is
 ##'   added to the \code{list}: \code{$PT} is the "saturated" model's parameter
 ##'   table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.
+##' @slot baselineList See \code{\linkS4class{lavaanList}}
 ##'
 ##' @param object An object of class \code{lavaan.mi}
 ##' @param se,ci,level,standardized,rsquare,header,output See
@@ -766,16 +767,21 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
         baseFit <- object@external$baseline.model
       } else {
-        PTb <- lavaan::lav_partable_independence(lavdata = object@Data,
-                                                 lavoptions = lavoptions)
+        #TODO: use @baselineList slot
+        PTb <- object@baselineList[[ useImps[1] ]]$partable
+        PTb[c("est","se")] <- NULL
         # FIXME: shouldn't need this line, but lav_partable_merge() fails when
         #        lavaan:::lav_object_extended() returns a NULL slot instead of "plabel"
         PTb$plabel <- paste0(".p", PTb$id, ".")
         group <- lavListInspect(object, "group")
         if (length(group) == 0L) group <- NULL
+        cluster <- lavListInspect(object, "cluster")
+        if (length(cluster) == 0L) group <- NULL
         baseFit <- runMI(model = PTb, data = object@DataList[useImps],
-                         group = group, se = "none", # to save time
+                         group = group, cluster = cluster,
                          test = lavoptions$test, estimator = lavoptions$estimator,
+                         fixed.x = lavoptions$fixed.x, se = "none", # to save time
+                         conditional.x = lavoptions$conditional.x,
                          ordered = lavListInspect(object, "ordered"),
                          parameterization = lavoptions$parameterization)
       }
@@ -1134,7 +1140,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     fits <- fits[which(!is.na(names(fits)))]
   }
   class(fits) <- c("lavaan.vector","numeric")
-  if (output == "text") class(fits) <- c("fitMeasures", class(fits))
+  if (output == "text") class(fits) <- c("lavaan.fitMeasures", class(fits))
   fits
 }
 ##' @name lavaan.mi-class

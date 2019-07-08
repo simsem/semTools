@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 June 2019
+### Last updated: 8 June 2019
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -463,6 +463,7 @@ getLLs <- function(object, useImps, saturated = FALSE,
     lavaan::logLik(lavaan(PT, data = d, slotOptions = lavoptions,
                           group = group, cluster = cluster))
   })
+  #TODO: use "dry-run" trick from blavaan:::postpred() to save computing time
 }
 
 ##' @importFrom stats pf pchisq

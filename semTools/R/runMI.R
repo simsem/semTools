@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 July 2019
+### Last updated: 8 July 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -269,7 +269,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
   lavListCall <- list(lavaan::lavaanList, model = model, dataList = imputedData,
                       cmd = fun)
   lavListCall <- c(lavListCall, dots)
-  lavListCall$store.slots <- c("partable","vcov","test","h1") #TODO: add @baselineList
+  lavListCall$store.slots <- c("partable","vcov","test","h1","baseline")
   lavListCall$FUN <- if (is.null(dots$FUN)) .getOutput. else function(obj) {
     temp1 <- .getOutput.(obj)
     temp2 <- dots$FUN(obj)

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 July 2019
+### Last updated: 8 July 2019
 ### test runMI
 
 library(lavaan)
@@ -246,8 +246,9 @@ for (i in 1:m) {
 
 library(semTools)
 fit2 <- sem(model, data = imputedData[[1]], cluster = "id")
-fitList2 <- semList(model, dataList = imputedData, cluster = "id")
-fit2.mi <- sem.mi(model, data = imputedData, cluster = "id")
+fitList2 <- semList(model, dataList = imputedData, cluster = "id",
+                    store.slots = "baseline")
+fit2.mi <- sem.mi(model, data = imputedData, cluster = "id", group = "g")
 ## check methods
 fit2.mi
 summary(fit2.mi, ci = TRUE, standardized = TRUE, rsquare = TRUE, fmi = TRUE)

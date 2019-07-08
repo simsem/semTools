@@ -9,8 +9,9 @@
 - Added the `omit.imps=` argument to all `lavaan.mi`-related functions, optionally excluding solutions that did not converge, failed to estimate *SE*s, or contained NPD matrices (Heywood cases are a special case).  Only the first 2 are excluded by default.
 - `reliability()`, `reliabilityL2()`, and `maximalRelia()` now accept `lavaan.mi` objects
 - Added (S)EPCs to `lavTestScore.mi()` output when `epc=TRUE`, as well as (A)RIV/FMI to all pooled tests when available, to quantify additional uncertaintly in the test statistic due to missing data.
-
 - Allow multigroup models in `plotProbe()` and related latent-interaction functions.
+
+
 
 # semTools 0.5-1 (on CRAN 25 September 2018)
 
@@ -35,6 +36,7 @@
     - Find many more details [posted on the lavaan forum](https://groups.google.com/d/msg/lavaan/oKwP0_6-i1g/i0jGCU-LBwAJ) (the Google group).
 
 
+
 # semTools 0.5-0 (on CRAN 1 July 2018)
 
 - Requires `lavaan` version 0.6-1
@@ -48,3 +50,10 @@
 - The `parcelAllocation()` has also been redesigned with new arguments to improve its flexibility and ease of use.  Users are now required to provide lavaan syntax not only for the parcel-level model, but also for the item-level model.  This allows parcel allocation to be automatically detected, no longer requiring users to provide a list of item-to-parcel assignments (see new examples on the help page).
 - The OpenMx enhancements in previous versions of semTools are obsolete now that OpenMx provides fit indices and standardized paths, so they have been removed.  However, `standardizeMx()` is still available (temporarily deprecated) to provide standardized mean-structure parameters, until the OpenMx maintainers add that feature to `OpenMx::mxStandardizeRAMpaths()`.
 - `measurementInvariance()` and `measurementInvarianceCat()` now require users to name all arguments passed to `cfa()`, including the first argument: `model=`.  This is to prevent errors that occurred when some previous users had passed arguments in a different order than expected, which should not be a limitation.
+
+
+# semTools versions < 0.5
+
+Find our remaining version history on GitHub:
+
+https://github.com/simsem/semTools/wiki/Version-History

@@ -151,9 +151,6 @@ semTools::plausibleValues()
 Miscellaneous semTools
 ======================
 
-allow reliability() et al. to accept lavaan.mi pooled coefs
-- @GLIST is a flat list, not a list of lists per group
-
 add moreFitIndices= argument to compareFit()
 
 semTools::miPowerFit()
@@ -197,7 +194,7 @@ New function: partialRsq()
 
 
 Add emmeans() support for observed/latent mean comparisons
-- already worked out:  https://github.com/yrosseel/lavaan/issues/133
+- post update here:  https://github.com/yrosseel/lavaan/issues/133
 
 
 Send Sacha a pull request to get rid of semTools::standardizeMx()
@@ -218,17 +215,6 @@ lavaan::lavNames()
 - somehow access @Data@ov.names.l list
 
 
-lavOptions("missing")
-- makes "two.stage" public!
-
-
-lavaan::lavTestScore()
-- check EPCs for multiple groups
-- add SEPCs (also for lavaan.mi)
-- add EPCs to $uni
-- check reversed EPCs from Max's example
-
-
 lavaan::lavaanList()
 - create c() method to concatenate lavaanList() objects
   - rather than starting over to get more permutations or parcel allocations
@@ -246,12 +232,6 @@ lavaan:::lav_object_inspect_vcov()
     $ diag(OUT)[diag(OUT) < 0 & abs(diag(OUT)) < .Machine$double.eps] <- 0
 - Would this cause problems with inversion within lavaan.mi methods?
 
-
-blavaan::blavPPMC()
-- wrapper around blavaan:::postpred() to get posterior predictive distributions
-  of custom discrepancy functions (e.g., Levy, 2011)
-  - use it for blavFitIndices(fit, rescale = "mcmc")
-- assign class, write print/summary methods to display intervals (not full posteriors)
 
 blavaan::blavInspect()
 - add options "perc.npd" for theta and psi
