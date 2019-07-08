@@ -242,6 +242,8 @@ model}
 \item{\code{h1List}}{See \code{\linkS4class{lavaanList}}. An additional element is
 added to the \code{list}: \code{$PT} is the "saturated" model's parameter
 table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
+
+\item{\code{baselineList}}{See \code{\linkS4class{lavaanList}}}
 }}
 
 \section{Objects from the Class}{

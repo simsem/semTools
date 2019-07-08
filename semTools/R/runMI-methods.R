@@ -800,8 +800,25 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
         baseFit <- baseline.model
       } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
         baseFit <- object@external$baseline.model
+      } else if (test == "D2") {
+        w <- sapply(object@baselineList[useImps], function(x) x$test[[1]][["stat"]])
+        DF <- mean(sapply(object@baselineList[useImps], function(x) x$test[[1]][["df"]]))
+        baseOut <- calculate.D2(w, DF, asymptotic = TRUE)
+        if (robust) {
+          if (pool.robust) {
+            w.r <- sapply(object@baselineList[useImps], function(x) x$test[[2]][["stat"]])
+            DF.r <- mean(sapply(object@baselineList[useImps], function(x) x$test[[2]][["df"]]))
+            base.robust <- calculate.D2(w.r, DF.r, asymptotic = TRUE)
+            names(base.robust) <- paste0(names(base.robust), ".scaled")
+            baseOut <- c(baseOut, base.robust)
+          } else {
+            baseOut <- robustify(ChiSq = baseOut, object = object,
+                                 baseline = TRUE, useImps = useImps)
+          }
+        }
+        baseFit <- NULL # for later checking, to avoid unnecessary calls
+
       } else {
-        #TODO: use @baselineList slot
         PTb <- object@baselineList[[ useImps[1] ]]$partable
         PTb[c("est","se")] <- NULL
         # FIXME: shouldn't need this line, but lav_partable_merge() fails when
@@ -820,17 +837,17 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
                          parameterization = lavoptions$parameterization)
       }
 
-      baseImps <- sapply(baseFit@convergence, "[[", i = "converged")
-      if (!all(baseImps)) warning('baseline.model did not converge for data set(s): ',
-                                  useImps[!baseImps])
-    }
+      if (!is.null(baseFit)) {
+        baseImps <- sapply(baseFit@convergence, "[[", i = "converged")
+        if (!all(baseImps)) warning('baseline.model did not converge for data set(s): ',
+                                    useImps[!baseImps])
+        argList <- c(list(object = baseFit), dots)
+        argList$asymptotic <- TRUE # in case it wasn't set in list(...)
+        argList$omit.imps <- setdiff(omit.imps, "no.se") # se="none" in baseFit
+        baseOut <- do.call(lavTestLRT.mi, argList)
+      }
+      # else {"already used "D2" with @baselineList info to make baseOut"}
 
-    ## pooled test statistic(s) for baseline model
-    if (any(indices %in% incremental)) {
-      argList <- c(list(object = baseFit), dots)
-      argList$asymptotic <- TRUE # in case it wasn't set in list(...)
-      argList$omit.imps <- setdiff(omit.imps, "no.se") # se="none" in baseFit
-      baseOut <- do.call(lavTestLRT.mi, argList)
     }
 
 

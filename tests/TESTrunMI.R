@@ -75,7 +75,7 @@ lavTestLRT.mi(mgfit0, h1 = mgfit1)           # compare fit
 lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2') # robustifies pooled naive statistic
 lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic
 fitMeasures(mgfit1, output = "text")
-
+print(fitMeasures(mgfit0, output = "text", test = "D2"), add.h0 = TRUE)
 
 ## use D1 to test a parametrically nested model (whether latent means are ==)
 lavTestWald.mi(mgfit0, test = "D1", asymptotic = TRUE, constraints = '
@@ -248,7 +248,9 @@ library(semTools)
 fit2 <- sem(model, data = imputedData[[1]], cluster = "id")
 fitList2 <- semList(model, dataList = imputedData, cluster = "id",
                     store.slots = "baseline")
-fit2.mi <- sem.mi(model, data = imputedData, cluster = "id", group = "g")
+fit2.mi <- sem.mi(model, data = imputedData,
+                  group = "g",
+                  cluster = "id")
 ## check methods
 fit2.mi
 summary(fit2.mi, ci = TRUE, standardized = TRUE, rsquare = TRUE, fmi = TRUE)
@@ -257,7 +259,7 @@ vcov(fit2.mi)
 nobs(fit2.mi)
 fitted(fit2.mi)
 resid(fit2.mi, type = "cor")
-modindices.mi(fit2.mi) # error reported:  https://github.com/yrosseel/lavaan/issues/149
+modindices.mi(fit2.mi)
 lavTestScore.mi(fit2.mi, test = "D2")
 lavTestScore.mi(fit2.mi, test = "D1") # very different results
 lavTestWald.mi(fit2.mi, constraints = 'b1 == b2')
@@ -265,9 +267,8 @@ lavTestWald.mi(fit2.mi, constraints = 'b1 == b2', test = "D2")
 lavTestLRT.mi(fit2.mi, test = "D2")
 anova(fit2.mi)
 anova(fit2.mi, asymptotic = TRUE) # comparable to anova(fit)
-fitMeasures(fit2.mi) # fails to fit the baseline.model
-##    Error in lav_partable_indep_or_unrestricted(lavobject = lavobject, lavdata = lavdata,  :
-##    trying to get slot "YLp" from an object of a basic class ("NULL") with no slots
+fitMeasures(fit2.mi)
+## custom baseline model
 basemod <- '
 level: within
   y1 ~~ y1

@@ -548,12 +548,15 @@ D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
 
 ##' @importFrom stats pchisq
 ##' @importFrom lavaan lavListInspect
-robustify <- function(ChiSq, object, h1 = NULL, useImps) {
+robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps) {
   scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
 
-  d0 <- mean(sapply(object@testList[useImps], function(x) x[[2]][["df"]]))
-  c0 <- mean(sapply(object@testList[useImps],
-                    function(x) x[[2]][["scaling.factor"]]))
+  if (baseline) {
+    TEST <- lapply(object@baselineList[useImps], "[[", i = "test")
+  } else TEST <- object@testList[useImps]
+
+  d0 <- mean(sapply(TEST, function(x) x[[2]][["df"]]))
+  c0 <- mean(sapply(TEST, function(x) x[[2]][["scaling.factor"]]))
   if (!is.null(h1)) {
     d1 <- mean(sapply(h1@testList[useImps], function(x) x[[2]][["df"]]))
     c1 <- mean(sapply(h1@testList[useImps],
@@ -570,8 +573,7 @@ robustify <- function(ChiSq, object, h1 = NULL, useImps) {
     ChiSq["df.scaled"] <- d0
     if (scaleshift) {
       ## add average shift parameter (or average of sums, if nG > 1)
-      shift <- mean(sapply(object@testList[useImps],
-                           function(x) sum(x[[2]][["shift.parameter"]]) ))
+      shift <- mean(sapply(TEST, function(x) sum(x[[2]][["shift.parameter"]]) ))
       ChiSq["chisq.scaled"] <- ChiSq[["chisq.scaled"]] + shift
       ChiSq["pvalue.scaled"] <- pchisq(ChiSq[["chisq.scaled"]],
                                        df = ChiSq[["df.scaled"]],
