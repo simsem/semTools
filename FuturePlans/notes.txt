@@ -208,6 +208,9 @@ How can we pass auxiliaries to lavCor for lavaan's first step in DWLS?
 How does lavaan allow for non-normality of continuous variables when mixed
 with ordinal?  Necessary to use a robust ACOV as the weight matrix?
 
+- add ER.RMR to modindices
+- add scaled chisq col to anova() output
+
 
 lavaan::lavNames()
 - add ... option level=1/2 or within/between?

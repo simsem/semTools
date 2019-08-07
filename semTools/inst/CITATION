@@ -5,9 +5,11 @@ vers <- paste("R package version", meta$Version)
 url <- "https://CRAN.R-project.org/package=semTools"
 
 citEntry(entry = "Manual",
-  title        = "{semTools}: Useful tools for structural equation modeling",
-  author       = c(as.person("Jorgensen, T. D."), as.person("Pornprasertmanit, S."),
-                   as.person("Schoemann, A. M."), as.person("Rosseel, Y.")),
+  title        = "\\texttt{semTools}: {U}seful tools for structural equation modeling",
+  author       = c(person(given = c("Terrence","D."), family = "Jorgensen"),
+                   person(given = "Sunthud", family = "Pornprasertmanit"),
+                   person(given = c("Alexander","M."), family = "Schoemann"),
+                   person(given = "Yves", family = "Rosseel")),
   year         = year,
   note         = vers,
   url          = url,
