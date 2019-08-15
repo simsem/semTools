@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 4 June 2019
+### Last updated: 15 August 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -797,14 +797,102 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##'                             group = "g", group.equal = "thresholds",
 ##'                             longFacNames = longFacNames,
 ##'                             long.equal = "thresholds", return.fit = TRUE)
-##'
 ##' ## compare their fit to test threshold invariance
 ##' anova(fit.config, fit.thresh)
 ##'
 ##'
-##' \dontrun{
+##' ## --------------------------------------------------------
+##' ## RECOMMENDED PRACTICE: fit one invariance model at a time
+##' ## --------------------------------------------------------
 ##'
-##' ## compare several invariance models
+##' ## - A downside of setting return.fit=TRUE is that if the model has trouble
+##' ##   converging, you don't have the opportunity to investigate the syntax,
+##' ##   or even to know whether an error resulted from the syntax-generator or
+##' ##   from lavaan itself.
+##' ## - A downside of automatically fitting an entire set of invariance models
+##' ##   (like the old measurementInvariance() function did) is that you might
+##' ##   end up testing models that shouldn't even be fitted because less
+##' ##   restrictive models already fail (e.g., don't test full scalar
+##' ##   invariance if metric invariance fails! Establish partial metric
+##' ##   invariance first, then test equivalent of intercepts ONLY among the
+##' ##   indicators that have invariate loadings.)
+##'
+##' ## The recommended sequence is to (1) generate and save each syntax object,
+##' ## (2) print it to the screen to verify you are fitting the model you expect
+##' ## to (and potentially learn which identification constraints should be
+##' ## released when equality constraints are imposed), and (3) fit that model
+##' ## to the data as you would if you wrote the syntax yourself.
+##'
+##' ## continuing from the examples above, after establishing invariance of
+##' ## thresholds, we proceed to test equivalence of loadings, intercepts, and
+##' ## residual variances (metric, scalar, and strict invariance, respectively)
+##' ## simultaneously across groups and repeated measures.
+##'
+##' ## metric invariance
+##' syntax.metric <- measEq.syntax(configural.model = mod.cat, data = datCat,
+##'                                ordered = paste0("u", 1:8),
+##'                                parameterization = "theta",
+##'                                ID.fac = "std.lv", ID.cat = "Wu.Estabrook.2016",
+##'                                group = "g", longFacNames = longFacNames,
+##'                                group.equal = c("thresholds","loadings"),
+##'                                long.equal  = c("thresholds","loadings"))
+##' summary(syntax.metric)                    # summarize model features
+##' mod.metric <- as.character(syntax.metric) # save as text
+##' cat(mod.metric)                           # print/view lavaan syntax
+##' ## fit model to data
+##' fit.metric <- cfa(mod.metric, data = datCat, group = "g",
+##'                   ordered = paste0("u", 1:8), parameterization = "theta")
+##' ## test equivalence of loadings, given equivalence of thresholds
+##' anova(fit.thresh, fit.metric)
+##'
+##' ## scalar invariance
+##' syntax.scalar <- measEq.syntax(configural.model = mod.cat, data = datCat,
+##'                                ordered = paste0("u", 1:8),
+##'                                parameterization = "theta",
+##'                                ID.fac = "std.lv", ID.cat = "Wu.Estabrook.2016",
+##'                                group = "g", longFacNames = longFacNames,
+##'                                group.equal = c("thresholds","loadings",
+##'                                                "intercepts"),
+##'                                long.equal  = c("thresholds","loadings",
+##'                                                "intercepts"))
+##' summary(syntax.scalar)                    # summarize model features
+##' mod.scalar <- as.character(syntax.scalar) # save as text
+##' cat(mod.scalar)                           # print/view lavaan syntax
+##' ## fit model to data
+##' fit.scalar <- cfa(mod.scalar, data = datCat, group = "g",
+##'                   ordered = paste0("u", 1:8), parameterization = "theta")
+##' ## test equivalence of intercepts, given equal thresholds & loadings
+##' anova(fit.metric, fit.scalar)
+##'
+##' ## strict invariance
+##' syntax.strict <- measEq.syntax(configural.model = mod.cat, data = datCat,
+##'                                ordered = paste0("u", 1:8),
+##'                                parameterization = "theta",
+##'                                ID.fac = "std.lv", ID.cat = "Wu.Estabrook.2016",
+##'                                group = "g", longFacNames = longFacNames,
+##'                                group.equal = c("thresholds","loadings",
+##'                                                "intercepts","residuals"),
+##'                                long.equal  = c("thresholds","loadings",
+##'                                                "intercepts","residuals"))
+##' summary(syntax.strict)                    # summarize model features
+##' mod.strict <- as.character(syntax.strict) # save as text
+##' cat(mod.strict)                           # print/view lavaan syntax
+##' ## fit model to data
+##' fit.strict <- cfa(mod.strict, data = datCat, group = "g",
+##'                   ordered = paste0("u", 1:8), parameterization = "theta")
+##' ## test equivalence of residual variances, given scalar invariance
+##' anova(fit.scalar, fit.strict)
+##'
+##'
+##' ## For a single table with all results, you can pass the models to
+##' ## summarize to the compareFit() function
+##' compareFit(fit.config, fit.thresh, fit.metric, fit.scalar, fit.strict)
+##'
+##'
+##' \dontrun{
+##' ## ------------------------------------------------------
+##' ## NOT RECOMMENDED: fit several invariance models at once
+##' ## ------------------------------------------------------
 ##' test.seq <- c("thresholds","loadings","intercepts","means","residuals")
 ##' meq.list <- list()
 ##' for (i in 0:length(test.seq)) {

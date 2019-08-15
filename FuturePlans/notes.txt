@@ -209,7 +209,7 @@ How does lavaan allow for non-normality of continuous variables when mixed
 with ordinal?  Necessary to use a robust ACOV as the weight matrix?
 
 - add ER.RMR to modindices
-- add scaled chisq col to anova() output
+- make @test a list of arbitrary length, test= argument accepts vector
 
 
 lavaan::lavNames()
