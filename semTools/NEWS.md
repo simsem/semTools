@@ -1,14 +1,15 @@
 # semTools 0.5-2 (development version on GitHub)
 
-- Requires `lavaan` version 0.6-4
+- Requires `lavaan` version 0.6-5
 - Minor bug fixes
 
 - Addition of the `plausibleValues()` function to extract plausible values (i.e., multiple imputations) of factor scores from objects of class `lavaan`, `lavaan.mi`, or `blavaan`
-- Full support for `lavaan.mi` models fitted mode multiply imputed multilevel data; resolved issue ([#39](https://github.com/simsem/semTools/issues/39)).
+- Full support for `lavaan.mi` models fitted to multiply imputed multilevel data; resolved issue ([#39](https://github.com/simsem/semTools/issues/39)).
 - Full support for `fixed.x=TRUE` and `conditional.x=TRUE` in `lavaan.mi` models, including `std.nox` solutions in `summary()`, `modindices.mi()`, and `lavTestScore.mi()`.
 - Added the `omit.imps=` argument to all `lavaan.mi`-related functions, optionally excluding solutions that did not converge, failed to estimate *SE*s, or contained NPD matrices (Heywood cases are a special case).  Only the first 2 are excluded by default.
 - `reliability()`, `reliabilityL2()`, and `maximalRelia()` now accept `lavaan.mi` objects
-- Added (S)EPCs to `lavTestScore.mi()` output when `epc=TRUE`, as well as (A)RIV/FMI to all pooled tests when available, to quantify additional uncertaintly in the test statistic due to missing data.
+- Added (S)EPCs to `lavTestScore.mi()` output when `epc=TRUE`
+- Added (A)RIV/FMI to all pooled tests when available for `lavaan.mi` objects, to quantify additional uncertaintly in the test statistic due to missing data.
 - Allow multigroup models in `plotProbe()` and related latent-interaction functions.
 
 
