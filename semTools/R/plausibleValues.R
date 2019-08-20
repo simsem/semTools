@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 April 2019
+### Last updated: 20 August 2019
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -73,11 +73,14 @@
 ##'   \emph{per imputation}.  Ignored if \code{object} is of class
 ##'   \code{\linkS4class{blavaan}}, in which case the number of draws is the
 ##'   number of MCMC samples from the posterior.
-##' @param seed \code{integer} passed to \code{\link{set.seed}()}
+##' @param seed \code{integer} passed to \code{\link{set.seed}()}.  Ignored if
+##'   \code{object} is of class \code{\linkS4class{blavaan}},
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
 ##'   imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.
 ##'   Can include any of \code{c("no.conv", "no.se", "no.npd")}.
-##' @param ... Optional arguments to pass to \code{\link[lavaan]{lavPredict}}
+##' @param ... Optional arguments to pass to \code{\link[lavaan]{lavPredict}}.
+##'   \code{assemble} will be ignored because multiple groups are always
+##'   assembled into a single \code{data.frame} per draw.
 ##'
 ##' @return A \code{list} of length \code{nDraws}, each of which is a
 ##'   \code{data.frame} containing plausible values, which can be treated as
@@ -91,7 +94,7 @@
 ##'
 ##' @references
 ##'   Asparouhov, T. & Muthen, B. O. (2010). \emph{Plausible values for latent
-##'   variables using Mplus}. Technical Report. Retrieved from
+##'   variables using M}plus. Technical Report. Retrieved from
 ##'   \url{www.statmodel.com/download/Plausible.pdf}
 ##'
 ##' @seealso \code{\link{runMI}}, \code{\linkS4class{lavaan.mi}}
@@ -107,6 +110,15 @@
 ##' fs1 <- plausibleValues(fit1, nDraws = 3)
 ##' lapply(fs1, head)
 ##'
+##' ## merge factor scores to original data.frame
+##' idx <- lavInspect(fit, "case.idx")       # row index for each case
+##' if (is.list(idx)) idx <- do.call(c, idx) # for multigroup models
+##' data(HolzingerSwineford1939)             # copy data to workspace
+##' HolzingerSwineford1939$case.idx <- idx   # add row index as variable
+##' ## loop over draws to merge original data with factor scores
+##' for (i in seq_along(fs1)) {
+##'   fs1[[i]] <- merge(fs1[[i]], HolzingerSwineford1939, by = "case.idx")
+##' }
 ##'
 ##' ## multiple-group analysis, in 2 steps
 ##' step1 <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
@@ -176,7 +188,7 @@ plausibleValues <- function(object, nDraws = 20L, seed = 12345,
 ## ----------------
 
 ## draw 1 set of plausible values from a lavaan object
-##' @importFrom lavaan lavInspect lavPredict
+##' @importFrom lavaan lavInspect lavPredict lavNames
 plaus.lavaan <- function(seed = 1, object, ...) {
   stopifnot(inherits(object, "lavaan"))
   set.seed(seed)
@@ -185,11 +197,45 @@ plaus.lavaan <- function(seed = 1, object, ...) {
   group.label <- lavInspect(object, "group.label")
   nG <- lavInspect(object, "ngroups")
   nL <- lavInspect(object, "nlevels")
+  l.names <- o.names <- list()
+  if (nG == 1L && nL == 1L) {
+    ## single block
+    l.names <- list(lavNames(object, "lv"))
+    o.names <- list(lavNames(object, "ov"))
+  } else if (nG == 1L && nL > 1L) {
+    ## multilevel
+    for (BB in 1:nL) {
+      l.names <- c(l.names, list(lavNames(object, "lv", block = BB)))
+      o.names <- c(o.names, list(lavNames(object, "ov", block = BB)))
+    }
+  } else if (nG > 1L && nL == 1L) {
+    ## multigroup
+    for (BB in 1:nG) {
+      l.names <- c(l.names, list(lavNames(object, "lv", block = BB)))
+      o.names <- c(o.names, list(lavNames(object, "ov", block = BB)))
+    }
+  } else {
+    ##FIXME: multilevel + multigroup
+    stop('Factor scores are currently named incorrectly in lavaan models with ',
+         'both multiple groups and multiple levels: \n',
+         '\thttps://github.com/yrosseel/lavaan/issues/153 \n',
+         'When this issue is resolved, this option will become available.')
+    for (BB in 1:(nG*nL)) { #FIXME: lavInspect(object, "nblocks")
+      l.names <- c(l.names, list(lavNames(object, "lv", block = BB)))
+      o.names <- c(o.names, list(lavNames(object, "ov", block = BB)))
+    }
+  }
+
+
 
   ## extract factor scores + covariance matrix
   fsArgs <- list(...)
+  fsArgs$assemble <- FALSE # assemble after drawing
+  append.data <- fsArgs$append.data
+  if (is.null(append.data)) append.data <- FALSE # default in lavPredict()
   only.L2 <- fsArgs$level == 2L
   if (length(only.L2) == 0L) only.L2 <- FALSE
+  if (only.L2) fsArgs$append.data <- append.data <- FALSE #FIXME: how will Yves handle lavPredict(fit, append=T, level=2)?
   bothLevels <- nL > 1L && is.null(fsArgs$level)
   fsArgs$object <- object
   fsArgs$acov <- "standard" #FIXME: update if other options become available
@@ -197,6 +243,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
   ## also draw Level 2, if multilevel and no specific level requested
   if (bothLevels) {
     fsArgs$level <- 2L
+    fsArgs$append.data <- FALSE #FIXME: how will Yves handle lavPredict(fit, append=T, level=2)?
     FS2 <- do.call(lavPredict, fsArgs)
   }
 
@@ -207,13 +254,17 @@ plaus.lavaan <- function(seed = 1, object, ...) {
       PV <- FS
     } else {
       ACOV <- attr(FS, "acov")[[1]]
-      PV <- apply(FS, 1, function(mu) {
+      v.idx <- if (only.L2) 2L else 1L
+      PV <- apply(FS[ , l.names[[v.idx]], drop = FALSE], 1, function(mu) {
         MASS::mvrnorm(n = 1, mu = mu, Sigma = ACOV)
       })
       if (is.null(dim(PV))) {
         PV <- as.matrix(PV)
-        colnames(PV) <- colnames(FS)
+        colnames(PV) <- l.names[[v.idx]]
       } else PV <- t(PV)
+      if (append.data) {
+        PV <- cbind(FS[ , o.names[[v.idx]], drop = FALSE], PV)
+      }
     }
 
     ## add Level 2 if multilevel and no specific level requested
@@ -222,12 +273,13 @@ plaus.lavaan <- function(seed = 1, object, ...) {
         PV2 <- FS2
       } else {
         ACOV2 <- attr(FS2, "acov")[[1]]
+        #FIXME: how will Yves handle lavPredict(fit, append=T, level=2)?
         PV2 <- apply(FS2, 1, function(mu) {
           out <- MASS::mvrnorm(n = 1, mu = mu, Sigma = ACOV2)
         })
         if (is.null(dim(PV2))) {
           PV2 <- as.matrix(PV2)
-          colnames(PV2) <- colnames(FS2)
+          colnames(PV2) <- l.names[[2]]
         } else PV2 <- t(PV2)
       }
     }
@@ -241,15 +293,18 @@ plaus.lavaan <- function(seed = 1, object, ...) {
         PV[[gg]] <- FS[[gg]]
       } else {
         ACOV[[gg]] <- attr(FS, "acov")[[gg]]
-        PV[[gg]] <- apply(FS[[gg]], 1, function(mu) {
+        v.idx <- if (only.L2) (2L + (gg - 1L)*nL) else (1L + (gg - 1L)*nL)
+        PV[[gg]] <- apply(FS[[gg]][ , l.names[[v.idx]], drop = FALSE], 1, function(mu) {
           MASS::mvrnorm(n = 1, mu = mu, Sigma = ACOV[[gg]])
         })
         if (is.null(dim(PV[[gg]]))) {
           PV[[gg]] <- as.matrix(PV[[gg]])
-          colnames(PV[[gg]]) <- colnames(FS[[gg]])
+          colnames(PV[[gg]]) <- l.names[[v.idx]]
         } else PV[[gg]] <- t(PV[[gg]])
       }
-
+      if (append.data) {
+        PV[[gg]] <- cbind(FS[[gg]][ , o.names[[v.idx]], drop = FALSE], PV[[gg]])
+      }
     }
 
     ## add Level 2 if multilevel and no specific level requested
@@ -262,6 +317,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
           PV2[[gg]] <- FS2[[gg]]
         } else {
           ACOV2[[gg]] <- attr(FS2, "acov")[[gg]]
+          #FIXME: how will Yves handle lavPredict(fit, append=T, level=2)?
           PV2[[gg]] <- apply(FS2[[gg]], 1, function(mu) {
             MASS::mvrnorm(n = 1, mu = mu, Sigma = ACOV2[[gg]])
           })
@@ -415,6 +471,78 @@ plaus.blavaan <- function(object) {
   PV
 }
 
+
+
+## ------
+## Checks
+## ------
+
+
+# HS.model <- ' visual  =~ x1 + x2 + x3
+#               textual =~ x4 + x5 + x6
+#               speed   =~ x7 + x8 + x9 '
+#
+# fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
+# fs1 <- plausibleValues(fit1, nDraws = 3, append.data = T)
+# lapply(fs1, head)
+#
+#
+#
+# step1 <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
+#              group.equal = c("loadings","intercepts"))
+# PV.list <- plausibleValues(step1, append.data = T)
+# lapply(PV.list[1:3], head)
+#
+#
+# model <- '
+#   level: 1
+#     fw =~ y1 + y2 + y3
+#     fw ~ x1 + x2 + x3
+#   level: 2
+#     fb =~ y1 + y2 + y3
+#     fb ~ w1 + w2
+# '
+# msem <- sem(model, data = Demo.twolevel, cluster = "cluster")
+# mlPVs <- plausibleValues(msem, nDraws = 3, append.data = T) # both levels by default
+# lapply(mlPVs, head, n = 10)
+# ## only Level 1
+# mlPV1 <- plausibleValues(msem, nDraws = 3, level = 1, append.data = T)
+# lapply(mlPV1, head)
+# ## only Level 2
+# mlPV2 <- plausibleValues(msem, nDraws = 3, level = 2, append.data = T)
+# lapply(mlPV2, head)
+#
+#
+#
+# data(Demo.twolevel)
+# Demo.twolevel$g <- ifelse(Demo.twolevel$cluster %% 2L, "foo", "bar") # arbitrary groups
+# table(Demo.twolevel$g)
+# model2 <- ' group: foo
+# level: within
+#   fw =~ y1 + L2*y2 + L3*y3
+#   fw ~ x1 + x2 + x3
+# level: between
+#   fb =~ y1 + L2*y2 + L3*y3
+#   fb ~ w1 + w2
+#
+# group: bar
+#
+# level: within
+#   fw =~ y1 + L2*y2 + L3*y3
+#   fw ~ x1 + x2 + x3
+# level: between
+#   fb =~ y1 + L2*y2 + L3*y3
+#   fb ~ w1 + w2
+# '
+# msem2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
+# ml2PVs <- plausibleValues(msem2, nDraws = 3, append.data = T) # both levels by default
+# lapply(ml2PVs, head, n = 10)
+# ## only Level 1
+# ml2PV1 <- plausibleValues(msem2, nDraws = 3, level = 1, append.data = T)
+# lapply(ml2PV1, head)
+# ## only Level 2
+# ml2PV2 <- plausibleValues(msem2, nDraws = 3, level = 2, append.data = T)
+# lapply(ml2PV2, head)
 
 
 

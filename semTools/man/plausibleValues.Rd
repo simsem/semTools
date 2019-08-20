@@ -18,13 +18,16 @@ the number of imputed data sets. If \code{object} is of class
 \code{\linkS4class{blavaan}}, in which case the number of draws is the
 number of MCMC samples from the posterior.}
 
-\item{seed}{\code{integer} passed to \code{\link{set.seed}()}}
+\item{seed}{\code{integer} passed to \code{\link{set.seed}()}.  Ignored if
+\code{object} is of class \code{\linkS4class{blavaan}},}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.
 Can include any of \code{c("no.conv", "no.se", "no.npd")}.}
 
-\item{...}{Optional arguments to pass to \code{\link[lavaan]{lavPredict}}}
+\item{...}{Optional arguments to pass to \code{\link[lavaan]{lavPredict}}.
+\code{assemble} will be ignored because multiple groups are always
+assembled into a single \code{data.frame} per draw.}
 }
 \value{
 A \code{list} of length \code{nDraws}, each of which is a
@@ -91,6 +94,15 @@ fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
 fs1 <- plausibleValues(fit1, nDraws = 3)
 lapply(fs1, head)
 
+## merge factor scores to original data.frame
+idx <- lavInspect(fit, "case.idx")       # row index for each case
+if (is.list(idx)) idx <- do.call(c, idx) # for multigroup models
+data(HolzingerSwineford1939)             # copy data to workspace
+HolzingerSwineford1939$case.idx <- idx   # add row index as variable
+## loop over draws to merge original data with factor scores
+for (i in seq_along(fs1)) {
+  fs1[[i]] <- merge(fs1[[i]], HolzingerSwineford1939, by = "case.idx")
+}
 
 ## multiple-group analysis, in 2 steps
 step1 <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
@@ -128,7 +140,7 @@ lapply(mlPV2, head)
 }
 \references{
 Asparouhov, T. & Muthen, B. O. (2010). \emph{Plausible values for latent
-  variables using Mplus}. Technical Report. Retrieved from
+  variables using M}plus. Technical Report. Retrieved from
   \url{www.statmodel.com/download/Plausible.pdf}
 }
 \seealso{

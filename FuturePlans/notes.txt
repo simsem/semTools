@@ -203,8 +203,6 @@ Add emmeans() support for observed/latent mean comparisons
 - post update here:  https://github.com/yrosseel/lavaan/issues/133
 
 
-Send Sacha a pull request to get rid of semTools::standardizeMx()
-
 
 ====================
 Changes to (b)lavaan
@@ -215,7 +213,9 @@ How does lavaan allow for non-normality of continuous variables when mixed
 with ordinal?  Necessary to use a robust ACOV as the weight matrix?
 
 - add ER.RMR to modindices
-- make @test a list of arbitrary length, test= argument accepts vector
+- all partially nested designs (e.g., Group 1 multilevel, Group 2 single-level)
+  - ttps://doi.org/10.1080/00273171.2014.882253
+  - need lav(List)Inspect(object, "nblocks")
 
 
 lavaan::lavNames()
