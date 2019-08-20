@@ -179,6 +179,12 @@ semTools::net()
     - https://groups.google.com/d/msg/lavaan/KZFGMlCuCDo/ayI3MNDSAAAJ
 
 
+semTools::reliability() suite
+- issue resolved? (no news) https://github.com/simsem/semTools/issues/45
+- check categorical issue: https://github.com/simsem/semTools/issues/48
+  - https://doi.org/10.1177/0013164417752008
+
+
 New function: convert ordinal CFA parameters to IRT
 - https://groups.google.com/d/msg/lavaan/RpZnNPQ3_kc/wawV4T-lAwAJ
 - https://groups.google.com/d/msg/lavaan/xeG7OuYcrMc/epJp14WlAwAJ

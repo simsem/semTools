@@ -11,6 +11,7 @@
 - Added (S)EPCs to `lavTestScore.mi()` output when `epc=TRUE`
 - Added (A)RIV/FMI to all pooled tests when available for `lavaan.mi` objects, to quantify additional uncertaintly in the test statistic due to missing data.
 - Allow multigroup models in `plotProbe()` and related latent-interaction functions.
+- `standardizeMx()` was deprecated in previous versions, now removed, along with dependency on the `OpenMx` package.
 
 
 
