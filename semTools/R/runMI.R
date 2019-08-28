@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 July 2019
+### Last updated: 28 August 2019
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -183,7 +183,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
           tolower(dots$test) %in% c("boot","bootstrap","bollen.stine")) ||
       all(!is.null(dots$se), tolower(dots$se) %in% c("boot","bootstrap"))) {
     stop('Bootstraping unavailable (and not recommended) in combination with ',
-         'multiple imputations. For bootstrap confidence intervals of indirect',
+         'multiple imputations. For robust confidence intervals of indirect',
          ' effects, see the ?semTools::monteCarloMed help page. To bootstrap ',
          'within each imputation, users can pass a custom function to the ',
          'FUN= argument (see ?lavaanList) to save bootstrap distributions in ',
@@ -196,6 +196,8 @@ runMI <- function(model, data, fun = "lavaan", ...,
   if (missing(data)) {
     #TODO: check for summary statistics
     #TODO: make lavaanList() accept lists of summary stats
+    #TODO: Add argument to implement Li Cai's pool-polychorics first, pass
+    #      to lavaan for DWLS with pooled WLS.V= and NACOV=, return(lavaan).
 
   } else if (is.data.frame(data)) {
     if (miPackage[1] == "Amelia") {

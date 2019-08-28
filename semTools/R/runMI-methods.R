@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 July 2019
+### Last updated: 28 August 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -800,20 +800,30 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
         baseFit <- baseline.model
       } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
         baseFit <- object@external$baseline.model
+
+        ## MUST fit PTb for "D3" likelihoods, but for "D2" use @baselineList
       } else if (test == "D2") {
-        w <- sapply(object@baselineList[useImps], function(x) x$test[[1]][["stat"]])
-        DF <- mean(sapply(object@baselineList[useImps], function(x) x$test[[1]][["df"]]))
+        baseImps <- object@meta$baseline.ok
+        if (!all(baseImps[useImps])) warning('The default independence model ',
+                                             'did not converge for data set(s): ',
+                                             which(!baseImps[useImps]))
+        w <- sapply(object@baselineList[ which(baseImps[useImps]) ],
+                    function(x) x$test[[1]][["stat"]])
+        DF <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
+                          function(x) x$test[[1]][["df"]]))
         baseOut <- calculate.D2(w, DF, asymptotic = TRUE)
         if (robust) {
           if (pool.robust) {
-            w.r <- sapply(object@baselineList[useImps], function(x) x$test[[2]][["stat"]])
-            DF.r <- mean(sapply(object@baselineList[useImps], function(x) x$test[[2]][["df"]]))
+            w.r <- sapply(object@baselineList[ which(baseImps[useImps]) ],
+                          function(x) x$test[[2]][["stat"]])
+            DF.r <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
+                                function(x) x$test[[2]][["df"]]))
             base.robust <- calculate.D2(w.r, DF.r, asymptotic = TRUE)
             names(base.robust) <- paste0(names(base.robust), ".scaled")
             baseOut <- c(baseOut, base.robust)
           } else {
             baseOut <- robustify(ChiSq = baseOut, object = object,
-                                 baseline = TRUE, useImps = useImps)
+                                 baseline = TRUE, useImps = which(baseImps[useImps]))
           }
         }
         baseFit <- NULL # for later checking, to avoid unnecessary calls
@@ -846,7 +856,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
         argList$omit.imps <- setdiff(omit.imps, "no.se") # se="none" in baseFit
         baseOut <- do.call(lavTestLRT.mi, argList)
       }
-      # else {"already used "D2" with @baselineList info to make baseOut"}
+      # else { already used "D2" with @baselineList info to make baseOut }
 
     }
 

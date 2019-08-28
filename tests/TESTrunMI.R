@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 July 2019
+### Last updated: 28 August 2019
 ### test runMI
 
 library(lavaan)
@@ -47,6 +47,7 @@ lavTestLRT.mi(fit1, asymptotic = TRUE)  # as chisq == F * df1
 lavTestLRT.mi(fit0, h1 = fit1, asymptotic = TRUE)  # compare fit
 lavTestLRT.mi(fit0, h1 = fit1, test = "D2")  # compare fit using D2
 fitMeasures(fit1)
+fitMeasures(fit1, output = "text")
 
 lavTestScore.mi(fit0, epc = TRUE)
 modindices.mi(fit1)
