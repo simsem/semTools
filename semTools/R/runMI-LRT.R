@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 8 June 2019
+### Last updated: 28 August 2019
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -155,13 +155,13 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
 
-  DF0 <- object@testList[[ useImps[1] ]][[1]][["df"]]
+  DF0 <- object@testList[[ useImps[1] ]]$standard[["df"]]
 
   ## model comparison?
   if (!is.null(h1)) {
     if (!inherits(h1, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
-    if (lavListInspect(object, "options")$test != lavListInspect(h1, "options")$test) {
-      stop('Different test statistics were requested for the 2 models.')
+    if (!all(lavListInspect(object, "options")$test == lavListInspect(h1, "options")$test)) {
+      stop('Different (sets of) test statistics were requested for the 2 models.')
     }
 
     useImps1 <- rep(TRUE, length(h1@DataList))
@@ -198,7 +198,7 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
     if (m == 0L) stop('For no imputations did both models converge.')
 
     ## check DF
-    DF1 <- h1@testList[[ useImps[1] ]][[1]][["df"]]
+    DF1 <- h1@testList[[ useImps[1] ]]$standard[["df"]]
     if (DF0 == DF1) stop("models have equal degrees of freedom")
     if (DF0 < DF1) {
       H0 <- h1
@@ -214,7 +214,7 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
   ## only keep arguments relevant to pass to lavTestLRT (if D2)
   dots <- list(...)[names(formals(lavTestLRT))]
 
-  ## check test options, backward compatibility?
+  ## check test-pooling options, for backward compatibility?
   test <- tolower(test[1])
   if (test == "mplus") {
     test <- "D3"
@@ -229,10 +229,26 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
   }
 
   ## check for robust
-  robust <- lavListInspect(object, "options")$test != "standard"
+  test.names <- lavListInspect(object, "options")$test
+  # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
+  if (length(test.names) > 1L) {
+    ## remove standard and any bootstrapped tests
+    rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
+    if (length(rm.idx) > 0L) {
+      test.names <- test.names[-rm.idx]
+    }
+    ## only acknowledge the first scaled test statistic
+    if (length(test.names) > 1L) {
+      test.names <- test.names[1]
+    }
+  }
+
+  robust <- any(test.names %in% c("satorra.bentler","yuan.bentler",
+                                  "yuan.bentler.mplus","scaled.shifted",
+                                  "mean.var.adjusted","satterthwaite"))
   if (!robust) pool.robust <- FALSE
 
-  scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
+  scaleshift <- any(test.names == "scaled.shifted")
   if (scaleshift && !is.null(h1)) {
     if (test == "D3" | !pool.robust)
       message("If test = 'scaled.shifted' (estimator = 'WLSMV' or 'MLMV'), ",
@@ -297,7 +313,7 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
     out <- robustify(ChiSq = out, object = object, h1 = h1, useImps = useImps)
     if (scaleshift) {
       extraWarn <- ' and shift parameter'
-    } else if (lavListInspect(object, "options")$test == "mean.var.adjusted") {
+    } else if (any(test.names == "mean.var.adjusted")) {
       extraWarn <- ' and degrees of freedom'
     } else extraWarn <- ''
     message('Robust corrections are made by pooling the naive chi-squared ',
@@ -370,18 +386,32 @@ D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
   ## else, return model fit OR naive difference test to be robustified
 
 
-  test <- if (pool.robust) 2L else 1L
+  test.names <- lavListInspect(object, "options")$test
+  # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
+  if (length(test.names) > 1L) {
+    ## remove standard and any bootstrapped tests
+    rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
+    if (length(rm.idx) > 0L) {
+      test.names <- test.names[-rm.idx]
+    }
+    ## only acknowledge the first scaled test statistic
+    if (length(test.names) > 1L) {
+      test.names <- test.names[1]
+    }
+  }
+
   ## pool Wald tests
   if (is.null(h1)) {
-    DF <- mean(sapply(object@testList[useImps], function(x) x[[test]][["df"]]))
-    w <- sapply(object@testList[useImps], function(x) x[[test]][["stat"]])
+    test <- if (pool.robust) test.names[1] else "standard"
+    DF <- mean(sapply(object@testList[useImps], function(x) x[[test]][["df"]]  ))
+    w  <-      sapply(object@testList[useImps], function(x) x[[test]][["stat"]])
   } else {
     ## this will not get run if !pool.robust because logic catches that first
-    DF0 <- mean(sapply(object@testList[useImps], function(x) x[[1]][["df"]]))
-    DF1 <- mean(sapply(h1@testList[useImps], function(x) x[[1]][["df"]]))
+    DF0 <- mean(sapply(object@testList[useImps], function(x) x$standard[["df"]]))
+    DF1 <- mean(sapply(    h1@testList[useImps], function(x) x$standard[["df"]]))
     DF <- DF0 - DF1
-    w0 <- sapply(object@testList[useImps], function(x) x[[1]][["stat"]])
-    w1 <- sapply(h1@testList[useImps], function(x) x[[1]][["stat"]])
+    w0 <- sapply(object@testList[useImps], function(x) x$standard[["stat"]])
+    w1 <- sapply(    h1@testList[useImps], function(x) x$standard[["stat"]])
     w <- w0 - w1
     ## check DF
     if (DF < 0) {
@@ -475,10 +505,10 @@ D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
   m <- length(useImps)
 
   if (is.null(h1)) {
-    DF <- object@testList[[ useImps[1] ]][[1]][["df"]]
+    DF <- object@testList[[ useImps[1] ]]$standard[["df"]]
   } else {
-    DF1 <- h1@testList[[ useImps[1] ]][[1]][["df"]]
-    DF0 <- object@testList[[ useImps[1] ]][[1]][["df"]]
+    DF1 <- h1@testList[[ useImps[1] ]]$standard[["df"]]
+    DF0 <- object@testList[[ useImps[1] ]]$standard[["df"]]
     DF <- DF0 - DF1
     if (DF < 0) stop('The "object" model must be nested within (i.e., have ',
                      'fewer degrees of freedom than) the "h1" model.')
@@ -498,10 +528,10 @@ D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
   LRT_con <- mean(-2*(LL0 - LL1)) # getLLs() already applies [useImps]
   ## average chisq across imputations
   if (is.null(h1)) {
-    LRT_bar <- mean(sapply(object@testList[useImps], function(x) x[[1]]$stat))
+    LRT_bar <- mean(sapply(object@testList[useImps], function(x) x$standard$stat))
   } else {
-    LRT_bar <- mean(sapply(object@testList[useImps], function(x) x[[1]]$stat) -
-                      sapply(h1@testList[useImps], function(x) x[[1]]$stat))
+    LRT_bar <- mean(sapply(object@testList[useImps], function(x) x$standard$stat) -
+                      sapply(h1@testList[useImps], function(x) x$standard$stat))
   }
   ## calculate average relative increase in variance
   a <- DF*(m - 1)
@@ -549,18 +579,31 @@ D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
 ##' @importFrom stats pchisq
 ##' @importFrom lavaan lavListInspect
 robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps) {
-  scaleshift <- lavListInspect(object, "options")$test == "scaled.shifted"
+  test.names <- lavListInspect(object, "options")$test
+  # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
+  if (length(test.names) > 1L) {
+    ## remove standard and any bootstrapped tests
+    rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
+    if (length(rm.idx) > 0L) {
+      test.names <- test.names[-rm.idx]
+    }
+    ## only acknowledge the first scaled test statistic
+    if (length(test.names) > 1L) {
+      test.names <- test.names[1]
+    }
+  }
+  scaleshift <- any(test.names %in% "scaled.shifted")
 
   if (baseline) {
     TEST <- lapply(object@baselineList[useImps], "[[", i = "test")
   } else TEST <- object@testList[useImps]
 
-  d0 <- mean(sapply(TEST, function(x) x[[2]][["df"]]))
-  c0 <- mean(sapply(TEST, function(x) x[[2]][["scaling.factor"]]))
+  d0 <- mean(sapply(TEST, function(x) x[[ test.names[1] ]][["df"]]))
+  c0 <- mean(sapply(TEST, function(x) x[[ test.names[1] ]][["scaling.factor"]]))
   if (!is.null(h1)) {
-    d1 <- mean(sapply(h1@testList[useImps], function(x) x[[2]][["df"]]))
+    d1 <- mean(sapply(h1@testList[useImps], function(x) x[[ test.names[1] ]][["df"]]))
     c1 <- mean(sapply(h1@testList[useImps],
-                      function(x) x[[2]][["scaling.factor"]]))
+                      function(x) x[[ test.names[1] ]][["scaling.factor"]]))
     delta_c <- (d0*c0 - d1*c1) / (d0 - d1)
     ChiSq["chisq.scaled"] <- ChiSq[["chisq"]] / delta_c
     ChiSq["df.scaled"] <- d0 - d1
@@ -573,7 +616,7 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps) {
     ChiSq["df.scaled"] <- d0
     if (scaleshift) {
       ## add average shift parameter (or average of sums, if nG > 1)
-      shift <- mean(sapply(TEST, function(x) sum(x[[2]][["shift.parameter"]]) ))
+      shift <- mean(sapply(TEST, function(x) sum(x[[ test.names[1] ]][["shift.parameter"]]) ))
       ChiSq["chisq.scaled"] <- ChiSq[["chisq.scaled"]] + shift
       ChiSq["pvalue.scaled"] <- pchisq(ChiSq[["chisq.scaled"]],
                                        df = ChiSq[["df.scaled"]],

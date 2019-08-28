@@ -55,12 +55,15 @@ modindices.mi(fit1)
 
 
 ## fit multigroup model
-mgfit1 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm")
-mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
-                 group.equal = c("loadings","intercepts"))
+mgfit1 <- cfa.mi(HS.model, data = imps,
+                 #test = c("mean.var.adjusted","satorra.bentler"),
+                 group = "school")
+mgfit0 <- cfa.mi(HS.model, data = imps,
+                 #test = c("mean.var.adjusted","satorra.bentler"),
+                 group = "school", group.equal = c("loadings","intercepts"))
 ## use methods
 summary(mgfit0, standardized = "std.all") # can also request "std.lv"
-summary(mgfit0, ci = FALSE, fmi = TRUE, asymptotic = TRUE)
+summary(mgfit0, ci = FALSE, fmi = TRUE, asymptotic = TRUE, fit = TRUE)
 coef(mgfit0)           # pooled coefs
 vcov(mgfit0)[1:4, 1:4] # pooled sampling covariance matrix
 fitted(mgfit0)         # model-implied moments evaluated at pooled coefficients
@@ -69,12 +72,12 @@ nobs(mgfit0)
 nobs(mgfit0, total = FALSE) # N per group
 
 lavTestLRT.mi(mgfit0)              # pooled LRT by default (D3 statistic)
-lavTestLRT.mi(mgfit0, test = 'D2') # use D2 method (necessary for categorical data)
+lavTestLRT.mi(mgfit0, test = 'D2') # use D2 method (necessary for MV-adjusted tests)
 lavTestLRT.mi(mgfit0, test = 'D2', pool.robust = TRUE)
 lavTestLRT.mi(mgfit0, test = 'D2', pool.robust = TRUE, asymptotic = TRUE)
 lavTestLRT.mi(mgfit0, h1 = mgfit1)           # compare fit
 lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2') # robustifies pooled naive statistic
-lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic
+lavTestLRT.mi(mgfit0, h1 = mgfit1, test = 'D2', pool.robust = TRUE) # pools robust statistic (integer df from lavTestLRT even when "mean.var.adjusted"!)
 fitMeasures(mgfit1, output = "text")
 print(fitMeasures(mgfit0, output = "text", test = "D2"), add.h0 = TRUE)
 

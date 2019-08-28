@@ -18,11 +18,11 @@ the models will be swapped, still on the assumption that they are nested.}
 function.}
 }
 \value{
-A numeric vector including the unadjusted (naive) chi-squared test
-statistic, the \emph{k}-factor correction, the corrected test statistic, the
-\emph{df} for the test, and the \emph{p} value for the test under the null
-hypothesis that the model fits perfectly (or that the 2 models have
-equivalent fit).
+A numeric vector including the original (unadjusted) chi-squared
+  statistic, the \emph{k}-factor correction, the corrected test statistic,
+  the \emph{df} for the test, and the \emph{p} value for the test under the
+  null hypothesis that the model fits perfectly (or that the 2 models have
+  equivalent fit).
 }
 \description{
 Calculate \emph{k}-factor correction for \eqn{chi^2} model-fit test
@@ -56,11 +56,10 @@ chisqSmallN(fit1, fit0)
 }
 \references{
 Nevitt, J., & Hancock, G. R. (2004). Evaluating small sample
-approaches for model test statistics in structural equation modeling.
-\emph{Multivariate Behavioral Research, 39}(3), 439--478.
-doi:10.1207/S15327906MBR3903_3
+  approaches for model test statistics in structural equation modeling.
+  \emph{Multivariate Behavioral Research, 39}(3), 439--478.
+  doi:10.1207/S15327906MBR3903_3
 }
 \author{
-Terrence D. Jorgensen (University of Amsterdam;
-\email{TJorgensen314@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

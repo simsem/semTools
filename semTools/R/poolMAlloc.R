@@ -3,7 +3,7 @@
 ### - based on research from/with Sonya Sterba
 ### - adapted from OLD parcelAllocation() by Corbin Quick and Alexander Schoemann
 ### - additional "indices" argument added by Terrence D. Jorgensen
-### Last updated: 18 March 2019
+### Last updated: 28 August 2019
 
 
 ##' Pooled estimates and standard errors across M parcel-allocations: Combining
@@ -492,8 +492,9 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
       fit <- lavaan::sem(syntax, data = data_parcel, ...)
       ## if a robust estimator was requested, update fit indices accordingly
       requestedTest <- lavInspect(fit, "options")$test
-      if (requestedTest %in% c("Satorra.Bentler","Yuan.Bentler",
-                               "mean.var.adjusted","Satterthwaite")) {
+      if (any(requestedTest %in% c("satorra.bentler","yuan.bentler",
+                                   "yuan.bentler.mplus","scaled.shifted",
+                                   "mean.var.adjusted","satterthwaite"))) {
         indices[1:2] <- c("chisq.scaled","df.scaled")
       } else indices[1:2] <- c("chisq","df")
       ## check convergence and solution

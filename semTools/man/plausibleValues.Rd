@@ -27,7 +27,8 @@ Can include any of \code{c("no.conv", "no.se", "no.npd")}.}
 
 \item{...}{Optional arguments to pass to \code{\link[lavaan]{lavPredict}}.
 \code{assemble} will be ignored because multiple groups are always
-assembled into a single \code{data.frame} per draw.}
+assembled into a single \code{data.frame} per draw. \code{type} will be
+ignored because it is set internally to \code{type="lv"}.}
 }
 \value{
 A \code{list} of length \code{nDraws}, each of which is a
@@ -95,7 +96,7 @@ fs1 <- plausibleValues(fit1, nDraws = 3)
 lapply(fs1, head)
 
 ## merge factor scores to original data.frame
-idx <- lavInspect(fit, "case.idx")       # row index for each case
+idx <- lavInspect(fit1, "case.idx")      # row index for each case
 if (is.list(idx)) idx <- do.call(c, idx) # for multigroup models
 data(HolzingerSwineford1939)             # copy data to workspace
 HolzingerSwineford1939$case.idx <- idx   # add row index as variable
