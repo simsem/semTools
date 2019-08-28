@@ -3,7 +3,7 @@
 ###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ###          Aaron Boulton <aboulton@ku.edu>,
 ###          Ruben Arslan <rubenarslan@gmail.com>
-### Last updated: 17 May 2019
+### Last updated: 28 August 2019
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -173,7 +173,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
     adjGammaHat <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df"]) * (1 - gammaHat)
     result["gammaHat"] <- gammaHat
     result["adjGammaHat"] <- adjGammaHat
-    if (!lavInspect(object, "options")$test %in% c("standard","bollen.stine")) {
+    if (any(grepl(pattern = "scaled", x = names(fit)))) {
       gammaHatScaled <- p / (p + 2 * ((fit["chisq.scaled"] - fit["df.scaled"]) / n))
       adjGammaHatScaled <- 1 - (((ngroup * p * (p + 1)) / 2) / fit["df.scaled"]) * (1 - gammaHatScaled)
       result["gammaHat.scaled"] <- gammaHatScaled
@@ -182,7 +182,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   }
   if (length(grep("rmsea", fit.measures))) {
     result["baseline.rmsea"] <- nullRMSEA(object, silent = TRUE)
-    if (!lavInspect(object, "options")$test %in% c("standard","bollen.stine")) {
+    if (any(grepl(pattern = "scaled", x = names(fit)))) {
       result["baseline.rmsea.scaled"] <- nullRMSEA(object, scaled = TRUE, silent = TRUE)
     }
   }
@@ -333,23 +333,27 @@ sic <- function(f, lresults = NULL) {
 ##' @importFrom stats pchisq
 ##'
 ##' @param fit0 The lavaan model object provided after running the \code{cfa},
-##' \code{sem}, \code{growth}, or \code{lavaan} functions.
+##'   \code{sem}, \code{growth}, or \code{lavaan} functions.
 ##' @param fit1 Optional additional \linkS4class{lavaan} model, in which
-##' \code{fit0} is nested.  If \code{fit0} has fewer \emph{df} than \code{fit1},
-##' the models will be swapped, still on the assumption that they are nested.
+##'   \code{fit0} is nested.  If \code{fit0} has fewer \emph{df} than \code{fit1},
+##'   the models will be swapped, still on the assumption that they are nested.
 ##' @param \dots Additional arguments to the \code{\link[lavaan]{lavTestLRT}}
-##' function.
-##' @return A numeric vector including the unadjusted (naive) chi-squared test
-##' statistic, the \emph{k}-factor correction, the corrected test statistic, the
-##' \emph{df} for the test, and the \emph{p} value for the test under the null
-##' hypothesis that the model fits perfectly (or that the 2 models have
-##' equivalent fit).
-##' @author Terrence D. Jorgensen (University of Amsterdam;
-##' \email{TJorgensen314@@gmail.com})
+##'   function.
+##'
+##' @return A numeric vector including the original (unadjusted) chi-squared
+##'   statistic, the \emph{k}-factor correction, the corrected test statistic,
+##'   the \emph{df} for the test, and the \emph{p} value for the test under the
+##'   null hypothesis that the model fits perfectly (or that the 2 models have
+##'   equivalent fit).
+##'
+##' @author
+##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
 ##' @references Nevitt, J., & Hancock, G. R. (2004). Evaluating small sample
-##' approaches for model test statistics in structural equation modeling.
-##' \emph{Multivariate Behavioral Research, 39}(3), 439--478.
-##' doi:10.1207/S15327906MBR3903_3
+##'   approaches for model test statistics in structural equation modeling.
+##'   \emph{Multivariate Behavioral Research, 39}(3), 439--478.
+##'   doi:10.1207/S15327906MBR3903_3
+##'
 ##' @examples
 ##'
 ##' HS.model <- '
@@ -397,16 +401,16 @@ chisqSmallN <- function(fit0, fit1 = NULL, ...) {
   }
   kc <- 1 - ((2*P + 4*K + 5) / (6*N))
   if (is.null(fit1)) {
-    scaled <- lavInspect(fit0, "options")$test %in%
-      c("satorra.bentler","yuan.bentler","mean.var.adjusted","scaled.shifted")
-    chi <- lavaan::fitMeasures(fit0)[[if (scaled) "chisq.scaled" else "chisq"]]
-    DF <- lavaan::fitMeasures(fit0)[["df"]]
+    FIT <- lavaan::fitMeasures(fit0)
+    scaled <- any(grepl(pattern = "scaled", x = names(FIT)))
+    chi <- FIT[[if (scaled) "chisq.scaled" else "chisq"]]
+    DF  <- FIT[["df"]]
   } else {
     AOV <- lavaan::lavTestLRT(fit0, fit1, ...)
     chi <- AOV[["Chisq diff"]][2]
     DF <- AOV[["Df diff"]][2]
   }
-  out <- c(naive.chisq = chi, `k-factor` = kc, adj.chisq = chi*kc,
+  out <- c(original.chisq = chi, `k-factor` = kc, adj.chisq = chi*kc,
            df = DF, pvalue = pchisq(chi*kc, DF, lower.tail = FALSE))
   class(out) <- c("lavaan.vector","numeric")
   out

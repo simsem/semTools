@@ -112,7 +112,7 @@
 ##' lapply(fs1, head)
 ##'
 ##' ## merge factor scores to original data.frame
-##' idx <- lavInspect(fit, "case.idx")       # row index for each case
+##' idx <- lavInspect(fit1, "case.idx")      # row index for each case
 ##' if (is.list(idx)) idx <- do.call(c, idx) # for multigroup models
 ##' data(HolzingerSwineford1939)             # copy data to workspace
 ##' HolzingerSwineford1939$case.idx <- idx   # add row index as variable

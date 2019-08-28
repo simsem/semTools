@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 14 November 2018
+### Last updated: 28 August 2019
 ### source code for compareFit() function and FitDiff class
 
 
@@ -374,7 +374,10 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	      fitA <- modsA[[i]]
 	      fitB <- modsB[[i]]
 	      if (is.null(argsLRT$asymptotic))
-	        argsLRT$asymptotic <- lavListInspect(fitA, "options")$test != "standard"
+	        argsLRT$asymptotic <- any(lavListInspect(fitA, "options")$test %in%
+	                                    c("satorra.bentler","yuan.bentler",
+	                                      "yuan.bentler.mplus","scaled.shifted",
+	                                      "mean.var.adjusted","satterthwaite"))
 	      tempDiff <- do.call(lavTestLRT.mi, c(list(fitA, h1 = fitB), argsLRT))
 
 	      if (names(tempDiff)[1] == "F") {

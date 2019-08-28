@@ -431,9 +431,9 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   }
   if (fit.measures) {
     indices <- c("chisq","df","pvalue","cfi","tli","rmsea","srmr")
-    try(print(fitMeasures(object, fit.measures = indices,
-                          output = "text"), add.h0 = TRUE),
-        silent = TRUE)
+    FITS <- suppressWarnings(fitMeasures(object, fit.measures = indices,
+                                         output = "text"))
+    try(print(FITS, add.h0 = TRUE), silent = TRUE)
   }
 
   PE
@@ -730,7 +730,8 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
   }
 
   ## CHI-SQUARED-BASED FIT INDICES
-  if (any(!grepl(pattern = "rmr", x = indices))) {
+  notest <- length(lavoptions$test) == 1L && lavoptions$test == "none"
+  if (notest || any(!grepl(pattern = "rmr", x = indices))) {
 
     ## check for additional arguments
     dots <- list(...)
@@ -748,14 +749,30 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     } else test <- tolower(test[1])
     if (tolower(test) %in% c("mr","meng.rubin","likelihood","lrt","mplus","d3")) test <- "D3"
     if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald","d2")) test <- "D2"
-    if (test == "D3" && !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
+    if (test == "D3" && !lavoptions$estimator %in% c("ML","PML","FML")) {
       message('"D3" only available using maximum likelihood estimation. ',
               'Changed test to "D2".')
       test <- "D2"
     }
 
     ## check for robust
-    robust <- lavoptions$test != "standard"
+    test.names <- lavoptions$test
+    # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
+    if (length(test.names) > 1L) {
+      ## remove standard and any bootstrapped tests
+      rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
+      if (length(rm.idx) > 0L) {
+        test.names <- test.names[-rm.idx]
+      }
+      ## only acknowledge the first scaled test statistic
+      if (length(test.names) > 1L) {
+        test.names <- test.names[1]
+      }
+    }
+
+    robust <- any(test.names %in% c("satorra.bentler","yuan.bentler",
+                                    "yuan.bentler.mplus","scaled.shifted",
+                                    "mean.var.adjusted","satterthwaite"))
     if (robust) {
       ## assign pool.robust option to object
       if (is.null(dots$pool.robust)) {
@@ -765,7 +782,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       }
     } else dots$pool.robust <- pool.robust <- FALSE
 
-    scaleshift <- lavoptions$test == "scaled.shifted"
+    scaleshift <- any(test.names == "scaled.shifted")
     if (scaleshift) {
       if (test == "D3" | !pool.robust)
         message("If test = 'scaled.shifted' (estimator = 'WLSMV' or 'MLMV'), ",
@@ -808,16 +825,16 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
                                              'did not converge for data set(s): ',
                                              which(!baseImps[useImps]))
         w <- sapply(object@baselineList[ which(baseImps[useImps]) ],
-                    function(x) x$test[[1]][["stat"]])
+                    function(x) x$test$standard[["stat"]])
         DF <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
-                          function(x) x$test[[1]][["df"]]))
+                          function(x) x$test$standard[["df"]]))
         baseOut <- calculate.D2(w, DF, asymptotic = TRUE)
         if (robust) {
           if (pool.robust) {
             w.r <- sapply(object@baselineList[ which(baseImps[useImps]) ],
-                          function(x) x$test[[2]][["stat"]])
+                          function(x) x$test[[ test.names[1] ]][["stat"]])
             DF.r <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
-                                function(x) x$test[[2]][["df"]]))
+                                function(x) x$test[[ test.names[1] ]][["df"]]))
             base.robust <- calculate.D2(w.r, DF.r, asymptotic = TRUE)
             names(base.robust) <- paste0(names(base.robust), ".scaled")
             baseOut <- c(baseOut, base.robust)
@@ -871,7 +888,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       ## for RMSEA
       if ("rmsea" %in% indices) {
         d <- mean(sapply(object@testList[useImps],
-                         function(x) sum(x[[2]][["trace.UGamma"]])))
+                         function(x) sum(x[[ test.names[1] ]][["trace.UGamma"]])))
         if (is.na(d) || d == 0) d <- NA # FIXME: only relevant when mean.var.adjusted?
       }
     }
@@ -908,7 +925,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
           out["cfi.scaled"] <- 1
         } else out["cfi.scaled"] <- 1 - t1/t2
         ## Brosseau-Liard & Savalei MBR 2014, equation 15
-        if (!pool.robust & lavoptions$test %in%
+        if (!pool.robust & test.names[1] %in%
             c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
           t1 <- max(X2 - ch*DF, 0)
           t2 <- max(X2 - ch*DF, bX2 - cb*bDF, 0)
@@ -934,7 +951,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
           out["rni.scaled"] <- NA
         } else out["rni.scaled"] <- 1 - t1/t2
         ## Brosseau-Liard & Savalei MBR 2014, equation 15
-        if (!pool.robust & lavoptions$test %in%
+        if (!pool.robust & test.names[1] %in%
             c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
           t1 <- X2 - ch*DF
           t2 <- bX2 - cb*bDF
@@ -962,7 +979,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
           out["tli.scaled"] <- out["nnfi.scaled"] <- 1
         }
         ## Brosseau-Liard & Savalei MBR 2014, equation 15
-        if (!pool.robust & lavoptions$test %in%
+        if (!pool.robust & test.names[1] %in%
             c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
           t1 <- (X2 - ch*DF)*bDF
           t2 <- (bX2 - cb*bDF)*DF
@@ -1090,7 +1107,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
           out["rmsea.pvalue.scaled"] <- pchisq(X2, DF.sc, ncp = N*DF.sc*0.05^2/nG,
                                                lower.tail = FALSE)
 
-          if (!pool.robust & lavoptions$test %in%
+          if (!pool.robust & test.names[1] %in%
               c("satorra.bentler","yuan.bentler","yuan.bentler.mplus")) {
             ## robust
             out["rmsea.robust"] <- sqrt( max(0, (X2/N)/DF - ch/N ) ) * sqrt(nG)
