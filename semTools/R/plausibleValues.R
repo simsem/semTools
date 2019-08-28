@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 20 August 2019
+### Last updated: 28 August 2019
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -80,7 +80,8 @@
 ##'   Can include any of \code{c("no.conv", "no.se", "no.npd")}.
 ##' @param ... Optional arguments to pass to \code{\link[lavaan]{lavPredict}}.
 ##'   \code{assemble} will be ignored because multiple groups are always
-##'   assembled into a single \code{data.frame} per draw.
+##'   assembled into a single \code{data.frame} per draw. \code{type} will be
+##'   ignored because it is set internally to \code{type="lv"}.
 ##'
 ##' @return A \code{list} of length \code{nDraws}, each of which is a
 ##'   \code{data.frame} containing plausible values, which can be treated as
@@ -191,6 +192,15 @@ plausibleValues <- function(object, nDraws = 20L, seed = 12345,
 ##' @importFrom lavaan lavInspect lavPredict lavNames
 plaus.lavaan <- function(seed = 1, object, ...) {
   stopifnot(inherits(object, "lavaan"))
+  if (lavInspect(object, "categorical")) {
+    stop("Plausible values not available (yet) for categorical data")
+  }
+  if (lavInspect(object, "options")$missing %in% c("ml", "ml.x")) {
+    stop("Plausible values not available (yet) for missing data + fiml.\n",
+         "       Multiple imputations can be used via lavaan.mi()")
+  }
+  #FIXME?  https://github.com/yrosseel/lavaan/issues/156
+
   set.seed(seed)
   cluster <- lavInspect(object, "cluster")
   group <- lavInspect(object, "group")
@@ -215,11 +225,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
       o.names <- c(o.names, list(lavNames(object, "ov", block = BB)))
     }
   } else {
-    ##FIXME: multilevel + multigroup
-    stop('Factor scores are currently named incorrectly in lavaan models with ',
-         'both multiple groups and multiple levels: \n',
-         '\thttps://github.com/yrosseel/lavaan/issues/153 \n',
-         'When this issue is resolved, this option will become available.')
+    ## multilevel + multigroup
     for (BB in 1:(nG*nL)) { #FIXME: lavInspect(object, "nblocks")
       l.names <- c(l.names, list(lavNames(object, "lv", block = BB)))
       o.names <- c(o.names, list(lavNames(object, "ov", block = BB)))
@@ -230,6 +236,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
 
   ## extract factor scores + covariance matrix
   fsArgs <- list(...)
+  fsArgs$type <- "lv"
   fsArgs$assemble <- FALSE # assemble after drawing
   append.data <- fsArgs$append.data
   if (is.null(append.data)) append.data <- FALSE # default in lavPredict()
@@ -239,7 +246,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
   bothLevels <- nL > 1L && is.null(fsArgs$level)
   fsArgs$object <- object
   fsArgs$acov <- "standard" #FIXME: update if other options become available
-  FS <- do.call(lavPredict, fsArgs)
+  FS <- do.call(lavPredict, fsArgs) #FIXME: breaks when multigroup MLSEM: https://github.com/yrosseel/lavaan/issues/157
   ## also draw Level 2, if multilevel and no specific level requested
   if (bothLevels) {
     fsArgs$level <- 2L

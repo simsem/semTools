@@ -143,8 +143,7 @@ semTools::runMI()
 
 semTools::plausibleValues()
 - add latent item-responses (LRESPONSES in Mplus) when available in blavaan
-- set append.data=TRUE and assemble=TRUE to simplify code, return with data by default
-
+- account for different factor-score matrices per missing-data pattern?
 
 
 ======================
@@ -214,7 +213,7 @@ with ordinal?  Necessary to use a robust ACOV as the weight matrix?
 
 - add ER.RMR to modindices
 - all partially nested designs (e.g., Group 1 multilevel, Group 2 single-level)
-  - ttps://doi.org/10.1080/00273171.2014.882253
+  - https://doi.org/10.1080/00273171.2014.882253
   - need lav(List)Inspect(object, "nblocks")
 
 
