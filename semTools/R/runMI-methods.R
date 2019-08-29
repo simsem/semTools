@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 August 2019
+### Last updated: 29 August 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -188,7 +188,7 @@
 ##' @references
 ##'   Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
 ##'   with multiple imputation}. Technical Report. Retrieved from
-##'   \url{www.statmodel.com}
+##'   www.statmodel.com
 ##'
 ##'   Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
 ##'   Guilford.
@@ -196,11 +196,11 @@
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
 ##'   Significance levels from repeated \emph{p}-values with multiply-imputed
 ##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   \url{https://www.jstor.org/stable/24303994}
+##'   https://www.jstor.org/stable/24303994
 ##'
 ##'   Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-##'   multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111. Retrieved
-##'   from \url{https://www.jstor.org/stable/2337151}
+##'   multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
+##'   doi:10.2307/2337151
 ##'
 ##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
 ##'   New York, NY: Wiley.

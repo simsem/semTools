@@ -67,15 +67,15 @@
 ##' @importFrom lavaan lavInspect lavPredict
 ##'
 ##' @param object A fitted model of class \code{\linkS4class{lavaan}},
-##'   \code{\linkS4class{blavaan}}, or \code{\linkS4class{lavaan.mi}}
+##'   \code{\link[blavaan]{blavaan}}, or \code{\linkS4class{lavaan.mi}}
 ##' @param nDraws \code{integer} specifying the number of draws, analogous to
 ##'   the number of imputed data sets. If \code{object} is of class
 ##'   \code{\linkS4class{lavaan.mi}}, this will be the number of draws taken
 ##'   \emph{per imputation}.  Ignored if \code{object} is of class
-##'   \code{\linkS4class{blavaan}}, in which case the number of draws is the
+##'   \code{\link[blavaan]{blavaan}}, in which case the number of draws is the
 ##'   number of MCMC samples from the posterior.
 ##' @param seed \code{integer} passed to \code{\link{set.seed}()}.  Ignored if
-##'   \code{object} is of class \code{\linkS4class{blavaan}},
+##'   \code{object} is of class \code{\link[blavaan]{blavaan}},
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
 ##'   imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.
 ##'   Can include any of \code{c("no.conv", "no.se", "no.npd")}.
@@ -97,7 +97,7 @@
 ##' @references
 ##'   Asparouhov, T. & Muthen, B. O. (2010). \emph{Plausible values for latent
 ##'   variables using M}plus. Technical Report. Retrieved from
-##'   \url{www.statmodel.com/download/Plausible.pdf}
+##'   www.statmodel.com/download/Plausible.pdf
 ##'
 ##' @seealso \code{\link{runMI}}, \code{\linkS4class{lavaan.mi}}
 ##'

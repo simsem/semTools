@@ -141,7 +141,7 @@ reliability(fit)
 \references{
 Bollen, K. A. (1980). Issues in the comparative measurement of
 political democracy. \emph{American Sociological Review, 45}(3), 370--390.
-Retrieved from \url{https://www.jstor.org/stable/2095172}
+doi:10.2307/2095172
 
 Bentler, P. M. (1972). A lower-bound method for the dimension-free
 measurement of internal consistency. \emph{Social Science Research, 1}(4),
@@ -178,5 +178,7 @@ of weighted composite
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 
-Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+  Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+
+  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

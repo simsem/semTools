@@ -189,6 +189,5 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}. New
   New York, NY: Wiley.
 }
 \author{
-Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
