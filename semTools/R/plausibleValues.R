@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 August 2019
+### Last updated: 29 August 2019
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -11,6 +11,7 @@
 # bFS <- do.call(rbind, blavInspect(bfit, "lvs"))
 # do.call()
 
+
 ## -------------
 ## Main function
 ## -------------
@@ -18,7 +19,7 @@
 ##' Plausible-Values Imputation of Factor Scores Estimated from a lavaan Model
 ##'
 ##' Draw plausible values of factor scores estimated from a fitted
-##' \code{\link[lavaan]{lavaan}} model, then treat them as mltiple imputations
+##' \code{\link[lavaan]{lavaan}} model, then treat them as multiple imputations
 ##' of missing data using \code{\link{runMI}}.
 ##'
 ##'
@@ -108,10 +109,13 @@
 ##'               speed   =~ x7 + x8 + x9 '
 ##'
 ##' fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
-##' fs1 <- plausibleValues(fit1, nDraws = 3)
+##' fs1 <- plausibleValues(fit1, nDraws = 3,
+##'                        ## lavPredict() can add only the modeled data
+##'                        append.data = TRUE)
 ##' lapply(fs1, head)
 ##'
-##' ## merge factor scores to original data.frame
+##' ## To merge factor scores to original data.frame (not just modeled data)
+##' fs1 <- plausibleValues(fit1, nDraws = 3)
 ##' idx <- lavInspect(fit1, "case.idx")      # row index for each case
 ##' if (is.list(idx)) idx <- do.call(c, idx) # for multigroup models
 ##' data(HolzingerSwineford1939)             # copy data to workspace
@@ -120,6 +124,8 @@
 ##' for (i in seq_along(fs1)) {
 ##'   fs1[[i]] <- merge(fs1[[i]], HolzingerSwineford1939, by = "case.idx")
 ##' }
+##' lapply(fs1, head)
+##'
 ##'
 ##' ## multiple-group analysis, in 2 steps
 ##' step1 <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",

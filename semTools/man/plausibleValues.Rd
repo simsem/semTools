@@ -40,7 +40,7 @@ A \code{list} of length \code{nDraws}, each of which is a
 }
 \description{
 Draw plausible values of factor scores estimated from a fitted
-\code{\link[lavaan]{lavaan}} model, then treat them as mltiple imputations
+\code{\link[lavaan]{lavaan}} model, then treat them as multiple imputations
 of missing data using \code{\link{runMI}}.
 }
 \details{
@@ -92,10 +92,13 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               speed   =~ x7 + x8 + x9 '
 
 fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
-fs1 <- plausibleValues(fit1, nDraws = 3)
+fs1 <- plausibleValues(fit1, nDraws = 3,
+                       ## lavPredict() can add only the modeled data
+                       append.data = TRUE)
 lapply(fs1, head)
 
-## merge factor scores to original data.frame
+## To merge factor scores to original data.frame (not just modeled data)
+fs1 <- plausibleValues(fit1, nDraws = 3)
 idx <- lavInspect(fit1, "case.idx")      # row index for each case
 if (is.list(idx)) idx <- do.call(c, idx) # for multigroup models
 data(HolzingerSwineford1939)             # copy data to workspace
@@ -104,6 +107,8 @@ HolzingerSwineford1939$case.idx <- idx   # add row index as variable
 for (i in seq_along(fs1)) {
   fs1[[i]] <- merge(fs1[[i]], HolzingerSwineford1939, by = "case.idx")
 }
+lapply(fs1, head)
+
 
 ## multiple-group analysis, in 2 steps
 step1 <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",

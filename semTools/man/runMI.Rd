@@ -104,7 +104,7 @@ out2 <- cfa.mi(HS.model, data = imps)
 ## same results (using the same seed results in the same imputations)
 cbind(impute.within = coef(out1), impute.first = coef(out2))
 
-summary(out1)
+summary(out1, fit.measures = TRUE)
 summary(out1, ci = FALSE, fmi = TRUE, output = "data.frame")
 summary(out1, ci = FALSE, stand = TRUE, rsq = TRUE)
 
@@ -122,9 +122,9 @@ fitMeasures(out1)
 mgfit.config <- cfa.mi(HS.model, data = imps, estimator = "mlm",
                        group = "school")
 ## add invariance constraints, and use previous fit as "data"
-mgfit.metric <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm"
+mgfit.metric <- cfa.mi(HS.model, data = mgfit.config, estimator = "mlm",
                        group = "school", group.equal = "loadings")
-mgfit.scalar <- cfa.mi(HS.model, data = mgfit1, estimator = "mlm"
+mgfit.scalar <- cfa.mi(HS.model, data = mgfit.config, estimator = "mlm",
                        group = "school",
                        group.equal = c("loadings","intercepts"))
 
