@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 28 August 2019
+### Last updated: 29 August 2019
 ### source code for compareFit() function and FitDiff class
 
 
@@ -321,7 +321,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	  pool.robust <- argsLRT$pool.robust # user-specified value
 	}
 	if (is.null(argsLRT$test)) {
-	  test <- formals(lavTestLRT.mi)$test # default value
+	  test <- eval(formals(lavTestLRT.mi)$test) # default value
 	} else {
 	  test <- argsLRT$test # user-specified value
 	}
