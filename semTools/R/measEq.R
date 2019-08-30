@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 15 August 2019
+### Last updated: 30 August 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -640,7 +640,7 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##'           \code{"effects.coding"}, \code{"effects-coding"},
 ##'           \code{"effects.code"}, \code{"effects-code"}
 ##'   }
-##'   See Little et al. (2006) for details on all three methods.
+##'   See Kloessner & Klopp (2019) for details about all three methods.
 ##'
 ##' @param ID.cat \code{character}. The method for identifying (residual)
 ##'   variances and intercepts of latent item-responses underlying any
@@ -734,10 +734,10 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##' @seealso  \code{\link{compareFit}}
 ##'
 ##' @references
-##'   Little, T. D., Slegers, D. W., & Card, N. A. (2006). A non-arbitrary
-##'   method of identifying and scaling latent variables in SEM and MACS models.
-##'   \emph{Structural Equation Modeling, 13}(1), 59--72.
-##'   doi:10.1207/s15328007sem1301_3
+##'   Kloessner, S., & Klopp, E. (2019). Explaining constraint interaction: How
+##'   to interpret estimated model parameters under alternative scaling methods.
+##'   \emph{Structural Equation Modeling, 26}(1), 143--155.
+##'   doi:10.1080/10705511.2018.1517356
 ##'
 ##'   Liu, Y., Millsap, R. E., West, S. G., Tein, J.-Y., Tanaka, R., & Grimm,
 ##'   K. J. (2017). Testing measurement invariance in longitudinal data with
@@ -823,10 +823,12 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##' ## released when equality constraints are imposed), and (3) fit that model
 ##' ## to the data as you would if you wrote the syntax yourself.
 ##'
-##' ## continuing from the examples above, after establishing invariance of
-##' ## thresholds, we proceed to test equivalence of loadings, intercepts, and
-##' ## residual variances (metric, scalar, and strict invariance, respectively)
+##' ## Continuing from the examples above, after establishing invariance of
+##' ## thresholds, we proceed to test equivalence of loadings and intercepts
+##' ##   (metric and scalar invariance, respectively)
 ##' ## simultaneously across groups and repeated measures.
+##'
+##' \dontrun{
 ##'
 ##' ## metric invariance
 ##' syntax.metric <- measEq.syntax(configural.model = mod.cat, data = datCat,
@@ -864,32 +866,13 @@ setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
 ##' ## test equivalence of intercepts, given equal thresholds & loadings
 ##' anova(fit.metric, fit.scalar)
 ##'
-##' ## strict invariance
-##' syntax.strict <- measEq.syntax(configural.model = mod.cat, data = datCat,
-##'                                ordered = paste0("u", 1:8),
-##'                                parameterization = "theta",
-##'                                ID.fac = "std.lv", ID.cat = "Wu.Estabrook.2016",
-##'                                group = "g", longFacNames = longFacNames,
-##'                                group.equal = c("thresholds","loadings",
-##'                                                "intercepts","residuals"),
-##'                                long.equal  = c("thresholds","loadings",
-##'                                                "intercepts","residuals"))
-##' summary(syntax.strict)                    # summarize model features
-##' mod.strict <- as.character(syntax.strict) # save as text
-##' cat(mod.strict)                           # print/view lavaan syntax
-##' ## fit model to data
-##' fit.strict <- cfa(mod.strict, data = datCat, group = "g",
-##'                   ordered = paste0("u", 1:8), parameterization = "theta")
-##' ## test equivalence of residual variances, given scalar invariance
-##' anova(fit.scalar, fit.strict)
-##'
 ##'
 ##' ## For a single table with all results, you can pass the models to
 ##' ## summarize to the compareFit() function
-##' compareFit(fit.config, fit.thresh, fit.metric, fit.scalar, fit.strict)
+##' compareFit(fit.config, fit.thresh, fit.metric, fit.scalar)
 ##'
 ##'
-##' \dontrun{
+##'
 ##' ## ------------------------------------------------------
 ##' ## NOT RECOMMENDED: fit several invariance models at once
 ##' ## ------------------------------------------------------
