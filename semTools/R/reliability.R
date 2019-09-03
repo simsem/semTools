@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit , Yves Rosseel
-### Last updated: 29 August 2019
+### Last updated: 3 September 2019
 
 
 ## -------------
@@ -874,19 +874,23 @@ p2 <- function(t1, t2, r) {
 # 	lapply(lavInspect(newobject, "est"), "[[", "theta")
 # }
 
-#' @importFrom lavaan lavInspect lavNames
+##' @importFrom lavaan lavInspect lavNames
+##' @importFrom methods getMethod
 getThreshold <- function(object) {
-	ngroups <- lavInspect(object, "ngroups")
+	ngroups <- lavInspect(object, "ngroups") #TODO: add nlevels when capable
 	ordnames <- lavNames(object, "ov.ord")
+	FITTED <- getMethod("fitted", class(object))(object)
 
 	if (ngroups == 1L) {
-	  thresholds <- fitted(object)$th
+	  thresholds <- FITTED$th
 	  result <- lapply(ordnames,
 	                   function(nn) thresholds[grepl(nn, names(thresholds))])
 	  names(result) <- ordnames
+	  ## needs to be within a list when called above within block-loops
+	  result <- list(result)
 
 	} else {
-	  thresholds <- sapply(fitted(object), "[[", i = "th", simplify = FALSE)
+	  thresholds <- sapply(FITTED, "[[", i = "th", simplify = FALSE)
 	  result <- list()
 		group.label <- lavInspect(object, "group.label")
 

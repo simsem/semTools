@@ -1,4 +1,16 @@
-# semTools 0.5-2 (submitted to CRAN on 29 August 2019)
+# semTools 0.5-3 (in development)
+
+## New Features:
+
+-
+
+## Bug Fixes:
+
+- `reliability()` and `maximalRelia()` returned an error with categorical single-group models
+
+
+
+# semTools 0.5-2 (on CRAN 30 August 2019)
 
 - Requires `lavaan` version 0.6-5
 - Minor bug fixes
