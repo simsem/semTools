@@ -7,6 +7,7 @@
 ## Bug Fixes:
 
 - `reliability()` and `maximalRelia()` returned an error with categorical single-group models
+    - https://groups.google.com/d/msg/lavaan/rPVEHUQjqVQ/SQaMrgn-AQAJ
 
 
 

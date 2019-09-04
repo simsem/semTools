@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 29 August 2019
+### Last updated: 4 September 2019
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -186,7 +186,7 @@ modindices.mi <- function(object,
 
   ## use first available modification indices as template to store pooled results
   ngroups <- lavListInspect(object, "ngroups")
-  nlevels <- object@Data@nlevels #FIXME: lavListInspect(object, "nlevels")
+  nlevels <- lavListInspect(object, "nlevels")
   myCols <- c("lhs","op","rhs")
   if (ngroups > 1L) myCols <- c(myCols,"block","group")
   if (nlevels > 1L) myCols <- c(myCols,"block","level")
