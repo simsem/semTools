@@ -64,6 +64,8 @@ Measurement Invariance suite
 
 New Measurement Invariance suite
 - add block.equal=T/F argument to measEq.syntax to test invariance across levels
+  - eventually, write syntax via blocks to avoid issues with group-blocks,
+    or somehow check whether groups have different blocks
 - empirical anchor selector
   - minimum Woods (2009), maybe Achim & Carolin's
 - partial / DIF tester
@@ -106,7 +108,7 @@ semTools::auxiliary()
 - try setting PT$user == 9 for auxiliary parameters
   - create lavaan branch, change coef(), parameterEstimates(), etc.
 - add example of alternative null model to help page
-- add argument to simply return extra syntax (for categorical?)
+- add argument to simply return extra syntax (no FIML for categorical?)
 
 
 semTools::bsBootMiss() additions:
@@ -211,8 +213,9 @@ How can we pass auxiliaries to lavCor for lavaan's first step in DWLS?
 How does lavaan allow for non-normality of continuous variables when mixed
 with ordinal?  Necessary to use a robust ACOV as the weight matrix?
 
-- add ER.RMR to modindices
-- all partially nested designs (e.g., Group 1 multilevel, Group 2 single-level)
+- add EC.RMR to modindices/lavTestScore?
+
+- allow partially nested designs (e.g., Group 1 multilevel, Group 2 single-level)
   - https://doi.org/10.1080/00273171.2014.882253
   - need lav(List)Inspect(object, "nblocks")
 

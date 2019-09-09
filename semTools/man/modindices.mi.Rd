@@ -24,12 +24,12 @@ modificationIndices.mi(object, test = c("D2", "D1"),
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}}
 
 \item{test}{\code{character} indicating which pooling method to use.
-\code{test = "D2"} (default) indicates that modification indices that were
-calculated within each imputed data set will be pooled across imputations,
-as described in Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010).
-\code{"D1"} indicates Li et al.'s (1991) proposed Wald test will be
-applied to the gradient and information, and those pooled values will be
-used to calculate modification indices in the usual manner.}
+\code{"D1"} requests Mansolf, Jorgensen, & Enders' (in press) proposed
+Wald-like test for pooling the gradient and information, which are then
+used to calculate score-test statistics in the usual manner. \code{"D2"}
+(default because it is less computationall intensive) requests to pool the
+complete-data score-test statistics from each imputed data set, then pool
+them across imputations, described by Li et al. (1991) and Enders (2010).}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results.  Can include any of
@@ -103,9 +103,10 @@ Modification indices (1-\emph{df} Lagrange multiplier tests) from a
 latent variable model fitted to multiple imputed data sets. Statistics
 for releasing one or more fixed or constrained parameters in model can
 be calculated by pooling the gradient and information matrices
-across imputed data sets in a method analogous to the Wald test proposed by
-Li, Meng, Raghunathan, & Rubin (1991), or by pooling the complete-data
-score-test statistics across imputed data sets (Li et al., 1991).
+across imputed data sets in a method proposed by Mansolf, Jorgensen, &
+Enders (in press)---analogous to the "D1" Wald test proposed by Li, Meng,
+Raghunathan, & Rubin (1991)---or by pooling the complete-data score-test
+statistics across imputed data sets (i.e., "D2"; Li et al., 1991).
 }
 \note{
 When \code{test = "D2"}, each (S)EPC will be pooled by taking its
@@ -153,6 +154,10 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}.
   Significance levels from repeated \emph{p}-values with multiply-imputed
    data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
   https://www.jstor.org/stable/24303994
+
+  Mansolf, M., Jorgensen, T. D., & Enders, C. K. (in press). A multiple
+  imputation score test for model modification in structural equation
+  models. \emph{Psychological Methods}. doi:10.1037/met0000243
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

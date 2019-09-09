@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 4 September 2019
+### Last updated: 9 September 2019
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -17,10 +17,11 @@
 ##' Score test (or "Lagrange multiplier" test) for lavaan models fitted to
 ##' multiple imputed data sets. Statistics for releasing one or more
 ##' fixed or constrained parameters in model can be calculated by pooling
-##' the gradient and information matrices pooled across imputed data sets,
-##' analogous to Li, Meng, Raghunathan, & Rubin's (1991) proposed Wald test, or
+##' the gradient and information matrices pooled across imputed data sets in a
+##' method proposed by Mansolf, Jorgensen, & Enders (in press)---analogous to
+##' the "D1" Wald test proposed by Li, Meng, Raghunathan, & Rubin's (1991)---or
 ##' by pooling the complete-data score-test statistics across imputed data sets
-##' (Li et al., 1991).
+##' (i.e., "D2"; Li et al., 1991).
 ##'
 ##' @aliases lavTestScore.mi
 ##' @importFrom lavaan lavListInspect parTable
@@ -35,12 +36,12 @@
 ##'  constraints that should be released. The indices correspond to the order of
 ##'  the equality constraints as they appear in the parameter table.
 ##' @param test \code{character} indicating which pooling method to use.
-##'  \code{"D1"} indicates Li, Meng, Raghunathan, & Rubin's (1991) proposed Wald
-##'  test will be applied to the gradient and information, and those pooled
-##'  values will be used to calculate score-test statistics in the usual manner.
-##'  \code{"D2"} (default) indicates that complete-data score-test statistics
-##'  calculated from each imputed data set will be pooled across imputations,
-##'  as described in Li et al. (1991) and Enders (2010).
+##'  \code{"D1"} requests Mansolf, Jorgensen, & Enders' (in press) proposed
+##'  Wald-like test for pooling the gradient and information, which are then
+##'  used to calculate score-test statistics in the usual manner. \code{"D2"}
+##'  (default because it is less computationall intensive) requests to pool the
+##'  complete-data score-test statistics from each imputed data set, then pool
+##'  them across imputations, described by Li et al. (1991) and Enders (2010).
 ##' @param scale.W \code{logical}. If \code{FALSE}, the pooled
 ##'  information matrix is calculated as the weighted sum of the
 ##'  within-imputation and between-imputation components. Otherwise, the pooled
@@ -133,6 +134,10 @@
 ##'   Significance levels from repeated \emph{p}-values with multiply-imputed
 ##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
 ##'   https://www.jstor.org/stable/24303994
+##'
+##'   Mansolf, M., Jorgensen, T. D., & Enders, C. K. (in press). A multiple
+##'   imputation score test for model modification in structural equation
+##'   models. \emph{Psychological Methods}. doi:10.1037/met0000243
 ##'
 ##' @seealso \code{\link[lavaan]{lavTestScore}}
 ##'
