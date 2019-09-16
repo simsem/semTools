@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 29 August 2019
+### Last updated: 16 September 2019
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -826,15 +826,28 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
                                              which(!baseImps[useImps]))
         w <- sapply(object@baselineList[ which(baseImps[useImps]) ],
                     function(x) x$test$standard[["stat"]])
-        DF <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
-                          function(x) x$test$standard[["df"]]))
+        if (is.list(w)) {
+          #TODO: figure out why this happens!
+          w <- unlist(w)
+          DF <- mean(unlist(sapply(object@baselineList[ which(baseImps[useImps]) ],
+                                   function(x) x$test$standard[["df"]])))
+        } else {
+          DF <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
+                            function(x) x$test$standard[["df"]]))
+        }
         baseOut <- calculate.D2(w, DF, asymptotic = TRUE)
         if (robust) {
           if (pool.robust) {
             w.r <- sapply(object@baselineList[ which(baseImps[useImps]) ],
                           function(x) x$test[[ test.names[1] ]][["stat"]])
-            DF.r <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
-                                function(x) x$test[[ test.names[1] ]][["df"]]))
+            if (is.list(w.r)) {
+              w.r <- unlist(w.r)
+              DF.r <- mean(unlist(sapply(object@baselineList[ which(baseImps[useImps]) ],
+                                         function(x) x$test[[ test.names[1] ]][["df"]])))
+            } else {
+              DF.r <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
+                                  function(x) x$test[[ test.names[1] ]][["df"]]))
+            }
             base.robust <- calculate.D2(w.r, DF.r, asymptotic = TRUE)
             names(base.robust) <- paste0(names(base.robust), ".scaled")
             baseOut <- c(baseOut, base.robust)
