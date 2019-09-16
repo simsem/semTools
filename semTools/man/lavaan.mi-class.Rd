@@ -88,7 +88,11 @@ they are likely to occur due to sampling error, especially in small
 samples.  However, gross model misspecification could also cause
 NPD solutions, users can compare pooled results with and without
 this setting as a sensitivity analysis to see whether some
-imputations warrant further investigation.}
+imputations warrant further investigation. Specific imputation
+numbers can also be included in this argument, in case users want to
+apply their own custom omission criteria (or simulations can use
+different numbers of imputations without redundantly refitting the
+model).}
 
 \item{asymptotic}{\code{logical}. If \code{FALSE} (typically a default, but
 see \bold{Value} section for details using various methods), pooled

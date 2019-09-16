@@ -14,8 +14,8 @@ lavTestScore.mi(object, add = NULL, release = NULL, test = c("D2",
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}.}
 
 \item{add}{Either a \code{character} string (typically between single
-quotes) or a parameter table containing additional (currently fixed-to-zero)
-parameters for which the score test must be computed.}
+quotes) or a parameter table containing additional (currently
+fixed-to-zero) parameters for which the score test must be computed.}
 
 \item{release}{Vector of \code{integer}s. The indices of the \emph{equality}
 constraints that should be released. The indices correspond to the order of
@@ -32,8 +32,8 @@ them across imputations, described by Li et al. (1991) and Enders (2010).}
 \item{scale.W}{\code{logical}. If \code{FALSE}, the pooled
 information matrix is calculated as the weighted sum of the
 within-imputation and between-imputation components. Otherwise, the pooled
-information is calculated by scaling the within-imputation component by the
-average relative increase in variance (ARIV; see Enders, 2010, p. 235),
+information is calculated by scaling the within-imputation component by
+the average relative increase in variance (ARIV; Enders, 2010, p. 235),
 which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
 \code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.}
 
@@ -45,7 +45,10 @@ converge or for which standard errors could not be computed.  The
 last option (\code{"no.npd"}) would exclude any imputations which
 yielded a nonpositive definite covariance matrix for observed or
 latent variables, which would include any "improper solutions" such
-as Heywood cases.}
+as Heywood cases. Specific imputation numbers can also be included in this
+argument, in case users want to  apply their own custom omission criteria
+(or simulations can use different numbers of imputations without
+redundantly refitting the model).}
 
 \item{asymptotic}{\code{logical}. If \code{FALSE} (default when using
 \code{add} to test adding fixed parameters to the model), the pooled test
@@ -66,8 +69,8 @@ statistics from large to small, and compute a series of multivariate
 score statistics, each time including an additional constraint in the test.}
 
 \item{epc}{\code{logical}. If \code{TRUE}, and we are releasing existing
-constraints, compute the expected parameter changes for the existing (free)
-parameters (and any specified with \code{add}), if all constraints
+constraints, compute the expected parameter changes for the existing
+(free) parameters (and any specified with \code{add}), if all constraints
 were released. For EPCs associated with a particular (1-\emph{df})
 constraint, only specify one parameter in \code{add} or one constraint in
 \code{release}.}

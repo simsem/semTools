@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 9 September 2019
+### Last updated: 16 September 2019
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -30,58 +30,61 @@
 ##'
 ##' @param object An object of class \code{\linkS4class{lavaan.mi}}.
 ##' @param add Either a \code{character} string (typically between single
-##'  quotes) or a parameter table containing additional (currently fixed-to-zero)
-##'  parameters for which the score test must be computed.
+##'   quotes) or a parameter table containing additional (currently
+##'   fixed-to-zero) parameters for which the score test must be computed.
 ##' @param release Vector of \code{integer}s. The indices of the \emph{equality}
 ##'  constraints that should be released. The indices correspond to the order of
 ##'  the equality constraints as they appear in the parameter table.
 ##' @param test \code{character} indicating which pooling method to use.
-##'  \code{"D1"} requests Mansolf, Jorgensen, & Enders' (in press) proposed
-##'  Wald-like test for pooling the gradient and information, which are then
-##'  used to calculate score-test statistics in the usual manner. \code{"D2"}
-##'  (default because it is less computationall intensive) requests to pool the
-##'  complete-data score-test statistics from each imputed data set, then pool
-##'  them across imputations, described by Li et al. (1991) and Enders (2010).
+##'   \code{"D1"} requests Mansolf, Jorgensen, & Enders' (in press) proposed
+##'   Wald-like test for pooling the gradient and information, which are then
+##'   used to calculate score-test statistics in the usual manner. \code{"D2"}
+##'   (default because it is less computationall intensive) requests to pool the
+##'   complete-data score-test statistics from each imputed data set, then pool
+##'   them across imputations, described by Li et al. (1991) and Enders (2010).
 ##' @param scale.W \code{logical}. If \code{FALSE}, the pooled
-##'  information matrix is calculated as the weighted sum of the
-##'  within-imputation and between-imputation components. Otherwise, the pooled
-##'  information is calculated by scaling the within-imputation component by the
-##'  average relative increase in variance (ARIV; see Enders, 2010, p. 235),
-##'  which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
-##'  \code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.
+##'   information matrix is calculated as the weighted sum of the
+##'   within-imputation and between-imputation components. Otherwise, the pooled
+##'   information is calculated by scaling the within-imputation component by
+##'   the average relative increase in variance (ARIV; Enders, 2010, p. 235),
+##'   which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
+##'   \code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'  imputations from pooled results.  Can include any of
-##'  \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
-##'  default setting, which excludes any imputations that did not
-##'  converge or for which standard errors could not be computed.  The
-##'  last option (\code{"no.npd"}) would exclude any imputations which
-##'  yielded a nonpositive definite covariance matrix for observed or
-##'  latent variables, which would include any "improper solutions" such
-##'  as Heywood cases.
+##'   imputations from pooled results.  Can include any of
+##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   default setting, which excludes any imputations that did not
+##'   converge or for which standard errors could not be computed.  The
+##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   yielded a nonpositive definite covariance matrix for observed or
+##'   latent variables, which would include any "improper solutions" such
+##'   as Heywood cases. Specific imputation numbers can also be included in this
+##'   argument, in case users want to  apply their own custom omission criteria
+##'   (or simulations can use different numbers of imputations without
+##'   redundantly refitting the model).
 ##' @param asymptotic \code{logical}. If \code{FALSE} (default when using
-##'  \code{add} to test adding fixed parameters to the model), the pooled test
-##'  will be returned as an \emph{F}-distributed variable with numerator
-##'  (\code{df1}) and denominator (\code{df2}) degrees of freedom.
-##'  If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
-##'  \code{df1} on the assumption that its \code{df2} is sufficiently large
-##'  enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-##'  with \code{df1}. When using the \code{release} argument, \code{asymptotic}
-##'  will be set to \code{TRUE} because (A)RIV can only be calculated for
-##'  \code{add}ed parameters.
+##'   \code{add} to test adding fixed parameters to the model), the pooled test
+##'   will be returned as an \emph{F}-distributed variable with numerator
+##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
+##'   If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
+##'   \code{df1} on the assumption that its \code{df2} is sufficiently large
+##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
+##'   with \code{df1}. When using the \code{release} argument, \code{asymptotic}
+##'   will be set to \code{TRUE} because (A)RIV can only be calculated for
+##'   \code{add}ed parameters.
 ##' @param univariate \code{logical}. If \code{TRUE}, compute the univariate
-##'  score statistics, one for each constraint.
+##'   score statistics, one for each constraint.
 ##' @param cumulative \code{logical}. If \code{TRUE}, order the univariate score
-##'  statistics from large to small, and compute a series of multivariate
-##'  score statistics, each time including an additional constraint in the test.
+##'   statistics from large to small, and compute a series of multivariate
+##'   score statistics, each time including an additional constraint in the test.
 ##' @param epc \code{logical}. If \code{TRUE}, and we are releasing existing
-##'  constraints, compute the expected parameter changes for the existing (free)
-##'  parameters (and any specified with \code{add}), if all constraints
-##'  were released. For EPCs associated with a particular (1-\emph{df})
-##'  constraint, only specify one parameter in \code{add} or one constraint in
-##'  \code{release}.
+##'   constraints, compute the expected parameter changes for the existing
+##'   (free) parameters (and any specified with \code{add}), if all constraints
+##'   were released. For EPCs associated with a particular (1-\emph{df})
+##'   constraint, only specify one parameter in \code{add} or one constraint in
+##'   \code{release}.
 ##' @param standardized If \code{TRUE}, two extra columns (\code{sepc.lv} and
-##'  \code{sepc.all}) in the \code{$epc} table will contain standardized values
-##'  for the EPCs. See \code{\link{lavTestScore}}.
+##'   \code{sepc.all}) in the \code{$epc} table will contain standardized values
+##'   for the EPCs. See \code{\link{lavTestScore}}.
 ##' @param cov.std \code{logical}. See \code{\link{standardizedSolution}}.
 ##' @param verbose \code{logical}. Not used for now.
 ##' @param warn \code{logical}. If \code{TRUE}, print warnings if they occur.
@@ -195,6 +198,10 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)

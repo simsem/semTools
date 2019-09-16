@@ -2,13 +2,13 @@
 
 ## New Features:
 
--
+- `class?lavaan.mi` methods and functions can optionally specify particular imputation numbers to omit, in addition to the general omission criteria in `omit.imps=`.
 
 ## Bug Fixes:
 
 - `reliability()` and `maximalRelia()` returned an error with categorical single-group models
     - https://groups.google.com/d/msg/lavaan/rPVEHUQjqVQ/SQaMrgn-AQAJ
-
+- `fitMeasures()` for `lavaan.mi` sometimes returned an error 
 
 
 # semTools 0.5-2 (on CRAN 30 August 2019)

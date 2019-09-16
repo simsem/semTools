@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 29 August 2019
+### Last updated: 16 September 2019
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -61,7 +61,10 @@
 ##'   last option (\code{"no.npd"}) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
-##'   as Heywood cases.
+##'   as Heywood cases. Specific imputation numbers can also be included in this
+##'   argument, in case users want to  apply their own custom omission criteria
+##'   (or simulations can use different numbers of imputations without
+##'   redundantly refitting the model).
 ##' @param verbose \code{logical}. If \code{TRUE}, print the restriction
 ##'   matrix and the estimated restricted values.
 ##' @param warn \code{logical}. If \code{TRUE}, print warnings if they occur.
@@ -155,6 +158,10 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)

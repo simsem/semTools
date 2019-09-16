@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 29 August 2019
+### Last updated: 16 September 2019
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -50,7 +50,10 @@
 ##'   last option (\code{"no.npd"}) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
-##'   as Heywood cases.
+##'   as Heywood cases. Specific imputation numbers can also be included in this
+##'   argument, in case users want to  apply their own custom omission criteria
+##'   (or simulations can use different numbers of imputations without
+##'   redundantly refitting the model).
 ##' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
 ##'   will be returned as an \emph{F}-distributed statistic with numerator
 ##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
@@ -151,6 +154,10 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)

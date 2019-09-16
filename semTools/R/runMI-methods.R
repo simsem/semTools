@@ -91,7 +91,11 @@
 ##'        samples.  However, gross model misspecification could also cause
 ##'        NPD solutions, users can compare pooled results with and without
 ##'        this setting as a sensitivity analysis to see whether some
-##'        imputations warrant further investigation.
+##'        imputations warrant further investigation. Specific imputation
+##'        numbers can also be included in this argument, in case users want to
+##'        apply their own custom omission criteria (or simulations can use
+##'        different numbers of imputations without redundantly refitting the
+##'        model).
 ##' @param labels \code{logical} indicating whether the \code{coef} output
 ##'        should include parameter labels. Default is \code{TRUE}.
 ##' @param total \code{logical} (default: \code{TRUE}) indicating whether the
@@ -277,6 +281,10 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
@@ -469,6 +477,10 @@ coef.lavaan.mi <- function(object, type = "free", labels = TRUE,
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
@@ -508,6 +520,10 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
@@ -709,6 +725,10 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
@@ -1263,6 +1283,10 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)
@@ -1378,6 +1402,10 @@ resid.lavaan.mi <- function(object, type = c("raw","cor"),
     Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
     useImps <- useImps & !(Heywood.lv | Heywood.ov)
   }
+  ## custom removal by imputation number
+  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+  ## whatever is left
   m <- sum(useImps)
   if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
   useImps <- which(useImps)

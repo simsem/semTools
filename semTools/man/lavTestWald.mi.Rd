@@ -50,7 +50,10 @@ converge or for which standard errors could not be computed.  The
 last option (\code{"no.npd"}) would exclude any imputations which
 yielded a nonpositive definite covariance matrix for observed or
 latent variables, which would include any "improper solutions" such
-as Heywood cases.}
+as Heywood cases. Specific imputation numbers can also be included in this
+argument, in case users want to  apply their own custom omission criteria
+(or simulations can use different numbers of imputations without
+redundantly refitting the model).}
 
 \item{verbose}{\code{logical}. If \code{TRUE}, print the restriction
 matrix and the estimated restricted values.}
