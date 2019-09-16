@@ -820,32 +820,36 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
 
         ## MUST fit PTb for "D3" likelihoods, but for "D2" use @baselineList
       } else if (test == "D2") {
+        ## length(baseImps) == m, not just length(useImps)
         baseImps <- object@meta$baseline.ok
         if (!all(baseImps[useImps])) warning('The default independence model ',
                                              'did not converge for data set(s): ',
-                                             which(!baseImps[useImps]))
-        w <- sapply(object@baselineList[ which(baseImps[useImps]) ],
+                                             which(!baseImps))
+        ## only use imputations that converged for both
+        baseImps <- intersect(useImps, which(baseImps))
+
+        w <- sapply(object@baselineList[baseImps],
                     function(x) x$test$standard[["stat"]])
         if (is.list(w)) {
           #TODO: figure out why this happens!
           w <- unlist(w)
-          DF <- mean(unlist(sapply(object@baselineList[ which(baseImps[useImps]) ],
+          DF <- mean(unlist(sapply(object@baselineList[baseImps],
                                    function(x) x$test$standard[["df"]])))
         } else {
-          DF <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
+          DF <- mean(sapply(object@baselineList[baseImps],
                             function(x) x$test$standard[["df"]]))
         }
         baseOut <- calculate.D2(w, DF, asymptotic = TRUE)
         if (robust) {
           if (pool.robust) {
-            w.r <- sapply(object@baselineList[ which(baseImps[useImps]) ],
+            w.r <- sapply(object@baselineList[baseImps],
                           function(x) x$test[[ test.names[1] ]][["stat"]])
             if (is.list(w.r)) {
               w.r <- unlist(w.r)
-              DF.r <- mean(unlist(sapply(object@baselineList[ which(baseImps[useImps]) ],
+              DF.r <- mean(unlist(sapply(object@baselineList[baseImps],
                                          function(x) x$test[[ test.names[1] ]][["df"]])))
             } else {
-              DF.r <- mean(sapply(object@baselineList[ which(baseImps[useImps]) ],
+              DF.r <- mean(sapply(object@baselineList[baseImps],
                                   function(x) x$test[[ test.names[1] ]][["df"]]))
             }
             base.robust <- calculate.D2(w.r, DF.r, asymptotic = TRUE)
@@ -853,7 +857,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
             baseOut <- c(baseOut, base.robust)
           } else {
             baseOut <- robustify(ChiSq = baseOut, object = object,
-                                 baseline = TRUE, useImps = which(baseImps[useImps]))
+                                 baseline = TRUE, useImps = baseImps)
           }
         }
         baseFit <- NULL # for later checking, to avoid unnecessary calls
@@ -878,6 +882,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
       }
 
       if (!is.null(baseFit)) {
+        ## length(baseImps) is only as long as length(useImps), not the original m
         baseImps <- sapply(baseFit@convergence, "[[", i = "converged")
         if (!all(baseImps)) warning('baseline.model did not converge for data set(s): ',
                                     useImps[!baseImps])
