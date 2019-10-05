@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 June 2018
+### Last updated: 5 October 2019
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -649,11 +649,12 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' Jorgensen, T. D., Kite, B. A., Chen, P.-Y., & Short, S. D. (in press).
 ##' Permutation randomization methods for testing measurement equivalence and
 ##' detecting differential item functioning in multiple-group confirmatory
-##' factor analysis. \emph{Psychological Methods}. doi:10.1037/met0000152
+##' factor analysis. \emph{Psychological Methods, 23}(4), 708--728.
+##' doi:10.1037/met0000152
 ##'
 ##' Kite, B. A., Jorgensen, T. D., & Chen, P.-Y. (in press). Random permutation
 ##' testing applied to measurement invariance testing with ordered-categorical
-##' indicators. \emph{Structural Equation Modeling}.
+##' indicators. \emph{Structural Equation Modeling 25}(4), 573--587.
 ##' doi:10.1080/10705511.2017.1421467
 ##'
 ##' Jorgensen, T. D. (2017). Applying permutation tests and multivariate
@@ -702,7 +703,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' textual =~ x4 + x5 + x6
 ##' speed   =~ x7 + x8 + x9
 ##' '
-##' miout <- measurementInvariance(mod.config, data = HS, std.lv = TRUE,
+##' miout <- measurementInvariance(model = mod.config, data = HS, std.lv = TRUE,
 ##'                                group = "ageGroup")
 ##'
 ##' (fit.config <- miout[["fit.configural"]])
