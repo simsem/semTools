@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 30 August 2019
+### Last updated: 5 October 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1576,7 +1576,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       longInds <- names(longIndKey)[ which(longIndKey == longIndKey[i]) ]
       if (length(longInds) == 0L) next
 
-      ## keep track of how many thresholds for the i_th indicator have
+      ## keep track of how many thresholds for the i_th indicator have been
       ## constrained, in case identification constraints can be released
       nEqThr <- 0L
 
@@ -1642,8 +1642,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         !any(long.partial$lhs == longIndKey[i] & long.partial$op == "~1")
       equate.resid <- "residuals" %in% long.equal &&
         !any(long.partial$lhs == longIndKey[i] &
-               long.partial$rhs == longIndKey[i] &
-               long.partial$op == "~~") #FIXME: leave resid==0 for reference indicators
+             long.partial$rhs == longIndKey[i] &
+             long.partial$op == "~~") #FIXME: leave resid==0 for reference indicators
 
       if (i == longInds[1]) {
 
@@ -1712,7 +1712,27 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     }
   }
   ## group constraints
-  if (nG > 1L) for (g in 1:nG) {
+  if (nG == 1L) {
+    ## Single-group model for repeated measures:
+    ## Longitudinal loop above only places LISREL equality constraints on
+    ## thresholds. Here, still neeed to fix the first 2 == {0, 1}.
+
+    ## loop over ordinal indicators
+    for (i in allOrdNames) {
+      ## loop over thresholds of the i_th ordinal indicator
+      for (th in 1:(nThr[i])) {
+
+        ## always fix the first (or only, if binary) to zero
+        if (th == 1L) GLIST.values[[g]]$tau[paste0(i, "|t", th), 1] <- 0
+        ## always fix the second to one
+        if (th == 2L) GLIST.values[[g]]$tau[paste0(i, "|t", th), 1] <- 1
+        ## estimate any others
+        if (th > 2L) GLIST.values[[g]]$tau[paste0(i, "|t", th), 1] <- NA
+
+      } ## end loop over thresholds
+    } ## end loop over ordinal indicators
+
+  } else for (g in 1:nG) {
     ## loop over ordinal indicators
     for (i in allOrdNames) {
 
@@ -1778,7 +1798,9 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
 
       ## check whether enough thresholds were equated to free
       ## IDENTIFICATION CONSTRAINTS on intercepts & residuals.
-      ## Note: Group 1 constraints already set in longitudinal loop.
+      ## Note: Group 1 constraints already set in longitudinal loop, ONLY if
+      ##       there are repeated measures identified by longInds.
+      ##       Section below only RELEASES constraints.
       ##       DON'T OVERWRITE FREED CONSTRAINTS AFTER TIME 1.
       equate.int <- "intercepts" %in% group.equal &&
         !any(group.partial$lhs == i & group.partial$op == "~1")
@@ -1812,7 +1834,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
           }
         }
 
-      } else if (g > 1L && ID.cat == "lisrel") {
+      } else if (ID.cat == "lisrel") {
         ## always estimate intercepts, and variances unless binary
         GLIST.values[[g]]$nu[i, 1] <- NA
         diag(GLIST.values[[g]]$theta)[i] <- if (nThr[i] == 1L) 1 else NA
