@@ -1039,6 +1039,12 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
            'factor or effects-coding method of identification, set std.lv=TRUE',
            ' to prevent initial loadings from being fixed to 1 in the syntax.')
     }
+    ## check that if (!meanstructure), not set TRUE in call
+    if (!is.null(mc$meanstructure)) {
+      if (!lavInspect(lavTemplate, "options")$meanstructure && mc$meanstructure)
+        stop('Request for meanstructure=TRUE requires configural.model to be ',
+             'fitted with meanstructure=TRUE')
+    }
   } else {
     lavArgs <- dots
     if (ID.fac != "ul") lavArgs$std.lv <- TRUE
@@ -1085,8 +1091,14 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   }
 
   ## extract options and other information
-  parameterization <- lavInspect(lavTemplate, "options")$parameterization
-  meanstructure <- lavInspect(lavTemplate, "options")$meanstructure
+  parameterization <- mc$parameterization
+  if (is.null(parameterization)) {
+    parameterization <- lavInspect(lavTemplate, "options")$parameterization
+  }
+  meanstructure <- mc$meanstructure
+  if (is.null(meanstructure)) {
+    meanstructure <- lavInspect(lavTemplate, "options")$meanstructure
+  }
   nG <- lavInspect(lavTemplate, "ngroups")
   ## names of ordinal indicators, number of thresholds for each
   allOrdNames <- lavNames(lavTemplate, type = "ov.ord")
@@ -1209,8 +1221,12 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   GLIST.free <- lavInspect(lavTemplate, "free")
   if (nG == 1L) GLIST.free   <- list(`1` = GLIST.free)
   ## only save relevant matrices to specify
-  pmats <- intersect(c("tau","lambda","beta","nu","theta","alpha","psi",
-                       if (parameterization == "delta") "delta" else NULL),
+  pmats <- intersect(c("tau","lambda","beta",
+                       if (meanstructure) "nu" else NULL ,
+                       "theta",
+                       if (meanstructure) "alpha" else NULL ,
+                       "psi",
+                       if (length(allOrdNames) && parameterization == "delta") "delta" else NULL),
                      names(GLIST.free[[1]]))
   if ("beta" %in% pmats && ID.fac != "ul") {
     ID.fac <- "ul" #FIXME: could use effects-coding with relative ease?

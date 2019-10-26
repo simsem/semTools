@@ -62,10 +62,6 @@ MIMIC papers:
 Measurement Invariance suite
 ============================
 
-measEq.syntax() TODO:
-- parameterization = "theta" is ignored when configural.model= set parameterization = "delta"
-
-
 New Measurement Invariance suite
 - add block.equal=T/F argument to measEq.syntax to test invariance across levels
   - eventually, write syntax via blocks to avoid issues with group-blocks,
