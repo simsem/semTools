@@ -1730,7 +1730,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     }
   }
   ## group constraints
-  if (nG == 1L) {
+  if (nG == 1L && ID.cat == "lisrel") {
     ## Single-group model for repeated measures:
     ## Longitudinal loop above only places LISREL equality constraints on
     ## thresholds. Here, still neeed to fix the first 2 == {0, 1}.
