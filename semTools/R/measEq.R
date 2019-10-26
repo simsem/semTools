@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 October 2019
+### Last updated: 26 October 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -28,6 +28,8 @@ measEq <- function(configural.model,
   #TODO: compatibility with auxiliary(), runMI(), parcelAllocation(), permuteMeasEq()
   #TODO: develop automated anchorSelection() and measEq.partial()
   #TODO: if (inherits(configural.model, "lavaan.measEq")) {continue sequence}?
+
+  ## This example might help:  https://groups.google.com/d/msg/lavaan/LvALeUpJBDg/2zD1CoikAQAJ
 
   #TODO: add argument to accept measEq.partial output, to continue sequence (or make and update() method?)
   if (is.character(group.partial)) {
@@ -2153,14 +2155,25 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       for (lag in 1:auto.i) {
         for (tt in 1:(nT - lag)) {
 
+          ## sort indices to ensure the lower.tri is always specified, in case
+          ## order of longIndNames does not match order in syntax/theta
+          nn.idx <- c(which(rownames(GLIST.specify[[g]]$theta) == nn[tt]),
+                      which(rownames(GLIST.specify[[g]]$theta) == nn[tt + lag]))
+          idx1 <- which.max(nn.idx) # row index
+          idx2 <- which.min(nn.idx) # column index
+
           ## specify and set free
-          GLIST.specify[[g]]$theta[ nn[tt + lag], nn[tt] ] <- TRUE
-          GLIST.values[[g]]$theta[ nn[tt + lag], nn[tt] ] <- NA
+          GLIST.specify[[g]]$theta[ nn[idx1], nn[idx2] ] <- TRUE
+          GLIST.values[[g]]$theta[  nn[idx1], nn[idx2] ] <- NA
 
           ## constrain to equality across repeated measures?
           if ("resid.autocov" %in% long.equal && tt > 1L) {
-            first.label <- GLIST.labels[[g]]$theta[ nn[1 + lag], nn[1] ]
-            GLIST.labels[[g]]$theta[ nn[tt + lag], nn[tt] ] <- first.label
+            o.idx <- c(which(rownames(GLIST.specify[[g]]$theta) == nn[1]),
+                       which(rownames(GLIST.specify[[g]]$theta) == nn[1 + lag]))
+            o1 <- which.max(o.idx) # row index
+            o2 <- which.min(o.idx) # column index
+            first.label <- GLIST.labels[[g]]$theta[ nn[o1], nn[o2] ]
+            GLIST.labels[[g]]$theta[ nn[idx1], nn[idx2] ] <- first.label
           }
 
         }
@@ -2502,7 +2515,7 @@ getLabel <- function(object, parMat, RR, CC = 1L) {
 ## function to assemble a model constraint for effects-code identification
 make.FX.constraint <- function(parLabels, param) {
   nCon <- length(parLabels)
-  conVal <- if (param == "loadings") nCon else 0
+  conVal <- if (param == "loadings") nCon else 0 #TODO: algorithm for thresholds
   out <- paste0(parLabels[1], " == ", conVal)
   if (nCon > 1) out <- paste(c(out, parLabels[-1]), collapse = " - ")
   out
