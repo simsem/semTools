@@ -63,7 +63,6 @@ Measurement Invariance suite
 ============================
 
 measEq.syntax() TODO:
-- Switch order of mean-structure labels/values (works now)
 - parameterization = "theta" is ignored when configural.model= set parameterization = "delta"
 
 

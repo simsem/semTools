@@ -2582,27 +2582,16 @@ write.lavaan.syntax <- function(pmat, specify, value, label) {
     ## specify all, so no need to check
     params <- sapply(rownames(specify[[1]]), function(x) {
       if (nG > 1L) {
-        # param <- paste0(x, " ~ c(",
-        #                 paste(sapply(value, "[", i = x, j = 1),
-        #                       collapse = ", "),
-        #                 ")*1 + c(",
-        #                 paste(sapply(label, "[", i = x, j = 1),
-        #                       collapse = ", "),
-        #                 ")*1")
-        #FIXME: Did Yves fix this lavaanify() bug?
-
         param <- paste0(x, " ~ c(",
-                        paste(sapply(label, "[", i = x, j = 1),
+                        paste(sapply(value, "[", i = x, j = 1),
                               collapse = ", "),
                         ")*1 + c(",
-                        paste(sapply(value, "[", i = x, j = 1),
+                        paste(sapply(label, "[", i = x, j = 1),
                               collapse = ", "),
                         ")*1")
       } else {
-        # param <- paste0(x, " ~ ", value[[1]][x, 1], "*1 + ",
-        #                 label[[1]][x, 1], "*1")
-        param <- paste0(x, " ~ ", label[[1]][x, 1], "*1 + ",
-                        value[[1]][x, 1], "*1")
+        param <- paste0(x, " ~ ", value[[1]][x, 1], "*1 + ",
+                        label[[1]][x, 1], "*1")
       }
       param
     })
