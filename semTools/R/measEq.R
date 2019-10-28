@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 October 2019
+### Last updated: 28 October 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1750,7 +1750,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       } ## end loop over thresholds
     } ## end loop over ordinal indicators
 
-  } else for (g in 1:nG) {
+  } else if (nG > 1L) for (g in 1:nG) {
     ## loop over ordinal indicators
     for (i in allOrdNames) {
 
