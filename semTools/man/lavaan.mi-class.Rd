@@ -19,19 +19,18 @@
 \usage{
 \S4method{show}{lavaan.mi}(object)
 
-\S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE,
-  level = 0.95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
+\S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE, level = 0.95,
+  standardized = FALSE, rsquare = FALSE, fmi = FALSE,
   scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
   asymptotic = FALSE, header = TRUE, output = "text",
   fit.measures = FALSE)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
-\S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE,
-  omit.imps = c("no.conv", "no.se"))
+\S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE, omit.imps = c("no.conv", "no.se"))
 
-\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between",
-  "within", "ariv"), scale.W = TRUE, omit.imps = c("no.conv", "no.se"))
+\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between", "within",
+  "ariv"), scale.W = TRUE, omit.imps = c("no.conv", "no.se"))
 
 \S4method{anova}{lavaan.mi}(object, ...)
 
@@ -45,14 +44,11 @@
 
 \S4method{fitted}{lavaan.mi}(object, omit.imps = c("no.conv", "no.se"))
 
-\S4method{fitted.values}{lavaan.mi}(object, omit.imps = c("no.conv",
-  "no.se"))
+\S4method{fitted.values}{lavaan.mi}(object, omit.imps = c("no.conv", "no.se"))
 
-\S4method{residuals}{lavaan.mi}(object, type = c("raw", "cor"),
-  omit.imps = c("no.conv", "no.se"))
+\S4method{residuals}{lavaan.mi}(object, type = c("raw", "cor"), omit.imps = c("no.conv", "no.se"))
 
-\S4method{resid}{lavaan.mi}(object, type = c("raw", "cor"),
-  omit.imps = c("no.conv", "no.se"))
+\S4method{resid}{lavaan.mi}(object, type = c("raw", "cor"), omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
 \item{object}{An object of class \code{lavaan.mi}}

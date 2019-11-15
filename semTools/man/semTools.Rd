@@ -3,7 +3,6 @@
 \docType{package}
 \name{semTools}
 \alias{semTools}
-\alias{semTools-package}
 \title{semTools: Useful Tools for Structural Equation Modeling}
 \description{
 The \pkg{semTools} package provides many miscellaneous functions that are

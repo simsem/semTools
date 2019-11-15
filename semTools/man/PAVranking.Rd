@@ -5,10 +5,9 @@
 \title{Parcel-Allocation Variability in Model Ranking}
 \usage{
 PAVranking(model0, model1, data, parcel.names, item.syntax, nAlloc = 100,
-  fun = "sem", alpha = 0.05, bic.crit = 10,
-  fit.measures = c("chisq", "df", "cfi", "tli", "rmsea", "srmr", "logl",
-  "aic", "bic", "bic2"), ..., show.progress = FALSE, iseed = 12345,
-  warn = FALSE)
+  fun = "sem", alpha = 0.05, bic.crit = 10, fit.measures = c("chisq",
+  "df", "cfi", "tli", "rmsea", "srmr", "logl", "aic", "bic", "bic2"), ...,
+  show.progress = FALSE, iseed = 12345, warn = FALSE)
 }
 \arguments{
 \item{model0, model1}{\code{\link[lavaan]{lavaan}} model syntax specifying

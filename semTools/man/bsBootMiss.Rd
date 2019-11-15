@@ -4,10 +4,9 @@
 \alias{bsBootMiss}
 \title{Bollen-Stine Bootstrap with the Existence of Missing Data}
 \usage{
-bsBootMiss(x, transformation = 2, nBoot = 500, model, rawData, Sigma,
-  Mu, group, ChiSquared, EMcov, writeTransData = FALSE,
-  transDataOnly = FALSE, writeBootData = FALSE,
-  bootSamplesOnly = FALSE, writeArgs, seed = NULL,
+bsBootMiss(x, transformation = 2, nBoot = 500, model, rawData, Sigma, Mu,
+  group, ChiSquared, EMcov, writeTransData = FALSE, transDataOnly = FALSE,
+  writeBootData = FALSE, bootSamplesOnly = FALSE, writeArgs, seed = NULL,
   suppressWarn = TRUE, showProgress = TRUE, ...)
 }
 \arguments{

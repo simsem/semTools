@@ -6,12 +6,12 @@
 \title{Partial Measurement Invariance Testing Across Groups}
 \usage{
 partialInvariance(fit, type, free = NULL, fix = NULL, refgroup = 1,
-  poolvar = TRUE, p.adjust = "none", fbound = 2,
-  return.fit = FALSE, method = "satorra.bentler.2001")
+  poolvar = TRUE, p.adjust = "none", fbound = 2, return.fit = FALSE,
+  method = "satorra.bentler.2001")
 
-partialInvarianceCat(fit, type, free = NULL, fix = NULL,
-  refgroup = 1, poolvar = TRUE, p.adjust = "none",
-  return.fit = FALSE, method = "satorra.bentler.2001")
+partialInvarianceCat(fit, type, free = NULL, fix = NULL, refgroup = 1,
+  poolvar = TRUE, p.adjust = "none", return.fit = FALSE,
+  method = "satorra.bentler.2001")
 }
 \arguments{
 \item{fit}{A list of models for invariance testing. Each model should be
@@ -109,7 +109,7 @@ names of "fit.configural" and "fit.loadings". Users may use "metric",
 testing invariance on marker variables, other variables will be assigned as
 marker variables automatically.
 
-\item Partial strong invariance. The model
+ \item Partial strong invariance. The model
 named 'fit.loadings' from the list of models is compared with the model
 named either 'fit.intercepts' or 'fit.thresholds'. Each intercept will be
 freed or fixed from the scalar and metric invariance models respectively.
@@ -122,7 +122,7 @@ other variables will be assigned as marker variables automatically. Note
 that if all variables are dichotomous, scalar invariance testing is not
 available.
 
-\item Partial strict invariance. The model named either
+ \item Partial strict invariance. The model named either
 'fit.intercepts' or 'fit.thresholds' (or 'fit.loadings') from the list of
 models is compared with the model named 'fit.residuals'. Each residual
 variance will be freed or fixed from the strict and scalar (or metric)
@@ -132,7 +132,7 @@ names of "fit.residuals" and either "fit.intercepts", "fit.thresholds", or
 "fit.loadings". Users may use "strict", "residual", "residuals", "error", or
 "errors" in the \code{type} argument.
 
-\item Partial mean invariance. The
+ \item Partial mean invariance. The
 model named either 'fit.intercepts' or 'fit.thresholds' (or 'fit.residuals'
 or 'fit.loadings') from the list of models is compared with the model named
 'fit.means'. Each factor mean will be freed or fixed from the means and

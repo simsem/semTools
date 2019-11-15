@@ -5,12 +5,11 @@
 \title{Permutation Randomization Tests of Measurement Equivalence and Differential
 Item Functioning (DIF)}
 \usage{
-permuteMeasEq(nPermute, modelType = c("mgcfa", "mimic"), con,
-  uncon = NULL, null = NULL, param = NULL, freeParam = NULL,
-  covariates = NULL, AFIs = NULL, moreAFIs = NULL, maxSparse = 10,
-  maxNonconv = 10, showProgress = TRUE, warn = -1, datafun, extra,
-  parallelType = c("none", "multicore", "snow"), ncpus = NULL,
-  cl = NULL, iseed = 12345)
+permuteMeasEq(nPermute, modelType = c("mgcfa", "mimic"), con, uncon = NULL,
+  null = NULL, param = NULL, freeParam = NULL, covariates = NULL,
+  AFIs = NULL, moreAFIs = NULL, maxSparse = 10, maxNonconv = 10,
+  showProgress = TRUE, warn = -1, datafun, extra, parallelType = c("none",
+  "multicore", "snow"), ncpus = NULL, cl = NULL, iseed = 12345)
 }
 \arguments{
 \item{nPermute}{An integer indicating the number of random permutations used
@@ -203,8 +202,8 @@ set the state of the RNG when not using parallel options, call
 }
 \value{
 The \linkS4class{permuteMeasEq} object representing the results of
-testing measurement equivalence (the multiparameter omnibus test) and DIF
-(modification indices), as well as diagnostics and any \code{extra} output.
+  testing measurement equivalence (the multiparameter omnibus test) and DIF
+  (modification indices), as well as diagnostics and any \code{extra} output.
 }
 \description{
 The function \code{permuteMeasEq} provides tests of hypotheses involving
@@ -229,7 +228,7 @@ measurement equivalence, in one of two frameworks:
   fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which
   case \code{param} must be \code{NULL} as well.
 
-\item{2} In MIMIC models, one or a set of continuous and/or discrete
+  \item{2} In MIMIC models, one or a set of continuous and/or discrete
   \code{covariates} can be permuted, and a constrained model is fit to each
   permutation in order to provide a distribution of any fit measures (namely,
   the maximum modification index among fixed parameters in \code{param}) under
@@ -450,7 +449,7 @@ lavTestScore(fit.mimic, add = as.character(param))
 
 ## function to recalculate interaction terms after permuting the covariate
 datafun <- function(data) {
-  d <- data[, !names(data) \%in\% paste0("x", 1:3, ".ageyr")]
+  d <- data[, !names(data) %in% paste0("x", 1:3, ".ageyr")]
   indProd(var1 = paste0("x", 1:3), var2 = "ageyr", match = FALSE, data = d)
 }
 
@@ -502,8 +501,8 @@ Methods, 8}(1), 16--37. doi:10.1037/1082-989X.8.1.16
 }
 \seealso{
 \code{\link[stats]{TukeyHSD}}, \code{\link[lavaan]{lavTestScore}},
-\code{\link[semTools]{measurementInvariance}},
-\code{\link[semTools]{measurementInvarianceCat}}
+  \code{\link[semTools]{measurementInvariance}},
+  \code{\link[semTools]{measurementInvarianceCat}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

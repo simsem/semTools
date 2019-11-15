@@ -4,8 +4,8 @@
 \alias{plotRMSEApower}
 \title{Plot power curves for RMSEA}
 \usage{
-plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
-  alpha = 0.05, group = 1, ...)
+plotRMSEApower(rmsea0, rmseaA, df, nlow, nhigh, steps = 1, alpha = 0.05,
+  group = 1, ...)
 }
 \arguments{
 \item{rmsea0}{Null RMSEA}

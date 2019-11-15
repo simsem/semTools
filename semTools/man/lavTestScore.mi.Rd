@@ -4,8 +4,8 @@
 \alias{lavTestScore.mi}
 \title{Score Test for Multiple Imputations}
 \usage{
-lavTestScore.mi(object, add = NULL, release = NULL, test = c("D2",
-  "D1"), scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
+lavTestScore.mi(object, add = NULL, release = NULL, test = c("D2", "D1"),
+  scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
   asymptotic = is.null(add), univariate = TRUE, cumulative = FALSE,
   epc = FALSE, standardized = epc, cov.std = epc, verbose = FALSE,
   warn = TRUE, information = "expected")

@@ -14,8 +14,8 @@ longInvariance(model, varList, auto = "all", constrainAuto = FALSE,
   quiet = FALSE, fit.measures = "default", baseline.model = NULL,
   method = "satorra.bentler.2001", ...)
 
-measurementInvariance(..., std.lv = FALSE, strict = FALSE,
-  quiet = FALSE, fit.measures = "default", baseline.model = NULL,
+measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
+  fit.measures = "default", baseline.model = NULL,
   method = "satorra.bentler.2001")
 
 measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE,

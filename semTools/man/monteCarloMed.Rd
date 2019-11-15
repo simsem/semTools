@@ -4,8 +4,8 @@
 \alias{monteCarloMed}
 \title{Monte Carlo Confidence Intervals to Test Complex Indirect Effects}
 \usage{
-monteCarloMed(expression, ..., ACM = NULL, object = NULL,
-  rep = 20000, CI = 95, plot = FALSE, outputValues = FALSE)
+monteCarloMed(expression, ..., ACM = NULL, object = NULL, rep = 20000,
+  CI = 95, plot = FALSE, outputValues = FALSE)
 }
 \arguments{
 \item{expression}{A character scalar representing the computation of an

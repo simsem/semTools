@@ -9,8 +9,7 @@
 \alias{update,measEq.syntax-method}
 \title{Class for Representing a Measurement-Equivalence Model}
 \usage{
-\S4method{as.character}{measEq.syntax}(x, package = "lavaan",
-  single = TRUE)
+\S4method{as.character}{measEq.syntax}(x, package = "lavaan", single = TRUE)
 
 \S4method{show}{measEq.syntax}(object)
 

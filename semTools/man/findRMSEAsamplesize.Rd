@@ -5,8 +5,7 @@
 \title{Find the minimum sample size for a given statistical power based on
 population RMSEA}
 \usage{
-findRMSEAsamplesize(rmsea0, rmseaA, df, power = 0.8, alpha = 0.05,
-  group = 1)
+findRMSEAsamplesize(rmsea0, rmseaA, df, power = 0.8, alpha = 0.05, group = 1)
 }
 \arguments{
 \item{rmsea0}{Null RMSEA}

@@ -22,24 +22,22 @@ Missing Data}
 
 \S4method{anova}{twostage}(object, h1 = NULL, baseline = FALSE)
 
-\S4method{nobs}{twostage}(object, type = c("ntotal", "ngroups",
-  "n.per.group", "norig", "patterns", "coverage"))
+\S4method{nobs}{twostage}(object, type = c("ntotal", "ngroups", "n.per.group",
+  "norig", "patterns", "coverage"))
 
 \S4method{coef}{twostage}(object, type = c("free", "user"))
 
 \S4method{vcov}{twostage}(object, baseline = FALSE)
 
-\S4method{fitted.values}{twostage}(object, model = c("target",
-  "saturated", "baseline"), type = "moments", labels = TRUE)
+\S4method{fitted.values}{twostage}(object, model = c("target", "saturated",
+  "baseline"), type = "moments", labels = TRUE)
 
 \S4method{fitted}{twostage}(object, model = c("target", "saturated",
   "baseline"), type = "moments", labels = TRUE)
 
-\S4method{residuals}{twostage}(object, type = c("raw", "cor",
-  "normalized", "standardized"))
+\S4method{residuals}{twostage}(object, type = c("raw", "cor", "normalized", "standardized"))
 
-\S4method{resid}{twostage}(object, type = c("raw", "cor", "normalized",
-  "standardized"))
+\S4method{resid}{twostage}(object, type = c("raw", "cor", "normalized", "standardized"))
 }
 \arguments{
 \item{object}{An object of class \code{twostage}.}
