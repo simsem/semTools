@@ -20,8 +20,7 @@ The \linkS4class{Net} object representing the outputs for nesting
   vector of degrees of freedom for each model.
 }
 \description{
-This test examines whether models are nested or equivalent based on Bentler
-and Satorra's (2010) procedure.
+This test examines whether pairs of SEMs are nested or equivalent.
 }
 \details{
 The concept of nesting/equivalence should be the same regardless of
@@ -31,9 +30,9 @@ the net function analyzes summary statistics (model-implied means and
 covariance matrices, not raw data). In the case of robust methods like MLR,
 the raw data is only utilized for the robust adjustment to SE and chi-sq,
 and the net function only checks the unadjusted chi-sq for the purposes of
-testing nesting/equivalence.  This method does not apply to models that
-estimate thresholds for categorical data, so an error message will be issued
-if such a model is provided.
+testing nesting/equivalence.  This method also applies to models for
+categorical data, following the procedure described by Asparouhov & Muthen
+(2019).
 }
 \examples{
 
@@ -64,6 +63,10 @@ summary(tests)
 \references{
 Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence.
 \emph{Psychological Methods, 15}(2), 111--123. doi:10.1037/a0019625
+
+Asparouhov, T., & Muthen, B. (2019). Nesting and equivalence testing for
+structural equation models. \emph{Structural Equation Modeling, 26}(2),
+302--309. doi:10.1080/10705511.2018.1513795
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

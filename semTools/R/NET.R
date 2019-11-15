@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 April 2019
+### Last updated: 15 November 2019
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -108,8 +108,7 @@ function(object) {
 
 ##' Nesting and Equivalence Testing
 ##'
-##' This test examines whether models are nested or equivalent based on Bentler
-##' and Satorra's (2010) procedure.
+##' This test examines whether pairs of SEMs are nested or equivalent.
 ##'
 ##' The concept of nesting/equivalence should be the same regardless of
 ##' estimation method. However, the particular method of testing
@@ -118,9 +117,9 @@ function(object) {
 ##' covariance matrices, not raw data). In the case of robust methods like MLR,
 ##' the raw data is only utilized for the robust adjustment to SE and chi-sq,
 ##' and the net function only checks the unadjusted chi-sq for the purposes of
-##' testing nesting/equivalence.  This method does not apply to models that
-##' estimate thresholds for categorical data, so an error message will be issued
-##' if such a model is provided.
+##' testing nesting/equivalence.  This method also applies to models for
+##' categorical data, following the procedure described by Asparouhov & Muthen
+##' (2019).
 ##'
 ##'
 ##' @importFrom lavaan lavInspect
@@ -139,8 +138,13 @@ function(object) {
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references
+##'
 ##' Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence.
 ##' \emph{Psychological Methods, 15}(2), 111--123. doi:10.1037/a0019625
+##'
+##' Asparouhov, T., & Muthen, B. (2019). Nesting and equivalence testing for
+##' structural equation models. \emph{Structural Equation Modeling, 26}(2),
+##' 302--309. doi:10.1080/10705511.2018.1513795
 ##'
 ##' @examples
 ##'
@@ -188,8 +192,8 @@ net <- function(..., crit = .0001) {
          'Please re-fit all models with the argument meanstructure=TRUE.')
 
   ## check whether any models include categorical outcomes
-  catMod <- sapply(fitList, function(x) lavInspect(x, "options")$categorical)
-  if (any(catMod)) stop("This method only applies to continuous outcomes.")
+  # catMod <- sapply(fitList, function(x) lavInspect(x, "options")$categorical)
+  # if (any(catMod)) stop("This method only applies to continuous outcomes.")
 
   ## get degrees of freedom for each model
   DFs <- sapply(fitList, function(x) lavInspect(x, "fit")["df"])
@@ -242,8 +246,8 @@ net <- function(..., crit = .0001) {
 
 #' @importFrom lavaan lavInspect
 x.within.y <- function(x, y, crit = .0001) {
-  if (length(c(lavaan::lavNames(x, "ov.ord"), lavaan::lavNames(y, "ov.ord"))))
-    stop("The net() function is not available for categorical-data estimators.")
+  # if (length(c(lavaan::lavNames(x, "ov.ord"), lavaan::lavNames(y, "ov.ord"))))
+  #   stop("The net() function is not available for categorical-data estimators.")
 
   exoX <- lavInspect(x, "options")$fixed.x & length(lavaan::lavNames(x, "ov.x"))
   exoY <- lavInspect(y, "options")$fixed.x & length(lavaan::lavNames(y, "ov.x"))
@@ -277,13 +281,27 @@ x.within.y <- function(x, y, crit = .0001) {
 
   ## model-implied moments
   Sigma <- lavInspect(x, "cov.ov")
-  if (lavInspect(x, "options")$meanstructure) {
-    Mu <- lavInspect(x, "mean.ov")
-  } else {
-    Mu <- NULL
-  }
+  ## mean structure?
+  Mu <- lavInspect(x, "mean.ov")
+  if (!length(Mu)) Mu <- NULL
+  ## thresholds?
+  Thr <- lavInspect(x, "thresholds")
+  if (!length(Thr)) {
+    Thr <- NULL
+  } else attr(Thr, "th.idx") <- lavInspect(x, "th.idx")
   N <- lavInspect(x, "nobs")
-  if (N != lavInspect(y, "nobs")) stop("Sample sizes differ. Models must apply to the same data")
+  if (!all(N == lavInspect(y, "nobs"))) stop("Sample sizes differ. Models must apply to the same data")
+
+  ## If DWLS, extract WLS.V and NACOV
+  estimator <- lavInspect(x, "options")$estimator
+  if (estimator == "DWLS") {
+    WLS.V <- lavInspect(x, "WLS.V")
+    NACOV <- lavInspect(x, "gamma")
+    #TODO: check against same output from y
+  } else {
+    WLS.V <- NULL
+    NACOV <- NULL
+  }
 
   ## fit model and check that chi-squared < crit
 
@@ -291,12 +309,13 @@ x.within.y <- function(x, y, crit = .0001) {
                                                 sample.cov = Sigma,
                                                 sample.mean = Mu,
                                                 sample.nobs = N,
-                                                estimator = "ML", #FIXME: Yves added sample.th= argument
+                                                sample.th = Thr,
+                                                estimator = estimator,
+                                                WLS.V = WLS.V, NACOV = NACOV,
                                                 se = "none", # to save time
                                                 test = "standard")))
   if(!lavInspect(newFit, "converged")) return(NA) else {
-    result <- lavInspect(newFit, "fit")["chisq"] < crit
-    names(result) <- NULL
+    result <- lavInspect(newFit, "fit")[["chisq"]] < crit
     if (lavInspect(x, "fit")["df"] ==
         lavInspect(y, "fit")["df"]) return(c(Equivalent = result))
   }

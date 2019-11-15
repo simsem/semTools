@@ -148,6 +148,15 @@ semTools::plausibleValues()
 - account for different factor-score matrices per missing-data pattern?
 
 
+New function to implement Chung & Cai's approach for DWLS
+- https://doi.org/10.1080/00273171.2018.1523000
+- pool thresholds & polychorics + VCOV first, then pass to lavaan
+- see how Yves passes weight matrix:
+  https://groups.google.com/d/msg/lavaan/KZFGMlCuCDo/ayI3MNDSAAAJ
+- Side benefit: similar procedure for SRM in lavaan?
+
+
+
 ======================
 Miscellaneous semTools
 ======================
@@ -168,16 +177,9 @@ http://dx.doi.org/10.1080/10705511.2016.1277726
 
 
 semTools::net()
-- fails using sample.cov= when trying to extract data: lavInspect(x, "data")
+- update lavInspect(x, "data") to check sample.cov= instead?
 - if (nclusters > 1L) test only one block (all groups)
   - default level=1L, optional level=2L
-- adapt for categorical data
-  - Mplus implication: http://www.statmodel.com/download/NET.pdf
-  - check thresholds for nesting (what about trade-off with intercepts?)
-  - given thresholds, can reproduce polychorics?
-    - minimize parameter table, fit model as if continuous?
-  - even necessary to pass weight matrix?
-    - https://groups.google.com/d/msg/lavaan/KZFGMlCuCDo/ayI3MNDSAAAJ
 
 
 semTools::reliability() suite
