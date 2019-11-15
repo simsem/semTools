@@ -177,6 +177,7 @@ http://dx.doi.org/10.1080/10705511.2016.1277726
 
 
 semTools::net()
+- allow for fixed.x or conditional.x?
 - update lavInspect(x, "data") to check sample.cov= instead?
 - if (nclusters > 1L) test only one block (all groups)
   - default level=1L, optional level=2L
