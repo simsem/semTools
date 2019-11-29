@@ -76,14 +76,14 @@ discriminantValidity <- function(object, cutoff = .9, merge = FALSE, level = .95
   free <- lavaan::lavInspect(object, "free", add.class= FALSE)
   
   # Identify the latent variables that we will use
-  lvs <- lavaan::lavNames(object,"lv.x")
+  lvs <- lavaan::lavNames(object,"lv")
   if(cutoff <=0 | cutoff >1) stop("The cutoff must be between (0,1]")
-  if(merge & ! missing(cutoff) & cutoff != 1) warning("Merging factors imply constraining factor correlation to 1. Cutoff will be ignored.")
+  if(merge & ! missing(cutoff) & cutoff != 1) message("Merging factors imply constraining factor correlation to 1. Cutoff will be ignored.")
   if(length(lvs)==0) stop("The model does not have any exogenous latent variables.")
   if(length(lvs)==1) stop("The model has only one exogenous latent variable. At least two are required for assessing discriminant validity.")
   if(length(lavaan::lavNames(object, "lv.y"))>0) warning(paste(
-    "The model has at least one exogenous latent variable (",
-    paste(lavaan::lavNames(object, "lv.y"), collapse=", "),"). Only correlations between exogenous latent variables will be analyzed.",sep=""
+    "The model has at least one endogenous latent variable (",
+    paste(lavaan::lavNames(object, "lv.y"), collapse=", "),"). The correlations of these variables will be estimated after conditioning on their predictors.",sep=""
     ))
 
   # Extract the part of psi that contains latent variables
@@ -97,7 +97,7 @@ discriminantValidity <- function(object, cutoff = .9, merge = FALSE, level = .95
   # Check that the diagonal of psi is all zeros
   if(any(diag(psi)!=0)){
     
-    warning("Some of the latent variable variances are estimated instead of fixed to 1. The model is re-estimated by scaling the latent variables by fixing their variances and freeing all factor loadings.")
+    message("Some of the latent variable variances are estimated instead of fixed to 1. The model is re-estimated by scaling the latent variables by fixing their variances and freeing all factor loadings.")
     
     # Identify free exogenous variances
     i <- intersect(varIndices,which(pt$free != 0))
@@ -127,7 +127,7 @@ discriminantValidity <- function(object, cutoff = .9, merge = FALSE, level = .95
   est <- lavaan::lavInspect(object,"est")$psi[lvs,lvs]
   
   if(any(diag(est)!=1)){
-    warning("Some of the latent variable variances are fixed to values other than 1. The model is re-estimated by scaling the latent variables based on the first factor loading.")
+    message("Some of the latent variable variances are fixed to values other than 1. The model is re-estimated by scaling the latent variables based on the first factor loading.")
 
     # constrain the exogenous variances to 1
     pt$ustart[varIndices] <- 1
