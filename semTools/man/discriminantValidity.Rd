@@ -7,19 +7,19 @@
 discriminantValidity(object, cutoff = 0.9, merge = FALSE, level = 0.95)
 }
 \arguments{
-\item{object}{The lavaan model object provided after running the \code{cfa} 
-function.}
+\item{object}{The \code{\linkS4class{lavaan}} model object returned by
+the \code{\link[lavaan]{cfa}} function.}
 
-\item{cutoff}{A cutoff to be used in the constrainded models in likelihood 
+\item{cutoff}{A cutoff to be used in the constrained models in likelihood
 ratio tests.}
 
-\item{merge}{Whether the constrained models should be constructed by merging 
+\item{merge}{Whether the constrained models should be constructed by merging
 two factors as one. Implies \code{cutoff} = 1.}
 
 \item{level}{The confidence level required.}
 }
 \value{
-A \code{data.frame} of latent variable correlation estimates, their 
+A \code{data.frame} of latent variable correlation estimates, their
 confidence intervals, and a likelihood ratio tests against constrained models.
 with the following attributes:
 \describe{
@@ -33,12 +33,12 @@ Calculate discriminant validity statistics based on a fitted lavaan object
 }
 \details{
 Evaluated on the measurement scale level, discriminant validity is commonly
-evaluated by checking if each pair of latent correlations is sufficiently 
+evaluated by checking if each pair of latent correlations is sufficiently
 below one (in absolute value) that the latent variables can be thought of
-representing two distinct construxts.
+representing two distinct constructs.
 
-\code{discriminantValidity} function calculates two sets of statistics that 
-are commonly used in discriminant validity evaluation. The first set is are
+\code{discriminantValidity} function calculates two sets of statistics that
+are commonly used in discriminant validity evaluation. The first set are
 factor correlation estimates and their confidence intervals. The second set
 is a series of nested model tests, where the baseline model is compared
 against as set of constrained models that are constructed by constraining
@@ -47,26 +47,27 @@ each factor correlation to the specified cutoff one at a time.
 The function assume that the \code{object} is set of confirmatory
 factor analysis results where the latent variables are scaled by fixing their
 variances to 1s. If the model is not a CFA model, the function will calculate
-the statistics for the correlations of exogenous latent variables. If the
+the statistics for the correlations among exogenous latent variables, but
+for the \emph{residual} variances with endogenous variables. If the
 latent variables are scaled in some other way (e.g. fixing the first loadings),
-the function issues a warnign and re-estimates the model with scaling that
-produces correlation estimates.
+the function issues a warning and re-estimates the model by fixing latent
+variances to 1 (and estimating all loadings) so that factor covariances are
+already estimated as correlations.
 
 The likelihood ratio tests are done by comparing the original baseline model
-against more constrained alternatives. By default, these alternatives are 
+against more constrained alternatives. By default, these alternatives are
 constructed by fixing each correlation at a time to a cutoff value. The
-typical purpose of this test is to demonstrate that the estimated factor 
-correlation is well below the cutoff and a significant chi2 statistic
-thus indicates support for discriminant validity. In some cases it is possible
-that the original correlation estimate is greater than the cutoff. In this
-case the chi2 test would constrain the correlation to be lower than where it
-is estimated and the test does not make sense. When this happens, the likelihood
+typical purpose of this test is to demonstrate that the estimated factor
+correlation is well below the cutoff and a significant \eqn{chi^2} statistic
+thus indicates support for discriminant validity. In some cases, the original
+correlation estimate may already be greater than the cutoff, making it
+redundant to fit a "restricted" model. When this happens, the likelihood
 ratio test will be replaced by comparing the baseline model against itself.
 For correlations that are estimated to be negative, a negation of the cutoff
-is used in the constrained mode. 
+is used in the constrained model.
 
 Another alternative is to do a nested model comparison against a model where
-two factors are merged as one by setting the \code{merge} argument to 
+two factors are merged as one by setting the \code{merge} argument to
 \code{TRUE}. In this comparison, the constrained model is constructed by
 removing one of the correlated factors from the model and assigning its
 indicators to the factor that remains in the model.

@@ -4,6 +4,8 @@
 
 - `class?lavaan.mi` methods and functions can optionally specify particular imputation numbers to omit, in addition to the general omission criteria in `omit.imps=`.
 - `net()` now accepts models fitted to categorical outcomes
+- New `discriminantValidity()` function added
+
 
 ## Bug Fixes:
 
