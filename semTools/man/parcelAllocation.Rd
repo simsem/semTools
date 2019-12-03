@@ -109,7 +109,7 @@ items to parcels, see Sterba (2011) and Sterba and MccCallum (2010).
 ## Specify the item-level model (if NO parcels were created)
 item.syntax <- c(paste0("f1 =~ f1item", 1:9),
                  paste0("f2 =~ f2item", 1:9))
-cat(item.syntax, sep = "\\n")
+cat(item.syntax, sep = "\n")
 ## Below, we reduce the size of this same model by
 ## applying different parceling schemes
 

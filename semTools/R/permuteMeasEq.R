@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 October 2019
+### Last updated: 3 December 2019
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -853,7 +853,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##'
 ##' ## function to recalculate interaction terms after permuting the covariate
 ##' datafun <- function(data) {
-##'   d <- data[, !names(data) %in% paste0("x", 1:3, ".ageyr")]
+##'   d <- data[, c(paste0("x", 1:3), "ageyr")]
 ##'   indProd(var1 = paste0("x", 1:3), var2 = "ageyr", match = FALSE, data = d)
 ##' }
 ##'

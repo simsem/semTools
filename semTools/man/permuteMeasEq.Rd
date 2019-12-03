@@ -449,7 +449,7 @@ lavTestScore(fit.mimic, add = as.character(param))
 
 ## function to recalculate interaction terms after permuting the covariate
 datafun <- function(data) {
-  d <- data[, !names(data) %in% paste0("x", 1:3, ".ageyr")]
+  d <- data[, c(paste0("x", 1:3), "ageyr")]
   indProd(var1 = paste0("x", 1:3), var2 = "ageyr", match = FALSE, data = d)
 }
 

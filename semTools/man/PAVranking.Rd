@@ -138,7 +138,7 @@ across multiple imputations of missing data (see \bold{Examples}).
 
 item.syntax <- c(paste0("f1 =~ f1item", 1:9),
                  paste0("f2 =~ f2item", 1:9))
-cat(item.syntax, sep = "\\n")
+cat(item.syntax, sep = "\n")
 ## Below, we reduce the size of this same model by
 ## applying different parceling schemes
 
