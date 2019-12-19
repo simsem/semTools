@@ -3,14 +3,18 @@
 ## New Features:
 
 - `class?lavaan.mi` methods and functions can optionally specify particular imputation numbers to omit, in addition to the general omission criteria in `omit.imps=`.
-- `net()` now accepts models fitted to categorical outcomes
-- New `discriminantValidity()` function added
-
+- `net()` now accepts models fitted to categorical outcomes.
+- `reliability()` includes 2 new arguments:
+    - default `dropSingle = TRUE` is consistent with old behavior.
+    - "total" column no longer returned by default, or ever for 1-factor models. Users can request `return.total = TRUE` when multiple factors are multiple dimensions of a single scale composite.
+- New `discriminantValidity()` function added.
 
 ## Bug Fixes:
 
 - `reliability()` and `maximalRelia()` returned an error with categorical single-group models
     - https://groups.google.com/d/msg/lavaan/rPVEHUQjqVQ/SQaMrgn-AQAJ
+- `reliability()` only ignored higher-order factors without any observed indicators, and returned an error when first-order factors had categorical indicators.  Both issues have been resolved:
+    - https://github.com/simsem/semTools/issues/65
 - `fitMeasures()` for `lavaan.mi` sometimes returned an error 
 
 

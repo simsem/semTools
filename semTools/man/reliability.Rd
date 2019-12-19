@@ -4,12 +4,24 @@
 \alias{reliability}
 \title{Calculate reliability values of factors}
 \usage{
-reliability(object, omit.imps = c("no.conv", "no.se"))
+reliability(object, return.total = FALSE, dropSingle = TRUE,
+  omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
 \item{object}{A \code{\linkS4class{lavaan}} or
 \code{\linkS4class{lavaan.mi}} object, expected to contain only
 exogenous common factors (i.e., a CFA model).}
+
+\item{return.total}{\code{logical} indicating whether to return a final
+column containing the reliability of a composite of all items. Ignored
+in 1-factor models, and should only be set \code{TRUE} if all factors
+represent scale dimensions that could nonetheless be collapsed to a
+single scale composite (scale sum or scale mean).}
+
+\item{dropSingle}{\code{logical} indicating whether to exclude factors
+defined by a single indicator from the returned results. If \code{TRUE}
+(default), single indicators will still be included in the \code{total}
+column when \code{return.total = TRUE}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results.  Can include any of
@@ -28,7 +40,8 @@ imputations warrant further investigation.}
 }
 \value{
 Reliability values (coefficient alpha, coefficients omega, average
-  variance extracted) of each factor in each group
+  variance extracted) of each factor in each group. If there are multiple
+  factors, a \code{total} column can optionally be included.
 }
 \description{
 Calculate reliability values of factors by coefficient omega
@@ -136,6 +149,7 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 
 fit <- cfa(HS.model, data = HolzingerSwineford1939)
 reliability(fit)
+reliability(fit, total = TRUE)
 
 }
 \references{

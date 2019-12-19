@@ -1,5 +1,5 @@
-### Sunthud Pornprasertmanit , Yves Rosseel
-### Last updated: 3 September 2019
+### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
+### Last updated: 19 December 2019
 
 
 ## -------------
@@ -105,26 +105,38 @@
 ##'
 ##'
 ##' @importFrom lavaan lavInspect lavNames
+##' @importFrom methods getMethod
+##'
 ##' @param object A \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
+##' @param return.total \code{logical} indicating whether to return a final
+##'   column containing the reliability of a composite of all items. Ignored
+##'   in 1-factor models, and should only be set \code{TRUE} if all factors
+##'   represent scale dimensions that could nonetheless be collapsed to a
+##'   single scale composite (scale sum or scale mean).
+##' @param dropSingle \code{logical} indicating whether to exclude factors
+##'   defined by a single indicator from the returned results. If \code{TRUE}
+##'   (default), single indicators will still be included in the \code{total}
+##'   column when \code{return.total = TRUE}.
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'        imputations from pooled results.  Can include any of
-##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
-##'        default setting, which excludes any imputations that did not
-##'        converge or for which standard errors could not be computed.  The
-##'        last option (\code{"no.npd"}) would exclude any imputations which
-##'        yielded a nonpositive definite covariance matrix for observed or
-##'        latent variables, which would include any "improper solutions" such
-##'        as Heywood cases.  NPD solutions are not excluded by default because
-##'        they are likely to occur due to sampling error, especially in small
-##'        samples.  However, gross model misspecification could also cause
-##'        NPD solutions, users can compare pooled results with and without
-##'        this setting as a sensitivity analysis to see whether some
-##'        imputations warrant further investigation.
+##'   imputations from pooled results.  Can include any of
+##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   default setting, which excludes any imputations that did not
+##'   converge or for which standard errors could not be computed.  The
+##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   yielded a nonpositive definite covariance matrix for observed or
+##'   latent variables, which would include any "improper solutions" such
+##'   as Heywood cases.  NPD solutions are not excluded by default because
+##'   they are likely to occur due to sampling error, especially in small
+##'   samples.  However, gross model misspecification could also cause
+##'   NPD solutions, users can compare pooled results with and without
+##'   this setting as a sensitivity analysis to see whether some
+##'   imputations warrant further investigation.
 ##'
 ##' @return Reliability values (coefficient alpha, coefficients omega, average
-##'   variance extracted) of each factor in each group
+##'   variance extracted) of each factor in each group. If there are multiple
+##'   factors, a \code{total} column can optionally be included.
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
@@ -178,9 +190,11 @@
 ##'
 ##' fit <- cfa(HS.model, data = HolzingerSwineford1939)
 ##' reliability(fit)
+##' reliability(fit, total = TRUE)
 ##'
 ##' @export
-reliability <- function(object, omit.imps = c("no.conv","no.se")) {
+reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
+                        omit.imps = c("no.conv","no.se")) {
 
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
   nlevels <- lavInspect(object, "nlevels")
@@ -260,21 +274,57 @@ reliability <- function(object, omit.imps = c("no.conv","no.se")) {
   ly <- lapply(param, "[[", "lambda")
   te <- lapply(param, "[[", "theta")
 
-	categorical <- lavInspect(object, "categorical")
-	threshold <- if (categorical) getThreshold(object) else NULL
+	anyCategorical <- lavInspect(object, "categorical")
+	threshold <- if (anyCategorical) getThreshold(object) else NULL
 
 	result <- list()
+	warnHigher <- FALSE
+	## loop over i blocks (groups/levels)
 	for (i in 1:nblocks) {
+	  ## extract factor and indicator names
+	  indNames <- rownames(ly[[i]])
+	  facNames <- colnames(ly[[i]])
+	  ## distinguish between categorical, continuous, and latent indicators
+	  nameArgs <- list(object = object)
+	  if (nblocks > 1L) nameArgs$block <- i
+	  ordNames <- do.call(lavNames, c(nameArgs, list(type = "ov.ord")))
+	  latInds  <- do.call(lavNames, c(nameArgs, list(type = "lv.ind")))
+	  higher   <- setdiff(facNames, latInds)
+	  ## keep track of factor indices, to drop higher-order factors,
+	  ## and optionally single-indicator factors
+	  idx.drop <- numeric(0)
+
+	  ## relevant quantities
 		common <- (apply(ly[[i]], 2, sum)^2) * diag(ve[[i]])
 		truevar <- ly[[i]] %*% ve[[i]] %*% t(ly[[i]])
+		## vectors to store results for each factor
 		error <- rep(NA, length(common))
 		alpha <- rep(NA, length(common))
 		total <- rep(NA, length(common))
 		omega1 <- omega2 <- omega3 <- rep(NA, length(common))
 		impliedTotal <- rep(NA, length(common))
 		avevar <- rep(NA, length(common))
+
+		## loop over j factors
 		for (j in 1:length(common)) {
 			index <- which(ly[[i]][,j] != 0)
+			## check for categorical (or mixed) indicators
+			categorical <-      any(indNames[index] %in% ordNames)
+			if (categorical && !all(indNames[index] %in% ordNames)) {
+			  stop('Reliability cannot be computed for factors with combinations ',
+			       'of categorical and continuous (including latent) indicators.')
+			}
+			## check for latent indicators
+			if (length(latInds) && facNames[j] %in% higher) {
+			  warnHigher <- TRUE
+			  idx.drop <- c(idx.drop, j)
+			  next
+			}
+			if (dropSingle && length(index) == 1L) {
+			  idx.drop <- c(idx.drop, j)
+			  next
+			}
+
 			error[j] <- sum(te[[i]][index, index, drop = FALSE])
 			sigma <- S[[i]][index, index, drop = FALSE]
 			alpha[j] <- computeAlpha(sigma, length(index))
@@ -308,35 +358,55 @@ reliability <- function(object, omit.imps = c("no.conv","no.se")) {
 				omega2[j] <- commonfac / impliedTotal[j]
 				omega3[j] <- commonfac / total[j]
 			}
+			## end loop over j factors
 		}
-		alpha <- c(alpha, total = computeAlpha(S[[i]], nrow(S[[i]])))
-		names(alpha) <- c(names(common), "total")
-		if (categorical) {
-			omega1 <- c(omega1, total = omegaCat(truevar = truevar,
-			                                     implied = SigmaHat[[i]],
-			                                     threshold = threshold[[i]],
-			                                     denom = truevar + te[[i]]))
-			omega2 <- c(omega2, total = omegaCat(truevar = truevar,
-			                                     implied = SigmaHat[[i]],
-			                                     threshold = threshold[[i]],
-			                                     denom = SigmaHat[[i]]))
-			omega3 <- c(omega3, total = omegaCat(truevar = truevar,
-			                                     implied = SigmaHat[[i]],
-			                                     threshold = threshold[[i]],
-			                                     denom = S[[i]]))
-		} else {
-			omega1 <- c(omega1, total = sum(truevar) / (sum(truevar) + sum(te[[i]])))
-			omega2 <- c(omega2, total = sum(truevar) / (sum(SigmaHat[[i]])))
-			omega3 <- c(omega3, total = sum(truevar) / (sum(S[[i]])))
+
+		if (return.total & length(facNames) > 1L) {
+		  alpha <- c(alpha, total = computeAlpha(S[[i]], nrow(S[[i]])))
+		  #FIXME: necessary?    names(alpha) <- c(names(common), "total")
+		  if (categorical) {
+		    omega1 <- c(omega1, total = omegaCat(truevar = truevar,
+		                                         implied = SigmaHat[[i]],
+		                                         threshold = threshold[[i]],
+		                                         denom = truevar + te[[i]]))
+		    omega2 <- c(omega2, total = omegaCat(truevar = truevar,
+		                                         implied = SigmaHat[[i]],
+		                                         threshold = threshold[[i]],
+		                                         denom = SigmaHat[[i]]))
+		    omega3 <- c(omega3, total = omegaCat(truevar = truevar,
+		                                         implied = SigmaHat[[i]],
+		                                         threshold = threshold[[i]],
+		                                         denom = S[[i]]))
+		  } else {
+		    omega1 <- c(omega1, total = sum(truevar) / (sum(truevar) + sum(te[[i]])))
+		    omega2 <- c(omega2, total = sum(truevar) / (sum(SigmaHat[[i]])))
+		    omega3 <- c(omega3, total = sum(truevar) / (sum(S[[i]])))
+		  }
+		  avevar <- c(avevar,
+		              total = sum(diag(truevar)) / sum((diag(truevar) + diag(te[[i]]))))
 		}
-		avevar <- c(avevar, total = sum(diag(truevar))/ sum((diag(truevar) + diag(te[[i]]))))
-		singleIndicator <- apply(ly[[i]], 2, function(x) sum(x != 0)) %in% 0:1
+
 		result[[i]] <- rbind(alpha = alpha, omega = omega1, omega2 = omega2,
-		                     omega3 = omega3, avevar = avevar)[ , !singleIndicator]
+		                     omega3 = omega3, avevar = avevar)
+		colnames(result[[i]])[1:length(facNames)] <- facNames
+		if (return.total & length(facNames) > 1L) {
+		  colnames(result[[i]])[ ncol(result[[i]]) ] <- "total"
+		}
+		if (length(idx.drop)) {
+		  result[[i]] <- result[[i]][ , -idx.drop]
+		  ## reset indices for next block (could have different model/variables)
+		  idx.drop <- numeric(0)
+		}
+		## end loop over blocks
 	}
-	if (categorical) message("The alpha and the average variance extracted are ",
-	                         "calculated from polychoric (polyserial) ",
-	                         "correlations, not from Pearson correlations.\n")
+
+	if (anyCategorical) message("For constructs with categorical indicators, ",
+	                            "the alpha and the average variance extracted ",
+	                            "are calculated from polychoric (polyserial) ",
+	                            "correlations, not from Pearson correlations.\n")
+	if (warnHigher) message('Higher-order factors were ignored.\n')
+
+	## drop list structure?
 	if (nblocks == 1L) {
 		result <- result[[1]]
 	} else names(result) <- block.label
