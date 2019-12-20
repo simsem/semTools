@@ -2,7 +2,9 @@
 
 ## New Features:
 
-- `class?lavaan.mi` methods and functions can optionally specify particular imputation numbers to omit, in addition to the general omission criteria in `omit.imps=`.
+- `class?lavaan.mi` methods and functions can optionally specify particular imputation numbers to omit, in addition to the general omission criteria in `omit.imps=`. Simply include specific imputation numbers in the `omit.imps=` vector.
+- The `update()` method for `class?measEq.syntax` has a new argument `change.syntax`. Users can pass lavaan syntax specifying an existing model parameter in order to change the labels or the fixed/free values. This provies some flexibility not found in the `measEq.syntax()` function itself (e.g., releasing an equality constraint in only one of >2 groups, whereas `group.partial=` can only release constraints across all groups).
+    - https://github.com/simsem/semTools/issues/60
 - `net()` now accepts models fitted to categorical outcomes.
 - `reliability()` includes 2 new arguments:
     - default `dropSingle = TRUE` is consistent with old behavior.

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 October 2019
+### Last updated: 20 December 2019
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -34,7 +34,8 @@ measEq <- function(configural.model,
   #TODO: add argument to accept measEq.partial output, to continue sequence (or make and update() method?)
   if (is.character(group.partial)) {
     if (group.partial == "" && length(group.partial) == 1L) {
-      group.partial <- data.frame(lhs = character(0), op = character(0), rhs = character(0))
+      group.partial <- data.frame(stringsAsFactors = FALSE, lhs = character(0),
+                                  op = character(0), rhs = character(0))
     } else {
       group.partial <- lavaan::lavParseModelString(group.partial,
                                                    as.data.frame. = TRUE,
@@ -43,7 +44,8 @@ measEq <- function(configural.model,
   } #TODO: else {extract information from a measEq.partial object}
   if (is.character(long.partial)) {
     if (long.partial == "" && length(long.partial) == 1L) {
-      long.partial <- data.frame(lhs = character(0), op = character(0), rhs = character(0))
+      long.partial <- data.frame(stringsAsFactors = FALSE, lhs = character(0),
+                                 op = character(0), rhs = character(0))
     } else {
       long.partial <- lavaan::lavParseModelString(long.partial,
                                                   as.data.frame. = TRUE,
@@ -122,6 +124,14 @@ measEq <- function(configural.model,
 ##'   changed values.
 ##' @param evaluate If \code{TRUE}, evaluate the new \code{call}; otherwise,
 ##'   return the new \code{call}.
+##' @param change.syntax \code{lavaan \link[lavaan]{model.syntax}} specifying
+##'   labels or fixed/free values of parameters in \code{object}.
+##'   These provide some flexibility to customize
+##'   existing parameters without having to copy/paste the output of
+##'   \code{as.character(object)} into an R script. For example,
+##'   \code{group.partial} will free a parameter across all groups, but
+##'   \code{update} allows users to free the parameter in just one group
+##'   while maintaining equality constraints among other groups.
 ##'
 ##' @return
 ##'   \item{summary}{\code{signature(object = "measEq.syntax", verbose = TRUE)}:
@@ -131,10 +141,12 @@ measEq <- function(configural.model,
 ##'     details about the model, including the numbers of indicators and factors,
 ##'     and which parameters are constrained to equality.}
 ##'   \item{show}{\code{signature(object = "measEq.syntax")}: Prints a message
-##'     about how to use the object for model fitting. Invisibly returns the
-##'     object.}
+##'     about how to use the \code{object} for model fitting. Invisibly
+##'     returns the \code{object}.}
 ##'   \item{update}{\code{signature(object = "measEq.syntax"), ...,
-##'     evaluate = TRUE}: Creates a new object with updated arguments.}
+##'     evaluate = TRUE, change.syntax = NULL}: Creates a new
+##'     \code{object} with updated arguments in \code{...}, or updated
+##'     parameter labels or fixed/free specifications in \code{object}.}
 ##'   \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
 ##'     Converts the \code{measEq.syntax} object to model syntax that can be
 ##'     copy/pasted into a syntax file to be edited before analysis, or simply
@@ -157,6 +169,7 @@ setClass("measEq.syntax", slots = c(package = "character", # lavaan, OpenMx in t
                                     values = "list",
                                     labels = "list",
                                     constraints = "character",
+                                    updates = "list", # 2 data.frames: labels and values
                                     ngroups = "integer"))
 
 ##' @rdname measEq.syntax-class
@@ -459,25 +472,115 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
   invisible(lambda)
 })
 
+updateMeasEqSyntax <- function(object, ..., evaluate = TRUE,
+                               change.syntax = NULL) {
+  # data.frame(stringsAsFactors = FALSE, extras = c(TRUE, FALSE),
+  #            override = c(TRUE, TRUE, FALSE, FALSE),
+  #            eval = c(TRUE, TRUE, TRUE, TRUE,
+  #                     FALSE, FALSE, FALSE, FALSE),
+  #            TODO = c("extras; eval; transfer, augment, and apply @updates",
+  #                     "apply and augment @updates",
+  #                     "extras; eval; transfer and apply @updates", "return object",
+  #                     "nothing, can't add to call", "nothing, can't add to call",
+  #                     "extras, return call", "return call")) -> foo
+  # foo[order(foo$extras), ]
+
+  #  extras override  eval                                                TODO
+  # 1 FALSE     TRUE  TRUE                          apply and augment @updates
+  # 2 FALSE    FALSE  TRUE                                       return object *
+  # 3 FALSE     TRUE FALSE                          nothing, can't add to call *
+  # 4 FALSE    FALSE FALSE                                         return call *
+  # 5  TRUE     TRUE  TRUE extras; eval; transfer, augment, and apply @updates
+  # 6  TRUE    FALSE  TRUE                     extras, eval, transfer @updates
+  # 7  TRUE     TRUE FALSE                          nothing, can't add to call *
+  # 8  TRUE    FALSE FALSE                                 extras, return call *
+
+  #extras <- match.call(expand.dots = FALSE)$...
+  extras <- list(...)
+  custom <- !is.null(change.syntax)
+
+  ## regardless of customization/evaluation, extras can be added to call first
+  if (length(extras)) {
+    ## prep 5:8
+    call <- object@call
+    existing <- !is.na(match(names(extras), names(call)))
+    for (a in names(extras)[existing]) call[[a]] <- extras[[a]]
+    if (any(!existing)) {
+      call <- c(as.list(call), extras[!existing])
+      call <- as.call(call)
+    }
+    if (!evaluate) {
+      if (custom) warning('cannot apply "change.syntax" ',
+                          'argument when evaluate=FALSE.')
+      ## finish 7:8
+      return(call)
+    }
+  } else if (!evaluate) {
+    if (custom) warning('cannot apply "change.syntax" ',
+                        'argument when evaluate=FALSE.')
+    ## finish 3:4
+    return(object@call)
+  } else if (!custom) {
+    ## finish 2
+    return(object)
+  }
+
+  #  extras override  eval                                        TODO
+  # 1 FALSE     TRUE  TRUE                  apply and augment @updates
+  # 5  TRUE     TRUE  TRUE eval; transfer, augment, and apply @updates
+  # 6  TRUE    FALSE  TRUE           eval; transfer and apply @updates
+
+  if (length(extras)) {
+    ## prep 5:6
+    out <- eval(call, parent.frame())
+    if (nrow(object@updates$values)) out@updates$values <- object@updates$values
+    if (nrow(object@updates$labels)) out@updates$labels <- object@updates$labels
+  } else out <- object # "prep" 1
+
+  #  extras override  eval                        TODO
+  # 1 FALSE     TRUE  TRUE  apply and augment @updates
+  # 5  TRUE     TRUE  TRUE augment, and apply @updates
+  # 6  TRUE    FALSE  TRUE              apply @updates
+
+  ## check before augmenting to prep 1 and 5
+  if (!is.null(change.syntax)) {
+    stopifnot(is.character(change.syntax))
+    ## convert syntax to data.frame of updates to make
+    UPDATES <- char2update(object, change.syntax, return.object = FALSE)
+    out@updates$values <- rbind(out@updates$values, UPDATES$values)
+    out@updates$labels <- rbind(out@updates$labels, UPDATES$labels)
+  }
+
+  ## nothing left to do but apply @updates
+
+  ## loop over any values/labels (now stored) to finish 1 and 5:6
+  if (nrow(out@updates$values)) for (RR in 1:nrow(out@updates$values)) {
+    valueArgs <- c(list(object = object, slotName = "values"),
+                   as.list(out@updates$values[RR, , drop = FALSE]))
+    BB <- out@updates$values$group[RR]
+    matName <- out@updates$values$matName[RR]
+    out@values[[BB]][[matName]] <- do.call(override, valueArgs)
+  }
+  if (nrow(out@updates$labels)) for (RR in 1:nrow(out@updates$labels)) {
+    labelArgs <- c(list(object = object, slotName = "labels"),
+                   as.list(out@updates$labels[RR, , drop = FALSE]))
+    BB <- out@updates$labels$group[RR]
+    matName <- out@updates$labels$matName[RR]
+    out@labels[[BB]][[matName]] <- do.call(override, labelArgs)
+  }
+  ## user-specified parameters to override MUST include:
+  ## - group (eventually block), defaults to 1 (convenient for longitudinal CFA)
+  ## - matName (e.g., lambda)
+  ## - row and col (integer or character indices)
+  ## - replacement (NA or numeric for values, character for labels)
+
+  out
+}
 ##' @rdname measEq.syntax-class
 ##' @aliases update,measEq.syntax-method
 ##' @importFrom stats update
 ##' @export
-setMethod("update", "measEq.syntax", function(object, ..., evaluate = TRUE) {
-  call <- object@call
-  #extras <- match.call(expand.dots = FALSE)$...
-  extras <- list(...)
-  existing <- !is.na(match(names(extras), names(call)))
-  for (a in names(extras)[existing]) call[[a]] <- extras[[a]]
-  if (any(!existing)) {
-    call <- c(as.list(call), extras[!existing])
-    call <- as.call(call)
-  }
-  if (evaluate) {
-    out <- eval(call, parent.frame())
-  } else out <- call
-  out
-})
+setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 
 
 
@@ -1058,7 +1161,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   ## convert *.partial strings to parTables
   if (is.character(group.partial)) {
     if (group.partial == "" && length(group.partial) == 1L) {
-      group.partial <- data.frame(lhs = character(0), op = character(0), rhs = character(0))
+      group.partial <- data.frame(stringsAsFactors = FALSE, lhs = character(0),
+                                  op = character(0), rhs = character(0))
     } else {
       group.partial <- lavaan::lavParseModelString(group.partial,
                                                    as.data.frame. = TRUE,
@@ -1067,7 +1171,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   } #TODO: else {extract information from a measEq.partial object}
   if (is.character(long.partial)) {
     if (long.partial == "" && length(long.partial) == 1L) {
-      long.partial <- data.frame(lhs = character(0), op = character(0), rhs = character(0))
+      long.partial <- data.frame(stringsAsFactors = FALSE, lhs = character(0),
+                                 op = character(0), rhs = character(0))
     } else {
       long.partial <- lavaan::lavParseModelString(long.partial,
                                                   as.data.frame. = TRUE,
@@ -2476,6 +2581,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
              values  = GLIST.values,
              labels  = GLIST.labels,
              constraints = fxList,
+             updates = list(values = data.frame(NULL),
+                            labels = data.frame(NULL)),
              ngroups = nG)
 
   if (return.fit) {
@@ -2707,6 +2814,191 @@ write.lavaan.syntax <- function(pmat, specify, value, label) {
 }
 #TODO: adapt routine to write Mplus MODEL statements and OpenMx RAM commands
 
+## function to allow users to customize syntax with update(),
+## so they don't necessarily have to copy/paste a script to adapt it.
+override <- function(object, slotName = "values", group = 1L,
+                     matName, row, col, replacement) {
+  stopifnot(inherits(object, "measEq.syntax"))
+  MM <- methods::slot(object, slotName)[[group]] # only "values" or "labels"
+
+  ## check indices
+  if (is.character(row)) {
+    if (! row %in% rownames(MM[[matName]]))
+      stop("'", row, "' not found in rownames(",
+           deparse(substitute(object)), "@", slotName, "[[", group, "]]$",
+           matName, ")")
+  } else if (is.numeric(row)) {
+    if (! as.integer(row) %in% 1:nrow(MM[[matName]]))
+      stop(as.integer(row), "' is outside the number of nrow(",
+           deparse(substitute(object)), "@", slotName, "[[", group, "]]$",
+           matName, ")")
+  } else stop('row argument must be numeric/character indices')
+  ## repeat for col
+  if (matName %in% c("nu","alpha","delta","tau")) col <- 1L else {
+    if (is.character(col)) {
+      if (! col %in% colnames(MM[[matName]]))
+        stop("'", col, "' not found in colnames(",
+             deparse(substitute(object)), "@", slotName, "[[", group, "]]$",
+             matName, ")")
+    } else if (is.numeric(col)) {
+      if (! as.integer(col) %in% 1:ncol(MM[[matName]]))
+        stop(as.integer(col), "' is outside the number of ncol(",
+             deparse(substitute(object)), "@", slotName, "[[", group, "]]$",
+             matName, ")")
+    } else stop('col argument must be numeric/character indices')
+  }
+
+  newM <- MM[[matName]]
+  newM[row, col] <- replacement
+  if (matName %in% c("theta","psi")) newM[col, row] <- replacement
+  newM
+}
+
+## function to assemble values/labels to update
+char2update <- function(object, model, return.object = TRUE) {
+  stopifnot(inherits(object, "measEq.syntax"))
+  stopifnot(inherits(model, "character"))
+
+  PT <- lavParseModelString(model, as.data.frame. = TRUE)
+  indNames <- lapply(object@values, function(x) rownames(x$lambda)) # per block
+  facNames <- lapply(object@values, function(x) colnames(x$lambda))
+
+  values <- PT$fixed
+  labels <- PT$label
+  ## check for multigroup specification of values/labels
+  if (any(grepl(pattern = ";", x = values))) {
+    values <- strsplit(values, split = ";")
+    nValues <- sapply(values, length)
+  } else nValues <- rep(1L, length(values))
+  if (any(grepl(pattern = ";", x = labels))) {
+    labels <- strsplit(labels, split = ";")
+    nLabels <- sapply(labels, length)
+  } else nLabels <- rep(1L, length(labels))
+  nBlocks <- length(facNames)
+
+  values.DF <- data.frame(NULL)
+  labels.DF <- data.frame(NULL)
+  for (RR in 1:nrow(PT)) {
+    ## check whether numbers match
+    if (nValues > 1L && nValues != nBlocks) {
+      stop('Number of fixed/free values (', nValues[RR],
+           ') specified for parameter "', PT$lhs[RR], PT$op[RR], PT$rhs[RR],
+           '" does not match the number of groups (', nBlocks, ')')
+    }
+    if (nLabels > 1L && nLabels != nBlocks) {
+      stop('Number of labels (', nLabels[RR],
+           ') specified for parameter "', PT$lhs[RR], PT$op[RR], PT$rhs[RR],
+           '" does not match the number of groups (', nBlocks, ')')
+    }
+
+    ## loop over blocks (currently only groups)
+    for (BB in 1:nBlocks) {
+      ## make template for values and labels, depending on parameter matrix
+
+      ## INTERCEPTS
+      if (PT$op[RR] == "~1" && PT$lhs[RR] %in% indNames[[BB]]) {
+        DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "nu",
+                         row = PT$lhs[RR], col = "intercept")
+
+        ## LATENT MEANS
+      } else if (PT$op[RR] == "~1" && PT$lhs[RR] %in% facNames[[BB]]) {
+        DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "alpha",
+                         row = PT$lhs[RR], col = "intercept")
+
+        ## LOADINGS
+      } else if (PT$op[RR] == "=~" && PT$rhs[RR] %in% indNames[[BB]]) {
+        DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "lambda",
+                         row = PT$rhs[RR], col = PT$lhs[RR])
+
+        ## SECOND-ORDER LOADINGS
+      } else  if (PT$op[RR] == "=~" && PT$rhs[RR] %in% facNames[[BB]]) {
+        DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "beta",
+                         row = PT$rhs[RR], col = PT$lhs[RR])
+
+        ## LATENT (CO)VARIANCES
+      } else if (PT$op[RR] == "~~" && PT$rhs[RR] %in% facNames[[BB]]) {
+        DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "psi",
+                         # symmetry handled in override
+                         row = PT$rhs[RR], col = PT$lhs[RR])
+
+        ## RESIDUAL (CO)VARIANCES
+      } else if (PT$op[RR] == "~~" && PT$rhs[RR] %in% indNames[[BB]]) {
+        DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "theta",
+                         # symmetry handled in override
+                         row = PT$rhs[RR], col = PT$lhs[RR])
+
+        ## THRESHOLDS
+      } else if (PT$op[RR] == "|") {
+        if (!length(object@ordered)) {
+          warning('Thresholds ignored when no indicators are declared as ordered')
+        }
+        DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "tau",
+                         row = paste0(PT$rhs[RR], "|", PT$lhs[RR]),
+                         col = "threshold")
+
+        ## SCALING FACTORS (delta parameters for latent item-responses)
+      } else if (PT$op[RR] == "~*~") {
+        if (!length(object@ordered)) {
+          warning('Thresholds ignored when no indicators are declared as ordered')
+        }
+        if (object@parameterization == "theta") {
+          warning('Latent-response scales (specified with the "~*~" operator) ',
+                  'ignored when parameterization = "theta"')
+        }
+        if (PT$lhs[RR] != PT$rhs[RR]) {
+          warning('Latent-response scales (specified with the "~*~" operator) ',
+                  'ignored when left- and right-hand side do not match (',
+                  PT$lhs[RR], '~*~', PT$rhs[RR], ')')
+          next
+        }
+        DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "delta",
+                         row = PT$lhs[RR], col = "scales")
+      }
+
+      #FIXME? anything that does not match is simply ignored (no error messages)
+
+      ## change labels?
+      if (BB > 1L && nLabels[RR] == 1L) {
+
+        if (labels[[RR]] != "") {
+          labels.DF <- rbind(labels.DF, cbind(DF, stringsAsFactors = FALSE,
+                                              replacement = labels[[RR]]))
+        }
+
+      } else if (labels[[RR]][BB] != "") {
+          labels.DF <- rbind(labels.DF, cbind(DF, stringsAsFactors = FALSE,
+                                              replacement = labels[[RR]][BB]))
+      }
+
+      ## change fixed/free values?
+      if (BB > 1L && nValues[RR] == 1L) {
+
+        if (values[[RR]] != "") {
+          values.DF <- rbind(values.DF, cbind(DF, stringsAsFactors = FALSE,
+                                              replacement = values[[RR]]))
+        }
+
+      } else if (values[[RR]][BB] != "") {
+        values.DF <- rbind(values.DF, cbind(DF, stringsAsFactors = FALSE,
+                                            replacement = values[[RR]][BB]))
+      }
+
+    } # end loop over blocks
+  }   # end loop over parameters
+
+  ## make sure values are stored as numeric, not character
+  if (nrow(values.DF)) {
+    suppressWarnings(values.DF$replacement <- as.numeric(values.DF$replacement))
+  }
+
+  if (return.object) {
+    object@updates$values <- rbind(object@updates$values, values.DF)
+    object@updates$labels <- rbind(object@updates$labels, labels.DF)
+    return(object)
+  }
+  ## else return the list of data.frames with updates to make
+  list(values = values.DF, labels = labels.DF)
+}
 
 
 

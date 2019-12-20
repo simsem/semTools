@@ -15,7 +15,7 @@
 
 \S4method{summary}{measEq.syntax}(object, verbose = TRUE)
 
-\S4method{update}{measEq.syntax}(object, ..., evaluate = TRUE)
+\S4method{update}{measEq.syntax}(object, ..., evaluate = TRUE, change.syntax = NULL)
 }
 \arguments{
 \item{x, object}{an object of class \code{measEq.syntax}}
@@ -37,6 +37,15 @@ changed values.}
 
 \item{evaluate}{If \code{TRUE}, evaluate the new \code{call}; otherwise,
 return the new \code{call}.}
+
+\item{change.syntax}{\code{lavaan \link[lavaan]{model.syntax}} specifying
+labels or fixed/free values of parameters in \code{object}.
+These provide some flexibility to customize
+existing parameters without having to copy/paste the output of
+\code{as.character(object)} into an R script. For example,
+\code{group.partial} will free a parameter across all groups, but
+\code{update} allows users to free the parameter in just one group
+while maintaining equality constraints among other groups.}
 }
 \value{
 \item{summary}{\code{signature(object = "measEq.syntax", verbose = TRUE)}:
@@ -46,10 +55,12 @@ return the new \code{call}.}
     details about the model, including the numbers of indicators and factors,
     and which parameters are constrained to equality.}
   \item{show}{\code{signature(object = "measEq.syntax")}: Prints a message
-    about how to use the object for model fitting. Invisibly returns the
-    object.}
+    about how to use the \code{object} for model fitting. Invisibly
+    returns the \code{object}.}
   \item{update}{\code{signature(object = "measEq.syntax"), ...,
-    evaluate = TRUE}: Creates a new object with updated arguments.}
+    evaluate = TRUE, change.syntax = NULL}: Creates a new
+    \code{object} with updated arguments in \code{...}, or updated
+    parameter labels or fixed/free specifications in \code{object}.}
   \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
     Converts the \code{measEq.syntax} object to model syntax that can be
     copy/pasted into a syntax file to be edited before analysis, or simply
