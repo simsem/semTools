@@ -2,40 +2,51 @@
 % Please edit documentation in R/fitIndices.R
 \name{chisqSmallN}
 \alias{chisqSmallN}
-\title{\emph{k}-factor correction for \eqn{chi^2} test statistic}
+\title{Small-\emph{N} correction for \eqn{chi^2} test statistic}
 \usage{
-chisqSmallN(fit0, fit1 = NULL, ...)
+chisqSmallN(fit0, fit1 = NULL, smallN.method = if (is.null(fit1)) c("swain",
+  "yuan.2015") else "yuan.2005", ..., omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{fit0}{The lavaan model object provided after running the \code{cfa},
-\code{sem}, \code{growth}, or \code{lavaan} functions.}
+\item{fit0}{The \linkS4class{lavaan} object provided after running the
+\code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
+\linkS4class{lavaan.mi} object also accepted.}
 
-\item{fit1}{Optional additional \linkS4class{lavaan} model, in which
-\code{fit0} is nested.  If \code{fit0} has fewer \emph{df} than \code{fit1},
-the models will be swapped, still on the assumption that they are nested.}
+\item{smallN.method}{\code{character} indicating the small-\emph{N}
+correction method to use. Multiple may be chosen (all of which assume
+normality), as described in Shi et al. (2018):
+\code{c("swain","yuan.2015","yuan.2005","bartlett")}.}
 
-\item{\dots}{Additional arguments to the \code{\link[lavaan]{lavTestLRT}}
-function.}
+\item{\dots}{Additional arguments to the \code{\link[lavaan]{lavTestLRT}} or
+\code{\link{lavTestLRT.mi}} functions. Ignored when \code{is.null(fit1)}.}
+
+\item{omit.imps}{\code{character} vector specifying criteria for omitting
+imputations from pooled results. Ignored unless \code{fit0} (and
+optionally \code{fit1}) is a \linkS4class{lavaan.mi} object. See
+\code{\link{lavTestLRT.mi}} for a description of options and defaults.}
 }
 \value{
-A numeric vector including the original (unadjusted) chi-squared
-  statistic, the \emph{k}-factor correction, the corrected test statistic,
-  the \emph{df} for the test, and the \emph{p} value for the test under the
-  null hypothesis that the model fits perfectly (or that the 2 models have
-  equivalent fit).
+A \code{list} of \code{numeric} vectors: one for the originally
+  requested statistic(s), along with one per requested \code{smallN.method}.
+  All include the the (un)adjusted test statistic, its \emph{df}, and the
+  \emph{p} value for the test under the null hypothesis that the model fits
+  perfectly (or that the 2 models have equivalent fit).
+  The adjusted chi-squared statistic(s) also include(s) the scaling factor
+  for the small-\emph{N} adjustment.
 }
 \description{
-Calculate \emph{k}-factor correction for \eqn{chi^2} model-fit test
-statistic to adjust for small sample size.
+Calculate small-\emph{N} corrections for \eqn{chi^2} model-fit test
+statistic to adjust for small sample size (relative to model size).
 }
 \details{
-The \emph{k}-factor correction (Nevitt & Hancock, 2004) is a global fit
-index which can be computed by:
-
-\deqn{ kc = 1 - \frac{2 \times P + 4 \times K + 5}{6 \times N}}
-
-where \eqn{N} is the sample size when using normal likelihood, or \eqn{N -
-1} when using \code{likelihood = 'wishart'}.
+Four finite-sample adjustments to the chi-squared statistic are currently
+available, all of which are described in Shi et al. (2018). These all
+assume normally distributed data, and may not work well with severely
+nonnormal data. Deng et al. (2018, section 4) review proposed small-\emph{N}
+adjustments that do not assume normality, which rarely show promise, so
+they are not implemented here. This function currently will apply
+small-\emph{N} adjustments to scaled test statistics with a warning that
+they do not perform well (Deng et al., 2018).
 }
 \examples{
 
@@ -44,21 +55,27 @@ HS.model <- '
     textual =~ x4 + b2*x5 + x6
     speed   =~ x7 + b3*x8 + x9
 '
-fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
+fit1 <- cfa(HS.model, data = HolzingerSwineford1939[1:50,])
 ## test a single model (implicitly compared to a saturated model)
 chisqSmallN(fit1)
 
 ## fit a more constrained model
-fit0 <- cfa(HS.model, data = HolzingerSwineford1939, orthogonal = TRUE)
+fit0 <- cfa(HS.model, data = HolzingerSwineford1939[1:50,],
+            orthogonal = TRUE)
 ## compare 2 models
 chisqSmallN(fit1, fit0)
 
 }
 \references{
-Nevitt, J., & Hancock, G. R. (2004). Evaluating small sample
-  approaches for model test statistics in structural equation modeling.
-  \emph{Multivariate Behavioral Research, 39}(3), 439--478.
-  doi:10.1207/S15327906MBR3903_3
+Deng, L., Yang, M., & Marcoulides, K. M. (2018). Structural equation
+  modeling with many variables: A systematic review of issues and
+  developments. \emph{Frontiers in Psychology, 9}, 580.
+  doi:10.3389/fpsyg.2018.00580
+
+  Shi, D., Lee, T., & Terry, R. A. (2018). Revisiting the model
+  size effect in structural equation modeling.
+  \emph{Structural Equation Modeling, 25}(1), 21--40.
+  doi:10.1080/10705511.2017.1369088
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

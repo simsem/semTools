@@ -3,7 +3,7 @@
 ###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ###          Aaron Boulton <aboulton@ku.edu>,
 ###          Ruben Arslan <rubenarslan@gmail.com>
-### Last updated: 28 August 2019
+### Last updated: 3 January 2020
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -292,6 +292,7 @@ nullRMSEA <- function(object, scaled = FALSE, silent = FALSE) {
 ## Stochastic Information Criterion
 ## f = minimized discrepancy function
 ## lresults = lavaan sem output object
+#TODO: update to extract f from lresults. Make public?
 sic <- function(f, lresults = NULL) {
   ## p. 596 of doi:10.1007/s10519-004-5587-0 says to use observed Fisher information
   E.inv <- lavaan::lavTech(lresults, "inverted.information.observed")
@@ -315,44 +316,63 @@ sic <- function(f, lresults = NULL) {
 
 
 
-##' \emph{k}-factor correction for \eqn{chi^2} test statistic
+##' Small-\emph{N} correction for \eqn{chi^2} test statistic
 ##'
-##' Calculate \emph{k}-factor correction for \eqn{chi^2} model-fit test
-##' statistic to adjust for small sample size.
+##' Calculate small-\emph{N} corrections for \eqn{chi^2} model-fit test
+##' statistic to adjust for small sample size (relative to model size).
 ##'
-##' The \emph{k}-factor correction (Nevitt & Hancock, 2004) is a global fit
-##' index which can be computed by:
+##' Four finite-sample adjustments to the chi-squared statistic are currently
+##' available, all of which are described in Shi et al. (2018). These all
+##' assume normally distributed data, and may not work well with severely
+##' nonnormal data. Deng et al. (2018, section 4) review proposed small-\emph{N}
+##' adjustments that do not assume normality, which rarely show promise, so
+##' they are not implemented here. This function currently will apply
+##' small-\emph{N} adjustments to scaled test statistics with a warning that
+##' they do not perform well (Deng et al., 2018).
 ##'
-##' \deqn{ kc = 1 - \frac{2 \times P + 4 \times K + 5}{6 \times N}}
-##'
-##' where \eqn{N} is the sample size when using normal likelihood, or \eqn{N -
-##' 1} when using \code{likelihood = 'wishart'}.
-##'
-##'
-##' @importFrom lavaan lavInspect
+##' @importFrom lavaan lavInspect lavNames
 ##' @importFrom stats pchisq
+##' @importFrom methods getMethod
 ##'
-##' @param fit0 The lavaan model object provided after running the \code{cfa},
-##'   \code{sem}, \code{growth}, or \code{lavaan} functions.
+##' @param fit0 The \linkS4class{lavaan} object provided after running the
+##'   \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
+##'   \linkS4class{lavaan.mi} object also accepted.
 ##' @param fit1 Optional additional \linkS4class{lavaan} model, in which
 ##'   \code{fit0} is nested.  If \code{fit0} has fewer \emph{df} than \code{fit1},
 ##'   the models will be swapped, still on the assumption that they are nested.
-##' @param \dots Additional arguments to the \code{\link[lavaan]{lavTestLRT}}
-##'   function.
+##'   \linkS4class{lavaan.mi} object also accepted, if \code{fit0) also is.
+##' @param smallN.method \code{character} indicating the small-\emph{N}
+##'   correction method to use. Multiple may be chosen (all of which assume
+##'   normality), as described in Shi et al. (2018):
+##'   \code{c("swain","yuan.2015","yuan.2005","bartlett")}.
+##' @param \dots Additional arguments to the \code{\link[lavaan]{lavTestLRT}} or
+##'   \code{\link{lavTestLRT.mi}} functions. Ignored when \code{is.null(fit1)}.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'   imputations from pooled results. Ignored unless \code{fit0} (and
+##'   optionally \code{fit1}) is a \linkS4class{lavaan.mi} object. See
+##'   \code{\link{lavTestLRT.mi}} for a description of options and defaults.
 ##'
-##' @return A numeric vector including the original (unadjusted) chi-squared
-##'   statistic, the \emph{k}-factor correction, the corrected test statistic,
-##'   the \emph{df} for the test, and the \emph{p} value for the test under the
-##'   null hypothesis that the model fits perfectly (or that the 2 models have
-##'   equivalent fit).
+##' @return A \code{list} of \code{numeric} vectors: one for the originally
+##'   requested statistic(s), along with one per requested \code{smallN.method}.
+##'   All include the the (un)adjusted test statistic, its \emph{df}, and the
+##'   \emph{p} value for the test under the null hypothesis that the model fits
+##'   perfectly (or that the 2 models have equivalent fit).
+##'   The adjusted chi-squared statistic(s) also include(s) the scaling factor
+##'   for the small-\emph{N} adjustment.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
-##' @references Nevitt, J., & Hancock, G. R. (2004). Evaluating small sample
-##'   approaches for model test statistics in structural equation modeling.
-##'   \emph{Multivariate Behavioral Research, 39}(3), 439--478.
-##'   doi:10.1207/S15327906MBR3903_3
+##' @references
+##'   Deng, L., Yang, M., & Marcoulides, K. M. (2018). Structural equation
+##'   modeling with many variables: A systematic review of issues and
+##'   developments. \emph{Frontiers in Psychology, 9}, 580.
+##'   doi:10.3389/fpsyg.2018.00580
+##'
+##'   Shi, D., Lee, T., & Terry, R. A. (2018). Revisiting the model
+##'   size effect in structural equation modeling.
+##'   \emph{Structural Equation Modeling, 25}(1), 21--40.
+##'   doi:10.1080/10705511.2017.1369088
 ##'
 ##' @examples
 ##'
@@ -361,59 +381,197 @@ sic <- function(f, lresults = NULL) {
 ##'     textual =~ x4 + b2*x5 + x6
 ##'     speed   =~ x7 + b3*x8 + x9
 ##' '
-##' fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
+##' fit1 <- cfa(HS.model, data = HolzingerSwineford1939[1:50,])
 ##' ## test a single model (implicitly compared to a saturated model)
 ##' chisqSmallN(fit1)
 ##'
 ##' ## fit a more constrained model
-##' fit0 <- cfa(HS.model, data = HolzingerSwineford1939, orthogonal = TRUE)
+##' fit0 <- cfa(HS.model, data = HolzingerSwineford1939[1:50,],
+##'             orthogonal = TRUE)
 ##' ## compare 2 models
 ##' chisqSmallN(fit1, fit0)
 ##'
 ##' @export
-chisqSmallN <- function(fit0, fit1 = NULL, ...) {
-  ## if there are 2 models, order them by DF
+chisqSmallN <- function(fit0, fit1 = NULL,
+                        smallN.method = if (is.null(fit1)) c("swain","yuan.2015") else "yuan.2005",
+                        ..., omit.imps = c("no.conv","no.se")) {
+  smallN.method <- intersect(tolower(smallN.method),
+                             c("swain","yuan.2015","yuan.2005","bartlett"))
+  if (!any(smallN.method %in% c("swain","yuan.2015","yuan.2005","bartlett")))
+    stop('No recognized options for "smallN.method" argument')
+
+  ## check class
+  if (!inherits(fit0, what = c("lavaan","lavaanList")))
+    stop("this function is only applicable to fitted lavaan models")
+
+  ## if there are 2 models...
   if (!is.null(fit1)) {
-    DF0 <- lavaan::fitMeasures(fit0, "df")
-    DF1 <- lavaan::fitMeasures(fit1, "df")
+
+    ## check classes
+    if (!inherits(fit1, what = c("lavaan","lavaanList")))
+      stop("this function is only applicable to fitted lavaan models")
+    modClass <- unique(sapply(list(fit0, fit1), class))
+    if (length(modClass) > 1L) stop('All models must be of the same class (e.g.,',
+                                    ' cannot compare lavaan objects to lavaan.mi)')
+
+    ## check order of DF
+    suppressMessages(DF0 <- getMethod("fitMeasures", class(fit0))(fit0, fit.measures = "df",
+                                                                  omit.imps = omit.imps)[1])
+    suppressMessages(DF1 <- getMethod("fitMeasures", class(fit1))(fit1, fit.measures = "df",
+                                                                  omit.imps = omit.imps)[1])
     if (DF0 == DF1) stop("Models have the same degrees of freedom.")
     parent <- which.min(c(DF0, DF1))
     if (parent == 1L) {
       parent <- fit0
       fit0 <- fit1
       fit1 <- parent
+
+      parent <- DF0
+      DF0 <- DF1
+      DF1 <- parent
     }
-    #if (min(c(DF0, DF1)) == 0L) fit1 <- NULL
+    if (min(c(DF0, DF1)) == 0L) {
+      message('Less restricted model has df=0, so chi-squared difference ',
+              'not needed to compare models. Using only the restricted ',
+              "model's chi-squared statistic.")
+      fit1 <- NULL
+    }
   }
-  ## calculate k-factor correction
+
+  ## check whether methods can be used
+  if (!is.null(fit1)) {
+
+    if (any(smallN.method %in% c("yuan.2015","swain"))) {
+      message('Swain(1975) and Yuan (2015) corrections depend on the number ',
+              'of free parameters, so it is unavailable for model comparison.')
+      smallN.method <- smallN.method[-which(smallN.method %in% c("yuan.2015","swain"))]
+    }
+
+    if (!length(smallN.method)) {
+      stop('No valid options for "smallN.method" argument')
+    } else warning('Small-N corrections developed for single models, not for ',
+                   'model comparison. Experimentally applying correction to ',
+                   'chi-squared difference statistic, which might be invalid.')
+  }
+
+  ## save quantities relevant across correction methods
   N <- lavInspect(fit0, "ntotal")
   Ng <- lavInspect(fit0, "ngroups")
   if (!lavInspect(fit0, "options")$sample.cov.rescale) N <- N - Ng
-  P <- length(lavaan::lavNames(fit0))
-  K <- length(lavaan::lavNames(fit0, type = "lv")) # count latent factors
-  if (!is.null(fit1)) {
+  P <- length(lavNames(fit0))
+  K <- length(lavNames(fit0, type = "lv")) # count latent factors
+
+  if (is.null(fit1)) {
+    FIT <- getMethod("fitMeasures", class(fit0))(fit0,
+                                                 ## lavaan.mi arguments ignored
+                                                 ## for lavaan objects
+                                                 omit.imps = omit.imps,
+                                                 asymptotic = TRUE,
+                                                 fit.measures = c("npar","chisq",
+                                                                  "df","pvalue"))
+    scaled <- any(grepl(pattern = "scaled", x = names(FIT)))
+    if (scaled) warning('Small-N corrections developed assuming normality, but',
+                        ' a scaled test was requested. Applying correction(s) ',
+                        'to the scaled test statistic, but this has not ',
+                        'performed well in past simulations.')
+    NPAR <- FIT[["npar"]]
+    chi <- FIT[[if (scaled) "chisq.scaled" else "chisq"]]
+    DF  <- FIT[[if (scaled) "df.scaled" else "df"]]
+    PV  <- FIT[[if (scaled) "pvalue.scaled" else "pvalue"]]
+
+  } else {
+    ## Compare to a second model. Check matching stats.
     N1 <- lavInspect(fit1, "ntotal")
     Ng1 <- lavInspect(fit1, "ngroups")
     if (!lavInspect(fit1, "options")$sample.cov.rescale) N1 <- N1 - Ng1
     if (N != N1) stop("Unequal sample sizes")
-    if (P != length(lavaan::lavNames(fit1))) stop("Unequal number of variables")
-    K <- max(K, length(lavaan::lavNames(fit1, type = "lv")))
+    if (P != length(lavNames(fit1))) stop("Unequal number of observed variables")
+    K1 <- length(lavNames(fit1, type = "lv"))
+    if (K != K1 && any(smallN.method %in% c("yuan.2005","bartlett"))) {
+      warning("Unequal number of latent variables (k). Unclear how to apply ",
+              "Yuan (2005) or Bartlett (2015) corrections when comparing ",
+              "models with different k. Experimentally using the larger ",
+              "model's k, but there is no evidence this is valid.")
+      K <- max(K, K1)
+    }
+
+    try(AOV <- compareFit(fit0, fit1, argsLRT = list(...), indices = FALSE),
+        silent = TRUE)
+    if (inherits(AOV, "try-error")) stop('Model comparison failed. Try using ',
+                                         'lavTestLRT() to investigate why.')
+
+    if (inherits(fit0, "lavaan")) {
+      if (grepl("scaled", attr(AOV@nested, "heading"), ignore.case = TRUE))
+        warning('Small-N corrections developed assuming normality, but scaled ',
+                'tests were requested. Applying correction(s) to the scaled test',
+                ' statistic, but this has not performed well in past simulations.')
+      chi <- AOV@nested[["Chisq diff"]][2]
+      DF  <- AOV@nested[["Df diff"]][2]
+      PV  <- AOV@nested[["Pr(>Chisq)"]][2]
+
+    } else if (inherits(fit0, "lavaan.mi")) {
+      if (any(grepl("scaled", colnames(AOV@nested), ignore.case = TRUE)))
+        warning('Small-N corrections developed assuming normality, but scaled ',
+                'tests were requested. Applying correction(s) to the scaled test',
+                ' statistic, but this has not performed well in past simulations.')
+      chi <- AOV@nested[1, 1]
+      DF  <- AOV@nested[1, 2]
+      PV  <- AOV@nested[1, 3]
+    }
+
   }
-  kc <- 1 - ((2*P + 4*K + 5) / (6*N))
-  if (is.null(fit1)) {
-    FIT <- lavaan::fitMeasures(fit0)
-    scaled <- any(grepl(pattern = "scaled", x = names(FIT)))
-    chi <- FIT[[if (scaled) "chisq.scaled" else "chisq"]]
-    DF  <- FIT[["df"]]
-  } else {
-    AOV <- lavaan::lavTestLRT(fit0, fit1, ...)
-    chi <- AOV[["Chisq diff"]][2]
-    DF <- AOV[["Df diff"]][2]
+
+
+  ## empty list to store correction(s)
+  out <- list()
+  out[[ lavInspect(fit0, "options")$test ]] <- c(chisq = chi, df = DF,
+                                                 pvalue = PV)
+  class(out[[1]]) <- c("lavaan.vector","numeric")
+
+  ## calculate Swain's (1975) correction
+  ## (undefined for model comparison)
+  if ("swain" %in% smallN.method) {
+    Q <- (sqrt(1 + 8*NPAR) - 1) / 2
+    num <- P*(2*P^2 + 3*P - 1) - Q*(2*Q^2 + 3*Q - 1)
+    SC <- 1 - num / (12*DF*N)
+    out[["swain"]] <- c(chisq = chi*SC, df = DF,
+                        pvalue = pchisq(chi*SC, DF, lower.tail = FALSE),
+                        smallN.factor = SC)
+    class(out[["swain"]]) <- c("lavaan.vector","numeric")
   }
-  out <- c(original.chisq = chi, `k-factor` = kc, adj.chisq = chi*kc,
-           df = DF, pvalue = pchisq(chi*kc, DF, lower.tail = FALSE))
-  class(out) <- c("lavaan.vector","numeric")
-  out
+
+  ## calculate Yuan's (2015) correction
+  ## (undefined for model comparison)
+  if ("yuan.2015" %in% smallN.method) {
+    ## numerator uses actual N regardless of sample.cov.rescale
+    SC <- (lavInspect(fit0, "ntotal") - (2.381 + .361*P + .006*NPAR)) / N
+    out[["yuan.2015"]] <- c(chisq = chi*SC, df = DF,
+                            pvalue = pchisq(chi*SC, DF, lower.tail = FALSE),
+                            smallN.factor = SC)
+    class(out[["yuan.2015"]]) <- c("lavaan.vector","numeric")
+  }
+
+  ## calculate Yuan's (2005) correction
+  if ("yuan.2005" %in% smallN.method) {
+    SC <- 1 - ((2*P + 2*K + 7) / (6*N))
+    out[["yuan.2005"]] <- c(chisq = chi*SC, df = DF,
+                            pvalue = pchisq(chi*SC, DF, lower.tail = FALSE),
+                            smallN.factor = SC)
+    class(out[["yuan.2005"]]) <- c("lavaan.vector","numeric")
+  }
+
+  ## calculate Bartlett's (1950) k-factor correction (ONLY appropriate for EFA)
+  if ("bartlett" %in% smallN.method) {
+    message('Bartlett\'s k-factor correction was developed for EFA models, ',
+            'not for general SEMs.')
+    SC <- 1 - ((2*P + 4*K + 5) / (6*N))
+    out[["bartlett"]] <- c(chisq = chi*SC, df = DF,
+                           pvalue = pchisq(chi*SC, DF, lower.tail = FALSE),
+                           smallN.factor = SC)
+    class(out[["bartlett"]]) <- c("lavaan.vector","numeric")
+  }
+
+  out[c(lavInspect(fit0, "options")$test, smallN.method)]
 }
 
 

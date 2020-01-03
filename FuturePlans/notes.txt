@@ -170,10 +170,10 @@ semTools::miPowerFit()
 
 
 semTools::chisqSmallN()
-- explains small-N correction
-https://www.frontiersin.org/articles/10.3389/fpsyg.2018.00580/full
-- new stats for nonnormal data:
+- new stats for nonnormal data with small N:
 http://dx.doi.org/10.1080/10705511.2016.1277726
+- empirical correction:
+https://doi.org/10.1080/00273171.2017.1354759
 
 
 semTools::net()
@@ -181,6 +181,7 @@ semTools::net()
 - update lavInspect(x, "data") to check sample.cov= instead?
 - if (nclusters > 1L) test only one block (all groups)
   - default level=1L, optional level=2L
+  - need to fudge the check using single-level models (MLSEM requires raw data)
 
 
 semTools::reliability() suite
