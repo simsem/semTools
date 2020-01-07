@@ -3,7 +3,7 @@
 ###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ###          Aaron Boulton <aboulton@ku.edu>,
 ###          Ruben Arslan <rubenarslan@gmail.com>
-### Last updated: 3 January 2020
+### Last updated: 7 January 2020
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -334,13 +334,9 @@ sic <- function(f, lresults = NULL) {
 ##' @importFrom stats pchisq
 ##' @importFrom methods getMethod
 ##'
-##' @param fit0 The \linkS4class{lavaan} object provided after running the
+##' @param fit0,fit1 \linkS4class{lavaan} object(s) provided after running the
 ##'   \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
-##'   \linkS4class{lavaan.mi} object also accepted.
-##' @param fit1 Optional additional \linkS4class{lavaan} model, in which
-##'   \code{fit0} is nested.  If \code{fit0} has fewer \emph{df} than \code{fit1},
-##'   the models will be swapped, still on the assumption that they are nested.
-##'   \linkS4class{lavaan.mi} object also accepted, if \code{fit0) also is.
+##'   \linkS4class{lavaan.mi} object(s) also accepted.
 ##' @param smallN.method \code{character} indicating the small-\emph{N}
 ##'   correction method to use. Multiple may be chosen (all of which assume
 ##'   normality), as described in Shi et al. (2018):
