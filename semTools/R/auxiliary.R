@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 November 2018
+### Last updated: 11 January 2020
 ### new auxiliary function does NOT create a lavaanStar-class instance
 
 #' Implement Saturated Correlates with FIML
@@ -198,6 +198,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
   baseArgs$missing                <- "fiml"
   baseArgs$cluster                <- lavArgs$cluster
   baseArgs$sample.cov.rescale     <- lavArgs$sample.cov.rescale
+  baseArgs$estimator              <- lavArgs$estimator
   baseArgs$information            <- lavArgs$information
   baseArgs$se                     <- lavArgs$se
   baseArgs$test                   <- lavArgs$test
