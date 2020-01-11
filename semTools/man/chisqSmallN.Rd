@@ -8,9 +8,9 @@ chisqSmallN(fit0, fit1 = NULL, smallN.method = if (is.null(fit1)) c("swain",
   "yuan.2015") else "yuan.2005", ..., omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{fit0}{The \linkS4class{lavaan} object provided after running the
+\item{fit0, fit1}{\linkS4class{lavaan} object(s) provided after running the
 \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
-\linkS4class{lavaan.mi} object also accepted.}
+\linkS4class{lavaan.mi} object(s) also accepted.}
 
 \item{smallN.method}{\code{character} indicating the small-\emph{N}
 correction method to use. Multiple may be chosen (all of which assume
