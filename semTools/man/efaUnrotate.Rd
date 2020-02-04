@@ -4,7 +4,7 @@
 \alias{efaUnrotate}
 \title{Analyze Unrotated Exploratory Factor Analysis Model}
 \usage{
-efaUnrotate(data, nf, varList = NULL, start = TRUE, aux = NULL, ...)
+efaUnrotate(data = NULL, nf, varList = NULL, start = TRUE, aux = NULL, ...)
 }
 \arguments{
 \item{data}{A target \code{data.frame}}
@@ -12,7 +12,8 @@ efaUnrotate(data, nf, varList = NULL, start = TRUE, aux = NULL, ...)
 \item{nf}{The desired number of factors}
 
 \item{varList}{Target observed variables. If not specified, all variables in
-\code{data} will be used.}
+\code{data} will be used (or \code{sample.cov} if \code{is.null(data)};
+see \code{\link[lavaan]{cfa}} for argument descriptions).}
 
 \item{start}{Use starting values in the analysis from the
 \code{\link{factanal}} \code{function}. If \code{FALSE}, the starting values
@@ -24,8 +25,8 @@ in the model by the saturated-correlates approach to account for missing
 information.}
 
 \item{\dots}{Other arguments in the \code{\link[lavaan]{cfa}} function in
-the \code{lavaan} package, such as \code{ordered}, \code{se}, or
-\code{estimator}}
+the \code{lavaan} package, such as \code{ordered}, \code{se},
+\code{estimator}, or \code{sample.cov} and \code{sample.nobs}.}
 }
 \value{
 A \code{lavaan} output of unrotated exploratory factor analysis
@@ -42,15 +43,16 @@ analysis model such that (1) all factor loadings are estimated, (2) factor
 variances are fixed to 1, (3) factor covariances are fixed to 0, and (4) the
 dot products of any pairs of columns in the factor loading matrix are fixed
 to zero (Johnson & Wichern, 2002). The reason for creating this function
-in addition to the \code{\link{factanal}} function is that users can enjoy
-some advanced features from the \code{lavaan} package such as scaled
-\eqn{\chi^2}, diagonal weighted least squares for ordinal indicators, or
-full-information maximum likelihood (FIML).
+to supplement the \code{\link{factanal}} function is that users can enjoy
+some advanced features from the \code{lavaan} package, such as scaled
+\eqn{\chi^2}, diagonally weighted least squares estimation for ordinal
+indicators, or full-information maximum likelihood (FIML) to handle
+incomplete data.
 }
 \examples{
 
 unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
-                         varList=paste0("x", 1:9), estimator = "mlr")
+                         varList = paste0("x", 1:9), estimator = "mlr")
 summary(unrotated, std = TRUE)
 inspect(unrotated, "std")
 
@@ -61,4 +63,6 @@ unrotated2 <- efaUnrotate(dat, nf = 2, varList = paste0("x", 1:9), aux = "z")
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
