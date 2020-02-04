@@ -11,6 +11,7 @@
     - "total" column no longer returned by default, or ever for 1-factor models. Users can request `return.total = TRUE` when multiple factors are multiple dimensions of a single scale composite.
 - New `discriminantValidity()` function added.
 - New small-*N* corrections added to `chisqSmallN()` function. Also accepts `lavaan.mi` objects now.
+- `efaUnrotate()` now accepts summary statistics when `data=NULL`.
 
 ## Bug Fixes:
 

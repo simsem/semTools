@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 21 July 2018
+### Last updated: 4 February 2020
 ### fit and rotate EFA models in lavaan
 
 
@@ -58,15 +58,51 @@
 #' unrotated2 <- efaUnrotate(dat, nf = 2, varList = paste0("x", 1:9), aux = "z")
 #'
 #' @export
-efaUnrotate <- function(data, nf, varList = NULL,
+efaUnrotate <- function(data = NULL, nf, varList = NULL,
                         start = TRUE, aux = NULL, ...) {
-  if (is.null(varList)) varList <- colnames(data)
-  isOrdered <- checkOrdered(data, varList, ...)
   efaArgs <- list(...)
-  if (!is.null(efaArgs$group)) stop("Multi-group EFA is not currently supported.")
-  efaArgs$data <- data
+  if (is.null(data)) {
+    ## check for summary statistics
+    sample.cov  <- efaArgs$sample.cov
+    sample.mean <- efaArgs$sample.mean
+    sample.nobs <- efaArgs$sample.nobs
+    sample.th   <- efaArgs$sample.th
+    WLS.V       <- efaArgs$WLS.V
+    NACOV       <- efaArgs$NACOV
+
+    if (is.null(sample.cov)) stop('User must supply either raw data or ',
+                                  'summary statistics to pass to lavaan().')
+    if (is.null(varList)) varList <- colnames(sample.cov)
+
+    anyOrdered <- !is.null(sample.th)
+    ordNames <- efaArgs$ordered
+    if (anyOrdered & (is.logical(ordNames) | is.null(ordNames))) {
+      if (is.null(ordNames)) {
+        message('Thresholds supplied, but not an ordered= argument. Must ',
+                'assume all model variables are ordered.')
+      }
+      ordNames <- varList
+    }
+
+  } else {
+    sample.cov  <- NULL
+    sample.mean <- NULL
+    sample.nobs <- NULL
+    sample.th   <- NULL
+    WLS.V       <- NULL
+    NACOV       <- NULL
+
+    efaArgs$data <- data
+    if (is.null(varList)) varList <- colnames(data)
+
+    anyOrdered <- checkOrdered(data, varList, ...)
+    ordNames <- checkOrdered(data, varList, ..., return.names = TRUE)
+
+    if (!is.null(efaArgs$group)) stop("Multi-group EFA is not currently supported.")
+  }
+
   if (!is.null(aux)) {
-    if (isOrdered) {
+    if (anyOrdered) {
       stop("The analysis model or the analysis data have ordered categorical",
            " variables. The auxiliary variable feature is not available for",
            " the models for categorical variables with the weighted least",
@@ -89,8 +125,13 @@ efaUnrotate <- function(data, nf, varList = NULL,
   syntax <- paste(syntax, paste(paste0(facnames, " ~~ 1*", facnames),
                                 collapse = "\n"), "\n")
 
-  if (!isOrdered) {
-    syntax <- paste(syntax, paste(paste0(varList, " ~ 1"), collapse = "\n"), "\n")
+  dataSupportsMeans <- length(setdiff(varList, ordNames)) && !(is.null(data) && is.null(sample.mean))
+  meanstructure <- efaArgs$meanstructure
+  if (is.null(meanstructure)) meanstructure <- anyOrdered #FIXME: wise default for EFA?
+  stopifnot(is.logical(meanstructure))
+  if (meanstructure && dataSupportsMeans) {
+    syntax <- paste(syntax, paste(paste0(setdiff(varList, ordNames),
+                                         " ~ 1"), collapse = "\n"), "\n")
   }
 
   if (nf > 1) {
@@ -129,7 +170,7 @@ efaUnrotate <- function(data, nf, varList = NULL,
     ##        https://groups.google.com/d/msg/lavaan/ujkHmCVirEY/-LGut4ewAwAJ
     parameterization <- efaArgs$parameterization
     if (is.null(parameterization)) parameterization <- lavaan::lavOptions("parameterization")
-    if (isOrdered && parameterization != "theta")
+    if (anyOrdered && parameterization != "theta")
       warning('If the default parameterization = "delta" returns results with ',
               'all factor loadings equal to zero, try either setting start ',
               '= TRUE or setting parameterization = "theta" instead.')
@@ -594,17 +635,21 @@ seStdLoadings <- function(rotate, object, fun, MoreArgs) {
 	matrix(LIST$se[idx], ncol = length(lv.names))
 }
 
-checkOrdered <- function(dat, varnames, ...) {
+checkOrdered <- function(dat, varnames, ..., return.names = FALSE) {
   ord <- list(...)$ordered
-  if(is.null(ord)) {
+  if (is.null(ord)) {
     ord <- FALSE
   } else {
     ord <- TRUE
   }
-  if(is.null(dat)) {
+  if (is.null(dat)) {
     orderedVar <- FALSE
   } else {
     orderedVar <- sapply(dat[,varnames], function(x) "ordered" %in% is(x))
+  }
+
+  if (return.names) {
+    return(unique(c(list(...)$ordered, names(orderedVar[orderedVar]))))
   }
   any(c(ord, orderedVar))
 }

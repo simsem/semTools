@@ -141,6 +141,10 @@ semTools::runMI()
   - or is this just Monte Carlo error when h0 is true?
 - adapt lavResiduals() for imputations?  NEEDS RESEARCH
   - potentially, treat residuals as estimates, pool SEs & tests as usual
+- standardizedSolution.mi() to provide SEs/CIs?
+  - ask Yves to pass standardized= argument from vcov(...) to lavaan's 
+    internal hidden function that returns SEs in standardizedSolution()
+  - https://groups.google.com/d/msg/lavaan/OfaPfUYqVVI/MWvL4TZkDAAJ
 
 
 semTools::plausibleValues()
