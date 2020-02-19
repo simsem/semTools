@@ -256,14 +256,14 @@ x.within.y <- function(x, y, crit = .0001) {
            "Fit the model again with 'fixed.x = FALSE'"))
   }
   ## variable names
-  Xnames <- lavaan::lavNames(x)
-  Ynames <- lavaan::lavNames(y)
-  if (!identical(sort(Xnames), sort(Ynames)))
+  Xnames <- sort(lavaan::lavNames(x))
+  Ynames <- sort(lavaan::lavNames(y))
+  if (!identical(Xnames, Ynames))
     stop("Models do not contain the same variables")
 
   ## check that the analyzed data matches
-  xData <- sort(unlist(lavInspect(x, "sampstat")))
-  yData <- sort(unlist(lavInspect(y, "sampstat")))
+  xData <- unlist(lavInspect(x, "sampstat")[Xnames, Xnames])
+  yData <- unlist(lavInspect(y, "sampstat")[Ynames, Ynames])
   if (!isTRUE(all.equal(xData, yData, tolerance = crit)))
     stop("Sample statistics differ. Models must apply to the same data")
   #FIXME: this method requires raw data
