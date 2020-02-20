@@ -73,6 +73,10 @@ New Measurement Invariance suite
 - add aux= argument to measEq.syntax() to signal calling auxiliary()
 
 
+semTools::measEq.syntax()
+- add params= argument to as.character() method (to select loadings, etc.)
+
+
 semTools::partialInvariance()
 - argument for adding OR dropping (or Wald), rather than all output
 - make a separate function: findAnchors(), implementing Woods (2009) or Wang & Woods (2017)
