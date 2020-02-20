@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 15 November 2019
+### Last updated: 21 February 2020
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -113,7 +113,7 @@ function(object) {
 ##' The concept of nesting/equivalence should be the same regardless of
 ##' estimation method. However, the particular method of testing
 ##' nesting/equivalence (as described in Bentler & Satorra, 2010) employed by
-##' the net function analyzes summary statistics (model-implied means and
+##' the \code{net} function analyzes summary statistics (model-implied means and
 ##' covariance matrices, not raw data). In the case of robust methods like MLR,
 ##' the raw data is only utilized for the robust adjustment to SE and chi-sq,
 ##' and the net function only checks the unadjusted chi-sq for the purposes of
@@ -240,31 +240,31 @@ net <- function(..., crit = .0001) {
 }
 
 
+
 ## --------------------------------------------------------------------
 ## Hidden Function to test whether model "x" is nested within model "y"
 ## --------------------------------------------------------------------
 
-#' @importFrom lavaan lavInspect
+#' @importFrom lavaan lavInspect lavNames
 x.within.y <- function(x, y, crit = .0001) {
-  # if (length(c(lavaan::lavNames(x, "ov.ord"), lavaan::lavNames(y, "ov.ord"))))
-  #   stop("The net() function is not available for categorical-data estimators.")
-
-  exoX <- lavInspect(x, "options")$fixed.x & length(lavaan::lavNames(x, "ov.x"))
-  exoY <- lavInspect(y, "options")$fixed.x & length(lavaan::lavNames(y, "ov.x"))
+  ## not currently implemented unless all variables are considered random
+  exoX <- lavInspect(x, "options")$fixed.x & length(lavNames(x, "ov.x"))
+  exoY <- lavInspect(y, "options")$fixed.x & length(lavNames(y, "ov.x"))
   if (exoX | exoY) {
     stop(c("The net() function does not work with exogenous variables.\n",
            "Fit the model again with 'fixed.x = FALSE'"))
   }
   ## variable names
-  Xnames <- sort(lavaan::lavNames(x))
-  Ynames <- sort(lavaan::lavNames(y))
+  Xnames <- sort(lavNames(x))
+  Ynames <- sort(lavNames(y))
   if (!identical(Xnames, Ynames))
     stop("Models do not contain the same variables")
 
   ## check that the analyzed data matches
-  #FIXME: adapt for multiple groups
-  xData <- unlist(lavInspect(x, "sampstat")$cov[Xnames, Xnames])
-  yData <- unlist(lavInspect(y, "sampstat")$cov[Ynames, Ynames])
+  xData <- sort(unlist(lavInspect(x, "sampstat")))
+  yData <- sort(unlist(lavInspect(y, "sampstat")))
+  names(xData) <- NULL
+  names(yData) <- NULL
   if (!isTRUE(all.equal(xData, yData, tolerance = crit)))
     stop("Sample statistics differ. Models must apply to the same data")
   #FIXME: this method requires raw data

@@ -1208,6 +1208,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   ## names of ordinal indicators, number of thresholds for each
   allOrdNames <- lavNames(lavTemplate, type = "ov.ord")
   if (length(allOrdNames)) {
+    #TODO: add nThr= argument (named numeric vector?) so data= not required
     nThr <- table(sapply(strsplit(lavNames(lavTemplate, "th"),
                                   split = "|", fixed = TRUE),
                          "[", i = 1))

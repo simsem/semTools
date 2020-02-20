@@ -146,7 +146,7 @@ semTools::runMI()
 - adapt lavResiduals() for imputations?  NEEDS RESEARCH
   - potentially, treat residuals as estimates, pool SEs & tests as usual
 - standardizedSolution.mi() to provide SEs/CIs?
-  - ask Yves to pass standardized= argument from vcov(...) to lavaan's 
+  - ask Yves to pass standardized= argument from vcov(...) to lavaan's
     internal hidden function that returns SEs in standardizedSolution()
   - https://groups.google.com/d/msg/lavaan/OfaPfUYqVVI/MWvL4TZkDAAJ
 
@@ -186,7 +186,6 @@ https://doi.org/10.1080/00273171.2017.1354759
 
 semTools::net()
 - allow for fixed.x or conditional.x?
-- update lavInspect(x, "data") to check sample.cov= instead?
 - if (nclusters > 1L) test only one block (all groups)
   - default level=1L, optional level=2L
   - need to fudge the check using single-level models (MLSEM requires raw data)

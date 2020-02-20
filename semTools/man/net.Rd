@@ -26,7 +26,7 @@ This test examines whether pairs of SEMs are nested or equivalent.
 The concept of nesting/equivalence should be the same regardless of
 estimation method. However, the particular method of testing
 nesting/equivalence (as described in Bentler & Satorra, 2010) employed by
-the net function analyzes summary statistics (model-implied means and
+the \code{net} function analyzes summary statistics (model-implied means and
 covariance matrices, not raw data). In the case of robust methods like MLR,
 the raw data is only utilized for the robust adjustment to SE and chi-sq,
 and the net function only checks the unadjusted chi-sq for the purposes of
