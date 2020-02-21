@@ -24,7 +24,8 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu"),
 		person(given = c("Jason","D."), family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"),
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com"),
-		person(given = "Maxwell", family = "Mansolf", role = "ctb", email="mamansolf@gmail.com", comment = c(ORCID = "0000-0001-6861-8657"))
+		person(given = "Maxwell", family = "Mansolf", role = "ctb", email="mamansolf@gmail.com", comment = c(ORCID = "0000-0001-6861-8657")),
+		person(given = "Mattan S.", family = "Ben-Shachar", role = "ctb", email="matanshm@post.bgu.ac.il", comment = c(ORCID = "0000-0002-4287-4801"))
 		)
 Depends: R(>= 3.4), utils, stats, graphics, lavaan(>= 0.6-5)
 Imports: methods
