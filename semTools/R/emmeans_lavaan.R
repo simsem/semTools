@@ -3,7 +3,7 @@
 #' @description
 #'
 #' @param object An object of class \code{lavaan}. See details.
-#' @param lavaan.DV Name (string) of the variable for which emmeans or emtrends should be produced. See details.
+#' @param lavaan.DV Name (string) of the variable for which emmeans or emtrends should be produced. Can be a vector of names - see details.
 #' @param ... Passed to \code{emmeans::recover_data.lm} or \code{emmeans::emm_basis.lm}.
 #' @param trms,xlev,grid See \code{emmeans::emm_basis}.
 #'
@@ -13,6 +13,9 @@
 #' \code{lavaan.DV} must be an \emph{endogenous variable}, by either appearing on the
 #' left-had-side of of a regression operator (\code{"~"}) or an intercept operator
 #' (\code{"~1"}), or both.
+#' \cr\cr
+#' \code{lavaan.DV} can also be a vector of endogenous variable, in which case they will be treated by
+#' emmeans as multivariate DVs (or repeated measures, a factor by the name \code{rep.meas}).
 #' }
 #'
 #' \subsection{Unsupported Models}{
@@ -44,10 +47,10 @@
 #'
 #' @author Mattan S. Ben-Shachar
 #'
-#' @name lavaan-emmeans
+#' @name lavaan2emmeans
 NULL
 
-#' @rdname lavaan-emmeans
+#' @rdname lavaan2emmeans
 recover_data.lavaan <- function(object, lavaan.DV, ...){
   if (!requireNamespace("emmeans", quietly = TRUE)){
     stop("'emmeans' is not installed.")
@@ -69,7 +72,7 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
   return(recovered)
 }
 
-#' @rdname lavaan-emmeans
+#' @rdname lavaan2emmeans
 emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   if (!requireNamespace("emmeans", quietly = TRUE)){
     stop("'emmeans' is not installed.")
@@ -78,12 +81,14 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   # Fake it
   emmb <- emmeans::emm_basis(.lavFakeFit(object, lavaan.DV), trms, xlev, grid, ...)
 
-
   # bhat --------------------------------------------------------------------
   pars <- lavaan::parameterEstimates(object)
-  pars <- pars[pars$lhs == lavaan.DV & pars$op %in% c("~", "~1"),]
+  pars <- pars[pars$lhs %in% lavaan.DV & pars$op %in% c("~", "~1"),]
   pars$rhs[pars$op == "~1"] <- "(Intercept)"
   pars$op[pars$op == "~1"] <- "~"
+  if (length(lavaan.DV)>1L) {
+    pars$rhs <- paste0(pars$lhs,":",pars$rhs)
+  }
 
   if(nrow(pars) < length(emmb$bhat)) {
     warning(
@@ -121,15 +126,15 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   })
 
   # only regression estimates
-  is_reg <- grepl(paste0("^", lavaan.DV, "~"), par_names)
-  is_cov <- grepl(paste0("^", lavaan.DV, "~~"), par_names)
+  is_reg <- grepl(paste0("^(",paste0(lavaan.DV, collapse = "|"),")~"), par_names)
+  is_cov <- grepl(paste0("^(",paste0(lavaan.DV, collapse = "|"),")~~"), par_names)
   only_reg <- is_reg & !is_cov
   lavVCOV <- lavVCOV[only_reg, only_reg, drop = FALSE]
 
   # get only RHS
   par_names <- par_names[only_reg]
   par_names <- sub(paste0("~1$"), "~(Intercept)", par_names)
-  par_names <- sub(paste0("^", lavaan.DV, "~"), "", par_names)
+  par_names <- sub(paste0("^(", paste0(lavaan.DV, collapse = "|"), ")~"), "", par_names)
 
   if(ncol(lavVCOV) < nrow(emmb$V)) {
     warning(
@@ -160,8 +165,9 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 
   # nbasis and misc ---------------------------------------------------------
-  emmb$nbasis <- matrix(NA, 1, 1)
-  emmb$misc <- list()
+  ## DONT CHANGE! MESSES UP MULTI-DV REF_GRID
+  # emmb$nbasis <- matrix(NA, 1, 1)
+  # emmb$misc <- list()
 
   return(emmb)
 }
@@ -170,26 +176,31 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 .test_lav <- function(object, lavaan.DV){
   # has DV?
   pars <- lavaan::parameterEstimates(object)
-  if (!any(pars$op %in% c("~1", "~") & pars$lhs == lavaan.DV)) {
-    stop("{", lavaan.DV, "} is not predicted (endogenous) in this model!")
+  pars <- pars[pars$op %in% c("~1", "~"),]
+  if (!all(lavaan.DV %in% pars$lhs)) {
+    stop("{", lavaan.DV, "} is not predicted (endogenous) in this model!\n",
+         "See `?lavaan2emmeans` for more info.")
   }
 
   # Is DV ordered?
-  if (lavaan.DV %in% lavaan::lavInspect(object, 'ordered')){
+  if (any(lavaan.DV %in% lavaan::lavInspect(object, 'ordered'))){
     stop("{", lavaan.DV, "} is an ordered variable! ",
-         "Currently only continuous DVs are supported.")
+         "Currently only continuous DVs are supported.\n",
+         "See `?lavaan2emmeans` for more info.")
   }
 
 
   # is multilevel?
   if (lavaan::lavInspect(object, 'nlevels')>1){
-    warning("lavaan->emmeans only supports regression on level 1.",
+    warning("lavaan->emmeans only supports regression on level 1.\n",
+            "See `?lavaan2emmeans` for more info.",
             call. = FALSE)
   }
 
   # multi-group?
   if (lavaan::lavInspect(object, 'ngroups')>1) {
-    stop("lavaan->emmeans does not support multi-group analysis.",
+    stop("lavaan->emmeans does not support multi-group analysis.\n",
+         "See `?lavaan2emmeans` for more info.",
          call. = FALSE)
   }
 
@@ -210,10 +221,16 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
   # Fake it
   pars <- lavaan::parameterEstimates(object)
-  pars <- pars[pars$lhs == lavaan.DV & pars$op == "~",]
-  lavaan_formula <- as.formula(
-    paste0(lavaan.DV, " ~ ", paste0(pars$rhs, collapse = " + "))
-  )
+  pars <- pars[pars$lhs %in% lavaan.DV & pars$op == "~",]
+  # if (length(lavaan.DV)>1L) {
+  #   lavaan.DV <-
+  # }
+
+  lavaan_formula <- as.formula(paste0(
+    paste0("cbind(",paste0(lavaan.DV, collapse = ","),")"),
+    "~",
+    paste0(pars$rhs, collapse = " + ")
+  ))
 
   return(lm(lavaan_formula, lavaan_data))
 }

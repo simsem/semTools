@@ -7,7 +7,7 @@
 
   mean_sd <- function(x) mean(x) + c(-sd(x), 0, sd(x))
 
-  model1 <- '
+  model <- '
   # regressions
   Sepal.Length ~ b1 * Sepal.Width + b2 * Petal.Length + b3 * Sepal.Width:Petal.Length
 
@@ -24,19 +24,19 @@
   SD.above := b2 + b3 * (Sepal.Width.mean + sqrt(Sepal.Width.var))
   '
 
-  semFit1 <- sem(model = model1,
-                 data = iris)
+  semFit <- sem(model = model,
+                data = iris)
 
   ## Compare simple slopes
   # From `emtrends`
   test(
-    emtrends(semFit1, ~ Sepal.Width, "Petal.Length",
+    emtrends(semFit, ~ Sepal.Width, "Petal.Length",
              lavaan.DV = "Sepal.Length",
              cov.red = mean_sd)
   )
 
   # From lavaan
-  parameterEstimates(semFit1, output = "pretty")[13:15, ]
+  parameterEstimates(semFit, output = "pretty")[13:15, ]
   # Identical slopes.
   # SEs differ due to lavaan estimating uncertainty of the mean / SD
   # of Sepal.Width, whereas emmeans uses the mean+-SD as a is.
@@ -48,12 +48,13 @@
   emmeans(lmFit, ~ Sepal.Width, at = list(Sepal.Width = 1:2))
 
   # From lavaan -> emmeans
-  emmeans(semFit1, ~ Sepal.Width, at = list(Sepal.Width = 1:2),
+  emmeans(semFit, ~ Sepal.Width, at = list(Sepal.Width = 1:2),
           lavaan.DV = "Sepal.Length")
+
 
   #### Latent DV ####
 
-  model2 <- '
+  model <- '
   LAT1 =~ Sepal.Length + Sepal.Width
 
   LAT1 ~ b1 * Petal.Width + 1 * Petal.Length
@@ -64,29 +65,72 @@
   V2 := 1 * Petal.Length.mean + 2 * b1
   '
 
-  semFit2 <- sem(model = model2,
-                 data = iris, std.lv = TRUE)
+  semFit <- sem(model = model,
+                data = iris, std.lv = TRUE)
 
   ## Compare emmeans
   # From emmeans
   test(
-    emmeans(semFit2, ~ Petal.Width,
+    emmeans(semFit, ~ Petal.Width,
             lavaan.DV = "LAT1",
             at = list(Petal.Width = 1:2))
   )
 
   # From lavaan
-  parameterEstimates(semFit2, output = "pretty")[15:16, ]
+  parameterEstimates(semFit, output = "pretty")[15:16, ]
   # Identical means.
   # SEs differ due to lavaan estimating uncertainty of the mean
   # of Petal.Length, whereas emmeans uses the mean as is.
+
+  #### Multi-Variate DV ####
+
+  model <- '
+  ind60 =~ x1 + x2 + x3
+
+  # metric invariance
+  dem60 =~ y1 + a*y2 + b*y3 + c*y4
+  dem65 =~ y5 + a*y6 + b*y7 + c*y8
+
+  # scalar invariance
+  y1 + y5 ~ d*1
+  y2 + y6 ~ e*1
+  y3 + y7 ~ f*1
+  y4 + y8 ~ g*1
+
+  # regressions (slopes differ: interaction with time)
+  dem60 ~ b1*ind60
+  dem65 ~ b2*ind60 + NA*1 + Mean.Diff*1
+
+  # residual correlations
+  y1 ~~ y5
+  y2 ~~ y4 + y6
+  y3 ~~ y7
+  y4 ~~ y8
+  y6 ~~ y8
+
+  # conditional mean differences (besides mean(ind60) == 0)
+   low := (-1*b2 + Mean.Diff) - (-1*b1) # 1 SD below M
+  high := (b2 + Mean.Diff) - b1         # 1 SD above M
+'
+
+  semFit <- sem(model, data = PoliticalDemocracy)
+
+
+  ## Compare contrasts
+  # From emmeans
+  emmeans(semFit, pairwise~ rep.meas|ind60, lavaan.DV = c("dem60","dem65"),
+          at = list(ind60 = c(-1,1)))[[2]]
+
+  # From lavaan
+  parameterEstimates(semFit, output = "pretty")[49:50, ]
+
 
   #### Dealing with factors ####
 
   warpbreaks <- cbind(warpbreaks,
                       model.matrix(~ wool + tension, data = warpbreaks))
 
-  model3 <- "
+  model <- "
   # Split for convenience
   breaks ~ 1
   breaks ~ woolB
@@ -94,17 +138,17 @@
   breaks ~ woolB:tensionM + woolB:tensionH
   "
 
-  semFit3 <- sem(model3, warpbreaks)
+  semFit <- sem(model, warpbreaks)
 
   ## Compare contrasts
   # From lm -> emmeans
-  lmFit2 <- lm(breaks ~ wool * tension, data = warpbreaks)
-  lmEM <- emmeans(lmFit2, ~ tension + wool)
+  lmFit <- lm(breaks ~ wool * tension, data = warpbreaks)
+  lmEM <- emmeans(lmFit, ~ tension + wool)
   contrast(lmEM, method = data.frame(L_all = c(-1, .05, 0.5),
                                      M_H   = c(0, 1, -1)), by = "wool")
 
   # From lavaan -> emmeans
-  lavEM <- emmeans(semFit3, ~ tensionM + tensionH + woolB,
+  lavEM <- emmeans(semFit, ~ tensionM + tensionH + woolB,
                    lavaan.DV = "breaks")
   contrast(lavEM,
            method = data.frame(
@@ -114,4 +158,3 @@
              "M_H|A"   = c(rep(0, 4),          c(0, 1, -1, 0))
            ))
 }
-
