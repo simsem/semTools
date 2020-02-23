@@ -29,7 +29,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		)
 Depends: R(>= 3.4), utils, stats, graphics, lavaan(>= 0.6-5)
 Imports: methods
-Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt, blavaan
+Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt, blavaan, emmeans
 License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
