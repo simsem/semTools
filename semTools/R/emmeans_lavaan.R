@@ -1,4 +1,4 @@
-#' \code{emmeans} support functions for \code{lavaan}
+#' \code{emmeans} Support Functions for \code{lavaan} Models
 #'
 #' @description
 #'
@@ -21,9 +21,8 @@
 #' \subsection{Unsupported Models}{
 #' This functionality does not support the following models:
 #' \itemize{
-#'   \item Multi-group models (yet?).
 #'   \item Multi-level models are only supported if the DV is on level 1.
-#'   \item Models not with with a data frame (i.e., models fit with a covariance matrix).
+#'   \item Models not fit with with a data frame (i.e., models fit with a covariance matrix).
 #' }
 #' }
 #'
@@ -31,6 +30,12 @@
 #' Fixed parameters (set with \code{lavaan}'s modifiers) are treated as-is: their value
 #' is as set by the users, and they have a SE of 0 (and they do not co-vary with any
 #' other parameter).
+#' }
+#'
+#' \subsection{Dealing with Multi-group Models}{
+#' If a multi-group model is supplied, a factor is added to the reference grid, the name
+#' matching the \code{group} argument supplied when fitting the model. \emph{Note that you must
+#' set \code{nesting = NULL}}.
 #' }
 #'
 #' \subsection{Dealing with Missing Data}{
@@ -82,13 +87,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   emmb <- emmeans::emm_basis(.lavFakeFit(object, lavaan.DV), trms, xlev, grid, ...)
 
   # bhat --------------------------------------------------------------------
-  pars <- lavaan::parameterEstimates(object)
-  pars <- pars[pars$lhs %in% lavaan.DV & pars$op %in% c("~", "~1"),]
-  pars$rhs[pars$op == "~1"] <- "(Intercept)"
-  pars$op[pars$op == "~1"] <- "~"
-  if (length(lavaan.DV)>1L) {
-    pars$rhs <- paste0(pars$lhs,":",pars$rhs)
-  }
+  pars <- .lavCleanPars(object, lavaan.DV)
 
   if(nrow(pars) < length(emmb$bhat)) {
     warning(
@@ -106,9 +105,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
                         colnames(emmb$V)[!colnames(emmb$V) %in% pars$rhs])
 
   # re-order
-  b_ind <- sapply(colnames(emmb$V), function(x) {
-    which(x == names(temp_bhat))
-  })
+  b_ind <- match(colnames(emmb$V), names(temp_bhat))
   emmb$bhat <- temp_bhat[b_ind]
 
 
@@ -116,14 +113,12 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   lavVCOV <- lavaan::lavInspect(object, "vcov", add.labels = TRUE)
 
   # deal with labels
-  par_names <- sapply(rownames(lavVCOV), function(x) {
-    if (x %in% pars$label) {
+  par_names <- rownames(lavVCOV)
+  par_names[par_names %in% pars$label] <-
+    sapply(par_names[par_names %in% pars$label], function(x){
       temp <- pars[pars$label == x, , drop = FALSE]
       return(paste0(temp$lhs, temp$op, temp$rhs))
-    } else {
-      return(x)
-    }
-  })
+    })
 
   # only regression estimates
   is_reg <- grepl(paste0("^(",paste0(lavaan.DV, collapse = "|"),")~"), par_names)
@@ -153,9 +148,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
                              colnames(emmb$V)[!colnames(emmb$V) %in% par_names])
 
   # re-order
-  v_ind <- sapply(colnames(emmb$V), function(x) {
-    which(x == colnames(temp_vcov))
-  })
+  v_ind <- match(colnames(emmb$V), colnames(temp_vcov))
   emmb$V <- temp_vcov[v_ind, v_ind]
 
 
@@ -199,9 +192,9 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
   # multi-group?
   if (lavaan::lavInspect(object, 'ngroups')>1) {
-    stop("lavaan->emmeans does not support multi-group analysis.\n",
-         "See `?lavaan2emmeans` for more info.",
-         call. = FALSE)
+    warning("For multi-group models, don't forget to set 'nesting = NULL'.\n",
+            "See `?lavaan2emmeans` for more info.",
+            call. = FALSE)
   }
 
   invisible(NULL)
@@ -211,6 +204,21 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 .lavRecoverData <- function(object){
   data_obs <- lavaan::lavInspect(object, "data")
   data_lat <- lavaan::lavPredict(object, type = "lv")
+
+  # If multi group
+  if (lavaan::lavInspect(object, 'ngroups') > 1L) {
+    # make single data frame + add group labels
+    group_labels <- unlist(sapply(seq_along(names(data_obs)), function(i){
+      label_ <- names(data_obs)[i]
+      nobs_ <- nrow(data_obs[[i]])
+      rep(label_, times = nobs_)
+    }))
+
+    data_obs <- data.frame(do.call(rbind,data_obs))
+    data_obs[[lavaan::lavInspect(object,"group")]] <- group_labels
+    data_lat <- do.call(rbind,data_lat)
+  }
+
   data_full <- cbind(data_obs, data_lat)
   return(data.frame(data_full))
 }
@@ -222,15 +230,51 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   # Fake it
   pars <- lavaan::parameterEstimates(object)
   pars <- pars[pars$lhs %in% lavaan.DV & pars$op == "~",]
-  # if (length(lavaan.DV)>1L) {
-  #   lavaan.DV <-
-  # }
+
+  # If multi-group
+  if (lavaan::lavInspect(object, 'ngroups')>1) {
+    # condition on group (no intercept!)
+    RHS <- paste0(
+      "0 +",
+      lavaan::lavInspect(object, "group"),
+      "+",
+      lavaan::lavInspect(object, "group"),
+      "/(",
+      paste0(pars$rhs, collapse = " + "),
+      ")"
+    )
+  } else {
+    RHS <- paste0(pars$rhs, collapse = " + ")
+  }
 
   lavaan_formula <- as.formula(paste0(
     paste0("cbind(",paste0(lavaan.DV, collapse = ","),")"),
     "~",
-    paste0(pars$rhs, collapse = " + ")
+    RHS
   ))
 
   return(lm(lavaan_formula, lavaan_data))
+}
+
+#' @keywords internal
+.lavCleanPars <- function(object, lavaan.DV){
+  pars <- lavaan::parameterEstimates(object)
+  pars <- pars[pars$lhs %in% lavaan.DV & pars$op %in% c("~", "~1"),]
+  pars$rhs[pars$op == "~1"] <- "(Intercept)"
+  pars$op[pars$op == "~1"] <- "~"
+
+  if (lavaan::lavInspect(object, 'ngroups') > 1L) {
+    group_labs <- paste0(lavaan::lavInspect(object, 'group'),
+                         lavaan::lavInspect(object, 'group.label'))
+    pars$group <- group_labs[pars$group]
+    temp_rhs <- paste0(pars$group,":",pars$rhs)
+    temp_rhs[grepl("(Intercept)", temp_rhs)] <- pars$group[grepl("(Intercept)", temp_rhs)]
+    pars$rhs <- temp_rhs
+  }
+
+  if (length(lavaan.DV) > 1L) {
+    pars$rhs <- paste0(pars$lhs,":",pars$rhs)
+  }
+
+  return(pars[, colnames(pars) %in% c("lhs", "op", "rhs", "label", "est")])
 }

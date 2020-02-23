@@ -39,17 +39,7 @@
   parameterEstimates(semFit, output = "pretty")[13:15, ]
   # Identical slopes.
   # SEs differ due to lavaan estimating uncertainty of the mean / SD
-  # of Sepal.Width, whereas emmeans uses the mean+-SD as a is.
-
-
-  ## Compare emmeans
-  # From lm -> emmeans
-  lmFit <- lm(Sepal.Length ~ Sepal.Width * Petal.Length, iris)
-  emmeans(lmFit, ~ Sepal.Width, at = list(Sepal.Width = 1:2))
-
-  # From lavaan -> emmeans
-  emmeans(semFit, ~ Sepal.Width, at = list(Sepal.Width = 1:2),
-          lavaan.DV = "Sepal.Length")
+  # of Sepal.Width, whereas emmeans uses the mean+-SD as is (fixed).
 
 
   #### Latent DV ####
@@ -118,12 +108,31 @@
 
   ## Compare contrasts
   # From emmeans
-  emmeans(semFit, pairwise~ rep.meas|ind60, lavaan.DV = c("dem60","dem65"),
+  emmeans(semFit, pairwise ~ rep.meas|ind60,
+          lavaan.DV = c("dem60","dem65"),
           at = list(ind60 = c(-1,1)))[[2]]
 
   # From lavaan
   parameterEstimates(semFit, output = "pretty")[49:50, ]
 
+
+  #### Multi Group ####
+
+  model <- 'x1 ~ c(int1, int2)*1 + c(b1, b2)*ageyr
+  diff_11 := (int2 + b2*11) - (int1 + b1*11)
+  diff_13 := (int2 + b2*13) - (int1 + b1*13)
+  diff_15 := (int2 + b2*15) - (int1 + b1*15)
+'
+  semFit <- sem(model, group = "school", data = HolzingerSwineford1939)
+
+
+  ## Compare contrasts
+  # From emmeans (note `nesting = NULL`)
+  emmeans(semFit, pairwise ~ school | ageyr, lavaan.DV = "x1",
+          at = list(ageyr = c(11, 13, 15)), nesting = NULL)[[2]]
+
+  # From lavaan
+  parameterEstimates(semFit, output = "pretty")
 
   #### Dealing with factors ####
 

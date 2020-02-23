@@ -4,7 +4,7 @@
 \alias{lavaan2emmeans}
 \alias{recover_data.lavaan}
 \alias{emm_basis.lavaan}
-\title{\code{emmeans} support functions for \code{lavaan}}
+\title{\code{emmeans} Support Functions for \code{lavaan} Models}
 \usage{
 recover_data.lavaan(object, lavaan.DV, ...)
 
@@ -35,9 +35,8 @@ emmeans as multivariate DVs (or repeated measures, a factor by the name \code{re
 \subsection{Unsupported Models}{
 This functionality does not support the following models:
 \itemize{
-  \item Multi-group models (yet?).
   \item Multi-level models are only supported if the DV is on level 1.
-  \item Models not with with a data frame (i.e., models fit with a covariance matrix).
+  \item Models not fit with with a data frame (i.e., models fit with a covariance matrix).
 }
 }
 
@@ -45,6 +44,12 @@ This functionality does not support the following models:
 Fixed parameters (set with \code{lavaan}'s modifiers) are treated as-is: their value
 is as set by the users, and they have a SE of 0 (and they do not co-vary with any
 other parameter).
+}
+
+\subsection{Dealing with Multi-group Models}{
+If a multi-group model is supplied, a factor is added to the reference grid, the name
+matching the \code{group} argument supplied when fitting the model. \emph{Note that you must
+set \code{nesting = NULL}}.
 }
 
 \subsection{Dealing with Missing Data}{
@@ -99,17 +104,7 @@ possible to get the desired emmeans / contasts. See example below.
   parameterEstimates(semFit, output = "pretty")[13:15, ]
   # Identical slopes.
   # SEs differ due to lavaan estimating uncertainty of the mean / SD
-  # of Sepal.Width, whereas emmeans uses the mean+-SD as a is.
-
-
-  ## Compare emmeans
-  # From lm -> emmeans
-  lmFit <- lm(Sepal.Length ~ Sepal.Width * Petal.Length, iris)
-  emmeans(lmFit, ~ Sepal.Width, at = list(Sepal.Width = 1:2))
-
-  # From lavaan -> emmeans
-  emmeans(semFit, ~ Sepal.Width, at = list(Sepal.Width = 1:2),
-          lavaan.DV = "Sepal.Length")
+  # of Sepal.Width, whereas emmeans uses the mean+-SD as is (fixed).
 
 
   #### Latent DV ####
@@ -178,12 +173,31 @@ possible to get the desired emmeans / contasts. See example below.
 
   ## Compare contrasts
   # From emmeans
-  emmeans(semFit, pairwise~ rep.meas|ind60, lavaan.DV = c("dem60","dem65"),
+  emmeans(semFit, pairwise ~ rep.meas|ind60,
+          lavaan.DV = c("dem60","dem65"),
           at = list(ind60 = c(-1,1)))[[2]]
 
   # From lavaan
   parameterEstimates(semFit, output = "pretty")[49:50, ]
 
+
+  #### Multi Group ####
+
+  model <- 'x1 ~ c(int1, int2)*1 + c(b1, b2)*ageyr
+  diff_11 := (int2 + b2*11) - (int1 + b1*11)
+  diff_13 := (int2 + b2*13) - (int1 + b1*13)
+  diff_15 := (int2 + b2*15) - (int1 + b1*15)
+'
+  semFit <- sem(model, group = "school", data = HolzingerSwineford1939)
+
+
+  ## Compare contrasts
+  # From emmeans (note `nesting = NULL`)
+  emmeans(semFit, pairwise ~ school | ageyr, lavaan.DV = "x1",
+          at = list(ageyr = c(11, 13, 15)), nesting = NULL)[[2]]
+
+  # From lavaan
+  parameterEstimates(semFit, output = "pretty")
 
   #### Dealing with factors ####
 
