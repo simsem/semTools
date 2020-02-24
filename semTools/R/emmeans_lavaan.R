@@ -299,3 +299,188 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
   return(pars[, colnames(pars) %in% c("lhs", "op", "rhs", "label", "est")])
 }
+
+#' @keywords internal test
+.emlav_run_tests <- function() {
+  if (!requireNamespace("testthat")) {
+    stop("Need 'testthat' for testing")
+  }
+
+  if (!requireNamespace("emmeans")) {
+    stop("Need 'emmeans' for testing")
+  }
+
+  testthat::test_that("moderation", {
+    model <- '
+  # regressions
+  Sepal.Length ~ b1 * Sepal.Width + b2 * Petal.Length + b3 * Sepal.Width:Petal.Length
+
+  # simple slopes for condition effect
+  below := b2 + b3 * (-1)
+  above := b2 + b3 * (+1)
+  '
+    semFit <- lavaan::sem(model = model,
+                          data = iris)
+
+    em_ <- summary(
+      emmeans::emtrends(
+        semFit,
+        ~ Sepal.Width,
+        "Petal.Length",
+        lavaan.DV = "Sepal.Length",
+        at = list(Sepal.Width = c(-1, 1))
+      )
+    )
+
+    em_est <- em_$Petal.Length.trend
+    em_se <- em_$SE
+    lv_est <-
+      lavaan::parameterEstimates(semFit, output = "pretty")[11:12, "est"]
+    lv_se <-
+      lavaan::parameterEstimates(semFit, output = "pretty")[11:12, "se"]
+
+    testthat::expect_equal(em_est, lv_est, tolerance = 1e-4)
+    testthat::expect_equal(em_se, lv_se, tolerance = 1e-4)
+  })
+
+
+
+  testthat::test_that("latent", {
+    model <- '
+  LAT1 =~ Sepal.Length + Sepal.Width
+
+  LAT1 ~ b1 * Petal.Width + 1 * Petal.Length
+
+  Petal.Length ~ Petal.Length.mean * 1
+
+  V1 := 1 * Petal.Length.mean + 1 * b1
+  V2 := 1 * Petal.Length.mean + 2 * b1
+  '
+
+    semFit <- lavaan::sem(model = model,
+                          data = iris,
+                          std.lv = TRUE)
+
+    em_ <- summary(emmeans::emmeans(
+      semFit,
+      ~ Petal.Width,
+      lavaan.DV = "LAT1",
+      at = list(Petal.Width = 1:2)
+    ))
+
+    em_est <- em_$emmean
+    lv_est <-
+      lavaan::parameterEstimates(semFit, output = "pretty")[15:16, "est"]
+
+    testthat::expect_equal(em_est, lv_est, tolerance = 1e-4)
+  })
+
+
+  testthat::test_that("multi-dv", {
+    model <- '
+  ind60 =~ x1 + x2 + x3
+
+  # metric invariance
+  dem60 =~ y1 + a*y2 + b*y3 + c*y4
+  dem65 =~ y5 + a*y6 + b*y7 + c*y8
+
+  # scalar invariance
+  y1 + y5 ~ d*1
+  y2 + y6 ~ e*1
+  y3 + y7 ~ f*1
+  y4 + y8 ~ g*1
+
+  # regressions (slopes differ: interaction with time)
+  dem60 ~ b1*ind60
+  dem65 ~ b2*ind60 + NA*1 + Mean.Diff*1
+
+  # residual correlations
+  y1 ~~ y5
+  y2 ~~ y4 + y6
+  y3 ~~ y7
+  y4 ~~ y8
+  y6 ~~ y8
+
+  # conditional mean differences (besides mean(ind60) == 0)
+   low := (-1*b2 + Mean.Diff) - (-1*b1) # 1 SD below M
+  high := (b2 + Mean.Diff) - b1         # 1 SD above M
+'
+
+    semFit <- lavaan::sem(model, data = lavaan::PoliticalDemocracy)
+
+    em_ <- summary(emmeans::emmeans(
+      semFit,
+      pairwise ~ rep.meas | ind60,
+      lavaan.DV = c("dem60", "dem65"),
+      at = list(ind60 = c(-1, 1))
+    )[[2]])
+
+    em_est <- em_$estimate
+    lv_est <-
+      lavaan::parameterEstimates(semFit, output = "pretty")[49:50, "est"]
+
+    em_se <- em_$SE
+    lv_se <-
+      lavaan::parameterEstimates(semFit, output = "pretty")[49:50, "se"]
+
+    testthat::expect_equal(em_est, -lv_est, tolerance = 1e-4)
+    testthat::expect_equal(em_se, lv_se, tolerance = 1e-4)
+  })
+
+
+  testthat::test_that("Multi Group", {
+    model <- '
+  x1 ~ c(int1, int2)*1 + c(b1, b2)*ageyr
+  diff_11 := (int2 + b2*11) - (int1 + b1*11)
+  diff_13 := (int2 + b2*13) - (int1 + b1*13)
+  diff_15 := (int2 + b2*15) - (int1 + b1*15)
+'
+    semFit <-
+      lavaan::sem(model,
+                  group = "school",
+                  data = lavaan::HolzingerSwineford1939)
+
+
+    em_ <-
+      summary(
+        emmeans::emmeans(
+          semFit,
+          pairwise ~ school | ageyr,
+          lavaan.DV = "x1",
+          at = list(ageyr = c(11, 13, 15)),
+          nesting = NULL
+        )[[2]]
+      )
+
+    em_est <- em_$estimate
+    lv_est <-
+      lavaan::parameterEstimates(semFit, output = "pretty")$est[11:13]
+
+    em_se <- em_$SE
+    lv_se <-
+      lavaan::parameterEstimates(semFit, output = "pretty")$se[11:13]
+
+    testthat::expect_equal(em_est, lv_est, tolerance = 1e-4)
+    testthat::expect_equal(em_se, lv_se, tolerance = 1e-4)
+  })
+
+  testthat::test_that("all!", {
+    model <- '
+LAT1 =~ x1 + x2 + x3
+LAT2 =~ x4 + x5 + x6
+LAT3 =~ LAT1 + LAT2 + x7 + x8 + x9
+
+LAT3 ~ c(b1,b1)*ageyr + agemo
+grade ~ ageyr
+
+'
+    semFit <- lavaan::sem(model,
+                          data = lavaan::HolzingerSwineford1939,
+                          group = "school")
+
+    testthat::expect_s4_class(emmeans::ref_grid(semFit, lavaan.DV = c("LAT3", "grade")), "emmGrid")
+  })
+
+  message("All good!")
+
+}
