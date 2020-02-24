@@ -4,8 +4,8 @@
 #'
 #' @param object An object of class \code{lavaan}. See details.
 #' @param lavaan.DV Name (string) of the variable for which emmeans or emtrends should be produced. Can be a vector of names - see details.
-#' @param ... Passed to \code{emmeans::recover_data.lm} or \code{emmeans::emm_basis.lm}.
 #' @param trms,xlev,grid See \code{emmeans::emm_basis}.
+#' @param ... Passed to \code{emmeans::recover_data.lm} or \code{emmeans::emm_basis.lm}.
 #'
 #' @details
 #'
@@ -61,13 +61,14 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
     stop("'emmeans' is not installed.")
   }
 
-  .test_lav(object, lavaan.DV)
+  .emlav_test_DV(object, lavaan.DV)
 
   # Fake it
-  recovered <- emmeans::recover_data(.lavFakeFit(object, lavaan.DV), ...)
+  recovered <- emmeans::recover_data(.emlav_fake_fit(object, lavaan.DV),
+                                     ...)
 
   # Make it
-  lavaan_data <- .lavRecoverData(object)
+  lavaan_data <- .emlav_recover_data(object)
   lavaan_data <- lavaan_data[, colnames(recovered), drop = FALSE]
 
   # Replace values (to maintain attributes)
@@ -79,20 +80,22 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
 
 #' @rdname lavaan2emmeans
 emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
-  if (!requireNamespace("emmeans", quietly = TRUE)){
+  if (!requireNamespace("emmeans", quietly = TRUE)) {
     stop("'emmeans' is not installed.")
   }
 
   # Fake it
-  emmb <- emmeans::emm_basis(.lavFakeFit(object, lavaan.DV), trms, xlev, grid, ...)
+  emmb <- emmeans::emm_basis(.emlav_fake_fit(object, lavaan.DV),
+                             trms, xlev, grid, ...)
 
   # bhat --------------------------------------------------------------------
-  pars <- .lavCleanPars(object, lavaan.DV)
+  pars <- .emlav_clean_pars_tab(object, lavaan.DV, "bhat")
+  par_names <- pars$rhs
 
   if(nrow(pars) < length(emmb$bhat)) {
     warning(
       "Not all parameters have been estimated.\n",
-      "This is usually caused by a missing mean structure. (maybe?)\n",
+      "This is usually caused by a missing mean structure.\n",
       "Fixing estimates for these parameters at 0.",
       call. = FALSE
     )
@@ -101,8 +104,8 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   # re-shape to deal with any missing estimates
   temp_bhat <- rep(0, length = length(emmb$bhat))
   temp_bhat[seq_len(nrow(pars))] <- pars$est
-  names(temp_bhat) <- c(pars$rhs,
-                        colnames(emmb$V)[!colnames(emmb$V) %in% pars$rhs])
+  names(temp_bhat) <- c(par_names,
+                        colnames(emmb$V)[!colnames(emmb$V) %in% par_names])
 
   # re-order
   b_ind <- match(colnames(emmb$V), names(temp_bhat))
@@ -110,35 +113,30 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 
   # VCOV --------------------------------------------------------------------
-  lavVCOV <- lavaan::lavInspect(object, "vcov", add.labels = TRUE)
-
-  # deal with labels
-  par_names <- rownames(lavVCOV)
-  par_names[par_names %in% pars$label] <-
-    sapply(par_names[par_names %in% pars$label], function(x){
-      temp <- pars[pars$label == x, , drop = FALSE]
-      return(paste0(temp$lhs, temp$op, temp$rhs))
-    })
+  lavVCOV <- lavaan::lavInspect(object, "vcov")
+  pars <- .emlav_clean_pars_tab(object, lavaan.DV, "vcov")
+  par_names <- paste0(pars$lhs, pars$op, pars$rhs)
 
   # only regression estimates
-  is_reg <- grepl(paste0("^(",paste0(lavaan.DV, collapse = "|"),")~"), par_names)
-  is_cov <- grepl(paste0("^(",paste0(lavaan.DV, collapse = "|"),")~~"), par_names)
+  pattern <- paste0("^(", paste0(lavaan.DV, collapse = "|"), ")")
+  is_reg <- grepl(paste0(pattern, "~"), par_names)
+  is_cov <- grepl(paste0(pattern, "~~"), par_names)
   only_reg <- is_reg & !is_cov
   lavVCOV <- lavVCOV[only_reg, only_reg, drop = FALSE]
-
-  # get only RHS
-  par_names <- par_names[only_reg]
-  par_names <- sub(paste0("~1$"), "~(Intercept)", par_names)
-  par_names <- sub(paste0("^(", paste0(lavaan.DV, collapse = "|"), ")~"), "", par_names)
 
   if(ncol(lavVCOV) < nrow(emmb$V)) {
     warning(
       "Not all parameters are included in the VCOV matrix.\n",
       "Perhaps some are fixed with a modifier, or the mean structure is missing.\n",
-      "Fixing VCOV for these parameters at 0.",
+      "Fixing SEs for these parameters at 0.",
       call. = FALSE
     )
   }
+
+  # get only RHS
+  par_names <- par_names[only_reg]
+  par_names <- sub(paste0("~1$"), "~(Intercept)", par_names)
+  par_names <- sub(paste0(pattern, "~"), "", par_names)
 
   # re-shape to deal with any missing estimates
   temp_vcov <- matrix(0, nrow = nrow(emmb$V), ncol = ncol(emmb$V))
@@ -166,57 +164,71 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 }
 
 #' @keywords internal
-.test_lav <- function(object, lavaan.DV){
+.emlav_test_DV <- function(object, lavaan.DV){
   # has DV?
   pars <- lavaan::parameterEstimates(object)
-  pars <- pars[pars$op %in% c("~1", "~"),]
+  pars <- pars[pars$op %in% c("~1", "~"), ]
   if (!all(lavaan.DV %in% pars$lhs)) {
-    stop("{", lavaan.DV, "} is not predicted (endogenous) in this model!\n",
-         "See `?lavaan2emmeans` for more info.")
+    lavaan.DV <- lavaan.DV[!lavaan.DV %in% pars$lhs]
+    lavaan.DV <- paste0(lavaan.DV, collapse = ",")
+    stop(
+      "{", lavaan.DV, "} is not predicted (endogenous) in this model!\n",
+      "See `?lavaan2emmeans` for more info.",
+      call. = FALSE
+    )
   }
 
   # Is DV ordered?
-  if (any(lavaan.DV %in% lavaan::lavInspect(object, 'ordered'))){
-    stop("{", lavaan.DV, "} is an ordered variable! ",
-         "Currently only continuous DVs are supported.\n",
-         "See `?lavaan2emmeans` for more info.")
+  if (any(lavaan.DV %in% lavaan::lavInspect(object, 'ordered'))) {
+    lavaan.DV <- lavaan.DV[lavaan.DV %in% lavaan::lavInspect(object, 'ordered')]
+    lavaan.DV <- paste0(lavaan.DV, collapse = ",")
+    stop(
+      "{", lavaan.DV, "} is an ordered variable! ",
+      "Currently only continuous DVs are supported.\n",
+      "See `?lavaan2emmeans` for more info.",
+      call. = FALSE
+    )
   }
 
 
   # is multilevel?
-  if (lavaan::lavInspect(object, 'nlevels')>1){
-    warning("lavaan->emmeans only supports regression on level 1.\n",
-            "See `?lavaan2emmeans` for more info.",
-            call. = FALSE)
+  if (lavaan::lavInspect(object, 'nlevels') > 1L){
+    warning(
+      "lavaan->emmeans only supports regression on level 1.\n",
+      "See `?lavaan2emmeans` for more info.",
+      call. = FALSE
+    )
   }
 
   # multi-group?
-  if (lavaan::lavInspect(object, 'ngroups')>1) {
-    warning("For multi-group models, don't forget to set 'nesting = NULL'.\n",
-            "See `?lavaan2emmeans` for more info.",
-            call. = FALSE)
+  if (lavaan::lavInspect(object, 'ngroups') > 1L) {
+    warning(
+      "For multi-group models, don't forget to set 'nesting = NULL'.\n",
+      "See `?lavaan2emmeans` for more info.",
+      call. = FALSE
+    )
   }
 
   invisible(NULL)
 }
 
 #' @keywords internal
-.lavRecoverData <- function(object){
+.emlav_recover_data <- function(object){
   data_obs <- lavaan::lavInspect(object, "data")
   data_lat <- lavaan::lavPredict(object, type = "lv")
 
   # If multi group
   if (lavaan::lavInspect(object, 'ngroups') > 1L) {
     # make single data frame + add group labels
-    group_labels <- unlist(sapply(seq_along(names(data_obs)), function(i){
+    group_labels <- sapply(seq_along(names(data_obs)), function(i) {
       label_ <- names(data_obs)[i]
       nobs_ <- nrow(data_obs[[i]])
       rep(label_, times = nobs_)
-    }))
+    })
 
-    data_obs <- data.frame(do.call(rbind,data_obs))
-    data_obs[[lavaan::lavInspect(object,"group")]] <- group_labels
-    data_lat <- do.call(rbind,data_lat)
+    data_obs <- data.frame(do.call(rbind, data_obs))
+    data_obs[[lavaan::lavInspect(object, "group")]] <- unlist(group_labels)
+    data_lat <- do.call(rbind, data_lat)
   }
 
   data_full <- cbind(data_obs, data_lat)
@@ -224,15 +236,15 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 }
 
 #' @keywords internal
-.lavFakeFit <- function(object, lavaan.DV){
-  lavaan_data <- .lavRecoverData(object)
+.emlav_fake_fit <- function(object, lavaan.DV){
+  lavaan_data <- .emlav_recover_data(object)
 
   # Fake it
   pars <- lavaan::parameterEstimates(object)
-  pars <- pars[pars$lhs %in% lavaan.DV & pars$op == "~",]
+  pars <- pars[pars$lhs %in% lavaan.DV & pars$op == "~", ]
 
   # If multi-group
-  if (lavaan::lavInspect(object, 'ngroups')>1) {
+  if (lavaan::lavInspect(object, 'ngroups') > 1L) {
     # condition on group (no intercept!)
     RHS <- paste0(
       "0 +",
@@ -257,9 +269,17 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 }
 
 #' @keywords internal
-.lavCleanPars <- function(object, lavaan.DV){
-  pars <- lavaan::parameterEstimates(object)
-  pars <- pars[pars$lhs %in% lavaan.DV & pars$op %in% c("~", "~1"),]
+.emlav_clean_pars_tab <- function(object, lavaan.DV, type = c("bhat", "vcov")){
+  type <- match.arg(type)
+  if (type == "bhat") {
+    pars <- lavaan::parameterEstimates(object)
+    pars <- pars[pars$lhs %in% lavaan.DV & pars$op %in% c("~", "~1"), ]
+  } else {
+    pars <- lavaan::parameterEstimates(object,
+                                       remove.nonfree = TRUE,
+                                       remove.def = TRUE)
+  }
+
   pars$rhs[pars$op == "~1"] <- "(Intercept)"
   pars$op[pars$op == "~1"] <- "~"
 
@@ -267,13 +287,14 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
     group_labs <- paste0(lavaan::lavInspect(object, 'group'),
                          lavaan::lavInspect(object, 'group.label'))
     pars$group <- group_labs[pars$group]
-    temp_rhs <- paste0(pars$group,":",pars$rhs)
-    temp_rhs[grepl("(Intercept)", temp_rhs)] <- pars$group[grepl("(Intercept)", temp_rhs)]
+    temp_rhs <- paste0(pars$group, ":", pars$rhs)
+    temp_rhs[grepl("(Intercept)", temp_rhs)] <-
+      pars$group[grepl("(Intercept)", temp_rhs)]
     pars$rhs <- temp_rhs
   }
 
   if (length(lavaan.DV) > 1L) {
-    pars$rhs <- paste0(pars$lhs,":",pars$rhs)
+    pars$rhs <- paste0(pars$lhs, ":", pars$rhs)
   }
 
   return(pars[, colnames(pars) %in% c("lhs", "op", "rhs", "label", "est")])
