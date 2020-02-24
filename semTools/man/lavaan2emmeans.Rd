@@ -225,11 +225,11 @@ possible to get the desired emmeans / contasts. See example below.
   lavEM <- emmeans(semFit, ~ tensionM + tensionH + woolB,
                    lavaan.DV = "breaks")
   contrast(lavEM,
-           method = data.frame(
+           method = list(
              "L_all|A" = c(c(-1, .05, 0.5, 0), rep(0, 4)),
-             "M_H|A"   = c(c(0, 1, -1, 0),     rep(0, 4)),
+             "M_H  |A" = c(c(0, 1, -1, 0),     rep(0, 4)),
              "L_all|A" = c(rep(0, 4),          c(-1, .05, 0.5, 0)),
-             "M_H|A"   = c(rep(0, 4),          c(0, 1, -1, 0))
+             "M_H  |A" = c(rep(0, 4),          c(0, 1, -1, 0))
            ))
 }
 }
