@@ -60,7 +60,7 @@ tukeySEM <- function(m1, m2, var1, var2, n1, n2, ng) {
   qDenom <- sqrt(((var1/n1) + (var2/n2))/2)
   Tukeyq <- qNum / qDenom
   Tukeydf <- ((var1/n1) + (var2/n2))^2 /
-    (((var1/n1)^2 / (n1 - 1)) + ((var2/n2)^2 / (n2 - 2)))
+    (((var1/n1)^2 / (n1 - 1)) + ((var2/n2)^2 / (n2 - 1)))
   c(q = Tukeyq, df = Tukeydf, p = 1 - ptukey(Tukeyq, ng, Tukeydf))
 }
 
