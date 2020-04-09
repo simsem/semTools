@@ -5,34 +5,53 @@
 \title{Probing two-way interaction on the no-centered or mean-centered latent
 interaction}
 \usage{
-probe2WayMC(fit, nameX, nameY, modVar, valProbe, group)
+probe2WayMC(fit, nameX, nameY, modVar, valProbe, group,
+  omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{fit}{The lavaan model object used to evaluate model fit}
+\item{fit}{A fitted \code{\linkS4class{lavaan}} or
+\code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.}
 
-\item{nameX}{The vector of the factor names used as the predictors. The
-first-order factor will be listed first. The last name must be the name
-representing the interaction term.}
+\item{nameX}{\code{character} vector of all 3 factor names used as the
+predictors. The lower-order factors must be listed first, and the final
+name must be the latent interaction factor.}
 
 \item{nameY}{The name of factor that is used as the dependent variable.}
 
 \item{modVar}{The name of factor that is used as a moderator. The effect of
-the other independent factor on each moderator variable value will be
-probed.}
+the other independent factor will be probed at each value of the
+moderator variable listed in \code{valProbe}.}
 
 \item{valProbe}{The values of the moderator that will be used to probe the
-effect of the other independent factor.}
+effect of the focal predictor.}
 
 \item{group}{In multigroup models, the label of the group for which the
 results will be returned. Must correspond to one of
-\code{\link[lavaan]{lavInspect}(fit, "group.label")}.}
+\code{\link[lavaan]{lavInspect}(fit, "group.label")}, or an integer
+corresponding to which of those group labels.}
+
+\item{omit.imps}{\code{character} vector specifying criteria for omitting
+imputations from pooled results. Ignored unless \code{fit} is of
+class \code{\linkS4class{lavaan.mi}}. Can include any of
+\code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+default setting, which excludes any imputations that did not
+converge or for which standard errors could not be computed.  The
+last option (\code{"no.npd"}) would exclude any imputations which
+yielded a nonpositive definite covariance matrix for observed or
+latent variables, which would include any "improper solutions" such
+as Heywood cases.  NPD solutions are not excluded by default because
+they are likely to occur due to sampling error, especially in small
+samples.  However, gross model misspecification could also cause
+NPD solutions, users can compare pooled results with and without
+this setting as a sensitivity analysis to see whether some
+imputations warrant further investigation.}
 }
 \value{
 A list with two elements:
 \enumerate{
  \item \code{SimpleIntercept}: The intercepts given each value of the
-  moderator. This element will be shown only if the factor intercept is
-  estimated (e.g., not fixed as 0).
+  moderator. This element will be \code{NULL} unless the factor intercept is
+  estimated (e.g., not fixed at 0).
  \item \code{SimpleSlope}: The slopes given each value of the moderator.
 }
 In each element, the first column represents the values of the moderators
@@ -84,7 +103,8 @@ estimate and \eqn{Cov} denotes the covariance of two parameter estimates.
 The variance of the simple slope formula is \deqn{ Var\left(b_{X|Z}\right) =
 Var\left(b_1\right) + 2ZCov\left(b_1, b_3\right) + Z^2Var\left(b_3\right) }
 
-Wald statistic is used for test statistic.
+Wald \emph{z} statistic is used for test statistic (even for objects of
+class \code{\linkS4class{lavaan.mi}}).
 }
 \examples{
 
@@ -114,9 +134,8 @@ fitMC2way <- sem(model1, data = dat2wayMC, std.lv = FALSE,
                  meanstructure = TRUE)
 summary(fitMC2way)
 
-result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"),
-                            "f3", "f2", c(-1, 0, 1))
-result2wayMC
+probe2WayMC(fitMC2way, nameX = c("f1", "f2", "f12"), nameY = "f3",
+            modVar = "f2",  valProbe = c(-1, 0, 1))
 
 }
 \references{

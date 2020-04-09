@@ -1,5 +1,5 @@
-### Sunthud Pornprasertmanit
-### Last updated: 4 June 2019
+### Sunthud Pornprasertmanit & Terrence D. Jorgensen
+### Last updated: 9 April 2020
 
 
 
@@ -46,31 +46,50 @@
 ##' The variance of the simple slope formula is \deqn{ Var\left(b_{X|Z}\right) =
 ##' Var\left(b_1\right) + 2ZCov\left(b_1, b_3\right) + Z^2Var\left(b_3\right) }
 ##'
-##' Wald statistic is used for test statistic.
+##' Wald \emph{z} statistic is used for test statistic (even for objects of
+##' class \code{\linkS4class{lavaan.mi}}).
 ##'
 ##'
 ##' @importFrom lavaan lavInspect
 ##' @importFrom stats pnorm
+##' @importFrom methods getMethod
 ##'
-##' @param fit The lavaan model object used to evaluate model fit
-##' @param nameX The vector of the factor names used as the predictors. The
-##'   first-order factor will be listed first. The last name must be the name
-##'   representing the interaction term.
+##' @param fit A fitted \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
+##' @param nameX \code{character} vector of all 3 factor names used as the
+##'   predictors. The lower-order factors must be listed first, and the final
+##'   name must be the latent interaction factor.
 ##' @param nameY The name of factor that is used as the dependent variable.
 ##' @param modVar The name of factor that is used as a moderator. The effect of
-##'   the other independent factor on each moderator variable value will be
-##'   probed.
+##'   the other independent factor will be probed at each value of the
+##'   moderator variable listed in \code{valProbe}.
 ##' @param valProbe The values of the moderator that will be used to probe the
-##'   effect of the other independent factor.
+##'   effect of the focal predictor.
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
-##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}.
+##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}, or an integer
+##'   corresponding to which of those group labels.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'        imputations from pooled results. Ignored unless \code{fit} is of
+##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
+##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        default setting, which excludes any imputations that did not
+##'        converge or for which standard errors could not be computed.  The
+##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        yielded a nonpositive definite covariance matrix for observed or
+##'        latent variables, which would include any "improper solutions" such
+##'        as Heywood cases.  NPD solutions are not excluded by default because
+##'        they are likely to occur due to sampling error, especially in small
+##'        samples.  However, gross model misspecification could also cause
+##'        NPD solutions, users can compare pooled results with and without
+##'        this setting as a sensitivity analysis to see whether some
+##'        imputations warrant further investigation.
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
 ##'  \item \code{SimpleIntercept}: The intercepts given each value of the
-##'   moderator. This element will be shown only if the factor intercept is
-##'   estimated (e.g., not fixed as 0).
+##'   moderator. This element will be \code{NULL} unless the factor intercept is
+##'   estimated (e.g., not fixed at 0).
 ##'  \item \code{SimpleSlope}: The slopes given each value of the moderator.
 ##' }
 ##' In each element, the first column represents the values of the moderators
@@ -144,28 +163,57 @@
 ##'                  meanstructure = TRUE)
 ##' summary(fitMC2way)
 ##'
-##' result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"),
-##'                             "f3", "f2", c(-1, 0, 1))
-##' result2wayMC
+##' probe2WayMC(fitMC2way, nameX = c("f1", "f2", "f12"), nameY = "f3",
+##'             modVar = "f2",  valProbe = c(-1, 0, 1))
 ##'
 ##' @export
-probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group) {
-	# Check whether modVar is correct
-	if(is.character(modVar)) {
-		modVar <- match(modVar, nameX)
-	}
-	if(is.na(modVar) || !(modVar %in% 1:2)) stop("The moderator name is not in the name of independent factors or not 1 or 2.")
+probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group,
+                        omit.imps = c("no.conv","no.se")) {
+  ## TDJ: verify class
+  if (inherits(fit, "lavaan")) {
+    est <- lavInspect(fit, "est")[[group]]
 
-	# Check whether the fit object does not use mlm, mlr, or mlf estimator (because the variance-covariance matrix of parameter estimates cannot be computed
+  } else if (inherits(fit, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(fit@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(fit@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(fit@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    ## custom removal by imputation number
+    rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+    if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+    ## whatever is left
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+  } else stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+
+
+	# Check whether modVar is correct
+	if (is.character(modVar)) modVar <- match(modVar, nameX)
+	if (is.na(modVar) || !(modVar %in% 1:2))
+	  stop("The moderator name is not in the name of independent factors or not 1 or 2.")
+
+	# Check whether the fit object does not use mlm, mlr, or mlf estimator
+	# (because the variance-covariance matrix of parameter estimates cannot be computed
+	#FIXME TDJ: Yes it can. Isn't the real problem that product indicators don't
+	#           make sense with categorical indicators?
 	estSpec <- lavInspect(fit, "call")$estimator
-	if(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf"))) stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as the estimator because the covariance matrix of the parameter estimates cannot be computed.")
+	if (!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf")))
+	  stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as ",
+	       "the estimator because the covariance matrix of the parameter estimates cannot be computed.")
 
 	## TDJ: If multigroup, check group %in% group.label
 	nG <- lavInspect(fit, "ngroups")
 	if (nG > 1L) {
 	  group.label <- lavInspect(fit, "group.label")
 	  if (missing(group)) {
-	    warning('No argument provided for "group". Using the first group.')
+	    warning('No argument provided for "group". Using the first group.',
+	            call. = FALSE)
 	    group <- 1L
 	  }
 	  ## assign numeric to character
@@ -178,29 +226,62 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 	  if (!as.character(group) %in% group.label)
 	    stop('"group" must be a character string naming a group of interest, or ',
 	         'an ingteger corresponding to a group in  lavInspect(fit, "group.label")')
-	  ## Get the parameter estimates for that group
-	  est <- lavInspect(fit, "est")[[group]]
+	}
+
+	# Extract all varEst
+	if (inherits(fit, "lavaan")) {
+	  varEst <- lavaan::vcov(fit)
+	} else if (inherits(fit, "lavaan.mi")) {
+	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	}
+
+	# Check whether intercept are estimated
+	targetcol <- paste0(nameY, "~1")
+	if (nG > 1L) {
+	  group.number <- which(group.label == group)
+	  if (group.number > 1L) targetcol <- paste(targetcol, group.number,
+	                                            sep = ".")
+	}
+	estimateIntcept <- targetcol %in% rownames(varEst)
+
+
+	## Get the parameter estimates for that group
+	if (nG > 1L) {
+
+	  if (inherits(fit, "lavaan")) {
+	    est <- lavInspect(fit, "est")[[group]]
+	  } else if (inherits(fit, "lavaan.mi")) {
+	    est <- list()
+	    GLIST <- fit@coefList[useImps]
+	    est$beta <- Reduce("+", lapply(GLIST, function(i) i[[group]]$beta)) / m
+	    if (estimateIntcept) {
+	      est$alpha <- Reduce("+", lapply(GLIST, function(i) i[[group]]$alpha)) / m
+	    }
+	  }
 
 	} else {
 	  ## single-group model
-	  est <- lavInspect(fit, "est")
+
+	  if (inherits(fit, "lavaan")) {
+	    est <- lavInspect(fit, "est")
+	  } else if (inherits(fit, "lavaan.mi")) {
+	    est <- list()
+	    est$beta <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "beta")) / m
+	    if (estimateIntcept) {
+	      est$alpha <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "alpha")) / m
+	    }
+	  }
+
 	}
 
 	# Compute the intercept of no-centering
 	betaNC <- as.matrix(est$beta[nameY, nameX]); colnames(betaNC) <- nameY
 
-	# Extract all varEst
-	varEst <- lavaan::vcov(fit)
-
-	# Check whether intercept are estimated
-	targetcol <- paste(nameY, "~", 1, sep="")
-	estimateIntcept <- targetcol %in% rownames(varEst)
-
 	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
 
 	resultIntcept <- NULL
 	resultSlope <- NULL
-	if(estimateIntcept) {
+	if (estimateIntcept) {
 		# Extract SE from residual centering
 		targetcol <- c(targetcol, paste(nameY, "~", nameX, sep=""))
 
@@ -209,7 +290,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 		usedBeta <- rbind(est$alpha[nameY,], betaNC)
 
 		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		if(modVar == 1) {
+		if (modVar == 1) {
 			usedVar <- usedVar[c(1, 3, 2, 4), c(1, 3, 2, 4)]
 			usedBeta <- usedBeta[c(1, 3, 2, 4)]
 		}
@@ -251,7 +332,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 		colnames(resultSlope) <- c(nameX[modVar], "Slope", "SE", "Wald", "p")
 	}
 
-	return(list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope))
+	list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope)
 }
 
 
@@ -259,8 +340,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 ##' Probing two-way interaction on the residual-centered latent interaction
 ##'
 ##' Probing interaction for simple intercept and simple slope for the
-##' residual-centered latent two-way interaction (Pornprasertmanit, Schoemann,
-##' Geldhof, & Little, submitted)
+##' residual-centered latent two-way interaction (Geldhof et al., 2013)
 ##'
 ##' Before using this function, researchers need to make the products of the
 ##' indicators between the first-order factors and residualize the products by
@@ -276,36 +356,53 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 ##'
 ##' The probing process on residual-centered latent interaction is based on
 ##' transforming the residual-centered result into the no-centered result. See
-##' Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further
-##' details. Note that this approach based on a strong assumption that the
-##' first-order latent variables are normally distributed. The probing process
-##' is applied after the no-centered result (parameter estimates and their
-##' covariance matrix among parameter estimates) has been computed. See the
-##' \code{\link{probe2WayMC}} for further details.
+##' Geldhof et al. (2013) for further details. Note that this approach based on
+##' a strong assumption that the first-order latent variables are normally
+##' distributed. The probing process is applied after the no-centered result
+##' (parameter estimates and their covariance matrix among parameter estimates)
+##' has been computed. See the \code{\link{probe2WayMC}} for further details.
 ##'
 ##'
 ##' @importFrom lavaan lavInspect
 ##' @importFrom stats pnorm
+##' @importFrom methods getMethod
 ##'
-##' @param fit The lavaan model object used to evaluate model fit
-##' @param nameX The vector of the factor names used as the predictors. The
-##'   first-order factor will be listed first. The last name must be the name
-##'   representing the interaction term.
+##' @param fit A fitted \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
+##' @param nameX \code{character} vector of all 3 factor names used as the
+##'   predictors. The lower-order factors must be listed first, and the final
+##'   name must be the latent interaction factor.
 ##' @param nameY The name of factor that is used as the dependent variable.
 ##' @param modVar The name of factor that is used as a moderator. The effect of
-##'   the other independent factor on each moderator variable value will be
-##'   probed.
+##'   the other independent factor will be probed at each value of the
+##'   moderator variable listed in \code{valProbe}.
 ##' @param valProbe The values of the moderator that will be used to probe the
-##'   effect of the other independent factor.
+##'   effect of the focal predictor.
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
-##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}.
+##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}, or an integer
+##'   corresponding to which of those group labels.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'        imputations from pooled results. Ignored unless \code{fit} is of
+##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
+##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        default setting, which excludes any imputations that did not
+##'        converge or for which standard errors could not be computed.  The
+##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        yielded a nonpositive definite covariance matrix for observed or
+##'        latent variables, which would include any "improper solutions" such
+##'        as Heywood cases.  NPD solutions are not excluded by default because
+##'        they are likely to occur due to sampling error, especially in small
+##'        samples.  However, gross model misspecification could also cause
+##'        NPD solutions, users can compare pooled results with and without
+##'        this setting as a sensitivity analysis to see whether some
+##'        imputations warrant further investigation.
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
 ##'  \item \code{SimpleIntercept}: The intercepts given each value of the
-##'   moderator. This element will be shown only if the factor intercept is
-##'   estimated (e.g., not fixed as 0).
+##'   moderator. This element will be \code{NULL} unless the factor intercept is
+##'   estimated (e.g., not fixed at 0).
 ##'  \item \code{SimpleSlope}: The slopes given each value of the moderator.
 ##' }
 ##' In each element, the first column represents the values of the moderators
@@ -381,28 +478,61 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 ##'                  meanstructure = TRUE)
 ##' summary(fitRC2way)
 ##'
-##' result2wayRC <- probe2WayRC(fitRC2way, c("f1", "f2", "f12"),
-##'                             "f3", "f2", c(-1, 0, 1))
-##' result2wayRC
+##' probe2WayRC(fitRC2way, nameX = c("f1", "f2", "f12"), nameY = "f3",
+##'             modVar = "f2", valProbe = c(-1, 0, 1))
 ##'
 ##' @export
-probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
-	# Check whether modVar is correct
-	if(is.character(modVar)) {
-		modVar <- match(modVar, nameX)
-	}
-	if(is.na(modVar) || !(modVar %in% 1:2)) stop("The moderator name is not in the name of independent factors or not 1 or 2.")
+probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group,
+                        omit.imps = c("no.conv","no.se")) {
+  ## TDJ: verify class
+  if (inherits(fit, "lavaan")) {
+    est <- lavInspect(fit, "est")[[group]]
 
-	# Check whether the fit object does not use mlm, mlr, or mlf estimator (because the variance-covariance matrix of parameter estimates cannot be computed
+  } else if (inherits(fit, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(fit@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(fit@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(fit@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    ## custom removal by imputation number
+    rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+    if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+    ## whatever is left
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+  } else stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+
+  if (!lavInspect(fit, "options")$meanstructure)
+    stop('The probe2WayMC() function requires the model to be fit with a ',
+         'mean structure.', call. = FALSE)
+
+
+  # Check whether modVar is correct
+	if (is.character(modVar))	modVar <- match(modVar, nameX)
+	if (is.na(modVar) || !(modVar %in% 1:2))
+	  stop("The moderator name is not in the name of independent factors or not 1 or 2.")
+
+	# Check whether the fit object does not use mlm, mlr, or mlf estimator
+  # (because the variance-covariance matrix of parameter estimates cannot be computed
+  #FIXME TDJ: Yes it can. Isn't the real problem that product indicators don't
+  #           make sense with categorical indicators?
 	estSpec <- lavInspect(fit, "call")$estimator
-	if(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf"))) stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as the estimator because the covariance matrix of the parameter estimates cannot be computed.")
+	if (!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf")))
+	  stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as ",
+	       "the estimator because the covariance matrix of the parameter estimates cannot be computed.")
 
 	## TDJ: If multigroup, check group %in% group.label
 	nG <- lavInspect(fit, "ngroups")
 	if (nG > 1L) {
 	  group.label <- lavInspect(fit, "group.label")
 	  if (missing(group)) {
-	    warning('No argument provided for "group". Using the first group.')
+	    warning('No argument provided for "group". Using the first group.',
+	            call. = FALSE)
 	    group <- 1L
 	  }
 	  ## assign numeric to character
@@ -415,12 +545,50 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 	  if (!as.character(group) %in% group.label)
 	    stop('"group" must be a character string naming a group of interest, or ',
 	         'an ingteger corresponding to a group in  lavInspect(fit, "group.label")')
-	  ## Get the parameter estimates for that group
-	  est <- lavInspect(fit, "est")[[group]]
+	}
+
+	# Extract all varEst
+	if (inherits(fit, "lavaan")) {
+	  varEst <- lavaan::vcov(fit)
+	} else if (inherits(fit, "lavaan.mi")) {
+	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	}
+
+	# Check whether intercept are estimated
+	targetcol <- paste0(nameY, "~1")
+	if (nG > 1L) {
+	  group.number <- which(group.label == group)
+	  if (group.number > 1L) targetcol <- paste(targetcol, group.number,
+	                                            sep = ".")
+	}
+	estimateIntcept <- targetcol %in% rownames(varEst)
+
+
+	## Get the parameter estimates for that group
+	if (nG > 1L) {
+
+	  if (inherits(fit, "lavaan")) {
+	    est <- lavInspect(fit, "est")[[group]]
+	  } else if (inherits(fit, "lavaan.mi")) {
+	    est <- list()
+	    GLIST <- fit@coefList[useImps]
+	    est$beta <- Reduce("+", lapply(GLIST, function(i) i[[group]]$beta)) / m
+	    est$alpha <- Reduce("+", lapply(GLIST, function(i) i[[group]]$alpha)) / m
+	    est$psi <- Reduce("+", lapply(GLIST, function(i) i[[group]]$psi)) / m
+	  }
 
 	} else {
 	  ## single-group model
-	  est <- lavInspect(fit, "est")
+
+	  if (inherits(fit, "lavaan")) {
+	    est <- lavInspect(fit, "est")
+	  } else if (inherits(fit, "lavaan.mi")) {
+	    est <- list()
+	    est$beta <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "beta")) / m
+	    est$alpha <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "alpha")) / m
+	    est$psi <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "psi")) / m
+	  }
+
 	}
 
 	# Find the mean and covariance matrix of independent factors
@@ -479,18 +647,11 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 	# Compute residual variance on non-centering
 	resVarNC <- varY - (t(betaNCWithIntcept) %*% SSNC %*% betaNCWithIntcept)/numobs + meanY^2
 
-	# Extract all varEst
-	varEst <- lavaan::vcov(fit)
-
-	# Check whether intercept are estimated
-	targetcol <- paste(nameY, "~", 1, sep="")
-	estimateIntcept <- targetcol %in% rownames(varEst)
-
 	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
 
 	resultIntcept <- NULL
 	resultSlope <- NULL
-	if(estimateIntcept) {
+	if (estimateIntcept) {
 		# Extract SE from residual centering
 		targetcol <- c(targetcol, paste(nameY, "~", nameX, sep=""))
 		varEstSlopeRC <- varEst[targetcol, targetcol]
@@ -500,7 +661,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 		usedBeta <- betaNCWithIntcept
 
 		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		if(modVar == 1) {
+		if (modVar == 1) {
 			usedVar <- usedVar[c(1, 3, 2, 4), c(1, 3, 2, 4)]
 			usedBeta <- usedBeta[c(1, 3, 2, 4)]
 		}
@@ -509,7 +670,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 		simpleIntcept <- usedBeta[1] + usedBeta[3] * valProbe
 		varIntcept <- usedVar[1, 1] + 2 * valProbe * usedVar[1, 3] + (valProbe^2) * usedVar[3, 3]
 		zIntcept <- simpleIntcept/sqrt(varIntcept)
-		pIntcept <- round(pvalue(zIntcept),6) #JG: rounded values to make them more readable
+		pIntcept <- round(pvalue(zIntcept), 6) #JG: rounded values to make them more readable
 		resultIntcept <- cbind(valProbe, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
 		colnames(resultIntcept) <- c(nameX[modVar], "Intcept", "SE", "Wald", "p")
 
@@ -543,12 +704,12 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 		colnames(resultSlope) <- c(nameX[modVar], "Slope", "SE", "Wald", "p")
 	}
 
-	return(list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope))
+	list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope)
 }
 
 
 
-##' Probing two-way interaction on the no-centered or mean-centered latent
+##' Probing three-way interaction on the no-centered or mean-centered latent
 ##' interaction
 ##'
 ##' Probing interaction for simple intercept and simple slope for the
@@ -604,20 +765,24 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 ##' 2ZWCov\left(b_4, b_5\right) + 2Z^2WCov\left(b_4, b_7\right) +
 ##' 2ZW^2Cov\left(b_5, b_7\right) }
 ##'
-##' Wald statistic is used for test statistic.
+##' Wald \emph{z} statistic is used for test statistic (even for objects of
+##' class \code{\linkS4class{lavaan.mi}}).
 ##'
 ##'
 ##' @importFrom lavaan lavInspect
 ##' @importFrom stats pnorm
+##' @importFrom methods getMethod
 ##'
-##' @param fit The lavaan model object used to evaluate model fit
-##' @param nameX The vector of the factor names used as the predictors. The
-##'   three first-order factors will be listed first. Then the second-order
-##'   factors will be listeed. The last element of the name will represent the
-##'   three-way interaction. Note that the fourth element must be the interaction
-##'   between the first and the second variables. The fifth element must be the
-##'   interaction between the first and the third variables. The sixth element
-##'   must be the interaction between the second and the third variables.
+##' @param fit A fitted \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
+##' @param nameX \code{character} vector of all 7 factor names used as the
+##'   predictors. The 3 lower-order factors must be listed first, followed by
+##'   the 3 second-order factors (specifically, the 4th element must be the
+##'   interaction between the factors listed first and second, the 5th element
+##'   must be the interaction between the factors listed first and third, and
+##'   the 6th element must be the interaction between the factors listed second
+##'   and third). The final name will be the factor representing the 3-way
+##'   interaction.
 ##' @param nameY The name of factor that is used as the dependent variable.
 ##' @param modVar The name of two factors that are used as the moderators. The
 ##'   effect of the independent factor on each combination of the moderator
@@ -629,13 +794,29 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
 ##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'        imputations from pooled results. Ignored unless \code{fit} is of
+##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
+##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        default setting, which excludes any imputations that did not
+##'        converge or for which standard errors could not be computed.  The
+##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        yielded a nonpositive definite covariance matrix for observed or
+##'        latent variables, which would include any "improper solutions" such
+##'        as Heywood cases.  NPD solutions are not excluded by default because
+##'        they are likely to occur due to sampling error, especially in small
+##'        samples.  However, gross model misspecification could also cause
+##'        NPD solutions, users can compare pooled results with and without
+##'        this setting as a sensitivity analysis to see whether some
+##'        imputations warrant further investigation.
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The intercepts given each value of the moderator.
-##'   This element will be shown only if the factor intercept is estimated
-##'   (e.g., not fixed as 0).
-##'  \item \code{SimpleSlope}: The slopes given each value of the moderator.
+##'  \item \code{SimpleIntercept}: The intercepts given each combination of
+##'   moderator values. This element will be shown only if the factor intercept
+##'   is estimated (e.g., not fixed at 0).
+##'  \item \code{SimpleSlope}: The slopes given each combination of moderator
+##'   values.
 ##' }
 ##' In each element, the first column represents values of the first moderator
 ##' specified in the \code{valProbe1} argument. The second column represents
@@ -722,22 +903,52 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group) {
 ##'                  meanstructure = TRUE)
 ##' summary(fitMC3way)
 ##'
-##' result3wayMC <- probe3WayMC(fitMC3way,
-##'                             c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
-##'                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
-##' result3wayMC
+##' probe3WayMC(fitMC3way, nameX = c("f1" ,"f2" ,"f3",
+##'                                  "f12","f13","f23", # the order matters!
+##'                                  "f123"),           # 3-way interaction
+##'             nameY = "f4", modVar = c("f1", "f2"),
+##'             valProbe1 = c(-1, 0, 1), valProbe2 = c(-1, 0, 1))
 ##'
 ##' @export
-probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) {
-	# Check whether modVar is correct
-	if(is.character(modVar)) {
-		modVar <- match(modVar, nameX)
-	}
-	if((NA %in% modVar) || !(do.call("&", as.list(modVar %in% 1:3)))) stop("The moderator name is not in the list of independent factors and is not 1, 2 or 3.")
+probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group,
+                        omit.imps = c("no.conv","no.se")) {
+  ## TDJ: verify class
+  if (inherits(fit, "lavaan")) {
+    est <- lavInspect(fit, "est")[[group]]
 
-	# Check whether the fit object does not use mlm, mlr, or mlf estimator (because the variance-covariance matrix of parameter estimates cannot be computed
+  } else if (inherits(fit, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(fit@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(fit@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(fit@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    ## custom removal by imputation number
+    rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+    if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+    ## whatever is left
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+  } else stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+
+
+  # Check whether modVar is correct
+	if (is.character(modVar)) modVar <- match(modVar, nameX)
+	if ((NA %in% modVar) || !(do.call("&", as.list(modVar %in% 1:3))))
+	  stop("The moderator name is not in the list of independent factors and is not 1, 2 or 3.")
+
+	# Check whether the fit object does not use mlm, mlr, or mlf estimator
+	# (because the variance-covariance matrix of parameter estimates cannot be computed
+	#FIXME TDJ: Yes it can. Isn't the real problem that product indicators don't
+	#           make sense with categorical indicators?
 	estSpec <- lavInspect(fit, "call")$estimator
-	if(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf"))) stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as the estimator because the covariance matrix of the parameter estimates cannot be computed.")
+	if (!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf")))
+	  stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as ",
+	       "the estimator because the covariance matrix of the parameter estimates cannot be computed.")
 
 	## TDJ: If multigroup, check group %in% group.label
 	nG <- lavInspect(fit, "ngroups")
@@ -757,23 +968,57 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 	  if (!as.character(group) %in% group.label)
 	    stop('"group" must be a character string naming a group of interest, or ',
 	         'an ingteger corresponding to a group in  lavInspect(fit, "group.label")')
-	  ## Get the parameter estimates for that group
-	  est <- lavInspect(fit, "est")[[group]]
+	}
+
+	# Extract all varEst
+	if (inherits(fit, "lavaan")) {
+	  varEst <- lavaan::vcov(fit)
+	} else if (inherits(fit, "lavaan.mi")) {
+	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	}
+
+	# Check whether intercept are estimated
+	targetcol <- paste0(nameY, "~1")
+	if (nG > 1L) {
+	  group.number <- which(group.label == group)
+	  if (group.number > 1L) targetcol <- paste(targetcol, group.number,
+	                                            sep = ".")
+	}
+	estimateIntcept <- targetcol %in% rownames(varEst)
+
+
+	## Get the parameter estimates for that group
+	if (nG > 1L) {
+
+	  if (inherits(fit, "lavaan")) {
+	    est <- lavInspect(fit, "est")[[group]]
+	  } else if (inherits(fit, "lavaan.mi")) {
+	    est <- list()
+	    GLIST <- fit@coefList[useImps]
+	    est$beta <- Reduce("+", lapply(GLIST, function(i) i[[group]]$beta)) / m
+	    if (estimateIntcept) {
+	      est$alpha <- Reduce("+", lapply(GLIST, function(i) i[[group]]$alpha)) / m
+	    }
+	  }
 
 	} else {
 	  ## single-group model
-	  est <- lavInspect(fit, "est")
+
+	  if (inherits(fit, "lavaan")) {
+	    est <- lavInspect(fit, "est")
+	  } else if (inherits(fit, "lavaan.mi")) {
+	    est <- list()
+	    est$beta <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "beta")) / m
+	    if (estimateIntcept) {
+	      est$alpha <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "alpha")) / m
+	    }
+	  }
+
 	}
+
 
 	# Compute the intercept of no-centering
 	betaNC <- as.matrix(est$beta[nameY, nameX]); colnames(betaNC) <- nameY
-
-	# Extract all varEst
-	varEst <- lavaan::vcov(fit)
-
-	# Check whether intercept are estimated
-	targetcol <- paste(nameY, "~", 1, sep="")
-	estimateIntcept <- targetcol %in% rownames(varEst)
 
 	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
 
@@ -790,7 +1035,8 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 		# Transform it to non-centering SE
 		usedVar <-  varEst[targetcol, targetcol]
 		usedBeta <- rbind(est$alpha[nameY,], betaNC)
-		if(sum(diag(usedVar) < 0) > 0) stop("This method does not work. The resulting calculation provided negative standard errors.") # JG: edited this error
+		if (sum(diag(usedVar) < 0) > 0)
+		  stop("This method does not work. The resulting calculation provided negative standard errors.") # JG: edited this error
 
 		# Change the order of usedVar and usedBeta if the moderator variable is listed first
 		usedVar <- usedVar[c(1, ord+1, 8), c(1, ord+1, 8)]
@@ -838,7 +1084,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 		colnames(resultSlope) <- c(nameX[modVar], "Slope", "SE", "Wald", "p")
 	}
 
-	return(list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope))
+	list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope)
 }
 
 
@@ -846,8 +1092,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 ##' Probing three-way interaction on the residual-centered latent interaction
 ##'
 ##' Probing interaction for simple intercept and simple slope for the
-##' residual-centered latent three-way interaction (Pornprasertmanit, Schoemann,
-##' Geldhof, & Little, submitted)
+##' residual-centered latent three-way interaction (Geldhof et al., 2013)
 ##'
 ##' Before using this function, researchers need to make the products of the
 ##' indicators between the first-order factors and residualize the products by
@@ -856,33 +1101,34 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 ##' the indicator products can be made for all possible combination or
 ##' matched-pair approach (Marsh et al., 2004). Next, the hypothesized model
 ##' with the regression with latent interaction will be used to fit all original
-##' indicators and the product terms (Geldhof, Pornprasertmanit, Schoemann, &
-##' Little, in press). To use this function the model must be fit with a mean
-##' structure. See the example for how to fit the product term below. Once the
-##' lavaan result is obtained, this function will be used to probe the
-##' interaction.
+##' indicators and the product terms (Geldhof et al., 2013). To use this
+##' function the model must be fit with a mean structure. See the example for
+##' how to fit the product term below. Once the lavaan result is obtained, this
+##' function will be used to probe the interaction.
 ##'
 ##' The probing process on residual-centered latent interaction is based on
 ##' transforming the residual-centered result into the no-centered result. See
-##' Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further
-##' details. Note that this approach based on a strong assumption that the
-##' first-order latent variables are normally distributed. The probing process
-##' is applied after the no-centered result (parameter estimates and their
-##' covariance matrix among parameter estimates) has been computed See the
-##' \code{\link{probe3WayMC}} for further details.
+##' Geldhof et al. (2013) for further details. Note that this approach based on
+##' a strong assumption that the first-order latent variables are normally
+##' distributed. The probing process is applied after the no-centered result
+##' (parameter estimates and their covariance matrix among parameter estimates)
+##' has been computed. See the \code{\link{probe3WayMC}} for further details.
 ##'
 ##'
 ##' @importFrom lavaan lavInspect
 ##' @importFrom stats pnorm
+##' @importFrom methods getMethod
 ##'
-##' @param fit The lavaan model object used to evaluate model fit
-##' @param nameX The vector of the factor names used as the predictors. The
-##'   three first-order factors will be listed first. Then the second-order
-##'   factors will be listeed. The last element of the name will represent the
-##'   three-way interaction. Note that the fourth element must be the interaction
-##'   between the first and the second variables. The fifth element must be the
-##'   interaction between the first and the third variables. The sixth element
-##'   must be the interaction between the second and the third variables.
+##' @param fit A fitted \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
+##' @param nameX \code{character} vector of all 7 factor names used as the
+##'   predictors. The 3 lower-order factors must be listed first, followed by
+##'   the 3 second-order factors (specifically, the 4th element must be the
+##'   interaction between the factors listed first and second, the 5th element
+##'   must be the interaction between the factors listed first and third, and
+##'   the 6th element must be the interaction between the factors listed second
+##'   and third). The final name will be the factor representing the 3-way
+##'   interaction.
 ##' @param nameY The name of factor that is used as the dependent variable.
 ##' @param modVar The name of two factors that are used as the moderators. The
 ##'   effect of the independent factor on each combination of the moderator
@@ -894,6 +1140,21 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
 ##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'        imputations from pooled results. Ignored unless \code{fit} is of
+##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
+##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        default setting, which excludes any imputations that did not
+##'        converge or for which standard errors could not be computed.  The
+##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        yielded a nonpositive definite covariance matrix for observed or
+##'        latent variables, which would include any "improper solutions" such
+##'        as Heywood cases.  NPD solutions are not excluded by default because
+##'        they are likely to occur due to sampling error, especially in small
+##'        samples.  However, gross model misspecification could also cause
+##'        NPD solutions, users can compare pooled results with and without
+##'        this setting as a sensitivity analysis to see whether some
+##'        imputations warrant further investigation.
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
@@ -1003,22 +1264,53 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 ##'                  meanstructure = TRUE)
 ##' summary(fitRC3way)
 ##'
-##' result3wayRC <- probe3WayRC(fitRC3way,
-##'                             c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
-##'                             "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
-##' result3wayRC
+##' probe3WayMC(fitRC3way, nameX = c("f1" ,"f2" ,"f3",
+##'                                  "f12","f13","f23", # the order matters!
+##'                                  "f123"),           # 3-way interaction
+##'             nameY = "f4", modVar = c("f1", "f2"),
+##'             valProbe1 = c(-1, 0, 1), valProbe2 = c(-1, 0, 1))
 ##'
 ##' @export
-probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) {
-	# Check whether modVar is correct
-	if(is.character(modVar)) {
-		modVar <- match(modVar, nameX)
-	}
-	if((NA %in% modVar) || !(do.call("&", as.list(modVar %in% 1:3)))) stop("The moderator name is not in the list of independent factors and is not 1, 2 or 3.") # JG: Changed error
+probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group,
+                        omit.imps = c("no.conv","no.se")) {
+  ## TDJ: verify class
+  if (inherits(fit, "lavaan")) {
+    est <- lavInspect(fit, "est")[[group]]
 
-	# Check whether the fit object does not use mlm, mlr, or mlf estimator (because the variance-covariance matrix of parameter estimates cannot be computed
+  } else if (inherits(fit, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(fit@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(fit@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(fit@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    ## custom removal by imputation number
+    rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
+    if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
+    ## whatever is left
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+  } else stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+
+
+  # Check whether modVar is correct
+	if (is.character(modVar)) modVar <- match(modVar, nameX)
+	if ((NA %in% modVar) || !(do.call("&", as.list(modVar %in% 1:3))))
+	  stop("The moderator name is not in the list of independent factors and is ",
+	       "not 1, 2 or 3.") # JG: Changed error
+
+	# Check whether the fit object does not use mlm, mlr, or mlf estimator
+	# (because the variance-covariance matrix of parameter estimates cannot be computed
+	#FIXME TDJ: Yes it can. Isn't the real problem that product indicators don't
+	#           make sense with categorical indicators?
 	estSpec <- lavInspect(fit, "call")$estimator
-	if(!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf"))) stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as the estimator because the covariance matrix of the parameter estimates cannot be computed.")
+	if (!is.null(estSpec) && (estSpec %in% c("mlr", "mlm", "mlf")))
+	  stop("This function does not work when 'mlr', 'mlm', or 'mlf' is used as ",
+	       "the estimator because the covariance matrix of the parameter estimates cannot be computed.")
 
 	## TDJ: If multigroup, check group %in% group.label
 	nG <- lavInspect(fit, "ngroups")
@@ -1038,13 +1330,52 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 	  if (!as.character(group) %in% group.label)
 	    stop('"group" must be a character string naming a group of interest, or ',
 	         'an ingteger corresponding to a group in  lavInspect(fit, "group.label")')
-	  ## Get the parameter estimates for that group
-	  est <- lavInspect(fit, "est")[[group]]
+	}
+
+	# Extract all varEst
+	if (inherits(fit, "lavaan")) {
+	  varEst <- lavaan::vcov(fit)
+	} else if (inherits(fit, "lavaan.mi")) {
+	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	}
+
+	# Check whether intercept are estimated
+	targetcol <- paste0(nameY, "~1")
+	if (nG > 1L) {
+	  group.number <- which(group.label == group)
+	  if (group.number > 1L) targetcol <- paste(targetcol, group.number,
+	                                            sep = ".")
+	}
+	estimateIntcept <- targetcol %in% rownames(varEst)
+
+
+	## Get the parameter estimates for that group
+	if (nG > 1L) {
+
+	  if (inherits(fit, "lavaan")) {
+	    est <- lavInspect(fit, "est")[[group]]
+	  } else if (inherits(fit, "lavaan.mi")) {
+	    est <- list()
+	    GLIST <- fit@coefList[useImps]
+	    est$beta <- Reduce("+", lapply(GLIST, function(i) i[[group]]$beta)) / m
+	    est$alpha <- Reduce("+", lapply(GLIST, function(i) i[[group]]$alpha)) / m
+	    est$psi <- Reduce("+", lapply(GLIST, function(i) i[[group]]$psi)) / m
+	  }
 
 	} else {
 	  ## single-group model
-	  est <- lavInspect(fit, "est")
+
+	  if (inherits(fit, "lavaan")) {
+	    est <- lavInspect(fit, "est")
+	  } else if (inherits(fit, "lavaan.mi")) {
+	    est <- list()
+	    est$beta <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "beta")) / m
+	    est$alpha <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "alpha")) / m
+	    est$psi <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "psi")) / m
+	  }
+
 	}
+
 
 	# Find the mean and covariance matrix of independent factors
 	varX <- est$psi[nameX, nameX]
@@ -1144,12 +1475,6 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 	# Compute residual variance on non-centering
 	resVarNC <- varY - (t(betaNCWithIntcept) %*% SSNC %*% betaNCWithIntcept)/numobs + meanY^2
 
-	# Extract all varEst
-	varEst <- lavaan::vcov(fit)
-
-	# Check whether intercept are estimated
-	targetcol <- paste(nameY, "~", 1, sep="")
-	estimateIntcept <- targetcol %in% rownames(varEst)
 
 	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
 
@@ -1159,7 +1484,7 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 
 	resultIntcept <- NULL
 	resultSlope <- NULL
-	if(estimateIntcept) {
+	if (estimateIntcept) {
 		# Extract SE from residual centering
 		targetcol <- c(targetcol, paste(nameY, "~", nameX, sep=""))
 		varEstSlopeRC <- varEst[targetcol, targetcol]
@@ -1216,7 +1541,7 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group) 
 		colnames(resultSlope) <- c(nameX[modVar], "Slope", "SE", "Wald", "p")
 	}
 
-	return(list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope))
+	list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope)
 }
 
 

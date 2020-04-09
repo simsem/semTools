@@ -2,21 +2,24 @@
 % Please edit documentation in R/probeInteraction.R
 \name{probe3WayMC}
 \alias{probe3WayMC}
-\title{Probing two-way interaction on the no-centered or mean-centered latent
+\title{Probing three-way interaction on the no-centered or mean-centered latent
 interaction}
 \usage{
-probe3WayMC(fit, nameX, nameY, modVar, valProbe1, valProbe2, group)
+probe3WayMC(fit, nameX, nameY, modVar, valProbe1, valProbe2, group,
+  omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{fit}{The lavaan model object used to evaluate model fit}
+\item{fit}{A fitted \code{\linkS4class{lavaan}} or
+\code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.}
 
-\item{nameX}{The vector of the factor names used as the predictors. The
-three first-order factors will be listed first. Then the second-order
-factors will be listeed. The last element of the name will represent the
-three-way interaction. Note that the fourth element must be the interaction
-between the first and the second variables. The fifth element must be the
-interaction between the first and the third variables. The sixth element
-must be the interaction between the second and the third variables.}
+\item{nameX}{\code{character} vector of all 7 factor names used as the
+predictors. The 3 lower-order factors must be listed first, followed by
+the 3 second-order factors (specifically, the 4th element must be the
+interaction between the factors listed first and second, the 5th element
+must be the interaction between the factors listed first and third, and
+the 6th element must be the interaction between the factors listed second
+and third). The final name will be the factor representing the 3-way
+interaction.}
 
 \item{nameY}{The name of factor that is used as the dependent variable.}
 
@@ -33,14 +36,31 @@ probe the effect of the independent factor.}
 \item{group}{In multigroup models, the label of the group for which the
 results will be returned. Must correspond to one of
 \code{\link[lavaan]{lavInspect}(fit, "group.label")}.}
+
+\item{omit.imps}{\code{character} vector specifying criteria for omitting
+imputations from pooled results. Ignored unless \code{fit} is of
+class \code{\linkS4class{lavaan.mi}}. Can include any of
+\code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+default setting, which excludes any imputations that did not
+converge or for which standard errors could not be computed.  The
+last option (\code{"no.npd"}) would exclude any imputations which
+yielded a nonpositive definite covariance matrix for observed or
+latent variables, which would include any "improper solutions" such
+as Heywood cases.  NPD solutions are not excluded by default because
+they are likely to occur due to sampling error, especially in small
+samples.  However, gross model misspecification could also cause
+NPD solutions, users can compare pooled results with and without
+this setting as a sensitivity analysis to see whether some
+imputations warrant further investigation.}
 }
 \value{
 A list with two elements:
 \enumerate{
- \item \code{SimpleIntercept}: The intercepts given each value of the moderator.
-  This element will be shown only if the factor intercept is estimated
-  (e.g., not fixed as 0).
- \item \code{SimpleSlope}: The slopes given each value of the moderator.
+ \item \code{SimpleIntercept}: The intercepts given each combination of
+  moderator values. This element will be shown only if the factor intercept
+  is estimated (e.g., not fixed at 0).
+ \item \code{SimpleSlope}: The slopes given each combination of moderator
+  values.
 }
 In each element, the first column represents values of the first moderator
 specified in the \code{valProbe1} argument. The second column represents
@@ -105,7 +125,8 @@ b_4\right) + 2WCov\left(b_1, b_5\right) + 2ZWCov\left(b_1, b_7\right) +
 2ZWCov\left(b_4, b_5\right) + 2Z^2WCov\left(b_4, b_7\right) +
 2ZW^2Cov\left(b_5, b_7\right) }
 
-Wald statistic is used for test statistic.
+Wald \emph{z} statistic is used for test statistic (even for objects of
+class \code{\linkS4class{lavaan.mi}}).
 }
 \examples{
 
@@ -157,10 +178,11 @@ fitMC3way <- sem(model3, data = dat3wayMC, std.lv = FALSE,
                  meanstructure = TRUE)
 summary(fitMC3way)
 
-result3wayMC <- probe3WayMC(fitMC3way,
-                            c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
-                            "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
-result3wayMC
+probe3WayMC(fitMC3way, nameX = c("f1" ,"f2" ,"f3",
+                                 "f12","f13","f23", # the order matters!
+                                 "f123"),           # 3-way interaction
+            nameY = "f4", modVar = c("f1", "f2"),
+            valProbe1 = c(-1, 0, 1), valProbe2 = c(-1, 0, 1))
 
 }
 \references{

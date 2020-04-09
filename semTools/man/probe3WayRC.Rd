@@ -4,18 +4,21 @@
 \alias{probe3WayRC}
 \title{Probing three-way interaction on the residual-centered latent interaction}
 \usage{
-probe3WayRC(fit, nameX, nameY, modVar, valProbe1, valProbe2, group)
+probe3WayRC(fit, nameX, nameY, modVar, valProbe1, valProbe2, group,
+  omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{fit}{The lavaan model object used to evaluate model fit}
+\item{fit}{A fitted \code{\linkS4class{lavaan}} or
+\code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.}
 
-\item{nameX}{The vector of the factor names used as the predictors. The
-three first-order factors will be listed first. Then the second-order
-factors will be listeed. The last element of the name will represent the
-three-way interaction. Note that the fourth element must be the interaction
-between the first and the second variables. The fifth element must be the
-interaction between the first and the third variables. The sixth element
-must be the interaction between the second and the third variables.}
+\item{nameX}{\code{character} vector of all 7 factor names used as the
+predictors. The 3 lower-order factors must be listed first, followed by
+the 3 second-order factors (specifically, the 4th element must be the
+interaction between the factors listed first and second, the 5th element
+must be the interaction between the factors listed first and third, and
+the 6th element must be the interaction between the factors listed second
+and third). The final name will be the factor representing the 3-way
+interaction.}
 
 \item{nameY}{The name of factor that is used as the dependent variable.}
 
@@ -32,6 +35,22 @@ probe the effect of the independent factor.}
 \item{group}{In multigroup models, the label of the group for which the
 results will be returned. Must correspond to one of
 \code{\link[lavaan]{lavInspect}(fit, "group.label")}.}
+
+\item{omit.imps}{\code{character} vector specifying criteria for omitting
+imputations from pooled results. Ignored unless \code{fit} is of
+class \code{\linkS4class{lavaan.mi}}. Can include any of
+\code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+default setting, which excludes any imputations that did not
+converge or for which standard errors could not be computed.  The
+last option (\code{"no.npd"}) would exclude any imputations which
+yielded a nonpositive definite covariance matrix for observed or
+latent variables, which would include any "improper solutions" such
+as Heywood cases.  NPD solutions are not excluded by default because
+they are likely to occur due to sampling error, especially in small
+samples.  However, gross model misspecification could also cause
+NPD solutions, users can compare pooled results with and without
+this setting as a sensitivity analysis to see whether some
+imputations warrant further investigation.}
 }
 \value{
 A list with two elements:
@@ -51,8 +70,7 @@ testing whether the simple intercepts or slopes are different from 0.
 }
 \description{
 Probing interaction for simple intercept and simple slope for the
-residual-centered latent three-way interaction (Pornprasertmanit, Schoemann,
-Geldhof, & Little, submitted)
+residual-centered latent three-way interaction (Geldhof et al., 2013)
 }
 \details{
 Before using this function, researchers need to make the products of the
@@ -62,20 +80,18 @@ process can be automated by the \code{\link{indProd}} function. Note that
 the indicator products can be made for all possible combination or
 matched-pair approach (Marsh et al., 2004). Next, the hypothesized model
 with the regression with latent interaction will be used to fit all original
-indicators and the product terms (Geldhof, Pornprasertmanit, Schoemann, &
-Little, in press). To use this function the model must be fit with a mean
-structure. See the example for how to fit the product term below. Once the
-lavaan result is obtained, this function will be used to probe the
-interaction.
+indicators and the product terms (Geldhof et al., 2013). To use this
+function the model must be fit with a mean structure. See the example for
+how to fit the product term below. Once the lavaan result is obtained, this
+function will be used to probe the interaction.
 
 The probing process on residual-centered latent interaction is based on
 transforming the residual-centered result into the no-centered result. See
-Pornprasertmanit, Schoemann, Geldhof, and Little (submitted) for further
-details. Note that this approach based on a strong assumption that the
-first-order latent variables are normally distributed. The probing process
-is applied after the no-centered result (parameter estimates and their
-covariance matrix among parameter estimates) has been computed See the
-\code{\link{probe3WayMC}} for further details.
+Geldhof et al. (2013) for further details. Note that this approach based on
+a strong assumption that the first-order latent variables are normally
+distributed. The probing process is applied after the no-centered result
+(parameter estimates and their covariance matrix among parameter estimates)
+has been computed. See the \code{\link{probe3WayMC}} for further details.
 }
 \examples{
 
@@ -127,10 +143,11 @@ fitRC3way <- sem(model3, data = dat3wayRC, std.lv = FALSE,
                  meanstructure = TRUE)
 summary(fitRC3way)
 
-result3wayRC <- probe3WayRC(fitRC3way,
-                            c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
-                            "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
-result3wayRC
+probe3WayMC(fitRC3way, nameX = c("f1" ,"f2" ,"f3",
+                                 "f12","f13","f23", # the order matters!
+                                 "f123"),           # 3-way interaction
+            nameY = "f4", modVar = c("f1", "f2"),
+            valProbe1 = c(-1, 0, 1), valProbe2 = c(-1, 0, 1))
 
 }
 \references{
