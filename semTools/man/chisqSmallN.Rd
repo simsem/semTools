@@ -4,8 +4,9 @@
 \alias{chisqSmallN}
 \title{Small-\emph{N} correction for \eqn{chi^2} test statistic}
 \usage{
-chisqSmallN(fit0, fit1 = NULL, smallN.method = if (is.null(fit1)) c("swain",
-  "yuan.2015") else "yuan.2005", ..., omit.imps = c("no.conv", "no.se"))
+chisqSmallN(fit0, fit1 = NULL, smallN.method = if (is.null(fit1))
+  c("swain", "yuan.2015") else "yuan.2005", ..., omit.imps = c("no.conv",
+  "no.se"))
 }
 \arguments{
 \item{fit0, fit1}{\linkS4class{lavaan} object(s) provided after running the

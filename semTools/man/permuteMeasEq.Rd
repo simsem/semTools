@@ -8,8 +8,9 @@ Item Functioning (DIF)}
 permuteMeasEq(nPermute, modelType = c("mgcfa", "mimic"), con, uncon = NULL,
   null = NULL, param = NULL, freeParam = NULL, covariates = NULL,
   AFIs = NULL, moreAFIs = NULL, maxSparse = 10, maxNonconv = 10,
-  showProgress = TRUE, warn = -1, datafun, extra, parallelType = c("none",
-  "multicore", "snow"), ncpus = NULL, cl = NULL, iseed = 12345)
+  showProgress = TRUE, warn = -1, datafun, extra,
+  parallelType = c("none", "multicore", "snow"), ncpus = NULL, cl = NULL,
+  iseed = 12345)
 }
 \arguments{
 \item{nPermute}{An integer indicating the number of random permutations used

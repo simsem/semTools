@@ -4,7 +4,8 @@
 \name{exLong}
 \alias{exLong}
 \title{Simulated Data set to Demonstrate Longitudinal Measurement Invariance}
-\format{A \code{data.frame} with 200 observations of 10 variables.
+\format{
+A \code{data.frame} with 200 observations of 10 variables.
 \describe{
 \item{sex}{Sex of respondents}
 \item{y1t1}{Indicator 1 in Time 1}
@@ -16,7 +17,8 @@
 \item{y1t3}{Indicator 1 in Time 3}
 \item{y2t3}{Indicator 2 in Time 3}
 \item{y3t3}{Indicator 3 in Time 3}
-}}
+}
+}
 \source{
 Data were generated using the \code{simsem} package.
 }

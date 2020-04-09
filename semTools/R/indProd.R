@@ -1,88 +1,107 @@
 ### Sunthud Pornprasertmanit and Alexander M. Schoemann
-### Last updated: 9 March 2018
+### Last updated: 9 April 2020
 ### prepare product indicators for 2-way and 3-way interactions in SEM
 
 
-#' Make products of indicators using no centering, mean centering, double-mean
-#' centering, or residual centering
-#'
-#' The \code{indProd} function will make products of indicators using no
-#' centering, mean centering, double-mean centering, or residual centering. The
-#' \code{orthogonalize} function is the shortcut of the \code{indProd} function
-#' to make the residual-centered indicators products.
-#'
-#'
-#' @aliases indProd orthogonalize
-#' @importFrom stats lm
-#'
-#' @param data The desired data to be transformed.
-#' @param var1 Names or indices of the variables loaded on the first factor
-#' @param var2 Names or indices of the variables loaded on the second factor
-#' @param var3 Names or indices of the variables loaded on the third factor
-#' (for three-way interaction)
-#' @param match Specify \code{TRUE} to use match-paired approach (Marsh, Wen, &
-#' Hau, 2004). If \code{FALSE}, the resulting products are all possible
-#' products.
-#' @param meanC Specify \code{TRUE} for mean centering the main effect
-#' indicator before making the products
-#' @param residualC Specify \code{TRUE} for residual centering the products by
-#' the main effect indicators (Little, Bovaird, & Widaman, 2006).
-#' @param doubleMC Specify \code{TRUE} for centering the resulting products
-#' (Lin et. al., 2010)
-#' @param namesProd The names of resulting products
-#' @return The original data attached with the products.
-#' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com}) Alexander
-#' Schoemann (East Carolina University; \email{schoemanna@@ecu.edu})
-#' @seealso \itemize{ \item \code{\link{probe2WayMC}} For probing the two-way
-#' latent interaction when the results are obtained from mean-centering, or
-#' double-mean centering.  \item \code{\link{probe3WayMC}} For probing the
-#' three-way latent interaction when the results are obtained from
-#' mean-centering, or double-mean centering.  \item \code{\link{probe2WayRC}}
-#' For probing the two-way latent interaction when the results are obtained
-#' from residual-centering approach.  \item \code{\link{probe3WayRC}} For
-#' probing the two-way latent interaction when the results are obtained from
-#' residual-centering approach.  \item \code{\link{plotProbe}} Plot the simple
-#' intercepts and slopes of the latent interaction.  }
-#' @references Marsh, H. W., Wen, Z. & Hau, K. T. (2004). Structural equation
-#' models of latent interactions: Evaluation of alternative estimation
-#' strategies and indicator construction. \emph{Psychological Methods, 9}(3),
-#' 275--300. doi:10.1037/1082-989X.9.3.275
-#'
-#' Lin, G. C., Wen, Z., Marsh, H. W., & Lin, H. S. (2010). Structural equation
-#' models of latent interactions: Clarification of orthogonalizing and
-#' double-mean-centering strategies. \emph{Structural Equation Modeling, 17}(3),
-#' 374--391. doi:10.1080/10705511.2010.488999
-#'
-#' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
-#' orthogonalizing powered and product terms: Implications for modeling
-#' interactions among latent variables. \emph{Structural Equation Modeling,
-#' 13}(4), 497--519. doi:10.1207/s15328007sem1304_1
-#' @examples
-#'
-#' ## Mean centering / two-way interaction / match-paired
-#' dat <- indProd(attitude[ , -1], var1 = 1:3, var2 = 4:6)
-#'
-#' ## Residual centering / two-way interaction / match-paired
-#' dat2 <- indProd(attitude[ , -1], var1 = 1:3, var2 = 4:6, match = FALSE,
-#'                 meanC = FALSE, residualC = TRUE, doubleMC = FALSE)
-#'
-#' ## Double-mean centering / two-way interaction / match-paired
-#' dat3 <- indProd(attitude[ , -1], var1 = 1:3, var2 = 4:6, match = FALSE,
-#'                 meanC = TRUE, residualC = FALSE, doubleMC = TRUE)
-#'
-#' ## Mean centering / three-way interaction / match-paired
-#' dat4 <- indProd(attitude[ , -1], var1 = 1:2, var2 = 3:4, var3 = 5:6)
-#'
-#' ## Residual centering / three-way interaction / match-paired
-#' dat5 <- orthogonalize(attitude[ , -1], var1 = 1:2, var2 = 3:4, var3 = 5:6,
-#'                       match = FALSE)
-#'
-#' ## Double-mean centering / three-way interaction / match-paired
-#' dat6 <- indProd(attitude[ , -1], var1 = 1:2, var2 = 3:4, var3 = 5:6,
-#'                 match = FALSE, meanC = TRUE, residualC = TRUE,
-#'                 doubleMC = TRUE)
-#'
-#' @export
+##' Make products of indicators using no centering, mean centering, double-mean
+##' centering, or residual centering
+##'
+##' The \code{indProd} function will make products of indicators using no
+##' centering, mean centering, double-mean centering, or residual centering. The
+##' \code{orthogonalize} function is the shortcut of the \code{indProd} function
+##' to make the residual-centered indicators products.
+##'
+##'
+##' @aliases indProd orthogonalize
+##' @importFrom stats lm
+##'
+##' @param data The desired data to be transformed.
+##' @param var1 Names or indices of the variables loaded on the first factor
+##' @param var2 Names or indices of the variables loaded on the second factor
+##' @param var3 Names or indices of the variables loaded on the third factor
+##' (for three-way interaction)
+##' @param match Specify \code{TRUE} to use match-paired approach (Marsh, Wen, &
+##' Hau, 2004). If \code{FALSE}, the resulting products are all possible
+##' products.
+##' @param meanC Specify \code{TRUE} for mean centering the main effect
+##' indicator before making the products
+##' @param residualC Specify \code{TRUE} for residual centering the products by
+##' the main effect indicators (Little, Bovaird, & Widaman, 2006).
+##' @param doubleMC Specify \code{TRUE} for centering the resulting products
+##' (Lin et. al., 2010)
+##' @param namesProd The names of resulting products
+##' @return The original data attached with the products.
+##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com}) Alexander
+##' Schoemann (East Carolina University; \email{schoemanna@@ecu.edu})
+##' @seealso \itemize{ \item \code{\link{probe2WayMC}} For probing the two-way
+##' latent interaction when the results are obtained from mean-centering, or
+##' double-mean centering.  \item \code{\link{probe3WayMC}} For probing the
+##' three-way latent interaction when the results are obtained from
+##' mean-centering, or double-mean centering.  \item \code{\link{probe2WayRC}}
+##' For probing the two-way latent interaction when the results are obtained
+##' from residual-centering approach.  \item \code{\link{probe3WayRC}} For
+##' probing the two-way latent interaction when the results are obtained from
+##' residual-centering approach.  \item \code{\link{plotProbe}} Plot the simple
+##' intercepts and slopes of the latent interaction.  }
+##' @references Marsh, H. W., Wen, Z. & Hau, K. T. (2004). Structural equation
+##' models of latent interactions: Evaluation of alternative estimation
+##' strategies and indicator construction. \emph{Psychological Methods, 9}(3),
+##' 275--300. doi:10.1037/1082-989X.9.3.275
+##'
+##' Lin, G. C., Wen, Z., Marsh, H. W., & Lin, H. S. (2010). Structural equation
+##' models of latent interactions: Clarification of orthogonalizing and
+##' double-mean-centering strategies. \emph{Structural Equation Modeling, 17}(3),
+##' 374--391. doi:10.1080/10705511.2010.488999
+##'
+##' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
+##' orthogonalizing powered and product terms: Implications for modeling
+##' interactions among latent variables. \emph{Structural Equation Modeling,
+##' 13}(4), 497--519. doi:10.1207/s15328007sem1304_1
+##' @examples
+##'
+##' ## Mean centering / two-way interaction / match-paired
+##' dat <- indProd(attitude[ , -1], var1 = 1:3, var2 = 4:6)
+##'
+##' ## Residual centering / two-way interaction / match-paired
+##' dat2 <- indProd(attitude[ , -1], var1 = 1:3, var2 = 4:6, match = FALSE,
+##'                 meanC = FALSE, residualC = TRUE, doubleMC = FALSE)
+##'
+##' ## Double-mean centering / two-way interaction / match-paired
+##' dat3 <- indProd(attitude[ , -1], var1 = 1:3, var2 = 4:6, match = FALSE,
+##'                 meanC = TRUE, residualC = FALSE, doubleMC = TRUE)
+##'
+##' ## Mean centering / three-way interaction / match-paired
+##' dat4 <- indProd(attitude[ , -1], var1 = 1:2, var2 = 3:4, var3 = 5:6)
+##'
+##' ## Residual centering / three-way interaction / match-paired
+##' dat5 <- orthogonalize(attitude[ , -1], var1 = 1:2, var2 = 3:4, var3 = 5:6,
+##'                       match = FALSE)
+##'
+##' ## Double-mean centering / three-way interaction / match-paired
+##' dat6 <- indProd(attitude[ , -1], var1 = 1:2, var2 = 3:4, var3 = 5:6,
+##'                 match = FALSE, meanC = TRUE, residualC = TRUE,
+##'                 doubleMC = TRUE)
+##'
+##'
+##' ## To add product-indicators to multiple-imputed data sets
+##' \dontrun{
+##' HSMiss <- HolzingerSwineford1939[ , c(paste0("x", 1:9), "ageyr","agemo")]
+##' set.seed(12345)
+##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
+##' age <- HSMiss$ageyr + HSMiss$agemo/12
+##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
+##' library(Amelia)
+##' set.seed(12345)
+##' HS.amelia <- amelia(HSMiss, m = 3, p2s = FALSE)
+##' imps <- HS.amelia$imputations # extract a list of imputations
+##' ## apply indProd() to the list of data.frames
+##' imps2 <- lapply(imps, indProd,
+##'                 var1 = c("x1","x2","x3"), var2 = c("x4","x5","x6"))
+##' ## verify:
+##' lapply(imps2, head)
+##' }
+##'
+##' @export
 indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
                     residualC = FALSE, doubleMC = TRUE, namesProd = NULL) {
   # Get all variable names
@@ -253,8 +272,8 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
   data.frame(data, datProd)
 }
 
-#' @rdname indProd
-#' @export
+##' @rdname indProd
+##' @export
 orthogonalize <- function(data, var1, var2, var3 = NULL,
                           match = TRUE, namesProd = NULL) {
   indProd(data = data, var1 = var1, var2 = var2, var3 = var3,

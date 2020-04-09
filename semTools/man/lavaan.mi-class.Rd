@@ -19,8 +19,8 @@
 \usage{
 \S4method{show}{lavaan.mi}(object)
 
-\S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE, level = 0.95,
-  standardized = FALSE, rsquare = FALSE, fmi = FALSE,
+\S4method{summary}{lavaan.mi}(object, se = TRUE, ci = FALSE,
+  level = 0.95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
   scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
   asymptotic = FALSE, header = TRUE, output = "text",
   fit.measures = FALSE)

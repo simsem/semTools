@@ -22,8 +22,8 @@ Missing Data}
 
 \S4method{anova}{twostage}(object, h1 = NULL, baseline = FALSE)
 
-\S4method{nobs}{twostage}(object, type = c("ntotal", "ngroups", "n.per.group",
-  "norig", "patterns", "coverage"))
+\S4method{nobs}{twostage}(object, type = c("ntotal", "ngroups",
+  "n.per.group", "norig", "patterns", "coverage"))
 
 \S4method{coef}{twostage}(object, type = c("free", "user"))
 

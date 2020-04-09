@@ -7,10 +7,10 @@
 \title{Modification Indices for Multiple Imputations}
 \usage{
 modindices.mi(object, test = c("D2", "D1"), omit.imps = c("no.conv",
-  "no.se"), standardized = TRUE, cov.std = TRUE, information = "expected",
-  power = FALSE, delta = 0.1, alpha = 0.05, high.power = 0.75,
-  sort. = FALSE, minimum.value = 0, maximum.number = nrow(LIST),
-  na.remove = TRUE, op = NULL)
+  "no.se"), standardized = TRUE, cov.std = TRUE,
+  information = "expected", power = FALSE, delta = 0.1, alpha = 0.05,
+  high.power = 0.75, sort. = FALSE, minimum.value = 0,
+  maximum.number = nrow(LIST), na.remove = TRUE, op = NULL)
 
 modificationIndices.mi(object, test = c("D2", "D1"),
   omit.imps = c("no.conv", "no.se"), standardized = TRUE, cov.std = TRUE,

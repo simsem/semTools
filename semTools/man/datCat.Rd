@@ -4,7 +4,8 @@
 \name{datCat}
 \alias{datCat}
 \title{Simulated Data set to Demonstrate Categorical Measurement Invariance}
-\format{A \code{data.frame} with 200 observations of 9 variables. 
+\format{
+A \code{data.frame} with 200 observations of 9 variables. 
 \describe{
 \item{g}{Sex of respondents}
 \item{u1}{Indicator 1}
@@ -15,7 +16,8 @@
 \item{u6}{Indicator 6}
 \item{u7}{Indicator 7}
 \item{u8}{Indicator 8}
-}}
+}
+}
 \source{
 Data were generated using the \code{lavaan} package.
 }

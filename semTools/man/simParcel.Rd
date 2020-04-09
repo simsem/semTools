@@ -4,7 +4,8 @@
 \name{simParcel}
 \alias{simParcel}
 \title{Simulated Data set to Demonstrate Random Allocations of Parcels}
-\format{A \code{data.frame} with 800 observations of 18 variables.
+\format{
+A \code{data.frame} with 800 observations of 18 variables.
 \describe{
 \item{f1item1}{Item 1 loading on factor 1}
 \item{f1item2}{Item 2 loading on factor 1}
@@ -24,7 +25,8 @@
 \item{f2item7}{Item 7 loading on factor 2} 
 \item{f2item8}{Item 8 loading on factor 2} 
 \item{f2item9}{Item 9 loading on factor 2}
-}}
+}
+}
 \source{
 Data were generated using the \code{simsem} package.
 }

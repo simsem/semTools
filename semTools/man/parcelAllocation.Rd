@@ -5,8 +5,8 @@
 \title{Random Allocation of Items to Parcels in a Structural Equation Model}
 \usage{
 parcelAllocation(model, data, parcel.names, item.syntax, nAlloc = 100,
-  fun = "sem", alpha = 0.05, fit.measures = c("chisq", "df", "cfi", "tli",
-  "rmsea", "srmr"), ..., show.progress = FALSE, iseed = 12345,
+  fun = "sem", alpha = 0.05, fit.measures = c("chisq", "df", "cfi",
+  "tli", "rmsea", "srmr"), ..., show.progress = FALSE, iseed = 12345,
   do.fit = TRUE, return.fit = FALSE, warn = FALSE)
 }
 \arguments{
