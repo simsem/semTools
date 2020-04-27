@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 21 February 2020
+### Last updated: 27 April 2020
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -27,7 +27,7 @@
 ##'
 ##' @return
 ##' \item{show}{\code{signature(object = "Net")}: prints the logical matrix of
-##'   test results.}
+##'   test results. \code{NA} indicates a model did not converge.}
 ##' \item{summary}{\code{signature(object = "Net")}: prints a narrative
 ##'   description of results. The original \code{object} is invisibly returned.}
 ##'
@@ -279,19 +279,28 @@ x.within.y <- function(x, y, crit = .0001) {
   ## check degrees of freedom support nesting structure
   if (lavInspect(x, "fit")["df"] < lavInspect(y, "fit")["df"])
     stop("x cannot be nested within y because y is more restricted than x")
+  ## check sample sizes
+  N <- lavInspect(x, "nobs")
+  if (!all(N == lavInspect(y, "nobs"))) stop("Sample sizes differ. Models must apply to the same data")
 
   ## model-implied moments
   Sigma <- lavInspect(x, "cov.ov")
+  nBlocks <- if (is.list(Sigma)) length(Sigma) else 1L
   ## mean structure?
   Mu <- lavInspect(x, "mean.ov")
-  if (!length(Mu)) Mu <- NULL
+  if (nBlocks == 1L) {
+    if (!length(Mu)) Mu <- NULL
+  } else {
+    if (all(sapply(Mu, length) == 0)) Mu <- NULL
+  }
   ## thresholds?
   Thr <- lavInspect(x, "thresholds")
-  if (!length(Thr)) {
-    Thr <- NULL
-  } else attr(Thr, "th.idx") <- lavInspect(x, "th.idx")
-  N <- lavInspect(x, "nobs")
-  if (!all(N == lavInspect(y, "nobs"))) stop("Sample sizes differ. Models must apply to the same data")
+  if (nBlocks == 1L) {
+    if (!length(Thr)) Thr <- NULL
+  } else {
+    if (all(sapply(Thr, length) == 0)) Thr <- NULL
+  }
+  if (!is.null(Thr)) Thr <- attr(Thr, "th.idx") <- lavInspect(x, "th.idx")
 
   ## If DWLS, extract WLS.V and NACOV
   estimator <- lavInspect(x, "options")$estimator

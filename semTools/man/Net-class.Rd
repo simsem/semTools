@@ -16,7 +16,7 @@
 }
 \value{
 \item{show}{\code{signature(object = "Net")}: prints the logical matrix of
-  test results.}
+  test results. \code{NA} indicates a model did not converge.}
 \item{summary}{\code{signature(object = "Net")}: prints a narrative
   description of results. The original \code{object} is invisibly returned.}
 }
