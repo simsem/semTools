@@ -285,11 +285,11 @@ cat(as.character(syntax.thresh))
 summary(syntax.thresh)
 
 
-## Fit a model to the data either in a subsequent step:
+## Fit a model to the data either in a subsequent step (recommended):
 mod.config <- as.character(syntax.config)
 fit.config <- cfa(mod.config, data = datCat, group = "g",
                   ordered = paste0("u", 1:8), parameterization = "theta")
-## or in a single step:
+## or in a single step (not generally recommended):
 fit.thresh <- measEq.syntax(configural.model = mod.cat, data = datCat,
                             ordered = paste0("u", 1:8),
                             parameterization = "theta",

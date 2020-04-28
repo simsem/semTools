@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 20 December 2019
+### Last updated: 28 April 2020
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -890,11 +890,11 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' summary(syntax.thresh)
 ##'
 ##'
-##' ## Fit a model to the data either in a subsequent step:
+##' ## Fit a model to the data either in a subsequent step (recommended):
 ##' mod.config <- as.character(syntax.config)
 ##' fit.config <- cfa(mod.config, data = datCat, group = "g",
 ##'                   ordered = paste0("u", 1:8), parameterization = "theta")
-##' ## or in a single step:
+##' ## or in a single step (not generally recommended):
 ##' fit.thresh <- measEq.syntax(configural.model = mod.cat, data = datCat,
 ##'                             ordered = paste0("u", 1:8),
 ##'                             parameterization = "theta",
@@ -2269,9 +2269,9 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     for (i in names(longIndNames)) {
       nn <- longIndNames[[i]]
       nT <- length(nn) # number repeated measures of indicator i
-      auto.i <- auto # because nT can differ across variables
-      if (auto == "all") auto.i <- nT - 1L # max lag
-      if (auto >= nT ) auto.i <- nT - 1L # max lag
+      auto.i <- as.integer(auto)[1] # because nT can differ across variables
+      if (auto == "all" | is.na(auto.i)) auto.i <- nT - 1L # max lag
+      if (auto.i >= nT | auto.i < 0L ) auto.i <- nT - 1L # max lag
 
       ## for each lag...
       for (lag in 1:auto.i) {
@@ -2281,21 +2281,21 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
           ## order of longIndNames does not match order in syntax/theta
           nn.idx <- c(which(rownames(GLIST.specify[[g]]$theta) == nn[tt]),
                       which(rownames(GLIST.specify[[g]]$theta) == nn[tt + lag]))
-          idx1 <- which.max(nn.idx) # row index
-          idx2 <- which.min(nn.idx) # column index
+          idx1 <- nn.idx[ which.max(nn.idx) ] # row index
+          idx2 <- nn.idx[ which.min(nn.idx) ] # column index
 
           ## specify and set free
-          GLIST.specify[[g]]$theta[ nn[idx1], nn[idx2] ] <- TRUE
-          GLIST.values[[g]]$theta[  nn[idx1], nn[idx2] ] <- NA
+          GLIST.specify[[g]]$theta[idx1, idx2] <- TRUE
+          GLIST.values[[g]]$theta[ idx1, idx2] <- NA
 
           ## constrain to equality across repeated measures?
           if ("resid.autocov" %in% long.equal && tt > 1L) {
             o.idx <- c(which(rownames(GLIST.specify[[g]]$theta) == nn[1]),
                        which(rownames(GLIST.specify[[g]]$theta) == nn[1 + lag]))
-            o1 <- which.max(o.idx) # row index
-            o2 <- which.min(o.idx) # column index
-            first.label <- GLIST.labels[[g]]$theta[ nn[o1], nn[o2] ]
-            GLIST.labels[[g]]$theta[ nn[idx1], nn[idx2] ] <- first.label
+            o1 <- o.idx[ which.max(o.idx) ] # row index
+            o2 <- o.idx[ which.min(o.idx) ] # column index
+            first.label <- GLIST.labels[[g]]$theta[o1, o2]
+            GLIST.labels[[g]]$theta[idx1, idx2] <- first.label
           }
 
         }
