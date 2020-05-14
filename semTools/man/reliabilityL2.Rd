@@ -42,20 +42,23 @@ factor
 The first formula of the coefficient omega (in the
 \code{\link{reliability}}) will be mainly used in the calculation. The
 model-implied covariance matrix of a second-order factor model can be
-separated into three sources: the second-order factor, the uniqueness of the
-first-order factor, and the measurement error of indicators:
+separated into three sources: the second-order common-factor variance,
+the residual variance of the first-order common factors (i.e., not
+accounted for by the second-order factor), and the measurement error of
+observed indicators:
 
 \deqn{ \hat{\Sigma} = \Lambda \bold{B} \Phi_2 \bold{B}^{\prime}
 \Lambda^{\prime} + \Lambda \Psi_{u} \Lambda^{\prime} + \Theta, }
 
 where \eqn{\hat{\Sigma}} is the model-implied covariance matrix,
-\eqn{\Lambda} is the first-order factor loading, \eqn{\bold{B}} is the
-second-order factor loading, \eqn{\Phi_2} is the covariance matrix of the
-second-order factors, \eqn{\Psi_{u}} is the covariance matrix of the unique
-scores from first-order factors, and \eqn{\Theta} is the covariance matrix
-of the measurement errors from indicators. Thus, the proportion of the
-second-order factor explaining the total score, or the coefficient omega at
-Level 1, can be calculated:
+\eqn{\Lambda} contains first-order factor loadings, \eqn{\bold{B}} contains
+second-order factor loadings, \eqn{\Phi_2} is the covariance matrix of the
+second-order factor(s), \eqn{\Psi_{u}} is the covariance matrix of residuals
+from first-order factors, and \eqn{\Theta} is the covariance matrix of the
+measurement errors from observed indicators. Thus, we can calculate the
+proportion of variance of a composite score calculated from the observed
+indicators (e.g., a total score or scale mean) that is attributable to the
+second-order factor, i.e. coefficient omega at Level 1:
 
 \deqn{ \omega_{L1} = \frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi_2
 \bold{B}^{\prime} \Lambda^{\prime} \bold{1}}{\bold{1}^{\prime} \Lambda
@@ -64,25 +67,35 @@ Level 1, can be calculated:
 \bold{1}^{\prime} \Theta \bold{1}}, }
 
 where \eqn{\bold{1}} is the \emph{k}-dimensional vector of 1 and \emph{k} is
-the number of observed variables. When model-implied covariance matrix among
-first-order factors (\eqn{\Phi_1}) can be calculated:
+the number of observed variables.
+
+The model-implied covariance matrix among first-order factors (\eqn{\Phi_1})
+can be calculated as:
 
 \deqn{ \Phi_1 = \bold{B} \Phi_2 \bold{B}^{\prime} + \Psi_{u}, }
 
-Thus, the proportion of the second-order factor explaining the varaince at
-first-order factor level, or the coefficient omega at Level 2, can be
-calculated:
+Thus, the proportion of variance among first-order common factors that is
+attributable to the second-order factor (i.e., coefficient omega at Level 2)
+can be calculated as:
 
 \deqn{ \omega_{L2} = \frac{\bold{1_F}^{\prime} \bold{B} \Phi_2
 \bold{B}^{\prime} \bold{1_F}}{\bold{1_F}^{\prime} \bold{B} \Phi_2
 \bold{B}^{\prime} \bold{1_F} + \bold{1_F}^{\prime} \Psi_{u} \bold{1_F}}, }
 
 where \eqn{\bold{1_F}} is the \emph{F}-dimensional vector of 1 and \emph{F}
-is the number of first-order factors.
+is the number of first-order factors. This Level-2 omega can be interpreted
+as an estimate of the reliability of a hypothetical composite calculated
+from error-free observable variables representing the first-order common
+factors. This might only be meaningful as a thought experiment.
 
-The partial coefficient omega at Level 1, or the proportion of observed
-variance explained by the second-order factor after partialling the
-uniqueness from the first-order factor, can be calculated:
+An additional thought experiment is possible: If the observed indicators
+contained only the second-order common-factor variance and unsystematic
+measurement error, then there would be no first-order common factors because
+their unique variances would be excluded from the observed measures. An
+estimate of this hypothetical composite reliability can be calculated as the
+partial coefficient omega at Level 1, or the proportion of observed
+variance explained by the second-order factor after partialling out the
+uniqueness from the first-order factors:
 
 \deqn{ \omega_{L1} = \frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi_2
 \bold{B}^{\prime} \Lambda^{\prime} \bold{1}}{\bold{1}^{\prime} \Lambda
@@ -91,7 +104,7 @@ uniqueness from the first-order factor, can be calculated:
 
 Note that if the second-order factor has a direct factor loading on some
 observed variables, the observed variables will be counted as first-order
-factors.
+factors, which might not be desirable.
 }
 \examples{
 
