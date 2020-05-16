@@ -2934,7 +2934,7 @@ char2update <- function(object, model, return.object = TRUE) {
           warning('Thresholds ignored when no indicators are declared as ordered')
         }
         DF <- data.frame(stringsAsFactors = FALSE, group = BB, matName = "tau",
-                         row = paste0(PT$rhs[RR], "|", PT$lhs[RR]),
+                         row = paste0(PT$lhs[RR], "|", PT$rhs[RR]),
                          col = "threshold")
 
         ## SCALING FACTORS (delta parameters for latent item-responses)
