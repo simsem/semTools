@@ -156,14 +156,21 @@ lavTestWald.mi(mgfit.scalar, constraints = eq.means)
 
 ## ordered-categorical data
 data(datCat)
-lapply(datCat, class)
+lapply(datCat, class) # indicators already stored as ordinal
 ## impose missing values
 set.seed(123)
 for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
 
-catout <- cfa.mi(' f =~ 1*u1 + 1*u2 + 1*u3 + 1*u4 ', data = datCat,
-                 m = 3, seed = 456,
-                 miArgs = list(ords = paste0("u", 1:8), noms = "g"),
+## impute ordinal missing data using mice package
+library(mice)
+set.seed(456)
+miceImps <- mice(datCat)
+## save imputations in a list of data.frames
+impList <- list()
+for (i in miceImps$m) impList[[i]] <- complete(miceImps, action = i)
+
+## fit model, save zero-cell tables and obsolete "WRMR" fit indices
+catout <- cfa.mi(' f =~ 1*u1 + 1*u2 + 1*u3 + 1*u4 ', data = impList,
                  FUN = function(fit) {
                    list(wrmr = lavaan::fitMeasures(fit, "wrmr"),
                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
