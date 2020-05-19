@@ -84,7 +84,7 @@ semTools::measEq.syntax()
     of strings for combo, e.g., list(boys  = c("within","cluster"),
                                      girls = c("within","cluster"))
   - no, no, no ... need to enable invariance across groups and levels separately
-- add multilevel example to show how to hack levels as groups
+  - add multilevel example to show how to hack levels as groups
 
 
 semTools::partialInvariance()
