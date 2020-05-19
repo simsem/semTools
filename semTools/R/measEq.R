@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 April 2020
+### Last updated: 19 May 2020
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1181,6 +1181,18 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     mc$meanstructure <- lavInspect(lavTemplate, "options")$meanstructure # just in case
     mc$configural.model <- lavTemplate
   }
+
+
+  ## prevent inconsistency
+  if (lavInspect(lavTemplate, "options")$categorical &&
+      ID.cat %in% c("wu","mplus") &&
+      ID.fac != "uv") warning('For factors measured only by categorical ',
+                              'indicators, constraints on intercepts are ',
+                              'insufficient to identify latent means when the ',
+                              'intercepts are already fixed to zero in order ',
+                              'to identify latent item scales.  To prevent',
+                              'underidentified models, it is recommended to ',
+                              'instead set ID.fac = "std.lv".')
 
 
   ## convert *.partial strings to parTables

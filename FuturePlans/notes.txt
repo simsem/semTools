@@ -83,8 +83,8 @@ semTools::measEq.syntax()
     multigroup, blocks = c("within","cluster") for MLSEM, and a named list
     of strings for combo, e.g., list(boys  = c("within","cluster"),
                                      girls = c("within","cluster"))
+  - no, no, no ... need to enable invariance across groups and levels separately
 - add multilevel example to show how to hack levels as groups
-- warn that ID.fac="ul" + ID.cat="wu" frees latent means (need to constrain a threshold)
 
 
 semTools::partialInvariance()
