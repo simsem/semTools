@@ -715,13 +715,20 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'           (as returned by \code{\link[lavaan]{parTable}}) specifying the
 ##'           configural model. Using this option, the user can also provide
 ##'           either raw \code{data} or summary statistics via \code{sample.cov}
-##'           and (optionally) \code{sample.mean}. In order to include
-##'           thresholds in the syntax, raw \code{data} must be provided.
-#FIXME: lavaan has a new sample.th= argument
-##'           See \code{\link[lavaan]{lavaan}}.
+##'           and (optionally) \code{sample.mean}. See argument descriptions in
+##'           \code{\link[lavaan]{lavaan}}. In order to include thresholds in
+##'           the generated syntax, either users must provide raw \code{data},
+##'           or the \code{configural.model} syntax must specify all thresholds
+##'           (see first example). If raw \code{data} are not provided, the
+##'           number of blocks (groups, levels, or combination) must be
+##'           indicated using an arbitrary \code{sample.nobs} argument (e.g.,
+##'           3 groups could be specified using \code{sample.nobs=rep(1, 3)}).
 ##'     \item a fitted \code{\linkS4class{lavaan}} model (e.g., as returned by
 ##'           \code{\link[lavaan]{cfa}}) estimating the configural model
 ##'   }
+##'   Note that the specified or fitted model must not contain any latent
+##'   structural parameters (i.e., it must be a CFA model), unless they are
+##'   higher-order constructs with latent indicators (i.e., a second-order CFA).
 ##'
 ##' @param ... Additional arguments (e.g., \code{data}, \code{ordered}, or
 ##'   \code{parameterization}) passed to the \code{\link[lavaan]{lavaan}}
@@ -758,7 +765,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'           specify any of: \code{"default"}, \code{"Mplus"}, \code{"Muthen"}.
 ##'           Details provided in Millsap & Tein (2004).
 ##'     \item To use the constraints recommended by Millsap & Tein (2004; see
-##'           also Liu et al., 2017)
+##'           also Liu et al., 2017, for the longitudinal case)
 ##'           specify any of: \code{"millsap"}, \code{"millsap.2004"},
 ##'           \code{"millsap.tein.2004"}
 ##'     \item To use the default settings of LISREL, specify \code{"LISREL"}
@@ -926,7 +933,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' ## (2) print it to the screen to verify you are fitting the model you expect
 ##' ## to (and potentially learn which identification constraints should be
 ##' ## released when equality constraints are imposed), and (3) fit that model
-##' ## to the data as you would if you wrote the syntax yourself.
+##' ## to the data, as you would if you had written the syntax yourself.
 ##'
 ##' ## Continuing from the examples above, after establishing invariance of
 ##' ## thresholds, we proceed to test equivalence of loadings and intercepts
@@ -1582,7 +1589,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                                          dimnames = dimnames(GLIST.free[[g]][[p]]))
         for (RR in rownames(GLIST.free[[g]][[p]])) {
           for (CC in colnames(GLIST.free[[g]][[p]])) {
-            GLIST.labels[[g]][[p]][RR, CC] <- getLabel(lavTemplate, parMat = p,
+            GLIST.labels[[g]][[p]][RR, CC] <- getLabel(GLIST.labels[[g]],
+                                                       parMat = p,
                                                        RR = RR, CC = CC)
           }
         }
@@ -2624,12 +2632,12 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
 ## ----------------
 
 
-## function(s) to locate position in lambda, theta, psi, nu, alpha
-##' @importFrom lavaan lavInspect
-getLabel <- function(object, parMat, RR, CC = 1L) {
-  est <- lavInspect(object, "free")
-  if (lavInspect(object, "ngroups") > 1L) est <- est[[1]]
-  dn <- dimnames(est[[parMat]])
+## function to label a parameter by its location in a parameter matrix
+## @importFrom lavaan lavInspect
+getLabel <- function(GLIST, parMat, RR, CC = 1L) {
+  # GLIST <- lavInspect(object, "free")
+  # if (lavInspect(object, "ngroups") > 1L) GLIST <- GLIST[[1]]
+  dn <- dimnames(GLIST[[parMat]])
   out <- paste(parMat, which(dn[[1]] == RR), sep = ".")
   if (!parMat %in% c("alpha","nu")) out <- paste(out, which(dn[[2]] == CC),
                                                  sep = "_")
@@ -2814,6 +2822,8 @@ write.lavaan.syntax <- function(pmat, specify, value, label) {
   invisible(NULL)
 }
 #TODO: adapt routine to write Mplus MODEL statements and OpenMx RAM commands
+# write.mplus.syntax <- function(pmat, specify, value, label)
+
 
 ## function to allow users to customize syntax with update(),
 ## so they don't necessarily have to copy/paste a script to adapt it.

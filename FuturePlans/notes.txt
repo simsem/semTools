@@ -63,9 +63,6 @@ Measurement Invariance suite
 ============================
 
 New Measurement Invariance suite
-- add block.equal=T/F argument to measEq.syntax to test invariance across levels
-  - eventually, write syntax via blocks to avoid issues with group-blocks,
-    or somehow check whether groups have different blocks
 - empirical anchor selector
   - minimum Woods (2009), maybe Achim & Carolin's
 - partial / DIF tester
@@ -75,6 +72,27 @@ New Measurement Invariance suite
 
 semTools::measEq.syntax()
 - add params= argument to as.character() method (to select loadings, etc.)
+- add Mplus and OpenMx to as.character()
+- add block.equal=T/F argument to measEq.syntax to test invariance across
+  either groups or levels (or combination).
+  - if configural invariance is required across groups or levels, no need to
+    distinguish between what "block" represents (potentially both)
+  - thus, write syntax via blocks to avoid issues with group-blocks?  Or make
+    it an argument: as.blocks=TRUE.  That would necessitate knowing whether to
+    write level: or group: in the syntax.  Maybe blocks = NULL for traditional
+    multigroup, blocks = c("within","cluster") for MLSEM, and a named list
+    of strings for combo, e.g., list(boys  = c("within","cluster"),
+                                     girls = c("within","cluster"))
+- change first example to not use data until fitting the model(s)
+- add multilevel example to show how to hack levels as groups
+- add nThr= and ngroups= arguments so data= unnecessary
+  - lavTemplate needed for:
+    - nThr, from lavNames("th"), which are names of sample.th
+    - allOrdNames, from lavNames("ov.ord"); can infer from ordered=
+    - ngroups
+    - default @Options
+    - GLIST.free, GLIST.values
+- warn that ID.fac="ul" + ID.cat="wu" frees latent means (need to constrain a threshold)
 
 
 semTools::partialInvariance()
