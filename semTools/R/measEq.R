@@ -868,11 +868,25 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' @examples
 ##' mod.cat <- ' FU1 =~ u1 + u2 + u3 + u4
 ##'              FU2 =~ u5 + u6 + u7 + u8 '
+##' ## only necessary to specify thresholds if you have no data
+##' mod.th <- '
+##'   u1 | t1 + t2 + t3 + t4
+##'   u2 | t1 + t2 + t3 + t4
+##'   u3 | t1 + t2 + t3 + t4
+##'   u4 | t1 + t2 + t3 + t4
+##'   u5 | t1 + t2 + t3 + t4
+##'   u6 | t1 + t2 + t3 + t4
+##'   u7 | t1 + t2 + t3 + t4
+##'   u8 | t1 + t2 + t3 + t4
+##' '
 ##' ## the 2 factors are actually the same factor (FU) measured twice
 ##' longFacNames <- list(FU = c("FU1","FU2"))
 ##'
 ##' ## configural model: no constraints across groups or repeated measures
-##' syntax.config <- measEq.syntax(configural.model = mod.cat, data = datCat,
+##' syntax.config <- measEq.syntax(configural.model = mod.cat,
+##'                                # NOTE: data provides info about numbers of
+##'                                #       groups and thresholds
+##'                                data = datCat,
 ##'                                ordered = paste0("u", 1:8),
 ##'                                parameterization = "theta",
 ##'                                ID.fac = "std.lv", ID.cat = "Wu.Estabrook.2016",
@@ -883,8 +897,11 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' summary(syntax.config)
 ##'
 ##' ## threshold invariance
-##' syntax.thresh <- measEq.syntax(configural.model = mod.cat, data = datCat,
-##'                                ordered = paste0("u", 1:8),
+##' syntax.thresh <- measEq.syntax(configural.model = c(mod.cat, mod.th),
+##'                                # NOTE: data not provided, so syntax must
+##'                                #       include thresholds, and nummber of
+##'                                #       groups == 2 is indicated by:
+##'                                sample.nobs = c(1, 1),
 ##'                                parameterization = "theta",
 ##'                                ID.fac = "std.lv", ID.cat = "Wu.Estabrook.2016",
 ##'                                group = "g", group.equal = "thresholds",
@@ -1161,6 +1178,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     lavArgs$model <- configural.model # let lavaan() do its own checks
     lavArgs$do.fit <- FALSE
     lavTemplate <- do.call("cfa", lavArgs) #FIXME: violates NAMESPACE rules?  Import cfa()?
+    mc$meanstructure <- lavInspect(lavTemplate, "options")$meanstructure # just in case
     mc$configural.model <- lavTemplate
   }
 
@@ -1625,7 +1643,6 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   ## collapse names of longitudinal factors (plus non-longitudinal factors)
   # reducedFacNames <- c(names(longFacNames), setdiff(unlist(allFacNames),
   #                                                   unlist(longFacNames)))
-
 
   ## check for longitudinal indicator names, automatically generate if empty
   make.longIndNames <- length(longIndNames) == 0L

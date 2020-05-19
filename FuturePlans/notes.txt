@@ -83,7 +83,6 @@ semTools::measEq.syntax()
     multigroup, blocks = c("within","cluster") for MLSEM, and a named list
     of strings for combo, e.g., list(boys  = c("within","cluster"),
                                      girls = c("within","cluster"))
-- change first example to not use data until fitting the model(s)
 - add multilevel example to show how to hack levels as groups
 - add nThr= and ngroups= arguments so data= unnecessary
   - lavTemplate needed for:
