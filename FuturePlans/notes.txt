@@ -84,13 +84,6 @@ semTools::measEq.syntax()
     of strings for combo, e.g., list(boys  = c("within","cluster"),
                                      girls = c("within","cluster"))
 - add multilevel example to show how to hack levels as groups
-- add nThr= and ngroups= arguments so data= unnecessary
-  - lavTemplate needed for:
-    - nThr, from lavNames("th"), which are names of sample.th
-    - allOrdNames, from lavNames("ov.ord"); can infer from ordered=
-    - ngroups
-    - default @Options
-    - GLIST.free, GLIST.values
 - warn that ID.fac="ul" + ID.cat="wu" frees latent means (need to constrain a threshold)
 
 
@@ -104,7 +97,7 @@ semTools::partialInvariance()
 - argument to add fit indices as columns in output$results
 EVENTUALLY automate post-hoc steps in measurementInvariance()
 	- add attributes like "level" and "partial" for checks, show/summary
-
+SEE R PACKAGES: dmacs
 
 semTools::alignment()
 - pass configural model for a re-fitted lavaan model that is "aligned"

@@ -2294,7 +2294,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     for (i in names(longIndNames)) {
       nn <- longIndNames[[i]]
       nT <- length(nn) # number repeated measures of indicator i
-      auto.i <- as.integer(auto)[1] # because nT can differ across variables
+      auto.i <- suppressWarnings(as.integer(auto))[1] # nT can vary over i
       if (auto == "all" | is.na(auto.i)) auto.i <- nT - 1L # max lag
       if (auto.i >= nT | auto.i < 0L ) auto.i <- nT - 1L # max lag
 
