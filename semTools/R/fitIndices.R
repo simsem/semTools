@@ -3,7 +3,7 @@
 ###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ###          Aaron Boulton <aboulton@ku.edu>,
 ###          Ruben Arslan <rubenarslan@gmail.com>
-### Last updated: 7 January 2020
+### Last updated: 23 May 2020
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -340,7 +340,8 @@ sic <- function(f, lresults = NULL) {
 ##' @param smallN.method \code{character} indicating the small-\emph{N}
 ##'   correction method to use. Multiple may be chosen (all of which assume
 ##'   normality), as described in Shi et al. (2018):
-##'   \code{c("swain","yuan.2015","yuan.2005","bartlett")}.
+##'   \code{c("swain","yuan.2015","yuan.2005","bartlett")}. Users may also
+##'   simply select \code{"all"}.
 ##' @param \dots Additional arguments to the \code{\link[lavaan]{lavTestLRT}} or
 ##'   \code{\link{lavTestLRT.mi}} functions. Ignored when \code{is.null(fit1)}.
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
@@ -391,6 +392,8 @@ sic <- function(f, lresults = NULL) {
 chisqSmallN <- function(fit0, fit1 = NULL,
                         smallN.method = if (is.null(fit1)) c("swain","yuan.2015") else "yuan.2005",
                         ..., omit.imps = c("no.conv","no.se")) {
+  if ("all" %in% smallN.method) smallN.method <- c("swain","yuan.2015",
+                                                   "yuan.2005","bartlett")
   smallN.method <- intersect(tolower(smallN.method),
                              c("swain","yuan.2015","yuan.2005","bartlett"))
   if (!any(smallN.method %in% c("swain","yuan.2015","yuan.2005","bartlett")))
