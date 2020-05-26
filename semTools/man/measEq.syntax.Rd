@@ -471,6 +471,30 @@ for (i in 0:length(test.seq)) {
 compareFit(meq.list)
 
 
+## ---------------------
+## Multilevel Invariance
+## ---------------------
+
+## To test invariance across levels in a MLSEM, specify syntax as though
+## you are fitting to 2 groups instead of 2 levels.
+
+mlsem <- ' f1 =~ y1 + y2 + y3
+           f2 =~ y4 + y5 + y6 '
+## metric invariance
+syntax.metric <- measEq.syntax(configural.model = mlsem, meanstructure = TRUE,
+                               ID.fac = "std.lv", sample.nobs = c(1, 1),
+                               group = "cluster", group.equal = "loadings")
+## by definition, Level-1 means must be zero, so fix them
+syntax.metric <- update(syntax.metric,
+                        change.syntax = paste0("y", 1:6, " ~ c(0, NA)*1"))
+## save as a character string
+mod.metric <- as.character(syntax.metric, groups.as.blocks = TRUE)
+## convert from multigroup to multilevel
+mod.metric <- gsub(pattern = "group:", replacement = "level:",
+                   x = mod.metric, fixed = TRUE)
+## fit model to data
+fit.metric <- lavaan(mod.metric, data = Demo.twolevel, cluster = "cluster")
+summary(fit.metric)
 }
 }
 \references{
