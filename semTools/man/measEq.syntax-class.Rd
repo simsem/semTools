@@ -9,7 +9,8 @@
 \alias{update,measEq.syntax-method}
 \title{Class for Representing a Measurement-Equivalence Model}
 \usage{
-\S4method{as.character}{measEq.syntax}(x, package = "lavaan", single = TRUE)
+\S4method{as.character}{measEq.syntax}(x, package = "lavaan",
+  params = NULL, single = TRUE, groups.as.blocks = FALSE)
 
 \S4method{show}{measEq.syntax}(object)
 
@@ -20,14 +21,29 @@
 \arguments{
 \item{x, object}{an object of class \code{measEq.syntax}}
 
-\item{package}{\code{character} indicating the package for which the
-syntax should be generated.  Currently, only \code{"lavaan"}.}
+\item{package}{\code{character} indicating the package for which the model
+syntax should be generated.  Currently, only \code{"lavaan"} and
+\code{"mplus"} are supported.}
+
+\item{params}{\code{character} vector indicating which type(s) of parameter
+to print syntax for. Must match a type that can be passed to
+\code{group.equal} or \code{long.equal}, but \code{"residual.covariances"}
+and \code{"lv.covariances"} will be silently ignored. Instead, requesting
+\code{"residuals"} or \code{"lv.variances"} will return covariances along
+with variances. By default (\code{NULL}), all types are printed.}
 
 \item{single}{\code{logical} indicating whether to concatenate lavaan
 \code{\link[lavaan]{model.syntax}} into a single \code{character} string.
 Setting \code{FALSE} will return a vector of strings, which may be
 convenient (or even necessary to prevent an error) in
 models with long variable names, many variables, or many groups.}
+
+\item{groups.as.blocks}{\code{logical} indicating whether to write lavaan
+\code{\link[lavaan]{model.syntax}} using vectors of labels and values
+for multiple groups (the default: \code{FALSE}), or whether to write
+a separate "block" of syntax per group. The block structure could allow
+users to apply the generated multigroup syntax (after some editing) to
+test invariance across levels in a multilevel SEM.}
 
 \item{verbose}{\code{logical} indicating whether to print a summary to the
 screen (default). If \code{FALSE}, only a pattern matrix is returned.}
@@ -63,8 +79,10 @@ while maintaining equality constraints among other groups.}
     parameter labels or fixed/free specifications in \code{object}.}
   \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
     Converts the \code{measEq.syntax} object to model syntax that can be
-    copy/pasted into a syntax file to be edited before analysis, or simply
-    passed to \code{\link[lavaan]{lavaan}} to fit the model to data.}
+    copy/pasted or written to a syntax file to be edited before analysis,
+    or simply passed to \code{\link[lavaan]{lavaan}} to fit the model to
+    data. Generated M\emph{plus} syntax could also be utilized using the
+    \pkg{MplusAuthomation} package.}
 }
 \description{
 This class of object stores information used to automatically generate
@@ -120,7 +138,8 @@ constraints used to identify the model when \code{ID.fac = "fx"}.}
 }}
 
 \examples{
-## See ?measEq.syntax help page
+## See ?measEq.syntax help page for examples using lavaan
+
 
 }
 \author{

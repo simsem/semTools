@@ -264,21 +264,10 @@ generated model will be fitted to the multiple imputations.
 \examples{
 mod.cat <- ' FU1 =~ u1 + u2 + u3 + u4
              FU2 =~ u5 + u6 + u7 + u8 '
-## only necessary to specify thresholds if you have no data
-mod.th <- '
-  u1 | t1 + t2 + t3 + t4
-  u2 | t1 + t2 + t3 + t4
-  u3 | t1 + t2 + t3 + t4
-  u4 | t1 + t2 + t3 + t4
-  u5 | t1 + t2 + t3 + t4
-  u6 | t1 + t2 + t3 + t4
-  u7 | t1 + t2 + t3 + t4
-  u8 | t1 + t2 + t3 + t4
-'
 ## the 2 factors are actually the same factor (FU) measured twice
 longFacNames <- list(FU = c("FU1","FU2"))
 
-## configural model: no constraints across groups or repeated measures
+## CONFIGURAL model: no constraints across groups or repeated measures
 syntax.config <- measEq.syntax(configural.model = mod.cat,
                                # NOTE: data provides info about numbers of
                                #       groups and thresholds
@@ -292,10 +281,21 @@ cat(as.character(syntax.config))
 ## print a summary of model features
 summary(syntax.config)
 
-## threshold invariance
+## THRESHOLD invariance:
+## only necessary to specify thresholds if you have no data
+mod.th <- '
+  u1 | t1 + t2 + t3 + t4
+  u2 | t1 + t2 + t3 + t4
+  u3 | t1 + t2 + t3 + t4
+  u4 | t1 + t2 + t3 + t4
+  u5 | t1 + t2 + t3 + t4
+  u6 | t1 + t2 + t3 + t4
+  u7 | t1 + t2 + t3 + t4
+  u8 | t1 + t2 + t3 + t4
+'
 syntax.thresh <- measEq.syntax(configural.model = c(mod.cat, mod.th),
                                # NOTE: data not provided, so syntax must
-                               #       include thresholds, and nummber of
+                               #       include thresholds, and number of
                                #       groups == 2 is indicated by:
                                sample.nobs = c(1, 1),
                                parameterization = "theta",
