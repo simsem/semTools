@@ -15,14 +15,14 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Donna", family = "Coffman", role = "ctb", email="dlc30@psu.edu"),
 		person(given = "Mijke", family = "Rhemtulla", role = "ctb", email="mrhemtulla@ucdavis.edu", comment = c(ORCID = "0000-0003-2572-2424")),
 		person(given = "Alexander", family = "Robitzsch", role = "ctb", email="a.robitzsch@bifie.at", comment = c(ORCID = "0000-0002-8226-3132")),
-		person(given = "Craig", family = "Enders", role = "ctb", email="Craig.Enders@asu.edu"),
+		person(given = "Craig", family = "Enders", role = "ctb", email="cenders@psych.ucla.edu"),
 		person(given = "Ruben", family = "Arslan", role = "ctb", email="rubenarslan@gmail.com", comment = c(ORCID = "0000-0002-6670-5658")),
 		person(given = "Bell", family = "Clinton", role = "ctb", email="clintonbell@ku.edu"),
 		person(given = "Pavel", family = "Panko", role = "ctb", email="pavel.panko@ttu.edu"),
 		person(given = "Edgar", family = "Merkle", role = "ctb", email="merklee@missouri.edu", comment = c(ORCID = "0000-0001-7158-0653")),
 		person(given = "Steven", family = "Chesnut", role = "ctb", email="Steven.Chesnut@usm.edu"),
 		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu"),
-		person(given = c("Jason","D."), family = "Rights", role = "ctb", email="jason.d.rights@vanderbilt.edu"),
+		person(given = c("Jason","D."), family = "Rights", role = "ctb", email="jrights@psych.ubc.ca"),
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com"),
 		person(given = "Maxwell", family = "Mansolf", role = "ctb", email="mamansolf@gmail.com", comment = c(ORCID = "0000-0001-6861-8657"))
 		)
