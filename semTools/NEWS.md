@@ -6,6 +6,9 @@
 - Latent-interaction functions (e.g., `probe2WayMC()`) now work for `lavaan.mi` objects. The `?indProd` documentation now includes an example adding product indicators to multiple imputed data sets.
 - The `update()` method for `class?measEq.syntax` has a new argument `change.syntax`. Users can pass lavaan syntax specifying an existing model parameter in order to change the labels or the fixed/free values. This provies some flexibility not found in the `measEq.syntax()` function itself (e.g., releasing an equality constraint in only one of >2 groups, whereas `group.partial=` can only release constraints across all groups).
     - https://github.com/simsem/semTools/issues/60
+- The `as.character()` method for `class?measEq.syntax` now accepts the argument `package = "mplus"`, which prints the syntax as an M*plus* MODEL command. The `as.character()` method also has 2 new arguments:
+    - `groups.as.blocks=TRUE` optionally prints multigroup syntax in "block" format, which enables users to hack `measEq.syntax()` to specify multilevel CFA models with invariance constraints.
+    - `params=` allows users to select specific types of parameters to print, making it easier to check particular aspects of the model specification (e.g., `params = c("loadings","lv.variances")` in metric invariance models).
 - `net()` now accepts models fitted to categorical outcomes.
 - `reliability()` includes 2 new arguments:
     - default `dropSingle = TRUE` is consistent with old behavior.
