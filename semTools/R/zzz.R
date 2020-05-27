@@ -6,4 +6,10 @@
     packageStartupMessage("All users of R (or SEM) are invited to submit functions or ideas for functions.")
     packageStartupMessage("###############################################################################")
 }
- 
+
+.onLoad <- function(libname, pkgname) {
+    if (requireNamespace("emmeans", quietly = TRUE)){
+        emmeans::.emm_register("lavaan", pkgname)
+    }
+}
+
