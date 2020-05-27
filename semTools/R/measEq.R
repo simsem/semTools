@@ -3358,7 +3358,7 @@ char2update <- function(object, model, return.object = TRUE) {
   stopifnot(inherits(object, "measEq.syntax"))
   stopifnot(inherits(model, "character"))
 
-  PT <- lavParseModelString(model, as.data.frame. = TRUE)
+  PT <- lavaan::lavParseModelString(model, as.data.frame. = TRUE)
   indNames <- lapply(object@values, function(x) rownames(x$lambda)) # per block
   facNames <- lapply(object@values, function(x) colnames(x$lambda))
 

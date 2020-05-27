@@ -43,7 +43,8 @@ models with long variable names, many variables, or many groups.}
 for multiple groups (the default: \code{FALSE}), or whether to write
 a separate "block" of syntax per group. The block structure could allow
 users to apply the generated multigroup syntax (after some editing) to
-test invariance across levels in a multilevel SEM.}
+test invariance across levels in a multilevel SEM (see final example on
+\code{\link{measEq.syntax}} help page).}
 
 \item{verbose}{\code{logical} indicating whether to print a summary to the
 screen (default). If \code{FALSE}, only a pattern matrix is returned.}

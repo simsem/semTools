@@ -149,7 +149,7 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 
 fit <- cfa(HS.model, data = HolzingerSwineford1939)
 reliability(fit)
-reliability(fit, total = TRUE)
+reliability(fit, return.total = TRUE)
 
 }
 \references{

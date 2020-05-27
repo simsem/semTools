@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 14 May 2020
+### Last updated: 27 May 2020
 
 
 ## -------------
@@ -190,7 +190,7 @@
 ##'
 ##' fit <- cfa(HS.model, data = HolzingerSwineford1939)
 ##' reliability(fit)
-##' reliability(fit, total = TRUE)
+##' reliability(fit, return.total = TRUE)
 ##'
 ##' @export
 reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
