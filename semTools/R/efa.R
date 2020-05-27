@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 4 February 2020
+### Last updated: 27 May 2020
 ### fit and rotate EFA models in lavaan
 
 
@@ -479,6 +479,7 @@ fillMult <- function(X, Y, fillrowx = 0, fillrowy = 0, fillcolx = 0, fillcoly = 
 	result[1:nrow(X), 1:ncol(Y)]
 }
 
+##' @importFrom lavaan lavInspect
 stdRotatedLoadings <- function(est, object, fun, aux = NULL, rotate = NULL, MoreArgs = NULL) {
 	ov.names <- lavaan::lavNames(object@ParTable, "ov", group = 1)
   lv.names <- lavaan::lavNames(object@ParTable, "lv", group = 1)
@@ -491,9 +492,10 @@ stdRotatedLoadings <- function(est, object, fun, aux = NULL, rotate = NULL, More
 	loading <- matrix(est[load.idx], ncol = length(lv.names))
 	loading <- rbind(loading, matrix(0, length(aux), ncol(loading)))
 	# Nu
-	int.idx <- which(partable$op == "~1" & (partable$rhs == "") & (partable$lhs %in% ov.names))
-	intcept <- matrix(est[int.idx], ncol = 1)
-
+	if (lavInspect(object, "options")$meanstructure) {
+	  int.idx <- which(partable$op == "~1" & (partable$rhs == "") & (partable$lhs %in% ov.names))
+	  intcept <- matrix(est[int.idx], ncol = 1)
+	}
 	# Theta
 	th.idx <- which(partable$op == "~~" & (partable$rhs %in% ov.names) & (partable$lhs %in% ov.names))
 	theta <- matrix(0, nrow = length(ov.names), ncol = length(ov.names),
@@ -517,8 +519,9 @@ stdRotatedLoadings <- function(est, object, fun, aux = NULL, rotate = NULL, More
 
 	# %*% rotate
 	est[load.idx] <- as.vector(loading[seq_along(ind.names),])
-	intcept <- invsd %*% intcept
-	est[int.idx] <- as.vector(intcept)
+	if (lavInspect(object, "options")$meanstructure) {
+	  est[int.idx] <- as.vector(invsd %*% intcept)
+	}
 	theta <- invsd %*% theta %*% invsd
 	rownames(theta) <- colnames(theta) <- ov.names
 	for(i in th.idx)  est[i] <- theta[partable$lhs[i], partable$rhs[i]]
