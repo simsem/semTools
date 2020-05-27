@@ -54,10 +54,6 @@ MIMIC papers:
 
 
 
-- Need to check all instances of "group", if they need to be changed to "block"
-  - miPowerFit() error with single group, ignore groups in multigroup
-
-
 ============================
 Measurement Invariance suite
 ============================
@@ -191,7 +187,6 @@ add moreFitIndices= argument to compareFit()
 semTools::miPowerFit()
 - optionally work with lavTestScore() output?
   - https://groups.google.com/d/msg/lavaan/b2mB9kHUYho/vFad-F8UDgAJ
-- error with single group, ignore groups in multigroup
 
 
 semTools::chisqSmallN()
@@ -208,12 +203,6 @@ semTools::net()
   - need to fudge the check using single-level models (MLSEM requires raw data)
 
 
-semTools::reliability() suite
-- issue resolved? (no news) https://github.com/simsem/semTools/issues/45
-- check categorical issue: https://github.com/simsem/semTools/issues/48
-  - https://doi.org/10.1177/0013164417752008
-
-
 New function: convert ordinal CFA parameters to IRT
 - https://groups.google.com/d/msg/lavaan/RpZnNPQ3_kc/wawV4T-lAwAJ
 - https://groups.google.com/d/msg/lavaan/xeG7OuYcrMc/epJp14WlAwAJ
@@ -226,10 +215,6 @@ New function: partialRsq()
     From:    Michael Zyphur <mzyphur@GMAIL.COM>
     Subject: Software for path-analytic variance computations?
 - also offer semipartialRsq()? or add semi-TRUE/FALSE option
-
-
-Add emmeans() support for observed/latent mean comparisons
-- post update here:  https://github.com/yrosseel/lavaan/issues/133
 
 
 

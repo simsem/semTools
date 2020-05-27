@@ -1,5 +1,10 @@
 # semTools 0.5-3 (in development)
 
+## New Functions:
+
+- New `discriminantValidity()` function added.
+- Support functions for the `emmeans` package (see `?lavaan2emmeans` for examples)
+
 ## New Features:
 
 - `class?lavaan.mi` methods and functions can optionally specify particular imputation numbers to omit, in addition to the general omission criteria in `omit.imps=`. Simply include specific imputation numbers in the `omit.imps=` vector.
@@ -13,7 +18,6 @@
 - `reliability()` includes 2 new arguments:
     - default `dropSingle = TRUE` is consistent with old behavior.
     - "total" column no longer returned by default, or ever for 1-factor models. Users can request `return.total = TRUE` when multiple factors are multiple dimensions of a single scale composite.
-- New `discriminantValidity()` function added.
 - New small-*N* corrections added to `chisqSmallN()` function. Also accepts `lavaan.mi` objects now.
 - `efaUnrotate()` now accepts summary statistics when `data=NULL`.
 
