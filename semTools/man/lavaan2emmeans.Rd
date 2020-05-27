@@ -11,55 +11,66 @@ recover_data.lavaan(object, lavaan.DV, ...)
 emm_basis.lavaan(object, trms, xlev, grid, lavaan.DV, ...)
 }
 \arguments{
-\item{object}{An object of class \code{lavaan}. See details.}
+\item{object}{An object of class \code{\link[lavaan]{lavaan}}.
+See \strong{Details}.}
 
-\item{lavaan.DV}{Name (string) of the variable for which emmeans or emtrends should be produced. Can be a vector of names - see details.}
+\item{lavaan.DV}{\code{character} string maming the variable(s) for which
+expected marginal means / trends should be produced.
+A vector of names indicates a multivariate outcome, treated by default
+as repeated measures.}
 
-\item{...}{Passed to \code{emmeans::recover_data.lm} or \code{emmeans::emm_basis.lm}.}
+\item{...}{Further arguments passed to \code{emmeans::recover_data.lm} or
+\code{emmeans::emm_basis.lm}}
 
-\item{trms, xlev, grid}{See \code{emmeans::emm_basis}.}
+\item{trms, xlev, grid}{See \code{emmeans::emm_basis}}
 }
 \description{
-
+Provide emmeans support for lavaan objects
 }
 \details{
 \subsection{Supported DVs}{
-\code{lavaan.DV} must be an \emph{endogenous variable}, by either appearing on the
-left-had-side of of a regression operator (\code{"~"}) or an intercept operator
-(\code{"~1"}), or both.
-\cr\cr
-\code{lavaan.DV} can also be a vector of endogenous variable, in which case they will be treated by
-emmeans as multivariate DVs (or repeated measures, a factor by the name \code{rep.meas}).
+  \code{lavaan.DV} must be an \emph{endogenous variable}, by appearing on
+  the left-hand side of either a regression operator (\code{"~"})
+  or an intercept operator (\code{"~1"}), or both.
+  \cr\cr
+  \code{lavaan.DV} can also be a vector of endogenous variable, in which
+  case they will be treated by \code{emmeans} as a multivariate outcome
+  (often, this indicates repeated measures) represented by an additional
+  factor named \code{rep.meas} by default.  The \code{rep.meas=} argument
+  can be used to overwrite this default name.
 }
 
 \subsection{Unsupported Models}{
-This functionality does not support the following models:
-\itemize{
-  \item Multi-level models are only supported if the DV is on level 1.
-  \item Models not fit with with a data frame (i.e., models fit with a covariance matrix).
-}
+  This functionality does not support the following models:
+  \itemize{
+    \item Multi-level models are not supported.
+    \item Models not fit to a \code{data.frame} (i.e., models fit to a
+          covariance matrix).
+  }
 }
 
 \subsection{Dealing with Fixed Parameters}{
-Fixed parameters (set with \code{lavaan}'s modifiers) are treated as-is: their value
-is as set by the users, and they have a SE of 0 (and they do not co-vary with any
-other parameter).
+Fixed parameters (set with \code{lavaan}'s modifiers) are treated as-is:
+their values are set by the users, and they have a \emph{SE} of 0 (as such,
+they do not co-vary with any other parameter).
 }
 
-\subsection{Dealing with Multi-group Models}{
-If a multi-group model is supplied, a factor is added to the reference grid, the name
-matching the \code{group} argument supplied when fitting the model. \emph{Note that you must
-set \code{nesting = NULL}}.
+\subsection{Dealing with Multigroup Models}{
+If a multigroup model is supplied, a factor is added to the reference grid,
+the name matching the \code{group} argument supplied when fitting the model.
+\emph{Note that you must set} \code{nesting = NULL}.
 }
 
 \subsection{Dealing with Missing Data}{
-Limited testing suggests that these functions do work when the model was fit with missing data.
+Limited testing suggests that these functions do work when the model was fit
+to incomplete data.
 }
 
 \subsection{Dealing with Factors}{
-By default \code{emmeans} recognizes binary variables (0,1) as a "factor" with two levels
-(and not a continuous variable). With some clever contrast defenitions it should be
-possible to get the desired emmeans / contasts. See example below.
+By default \code{emmeans} recognizes binary variables (0,1) as a "factor"
+with two levels (and not a continuous variable). With some clever contrast
+defenitions it should be possible to get the desired emmeans / contasts.
+See example below.
 }
 }
 \examples{
@@ -234,5 +245,6 @@ possible to get the desired emmeans / contasts. See example below.
 }
 }
 \author{
-Mattan S. Ben-Shachar
+Mattan S. Ben-Shachar (Ben-Gurion University of the Negev;
+  \email{matanshm@post.bgu.ac.il})
 }

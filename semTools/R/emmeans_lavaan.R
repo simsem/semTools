@@ -1,61 +1,78 @@
-#' \code{emmeans} Support Functions for \code{lavaan} Models
-#'
-#' @description
-#'
-#' @param object An object of class \code{lavaan}. See details.
-#' @param lavaan.DV Name (string) of the variable for which emmeans or emtrends should be produced. Can be a vector of names - see details.
-#' @param trms,xlev,grid See \code{emmeans::emm_basis}.
-#' @param ... Passed to \code{emmeans::recover_data.lm} or \code{emmeans::emm_basis.lm}.
-#'
-#' @details
-#'
-#' \subsection{Supported DVs}{
-#' \code{lavaan.DV} must be an \emph{endogenous variable}, by either appearing on the
-#' left-had-side of of a regression operator (\code{"~"}) or an intercept operator
-#' (\code{"~1"}), or both.
-#' \cr\cr
-#' \code{lavaan.DV} can also be a vector of endogenous variable, in which case they will be treated by
-#' emmeans as multivariate DVs (or repeated measures, a factor by the name \code{rep.meas}).
-#' }
-#'
-#' \subsection{Unsupported Models}{
-#' This functionality does not support the following models:
-#' \itemize{
-#'   \item Multi-level models are only supported if the DV is on level 1.
-#'   \item Models not fit with with a data frame (i.e., models fit with a covariance matrix).
-#' }
-#' }
-#'
-#' \subsection{Dealing with Fixed Parameters}{
-#' Fixed parameters (set with \code{lavaan}'s modifiers) are treated as-is: their value
-#' is as set by the users, and they have a SE of 0 (and they do not co-vary with any
-#' other parameter).
-#' }
-#'
-#' \subsection{Dealing with Multi-group Models}{
-#' If a multi-group model is supplied, a factor is added to the reference grid, the name
-#' matching the \code{group} argument supplied when fitting the model. \emph{Note that you must
-#' set \code{nesting = NULL}}.
-#' }
-#'
-#' \subsection{Dealing with Missing Data}{
-#' Limited testing suggests that these functions do work when the model was fit with missing data.
-#' }
-#'
-#' \subsection{Dealing with Factors}{
-#' By default \code{emmeans} recognizes binary variables (0,1) as a "factor" with two levels
-#' (and not a continuous variable). With some clever contrast defenitions it should be
-#' possible to get the desired emmeans / contasts. See example below.
-#' }
-#'
-#' @example examples/emmeans_lavaan - examples.R
-#'
-#' @author Mattan S. Ben-Shachar
-#'
-#' @name lavaan2emmeans
+### Mattan S. Ben-Shachar
+### Last updated: 27 May 2020
+### emmeans support for lavaan objects
+
+
+##' \code{emmeans} Support Functions for \code{lavaan} Models
+##'
+##' @description Provide emmeans support for lavaan objects
+##'
+##' @param object An object of class \code{\link[lavaan]{lavaan}}.
+##'   See \strong{Details}.
+##' @param lavaan.DV \code{character} string maming the variable(s) for which
+##'   expected marginal means / trends should be produced.
+##'   A vector of names indicates a multivariate outcome, treated by default
+##'   as repeated measures.
+##' @param trms,xlev,grid See \code{emmeans::emm_basis}
+##' @param ... Further arguments passed to \code{emmeans::recover_data.lm} or
+##'   \code{emmeans::emm_basis.lm}
+##'
+##' @details
+##'
+##' \subsection{Supported DVs}{
+##'   \code{lavaan.DV} must be an \emph{endogenous variable}, by appearing on
+##'   the left-hand side of either a regression operator (\code{"~"})
+##'   or an intercept operator (\code{"~1"}), or both.
+##'   \cr\cr
+##'   \code{lavaan.DV} can also be a vector of endogenous variable, in which
+##'   case they will be treated by \code{emmeans} as a multivariate outcome
+##'   (often, this indicates repeated measures) represented by an additional
+##'   factor named \code{rep.meas} by default.  The \code{rep.meas=} argument
+##'   can be used to overwrite this default name.
+##' }
+##'
+##' \subsection{Unsupported Models}{
+##'   This functionality does not support the following models:
+##'   \itemize{
+##'     \item Multi-level models are not supported.
+##'     \item Models not fit to a \code{data.frame} (i.e., models fit to a
+##'           covariance matrix).
+##'   }
+##' }
+##'
+##' \subsection{Dealing with Fixed Parameters}{
+##' Fixed parameters (set with \code{lavaan}'s modifiers) are treated as-is:
+##' their values are set by the users, and they have a \emph{SE} of 0 (as such,
+##' they do not co-vary with any other parameter).
+##' }
+##'
+##' \subsection{Dealing with Multigroup Models}{
+##' If a multigroup model is supplied, a factor is added to the reference grid,
+##' the name matching the \code{group} argument supplied when fitting the model.
+##' \emph{Note that you must set} \code{nesting = NULL}.
+##' }
+##'
+##' \subsection{Dealing with Missing Data}{
+##' Limited testing suggests that these functions do work when the model was fit
+##' to incomplete data.
+##' }
+##'
+##' \subsection{Dealing with Factors}{
+##' By default \code{emmeans} recognizes binary variables (0,1) as a "factor"
+##' with two levels (and not a continuous variable). With some clever contrast
+##' defenitions it should be possible to get the desired emmeans / contasts.
+##' See example below.
+##' }
+##'
+##' @author Mattan S. Ben-Shachar (Ben-Gurion University of the Negev;
+##'   \email{matanshm@@post.bgu.ac.il})
+##'
+##' @example examples/lavaan2emmeans.R
+##'
+##' @name lavaan2emmeans
 NULL
 
-#' @rdname lavaan2emmeans
+##' @rdname lavaan2emmeans
 recover_data.lavaan <- function(object, lavaan.DV, ...){
   if (!requireNamespace("emmeans", quietly = TRUE)){
     stop("'emmeans' is not installed.")
@@ -78,7 +95,8 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
   return(recovered)
 }
 
-#' @rdname lavaan2emmeans
+##' @rdname lavaan2emmeans
+##' @importFrom lavaan lavInspect
 emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   if (!requireNamespace("emmeans", quietly = TRUE)) {
     stop("'emmeans' is not installed.")
@@ -113,7 +131,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 
   # VCOV --------------------------------------------------------------------
-  lavVCOV <- lavaan::lavInspect(object, "vcov")
+  lavVCOV <- lavInspect(object, "vcov")
   pars <- .emlav_clean_pars_tab(object, lavaan.DV, "vcov")
   par_names <- paste0(pars$lhs, pars$op, pars$rhs)
 
@@ -163,7 +181,8 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   return(emmb)
 }
 
-#' @keywords internal
+##' @keywords internal
+##' @importFrom lavaan lavInspect
 .emlav_test_DV <- function(object, lavaan.DV){
   # has DV?
   pars <- lavaan::parameterEstimates(object)
@@ -179,8 +198,8 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   }
 
   # Is DV ordered?
-  if (any(lavaan.DV %in% lavaan::lavInspect(object, 'ordered'))) {
-    lavaan.DV <- lavaan.DV[lavaan.DV %in% lavaan::lavInspect(object, 'ordered')]
+  if (any(lavaan.DV %in% lavInspect(object, 'ordered'))) {
+    lavaan.DV <- lavaan.DV[lavaan.DV %in% lavInspect(object, 'ordered')]
     lavaan.DV <- paste0(lavaan.DV, collapse = ",")
     stop(
       "{", lavaan.DV, "} is an ordered variable! ",
@@ -192,33 +211,34 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 
   # is multilevel?
-  if (lavaan::lavInspect(object, 'nlevels') > 1L){
+  if (lavInspect(object, 'nlevels') > 1L){
     warning(
-      "lavaan->emmeans only supports regression on level 1.\n",
-      "See `?lavaan2emmeans` for more info.",
+      "emmeans support is unavailable for multilevel SEMs.",
       call. = FALSE
     )
   }
 
   # multi-group?
-  if (lavaan::lavInspect(object, 'ngroups') > 1L) {
-    warning(
-      "For multi-group models, don't forget to set 'nesting = NULL'.\n",
-      "See `?lavaan2emmeans` for more info.",
-      call. = FALSE
-    )
-  }
+  # if (lavInspect(object, 'ngroups') > 1L) {
+  #   warning(
+  #     "For multi-group models, don't forget to set 'nesting = NULL'.\n",
+  #     "See `?lavaan2emmeans` for more info.",
+  #     call. = FALSE
+  #   )
+  # }
+  #TDJ moved this to a one-time message to .onLoad() in zzz.R
 
   invisible(NULL)
 }
 
-#' @keywords internal
+##' @keywords internal
+##' @importFrom lavaan lavInspect
 .emlav_recover_data <- function(object){
-  data_obs <- lavaan::lavInspect(object, "data")
+  data_obs <- lavInspect(object, "data")
   data_lat <- lavaan::lavPredict(object, type = "lv")
 
   # If multi group
-  if (lavaan::lavInspect(object, 'ngroups') > 1L) {
+  if (lavInspect(object, 'ngroups') > 1L) {
     # make single data frame + add group labels
     group_labels <- sapply(seq_along(names(data_obs)), function(i) {
       label_ <- names(data_obs)[i]
@@ -227,7 +247,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
     })
 
     data_obs <- data.frame(do.call(rbind, data_obs))
-    data_obs[[lavaan::lavInspect(object, "group")]] <- unlist(group_labels)
+    data_obs[[lavInspect(object, "group")]] <- unlist(group_labels)
     data_lat <- do.call(rbind, data_lat)
   }
 
@@ -235,7 +255,8 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   return(data.frame(data_full))
 }
 
-#' @keywords internal
+##' @keywords internal
+##' @importFrom lavaan lavInspect
 .emlav_fake_fit <- function(object, lavaan.DV){
   lavaan_data <- .emlav_recover_data(object)
 
@@ -244,13 +265,13 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   pars <- pars[pars$lhs %in% lavaan.DV & pars$op == "~", ]
 
   # If multi-group
-  if (lavaan::lavInspect(object, 'ngroups') > 1L) {
+  if (lavInspect(object, 'ngroups') > 1L) {
     # condition on group (no intercept!)
     RHS <- paste0(
       "0 +",
-      lavaan::lavInspect(object, "group"),
+      lavInspect(object, "group"),
       "+",
-      lavaan::lavInspect(object, "group"),
+      lavInspect(object, "group"),
       "/(",
       paste0(pars$rhs, collapse = " + "),
       ")"
@@ -268,7 +289,8 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   return(lm(lavaan_formula, lavaan_data))
 }
 
-#' @keywords internal
+##' @keywords internal
+##' @importFrom lavaan lavInspect
 .emlav_clean_pars_tab <- function(object, lavaan.DV, type = c("bhat", "vcov")){
   type <- match.arg(type)
   if (type == "bhat") {
@@ -283,9 +305,9 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   pars$rhs[pars$op == "~1"] <- "(Intercept)"
   pars$op[pars$op == "~1"] <- "~"
 
-  if (lavaan::lavInspect(object, 'ngroups') > 1L) {
-    group_labs <- paste0(lavaan::lavInspect(object, 'group'),
-                         lavaan::lavInspect(object, 'group.label'))
+  if (lavInspect(object, 'ngroups') > 1L) {
+    group_labs <- paste0(lavInspect(object, 'group'),
+                         lavInspect(object, 'group.label'))
     pars$group <- group_labs[pars$group]
     temp_rhs <- paste0(pars$group, ":", pars$rhs)
     temp_rhs[grepl("(Intercept)", temp_rhs)] <-
@@ -300,7 +322,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   return(pars[, colnames(pars) %in% c("lhs", "op", "rhs", "label", "est")])
 }
 
-#' @keywords internal test
+##' @keywords internal test
 .emlav_run_tests <- function() {
   if (!requireNamespace("testthat")) {
     stop("Need 'testthat' for testing")
