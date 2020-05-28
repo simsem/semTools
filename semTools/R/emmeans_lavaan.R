@@ -67,7 +67,7 @@
 ##' @author Mattan S. Ben-Shachar (Ben-Gurion University of the Negev;
 ##'   \email{matanshm@@post.bgu.ac.il})
 ##'
-##' @example examples/lavaan2emmeans.R
+##' @example inst/examples/lavaan2emmeans.R
 ##'
 ##' @name lavaan2emmeans
 NULL
@@ -79,6 +79,16 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
   }
 
   .emlav_test_DV(object, lavaan.DV)
+  ## testing multi-group requires access to ...
+  dots <- list(...)
+  if (lavInspect(object, 'ngroups') > 1L && !("nesting" %in% names(dots))) {
+    warning(
+      "For multi-group models, don't forget to set 'nesting = NULL'.\n",
+      "See `?lavaan2emmeans` for more info.",
+      call. = FALSE
+    )
+  }
+
 
   # Fake it
   recovered <- emmeans::recover_data(.emlav_fake_fit(object, lavaan.DV),
@@ -218,16 +228,6 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
     )
   }
 
-  # multi-group?
-  # if (lavInspect(object, 'ngroups') > 1L) {
-  #   warning(
-  #     "For multi-group models, don't forget to set 'nesting = NULL'.\n",
-  #     "See `?lavaan2emmeans` for more info.",
-  #     call. = FALSE
-  #   )
-  # }
-  #TDJ moved this to a one-time message to .onLoad() in zzz.R
-
   invisible(NULL)
 }
 
@@ -280,7 +280,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
     RHS <- paste0(pars$rhs, collapse = " + ")
   }
 
-  lavaan_formula <- as.formula(paste0(
+  lavaan_formula <- stats::as.formula(paste0(
     paste0("cbind(",paste0(lavaan.DV, collapse = ","),")"),
     "~",
     RHS
@@ -342,7 +342,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   above := b2 + b3 * (+1)
   '
     semFit <- lavaan::sem(model = model,
-                          data = iris)
+                          data = datasets::iris)
 
     em_ <- summary(
       emmeans::emtrends(
@@ -380,7 +380,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   '
 
     semFit <- lavaan::sem(model = model,
-                          data = iris,
+                          data = datasets::iris,
                           std.lv = TRUE)
 
     em_ <- summary(emmeans::emmeans(

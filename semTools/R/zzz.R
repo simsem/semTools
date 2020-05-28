@@ -10,10 +10,6 @@
 .onLoad <- function(libname, pkgname) {
     if (requireNamespace("emmeans", quietly = TRUE)){
         emmeans::.emm_register("lavaan", pkgname)
-        message('semTools now supports using the emmeans package on lavaan ',
-                'objects. For multigroup models, remember to set ',
-                '"nesting = NULL" in order to treat the grouping variable as ',
-                'another design factor in the ref_grid.')
     }
 }
 
