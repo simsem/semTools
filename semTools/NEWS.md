@@ -1,4 +1,8 @@
-# semTools 0.5-3 (in development)
+# semTools 0.5-4 (in development)
+
+
+
+# semTools 0.5-3 (on CRAN 27 May 2020)
 
 ## New Functions:
 
