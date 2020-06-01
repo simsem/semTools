@@ -1,6 +1,10 @@
 # semTools 0.5-4 (in development)
 
 
+## Bug Fixes:
+
+- `net()` returned an error for models with categorical indicators, now fixed.
+
 
 # semTools 0.5-3 (on CRAN 27 May 2020)
 

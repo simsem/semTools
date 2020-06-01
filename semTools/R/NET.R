@@ -300,7 +300,7 @@ x.within.y <- function(x, y, crit = .0001) {
   } else {
     if (all(sapply(Thr, length) == 0)) Thr <- NULL
   }
-  if (!is.null(Thr)) Thr <- attr(Thr, "th.idx") <- lavInspect(x, "th.idx")
+  if (!is.null(Thr)) attr(Thr, "th.idx") <- lavInspect(x, "th.idx")
 
   ## If DWLS, extract WLS.V and NACOV
   estimator <- lavInspect(x, "options")$estimator
