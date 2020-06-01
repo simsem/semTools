@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 18 May 2020
+### Last updated: 1 June 2020
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 

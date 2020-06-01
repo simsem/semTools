@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 16 September 2019
+### Last updated: 1 June 2020
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -806,14 +806,13 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
 
     scaleshift <- any(test.names == "scaled.shifted")
     if (scaleshift) {
-      if (test == "D3" | !pool.robust)
+      if (test == "D3") {
         message("If test = 'scaled.shifted' (estimator = 'WLSMV' or 'MLMV'), ",
-                "model comparison is only available by (re)setting test = 'D2' ",
-                "and pool.robust = TRUE.\n",
-                "Control more options by passing arguments to lavTestLRT() via ",
-                "the '...' argument.\n")
-      dots$pool.robust <- pool.robust <- TRUE
-      test <- 'D2'
+                "model evaluation is only available by (re)setting .",
+                "test = 'D2'.\nControl more options by passing arguments to ",
+                "lavTestLRT() via the '...' argument.\n")
+        test <- 'D2'
+      }
     }
 
     if (pool.robust && test == "D3") {
