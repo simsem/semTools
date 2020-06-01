@@ -167,7 +167,7 @@ set.seed(456)
 miceImps <- mice(datCat)
 ## save imputations in a list of data.frames
 impList <- list()
-for (i in miceImps$m) impList[[i]] <- complete(miceImps, action = i)
+for (i in 1:miceImps$m) impList[[i]] <- complete(miceImps, action = i)
 
 ## fit model, save zero-cell tables and obsolete "WRMR" fit indices
 catout <- cfa.mi(' f =~ 1*u1 + 1*u2 + 1*u3 + 1*u4 ', data = impList,
