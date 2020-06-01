@@ -23,7 +23,7 @@
   level = 0.95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
   scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
   asymptotic = FALSE, header = TRUE, output = "text",
-  fit.measures = FALSE)
+  fit.measures = FALSE, ...)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
@@ -104,6 +104,9 @@ a \eqn{\chi^2} distribution.}
 \code{summary(object, fit.measures = TRUE)} will print (but not
 return) a table of fit measures to the console.}
 
+\item{...}{Additional arguments passed to \code{\link{lavTestLRT.mi}}, or
+subsequently to \code{\link[lavaan]{lavTestLRT}}.}
+
 \item{total}{\code{logical} (default: \code{TRUE}) indicating whether the
 \code{nobs} method should return the total sample size or (if
 \code{FALSE}) a vector of group sample sizes.}
@@ -114,9 +117,6 @@ under \code{coef}, \code{vcov}, and \code{residuals}.}
 
 \item{labels}{\code{logical} indicating whether the \code{coef} output
 should include parameter labels. Default is \code{TRUE}.}
-
-\item{...}{Additional arguments passed to \code{\link{lavTestLRT.mi}}, or
-subsequently to \code{\link[lavaan]{lavTestLRT}}.}
 }
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free",
@@ -170,8 +170,8 @@ subsequently to \code{\link[lavaan]{lavTestLRT}}.}
 
 \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
- scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
- asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE)}:
+ scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
+  header = TRUE, output = "text", fit.measures = FALSE, ...)}:
  see \code{\link[lavaan]{parameterEstimates}} for details.
  By default, \code{summary} returns pooled point and \emph{SE}
  estimates, along with \emph{t} test statistics and their associated
@@ -187,7 +187,9 @@ subsequently to \code{\link[lavaan]{lavTestLRT}}.}
  the \code{parameterEstimates} output. The \code{scale.W} argument is
  passed to \code{vcov} (see description above).
  Setting \code{fit.measures=TRUE} will additionally print fit measures to
- the console, but they will not be returned.}
+ the console, but they will not be returned; additional arguments may be
+ passed via \code{...} to \code{\link[lavaan]{fitMeasures}} and
+ subsequently to \code{\link{lavTestLRT.mi}}.}
 }
 \description{
 This class extends the \code{\linkS4class{lavaanList}} class, created by

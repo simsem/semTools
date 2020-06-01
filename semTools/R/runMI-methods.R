@@ -163,8 +163,8 @@
 ##'
 ##' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
 ##'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-##'  scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
-##'  asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE)}:
+##'  scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
+##'   header = TRUE, output = "text", fit.measures = FALSE, ...)}:
 ##'  see \code{\link[lavaan]{parameterEstimates}} for details.
 ##'  By default, \code{summary} returns pooled point and \emph{SE}
 ##'  estimates, along with \emph{t} test statistics and their associated
@@ -180,7 +180,9 @@
 ##'  the \code{parameterEstimates} output. The \code{scale.W} argument is
 ##'  passed to \code{vcov} (see description above).
 ##'  Setting \code{fit.measures=TRUE} will additionally print fit measures to
-##'  the console, but they will not be returned.}
+##'  the console, but they will not be returned; additional arguments may be
+##'  passed via \code{...} to \code{\link[lavaan]{fitMeasures}} and
+##'  subsequently to \code{\link{lavTestLRT.mi}}.}
 ##'
 ##' @section Objects from the Class: See the \code{\link{runMI}} function for
 ##'   details. Wrapper functions include \code{\link{lavaan.mi}},
@@ -272,7 +274,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               fmi = FALSE, scale.W = !asymptotic,
                               omit.imps = c("no.conv","no.se"),
                               asymptotic = FALSE, header = TRUE,
-                              output = "text", fit.measures = FALSE) {
+                              output = "text", fit.measures = FALSE, ...) {
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
   if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -440,7 +442,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   if (fit.measures) {
     indices <- c("chisq","df","pvalue","cfi","tli","rmsea","srmr")
     FITS <- suppressWarnings(fitMeasures(object, fit.measures = indices,
-                                         output = "text"))
+                                         output = "text", ...))
     try(print(FITS, add.h0 = TRUE), silent = TRUE)
   }
 
