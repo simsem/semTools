@@ -1,6 +1,10 @@
 # semTools 0.5-4 (in development)
 
 
+## New Features:
+
+- `summary()` method for `lavaan.mi` objects now passes arguments to `lavTestLRT.mi()` via `...`.
+
 ## Bug Fixes:
 
 - `net()` returned an error for models with categorical indicators, now fixed.
