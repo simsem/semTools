@@ -64,16 +64,19 @@ variances and intercepts of latent item-responses underlying any
 \itemize{
   \item To follow Wu & Estabrook's (2016) guidelines (default), specify
         any of: \code{"Wu.Estabrook.2016"}, \code{"Wu.2016"},
-        \code{"Wu.Estabrook"}, \code{"Wu"}, \code{"Wu2016"}.
+        \code{"Wu.Estabrook"}, \code{"Wu"}, \code{"Wu2016"}. For
+        consistency, specify \code{ID.fac = "std.lv"}.
   \item To use the default settings of M\emph{plus} and \code{lavaan},
         specify any of: \code{"default"}, \code{"Mplus"}, \code{"Muthen"}.
         Details provided in Millsap & Tein (2004).
   \item To use the constraints recommended by Millsap & Tein (2004; see
         also Liu et al., 2017, for the longitudinal case)
         specify any of: \code{"millsap"}, \code{"millsap.2004"},
-        \code{"millsap.tein.2004"}
+        \code{"millsap.tein.2004"}. For consistency, specify
+        \code{ID.fac = "marker"} and \code{parameterization = "theta"}.
   \item To use the default settings of LISREL, specify \code{"LISREL"}
         or \code{"Joreskog"}. Details provided in Millsap & Tein (2004).
+        For consistency, specify \code{parameterization = "theta"}.
 }
 See \strong{Details} and \strong{References} for more information.}
 

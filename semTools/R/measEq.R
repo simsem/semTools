@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 27 May 2020
+### Last updated: 5 June 2020
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -886,16 +886,19 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'   \itemize{
 ##'     \item To follow Wu & Estabrook's (2016) guidelines (default), specify
 ##'           any of: \code{"Wu.Estabrook.2016"}, \code{"Wu.2016"},
-##'           \code{"Wu.Estabrook"}, \code{"Wu"}, \code{"Wu2016"}.
+##'           \code{"Wu.Estabrook"}, \code{"Wu"}, \code{"Wu2016"}. For
+##'           consistency, specify \code{ID.fac = "std.lv"}.
 ##'     \item To use the default settings of M\emph{plus} and \code{lavaan},
 ##'           specify any of: \code{"default"}, \code{"Mplus"}, \code{"Muthen"}.
 ##'           Details provided in Millsap & Tein (2004).
 ##'     \item To use the constraints recommended by Millsap & Tein (2004; see
 ##'           also Liu et al., 2017, for the longitudinal case)
 ##'           specify any of: \code{"millsap"}, \code{"millsap.2004"},
-##'           \code{"millsap.tein.2004"}
+##'           \code{"millsap.tein.2004"}. For consistency, specify
+##'           \code{ID.fac = "marker"} and \code{parameterization = "theta"}.
 ##'     \item To use the default settings of LISREL, specify \code{"LISREL"}
 ##'           or \code{"Joreskog"}. Details provided in Millsap & Tein (2004).
+##'           For consistency, specify \code{parameterization = "theta"}.
 ##'   }
 ##'   See \strong{Details} and \strong{References} for more information.
 ##'
@@ -1383,11 +1386,11 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   }
 
   ## extract options and other information
-  parameterization <- mc$parameterization
+  parameterization <- eval(mc$parameterization)
   if (is.null(parameterization)) {
     parameterization <- lavInspect(lavTemplate, "options")$parameterization
   }
-  meanstructure <- mc$meanstructure
+  meanstructure <- eval(mc$meanstructure)
   if (is.null(meanstructure)) {
     meanstructure <- lavInspect(lavTemplate, "options")$meanstructure
   }
@@ -1580,28 +1583,33 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       if (p == "tau") {
         GLIST.specify[[g]]$tau <- GLIST.free[[g]]$tau == 0
         GLIST.specify[[g]]$tau[ , 1] <- TRUE
+        next
       }
       ## LOADINGS
       if (p == "lambda") {
         free.loading <- GLIST.free[[g]]$lambda > 0L
         fixed.nonzero.loading <- GLIST.free[[g]]$lambda == 0L & GLIST.est[[g]]$lambda != 0
         GLIST.specify[[g]]$lambda <- free.loading | fixed.nonzero.loading
+        next
       }
       ## SECOND-ORDER LOADINGS
       if (p == "beta") {
         free.loading <- GLIST.free[[g]]$beta > 0L
         fixed.nonzero.loading <- GLIST.free[[g]]$beta == 0L & GLIST.est[[g]]$beta != 0
         GLIST.specify[[g]]$beta <- free.loading | fixed.nonzero.loading
+        next
       }
       ## INTERCEPTS
       if (p == "nu") {
         GLIST.specify[[g]]$nu <- GLIST.free[[g]]$nu == 0
         GLIST.specify[[g]]$nu[ , 1] <- TRUE
+        next
       }
       ## LATENT MEANS
       if (p == "alpha") {
         GLIST.specify[[g]]$alpha <- GLIST.free[[g]]$alpha == 0
         GLIST.specify[[g]]$alpha[ , 1] <- TRUE
+        next
       }
       ## LATENT (CO)VARIANCES
       if (p == "psi") {
@@ -1610,6 +1618,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                                          dimnames = dimnames(GLIST.free[[g]]$psi))
         ## only specify lower triangle
         GLIST.specify[[g]]$psi[upper.tri(GLIST.specify[[g]]$psi)] <- FALSE
+        next
       }
       ## RESIDUAL (CO)VARIANCES
       if (p == "theta") {
@@ -1621,6 +1630,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
           diag(GLIST.specify[[g]]$theta)[allOrdNames] <- FALSE
         ## only specify lower triangle
         GLIST.specify[[g]]$theta[upper.tri(GLIST.specify[[g]]$theta)] <- FALSE
+        next
       }
       ## SCALING FACTORS (delta parameters for latent item-responses)
       if (p == "delta") {
