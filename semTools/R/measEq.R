@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 June 2020
+### Last updated: 6 June 2020
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1299,7 +1299,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                                  '"configural.model=" argument, not "model=".')
   if (is.null(dots$meanstructure)) {
     constrMeanStr <- c("intercepts","means") %in% c(group.equal, long.equal)
-    if (is.null(dots$sample.mean) && is.null(dots$data) && !any(constrMeanStr)) {
+    if (is.null(dots$data) && is.null(dots$sample.mean) &&
+        is.null(dots$sample.th) && !any(constrMeanStr)) {
       dots$meanstructure <- FALSE
       mc$meanstructure <- FALSE
     } else {
@@ -1386,14 +1387,17 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
   }
 
   ## extract options and other information
-  parameterization <- eval(mc$parameterization)
-  if (is.null(parameterization)) {
+  if (is.null(mc$parameterization)) {
     parameterization <- lavInspect(lavTemplate, "options")$parameterization
+  } else {
+    parameterization <- try(eval(mc$parameterization), silent = TRUE)
+    if (inherits(parameterization, "try-error")) {
+      parameterization <- try(eval.parent(mc$parameterization, 1), silent = TRUE)
+    }
   }
-  meanstructure <- eval(mc$meanstructure)
-  if (is.null(meanstructure)) {
+  if (is.null(mc$meanstructure)) {
     meanstructure <- lavInspect(lavTemplate, "options")$meanstructure
-  }
+  } else meanstructure <- mc$meanstructure
   nG <- lavInspect(lavTemplate, "ngroups")
   ## names of ordinal indicators, number of thresholds for each
   allOrdNames <- lavNames(lavTemplate, type = "ov.ord")
