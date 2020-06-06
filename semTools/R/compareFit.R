@@ -312,6 +312,14 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	modClass <- unique(sapply(mods, class))
 	if (length(modClass) > 1L) stop('All models must be of the same class (e.g.,',
 	                                ' cannot compare lavaan objects to lavaan.mi)')
+	nonConv <- !sapply(mods, lavInspect, what = "converged")
+	if (all(nonConv)) {
+	  stop('No models converged')
+	} else if (any(nonConv)) {
+	  message('The following models did not converge, so they are ignored:\n',
+	          paste(names(nonConv)[nonConv], collapse = ",\t"))
+	  mods <- mods[which(!nonConv)]
+	}
 
 
 	## grab lavaan.mi options, if relevant

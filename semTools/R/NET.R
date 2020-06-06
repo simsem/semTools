@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 27 April 2020
+### Last updated: 6 June 2020
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -186,7 +186,9 @@ net <- function(..., crit = .0001) {
 
   ## remove any that did not converge
   nonConv <- !sapply(fitList, lavInspect, what = "converged")
-  if (any(nonConv)) {
+  if (all(nonConv)) {
+    stop('No models converged')
+  } else if (any(nonConv)) {
     fitNames <- sapply(as.list(substitute(list(...)))[-1], deparse)
     message('The following models did not converge, so they are ignored:\n',
             paste(fitNames[nonConv], collapse = ",\t"))
