@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 29 August 2019
+### Last updated: 6 June 2020
 ### source code for compareFit() function and FitDiff class
 
 
@@ -462,7 +462,7 @@ getFitSummary <- function(object, fit.measures = "default", return.diff = FALSE)
   }
 
   ## return numeric values
-  fitTab <- object@fit[ , colnames(object@fit) %in% fit.measures]
+  fitTab <- object@fit[ , colnames(object@fit) %in% fit.measures, drop = FALSE]
   if (!return.diff) return(fitTab)
 
   ## or return differences in fit indices
