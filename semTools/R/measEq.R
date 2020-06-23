@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 June 2020
+### Last updated: 23 June 2020
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1439,6 +1439,15 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     if (any(partial.thr)) long.partial <- long.partial[!partial.thr, ]
   }
 
+  if (length(allOrdNames) && ID.cat %in% c("millsap","mplus")) {
+    ## scalar invariance implies equal intercepts, even though they are
+    ## fixed to zero anyway. This will correctly trigger freeing latent mean(s)
+    if ("loadings" %in% group.equal && "thresholds" %in% group.equal &&
+        !"intercepts" %in% group.equal) group.equal <- c("intercepts", group.equal)
+    if ("loadings" %in% long.equal && "thresholds" %in% long.equal &&
+        !"intercepts" %in% long.equal) long.equal <- c("intercepts", long.equal)
+  }
+
   if (!meanstructure) {
     ## make sure *.equal includes no mean-structure parameters
     eq.means <- which(group.equal %in% c("means","intercepts"))
@@ -2611,6 +2620,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         listLabels.I[[g]] <- sapply(colnames(GLIST.labels[[g]]$lambda), function(f) {
           GLIST.labels[[g]]$nu[GLIST.specify[[g]]$lambda[ , f], 1]
         }, simplify = FALSE)
+
+        #TODO: threshold labels
       }
 
     }
