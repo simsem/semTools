@@ -406,9 +406,9 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(),
 	  ## not nested
 	} else nestedout <- data.frame()
 
-	new("FitDiff",
-	    name = names(mods), model.class = modClass,
-	    nested = nestedout, fit = fit)
+	invisible(new("FitDiff",
+	              name = names(mods), model.class = modClass,
+	              nested = nestedout, fit = fit))
 }
 
 

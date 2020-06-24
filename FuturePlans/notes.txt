@@ -101,13 +101,16 @@ semTools::alignment()
 - pass configural model for a re-fitted lavaan model that is "aligned"
 - need delta, or just apply aligned latent means/variances as new fixed values?
   - check whether SEs match Mplus' delta method
+  - CFA-after-alignment proposed by Marsh; just offer that?
 - extend to ordinal indicators? (Mplus only allows binary items)
+  - 2 steps: first align thresholds allowing LIR distributions to differ,
+             then align as usual given the first alignment
 
 
 New CFI for invariance tests?
 - general incremental-fit function accepts 2-3 models, returns vector of indices
   - detect robust correction
-  - utilize Yves' new @saturated and @baseline slots when available
+  - utilize Yves' new @h1 and @baseline slots when available
 
 
 ==================
