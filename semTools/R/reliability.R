@@ -44,7 +44,7 @@
 ##' second coefficients omega will have the same value when the model has simple
 ##' structure, but different values when there are (for example) cross-loadings
 ##' or method factors. The first coefficient omega can be viewed as the
-##' reliability controlling for the other factors (like \eqn{\eta^2_partial} in
+##' reliability controlling for the other factors (like \eqn{\eta^2_{partial}} in
 ##' ANOVA). The second coefficient omega can be viewed as the unconditional
 ##' reliability (like \eqn{\eta^2} in ANOVA).
 ##'
