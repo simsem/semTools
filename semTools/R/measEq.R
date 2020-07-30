@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 23 June 2020
+### Last updated: 30 July 2020
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -157,8 +157,8 @@ measEq <- function(configural.model,
 ##'   \item{show}{\code{signature(object = "measEq.syntax")}: Prints a message
 ##'     about how to use the \code{object} for model fitting. Invisibly
 ##'     returns the \code{object}.}
-##'   \item{update}{\code{signature(object = "measEq.syntax"), ...,
-##'     evaluate = TRUE, change.syntax = NULL}: Creates a new
+##'   \item{update}{\code{signature(object = "measEq.syntax", ...,
+##'     evaluate = TRUE, change.syntax = NULL)}: Creates a new
 ##'     \code{object} with updated arguments in \code{...}, or updated
 ##'     parameter labels or fixed/free specifications in \code{object}.}
 ##'   \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:

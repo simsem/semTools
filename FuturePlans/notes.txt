@@ -82,6 +82,8 @@ semTools::measEq.syntax()
     of strings for combo, e.g., list(boys  = c("within","cluster"),
                                      girls = c("within","cluster"))
   - no, no, no ... need to enable invariance across groups and levels separately
+- more advanced check for ordinal indicators + higher-order factor?
+  https://groups.google.com/d/msg/lavaan/vgQZCbzAKRU/8UFuE-IKBwAJ
 
 
 semTools::partialInvariance()
