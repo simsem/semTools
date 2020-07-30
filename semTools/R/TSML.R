@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 15 September 2018
+### Last updated: 30 July 2020
 ### semTools function to implement 2-stage ML
 
 
@@ -569,7 +569,7 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   if (is.null(dots$model)) stop("lavaan model syntax argument must be named 'model'.")
   ####################### FIXME: also check intersect(names(dots), names(lavOptions()))
   lavaanifyArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaanify)))]
-  funArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaan)))]
+  funArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaan)))] #FIXME: lavOptions too
   ## set some non-optional lavaan arguments
   funArgs$meanstructure <- TRUE
   funArgs$conditional.x <- FALSE
@@ -579,7 +579,7 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   funArgs$test <- "standard"
   if (is.null(funArgs$information)) funArgs$information <- "observed"
 
-  if (funArgs$information == "expected") {
+  if (funArgs$information[1] == "expected") {
     message("If data are MAR, only the observed information matrix is consistent.")
     if (!is.null(aux)) {
       funArgs$information <- "observed"

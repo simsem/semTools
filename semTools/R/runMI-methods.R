@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 June 2020
+### Last updated: 30 July 2020
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -396,15 +396,17 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     PE$label <- PT$label
     #FIXME: no longer needed?  PE$exo <- 0L
     class(PE) <- c("lavaan.parameterEstimates","lavaan.data.frame","data.frame")
-    attr(PE, "information") <- lavoptions$information
+    attr(PE, "information") <- lavoptions$information[1]
+    attr(PE, "information.meat") <- lavoptions$information.meat
     attr(PE, "se") <- lavoptions$se
     attr(PE, "group.label") <- lavListInspect(object, "group.label")
     attr(PE, "level.label") <- c("within", lavListInspect(object, "cluster"))
     attr(PE, "bootstrap") <- lavoptions$bootstrap
     attr(PE, "bootstrap.successful") <- 0L #FIXME: assumes none. Implement Wei & Fan's mixing method?
     attr(PE, "missing") <- lavoptions$missing
-    attr(PE, "observed.information") <- lavoptions$observed.information
-    attr(PE, "h1.information") <- lavoptions$h1.information
+    attr(PE, "observed.information") <- lavoptions$observed.information[1]
+    attr(PE, "h1.information") <- lavoptions$h1.information[1]
+    attr(PE, "h1.information.meat") <- lavoptions$h1.information.meat
     attr(PE, "header") <- header
     # FIXME: lavaan may add more!!
     if (fmi) cat("\n", messRIV, sep = "")
