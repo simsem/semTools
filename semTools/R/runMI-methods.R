@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 30 July 2020
+### Last updated: 23 September 2020
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -1080,7 +1080,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
     }
 
     N <- lavListInspect(object, "ntotal")
-    Ns <- lavListInspect(object, "nobs")
+    Ns <- lavListInspect(object, "nobs") # N per group
     nG <- lavListInspect(object, "ngroups")
     nVars <- length(lavNames(object))
     if (!(lavoptions$likelihood == "normal" |
@@ -1127,25 +1127,25 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
           ## naive
           out["rmsea.scaled"] <- sqrt( max(0, (X2/N)/d - 1/N) ) * sqrt(nG)
           ## lower confidence limit
-          if (DF.sc < 1 | getLambda(0, X2, DF.sc, .95) < 0.0) {
+          if (DF < 1 || d < 1 || getLambda(0, X2, d, .95) < 0.0) {
             out["rmsea.ci.lower.scaled"] <- 0
           } else {
-            lambda.l <- try(uniroot(f = getLambda, chi = X2, df = DF.sc, p = .95,
+            lambda.l <- try(uniroot(f = getLambda, chi = X2, df = d, p = .95,
                                     lower = 0, upper = X2)$root, silent = TRUE)
             if (inherits(lambda.l, "try-error")) lambda.l <- NA
             out["rmsea.ci.lower.scaled"] <- sqrt( lambda.l/(N*DF) ) * sqrt(nG)
           }
           ## upper confidence limit
-          if (DF.sc < 1 | getLambda(N.RMSEA, X2, DF.sc, .05) > 0.0) {
+          if (DF < 1|| d < 1 || getLambda(0, X2, d, .95) < 0.0 || getLambda(N.RMSEA, X2, d, .05) > 0.0) {
             out["rmsea.ci.upper.scaled"] <- 0
           } else {
-            lambda.u <- try(uniroot(f = getLambda, chi = X2, df = DF.sc, p = .05,
+            lambda.u <- try(uniroot(f = getLambda, chi = X2, df = d, p = .05,
                                     lower = 0, upper = N.RMSEA)$root, silent = TRUE)
             if (inherits(lambda.u, "try-error")) lambda.u <- NA
             out["rmsea.ci.upper.scaled"] <- sqrt( lambda.u/(N*DF) ) * sqrt(nG)
           }
           ## p value
-          out["rmsea.pvalue.scaled"] <- pchisq(X2, DF.sc, ncp = N*DF.sc*0.05^2/nG,
+          out["rmsea.pvalue.scaled"] <- pchisq(X2, d, ncp = N*d*0.05^2/nG,
                                                lower.tail = FALSE)
 
           if (!pool.robust & test.names[1] %in%
@@ -1157,7 +1157,7 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
               out["rmsea.ci.lower.robust"] <- 0
             } else {
               lambda.l <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .95,
-                                      lower = 0, upper = X2)$root, silent = TRUE)
+                                      lower = 0, upper = X2.sc)$root, silent = TRUE)
               if (inherits(lambda.l, "try-error")) lambda.l <- NA
               out["rmsea.ci.lower.robust"] <- sqrt( (ch*lambda.l)/(N*DF.sc) ) * sqrt(nG)
             }
@@ -1177,25 +1177,25 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
           ## naive only
           out["rmsea.scaled"] <- sqrt( max(0, (X2.sc/N)/DF - 1/N) ) * sqrt(nG)
           ## lower confidence limit
-          if (DF.sc < 1 | getLambda(0, X2.sc, DF.sc, .95) < 0.0) {
+          if (DF < 1 | getLambda(0, X2.sc, DF, .95) < 0.0) {
             out["rmsea.ci.lower.scaled"] <- 0
           } else {
-            lambda.l <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .95,
+            lambda.l <- try(uniroot(f = getLambda, chi = X2.sc, df = DF, p = .95,
                                     lower = 0, upper = X2.sc)$root, silent = TRUE)
             if (inherits(lambda.l, "try-error")) lambda.l <- NA
-            out["rmsea.ci.lower.scaled"] <- sqrt( lambda.l/(N*DF.sc) ) * sqrt(nG)
+            out["rmsea.ci.lower.scaled"] <- sqrt( lambda.l/(N*DF) ) * sqrt(nG)
           }
           ## upper confidence limit
-          if (DF.sc < 1 | getLambda(N.RMSEA, X2.sc, DF.sc, .05) > 0.0) {
+          if (DF < 1 | getLambda(N.RMSEA, X2.sc, DF, .05) > 0.0) {
             out["rmsea.ci.upper.scaled"] <- 0
           } else {
-            lambda.u <- try(uniroot(f = getLambda, chi = X2.sc, df = DF.sc, p = .05,
+            lambda.u <- try(uniroot(f = getLambda, chi = X2.sc, df = DF, p = .05,
                                     lower = 0, upper = N.RMSEA)$root, silent = TRUE)
             if (inherits(lambda.u, "try-error")) lambda.u <- NA
-            out["rmsea.ci.upper.scaled"] <- sqrt( lambda.u/(N*DF.sc) ) * sqrt(nG)
+            out["rmsea.ci.upper.scaled"] <- sqrt( lambda.u/(N*DF) ) * sqrt(nG)
           }
           ## p value
-          out["rmsea.pvalue.scaled"] <- pchisq(X2.sc, DF.sc, ncp = N*DF.sc*0.05^2/nG,
+          out["rmsea.pvalue.scaled"] <- pchisq(X2.sc, DF, ncp = N*DF*0.05^2/nG,
                                                lower.tail = FALSE)
         }
       }
