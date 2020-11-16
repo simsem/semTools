@@ -84,6 +84,8 @@ semTools::measEq.syntax()
   - no, no, no ... need to enable invariance across groups and levels separately
 - more advanced check for ordinal indicators + higher-order factor?
   https://groups.google.com/d/msg/lavaan/vgQZCbzAKRU/8UFuE-IKBwAJ
+- accompanying measEq.null.syntax() function with some options:
+  - Rigdon's model, Widamin & Thompson's independence model, parallel/tau-eq models
 
 
 semTools::partialInvariance()
@@ -186,6 +188,15 @@ New function to implement Chung & Cai's approach for DWLS
 ======================
 Miscellaneous semTools
 ======================
+
+replace all "doi:" with URLs (APA7)
+
+semTools::reliability()
+- distinguish alpha from alpha-ord (cite Zumbo)
+- update documentation: https://github.com/simsem/semTools/issues/48
+  - reference differences from psych package?
+- allow models with mixed types, so long as they aren't mixed within
+  the same construct (and set return.total=FALSE)
 
 add moreFitIndices= argument to compareFit()
 

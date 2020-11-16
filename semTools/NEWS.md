@@ -8,6 +8,7 @@
 ## Bug Fixes:
 
 - `net()` returned an error for models with categorical indicators, now fixed.
+- The wrong *df* were used to find confidence limits for RMSEA calculated from the scaled $\chi^2$ statistic in `lavaan.mi` objects.
 
 
 # semTools 0.5-3 (on CRAN 27 May 2020)

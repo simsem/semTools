@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 27 May 2020
+### Last updated: 16 November 2020
 
 
 ## -------------
@@ -182,8 +182,6 @@
 ##'
 ##' @examples
 ##'
-##' library(lavaan)
-##'
 ##' HS.model <- ' visual  =~ x1 + x2 + x3
 ##'               textual =~ x4 + x5 + x6
 ##'               speed   =~ x7 + x8 + x9 '
@@ -327,7 +325,7 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 
 			error[j] <- sum(te[[i]][index, index, drop = FALSE])
 			sigma <- S[[i]][index, index, drop = FALSE]
-			alpha[j] <- computeAlpha(sigma, length(index))
+			alpha[j] <- computeAlpha(sigma)
 			total[j] <- sum(sigma)
 			impliedTotal[j] <- sum(SigmaHat[[i]][index, index, drop = FALSE])
 			faccontrib <- ly[[i]][,j, drop = FALSE] %*% ve[[i]][j,j, drop = FALSE] %*% t(ly[[i]][,j, drop = FALSE])
@@ -362,7 +360,7 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 		}
 
 		if (return.total & length(facNames) > 1L) {
-		  alpha <- c(alpha, total = computeAlpha(S[[i]], nrow(S[[i]])))
+		  alpha <- c(alpha, total = computeAlpha(S[[i]]))
 		  #FIXME: necessary?    names(alpha) <- c(names(common), "total")
 		  if (categorical) {
 		    omega1 <- c(omega1, total = omegaCat(truevar = truevar,
@@ -526,12 +524,10 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 ##'
 ##' @examples
 ##'
-##' library(lavaan)
-##'
 ##' HS.model3 <- ' visual  =~ x1 + x2 + x3
 ##'                textual =~ x4 + x5 + x6
 ##'                speed   =~ x7 + x8 + x9
-##' 			          higher =~ visual + textual + speed'
+##' 			         higher =~ visual + textual + speed'
 ##'
 ##' fit6 <- cfa(HS.model3, data = HolzingerSwineford1939)
 ##' reliability(fit6) # Should provide a warning for the endogenous variables
@@ -891,7 +887,10 @@ maximalRelia <- function(object, omit.imps = c("no.conv","no.se")) {
 ## Hidden Functions
 ## ----------------
 
-computeAlpha <- function(S, k) k/(k - 1) * (1.0 - sum(diag(S)) / sum(S))
+computeAlpha <- function(S) {
+  k <- nrow(S)
+  k/(k - 1) * (1.0 - sum(diag(S)) / sum(S))
+}
 
 #' @importFrom stats cov2cor pnorm
 omegaCat <- function(truevar, implied, threshold, denom) {

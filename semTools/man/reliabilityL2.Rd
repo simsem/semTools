@@ -108,12 +108,10 @@ factors, which might not be desirable.
 }
 \examples{
 
-library(lavaan)
-
 HS.model3 <- ' visual  =~ x1 + x2 + x3
                textual =~ x4 + x5 + x6
                speed   =~ x7 + x8 + x9
-			          higher =~ visual + textual + speed'
+			         higher =~ visual + textual + speed'
 
 fit6 <- cfa(HS.model3, data = HolzingerSwineford1939)
 reliability(fit6) # Should provide a warning for the endogenous variables
