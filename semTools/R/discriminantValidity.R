@@ -1,5 +1,5 @@
-### Mikko Ronkko
-### Last updated: 3 December 2019
+### Mikko Rönkkö
+### Last updated: 1 December 2020
 
 
 ##' Calculate discriminant validity statistics
@@ -15,7 +15,7 @@
 ##' are commonly used in discriminant validity evaluation. The first set are
 ##' factor correlation estimates and their confidence intervals. The second set
 ##' is a series of nested model tests, where the baseline model is compared
-##' against as set of constrained models that are constructed by constraining
+##' against a set of constrained models that are constructed by constraining
 ##' each factor correlation to the specified cutoff one at a time.
 ##'
 ##' The function assume that the \code{object} is set of confirmatory
@@ -66,12 +66,13 @@
 ##'  used in the likelihood ratio test.}
 ##' }
 ##'
-
-## @author ADD MIKKO AFTER ARTICLE IS ACCEPTED, also add to DESCRIPTION:
-## person(given = "Mikko", family = "Ronkko", role = "ctb", email = "mikko.ronkko@jyu.fi", comment = c(ORCID = "0000-0001-7988-7609")),
-
-## @references ADD CITATION AFTER ARTICLE HAS A DOI
-
+##' @author
+##'  Mikko Rönkkö (University of Jyväskylä; \email{mikko.ronkko@jyu.fi}):
+##' @references
+##'
+##' Rönkkö, M., & Cho, E. (2020). An updated guideline for assessing
+##' discriminant validity. \emph{Organizational Research Methods}.
+##' \url{https://doi.org/10.1177/1094428120968614}
 ##'
 ##' @examples
 ##'

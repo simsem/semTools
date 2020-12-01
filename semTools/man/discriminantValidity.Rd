@@ -41,7 +41,7 @@ representing two distinct constructs.
 are commonly used in discriminant validity evaluation. The first set are
 factor correlation estimates and their confidence intervals. The second set
 is a series of nested model tests, where the baseline model is compared
-against as set of constrained models that are constructed by constraining
+against a set of constrained models that are constructed by constraining
 each factor correlation to the specified cutoff one at a time.
 
 The function assume that the \code{object} is set of confirmatory
@@ -84,4 +84,12 @@ fit <- cfa(HS.model, data = HolzingerSwineford1939)
 discriminantValidity(fit)
 discriminantValidity(fit, merge = TRUE)
 
+}
+\references{
+Rönkkö, M., & Cho, E. (2020). An updated guideline for assessing
+discriminant validity. \emph{Organizational Research Methods}.
+\url{https://doi.org/10.1177/1094428120968614}
+}
+\author{
+Mikko Rönkkö (University of Jyväskylä; \email{mikko.ronkko@jyu.fi}):
 }
