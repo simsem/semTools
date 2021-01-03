@@ -98,11 +98,9 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
   lavaan_data <- .emlav_recover_data(object)
   lavaan_data <- lavaan_data[, colnames(recovered), drop = FALSE]
 
-  # Replace values (to maintain attributes)
-  for (i in colnames(recovered)) {
-    recovered[[i]] <- lavaan_data[[i]]
-  }
-  return(recovered)
+  # Fill attributes (but keep lavaan_data in case of missing data)
+  mostattributes(lavaan_data) <- attributes(recovered)
+  return(lavaan_data)
 }
 
 ##' @rdname lavaan2emmeans
