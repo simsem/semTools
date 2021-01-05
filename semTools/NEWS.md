@@ -7,6 +7,7 @@
 
 ## Bug Fixes:
 
+- `reliability()` incorrectly used standardized thresholds rather than the model's parameter estimates (i.e., on the latent-response scales) to calculate omega for categorical indicators.
 - `net()` returned an error for models with categorical indicators, now fixed.
 - The wrong *df* were used to find confidence limits for RMSEA calculated from the scaled $\chi^2$ statistic in `lavaan.mi` objects.
 

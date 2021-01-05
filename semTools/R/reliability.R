@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 16 November 2020
+### Last updated: 4 January 2021
 
 
 ## -------------
@@ -85,7 +85,8 @@
 ##'
 ##' Regarding categorical indicators, coefficient alpha and AVE are calculated
 ##' based on polychoric correlations. The coefficient alpha from this function
-##' may be not the same as the standard alpha calculation for categorical items.
+##' differs from the standard alpha calculation, which does not assume items are
+##' continuous, so numerically weighted categories can be treated as numeric.
 ##' Researchers may check the \code{alpha} function in the \code{psych} package
 ##' for the standard coefficient alpha calculation.
 ##'
@@ -274,6 +275,7 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 
 	anyCategorical <- lavInspect(object, "categorical")
 	threshold <- if (anyCategorical) getThreshold(object) else NULL
+	latScales <- if (anyCategorical) getScales(object) else NULL
 
 	result <- list()
 	warnHigher <- FALSE
@@ -323,14 +325,10 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 			  next
 			}
 
-			error[j] <- sum(te[[i]][index, index, drop = FALSE])
 			sigma <- S[[i]][index, index, drop = FALSE]
 			alpha[j] <- computeAlpha(sigma)
-			total[j] <- sum(sigma)
-			impliedTotal[j] <- sum(SigmaHat[[i]][index, index, drop = FALSE])
 			faccontrib <- ly[[i]][,j, drop = FALSE] %*% ve[[i]][j,j, drop = FALSE] %*% t(ly[[i]][,j, drop = FALSE])
 			truefac <- diag(faccontrib[index, index, drop = FALSE])
-			commonfac <- sum(faccontrib[index, index, drop = FALSE])
 			trueitem <- diag(truevar[index, index, drop = FALSE])
 			erritem <- diag(te[[i]][index, index, drop = FALSE])
 			if (sum(abs(trueitem - truefac)) < 0.00001) {
@@ -340,19 +338,24 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 			}
 			if (categorical) {
 				omega1[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      implied = SigmaHat[[i]][index, index, drop = FALSE],
 				                      threshold = threshold[[i]][index],
+				                      scales = latScales[[i]][index],
 				                      denom = faccontrib[index, index, drop = FALSE] + te[[i]][index, index, drop = FALSE])
 				omega2[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      implied = SigmaHat[[i]][index, index, drop = FALSE],
 				                      threshold = threshold[[i]][index],
+				                      scales = latScales[[i]][index],
 				                      denom = SigmaHat[[i]][index, index, drop = FALSE])
 				omega3[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      implied = SigmaHat[[i]][index, index, drop = FALSE],
 				                      threshold = threshold[[i]][index],
+				                      scales = latScales[[i]][index],
 				                      denom = sigma)
 			} else {
-				omega1[j] <- commonfac / (commonfac + error[j])
+			  commonfac <- sum(faccontrib[index, index, drop = FALSE])
+			  error[j] <- sum(te[[i]][index, index, drop = FALSE])
+			  impliedTotal[j] <- sum(SigmaHat[[i]][index, index, drop = FALSE])
+			  total[j] <- sum(sigma)
+
+			  omega1[j] <- commonfac / (commonfac + error[j])
 				omega2[j] <- commonfac / impliedTotal[j]
 				omega3[j] <- commonfac / total[j]
 			}
@@ -364,16 +367,16 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 		  #FIXME: necessary?    names(alpha) <- c(names(common), "total")
 		  if (categorical) {
 		    omega1 <- c(omega1, total = omegaCat(truevar = truevar,
-		                                         implied = SigmaHat[[i]],
 		                                         threshold = threshold[[i]],
+		                                         scales = latScales[[i]],
 		                                         denom = truevar + te[[i]]))
 		    omega2 <- c(omega2, total = omegaCat(truevar = truevar,
-		                                         implied = SigmaHat[[i]],
 		                                         threshold = threshold[[i]],
+		                                         scales = latScales[[i]],
 		                                         denom = SigmaHat[[i]]))
 		    omega3 <- c(omega3, total = omegaCat(truevar = truevar,
-		                                         implied = SigmaHat[[i]],
 		                                         threshold = threshold[[i]],
+		                                         scales = latScales[[i]],
 		                                         denom = S[[i]]))
 		  } else {
 		    omega1 <- c(omega1, total = sum(truevar) / (sum(truevar) + sum(te[[i]])))
@@ -893,24 +896,32 @@ computeAlpha <- function(S) {
 }
 
 #' @importFrom stats cov2cor pnorm
-omegaCat <- function(truevar, implied, threshold, denom) {
-	# denom could be polychoric correlation, model-implied correlation, or model-implied without error correlation
-	polyc <- truevar
-	invstdvar <- 1 / sqrt(diag(implied))
-	polyr <- diag(invstdvar) %*% polyc %*% diag(invstdvar)
-	nitem <- ncol(implied)
+omegaCat <- function(truevar, threshold, scales, denom) {
+  ## must be in standardized latent scale
+  R <- diag(scales) %*% truevar %*% diag(scales)
+
+	## denom could be model-implied polychoric correlation assuming diagonal theta,
+	##       model-implied polychoric correlation accounting for error covariances,
+	##       or "observed" polychoric correlation matrix.
+  ## If parameterization="theta", standardize the polychoric coVARIANCE matrix
 	denom <- cov2cor(denom)
-	sumnum <- 0
-	addden <- 0
+
+	nitem <- ncol(denom)
+	## initialize sums of cumulative probabilities
+	sumnum <- 0 # numerator
+	addden <- 0 # denominator
+	## loop over all pairs of items
 	for (j in 1:nitem) {
   	for (jp in 1:nitem) {
+  	  ## initialize sums of cumulative probabilities *per item*
   		sumprobn2 <- 0
   		addprobn2 <- 0
-  		t1 <- threshold[[j]]
-  		t2 <- threshold[[jp]]
+  		## for each pair of items, loop over all their thresholds
+  		t1 <- threshold[[j]]  * scales[j] # on standardized latent scale
+  		t2 <- threshold[[jp]] * scales[jp]
   		for (c in 1:length(t1)) {
     		for (cp in 1:length(t2)) {
-    			sumprobn2 <- sumprobn2 + p2(t1[c], t2[cp], polyr[j, jp])
+    			sumprobn2 <- sumprobn2 + p2(t1[c], t2[cp], R[j, jp])
     			addprobn2 <- addprobn2 + p2(t1[c], t2[cp], denom[j, jp])
     		}
   		}
@@ -957,14 +968,13 @@ p2 <- function(t1, t2, r) {
 # }
 
 ##' @importFrom lavaan lavInspect lavNames
-##' @importFrom methods getMethod
 getThreshold <- function(object) {
 	ngroups <- lavInspect(object, "ngroups") #TODO: add nlevels when capable
 	ordnames <- lavNames(object, "ov.ord")
-	FITTED <- getMethod("fitted", class(object))(object)
+	EST <- lavInspect(object, "est")
 
 	if (ngroups == 1L) {
-	  thresholds <- FITTED$th
+	  thresholds <- EST$tau[,"threshold"]
 	  result <- lapply(ordnames,
 	                   function(nn) thresholds[grepl(nn, names(thresholds))])
 	  names(result) <- ordnames
@@ -972,7 +982,9 @@ getThreshold <- function(object) {
 	  result <- list(result)
 
 	} else {
-	  thresholds <- sapply(FITTED, "[[", i = "th", simplify = FALSE)
+	  allThr <- EST[which(names(EST) == "tau")]
+	  ## convert 1-column matrices to vectors, preserving rownames
+	  thresholds <- sapply(allThr, "[", j = "threshold", simplify = FALSE)
 	  result <- list()
 		group.label <- lavInspect(object, "group.label")
 
@@ -986,6 +998,23 @@ getThreshold <- function(object) {
 	}
 
 	return(result)
+}
+
+##' @importFrom lavaan lavInspect lavNames
+getScales <- function(object) {
+  ngroups <- lavInspect(object, "ngroups") #TODO: add nlevels when capable
+  ordnames <- lavNames(object, "ov.ord") #TODO: use to allow mix of cat/con vars
+  EST <- lavInspect(object, "est")
+
+  if (ngroups == 1L) {
+    result <- list(EST$delta[,"scales"])
+  } else {
+    result <- lapply(EST[which(names(EST) == "delta")],
+                     function(x) x[,"scales"])
+    names(result) <- lavInspect(object, "group.label")
+  }
+
+  return(result)
 }
 
 invGeneralRelia <- function(w, truevar, totalvar) {

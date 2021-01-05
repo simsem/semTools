@@ -121,7 +121,8 @@ property of items but not the property of factors.
 
 Regarding categorical indicators, coefficient alpha and AVE are calculated
 based on polychoric correlations. The coefficient alpha from this function
-may be not the same as the standard alpha calculation for categorical items.
+differs from the standard alpha calculation, which does not assume items are
+continuous, so numerically weighted categories can be treated as numeric.
 Researchers may check the \code{alpha} function in the \code{psych} package
 for the standard coefficient alpha calculation.
 
