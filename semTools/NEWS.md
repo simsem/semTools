@@ -4,6 +4,7 @@
 ## New Features:
 
 - `summary()` method for `lavaan.mi` objects now passes arguments to `lavTestLRT.mi()` via `...`.
+- `emmeans` methods deal with models fit with missing data.
 
 ## Bug Fixes:
 

@@ -98,11 +98,9 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
   lavaan_data <- .emlav_recover_data(object)
   lavaan_data <- lavaan_data[, colnames(recovered), drop = FALSE]
 
-  # Replace values (to maintain attributes)
-  for (i in colnames(recovered)) {
-    recovered[[i]] <- lavaan_data[[i]]
-  }
-  return(recovered)
+  # Fill attributes (but keep lavaan_data in case of missing data)
+  mostattributes(lavaan_data) <- attributes(recovered)
+  return(lavaan_data)
 }
 
 ##' @rdname lavaan2emmeans
@@ -342,7 +340,8 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   above := b2 + b3 * (+1)
   '
     semFit <- lavaan::sem(model = model,
-                          data = datasets::iris)
+                          data = datasets::iris,
+                          meanstructure = TRUE)
 
     em_ <- summary(
       emmeans::emtrends(
@@ -357,9 +356,9 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
     em_est <- em_$Petal.Length.trend
     em_se <- em_$SE
     lv_est <-
-      lavaan::parameterEstimates(semFit, output = "pretty")[11:12, "est"]
+      lavaan::parameterEstimates(semFit, output = "pretty")[15:16, "est"]
     lv_se <-
-      lavaan::parameterEstimates(semFit, output = "pretty")[11:12, "se"]
+      lavaan::parameterEstimates(semFit, output = "pretty")[15:16, "se"]
 
     testthat::expect_equal(em_est, lv_est, tolerance = 1e-4)
     testthat::expect_equal(em_se, lv_se, tolerance = 1e-4)
@@ -379,16 +378,18 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   V2 := 1 * Petal.Length.mean + 2 * b1
   '
 
-    semFit <- lavaan::sem(model = model,
-                          data = datasets::iris,
-                          std.lv = TRUE)
+    semFit <- suppressWarnings(
+      lavaan::sem(model = model,
+                  data = datasets::iris,
+                  std.lv = TRUE)
+    )
 
-    em_ <- summary(emmeans::emmeans(
+    em_ <- suppressWarnings(summary(emmeans::emmeans(
       semFit,
       ~ Petal.Width,
       lavaan.DV = "LAT1",
       at = list(Petal.Width = 1:2)
-    ))
+    )))
 
     em_est <- em_$emmean
     lv_est <-
@@ -430,12 +431,12 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
     semFit <- lavaan::sem(model, data = lavaan::PoliticalDemocracy)
 
-    em_ <- summary(emmeans::emmeans(
+    em_ <- suppressWarnings(summary(emmeans::emmeans(
       semFit,
       pairwise ~ rep.meas | ind60,
       lavaan.DV = c("dem60", "dem65"),
       at = list(ind60 = c(-1, 1))
-    )[[2]])
+    )[[2]]))
 
     em_est <- em_$estimate
     lv_est <-
@@ -464,7 +465,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 
     em_ <-
-      summary(
+      suppressWarnings(summary(
         emmeans::emmeans(
           semFit,
           pairwise ~ school | ageyr,
@@ -472,7 +473,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
           at = list(ageyr = c(11, 13, 15)),
           nesting = NULL
         )[[2]]
-      )
+      ))
 
     em_est <- em_$estimate
     lv_est <-
@@ -499,8 +500,8 @@ grade ~ ageyr
     semFit <- lavaan::sem(model,
                           data = lavaan::HolzingerSwineford1939,
                           group = "school")
-
-    testthat::expect_s4_class(emmeans::ref_grid(semFit, lavaan.DV = c("LAT3", "grade")), "emmGrid")
+    rg <- suppressWarnings(emmeans::ref_grid(semFit, lavaan.DV = c("LAT3", "grade")))
+    testthat::expect_s4_class(rg, "emmGrid")
   })
 
   message("All good!")
