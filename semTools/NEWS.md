@@ -4,10 +4,10 @@
 ## New Features:
 
 - `summary()` method for `lavaan.mi` objects now passes arguments to `lavTestLRT.mi()` via `...`.
+- `emmeans` methods deal with models fit with missing data.
 
 ## Bug Fixes:
 
-- `emmeans` methods deal with models fit with missing data.
 - `net()` returned an error for models with categorical indicators, now fixed.
 - The wrong *df* were used to find confidence limits for RMSEA calculated from the scaled $\chi^2$ statistic in `lavaan.mi` objects.
 
