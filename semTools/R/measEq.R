@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 30 July 2020
+### Last updated: 8 January 2021
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -831,7 +831,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' \code{configural.model} argument, and if \code{return.fit = TRUE}, the
 ##' generated model will be fitted to the multiple imputations.
 ##'
-##' @importFrom lavaan lavInspect lavNames cfa
+##' @importFrom lavaan lavInspect lavNames parTable cfa
 ##'
 ##' @param configural.model A model with no measurement-invariance constraints
 ##'   (i.e., representing only configural invariance), unless required for model
@@ -1335,6 +1335,13 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     mc$meanstructure <- lavInspect(lavTemplate, "options")$meanstructure # just in case
     mc$configural.model <- lavTemplate
   }
+
+  ## warn about regression parameters
+  if (any(parTable(lavTemplate)$op == "~"))
+    warning('Regression operator (~) detected. measEq.syntax() was designed ',
+            'only for multigroup CFA models. Regression operator (~) could be ',
+            'used to define a higher-order factor (although the =~ operator ',
+            'is easier), but structural regressions should not be specified.')
 
 
   ## prevent inconsistency
