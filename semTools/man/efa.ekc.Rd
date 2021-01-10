@@ -80,8 +80,9 @@ attr(out, "nfactors")
 
 }
 \references{
-Braeken, J., & van Assen, M. A. L. M. (in press). An empirical Kaiser
-criterion. \emph{Psychological Methods, 22}(3), 450--466. doi:10.1037/met0000074
+Braeken, J., & van Assen, M. A. L. M. (2017). An empirical
+Kaiser criterion. \emph{Psychological Methods, 22}(3), 450--466.
+\doi{10.1037/met0000074}
 }
 \author{
 Ylenio Longo (University of Nottingham;

@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, & Terrence D. Jorgensen
-### Last updated: 1 September 2018
+### Last updated: 10 January 2021
 ### automate measurement invariance tests for categorical indicators
 
 
@@ -62,7 +62,7 @@
 ##'
 ##' @references Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial
 ##'   invariance in ordered-categorical measures. \emph{Multivariate Behavioral
-##'   Research, 39}(3), 479--515. doi:10.1207/S15327906MBR3903_4
+##'   Research, 39}(3), 479--515. \doi{10.1207/S15327906MBR3903_4}
 ##'
 ##' @examples
 ##'

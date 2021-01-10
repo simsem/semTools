@@ -1,5 +1,5 @@
 ### Mikko Rönkkö
-### Last updated: 1 December 2020
+### Last updated: 10 January 2020
 
 
 ##' Calculate discriminant validity statistics
@@ -72,7 +72,7 @@
 ##'
 ##' Rönkkö, M., & Cho, E. (2020). An updated guideline for assessing
 ##' discriminant validity. \emph{Organizational Research Methods}.
-##' \url{https://doi.org/10.1177/1094428120968614}
+##' \doi{10.1177/1094428120968614}
 ##'
 ##' @examples
 ##'

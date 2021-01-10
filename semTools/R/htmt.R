@@ -1,5 +1,5 @@
 ### Ylenio Longo
-### Last updated: 20 February 2020
+### Last updated: 10 January 2021
 
 ##' Assessing Discriminant Validity using Heterotrait-Monotrait Ratio
 ##'
@@ -48,13 +48,13 @@
 ##'   Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for
 ##'   assessing discriminant validity in variance-based structural equation
 ##'   modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
-##'   115--135. doi:10.1007/s11747-014-0403-8
+##'   115--135. \doi{10.1007/s11747-014-0403-8}
 ##'
 ##'   Voorhees, C. M., Brady, M. K., Calantone, R., & Ramirez, E. (2016).
 ##'   Discriminant validity testing in marketing: an analysis, causes for
 ##'   concern, and proposed remedies.
 ##'   \emph{Journal of the Academy of Marketing Science, 44}(1), 119--134.
-##'   doi:10.1007/s11747-015-0455-4
+##'   \doi{10.1007/s11747-015-0455-4}
 ##'
 ##' @examples
 ##'

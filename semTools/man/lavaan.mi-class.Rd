@@ -262,7 +262,7 @@ table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
 \references{
 Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
   with multiple imputation}. Technical Report. Retrieved from
-  www.statmodel.com
+  \url{www.statmodel.com}
 
   Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
   Guilford.
@@ -270,11 +270,11 @@ Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
   Significance levels from repeated \emph{p}-values with multiply-imputed
   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  https://www.jstor.org/stable/24303994
+  \url{https://www.jstor.org/stable/24303994}
 
   Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
   multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
-  doi:10.2307/2337151
+  \doi{10.2307/2337151}
 
   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
   New York, NY: Wiley.

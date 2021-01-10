@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 9 January 2021
+### Last updated: 10 January 2021
 
 
 
@@ -132,12 +132,12 @@
 ##' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 ##' latent interactions: Evaluation of alternative estimation strategies and
 ##' indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
-##' doi:10.1037/1082-989X.9.3.275
+##' \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' Preacher, K. J., Curran, P. J., & Bauer, D. J. (2006). Computational tools
 ##' for probing interactions in multiple linear regression, multilevel modeling,
 ##' and latent curve analysis. \emph{Journal of Educational and Behavioral
-##' Statistics, 31}(4), 437--448. doi:10.3102/10769986031004437
+##' Statistics, 31}(4), 437--448. \doi{10.3102/10769986031004437}
 ##'
 ##' @examples
 ##'
@@ -442,22 +442,23 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group,
 ##' Lance, C. E. (1988). Residual centering, exploratory and confirmatory
 ##' moderator analysis, and decomposition of effects in path models containing
 ##' interactions. \emph{Applied Psychological Measurement, 12}(2), 163--175.
-##' doi:10.1177/014662168801200205
+##' \doi{10.1177/014662168801200205}
 ##'
 ##' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 ##' orthogonalizing powered and product terms: Implications for modeling
 ##' interactions. \emph{Structural Equation Modeling, 13}(4), 497--519.
-##' doi:10.1207/s15328007sem1304_1
+##' \doi{10.1207/s15328007sem1304_1}
 ##'
 ##' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 ##' latent interactions: Evaluation of alternative estimation strategies and
 ##' indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
-##' doi:10.1037/1082-989X.9.3.275
+##' \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., & Little, T. D.
 ##' (2013). Orthogonalizing through residual centering: Extended applications
 ##' and caveats. \emph{Educational and Psychological Measurement, 73}(1), 27--46.
-##' doi:10.1177/0013164412445473
+##' \doi{10.1177/0013164412445473}
+##'
 ##' @examples
 ##'
 ##' library(lavaan)
@@ -863,7 +864,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group,
 ##' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 ##' latent interactions: Evaluation of alternative estimation strategies and
 ##' indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
-##' doi:10.1037/1082-989X.9.3.275
+##' \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' @examples
 ##'
@@ -1209,22 +1210,22 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2, group,
 ##' Geldhof, G. J., Pornprasertmanit, S., Schoemann, A., & Little,
 ##' T. D. (2013). Orthogonalizing through residual centering: Extended
 ##' applications and caveats. \emph{Educational and Psychological Measurement,
-##' 73}(1), 27--46. doi:10.1177/0013164412445473
+##' 73}(1), 27--46. \doi{10.1177/0013164412445473}
 ##'
 ##' Lance, C. E. (1988). Residual centering, exploratory and confirmatory
 ##' moderator analysis, and decomposition of effects in path models containing
 ##' interactions. \emph{Applied Psychological Measurement, 12}(2), 163--175.
-##' doi:10.1177/014662168801200205
+##' \doi{10.1177/014662168801200205}
 ##'
 ##' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 ##' orthogonalizing powered and product terms: Implications for modeling
 ##' interactions. \emph{Structural Equation Modeling, 13}(4), 497--519.
-##' doi:10.1207/s15328007sem1304_1
+##' \doi{10.1207/s15328007sem1304_1}
 ##'
 ##' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 ##' latent interactions: Evaluation of alternative estimation strategies and
 ##' indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
-##' doi:10.1037/1082-989X.9.3.275
+##' \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' Pornprasertmanit, S., Schoemann, A. M., Geldhof, G. J., & Little, T. D.
 ##' (submitted). \emph{Probing latent interaction estimated with a residual

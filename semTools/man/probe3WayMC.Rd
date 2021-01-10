@@ -192,7 +192,7 @@ and interpreting interactions}. Newbury Park, CA: Sage.
 Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 latent interactions: Evaluation of alternative estimation strategies and
 indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
-doi:10.1037/1082-989X.9.3.275
+\doi{10.1037/1082-989X.9.3.275}
 }
 \seealso{
 \itemize{

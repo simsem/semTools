@@ -41,7 +41,7 @@ findRMSEAsamplesize(rmsea0 = .05, rmseaA = .08, df = 20, power = 0.80)
 \references{
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 and determination of sample size for covariance structure modeling.
-\emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
+\emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
 }
 \seealso{
 \itemize{

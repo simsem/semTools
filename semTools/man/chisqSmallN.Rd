@@ -72,12 +72,12 @@ chisqSmallN(fit1, fit0)
 Deng, L., Yang, M., & Marcoulides, K. M. (2018). Structural equation
   modeling with many variables: A systematic review of issues and
   developments. \emph{Frontiers in Psychology, 9}, 580.
-  doi:10.3389/fpsyg.2018.00580
+  \doi{10.3389/fpsyg.2018.00580}
 
   Shi, D., Lee, T., & Terry, R. A. (2018). Revisiting the model
   size effect in structural equation modeling.
   \emph{Structural Equation Modeling, 25}(1), 21--40.
-  doi:10.1080/10705511.2017.1369088
+  \doi{10.1080/10705511.2017.1369088}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

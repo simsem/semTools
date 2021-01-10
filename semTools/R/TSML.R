@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 30 July 2020
+### Last updated: 10 January 2021
 ### semTools function to implement 2-stage ML
 
 
@@ -511,12 +511,12 @@ setMethod("resid", "twostage",
 ##' Savalei, V., & Bentler, P. M. (2009). A two-stage approach to missing data:
 ##' Theory and application to auxiliary variables.
 ##' \emph{Structural Equation Modeling, 16}(3), 477--497.
-##' doi:10.1080/10705510903008238
+##' \doi{10.1080/10705510903008238}
 ##'
 ##' Savalei, V., & Falk, C. F. (2014). Robust two-stage approach outperforms
 ##' robust full information maximum likelihood with incomplete nonnormal data.
 ##' \emph{Structural Equation Modeling, 21}(2), 280--302.
-##' doi:10.1080/10705511.2014.882692
+##' \doi{10.1080/10705511.2014.882692}
 ##'
 ##' @examples
 ##'

@@ -56,7 +56,7 @@ nullRMSEA(fit)
 Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The
 performance of RMSEA in models with small degrees of freedom.
 \emph{Sociological Methods Research, 44}(3), 486--507.
-doi:10.1177/0049124114543236
+\doi{10.1177/0049124114543236}
 }
 \seealso{
 \itemize{

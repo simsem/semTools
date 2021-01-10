@@ -137,7 +137,7 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}.
   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
   Significance levels from repeated \emph{p}-values with multiply-imputed
   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  https://www.jstor.org/stable/24303994
+  \url{https://www.jstor.org/stable/24303994}
 
   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
   New York, NY: Wiley.

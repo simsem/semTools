@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit and Alexander M. Schoemann
-### Last updated: 9 April 2020
+### Last updated: 10 January 2021
 ### prepare product indicators for 2-way and 3-way interactions in SEM
 
 
@@ -46,17 +46,17 @@
 ##' @references Marsh, H. W., Wen, Z. & Hau, K. T. (2004). Structural equation
 ##' models of latent interactions: Evaluation of alternative estimation
 ##' strategies and indicator construction. \emph{Psychological Methods, 9}(3),
-##' 275--300. doi:10.1037/1082-989X.9.3.275
+##' 275--300. \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' Lin, G. C., Wen, Z., Marsh, H. W., & Lin, H. S. (2010). Structural equation
 ##' models of latent interactions: Clarification of orthogonalizing and
 ##' double-mean-centering strategies. \emph{Structural Equation Modeling, 17}(3),
-##' 374--391. doi:10.1080/10705511.2010.488999
+##' 374--391. \doi{10.1080/10705511.2010.488999}
 ##'
 ##' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 ##' orthogonalizing powered and product terms: Implications for modeling
 ##' interactions among latent variables. \emph{Structural Equation Modeling,
-##' 13}(4), 497--519. doi:10.1207/s15328007sem1304_1
+##' 13}(4), 497--519. \doi{10.1207/s15328007sem1304_1}
 ##' @examples
 ##'
 ##' ## Mean centering / two-way interaction / match-paired

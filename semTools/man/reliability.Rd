@@ -154,26 +154,26 @@ reliability(fit, return.total = TRUE)
 \references{
 Bollen, K. A. (1980). Issues in the comparative measurement of
 political democracy. \emph{American Sociological Review, 45}(3), 370--390.
-doi:10.2307/2095172
+\doi{10.2307/2095172}
 
 Bentler, P. M. (1972). A lower-bound method for the dimension-free
 measurement of internal consistency. \emph{Social Science Research, 1}(4),
-343--357. doi:10.1016/0049-089X(72)90082-8
+343--357. \doi{10.1016/0049-089X(72)90082-8}
 
 Bentler, P. M. (2009). Alpha, dimension-free, and model-based internal
 consistency reliability. \emph{Psychometrika, 74}(1), 137--143.
-doi:10.1007/s11336-008-9100-1
+\doi{10.1007/s11336-008-9100-1}
 
 Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
-tests. \emph{Psychometrika, 16}(3), 297--334. doi:10.1007/BF02310555
+tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
 
 Fornell, C., & Larcker, D. F. (1981). Evaluating structural equation models
 with unobservable variables and measurement errors. \emph{Journal of
-Marketing Research, 18}(1), 39--50. doi:10.2307/3151312
+Marketing Research, 18}(1), 39--50. \doi{10.2307/3151312}
 
 Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using
 structural equation modeling: An alternative to coefficient alpha.
-\emph{Psychometrika, 74}(1), 155--167. doi:10.1007/s11336-008-9099-3
+\emph{Psychometrika, 74}(1), 155--167. \doi{10.1007/s11336-008-9099-3}
 
 McDonald, R. P. (1999). \emph{Test theory: A unified treatment}. Mahwah, NJ:
 Erlbaum.
@@ -181,7 +181,7 @@ Erlbaum.
 Raykov, T. (2001). Estimation of congeneric scale reliability using
 covariance structure analysis with nonlinear constraints \emph{British
 Journal of Mathematical and Statistical Psychology, 54}(2), 315--323.
-doi:10.1348/000711001159582
+\doi{10.1348/000711001159582}
 }
 \seealso{
 \code{\link{reliabilityL2}} for reliability value of a desired

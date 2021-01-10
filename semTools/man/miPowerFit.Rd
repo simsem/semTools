@@ -166,11 +166,11 @@ Cohen, J. (1988). \emph{Statistical power analysis for the
 behavioral sciences} (2nd ed.). Hillsdale, NJ: Erlbaum.
 
 Cohen, J. (1992). A power primer. \emph{Psychological Bulletin, 112}(1),
-155--159. doi:10.1037/0033-2909.112.1.155
+155--159. \doi{10.1037/0033-2909.112.1.155}
 
 Saris, W. E., Satorra, A., & van der Veld, W. M. (2009). Testing structural
 equation models or detection of misspecifications? \emph{Structural Equation
-Modeling, 16}(4), 561--582. doi:10.1080/10705510903203433
+Modeling, 16}(4), 561--582. \doi{10.1080/10705510903203433}
 }
 \seealso{
 \code{\link{moreFitIndices}} For the additional fit indices

@@ -3,7 +3,7 @@
 ###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ###          Aaron Boulton <aboulton@ku.edu>,
 ###          Ruben Arslan <rubenarslan@gmail.com>
-### Last updated: 23 May 2020
+### Last updated: 10 January 2021
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -112,15 +112,15 @@
 ##' Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample
 ##' RMSEA adjustment to other noncentrality parameter-based statistic.
 ##' \emph{Structural Equation Modeling, 11}(3), 305--319.
-##' doi:10.1207/s15328007sem1103_1
+##' \doi{10.1207/s15328007sem1103_1}
 ##'
 ##' Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance.
 ##' \emph{Sociological Methods Research, 33}(2), 188--229.
-##' doi:10.1177/0049124103262065
+##' \doi{10.1177/0049124103262065}
 ##'
 ##' Preacher, K. J. (2006). Quantifying parsimony in structural equation
 ##' modeling. \emph{Multivariate Behavioral Research, 43}(3), 227-259.
-##' doi:10.1207/s15327906mbr4103_1
+##' \doi{10.1207/s15327906mbr4103_1}
 ##'
 ##' West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection
 ##' in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of
@@ -254,7 +254,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 ##' @references Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The
 ##' performance of RMSEA in models with small degrees of freedom.
 ##' \emph{Sociological Methods Research, 44}(3), 486--507.
-##' doi:10.1177/0049124114543236
+##' \doi{10.1177/0049124114543236}
 ##'
 ##' @examples
 ##'
@@ -364,12 +364,12 @@ sic <- function(f, lresults = NULL) {
 ##'   Deng, L., Yang, M., & Marcoulides, K. M. (2018). Structural equation
 ##'   modeling with many variables: A systematic review of issues and
 ##'   developments. \emph{Frontiers in Psychology, 9}, 580.
-##'   doi:10.3389/fpsyg.2018.00580
+##'   \doi{10.3389/fpsyg.2018.00580}
 ##'
 ##'   Shi, D., Lee, T., & Terry, R. A. (2018). Revisiting the model
 ##'   size effect in structural equation modeling.
 ##'   \emph{Structural Equation Modeling, 25}(1), 21--40.
-##'   doi:10.1080/10705511.2017.1369088
+##'   \doi{10.1080/10705511.2017.1369088}
 ##'
 ##' @examples
 ##'

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 January 2021
+### Last updated: 10 January 2021
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -978,21 +978,21 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'   Kloessner, S., & Klopp, E. (2019). Explaining constraint interaction: How
 ##'   to interpret estimated model parameters under alternative scaling methods.
 ##'   \emph{Structural Equation Modeling, 26}(1), 143--155.
-##'   doi:10.1080/10705511.2018.1517356
+##'   \doi{10.1080/10705511.2018.1517356}
 ##'
 ##'   Liu, Y., Millsap, R. E., West, S. G., Tein, J.-Y., Tanaka, R., & Grimm,
 ##'   K. J. (2017). Testing measurement invariance in longitudinal data with
 ##'   ordered-categorical measures. \emph{Psychological Methods, 22}(3),
-##'   486--506. doi:10.1037/met0000075
+##'   486--506. \doi{10.1037/met0000075}
 ##'
 ##'   Millsap, R. E., & Tein, J.-Y. (2004). Assessing factorial invariance in
 ##'   ordered-categorical measures. \emph{Multivariate Behavioral Research, 39}(3),
-##'   479--515. doi:10.1207/S15327906MBR3903_4
+##'   479--515. \doi{10.1207/S15327906MBR3903_4}
 ##'
 ##'   Wu, H., & Estabrook, R. (2016). Identification of confirmatory factor
 ##'   analysis models of different levels of invariance for ordered categorical
 ##'   outcomes. \emph{Psychometrika, 81}(4), 1014--1045.
-##'   doi:10.1007/s11336-016-9506-0
+##'   \doi{10.1007/s11336-016-9506-0}
 ##'
 ##' @examples
 ##' mod.cat <- ' FU1 =~ u1 + u2 + u3 + u4

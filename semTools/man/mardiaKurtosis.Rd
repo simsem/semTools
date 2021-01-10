@@ -39,8 +39,8 @@ mardiaKurtosis(HolzingerSwineford1939[ , paste0("x", 1:9)])
 }
 \references{
 Mardia, K. V. (1970). Measures of multivariate skewness and
- kurtosis with applications. \emph{Biometrika, 57}(3), 519-530.
- doi:10.2307/2334770
+ kurtosis with applications. \emph{Biometrika, 57}(3), 519--530.
+ \doi{10.2307/2334770}
 }
 \seealso{
 \itemize{

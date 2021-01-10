@@ -246,21 +246,21 @@ poolMAlloc(nPerPar = list(c(3,3,3), c(3,3,3)),
 Sterba, S. K. (2011). Implications of parcel-allocation
 variability for comparing fit of item-solutions and parcel-solutions.
 \emph{Structural Equation Modeling, 18}(4), 554--577.
-doi:10.1080/10705511.2011.607073
+\doi{10.1080/10705511.2011.607073}
 
 Sterba, S. K., & MacCallum, R. C. (2010). Variability in parameter estimates
 and model fit across random allocations of items to parcels.
 \emph{Multivariate Behavioral Research, 45}(2), 322--358.
-doi:10.1080/00273171003680302
+\doi{10.1080/00273171003680302}
 
 Sterba, S. K., & Rights, J. D. (2016). Accounting for parcel-allocation
 variability in practice: Combining sources of uncertainty and choosing the
 number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
-296--313. doi:10.1080/00273171.2016.1144502
+296--313. \doi{10.1080/00273171.2016.1144502}
 
 Sterba, S. K., & Rights, J. D. (2017). Effects of parceling on model
 selection: Parcel-allocation variability in model ranking.
-\emph{Psychological Methods, 22}(1), 47--68. doi:10.1037/met0000067
+\emph{Psychological Methods, 22}(1), 47--68. \doi{10.1037/met0000067}
 }
 \seealso{
 \code{\link{runMI}} for treating allocations as multiple imputations to

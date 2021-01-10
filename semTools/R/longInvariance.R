@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Yves Rosseel
-### Last updated: 1 September 2018
+### Last updated: 10 January 2021
 
 ##' Measurement Invariance Tests Within Person
 ##'
@@ -96,7 +96,7 @@
 ##'   synthesis of the measurement invariance literature: Suggestions,
 ##'   practices, and recommendations for organizational research.
 ##'   \emph{Organizational Research Methods, 3}(1), 4--70.
-##'   doi:10.1177/109442810031002
+##'   \doi{10.1177/109442810031002}
 ##'
 ##' @examples
 ##'

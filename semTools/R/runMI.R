@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 June 2020
+### Last updated: 10 January 2021
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -452,7 +452,7 @@ growth.mi <- function(model, data, ...,
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
 ##'   Significance levels from repeated \emph{p}-values with multiply-imputed
 ##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   https://www.jstor.org/stable/24303994
+##'   \url{https://www.jstor.org/stable/24303994}
 ##'
 ##' @examples
 ##' ## generate a vector of chi-squared values, just for example

@@ -152,7 +152,7 @@ monteCarloMed(med, myCoefs, ACM = myACM)
 MacKinnon, D. P., Lockwood, C. M., & Williams, J. (2004). Confidence limits
 for the indirect effect: Distribution of the product and resampling methods.
 \emph{Multivariate Behavioral Research, 39}(1) 99--128.
-doi:10.1207/s15327906mbr3901_4
+\doi{10.1207/s15327906mbr3901_4}
 
 Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method
 for assessing multilevel mediation: An interactive tool for creating
@@ -161,7 +161,7 @@ confidence intervals for indirect effects in 1-1-1 multilevel models
 
 Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
 intervals for indirect effects. \emph{Communication Methods and Measures,
-6}(2), 77--98. doi:10.1080/19312458.2012.679848
+6}(2), 77--98. \doi{10.1080/19312458.2012.679848}
 
 Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 assessing mediation: An interactive tool for creating confidence intervals

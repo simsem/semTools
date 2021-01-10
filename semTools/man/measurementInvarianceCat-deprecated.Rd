@@ -79,7 +79,7 @@ measurementInvarianceCat(model = syntax, data = datCat, group = "g",
 \references{
 Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial
   invariance in ordered-categorical measures. \emph{Multivariate Behavioral
-  Research, 39}(3), 479--515. doi:10.1207/S15327906MBR3903_4
+  Research, 39}(3), 479--515. \doi{10.1207/S15327906MBR3903_4}
 }
 \seealso{
 \code{\link{semTools-deprecated}}

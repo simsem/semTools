@@ -41,7 +41,7 @@ findRMSEApowernested(rmsea0A = 0.06, rmsea0B = 0.05, rmsea1A = 0.08,
 MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 differences between nested covariance structure models: Power analysis and
 null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
-doi:10.1037/1082-989X.11.1.19
+\doi{10.1037/1082-989X.11.1.19}
 }
 \seealso{
 \itemize{

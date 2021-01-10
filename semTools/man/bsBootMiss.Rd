@@ -132,11 +132,11 @@ hist(temp, alpha = .01, nd = 3, xlab = "something else", breaks = 25,
 \references{
 Bollen, K. A., & Stine, R. A. (1992). Bootstrapping goodness-of-fit measures
 in structural equation models. \emph{Sociological Methods &
-Research, 21}(2), 205--229. doi:10.1177/0049124192021002004
+Research, 21}(2), 205--229. \doi{10.1177/0049124192021002004}
 
 Savalei, V., & Yuan, K.-H. (2009). On the model-based bootstrap with missing
 data: Obtaining a p-value for a test of exact fit. \emph{Multivariate
-Behavioral Research, 44}(6), 741--763. doi:10.1080/00273170903333590
+Behavioral Research, 44}(6), 741--763. \doi{10.1080/00273170903333590}
 }
 \seealso{
 \code{\linkS4class{BootMiss}}

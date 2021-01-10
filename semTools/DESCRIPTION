@@ -1,8 +1,8 @@
 Encoding:UTF-8
 Package: semTools
-Version: 0.5-3.912
+Version: 0.5-4
 Title: Useful Tools for Structural Equation Modeling
-Description: Provides useful tools for structural equation modeling.
+Description: Provides tools for structural equation modeling, many of which extend the lavaan package; for example, to pool results from multiple imputations, probe latent interactions, or test measurement invariance.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
 		person(given = "Sunthud", family = "Pornprasertmanit", role = "aut", email = "psunthud@gmail.com"),
 		person(given = c("Alexander","M."), family = "Schoemann", role = "aut", email="schoemanna@ecu.edu", comment = c(ORCID = "0000-0002-8479-8798")),
@@ -29,7 +29,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Mattan S.", family = "Ben-Shachar", role = "ctb", email="matanshm@post.bgu.ac.il", comment = c(ORCID = "0000-0002-4287-4801")),
 		person(given = "Mikko", family = "Rönkkö", role = "ctb", email = "mikko.ronkko@jyu.fi", comment = c(ORCID = "0000-0001-7988-7609"))
 		)
-Depends: R(>= 3.4), utils, stats, graphics, lavaan(>= 0.6-6)
+Depends: R(>= 3.4), utils, stats, graphics, lavaan(>= 0.6-7)
 Imports: methods
 Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt, blavaan, emmeans, testthat
 License: GPL (>= 2)
@@ -37,6 +37,6 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2021-01-09
+Date/Publication: 2021-01-10
 RoxygenNote: 7.1.1
 Roxygen: list(old_usage = TRUE)

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 June 2020
+### Last updated: 10 January 2021
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -140,11 +140,11 @@ function(object) {
 ##' @references
 ##'
 ##' Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence.
-##' \emph{Psychological Methods, 15}(2), 111--123. doi:10.1037/a0019625
+##' \emph{Psychological Methods, 15}(2), 111--123. \doi{10.1037/a0019625}
 ##'
 ##' Asparouhov, T., & Muthen, B. (2019). Nesting and equivalence testing for
 ##' structural equation models. \emph{Structural Equation Modeling, 26}(2),
-##' 302--309. doi:10.1080/10705511.2018.1513795
+##' 302--309. \doi{10.1080/10705511.2018.1513795}
 ##'
 ##' @examples
 ##'

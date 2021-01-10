@@ -108,11 +108,11 @@ in surveys}. New York, NY: Wiley.
 Savalei, V. & Rhemtulla, M. (2012). On obtaining estimates of the fraction
 of missing information from full information maximum likelihood.
 \emph{Structural Equation Modeling, 19}(3), 477--494.
-doi:10.1080/10705511.2012.687669
+\doi{10.1080/10705511.2012.687669}
 
 Wagner, J. (2010). The fraction of missing information as a tool for
 monitoring the quality of survey data. \emph{Public Opinion Quarterly,
-74}(2), 223--243. doi:10.1093/poq/nfq007
+74}(2), 223--243. \doi{10.1093/poq/nfq007}
 }
 \author{
 Mauricio Garnier Villarreal (University of Kansas;

@@ -74,7 +74,7 @@ rawdat2 <- kd(covmat, 300)
 Kaiser, H. F. and Dickman, K. (1962).  Sample and population
 score matrices and sample correlation matrices from an arbitrary population
 correlation matrix.  \emph{Psychometrika, 27}(2), 179--182.
-doi:10.1007/BF02289635
+\doi{10.1007/BF02289635}
 }
 \author{
 Ed Merkle (University of Missouri; \email{merklee@missouri.edu})

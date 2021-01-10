@@ -47,7 +47,7 @@ mvrnonnorm(20, c(a = 1, b = 2), matrix(c(10, 2, 2, 5), 2, 2),
 \references{
 Vale, C. D. & Maurelli, V. A. (1983). Simulating multivariate
 nonormal distributions. \emph{Psychometrika, 48}(3), 465--471.
-doi:10.1007/BF02293687
+\doi{10.1007/BF02293687}
 }
 \author{
 The original function is the \code{\link[lavaan]{simulateData}}

@@ -149,12 +149,12 @@ multiple regression/correlation analysis for the behavioral sciences}
 Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 latent interactions: Evaluation of alternative estimation strategies and
 indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
-doi:10.1037/1082-989X.9.3.275
+\doi{10.1037/1082-989X.9.3.275}
 
 Preacher, K. J., Curran, P. J., & Bauer, D. J. (2006). Computational tools
 for probing interactions in multiple linear regression, multilevel modeling,
 and latent curve analysis. \emph{Journal of Educational and Behavioral
-Statistics, 31}(4), 437--448. doi:10.3102/10769986031004437
+Statistics, 31}(4), 437--448. \doi{10.3102/10769986031004437}
 }
 \seealso{
 \itemize{

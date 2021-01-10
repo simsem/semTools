@@ -102,7 +102,7 @@ attr(mr, "weight")
 }
 \references{
 Li, H. (1997). A unifying expression for the maximal reliability of a linear
-composite. \emph{Psychometrika, 62}(2), 245--249. doi:10.1007/BF02295278
+composite. \emph{Psychometrika, 62}(2), 245--249. \doi{10.1007/BF02295278}
 
 Raykov, T. (2012). Scale construction and development using structural
 equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of structural

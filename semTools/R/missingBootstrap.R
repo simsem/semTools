@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 11 June 2019
+### Last updated: 10 January 2021
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 
@@ -239,11 +239,11 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ##'
 ##' Bollen, K. A., & Stine, R. A. (1992). Bootstrapping goodness-of-fit measures
 ##' in structural equation models. \emph{Sociological Methods &
-##' Research, 21}(2), 205--229. doi:10.1177/0049124192021002004
+##' Research, 21}(2), 205--229. \doi{10.1177/0049124192021002004}
 ##'
 ##' Savalei, V., & Yuan, K.-H. (2009). On the model-based bootstrap with missing
 ##' data: Obtaining a p-value for a test of exact fit. \emph{Multivariate
-##' Behavioral Research, 44}(6), 741--763. doi:10.1080/00273170903333590
+##' Behavioral Research, 44}(6), 741--763. \doi{10.1080/00273170903333590}
 ##' @examples
 ##'
 ##' \dontrun{
@@ -720,7 +720,7 @@ trans3 <- function(dat, Sigma, Mu, EMcov) {
   Tj3add <- matrix(0, nrow = p, ncol = p * p)
 
   ## Create Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
-  Dup <- lavaan::duplicationMatrix(p)
+  Dup <- lavaan::lav_matrix_duplication(p)
   Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
 
   ## step through each MD pattern, populate Hjs and Mjs

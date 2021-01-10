@@ -1,102 +1,107 @@
 ### Steven R. Chesnut, Danny Squire, Terrence D. Jorgensen
-### Last updated: 26 June 2018
+### Last updated: 10 January 2021
 
 
 
-#' Quark
-#'
-#' The \code{quark} function provides researchers with the ability to calculate
-#' and include component scores calculated by taking into account the variance
-#' in the original dataset and all of the interaction and polynomial effects of
-#' the data in the dataset.
-#'
-#' The \code{quark} function calculates these component scores by first filling
-#' in the data via means of multiple imputation methods and then expanding the
-#' dataset by aggregating the non-overlapping interaction effects between
-#' variables by calculating the mean of the interactions and polynomial
-#' effects.  The multiple imputation methods include one of iterative sampling
-#' and group mean substitution and multiple imputation using a polytomous
-#' regression algorithm (mice). During the expansion process, the dataset is
-#' expanded to three times its normal size (in width). The first third of the
-#' dataset contains all of the original data post imputation, the second third
-#' contains the means of the polynomial effects (squares and cubes), and the
-#' final third contains the means of the non-overlapping interaction effects. A
-#' full principal componenent analysis is conducted and the individual
-#' components are retained. The subsequent \code{\link{combinequark}} function
-#' provides researchers the control in determining how many components to
-#' extract and retain. The function returns the dataset as submitted (with
-#' missing values) and the component scores as requested for a more accurate
-#' multiple imputation in subsequent steps.
-#'
-#' @param data The data frame is a required component for \code{quark}.  In
-#' order for \code{quark} to process a data frame, it must not contain any
-#' factors or text-based variables.  All variables must be in numeric format.
-#' Identifiers and dates can be left in the data; however, they will need to be
-#' identified under the \code{id} argument.
-#' @param id Identifiers and dates within the dataset will need to be
-#' acknowledged as \code{quark} cannot process these.  By acknowledging the
-#' identifiers and dates as a vector of column numbers or variable names,
-#' \code{quark} will remove them from the data temporarily to complete its main
-#' processes.  Among many potential issues of not acknowledging identifiers and
-#' dates are issues involved with imputation, product and polynomial effects,
-#' and principal component analysis.
-#' @param order Order is an optional argument provided by quark that can be
-#' used when the imputation procedures in mice fail.  Under some circumstances,
-#' mice cannot calculate missing values due to issues with extreme missingness.
-#' Should an error present itself stating a failure due to not having any
-#' columns selected, set the argument \code{order = 2} in order to reorder the
-#' imputation method procedure.  Otherwise, use the default \code{order = 1}.
-#' @param silent If \code{FALSE}, the details of the \code{quark} process are
-#' printed.
-#' @param \dots additional arguments to pass to \code{\link[mice]{mice}}.
-#' @return The output value from using the quark function is a list. It will
-#' return a list with 7 components.
-#'  \item{ID Columns}{Is a vector of the identifier columns entered when
-#'   running quark.}
-#'  \item{ID Variables}{Is a subset of the dataset that contains the identifiers
-#'   as acknowledged when running quark.}
-#'  \item{Used Data}{Is a matrix / dataframe of the data provided by user as
-#'   the basis for quark to process.}
-#'  \item{Imputed Data}{Is a matrix / dataframe of the data after the multiple
-#'   method imputation process.}
-#'  \item{Big Matrix}{Is the expanded product and polynomial matrix.}
-#'  \item{Principal Components}{Is the entire dataframe of principal components
-#'   for the dataset.  This dataset will have the same number of rows of the big
-#'   matrix, but will have 1 less column (as is the case with principal
-#'   component analyses).}
-#'  \item{Percent Variance Explained}{Is a vector of the percent variance
-#'   explained with each column of principal components.}
-#' @author Steven R. Chesnut (University of Southern Mississippi;
-#' \email{Steven.Chesnut@@usm.edu})
-#'
-#' Danny Squire (Texas Tech University)
-#'
-#' Terrence D. Jorgensen (University of Amsterdam)
-#'
-#' The PCA code is copied and modified from the \code{FactoMineR} package.
-#' @seealso \code{\link{combinequark}}
-#' @references Howard, W. J., Rhemtulla, M., & Little, T. D. (2015). Using
-#' Principal Components as Auxiliary Variables in Missing Data Estimation.
-#' \emph{Multivariate Behavioral Research, 50}(3), 285--299.
-#' doi:10.1080/00273171.2014.999267
-#' @examples
-#'
-#' set.seed(123321)
-#'
-#' dat <- HolzingerSwineford1939[,7:15]
-#' misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
-#' dat[misspat] <- NA
-#' dat <- cbind(HolzingerSwineford1939[,1:3], dat)
-#' \dontrun{
-#' quark.list <- quark(data = dat, id = c(1, 2))
-#'
-#' final.data <- combinequark(quark = quark.list, percent = 80)
-#'
-#' ## Example to rerun quark after imputation failure:
-#' quark.list <- quark(data = dat, id = c(1, 2), order = 2)
-#' }
-#'
-#' @export
+##' Quark
+##'
+##' The \code{quark} function provides researchers with the ability to calculate
+##' and include component scores calculated by taking into account the variance
+##' in the original dataset and all of the interaction and polynomial effects of
+##' the data in the dataset.
+##'
+##' The \code{quark} function calculates these component scores by first filling
+##' in the data via means of multiple imputation methods and then expanding the
+##' dataset by aggregating the non-overlapping interaction effects between
+##' variables by calculating the mean of the interactions and polynomial
+##' effects.  The multiple imputation methods include one of iterative sampling
+##' and group mean substitution and multiple imputation using a polytomous
+##' regression algorithm (mice). During the expansion process, the dataset is
+##' expanded to three times its normal size (in width). The first third of the
+##' dataset contains all of the original data post imputation, the second third
+##' contains the means of the polynomial effects (squares and cubes), and the
+##' final third contains the means of the non-overlapping interaction effects. A
+##' full principal componenent analysis is conducted and the individual
+##' components are retained. The subsequent \code{\link{combinequark}} function
+##' provides researchers the control in determining how many components to
+##' extract and retain. The function returns the dataset as submitted (with
+##' missing values) and the component scores as requested for a more accurate
+##' multiple imputation in subsequent steps.
+##'
+##' @param data The data frame is a required component for \code{quark}.  In
+##' order for \code{quark} to process a data frame, it must not contain any
+##' factors or text-based variables.  All variables must be in numeric format.
+##' Identifiers and dates can be left in the data; however, they will need to be
+##' identified under the \code{id} argument.
+##' @param id Identifiers and dates within the dataset will need to be
+##' acknowledged as \code{quark} cannot process these.  By acknowledging the
+##' identifiers and dates as a vector of column numbers or variable names,
+##' \code{quark} will remove them from the data temporarily to complete its main
+##' processes.  Among many potential issues of not acknowledging identifiers and
+##' dates are issues involved with imputation, product and polynomial effects,
+##' and principal component analysis.
+##' @param order Order is an optional argument provided by quark that can be
+##' used when the imputation procedures in mice fail.  Under some circumstances,
+##' mice cannot calculate missing values due to issues with extreme missingness.
+##' Should an error present itself stating a failure due to not having any
+##' columns selected, set the argument \code{order = 2} in order to reorder the
+##' imputation method procedure.  Otherwise, use the default \code{order = 1}.
+##' @param silent If \code{FALSE}, the details of the \code{quark} process are
+##' printed.
+##' @param \dots additional arguments to pass to \code{\link[mice]{mice}}.
+##'
+##' @return The output value from using the quark function is a list. It will
+##' return a list with 7 components.
+##'  \item{ID Columns}{Is a vector of the identifier columns entered when
+##'   running quark.}
+##'  \item{ID Variables}{Is a subset of the dataset that contains the identifiers
+##'   as acknowledged when running quark.}
+##'  \item{Used Data}{Is a matrix / dataframe of the data provided by user as
+##'   the basis for quark to process.}
+##'  \item{Imputed Data}{Is a matrix / dataframe of the data after the multiple
+##'   method imputation process.}
+##'  \item{Big Matrix}{Is the expanded product and polynomial matrix.}
+##'  \item{Principal Components}{Is the entire dataframe of principal components
+##'   for the dataset.  This dataset will have the same number of rows of the big
+##'   matrix, but will have 1 less column (as is the case with principal
+##'   component analyses).}
+##'  \item{Percent Variance Explained}{Is a vector of the percent variance
+##'   explained with each column of principal components.}
+##'
+##' @author Steven R. Chesnut (University of Southern Mississippi;
+##' \email{Steven.Chesnut@@usm.edu})
+##'
+##' Danny Squire (Texas Tech University)
+##'
+##' Terrence D. Jorgensen (University of Amsterdam)
+##'
+##' The PCA code is copied and modified from the \code{FactoMineR} package.
+##'
+##' @seealso \code{\link{combinequark}}
+##'
+##' @references Howard, W. J., Rhemtulla, M., & Little, T. D. (2015). Using
+##' Principal Components as Auxiliary Variables in Missing Data Estimation.
+##' \emph{Multivariate Behavioral Research, 50}(3), 285--299.
+##' \doi{10.1080/00273171.2014.999267}
+##'
+##' @examples
+##'
+##' set.seed(123321)
+##'
+##' dat <- HolzingerSwineford1939[,7:15]
+##' misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
+##' dat[misspat] <- NA
+##' dat <- cbind(HolzingerSwineford1939[,1:3], dat)
+##' \dontrun{
+##' quark.list <- quark(data = dat, id = c(1, 2))
+##'
+##' final.data <- combinequark(quark = quark.list, percent = 80)
+##'
+##' ## Example to rerun quark after imputation failure:
+##' quark.list <- quark(data = dat, id = c(1, 2), order = 2)
+##' }
+##'
+##' @export
 quark <- function(data, id, order = 1, silent = FALSE, ...){
   if(!is.data.frame(data) && !is.matrix(data)) {
     stop("Inappropriate data file provided.")
@@ -136,39 +141,43 @@ quark <- function(data, id, order = 1, silent = FALSE, ...){
 
 
 
-#' Combine the results from the quark function
-#'
-#' This function builds upon the \code{\link{quark}} function to provide a
-#' final dataset comprised of the original dataset provided to
-#' \code{\link{quark}} and enough principal components to be able to account
-#' for a certain level of variance in the data.
-#'
-#'
-#' @param quark Provide the \code{\link{quark}} object that was returned.  It
-#' should be a list of objects.  Make sure to include it in its entirety.
-#' @param percent Provide a percentage of variance that you would like to have
-#' explained.  That many components (columns) will be extracted and kept with
-#' the output dataset.  Enter this variable as a number WITHOUT a percentage
-#' sign.
-#' @return The output of this function is the original dataset used in quark
-#' combined with enough principal component scores to be able to account for
-#' the amount of variance that was requested.
-#' @author Steven R. Chesnut (University of Southern Mississippi
-#' \email{Steven.Chesnut@@usm.edu})
-#' @seealso \code{\link{quark}}
-#' @examples
-#'
-#' set.seed(123321)
-#' dat <- HolzingerSwineford1939[,7:15]
-#' misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
-#' dat[misspat] <- NA
-#' dat <- cbind(HolzingerSwineford1939[,1:3], dat)
-#'
-#' quark.list <- quark(data = dat, id = c(1, 2))
-#'
-#' final.data <- combinequark(quark = quark.list, percent = 80)
-#'
-#' @export
+##' Combine the results from the quark function
+##'
+##' This function builds upon the \code{\link{quark}} function to provide a
+##' final dataset comprised of the original dataset provided to
+##' \code{\link{quark}} and enough principal components to be able to account
+##' for a certain level of variance in the data.
+##'
+##'
+##' @param quark Provide the \code{\link{quark}} object that was returned.  It
+##' should be a list of objects.  Make sure to include it in its entirety.
+##' @param percent Provide a percentage of variance that you would like to have
+##' explained.  That many components (columns) will be extracted and kept with
+##' the output dataset.  Enter this variable as a number WITHOUT a percentage
+##' sign.
+##'
+##' @return The output of this function is the original dataset used in quark
+##' combined with enough principal component scores to be able to account for
+##' the amount of variance that was requested.
+##'
+##' @author Steven R. Chesnut (University of Southern Mississippi
+##' \email{Steven.Chesnut@@usm.edu})
+##'
+##' @seealso \code{\link{quark}}
+##'
+##' @examples
+##'
+##' set.seed(123321)
+##' dat <- HolzingerSwineford1939[,7:15]
+##' misspat <- matrix(runif(nrow(dat) * 9) < 0.3, nrow(dat))
+##' dat[misspat] <- NA
+##' dat <- cbind(HolzingerSwineford1939[,1:3], dat)
+##'
+##' quark.list <- quark(data = dat, id = c(1, 2))
+##'
+##' final.data <- combinequark(quark = quark.list, percent = 80)
+##'
+##' @export
 combinequark <- function(quark, percent) {
   data <- cbind(quark$ID_Vars, quark$Used_Data)
   pct <- quark$Prin_Components_Prcnt
@@ -333,7 +342,7 @@ printpct <- function(percent) {
   if (round(percent, digits = 10) == 1) cat("100%..")
 }
 
-# This function is modified from the FactoMinoR package.
+## This function is modified from the FactoMinoR package.
 pcaquark <- function(X, ncp = 5) {
   moy.p <- function(V, poids) res <- sum(V * poids)/sum(poids)
   ec <- function(V, poids) res <- sqrt(sum(V^2 * poids)/sum(poids))
@@ -400,7 +409,7 @@ pcaquark <- function(X, ncp = 5) {
   return(res)
 }
 
-# This function is modified from the FactoMinoR package.
+## This function is modified from the FactoMinoR package.
 svd.triplet.quark <- function (X, row.w = NULL, col.w = NULL, ncp = Inf) {
 	tryCatch.W.E <- function(expr) {  ## function proposed by Maechlmr
 		W <- NULL

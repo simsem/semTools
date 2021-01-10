@@ -99,7 +99,7 @@ quark.list <- quark(data = dat, id = c(1, 2), order = 2)
 Howard, W. J., Rhemtulla, M., & Little, T. D. (2015). Using
 Principal Components as Auxiliary Variables in Missing Data Estimation.
 \emph{Multivariate Behavioral Research, 50}(3), 285--299.
-doi:10.1080/00273171.2014.999267
+\doi{10.1080/00273171.2014.999267}
 }
 \seealso{
 \code{\link{combinequark}}

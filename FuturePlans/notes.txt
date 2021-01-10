@@ -189,12 +189,8 @@ New function to implement Chung & Cai's approach for DWLS
 Miscellaneous semTools
 ======================
 
-replace all "doi:" with URLs (APA7)
-
-semTools::probe*Way*C() functions are buggy!
-- The modVar= variable appears to be used as the focal predictor rather than moderator, but the correct SEs are only printed when the nameX= order is {focal, moderator, interaction}; otherwise, the SEs are SWITCHED between first-order effects (apparent when probing both effects now).
-- re-fitting the model with user-defined parameters appending original syntax/PT
-
+semTools::probe*WayMC()
+- re-fit the model with user-defined parameters appending original syntax/PT
 
 semTools::reliability()
 - distinguish alpha from alpha-ord (cite Zumbo)

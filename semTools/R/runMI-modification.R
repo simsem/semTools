@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves rosseel
-### Last updated: 16 September 2019
+### Last updated: 10 January 2021
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -10,7 +10,7 @@
 ##' for releasing one or more fixed or constrained parameters in model can
 ##' be calculated by pooling the gradient and information matrices
 ##' across imputed data sets in a method proposed by Mansolf, Jorgensen, &
-##' Enders (in press)---analogous to the "D1" Wald test proposed by Li, Meng,
+##' Enders (2020)---analogous to the "D1" Wald test proposed by Li, Meng,
 ##' Raghunathan, & Rubin (1991)---or by pooling the complete-data score-test
 ##' statistics across imputed data sets (i.e., "D2"; Li et al., 1991).
 ##'
@@ -22,7 +22,7 @@
 ##'
 ##' @param object An object of class \code{\linkS4class{lavaan.mi}}
 ##' @param test \code{character} indicating which pooling method to use.
-##'  \code{"D1"} requests Mansolf, Jorgensen, & Enders' (in press) proposed
+##'  \code{"D1"} requests Mansolf, Jorgensen, & Enders' (2020) proposed
 ##'  Wald-like test for pooling the gradient and information, which are then
 ##'  used to calculate score-test statistics in the usual manner. \code{"D2"}
 ##'  (default because it is less computationall intensive) requests to pool the
@@ -107,12 +107,13 @@
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
 ##'   Significance levels from repeated \emph{p}-values with multiply-imputed
-##'    data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   https://www.jstor.org/stable/24303994
+##'   data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+##'   \url{https://www.jstor.org/stable/24303994}
 ##'
-##'   Mansolf, M., Jorgensen, T. D., & Enders, C. K. (in press). A multiple
+##'   Mansolf, M., Jorgensen, T. D., & Enders, C. K. (2020). A multiple
 ##'   imputation score test for model modification in structural equation
-##'   models. \emph{Psychological Methods}. doi:10.1037/met0000243
+##'   models. \emph{Psychological Methods, 25}(4), 393--411.
+##'   \doi{10.1037/met0000243}
 ##'
 ##' @examples
 ##'  \dontrun{

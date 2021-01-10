@@ -1,5 +1,5 @@
 ### Alexander M. Schoemann & Terrence D. Jorgensen
-### Last updated: 15 September 2018
+### Last updated: 10 January 2021
 ### Function to apply Satorra & Saris method for chi-squared power analysis
 
 
@@ -58,7 +58,7 @@
 ##' @references
 ##'  Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
 ##'  test in covariance structure analysis. \emph{Psychometrika, 50}, 83--90.
-##'  doi:10.1007/BF02294150
+##'  \doi{10.1007/BF02294150}
 ##'
 ##' @examples
 ##' ## Specify population values. Note every paramter has a fixed value.

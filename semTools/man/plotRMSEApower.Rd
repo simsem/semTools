@@ -53,15 +53,15 @@ plotRMSEApower(rmsea0 = .025, rmseaA = .075, df = 23,
 MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 differences between nested covariance structure models: Power analysis and
 null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
-doi:10.1037/1082-989X.11.1.19
+\doi{10.1037/1082-989X.11.1.19}
 
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 and determination of sample size for covariance structure modeling.
-\emph{Psychological Methods, 1}(2), 130--149. doi:10.1037/1082-989X.1.2.130
+\emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
 
 MacCallum, R. C., Lee, T., & Browne, M. W. (2010). The issue of isopower in
 power analysis for tests of structural equation models. \emph{Structural
-Equation Modeling, 17}(1), 23--41. doi:10.1080/10705510903438906
+Equation Modeling, 17}(1), 23--41. \doi{10.1080/10705510903438906}
 
 Preacher, K. J., Cai, L., & MacCallum, R. C. (2007). Alternatives to
 traditional model comparison strategies for covariance structure models. In
@@ -71,7 +71,7 @@ Associates.
 
 Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit
 index. \emph{Structural Equation Modeling, 5}(4), 411--419.
-doi:10.1080/10705519809540115
+\doi{10.1080/10705519809540115}
 
 Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests
 for the number of factors.} Paper presented at the annual meeting of the
