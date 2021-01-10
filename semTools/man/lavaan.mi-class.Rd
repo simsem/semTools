@@ -262,7 +262,7 @@ table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
 \references{
 Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
   with multiple imputation}. Technical Report. Retrieved from
-  \url{www.statmodel.com}
+  \url{http://www.statmodel.com/}
 
   Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
   Guilford.
