@@ -135,7 +135,7 @@ doi:10.1037/1082-989X.9.3.275
 
 Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., & Little, T. D.
 (2013). Orthogonalizing through residual centering: Extended applications
-and caveats \emph{Educational and Psychological Measurement, 73}(1), 27--46.
+and caveats. \emph{Educational and Psychological Measurement, 73}(1), 27--46.
 doi:10.1177/0013164412445473
 }
 \seealso{

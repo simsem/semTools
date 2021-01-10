@@ -11,6 +11,7 @@
 - `net()` returned an error for models with categorical indicators, now fixed.
 - The wrong *df* were used to find confidence limits for RMSEA calculated from the scaled $\chi^2$ statistic in `lavaan.mi` objects.
 - `emmeans` methods appropriately deal with incomplete data.
+- `probe2WayMC()` and `probe2WayRC()` treated the wrong variable as moderator for point or *SE* estimates, depending on the order in `nameX=`. 
 
 
 # semTools 0.5-3 (on CRAN 27 May 2020)

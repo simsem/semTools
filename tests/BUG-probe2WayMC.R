@@ -27,6 +27,10 @@ dogma~~interact
 
 fit<-sem(model,dbc,meanstructure=TRUE)
 summary(fit,fit.measures=TRUE,stand=TRUE)
+## estimate latent intercepts
+fitm <- sem(model, dbc, meanstructure = TRUE, effect.coding = "intercepts")
+summary(fitm, fit.measures=TRUE,stand=TRUE)
+
 
 ## manually calculate simple slopes as user-defined parameters
 model1<-'
@@ -82,4 +86,3 @@ probe2WayMC(fit, nameX=c("dogma","agree","interact"), nameY="intol", modVar="agr
 ## but the SEs are switched!
 
 
-                 
