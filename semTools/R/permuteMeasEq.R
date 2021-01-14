@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 14 January 2021
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -1315,7 +1315,6 @@ getMIs <- function(...) {
 }
 
 ## Functions to find delta-AFIs & maximum modification index in one permutation
-#' @importFrom lavaan lavInspect
 permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
                               covariates, AFIs, moreAFIs, maxSparse, maxNonconv,
                               iseed, warn, extra = NULL, datafun = NULL) {
@@ -1325,6 +1324,8 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
   argNames <- names(formals(permuteOnce.mgcfa))
   availableArgs <- lapply(argNames, function(x) eval(as.name(x)))
   names(availableArgs) <- argNames
+
+  group.label <- lavaan::lavInspect(con, "group.label")
 
   nSparse <- 0L
   nTries <- 1L
@@ -1366,28 +1367,28 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
     }
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::update(null, data = d, group.label = lavInspect(con, "group.label"))
+      out.null <- lavaan::update(null, data = d, group.label = group.label)
     }
 
     ## fit constrained model, check for convergence
-    try(out0 <- lavaan::update(con, data = d, group.label = lavInspect(con, "group.label")))
+    try(out0 <- lavaan::update(con, data = d, group.label = group.label))
     if (!exists("out0")) {
       nTries <- nTries + 1L
       next
     }
-    if (!lavInspect(out0, "converged")) {
+    if (!lavaan::lavInspect(out0, "converged")) {
       nTries <- nTries + 1L
       next
     }
 
     ## fit unconstrained model (unless NULL), check for convergence
     if (!is.null(uncon)) {
-      try(out1 <- lavaan::update(uncon, data = d, group.label = lavInspect(con, "group.label")))
+      try(out1 <- lavaan::update(uncon, data = d, group.label = group.label))
       if (!exists("out1")) {
         nTries <- nTries + 1L
         next
       }
-      if (!lavInspect(out1, "converged")) {
+      if (!lavaan::lavInspect(out1, "converged")) {
         nTries <- nTries + 1L
         next
       }
@@ -1431,7 +1432,6 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
        n.nonConverged = nTries - 1L, n.Sparse = nSparse)
 }
 
-#' @importFrom lavaan lavInspect
 permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
                               covariates, AFIs, moreAFIs, maxSparse, maxNonconv,
                               iseed, warn, extra = NULL, datafun = NULL) {
@@ -1442,11 +1442,13 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
   availableArgs <- lapply(argNames, function(x) eval(as.name(x)))
   names(availableArgs) <- argNames
 
+  group.label <- lavaan::lavInspect(con, "group.label")
+
   nTries <- 1L
   while (nTries <= maxNonconv) {
     ## permute covariate(s) within each group
     if (length(G)) {
-      for (gg in lavInspect(con, "group.label")) {
+      for (gg in group.label) {
         dG <- d[ d[[G]] == gg, ]
         N <- nrow(dG)
         newd <- dG[sample(1:N, N), covariates, drop = FALSE]
@@ -1476,17 +1478,17 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
 
     ## fit null model, if it exists
     if (!is.null(null)) {
-      out.null <- lavaan::update(null, data = d, group.label = lavInspect(con, "group.label"))
+      out.null <- lavaan::update(null, data = d, group.label = group.label)
     }
 
     ## fit constrained model
-    try(out0 <- lavaan::update(con, data = d, group.label = lavInspect(con, "group.label")))
+    try(out0 <- lavaan::update(con, data = d, group.label = group.label))
     ## check for convergence
     if (!exists("out0")) {
       nTries <- nTries + 1L
       next
     }
-    if (!lavInspect(out0, "converged")) {
+    if (!lavaan::lavInspect(out0, "converged")) {
       nTries <- nTries + 1L
       next
     }

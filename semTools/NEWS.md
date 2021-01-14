@@ -1,5 +1,8 @@
 # semTools 0.5-5 (in development)
 
+## Bug Fixes:
+
+- `permuteMeasEq()` returned an error when `parallelType = "multicore"`.
 
 
 # semTools 0.5-4 (on CRAN 11 January 2021)
