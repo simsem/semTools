@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 10 January 2021
+### Last updated: 27 January 2021
 
 
 ## -------------
@@ -120,6 +120,15 @@
 ##'   defined by a single indicator from the returned results. If \code{TRUE}
 ##'   (default), single indicators will still be included in the \code{total}
 ##'   column when \code{return.total = TRUE}.
+##' @param omit.factors \code{character} vector naming any common factors
+##'   modeled in \code{object} whose composite reliability is not of
+##'   interest. For example, higher-order or method factors. Note that
+##'   \code{\link{reliabilityL2}()} should be used to calculate composite
+##'   reliability of a higher-order factor.
+##' @param omit.indicators \code{character} vector naming any observed variables
+##'   that should be ignored when calculating composite reliability. This can
+##'   be useful, for example, to estimate reliability when an indicator is
+##'   removed.
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
 ##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
@@ -192,7 +201,10 @@
 ##' reliability(fit, return.total = TRUE)
 ##'
 ##' @export
-reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
+reliability <- function(object,
+                        return.total = FALSE, dropSingle = TRUE,
+                        omit.factors = character(0),
+                        omit.indicators = character(0),
                         omit.imps = c("no.conv","no.se")) {
 
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
@@ -272,13 +284,16 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 
   ly <- lapply(param, "[[", "lambda")
   te <- lapply(param, "[[", "theta")
+  beta <- if ("beta" %in% names(param[[1]])) {
+    lapply(param, "[[", "beta")
+  } else NULL
 
 	anyCategorical <- lavInspect(object, "categorical")
 	threshold <- if (anyCategorical) getThreshold(object) else NULL
 	latScales <- if (anyCategorical) getScales(object) else NULL
 
 	result <- list()
-	warnHigher <- FALSE
+	warnHigher <- character(0) # collect list of potential higher-order factors
 	## loop over i blocks (groups/levels)
 	for (i in 1:nblocks) {
 	  ## extract factor and indicator names
@@ -288,10 +303,12 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 	  nameArgs <- list(object = object)
 	  if (nblocks > 1L) nameArgs$block <- i
 	  ordNames <- do.call(lavNames, c(nameArgs, list(type = "ov.ord")))
+	  ## identify POSSIBLE higher-order factors (that affect other latent vars)
 	  latInds  <- do.call(lavNames, c(nameArgs, list(type = "lv.ind")))
-	  higher   <- setdiff(facNames, latInds)
-	  ## keep track of factor indices, to drop higher-order factors,
-	  ## and optionally single-indicator factors
+	  higher <- if (length(latInds) == 0L) character(0) else {
+	    facNames[apply(beta[[i]], MARGIN = 2, function(x) any(x != 0))]
+	  }
+	  ## keep track of factor indices to skip
 	  idx.drop <- numeric(0)
 
 	  ## relevant quantities
@@ -307,7 +324,26 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 
 		## loop over j factors
 		for (j in 1:length(common)) {
+		  ## skip this factor?
+		  if (facNames[j] %in% omit.factors) {
+		    idx.drop <- c(idx.drop, j)
+		    next
+		  }
+
 			index <- which(ly[[i]][,j] != 0)
+			## remove unwanted indicators
+			index <- setdiff(index, which(indNames %in% omit.indicators))
+
+			## check for ANY indicators (possibly skip purely higher-order factors)
+			if (length(index) == 0L) {
+			  idx.drop <- c(idx.drop, j)
+			  next
+			}
+			## check for single indicators
+			if (dropSingle && length(index) == 1L) {
+			  idx.drop <- c(idx.drop, j)
+			  next
+			}
 			## check for categorical (or mixed) indicators
 			categorical <-      any(indNames[index] %in% ordNames)
 			if (categorical && !all(indNames[index] %in% ordNames)) {
@@ -315,14 +351,8 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 			       'of categorical and continuous (including latent) indicators.')
 			}
 			## check for latent indicators
-			if (length(latInds) && facNames[j] %in% higher) {
-			  warnHigher <- TRUE
-			  idx.drop <- c(idx.drop, j)
-			  next
-			}
-			if (dropSingle && length(index) == 1L) {
-			  idx.drop <- c(idx.drop, j)
-			  next
+			if (facNames[j] %in% higher) {
+			  warnHigher <- c(warnHigher, facNames[j])
 			}
 
 			sigma <- S[[i]][index, index, drop = FALSE]
@@ -405,7 +435,8 @@ reliability <- function(object, return.total = FALSE, dropSingle = TRUE,
 	                            "the alpha and the average variance extracted ",
 	                            "are calculated from polychoric (polyserial) ",
 	                            "correlations, not from Pearson correlations.\n")
-	if (warnHigher) message('Higher-order factors were ignored.\n')
+	if (length(warnHigher)) warning('Possible higher-order factors detected:\n',
+	                                paste(unique(warnHigher), sep = ", "))
 
 	## drop list structure?
 	if (nblocks == 1L) {

@@ -5,6 +5,7 @@
 \title{Calculate reliability values of factors}
 \usage{
 reliability(object, return.total = FALSE, dropSingle = TRUE,
+  omit.factors = character(0), omit.indicators = character(0),
   omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
@@ -22,6 +23,17 @@ single scale composite (scale sum or scale mean).}
 defined by a single indicator from the returned results. If \code{TRUE}
 (default), single indicators will still be included in the \code{total}
 column when \code{return.total = TRUE}.}
+
+\item{omit.factors}{\code{character} vector naming any common factors
+modeled in \code{object} whose composite reliability is not of
+interest. For example, higher-order or method factors. Note that
+\code{\link{reliabilityL2}()} should be used to calculate composite
+reliability of a higher-order factor.}
+
+\item{omit.indicators}{\code{character} vector naming any observed variables
+that should be ignored when calculating composite reliability. This can
+be useful, for example, to estimate reliability when an indicator is
+removed.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results.  Can include any of
