@@ -193,9 +193,6 @@ semTools::probe*WayMC()
 - re-fit the model with user-defined parameters appending original syntax/PT
 
 semTools::reliability()
-- distinguish alpha from alpha-ord (cite Zumbo)
-- update documentation: https://github.com/simsem/semTools/issues/48
-  - reference differences from psych package?
 - allow models with mixed types, so long as they aren't mixed within
   the same construct (and set return.total=FALSE)
 

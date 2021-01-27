@@ -135,14 +135,14 @@ Note that this formula is modified from Fornell & Larcker (1981) in the case
 that factor variances are not 1. The proposed formula from Fornell & Larcker
 (1981) assumes that the factor variances are 1. Note that AVE will not be
 provided for factors consisting of items with dual loadings. AVE is the
-property of items but not the property of factors.
+property of items but not the property of factors. AVE is calculated with
+polychoric correlations when ordinal indicators are used.
 
-Regarding categorical indicators, coefficient alpha and AVE are calculated
-based on polychoric correlations. The coefficient alpha from this function
-differs from the standard alpha calculation, which does not assume items are
-continuous, so numerically weighted categories can be treated as numeric.
-Researchers may check the \code{alpha} function in the \code{psych} package
-for the standard coefficient alpha calculation.
+Coefficient alpha is by definition applied by treating indicators as numeric
+(see Chalmers, 2018), which is consistent with the \code{alpha} function in
+the \code{psych} package. When indicators are ordinal, \code{reliability}
+additional applies the standard alpha calculation to the polychoric
+correlation matrix to return Zufmbo et al.'s (2007) "ordinal alpha".
 
 Item thresholds are not accounted for. Coefficient omega for categorical
 items, however, is calculated by accounting for both item covariances and
