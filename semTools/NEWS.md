@@ -1,5 +1,10 @@
 # semTools 0.5-5 (in development)
 
+## New Features:
+
+- `reliability()` has new `what=`, `omit.factors=`, and `omit.indicators=` arguments to 
+customize composite-reliability estimates.
+
 ## Bug Fixes:
 
 - `permuteMeasEq()` returned an error when `parallelType = "multicore"`.

@@ -111,6 +111,11 @@
 ##' @param object A \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
+##' @param what \code{character} vector naming any reliability indices to
+##'   calculate. All are returned by default. When indicators are ordinal,
+##'   both traditional \code{"alpha"} and Zumbo et al.'s (2007) so-called
+##'   "ordinal alpha" (\code{"alpha.ord"}) are returned, though the latter is
+##'   arguably of dubious value (Chalmers, 2018).
 ##' @param return.total \code{logical} indicating whether to return a final
 ##'   column containing the reliability of a composite of all items. Ignored
 ##'   in 1-factor models, and should only be set \code{TRUE} if all factors
@@ -171,6 +176,10 @@
 ##' consistency reliability. \emph{Psychometrika, 74}(1), 137--143.
 ##' \doi{10.1007/s11336-008-9100-1}
 ##'
+##' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of
+##' ordinal alpha. \emph{Educational and Psychological Measurement, 78}(6),
+##' 1056--1071. \doi{10.1177/0013164417727036}
+##'
 ##' Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
 ##' tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
 ##'
@@ -190,6 +199,11 @@
 ##' Journal of Mathematical and Statistical Psychology, 54}(2), 315--323.
 ##' \doi{10.1348/000711001159582}
 ##'
+##' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of
+##' coefficients alpha and theta for Likert rating scales.
+##' \emph{Journal of Modern Applied Statistical Methods, 6}(1), 21--29.
+##' \doi{10.22237/jmasm/1177992180}
+##'
 ##' @examples
 ##'
 ##' HS.model <- ' visual  =~ x1 + x2 + x3
@@ -202,6 +216,7 @@
 ##'
 ##' @export
 reliability <- function(object,
+                        what = c("alpha","omega","omega2","omega3","ave"),
                         return.total = FALSE, dropSingle = TRUE,
                         omit.factors = character(0),
                         omit.indicators = character(0),
@@ -218,11 +233,25 @@ reliability <- function(object,
                          sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
   }
 
-  ## parameters in GLIST format (not flat, need block-level list)
+  ## check for categorical (determines what S will be)
+  anyCategorical <- lavInspect(object, "categorical")
+  if (anyCategorical && "alpha" %in% what) {
+    what <- c(what, "alpha.ord")
+    what <- unique(what) # in case it was already explicitly requested
+  }
+  ## categorical-model parameters
+  threshold <- if (anyCategorical) getThreshold(object) else NULL
+  latScales <- if (anyCategorical) getScales(object) else NULL
+  ## all other relevant parameters in GLIST format (not flat, need block-level list)
   if (inherits(object, "lavaan")) {
     param <- lavInspect(object, "est")
     ve <- lavInspect(object, "cov.lv") # model-implied latent covariance matrix
     S <- object@h1$implied$cov # observed sample covariance matrix (already a list)
+    if (anyCategorical) {
+      rawData <- lavInspect(object, "data")
+      if (nblocks == 1L) rawData <- list(rawData)
+      S.as.con <- lapply(rawData, cov) # for actual "alpha", not "alpha.ord"
+    }
 
     if (nblocks == 1L) {
       param <- list(param)
@@ -245,15 +274,46 @@ reliability <- function(object,
     param <- object@coefList[[ useImps[1] ]] # first admissible as template
     coefList <- object@coefList[useImps]
     phiList <- object@phiList[useImps]
+    if (anyCategorical) {
+      dataList <- object@DataList[useImps]
+      S.as.con <- vector("list", nblocks) # for group-list of pooled S
+    }
     ## add block-level list per imputation?
     if (nblocks == 1L) {
       param <- list(param)
       for (i in 1:m) {
         coefList[[i]] <- list(coefList[[i]])
         phiList[[i]] <- list(phiList[[i]])
+        if (anyCategorical) dataList[[i]] <- list(dataList[[i]])
       }
+    } else if (anyCategorical) { #FIXME: currently no categorical ML-SEMs
+      ## multigroup models need separate data matrices per group
+      if (ngroups > 1L) {
+        G <- lavInspect(object, "group")
+        group.label <- lavInspect(object, "group.label")
+
+        for (g in seq_along(group.label)) {
+          VV <- lavNames(object, type = "ov", group = g)
+          impCovList <- lapply(dataList, function(DD) {
+            RR <- DD[,G] == group.label[g]
+            dat <- do.call(cbind, sapply(DD[RR, VV], as.numeric, simplify = FALSE))
+            cov(dat)
+          })
+          S.as.con[[g]] <- Reduce("+", impCovList) / length(impCovList)
+        }
+
+      } else {
+        ## single group
+        VV <- lavNames(object, type = "ov")
+        impCovList <- lapply(dataList, function(DD) {
+          dat <- do.call(cbind, sapply(DD[VV], as.numeric, simplify = FALSE))
+          cov(dat)
+        })
+        S.as.con[[1]] <- Reduce("+", impCovList) / length(impCovList)
+      }
+
     }
-    S <- vector("list", nblocks) # pooled observed covariance matrix
+    S <- vector("list", nblocks) # pooled observed OR polychoric covariance matrix
     ve <- vector("list", nblocks)
     ## loop over blocks
     for (b in 1:nblocks) {
@@ -264,7 +324,7 @@ reliability <- function(object,
         param[[b]][[mat]] <- Reduce("+", matList) / length(matList)
       } # mat
 
-      ## pooled observed covariance matrix
+      ## pooled observed OR polychoric covariance matrix
       covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
       S[[b]] <- Reduce("+", covList) / m
 
@@ -287,10 +347,6 @@ reliability <- function(object,
   beta <- if ("beta" %in% names(param[[1]])) {
     lapply(param, "[[", "beta")
   } else NULL
-
-	anyCategorical <- lavInspect(object, "categorical")
-	threshold <- if (anyCategorical) getThreshold(object) else NULL
-	latScales <- if (anyCategorical) getScales(object) else NULL
 
 	result <- list()
 	warnHigher <- character(0) # collect list of potential higher-order factors
@@ -317,6 +373,7 @@ reliability <- function(object,
 		## vectors to store results for each factor
 		error <- rep(NA, length(common))
 		alpha <- rep(NA, length(common))
+		if (anyCategorical) alpha.ord <- rep(NA, length(common))
 		total <- rep(NA, length(common))
 		omega1 <- omega2 <- omega3 <- rep(NA, length(common))
 		impliedTotal <- rep(NA, length(common))
@@ -356,7 +413,6 @@ reliability <- function(object,
 			}
 
 			sigma <- S[[i]][index, index, drop = FALSE]
-			alpha[j] <- computeAlpha(sigma)
 			faccontrib <- ly[[i]][,j, drop = FALSE] %*% ve[[i]][j,j, drop = FALSE] %*% t(ly[[i]][,j, drop = FALSE])
 			truefac <- diag(faccontrib[index, index, drop = FALSE])
 			trueitem <- diag(truevar[index, index, drop = FALSE])
@@ -367,6 +423,8 @@ reliability <- function(object,
 				avevar[j] <- NA
 			}
 			if (categorical) {
+			  alpha[j] <- computeAlpha(S.as.con[[i]][index, index, drop = FALSE])
+			  alpha.ord[j] <- computeAlpha(sigma)
 				omega1[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
 				                      threshold = threshold[[i]][index],
 				                      scales = latScales[[i]][index],
@@ -380,6 +438,8 @@ reliability <- function(object,
 				                      scales = latScales[[i]][index],
 				                      denom = sigma)
 			} else {
+			  alpha[j] <- computeAlpha(sigma)
+
 			  commonfac <- sum(faccontrib[index, index, drop = FALSE])
 			  error[j] <- sum(te[[i]][index, index, drop = FALSE])
 			  impliedTotal[j] <- sum(SigmaHat[[i]][index, index, drop = FALSE])
@@ -393,9 +453,9 @@ reliability <- function(object,
 		}
 
 		if (return.total & length(facNames) > 1L) {
-		  alpha <- c(alpha, total = computeAlpha(S[[i]]))
-		  #FIXME: necessary?    names(alpha) <- c(names(common), "total")
-		  if (categorical) {
+		  if (anyCategorical) {
+		    alpha <- c(alpha, computeAlpha(S.as.con[[i]]))
+		    alpha.ord <- c(alpha.ord, total = computeAlpha(S[[i]]))
 		    omega1 <- c(omega1, total = omegaCat(truevar = truevar,
 		                                         threshold = threshold[[i]],
 		                                         scales = latScales[[i]],
@@ -409,6 +469,7 @@ reliability <- function(object,
 		                                         scales = latScales[[i]],
 		                                         denom = S[[i]]))
 		  } else {
+		    alpha <- c(alpha, total = computeAlpha(S[[i]]))
 		    omega1 <- c(omega1, total = sum(truevar) / (sum(truevar) + sum(te[[i]])))
 		    omega2 <- c(omega2, total = sum(truevar) / (sum(SigmaHat[[i]])))
 		    omega3 <- c(omega3, total = sum(truevar) / (sum(S[[i]])))
@@ -417,8 +478,12 @@ reliability <- function(object,
 		              total = sum(diag(truevar)) / sum((diag(truevar) + diag(te[[i]]))))
 		}
 
-		result[[i]] <- rbind(alpha = alpha, omega = omega1, omega2 = omega2,
-		                     omega3 = omega3, avevar = avevar)
+		result[[i]] <- rbind(alpha = if ("alpha" %in% what) alpha else NULL,
+		                     alpha.ord = if ("alpha.ord" %in% what) alpha.ord else NULL,
+		                     omega  = if ("omega"  %in% what) omega1 else NULL,
+		                     omega2 = if ("omega2" %in% what) omega2 else NULL,
+		                     omega3 = if ("omega3" %in% what) omega3 else NULL,
+		                     avevar = if ("ave" %in% what) avevar else NULL)
 		colnames(result[[i]])[1:length(facNames)] <- facNames
 		if (return.total & length(facNames) > 1L) {
 		  colnames(result[[i]])[ ncol(result[[i]]) ] <- "total"
@@ -431,10 +496,21 @@ reliability <- function(object,
 		## end loop over blocks
 	}
 
-	if (anyCategorical) message("For constructs with categorical indicators, ",
-	                            "the alpha and the average variance extracted ",
-	                            "are calculated from polychoric (polyserial) ",
-	                            "correlations, not from Pearson correlations.\n")
+	if (anyCategorical) {
+	  alphaMessage <- paste0('Zumbo et al.`s (2007) "ordinal alpha" is calculated',
+	                         ' in addition to the standard alpha, which treats ',
+	                         'ordinal variables as numeric. See Chalmers (2018) ',
+	                         'for a critique of "alpha.ord".')
+	  AVEmessage <- paste0('average variance extracted is calculated from ',
+	                       'polychoric (polyserial) not Pearson correlations.')
+	  both <- "alpha.ord" %in% what & "ave" %in% what
+	  connectMessage <- if (both) ' Likewise, ' else ' the '
+	  catMessage <- paste0("For constructs with categorical indicators, ",
+	                       if ("alpha.ord" %in% what) alphaMessage else NULL,
+	                       if (both) ' Likewise, ' else NULL,
+	                       if ("ave" %in% what) AVEmessage else NULL)
+	  if ("alpha.ord" %in% what || "ave" %in% what) message(catMessage)
+	}
 	if (length(warnHigher)) warning('Possible higher-order factors detected:\n',
 	                                paste(unique(warnHigher), sep = ", "))
 
@@ -1002,7 +1078,7 @@ p2 <- function(t1, t2, r) {
 getThreshold <- function(object) {
 	ngroups <- lavInspect(object, "ngroups") #TODO: add nlevels when capable
 	ordnames <- lavNames(object, "ov.ord")
-	EST <- lavInspect(object, "est")
+	EST <- lavInspect(object, "est") #FIXME: what about lavaan.mi objects?
 
 	if (ngroups == 1L) {
 	  thresholds <- EST$tau[,"threshold"]
@@ -1035,7 +1111,7 @@ getThreshold <- function(object) {
 getScales <- function(object) {
   ngroups <- lavInspect(object, "ngroups") #TODO: add nlevels when capable
   ordnames <- lavNames(object, "ov.ord") #TODO: use to allow mix of cat/con vars
-  EST <- lavInspect(object, "est")
+  EST <- lavInspect(object, "est") #FIXME: what about lavaan.mi objects?
 
   if (ngroups == 1L) {
     result <- list(EST$delta[,"scales"])

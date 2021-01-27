@@ -4,14 +4,20 @@
 \alias{reliability}
 \title{Calculate reliability values of factors}
 \usage{
-reliability(object, return.total = FALSE, dropSingle = TRUE,
-  omit.factors = character(0), omit.indicators = character(0),
-  omit.imps = c("no.conv", "no.se"))
+reliability(object, what = c("alpha", "omega", "omega2", "omega3", "ave"),
+  return.total = FALSE, dropSingle = TRUE, omit.factors = character(0),
+  omit.indicators = character(0), omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
 \item{object}{A \code{\linkS4class{lavaan}} or
 \code{\linkS4class{lavaan.mi}} object, expected to contain only
 exogenous common factors (i.e., a CFA model).}
+
+\item{what}{\code{character} vector naming any reliability indices to
+calculate. All are returned by default. When indicators are ordinal,
+both traditional \code{"alpha"} and Zumbo et al.'s (2007) so-called
+"ordinal alpha" (\code{"alpha.ord"}) are returned, though the latter is
+arguably of dubious value (Chalmers, 2018).}
 
 \item{return.total}{\code{logical} indicating whether to return a final
 column containing the reliability of a composite of all items. Ignored
@@ -176,6 +182,10 @@ Bentler, P. M. (2009). Alpha, dimension-free, and model-based internal
 consistency reliability. \emph{Psychometrika, 74}(1), 137--143.
 \doi{10.1007/s11336-008-9100-1}
 
+Chalmers, R. P. (2018). On misconceptions and the limited usefulness of
+ordinal alpha. \emph{Educational and Psychological Measurement, 78}(6),
+1056--1071. \doi{10.1177/0013164417727036}
+
 Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
 tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
 
@@ -194,6 +204,11 @@ Raykov, T. (2001). Estimation of congeneric scale reliability using
 covariance structure analysis with nonlinear constraints \emph{British
 Journal of Mathematical and Statistical Psychology, 54}(2), 315--323.
 \doi{10.1348/000711001159582}
+
+Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of
+coefficients alpha and theta for Likert rating scales.
+\emph{Journal of Modern Applied Statistical Methods, 6}(1), 21--29.
+\doi{10.22237/jmasm/1177992180}
 }
 \seealso{
 \code{\link{reliabilityL2}} for reliability value of a desired
