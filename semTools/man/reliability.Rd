@@ -20,10 +20,11 @@ both traditional \code{"alpha"} and Zumbo et al.'s (2007) so-called
 arguably of dubious value (Chalmers, 2018).}
 
 \item{return.total}{\code{logical} indicating whether to return a final
-column containing the reliability of a composite of all items. Ignored
-in 1-factor models, and should only be set \code{TRUE} if all factors
-represent scale dimensions that could nonetheless be collapsed to a
-single scale composite (scale sum or scale mean).}
+column containing the reliability of a composite of all indicators (not
+listed in \code{omit.indicators}) of factors not listed in
+\code{omit.factors}.  Ignored in 1-factor models, and should only be set
+\code{TRUE} if all factors represent scale dimensions that could be
+meaningfully collapsed to a single composite (scale sum or scale mean).}
 
 \item{dropSingle}{\code{logical} indicating whether to exclude factors
 defined by a single indicator from the returned results. If \code{TRUE}
@@ -62,7 +63,8 @@ Reliability values (coefficient alpha, coefficients omega, average
   factors, a \code{total} column can optionally be included.
 }
 \description{
-Calculate reliability values of factors by coefficient omega
+Calculate reliability values of factors by coefficients alpha and omega,
+as well as the average variance extracted (AVE)
 }
 \details{
 The coefficient alpha (Cronbach, 1951) can be calculated by
@@ -141,32 +143,71 @@ polychoric correlations when ordinal indicators are used.
 Coefficient alpha is by definition applied by treating indicators as numeric
 (see Chalmers, 2018), which is consistent with the \code{alpha} function in
 the \code{psych} package. When indicators are ordinal, \code{reliability}
-additional applies the standard alpha calculation to the polychoric
-correlation matrix to return Zufmbo et al.'s (2007) "ordinal alpha".
+additionally applies the standard alpha calculation to the polychoric
+correlation matrix to return Zumbo et al.'s (2007) "ordinal alpha".
 
-Item thresholds are not accounted for. Coefficient omega for categorical
-items, however, is calculated by accounting for both item covariances and
-item thresholds using Green and Yang's (2009, formula 21) approach. Three
-types of coefficient omega indicate different methods to calculate item
-total variances. The original formula from Green and Yang is equivalent to
-\eqn{\omega_3} in this function. Green and Yang did not propose a method for
+Coefficient omega for categorical items is calculated using Green and Yang's
+(2009, formula 21) approach. Three types of coefficient omega indicate
+different methods to calculate item total variances. The original formula
+from Green and Yang is equivalent to \eqn{\omega_3} in this function.
+Green and Yang did not propose a method for
 calculating reliability with a mixture of categorical and continuous
 indicators, and we are currently unaware of an appropriate method.
 Therefore, when \code{reliability} detects both categorical and continuous
-indicators in the model, an error is returned. If the categorical indicators
+indicators of a factor, an error is returned. If the categorical indicators
 load on a different factor(s) than continuous indicators, then reliability
-can be calculated separately for those scales by fitting separate models and
-submitting each to the \code{reliability} function.
+will still be calculated separately for those factors, but
+\code{return.total} must be \code{FALSE} (unless \code{omit.factors} is used
+to isolate factors with indicators of the same type).
 }
 \examples{
 
+data(HolzingerSwineford1939)
+HS9 <- HolzingerSwineford1939[ , c("x7","x8","x9")]
+HSbinary <- as.data.frame( lapply(HS9, cut, 2, labels=FALSE) )
+names(HSbinary) <- c("y7","y8","y9")
+HS <- cbind(HolzingerSwineford1939, HSbinary)
+
 HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
-              speed   =~ x7 + x8 + x9 '
+              speed   =~ y7 + y8 + y9 '
 
-fit <- cfa(HS.model, data = HolzingerSwineford1939)
+fit <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
+
+## works for factors with exclusively continuous OR categorical indicators
 reliability(fit)
-reliability(fit, return.total = TRUE)
+
+## reliability for ALL indicators only available when they are
+## all continuous or all categorical
+reliability(fit, omit.factors = "speed", return.total = TRUE)
+
+
+## loop over visual indicators to calculate alpha if one indicator is removed
+for (i in paste0("x", 1:3)) {
+  cat("Drop x", i, ":\n")
+  print(reliability(fit, omit.factors = c("textual","speed"),
+                    omit.indicators = i, what = "alpha"))
+}
+
+
+## works for multigroup models and for multilevel models (and both)
+data(Demo.twolevel)
+## assign clusters to arbitrary groups
+Demo.twolevel$g <- ifelse(Demo.twolevel$cluster \%\% 2L, "type1", "type2")
+model2 <- ' group: foo
+  level: within
+    fac =~ y1 + L2*y2 + L3*y3
+  level: between
+    fac =~ y1 + L2*y2 + L3*y3
+
+group: bar
+  level: within
+    fac =~ y1 + L2*y2 + L3*y3
+  level: between
+    fac =~ y1 + L2*y2 + L3*y3
+'
+fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
+reliability(fit2, what = c("alpha","omega3"))
 
 }
 \references{

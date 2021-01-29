@@ -192,10 +192,6 @@ Miscellaneous semTools
 semTools::probe*WayMC()
 - re-fit the model with user-defined parameters appending original syntax/PT
 
-semTools::reliability()
-- allow models with mixed types, so long as they aren't mixed within
-  the same construct (and set return.total=FALSE)
-
 add moreFitIndices= argument to compareFit()
 
 semTools::miPowerFit()

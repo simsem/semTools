@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 August 2019
+### Last updated: 28 January 2021
 ### test runMI
 
 library(lavaan)
@@ -202,26 +202,7 @@ level: between
 L2w == L2b
 L3w == L3b
 '
-model2 <- ' group: foo
-level: within
-  fw =~ y1 + L2*y2 + L3*y3
-  fw ~ x1 + x2 + x3
-level: between
-  fb =~ y1 + L2*y2 + L3*y3
-  fb ~ w1 + w2
-
-group: bar
-
-level: within
-  fw =~ y1 + L2*y2 + L3*y3
-  fw ~ x1 + x2 + x3
-level: between
-  fb =~ y1 + L2*y2 + L3*y3
-  fb ~ w1 + w2
-'
-
 fit2 <- sem(model, data = Demo.twolevel, cluster = "cluster")
-mgfit2 <- sem(model2, data = Demo.twolevel, cluster = "id", group = "g")
 
 summary(fit2, fit.measures = TRUE, standardized = TRUE)
 lavInspect(fit2, "ngroups")
@@ -238,6 +219,34 @@ lavInspect(fit2, "cluster.label")
 
 lavInspect(fit2, "cov.lv")
 lavInspect(fit2, "theta")
+
+model2 <- ' group: foo
+level: within
+  fw =~ y1 + L2*y2 + L3*y3
+  fw ~ x1 + x2 + x3
+level: between
+  fb =~ y1 + L2*y2 + L3*y3
+  #fb ~ w1 + w2
+
+group: bar
+
+level: within
+  fw =~ y1 + L2*y2 + L3*y3
+  #fw ~ x1 + x2 + x3
+level: between
+  fb =~ y1 + L2*y2 + L3*y3
+  fb ~ w1 + w2
+'
+
+mgfit2 <- sem(model2, data = Demo.twolevel, cluster = "id", group = "g")
+lavNames(mgfit2, group = "foo")
+lavNames(mgfit2, group = "bar")
+lavNames(mgfit2, level = "within")
+lavNames(mgfit2, level = "between")
+lavNames(mgfit2, block = 1)
+lavNames(mgfit2, block = 2)
+lavNames(mgfit2, block = 3)
+lavNames(mgfit2, block = 4)
 
 ## impute data
 library(mice)

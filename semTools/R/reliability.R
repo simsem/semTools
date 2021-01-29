@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 27 January 2021
+### Last updated: 28 January 2021
 
 
 ## -------------
@@ -9,7 +9,8 @@
 
 ##' Calculate reliability values of factors
 ##'
-##' Calculate reliability values of factors by coefficient omega
+##' Calculate reliability values of factors by coefficients alpha and omega,
+##' as well as the average variance extracted (AVE)
 ##'
 ##' The coefficient alpha (Cronbach, 1951) can be calculated by
 ##'
@@ -87,22 +88,22 @@
 ##' Coefficient alpha is by definition applied by treating indicators as numeric
 ##' (see Chalmers, 2018), which is consistent with the \code{alpha} function in
 ##' the \code{psych} package. When indicators are ordinal, \code{reliability}
-##' additional applies the standard alpha calculation to the polychoric
-##' correlation matrix to return Zufmbo et al.'s (2007) "ordinal alpha".
+##' additionally applies the standard alpha calculation to the polychoric
+##' correlation matrix to return Zumbo et al.'s (2007) "ordinal alpha".
 ##'
-##' Item thresholds are not accounted for. Coefficient omega for categorical
-##' items, however, is calculated by accounting for both item covariances and
-##' item thresholds using Green and Yang's (2009, formula 21) approach. Three
-##' types of coefficient omega indicate different methods to calculate item
-##' total variances. The original formula from Green and Yang is equivalent to
-##' \eqn{\omega_3} in this function. Green and Yang did not propose a method for
+##' Coefficient omega for categorical items is calculated using Green and Yang's
+##' (2009, formula 21) approach. Three types of coefficient omega indicate
+##' different methods to calculate item total variances. The original formula
+##' from Green and Yang is equivalent to \eqn{\omega_3} in this function.
+##' Green and Yang did not propose a method for
 ##' calculating reliability with a mixture of categorical and continuous
 ##' indicators, and we are currently unaware of an appropriate method.
 ##' Therefore, when \code{reliability} detects both categorical and continuous
-##' indicators in the model, an error is returned. If the categorical indicators
+##' indicators of a factor, an error is returned. If the categorical indicators
 ##' load on a different factor(s) than continuous indicators, then reliability
-##' can be calculated separately for those scales by fitting separate models and
-##' submitting each to the \code{reliability} function.
+##' will still be calculated separately for those factors, but
+##' \code{return.total} must be \code{FALSE} (unless \code{omit.factors} is used
+##' to isolate factors with indicators of the same type).
 ##'
 ##'
 ##' @importFrom lavaan lavInspect lavNames
@@ -117,10 +118,11 @@
 ##'   "ordinal alpha" (\code{"alpha.ord"}) are returned, though the latter is
 ##'   arguably of dubious value (Chalmers, 2018).
 ##' @param return.total \code{logical} indicating whether to return a final
-##'   column containing the reliability of a composite of all items. Ignored
-##'   in 1-factor models, and should only be set \code{TRUE} if all factors
-##'   represent scale dimensions that could nonetheless be collapsed to a
-##'   single scale composite (scale sum or scale mean).
+##'   column containing the reliability of a composite of all indicators (not
+##'   listed in \code{omit.indicators}) of factors not listed in
+##'   \code{omit.factors}.  Ignored in 1-factor models, and should only be set
+##'   \code{TRUE} if all factors represent scale dimensions that could be
+##'   meaningfully collapsed to a single composite (scale sum or scale mean).
 ##' @param dropSingle \code{logical} indicating whether to exclude factors
 ##'   defined by a single indicator from the returned results. If \code{TRUE}
 ##'   (default), single indicators will still be included in the \code{total}
@@ -206,13 +208,52 @@
 ##'
 ##' @examples
 ##'
+##' data(HolzingerSwineford1939)
+##' HS9 <- HolzingerSwineford1939[ , c("x7","x8","x9")]
+##' HSbinary <- as.data.frame( lapply(HS9, cut, 2, labels=FALSE) )
+##' names(HSbinary) <- c("y7","y8","y9")
+##' HS <- cbind(HolzingerSwineford1939, HSbinary)
+##'
 ##' HS.model <- ' visual  =~ x1 + x2 + x3
 ##'               textual =~ x4 + x5 + x6
-##'               speed   =~ x7 + x8 + x9 '
+##'               speed   =~ y7 + y8 + y9 '
 ##'
-##' fit <- cfa(HS.model, data = HolzingerSwineford1939)
+##' fit <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
+##'
+##' ## works for factors with exclusively continuous OR categorical indicators
 ##' reliability(fit)
-##' reliability(fit, return.total = TRUE)
+##'
+##' ## reliability for ALL indicators only available when they are
+##' ## all continuous or all categorical
+##' reliability(fit, omit.factors = "speed", return.total = TRUE)
+##'
+##'
+##' ## loop over visual indicators to calculate alpha if one indicator is removed
+##' for (i in paste0("x", 1:3)) {
+##'   cat("Drop x", i, ":\n")
+##'   print(reliability(fit, omit.factors = c("textual","speed"),
+##'                     omit.indicators = i, what = "alpha"))
+##' }
+##'
+##'
+##' ## works for multigroup models and for multilevel models (and both)
+##' data(Demo.twolevel)
+##' ## assign clusters to arbitrary groups
+##' Demo.twolevel$g <- ifelse(Demo.twolevel$cluster %% 2L, "type1", "type2")
+##' model2 <- ' group: foo
+##'   level: within
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'   level: between
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'
+##' group: bar
+##'   level: within
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'   level: between
+##'     fac =~ y1 + L2*y2 + L3*y3
+##' '
+##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
+##' reliability(fit2, what = c("alpha","omega3"))
 ##'
 ##' @export
 reliability <- function(object,
@@ -225,6 +266,7 @@ reliability <- function(object,
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
   nlevels <- lavInspect(object, "nlevels")
   nblocks <- ngroups*nlevels #FIXME: always true?
+  return.total <- rep(return.total, nblocks)
   group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
   #FIXME? lavInspect(object, "level.labels")
   clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
@@ -240,8 +282,8 @@ reliability <- function(object,
     what <- unique(what) # in case it was already explicitly requested
   }
   ## categorical-model parameters
-  threshold <- if (anyCategorical) getThreshold(object) else NULL
-  latScales <- if (anyCategorical) getScales(object) else NULL
+  threshold <- if (anyCategorical) getThreshold(object, omit.imps = omit.imps) else NULL
+  latScales <- if (anyCategorical) getScales(object, omit.imps = omit.imps) else NULL
   ## all other relevant parameters in GLIST format (not flat, need block-level list)
   if (inherits(object, "lavaan")) {
     param <- lavInspect(object, "est")
@@ -284,32 +326,33 @@ reliability <- function(object,
       for (i in 1:m) {
         coefList[[i]] <- list(coefList[[i]])
         phiList[[i]] <- list(phiList[[i]])
-        if (anyCategorical) dataList[[i]] <- list(dataList[[i]])
       }
-    } else if (anyCategorical) { #FIXME: currently no categorical ML-SEMs
-      ## multigroup models need separate data matrices per group
-      if (ngroups > 1L) {
-        G <- lavInspect(object, "group")
-        group.label <- lavInspect(object, "group.label")
-
-        for (g in seq_along(group.label)) {
-          VV <- lavNames(object, type = "ov", group = g)
-          impCovList <- lapply(dataList, function(DD) {
-            RR <- DD[,G] == group.label[g]
-            dat <- do.call(cbind, sapply(DD[RR, VV], as.numeric, simplify = FALSE))
-            cov(dat)
-          })
-          S.as.con[[g]] <- Reduce("+", impCovList) / length(impCovList)
-        }
-
-      } else {
-        ## single group
+      if (anyCategorical) { #FIXME: currently no categorical ML-SEMs
+        #dataList[[i]] <- list(dataList[[i]])
         VV <- lavNames(object, type = "ov")
         impCovList <- lapply(dataList, function(DD) {
           dat <- do.call(cbind, sapply(DD[VV], as.numeric, simplify = FALSE))
           cov(dat)
         })
         S.as.con[[1]] <- Reduce("+", impCovList) / length(impCovList)
+      }
+
+    } else if (anyCategorical) { #FIXME: currently no categorical ML-SEMs
+      ## multigroup models need separate data matrices per group
+      G <- lavInspect(object, "group")
+
+      for (g in seq_along(group.label)) {
+        VV <- try(lavNames(object, type = "ov", group = group.label[g]),
+                  silent = TRUE)
+        if (inherits(VV, "try-error")) {
+          VV <- lavNames(object, type = "ov", group = g)
+        }
+        impCovList <- lapply(dataList, function(DD) {
+          RR <- DD[,G] == group.label[g]
+          dat <- do.call(cbind, sapply(DD[RR, VV], as.numeric, simplify = FALSE))
+          cov(dat)
+        })
+        S.as.con[[g]] <- Reduce("+", impCovList) / length(impCovList)
       }
 
     }
@@ -349,20 +392,41 @@ reliability <- function(object,
   } else NULL
 
 	result <- list()
+	warnTotal <- FALSE
 	warnHigher <- character(0) # collect list of potential higher-order factors
 	## loop over i blocks (groups/levels)
 	for (i in 1:nblocks) {
 	  ## extract factor and indicator names
-	  indNames <- rownames(ly[[i]])
-	  facNames <- colnames(ly[[i]])
+	  allIndNames <- rownames(ly[[i]])
+	  allFacNames <- colnames(ly[[i]])
+	  myFacNames <- setdiff(allFacNames, omit.factors)
+	  subLY <- ly[[i]][ , myFacNames, drop = FALSE] != 0
+	  myIndNames <- rownames(subLY)[apply(subLY, MARGIN = 1L, FUN = any)]
+
 	  ## distinguish between categorical, continuous, and latent indicators
 	  nameArgs <- list(object = object)
 	  if (nblocks > 1L) nameArgs$block <- i
 	  ordNames <- do.call(lavNames, c(nameArgs, list(type = "ov.ord")))
+	  numNames <- do.call(lavNames, c(nameArgs, list(type = "ov.num")))
+	  if (anyCategorical) {
+	    ## identify when the (sub)set of factors are all categorical
+	    blockCat <- all(myIndNames %in% ordNames)
+	    ## identify when the (sub)set of factors have mixed indicators, so no total
+	    mix <- any(myIndNames %in% ordNames) && any(myIndNames %in% numNames)
+	  } else {
+	    blockCat <- FALSE
+	    mix <- FALSE
+	  }
+
+	  if (mix && return.total[i]) {
+	    return.total[i] <- FALSE
+	    warnTotal <- TRUE
+    }
+
 	  ## identify POSSIBLE higher-order factors (that affect other latent vars)
 	  latInds  <- do.call(lavNames, c(nameArgs, list(type = "lv.ind")))
 	  higher <- if (length(latInds) == 0L) character(0) else {
-	    facNames[apply(beta[[i]], MARGIN = 2, function(x) any(x != 0))]
+	    allFacNames[apply(beta[[i]], MARGIN = 2, function(x) any(x != 0))]
 	  }
 	  ## keep track of factor indices to skip
 	  idx.drop <- numeric(0)
@@ -373,7 +437,7 @@ reliability <- function(object,
 		## vectors to store results for each factor
 		error <- rep(NA, length(common))
 		alpha <- rep(NA, length(common))
-		if (anyCategorical) alpha.ord <- rep(NA, length(common))
+		alpha.ord <- rep(NA, length(common))
 		total <- rep(NA, length(common))
 		omega1 <- omega2 <- omega3 <- rep(NA, length(common))
 		impliedTotal <- rep(NA, length(common))
@@ -382,14 +446,17 @@ reliability <- function(object,
 		## loop over j factors
 		for (j in 1:length(common)) {
 		  ## skip this factor?
-		  if (facNames[j] %in% omit.factors) {
+		  if (allFacNames[j] %in% omit.factors) {
 		    idx.drop <- c(idx.drop, j)
 		    next
 		  }
 
-			index <- which(ly[[i]][,j] != 0)
-			## remove unwanted indicators
-			index <- setdiff(index, which(indNames %in% omit.indicators))
+			index <- setdiff(which(ly[[i]][,j] != 0), # nonzero loadings
+			                 which(allIndNames %in% omit.indicators))
+			jIndNames <- allIndNames[index]
+
+			## identify when this factor has mixed indicators, so no omegas
+			jMix <- any(jIndNames %in% ordNames) && any(jIndNames %in% numNames)
 
 			## check for ANY indicators (possibly skip purely higher-order factors)
 			if (length(index) == 0L) {
@@ -402,14 +469,11 @@ reliability <- function(object,
 			  next
 			}
 			## check for categorical (or mixed) indicators
-			categorical <-      any(indNames[index] %in% ordNames)
-			if (categorical && !all(indNames[index] %in% ordNames)) {
-			  stop('Reliability cannot be computed for factors with combinations ',
-			       'of categorical and continuous (including latent) indicators.')
-			}
+			jCat <-      any(jIndNames %in% ordNames)
+			warnOmega <- jCat && !all(jIndNames %in% ordNames)
 			## check for latent indicators
-			if (facNames[j] %in% higher) {
-			  warnHigher <- c(warnHigher, facNames[j])
+			if (allFacNames[j] %in% higher && !(allFacNames[j] %in% omit.factors)) {
+			  warnHigher <- c(warnHigher, allFacNames[j])
 			}
 
 			sigma <- S[[i]][index, index, drop = FALSE]
@@ -422,19 +486,19 @@ reliability <- function(object,
 			} else {
 				avevar[j] <- NA
 			}
-			if (categorical) {
+			if (jCat) {
 			  alpha[j] <- computeAlpha(S.as.con[[i]][index, index, drop = FALSE])
 			  alpha.ord[j] <- computeAlpha(sigma)
 				omega1[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      threshold = threshold[[i]][index],
+				                      threshold = threshold[[i]][jIndNames],
 				                      scales = latScales[[i]][index],
 				                      denom = faccontrib[index, index, drop = FALSE] + te[[i]][index, index, drop = FALSE])
 				omega2[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      threshold = threshold[[i]][index],
+				                      threshold = threshold[[i]][jIndNames],
 				                      scales = latScales[[i]][index],
 				                      denom = SigmaHat[[i]][index, index, drop = FALSE])
 				omega3[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      threshold = threshold[[i]][index],
+				                      threshold = threshold[[i]][jIndNames],
 				                      scales = latScales[[i]][index],
 				                      denom = sigma)
 			} else {
@@ -452,8 +516,8 @@ reliability <- function(object,
 			## end loop over j factors
 		}
 
-		if (return.total & length(facNames) > 1L) {
-		  if (anyCategorical) {
+		if (return.total[i] & length(myFacNames) > 1L) {
+		  if (blockCat) {
 		    alpha <- c(alpha, computeAlpha(S.as.con[[i]]))
 		    alpha.ord <- c(alpha.ord, total = computeAlpha(S[[i]]))
 		    omega1 <- c(omega1, total = omegaCat(truevar = truevar,
@@ -478,25 +542,27 @@ reliability <- function(object,
 		              total = sum(diag(truevar)) / sum((diag(truevar) + diag(te[[i]]))))
 		}
 
+		if (all(is.na(alpha.ord))) alpha.ord <- NULL
 		result[[i]] <- rbind(alpha = if ("alpha" %in% what) alpha else NULL,
 		                     alpha.ord = if ("alpha.ord" %in% what) alpha.ord else NULL,
 		                     omega  = if ("omega"  %in% what) omega1 else NULL,
 		                     omega2 = if ("omega2" %in% what) omega2 else NULL,
 		                     omega3 = if ("omega3" %in% what) omega3 else NULL,
 		                     avevar = if ("ave" %in% what) avevar else NULL)
-		colnames(result[[i]])[1:length(facNames)] <- facNames
-		if (return.total & length(facNames) > 1L) {
+		colnames(result[[i]])[1:length(allFacNames)] <- allFacNames
+		if (return.total[i] & length(myFacNames) > 1L) {
 		  colnames(result[[i]])[ ncol(result[[i]]) ] <- "total"
 		}
 		if (length(idx.drop)) {
-		  result[[i]] <- result[[i]][ , -idx.drop]
+		  result[[i]] <- result[[i]][ , -idx.drop, drop = FALSE]
 		  ## reset indices for next block (could have different model/variables)
 		  idx.drop <- numeric(0)
 		}
 		## end loop over blocks
 	}
 
-	if (anyCategorical) {
+	warnCat <- sapply(result, function(x) any(c("alpha.ord","ave") %in% rownames(x)))
+	if (any(warnCat)) {
 	  alphaMessage <- paste0('Zumbo et al.`s (2007) "ordinal alpha" is calculated',
 	                         ' in addition to the standard alpha, which treats ',
 	                         'ordinal variables as numeric. See Chalmers (2018) ',
@@ -509,10 +575,20 @@ reliability <- function(object,
 	                       if ("alpha.ord" %in% what) alphaMessage else NULL,
 	                       if (both) ' Likewise, ' else NULL,
 	                       if ("ave" %in% what) AVEmessage else NULL)
-	  if ("alpha.ord" %in% what || "ave" %in% what) message(catMessage)
+	  if ("alpha.ord" %in% what || "ave" %in% what) message(catMessage, "\n")
 	}
 	if (length(warnHigher)) warning('Possible higher-order factors detected:\n',
 	                                paste(unique(warnHigher), sep = ", "))
+	if (warnTotal) {
+	  message('Cannot return.total when model contains both continuous and ',
+	          'binary/ordinal observed indicators. Use the ',
+	          'omit.factors= argument to choose factors with only categorical ',
+	          'indicators, if that is a composite of interest.\n')
+	}
+	if (warnOmega) {
+	  message('Composite reliability (omega) cannot be computed for factors ',
+	          'with mixed categorical and continuous indicators.')
+	}
 
 	## drop list structure?
 	if (nblocks == 1L) {
@@ -968,7 +1044,7 @@ maximalRelia <- function(object, omit.imps = c("no.conv","no.se")) {
   te <- lapply(param, "[[", "theta")
 
   categorical <- lavInspect(object, "categorical")
-  threshold <- if (categorical) getThreshold(object) else NULL
+  threshold <- if (categorical) getThreshold(object, omit.imps = omit.imps) else NULL
 
   result <- list()
   for (i in 1:nblocks) {
@@ -1075,13 +1151,37 @@ p2 <- function(t1, t2, r) {
 # }
 
 ##' @importFrom lavaan lavInspect lavNames
-getThreshold <- function(object) {
+getThreshold <- function(object, omit.imps = c("no.conv","no.se")) {
 	ngroups <- lavInspect(object, "ngroups") #TODO: add nlevels when capable
 	ordnames <- lavNames(object, "ov.ord")
-	EST <- lavInspect(object, "est") #FIXME: what about lavaan.mi objects?
+
+	if (inherits(object, "lavaan")) {
+	  EST <- lavInspect(object, "est")
+
+	} else if (inherits(object, "lavaan.mi")) {
+	  useImps <- rep(TRUE, length(object@DataList))
+	  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+	  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+	  if ("no.npd" %in% omit.imps) {
+	    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+	    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+	    useImps <- useImps & !(Heywood.lv | Heywood.ov)
+	  }
+	  m <- sum(useImps)
+	  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+	  useImps <- which(useImps)
+
+	  EST <- object@coefList[useImps]
+	}
 
 	if (ngroups == 1L) {
-	  thresholds <- EST$tau[,"threshold"]
+	  if (inherits(object, "lavaan")) {
+	    thresholds <- EST$tau[,"threshold"]
+	  } else if (inherits(object, "lavaan.mi")) {
+	    tauList <- lapply(EST, function(x) x$tau[,"threshold"])
+	    thresholds <- Reduce("+", tauList) / length(tauList)
+	  }
+
 	  result <- lapply(ordnames,
 	                   function(nn) thresholds[grepl(nn, names(thresholds))])
 	  names(result) <- ordnames
@@ -1089,9 +1189,18 @@ getThreshold <- function(object) {
 	  result <- list(result)
 
 	} else {
-	  allThr <- EST[which(names(EST) == "tau")]
-	  ## convert 1-column matrices to vectors, preserving rownames
-	  thresholds <- sapply(allThr, "[", j = "threshold", simplify = FALSE)
+
+	  thresholds <- vector("list", ngroups)
+	  for (g in 1:ngroups) {
+	    if (inherits(object, "lavaan")) {
+	      thresholds[[g]] <- EST[[g]]$tau[,"threshold"]
+	    } else if (inherits(object, "lavaan.mi")) {
+	      tauList <- lapply(EST, function(x) x[[g]]$tau[,"threshold"])
+	      thresholds[[g]] <- Reduce("+", tauList) / length(tauList)
+	    }
+
+	  }
+
 	  result <- list()
 		group.label <- lavInspect(object, "group.label")
 
@@ -1108,17 +1217,49 @@ getThreshold <- function(object) {
 }
 
 ##' @importFrom lavaan lavInspect lavNames
-getScales <- function(object) {
+getScales <- function(object, omit.imps = c("no.conv","no.se")) {
   ngroups <- lavInspect(object, "ngroups") #TODO: add nlevels when capable
   ordnames <- lavNames(object, "ov.ord") #TODO: use to allow mix of cat/con vars
-  EST <- lavInspect(object, "est") #FIXME: what about lavaan.mi objects?
+
+  if (inherits(object, "lavaan")) {
+    EST <- lavInspect(object, "est")
+
+  } else if (inherits(object, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(object@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+    EST <- object@coefList[useImps]
+  }
 
   if (ngroups == 1L) {
-    result <- list(EST$delta[,"scales"])
+    if (inherits(object, "lavaan")) {
+      result <- list(EST$delta[,"scales"])
+    } else if (inherits(object, "lavaan.mi")) {
+      result <- list(Reduce("+", lapply(EST, function(x) x$delta[,"scales"])) / sum(useImps))
+    }
+
   } else {
-    result <- lapply(EST[which(names(EST) == "delta")],
-                     function(x) x[,"scales"])
-    names(result) <- lavInspect(object, "group.label")
+
+    result <- vector("list", ngroups)
+
+    for (g in 1:ngroups) {
+      if (inherits(object, "lavaan")) {
+        result[[g]] <- EST[[g]]$delta[,"scales"]
+      } else if (inherits(object, "lavaan.mi")) {
+        scales <- lapply(EST, function(x) x[[g]]$delta[,"scales"])
+        result[[g]] <- Reduce("+", scales) / length(scales)
+      }
+    }
+
   }
 
   return(result)
