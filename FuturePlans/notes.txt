@@ -191,6 +191,7 @@ Miscellaneous semTools
 
 semTools::probe*WayMC()
 - re-fit the model with user-defined parameters appending original syntax/PT
+  - this only works for mean-centering
 
 add moreFitIndices= argument to compareFit()
 
