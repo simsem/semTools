@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 28 January 2021
+### Last updated: 13 February 2021
 
 
 ## -------------
@@ -240,13 +240,13 @@
 ##' data(Demo.twolevel)
 ##' ## assign clusters to arbitrary groups
 ##' Demo.twolevel$g <- ifelse(Demo.twolevel$cluster %% 2L, "type1", "type2")
-##' model2 <- ' group: foo
+##' model2 <- ' group: type1
 ##'   level: within
 ##'     fac =~ y1 + L2*y2 + L3*y3
 ##'   level: between
 ##'     fac =~ y1 + L2*y2 + L3*y3
 ##'
-##' group: bar
+##' group: type2
 ##'   level: within
 ##'     fac =~ y1 + L2*y2 + L3*y3
 ##'   level: between
