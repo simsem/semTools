@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 13 February 2021
+### Last updated: 18 February 2021
 
 
 ## -------------
@@ -1183,7 +1183,7 @@ getThreshold <- function(object, omit.imps = c("no.conv","no.se")) {
 	  }
 
 	  result <- lapply(ordnames,
-	                   function(nn) thresholds[grepl(nn, names(thresholds))])
+	                   function(nn) thresholds[grepl(paste0(nn, "\\|"), names(thresholds))])
 	  names(result) <- ordnames
 	  ## needs to be within a list when called above within block-loops
 	  result <- list(result)
@@ -1206,7 +1206,7 @@ getThreshold <- function(object, omit.imps = c("no.conv","no.se")) {
 
 		for (g in 1:ngroups) {
 		  result[[ group.label[g] ]] <- lapply(ordnames, function(nn) {
-		    thresholds[[g]][ grepl(nn, names(thresholds[[g]])) ]
+		    thresholds[[g]][ grepl(paste0(nn, "\\|"), names(thresholds[[g]])) ]
 		  })
 		  names(result[[ group.label[g] ]]) <- ordnames
 		}
