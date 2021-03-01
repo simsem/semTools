@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 18 February 2021
+### Last updated: 1 March 2021
 
 
 ## -------------
@@ -289,8 +289,11 @@ reliability <- function(object,
     param <- lavInspect(object, "est")
     ve <- lavInspect(object, "cov.lv") # model-implied latent covariance matrix
     S <- object@h1$implied$cov # observed sample covariance matrix (already a list)
-    if (anyCategorical) {
-      rawData <- lavInspect(object, "data")
+    if (anyCategorical && any(c("alpha","alpha.ord") %in% what)) {
+      rawData <- try(lavInspect(object, "data"), silent = TRUE)
+      if (inherits(rawData, "try-error"))
+        stop('Error in lavInspect(fit, "data"); what="alpha" unavailable for ',
+             'models fitted to summary statistics of categorial data.')
       if (nblocks == 1L) rawData <- list(rawData)
       S.as.con <- lapply(rawData, cov) # for actual "alpha", not "alpha.ord"
     }
@@ -481,26 +484,35 @@ reliability <- function(object,
 			truefac <- diag(faccontrib[index, index, drop = FALSE])
 			trueitem <- diag(truevar[index, index, drop = FALSE])
 			erritem <- diag(te[[i]][index, index, drop = FALSE])
-			if (sum(abs(trueitem - truefac)) < 0.00001) {
+			if (sum(abs(trueitem - truefac)) < 0.00001 & "ave" %in% what) {
 				avevar[j] <- sum(trueitem) / sum(trueitem + erritem)
-			} else {
-				avevar[j] <- NA
 			}
 			if (jCat) {
-			  alpha[j] <- computeAlpha(S.as.con[[i]][index, index, drop = FALSE])
-			  alpha.ord[j] <- computeAlpha(sigma)
-				omega1[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      threshold = threshold[[i]][jIndNames],
-				                      scales = latScales[[i]][index],
-				                      denom = faccontrib[index, index, drop = FALSE] + te[[i]][index, index, drop = FALSE])
-				omega2[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      threshold = threshold[[i]][jIndNames],
-				                      scales = latScales[[i]][index],
-				                      denom = SigmaHat[[i]][index, index, drop = FALSE])
-				omega3[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
-				                      threshold = threshold[[i]][jIndNames],
-				                      scales = latScales[[i]][index],
-				                      denom = sigma)
+			  if ("alpha" %in% what) {
+			    alpha[j] <- computeAlpha(S.as.con[[i]][index, index, drop = FALSE])
+			  }
+			  if ("alpha.ord" %in% what) {
+			    alpha.ord[j] <- computeAlpha(sigma)
+			  }
+			  if ("omega" %in% what) {
+			    omega1[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
+			                          threshold = threshold[[i]][jIndNames],
+			                          scales = latScales[[i]][index],
+			                          denom = faccontrib[index, index, drop = FALSE] + te[[i]][index, index, drop = FALSE])
+			  }
+			  if ("omega2" %in% what) {
+			    omega2[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
+			                          threshold = threshold[[i]][jIndNames],
+			                          scales = latScales[[i]][index],
+			                          denom = SigmaHat[[i]][index, index, drop = FALSE])
+			  }
+			  if ("omega3" %in% what) {
+			    omega3[j] <- omegaCat(truevar = faccontrib[index, index, drop = FALSE],
+			                          threshold = threshold[[i]][jIndNames],
+			                          scales = latScales[[i]][index],
+			                          denom = sigma)
+			  }
+
 			} else {
 			  alpha[j] <- computeAlpha(sigma)
 
@@ -518,20 +530,31 @@ reliability <- function(object,
 
 		if (return.total[i] & length(myFacNames) > 1L) {
 		  if (blockCat) {
-		    alpha <- c(alpha, computeAlpha(S.as.con[[i]]))
-		    alpha.ord <- c(alpha.ord, total = computeAlpha(S[[i]]))
-		    omega1 <- c(omega1, total = omegaCat(truevar = truevar,
-		                                         threshold = threshold[[i]],
-		                                         scales = latScales[[i]],
-		                                         denom = truevar + te[[i]]))
-		    omega2 <- c(omega2, total = omegaCat(truevar = truevar,
-		                                         threshold = threshold[[i]],
-		                                         scales = latScales[[i]],
-		                                         denom = SigmaHat[[i]]))
-		    omega3 <- c(omega3, total = omegaCat(truevar = truevar,
-		                                         threshold = threshold[[i]],
-		                                         scales = latScales[[i]],
-		                                         denom = S[[i]]))
+		    if ("alpha" %in% what) {
+		      alpha <- c(alpha, computeAlpha(S.as.con[[i]]))
+		    }
+		    if ("alpha.ord" %in% what) {
+		      alpha.ord <- c(alpha.ord, total = computeAlpha(S[[i]]))
+		    }
+		    if ("omega" %in% what) {
+		      omega1 <- c(omega1, total = omegaCat(truevar = truevar,
+		                                           threshold = threshold[[i]],
+		                                           scales = latScales[[i]],
+		                                           denom = truevar + te[[i]]))
+		    }
+		    if ("omega2" %in% what) {
+		      omega2 <- c(omega2, total = omegaCat(truevar = truevar,
+		                                           threshold = threshold[[i]],
+		                                           scales = latScales[[i]],
+		                                           denom = SigmaHat[[i]]))
+		    }
+		    if ("omega2" %in% what) {
+  		    omega3 <- c(omega3, total = omegaCat(truevar = truevar,
+  		                                         threshold = threshold[[i]],
+  		                                         scales = latScales[[i]],
+  		                                         denom = S[[i]]))
+		    }
+
 		  } else {
 		    alpha <- c(alpha, total = computeAlpha(S[[i]]))
 		    omega1 <- c(omega1, total = sum(truevar) / (sum(truevar) + sum(te[[i]])))

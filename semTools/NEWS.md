@@ -8,6 +8,7 @@ customize composite-reliability estimates.
 ## Bug Fixes:
 
 - `permuteMeasEq()` returned an error when `parallelType = "multicore"`.
+- `reliability()` could use the wrong thresholds when a sequence of ordinal indicator names overlapped (e.g., `x1` and `x10`); now fixed.
 
 
 # semTools 0.5-4 (on CRAN 11 January 2021)
