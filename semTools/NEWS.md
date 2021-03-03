@@ -4,6 +4,10 @@
 
 - `reliability()` has new `what=`, `omit.factors=`, and `omit.indicators=` arguments to 
 customize composite-reliability estimates.
+- `SSpower()` now allows multigroup population models to be specified with `lavaan` syntax via the `popModel=` argument.
+- `SSpower()` and `findRMSEApower()` functionality is now available with a graphical user interface:
+    - Shiny app available at https://sjak.shinyapps.io/power4SEM/ 
+    - tutorial published open-access at https://doi.org/10.3758/s13428-020-01479-0
 
 ## Bug Fixes:
 

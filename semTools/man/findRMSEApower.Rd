@@ -35,6 +35,10 @@ the right hand side of the null sampling distribution. On the other hand, if
 \code{rmseaA} is less than \code{rmsea0}, the test of not-close fit is used
 and the critical region is in the left hand side of the null sampling
 distribution (MacCallum, Browne, & Suguwara, 1996).
+
+There is also a Shiny app called "power4SEM" that provides a graphical user
+interface for this functionality (Jak et al., in press).  It can be accessed
+at \url{https://sjak.shinyapps.io/power4SEM/}.
 }
 \examples{
 
@@ -45,6 +49,11 @@ findRMSEApower(rmsea0 = .05, rmseaA = .08, df = 20, n = 200)
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 and determination of sample size for covariance structure modeling.
 \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
+
+Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+(in press). Analytical power calculations for structural equation modeling:
+A tutorial and Shiny app. \emph{Behavior Research Methods}.
+https://doi.org/10.3758/s13428-020-01479-0
 }
 \seealso{
 \itemize{

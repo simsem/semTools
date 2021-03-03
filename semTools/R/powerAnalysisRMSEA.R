@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Alexander M. Schoemann, Kristopher J. Preacher, Donna Coffman
-### Last updated: 10 January 2021
+### Last updated: 3 March 2021
 
 
 ##' Plot power curves for RMSEA
@@ -204,6 +204,10 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 ##' and the critical region is in the left hand side of the null sampling
 ##' distribution (MacCallum, Browne, & Suguwara, 1996).
 ##'
+##' There is also a Shiny app called "power4SEM" that provides a graphical user
+##' interface for this functionality (Jak et al., in press).  It can be accessed
+##' at \url{https://sjak.shinyapps.io/power4SEM/}.
+##'
 ##'
 ##' @importFrom stats qchisq pchisq
 ##'
@@ -225,6 +229,11 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 ##' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 ##' and determination of sample size for covariance structure modeling.
 ##' \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
+##'
+##' Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+##' (in press). Analytical power calculations for structural equation modeling:
+##' A tutorial and Shiny app. \emph{Behavior Research Methods}.
+##' https://doi.org/10.3758/s13428-020-01479-0
 ##'
 ##' @examples
 ##'
