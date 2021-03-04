@@ -1,5 +1,5 @@
 ### Alexander M. Schoemann & Terrence D. Jorgensen
-### Last updated: 3 March 2021
+### Last updated: 4 March 2021
 ### Function to apply Satorra & Saris method for chi-squared power analysis
 
 
@@ -160,7 +160,7 @@ SSpower <- function(powerModel, n, nparam, popModel, mu, Sigma,
     if (length(n) > 1L) {
       Sigma <- lapply(popMoments, "[[", i = "cov")
       mu <- if (!is.null(popMoments[[1]]$mean)) {
-        lapply(popMoments, "[[", i = "cov")
+        lapply(popMoments, "[[", i = "mean")
       } else NULL
 
     } else {
