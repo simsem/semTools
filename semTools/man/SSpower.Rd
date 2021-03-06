@@ -137,7 +137,7 @@ legend("bottomright", c("80\% Power","90\% Power"), lty = c("dotted","dashed"))
 }
 \references{
 Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
- test in covariance structure analysis. \emph{Psychometrika, 50}, 83--90.
+ test in covariance structure analysis. \emph{Psychometrika, 50}(1), 83--90.
  \doi{10.1007/BF02294150}
 
  Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.

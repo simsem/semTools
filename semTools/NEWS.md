@@ -8,6 +8,7 @@ customize composite-reliability estimates.
 - `SSpower()` and `findRMSEApower()` functionality is now available with a graphical user interface:
     - Shiny app available at https://sjak.shinyapps.io/power4SEM/ 
     - tutorial published open-access at https://doi.org/10.3758/s13428-020-01479-0
+- `monteCarloMed()` has been replaced by `monteCarloCI()` because the method generalizes beyond evaluating mediation (indirect effects), and can be applied to any function of model parameters. `monteCarloCI()` now accepts a set of functions to sample simultaneously (e.g., both the indirect and total effects), rather than drawing parameters again for each function of parameters. More conveniently, if user-defined parameters are already specified when fitting the `lavaan` model, then `monteCarloCI()` can obtain all necessary information from the `lavaan` object.
 
 ## Bug Fixes:
 
