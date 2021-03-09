@@ -8,22 +8,23 @@
 ##'
 ##' Finding skewness (\eqn{g_{1}}) of an object
 ##'
-##' The skewness computed is \eqn{g_{1}}. The parameter skewness \eqn{\gamma_{2}}
-##' formula is
+##' The skewness computed by default is \eqn{g_{1}}, the third standardized
+##' moment of the empirical distribution of \code{object}.
+##' The population parameter skewness \eqn{\gamma_{1}} formula is
 ##'
-##' \deqn{\gamma_{2} = \frac{\mu_{3}}{\mu^{3/2}_{2}},}
+##' \deqn{\gamma_{1} = \frac{\mu_{3}}{\mu^{3/2}_{2}},}
 ##'
 ##' where \eqn{\mu_{i}} denotes the \eqn{i} order central moment.
 ##'
-##' The excessive kurtosis formula for sample statistic \eqn{g_{2}} is
+##' The skewness formula for sample statistic \eqn{g_{1}} is
 ##'
-##' \deqn{g_{2} = \frac{k_{3}}{k^{2}_{2}},}
+##' \deqn{g_{1} = \frac{k_{3}}{k^{2}_{2}},}
 ##'
 ##' where \eqn{k_{i}} are the \eqn{i} order \emph{k}-statistic.
 ##'
 ##' The standard error of the skewness is
 ##'
-##' \deqn{Var(\hat{g}_2) = \frac{6}{N}}
+##' \deqn{Var(\hat{g}_1) = \frac{6}{N}}
 ##'
 ##' where \eqn{N} is the sample size.
 ##'
@@ -74,8 +75,9 @@ skew <- function(object, population = FALSE) {
 ##'
 ##' Finding excessive kurtosis (\eqn{g_{2}}) of an object
 ##'
-##' The excessive kurtosis computed is \eqn{g_{2}}. The parameter excessive
-##' kurtosis \eqn{\gamma_{2}} formula is
+##' The excessive kurtosis computed by default is \eqn{g_{2}}, the fourth
+##' standardized moment of the empirical distribution of \code{object}.
+##' The population parameter excessive kurtosis \eqn{\gamma_{2}} formula is
 ##'
 ##' \deqn{\gamma_{2} = \frac{\mu_{4}}{\mu^{2}_{2}} - 3,}
 ##'
@@ -83,7 +85,7 @@ skew <- function(object, population = FALSE) {
 ##'
 ##' The excessive kurtosis formula for sample statistic \eqn{g_{2}} is
 ##'
-##' \deqn{g_{2} = \frac{k_{4}}{k^{2}_{2}},}
+##' \deqn{g_{2} = \frac{k_{4}}{k^{2}_{2}} - 3,}
 ##'
 ##' where \eqn{k_{i}} are the \eqn{i} order \emph{k}-statistic.
 ##'

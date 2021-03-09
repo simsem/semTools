@@ -20,8 +20,9 @@ population is specified as \code{FALSE}
 Finding excessive kurtosis (\eqn{g_{2}}) of an object
 }
 \details{
-The excessive kurtosis computed is \eqn{g_{2}}. The parameter excessive
-kurtosis \eqn{\gamma_{2}} formula is
+The excessive kurtosis computed by default is \eqn{g_{2}}, the fourth
+standardized moment of the empirical distribution of \code{object}.
+The population parameter excessive kurtosis \eqn{\gamma_{2}} formula is
 
 \deqn{\gamma_{2} = \frac{\mu_{4}}{\mu^{2}_{2}} - 3,}
 
@@ -29,7 +30,7 @@ where \eqn{\mu_{i}} denotes the \eqn{i} order central moment.
 
 The excessive kurtosis formula for sample statistic \eqn{g_{2}} is
 
-\deqn{g_{2} = \frac{k_{4}}{k^{2}_{2}},}
+\deqn{g_{2} = \frac{k_{4}}{k^{2}_{2}} - 3,}
 
 where \eqn{k_{i}} are the \eqn{i} order \emph{k}-statistic.
 
