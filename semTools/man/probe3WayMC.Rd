@@ -174,8 +174,7 @@ f123 ~ NA*1
 f4 ~ NA*1
 "
 
-fitMC3way <- sem(model3, data = dat3wayMC, std.lv = FALSE,
-                 meanstructure = TRUE)
+fitMC3way <- sem(model3, data = dat3wayMC, meanstructure = TRUE)
 summary(fitMC3way)
 
 probe3WayMC(fitMC3way, nameX = c("f1" ,"f2" ,"f3",

@@ -109,8 +109,7 @@ f12 ~ NA*1
 f3 ~ NA*1
 "
 
-fitRC2way <- sem(model1, data = dat2wayRC, std.lv = FALSE,
-                 meanstructure = TRUE)
+fitRC2way <- sem(model1, data = dat2wayRC, meanstructure = TRUE)
 summary(fitRC2way)
 
 probe2WayRC(fitRC2way, nameX = c("f1", "f2", "f12"), nameY = "f3",

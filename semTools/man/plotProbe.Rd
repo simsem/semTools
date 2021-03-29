@@ -59,10 +59,9 @@ f12 ~ NA*1
 f3 ~ NA*1
 "
 
-fitMC2way <- sem(model1, data = dat2wayMC, std.lv = FALSE,
-                 meanstructure = TRUE)
-result2wayMC <- probe2WayMC(fitMC2way, c("f1", "f2", "f12"),
-                            "f3", "f2", c(-1, 0, 1))
+fitMC2way <- sem(model1, data = dat2wayMC, meanstructure = TRUE)
+result2wayMC <- probe2WayMC(fitMC2way, nameX = c("f1", "f2", "f12"),
+                            nameY = "f3", modVar = "f2", valProbe = c(-1, 0, 1))
 plotProbe(result2wayMC, xlim = c(-2, 2))
 
 
@@ -110,9 +109,10 @@ f4 ~ NA*1
 
 fitMC3way <- sem(model3, data = dat3wayMC, std.lv = FALSE,
                  meanstructure = TRUE)
-result3wayMC <- probe3WayMC(fitMC3way,
-                            c("f1", "f2", "f3", "f12", "f13", "f23", "f123"),
-                            "f4", c("f1", "f2"), c(-1, 0, 1), c(-1, 0, 1))
+result3wayMC <- probe3WayMC(fitMC3way, nameX = c("f1", "f2", "f3", "f12",
+                                                 "f13", "f23", "f123"),
+                            nameY = "f4", modVar = c("f1", "f2"),
+                            valProbe1 = c(-1, 0, 1), valProbe2 = c(-1, 0, 1))
 plotProbe(result3wayMC, xlim = c(-2, 2))
 
 }
