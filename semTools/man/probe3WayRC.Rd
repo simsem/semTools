@@ -4,7 +4,7 @@
 \alias{probe3WayRC}
 \title{Probing three-way interaction on the residual-centered latent interaction}
 \usage{
-probe3WayRC(fit, nameX, nameY, modVar, valProbe1, valProbe2, group,
+probe3WayRC(fit, nameX, nameY, modVar, valProbe1, valProbe2, group = 1L,
   omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
@@ -95,48 +95,33 @@ has been computed. See the \code{\link{probe3WayMC}} for further details.
 }
 \examples{
 
-library(lavaan)
-
 dat3wayRC <- orthogonalize(dat3way, 1:3, 4:6, 7:9)
 
-model3 <- "
+model3 <- " ## define latent variables
 f1 =~ x1 + x2 + x3
 f2 =~ x4 + x5 + x6
 f3 =~ x7 + x8 + x9
+## 2-way interactions
 f12 =~ x1.x4 + x2.x5 + x3.x6
 f13 =~ x1.x7 + x2.x8 + x3.x9
 f23 =~ x4.x7 + x5.x8 + x6.x9
+## 3-way interaction
 f123 =~ x1.x4.x7 + x2.x5.x8 + x3.x6.x9
+## outcome variable
 f4 =~ x10 + x11 + x12
-f4 ~ f1 + f2 + f3 + f12 + f13 + f23 + f123
-f1 ~~ 0*f12
-f1 ~~ 0*f13
-f1 ~~ 0*f123
-f2 ~~ 0*f12
-f2 ~~ 0*f23
-f2 ~~ 0*f123
-f3 ~~ 0*f13
-f3 ~~ 0*f23
-f3 ~~ 0*f123
-f12 ~~ 0*f123
-f13 ~~ 0*f123
-f23 ~~ 0*f123
-x1 ~ 0*1
-x4 ~ 0*1
-x7 ~ 0*1
-x10 ~ 0*1
-x1.x4 ~ 0*1
-x1.x7 ~ 0*1
-x4.x7 ~ 0*1
-x1.x4.x7 ~ 0*1
-f1 ~ NA*1
-f2 ~ NA*1
-f3 ~ NA*1
-f12 ~ NA*1
-f13 ~ NA*1
-f23 ~ NA*1
-f123 ~ NA*1
-f4 ~ NA*1
+
+## latent regression model
+f4 ~ b1*f1 + b2*f2 + b3*f3 + b12*f12 + b13*f13 + b23*f23 + b123*f123
+
+## orthogonal terms among predictors
+f1 ~~ 0*f12 + 0*f13 + 0*f123
+f2 ~~ 0*f12 + 0*f23 + 0*f123
+f3 ~~ 0*f13 + 0*f23 + 0*f123
+f12 + f13 + f23 ~~ 0*f123
+
+## identify latent means
+x1 + x4 + x7 + x1.x4 + x1.x7 + x4.x7 + x1.x4.x7 + x10 ~ 0*1
+f1 + f2 + f3 + f12 + f13 + f23 + f123 + f4 ~ NA*1
 "
 
 fitRC3way <- sem(model3, data = dat3wayRC, meanstructure = TRUE)

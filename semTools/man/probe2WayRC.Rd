@@ -4,7 +4,7 @@
 \alias{probe2WayRC}
 \title{Probing two-way interaction on the residual-centered latent interaction}
 \usage{
-probe2WayRC(fit, nameX, nameY, modVar, valProbe, group,
+probe2WayRC(fit, nameX, nameY, modVar, valProbe, group = 1L,
   omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
@@ -87,8 +87,6 @@ has been computed. See the \code{\link{probe2WayMC}} for further details.
 }
 \examples{
 
-library(lavaan)
-
 dat2wayRC <- orthogonalize(dat2way, 1:3, 4:6)
 
 model1 <- "
@@ -97,16 +95,9 @@ f2 =~ x4 + x5 + x6
 f12 =~ x1.x4 + x2.x5 + x3.x6
 f3 =~ x7 + x8 + x9
 f3 ~ f1 + f2 + f12
-f12 ~~0*f1
-f12 ~~ 0*f2
-x1 ~ 0*1
-x4 ~ 0*1
-x1.x4 ~ 0*1
-x7 ~ 0*1
-f1 ~ NA*1
-f2 ~ NA*1
-f12 ~ NA*1
-f3 ~ NA*1
+f12 ~~ 0*f1 + 0*f2
+x1 + x4 + x1.x4 + x7 ~ 0*1 # identify latent means
+f1 + f2 + f12 + f3 ~ NA*1
 "
 
 fitRC2way <- sem(model1, data = dat2wayRC, meanstructure = TRUE)
@@ -114,6 +105,27 @@ summary(fitRC2way)
 
 probe2WayRC(fitRC2way, nameX = c("f1", "f2", "f12"), nameY = "f3",
             modVar = "f2", valProbe = c(-1, 0, 1))
+
+
+## can probe multigroup models, one group at a time
+dat2wayRC$g <- 1:2
+
+model2 <- "
+f1  =~ x1 + x2 + x3
+f2  =~ x4 + x5 + x6
+f12 =~ x1.x4 + x2.x5 + x3.x6
+f3  =~ x7 + x8 + x9
+f3 ~ c(b1.g1, b1.g2)*f1 + c(b2.g1, b2.g2)*f2 + c(b12.g1, b12.g2)*f12
+f12 ~~ 0*f1 + 0*f2
+x1 + x4 + x1.x4 + x7 ~ 0*1 # identify latent means
+f1 + f2 + f12 ~ NA*1
+f3 ~ NA*1 + c(b0.g1, b0.g2)*1
+"
+fit2 <- sem(model2, data = dat2wayRC, group = "g")
+probe2WayRC(fit2, nameX = c("f1", "f2", "f12"), nameY = "f3",
+            modVar = "f2", valProbe = c(-1, 0, 1)) # group = 1 by default
+probe2WayRC(fit2, nameX = c("f1", "f2", "f12"), nameY = "f3",
+            modVar = "f2", valProbe = c(-1, 0, 1), group = 2)
 
 }
 \references{

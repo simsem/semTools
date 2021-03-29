@@ -189,10 +189,6 @@ New function to implement Chung & Cai's approach for DWLS
 Miscellaneous semTools
 ======================
 
-semTools::probe*WayMC()
-- re-fit the model with user-defined parameters appending original syntax/PT
-  - this only works for mean-centering, not for residual-centering
-
 add moreFitIndices= argument to compareFit()
 
 semTools::miPowerFit()
