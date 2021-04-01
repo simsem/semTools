@@ -15,6 +15,7 @@ customize composite-reliability estimates.
 - `permuteMeasEq()` returned an error when `parallelType = "multicore"`.
 - `reliability()` could use the wrong thresholds when a sequence of ordinal indicator names overlapped (e.g., `x1` and `x10`); now fixed.
 - `probe*Way*C()` functions for probing latent interactions formerly returned an error when users specified custom labels for the relevant regression parameters in `lavaan` syntax. And in multigroup models, only group-1 *SE*s were used regardless of which `group=` was specified. Both issues resolved.
+- The `show()` method for `compareFit()` now behaves as expected: nothing is printed when assigning `compareFit()` output to an object, but something is printed when there is no assignment. The `summary()` method prints either way and invisibly returns the object itself.
 
 
 # semTools 0.5-4 (on CRAN 11 January 2021)

@@ -47,23 +47,28 @@ nested models that are ordered by their degrees of freedom (\emph{df})}
 
 \examples{
 
-HS.model <- ' visual =~ x1 + x2 + x3
+HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
-              speed =~ x7 + x8 + x9 '
-
-out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
-                             group = "school", quiet = TRUE)
-modelDiff <- compareFit(out)
-summary(modelDiff)
-summary(modelDiff, fit.measures = "all")
-summary(modelDiff, fit.measures = c("aic", "bic"))
+              speed   =~ x7 + x8 + x9 '
+fit.config <- cfa(HS.model, data = HolzingerSwineford1939, group = "school")
+## invariance constraints
+fit.metric <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
+                  group.equal = "loadings")
+fit.scalar <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
+                  group.equal = c("loadings","intercepts"))
+fit.strict <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
+                  group.equal = c("loadings","intercepts","residuals"))
+measEqOut <- compareFit(fit.config, fit.metric, fit.scalar, fit.strict)
+summary(measEqOut)
+summary(measEqOut, fit.measures = "all")
+summary(measEqOut, fit.measures = c("aic", "bic"))
 
 \dontrun{
 ## Save results to a file
-saveFile(modelDiff, file = "modelDiff.txt")
+saveFile(measEqOut, file = "measEq.txt")
 
 ## Copy to a clipboard
-clipboard(modelDiff)
+clipboard(measEqOut)
 }
 
 }

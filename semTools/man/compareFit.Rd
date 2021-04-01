@@ -5,7 +5,7 @@
 \title{Build an object summarizing fit indices across multiple models}
 \usage{
 compareFit(..., nested = TRUE, argsLRT = list(), indices = TRUE,
-  baseline.model = NULL)
+  moreIndices = FALSE, baseline.model = NULL, nPrior = 1)
 }
 \arguments{
 \item{...}{fitted \code{lavaan} models or list(s) of \code{lavaan} objects.
@@ -21,11 +21,20 @@ nested. See \code{\link{net}} for an empirical test of nesting.}
 comparing \code{\linkS4class{lavaan.mi}} models.}
 
 \item{indices}{\code{logical} indicating whether to return fit indices from
-the \code{\link[lavaan]{fitMeasures}} function.}
+the \code{\link[lavaan]{fitMeasures}} function. Selecting particular
+indices is controlled in the \code{summary} method; see
+\code{\linkS4class{FitDiff}}.}
+
+\item{moreIndices}{\code{logical} indicating whether to return fit indices
+from the \code{\link{moreFitIndices}} function. Selecting particular
+indices is controlled in the \code{summary} method; see
+\code{\linkS4class{FitDiff}}.}
 
 \item{baseline.model}{optional fitted \code{\linkS4class{lavaan}} model
 passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit
 indices.}
+
+\item{nPrior}{passed to \code{\link{moreFitIndices}}, if relevant}
 }
 \value{
 A \code{\linkS4class{FitDiff}} object that saves model fit
@@ -42,23 +51,36 @@ or a file later.
 }
 \examples{
 
-HS.model <- ' visual =~ x1 + x2 + x3
+HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
-              speed =~ x7 + x8 + x9 '
+              speed   =~ x7 + x8 + x9 '
 
+## non-nested models
 fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
 
-## non-nested model
 m2 <- ' f1 =~ x1 + x2 + x3 + x4
         f2 =~ x5 + x6 + x7 + x8 + x9 '
 fit2 <- cfa(m2, data = HolzingerSwineford1939)
-compareFit(fit1, fit2, nested = FALSE)
+
+(out1 <- compareFit(fit1, fit2, nested = FALSE))
+summary(out1)
 
 
-## nested model comparisons:
-out <- measurementInvariance(model = HS.model, data = HolzingerSwineford1939,
-                             group = "school", quiet = TRUE)
-compareFit(out)
+## nested model comparisons: measurement equivalence/invariance
+fit.config <- cfa(HS.model, data = HolzingerSwineford1939, group = "school")
+fit.metric <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
+                  group.equal = "loadings")
+fit.scalar <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
+                  group.equal = c("loadings","intercepts"))
+fit.strict <- cfa(HS.model, data = HolzingerSwineford1939, group = "school",
+                  group.equal = c("loadings","intercepts","residuals"))
+
+measEqOut <- compareFit(fit.config, fit.metric, fit.scalar, fit.strict,
+                        moreIndices = TRUE) # include moreFitIndices()
+summary(measEqOut)
+summary(measEqOut, fit.measures = "all")
+summary(measEqOut, fit.measures = c("aic", "bic", "sic"))
+
 
 \dontrun{
 ## also applies to lavaan.mi objects (fit model to multiple imputations)
@@ -67,6 +89,8 @@ HSMiss <- HolzingerSwineford1939[ , paste("x", 1:9, sep = "")]
 HSMiss$x5 <- ifelse(HSMiss$x1 <= quantile(HSMiss$x1, .3), NA, HSMiss$x5)
 HSMiss$x9 <- ifelse(is.na(HSMiss$x5), NA, HSMiss$x9)
 HSMiss$school <- HolzingerSwineford1939$school
+
+library(Amelia)
 HS.amelia <- amelia(HSMiss, m = 20, noms = "school")
 imps <- HS.amelia$imputations
 
@@ -78,9 +102,15 @@ mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
                  group.equal = c("loadings","intercepts"))
 
 ## request the strictly-positive robust test statistics
-compareFit(scalar = mgfit0, metric = mgfit1, config = mgfit2,
-           argsLRT = list(asymptotic = TRUE,
-                          method = "satorra.bentler.2010"))
+out2 <- compareFit(scalar = mgfit0, metric = mgfit1, config = mgfit2,
+                   argsLRT = list(asymptotic = TRUE,
+                                  method = "satorra.bentler.2010"))
+## note that moreFitIndices() does not work for lavaan.mi objects, but the
+## fitMeasures() method for lavaan.mi objects already returns gammaHat(s)
+summary(out2, fit.measures = c("ariv","fmi","df","crmr","srmr",
+                               "cfi.robust","tli.robust",
+                               "adjGammaHat.scaled","rmsea.ci.lower.robust",
+                               "rmsea.robust","rmsea.ci.upper.robust"))
 }
 
 }
