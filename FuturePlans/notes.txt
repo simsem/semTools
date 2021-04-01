@@ -189,8 +189,6 @@ New function to implement Chung & Cai's approach for DWLS
 Miscellaneous semTools
 ======================
 
-add moreFitIndices= argument to compareFit()
-
 semTools::miPowerFit()
 - optionally work with lavTestScore() output?
   - https://groups.google.com/d/msg/lavaan/b2mB9kHUYho/vFad-F8UDgAJ

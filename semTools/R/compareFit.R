@@ -23,6 +23,8 @@
 ##'   nested models that are ordered by their degrees of freedom (\emph{df})
 ##' @slot fit \code{data.frame}. Fit measures of all models specified in the
 ##'   \code{name} slot, ordered by their \emph{df}
+##' @slot fit.diff \code{data.frame}. Sequential differences in fit measures in
+##'   the \code{fit} slot
 ##'
 ##' @section Objects from the Class: Objects can be created via the
 ##'  \code{\link{compareFit}} function.
