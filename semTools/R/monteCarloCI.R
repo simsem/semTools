@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 March 2021
+### Last updated: 16 April 2021
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -185,6 +185,7 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e5, fast = TRU
     ## create expression vector
     expr <- PT$rhs[PT$op == ":="]
     names(expr) <- PT$lhs[PT$op == ":="]
+    if (length(expr) == 0L) stop('No user-defined parameters found.')
   }
   ## provide names if there are none
   if (is.null(names(expr))) names(expr) <- expr
