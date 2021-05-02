@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 1 March 2021
+### Last updated: 2 May 2021
 
 
 ## -------------
@@ -1267,7 +1267,8 @@ getScales <- function(object, omit.imps = c("no.conv","no.se")) {
     if (inherits(object, "lavaan")) {
       result <- list(EST$delta[,"scales"])
     } else if (inherits(object, "lavaan.mi")) {
-      result <- list(Reduce("+", lapply(EST, function(x) x$delta[,"scales"])) / sum(useImps))
+      scales <- lapply(EST, function(x) x$delta[,"scales"])
+      result <- list(Reduce("+", scales) / length(scales))
     }
 
   } else {
