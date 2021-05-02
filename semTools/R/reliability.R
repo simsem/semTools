@@ -206,6 +206,12 @@
 ##' \emph{Journal of Modern Applied Statistical Methods, 6}(1), 21--29.
 ##' \doi{10.22237/jmasm/1177992180}
 ##'
+##' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens’
+##' scales of measurement do not help make it: A response to Chalmers.
+##' \emph{Educational and Psychological Measurement, 79}(6), 1184--1197.
+##' \doi{10.1177/0013164419844305}
+##'
+##'
 ##' @examples
 ##'
 ##' data(HolzingerSwineford1939)
@@ -589,7 +595,8 @@ reliability <- function(object,
 	  alphaMessage <- paste0('Zumbo et al.`s (2007) "ordinal alpha" is calculated',
 	                         ' in addition to the standard alpha, which treats ',
 	                         'ordinal variables as numeric. See Chalmers (2018) ',
-	                         'for a critique of "alpha.ord".')
+	                         'for a critique of "alpha.ord" and the response by ',
+	                         'Zumbo & Kroc (2019).')
 	  AVEmessage <- paste0('average variance extracted is calculated from ',
 	                       'polychoric (polyserial) not Pearson correlations.')
 	  both <- "alpha.ord" %in% what & "ave" %in% what

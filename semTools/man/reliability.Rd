@@ -250,6 +250,11 @@ Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of
 coefficients alpha and theta for Likert rating scales.
 \emph{Journal of Modern Applied Statistical Methods, 6}(1), 21--29.
 \doi{10.22237/jmasm/1177992180}
+
+Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens’
+scales of measurement do not help make it: A response to Chalmers.
+\emph{Educational and Psychological Measurement, 79}(6), 1184--1197.
+\doi{10.1177/0013164419844305}
 }
 \seealso{
 \code{\link{reliabilityL2}} for reliability value of a desired
