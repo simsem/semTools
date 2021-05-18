@@ -143,6 +143,48 @@ lapply(mlPV1, head)
 mlPV2 <- plausibleValues(msem, nDraws = 3, level = 2)
 lapply(mlPV2, head)
 
+
+
+## example with 10 multiple imputations of missing data:
+
+\dontrun{
+HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
+                                      "ageyr","agemo","school")]
+set.seed(12345)
+HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
+age <- HSMiss$ageyr + HSMiss$agemo/12
+HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
+## impute data
+library(Amelia)
+set.seed(12345)
+HS.amelia <- amelia(HSMiss, m = 10, noms = "school", p2s = FALSE)
+imps <- HS.amelia$imputations
+## specify CFA model from lavaan's ?cfa help page
+HS.model <- '
+  visual  =~ x1 + x2 + x3
+  textual =~ x4 + x5 + x6
+  speed   =~ x7 + x8 + x9
+'
+out2 <- cfa.mi(HS.model, data = imps)
+PVs <- plausibleValues(out2, nDraws = nPVs)
+
+idx <- out2@Data@case.idx # can't use lavInspect() on lavaan.mi
+## empty list to hold expanded imputations
+impPVs <- list()
+nPVs <- 5
+nImps <- 10
+for (m in 1:nImps) {
+  imps[[m]]["case.idx"] <- idx
+  for (i in 1:nPVs) {
+    impPVs[[ nPVs*(m - 1) + i ]] <- merge(imps[[m]],
+                                          PVs[[ nPVs*(m - 1) + i ]],
+                                          by = "case.idx")
+  }
+}
+lapply(impPVs, head)
+
+}
+
 }
 \references{
 Asparouhov, T. & Muthen, B. O. (2010). \emph{Plausible values for latent
