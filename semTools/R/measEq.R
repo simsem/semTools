@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 3 June 2021
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1927,10 +1927,11 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         ## (ADD) constraints across repeated measures?
         equate.long <- "thresholds" %in% long.equal
         ## check whether not to equate because it is in long.partial
-        partial.th <- long.partial$op == "|" & long.partial$rhs == paste0("t", th)
+        partial.th <- long.partial$lhs == "" &
+          long.partial$op == "|" & long.partial$rhs == paste0("t", th)
         if (equate.long && any(partial.th)) {
-          partial.inds <- longIndNames[[ long.partial$lhs[which(partial.th)] ]]
-          equate.long <- !i %in% partial.inds
+          partial.inds <- longIndNames[ long.partial$lhs[which(partial.th)] ]
+          equate.long <- !i %in% unlist(partial.inds)
         }
 
         ## check whether to equate for identification (overrides *.partial)
