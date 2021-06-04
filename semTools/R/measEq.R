@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 June 2021
+### Last updated: 4 June 2021
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1927,8 +1927,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
         ## (ADD) constraints across repeated measures?
         equate.long <- "thresholds" %in% long.equal
         ## check whether not to equate because it is in long.partial
-        partial.th <- long.partial$lhs == "" &
-          long.partial$op == "|" & long.partial$rhs == paste0("t", th)
+        partial.th <- long.partial$op == "|" & long.partial$rhs == paste0("t", th)
         if (equate.long && any(partial.th)) {
           partial.inds <- longIndNames[ long.partial$lhs[which(partial.th)] ]
           equate.long <- !i %in% unlist(partial.inds)
@@ -2097,7 +2096,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
           ## always equate the first (or only, if binary)
           if (th == ID.thr[[i]][1]) {
             equate.group <- TRUE
-            ## remove this from long.partial, if necessary
+            ## remove this from group.partial, if necessary
             rm.th <- which(partial.th)
             if (length(rm.th)) group.partial <- group.partial[-rm.th, ]
           }
@@ -2116,7 +2115,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
                       'not be optimal when the reference indicator ("', i,
                       '") has a cross-loading (on factors "',
                       paste0(names(fs), collapse = '", "'), '")')
-            ## remove this from long.partial, if necessary
+            ## remove this from group.partial, if necessary
             rm.th <- which(partial.th)
             if (length(rm.th)) group.partial <- group.partial[-rm.th, ]
           }
