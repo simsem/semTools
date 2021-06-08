@@ -109,4 +109,6 @@ Wirth, R. J., & Edwards, M. C. (2007). Item factor analysis: Current
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+
+  Andrew Johnson (Curtin University; \email{andrew.johnson@curtin.edu.au})
 }

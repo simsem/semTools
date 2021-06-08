@@ -1,4 +1,4 @@
-### Terrence D. Jorgensen & Andrew Johnson
+### Terrence D. Jorgensen & Andrew R. Johnson
 ### Last updated: 8 June 2021
 ### function to derive ordinal-scale moments implied by LRV-scale moments
 
@@ -40,6 +40,8 @@
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##'   Andrew Johnson (Curtin University; \email{andrew.johnson@@curtin.edu.au})
 ##'
 ##' @references
 ##'

@@ -1,4 +1,4 @@
-## Last updated: 4 June 2018
+## Last updated: 8 June 2021
 
 ## List of functions, organized by author(s)
 export(
@@ -56,6 +56,8 @@ export(
   nullRMSEA,
   ## with Sunthud, Aaron, Yves
   moreFitIndices,
+  ## with Andrew Johnson
+  lrv2ord,
 
   ## Ed Merkle
   kd,

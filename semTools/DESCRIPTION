@@ -27,7 +27,8 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com"),
 		person(given = "Maxwell", family = "Mansolf", role = "ctb", email="mamansolf@gmail.com", comment = c(ORCID = "0000-0001-6861-8657")),
 		person(given = "Mattan S.", family = "Ben-Shachar", role = "ctb", email="matanshm@post.bgu.ac.il", comment = c(ORCID = "0000-0002-4287-4801")),
-		person(given = "Mikko", family = "Rönkkö", role = "ctb", email = "mikko.ronkko@jyu.fi", comment = c(ORCID = "0000-0001-7988-7609"))
+		person(given = "Mikko", family = "Rönkkö", role = "ctb", email = "mikko.ronkko@jyu.fi", comment = c(ORCID = "0000-0001-7988-7609")),
+		person(given = "Andrew R.", family = "Johnson", role = "ctb", email = "andrew.johnson@curtin.edu.au", comment = c(ORCID = "0000-0001-7000-8065"))
 		)
 Depends: R(>= 3.4), utils, stats, graphics, lavaan(>= 0.6-7)
 Imports: methods
