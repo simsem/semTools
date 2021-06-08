@@ -2,6 +2,7 @@
 
 ## New Features:
 
+- A new function `lrv2ord()` provides univariate and bivariate population parameters for multivariate-normal data that have been discretized but treated as continuous.
 - `reliability()` has new `what=`, `omit.factors=`, and `omit.indicators=` arguments to 
 customize composite-reliability estimates.
 - `SSpower()` now allows multigroup population models to be specified with `lavaan` syntax via the `popModel=` argument.
