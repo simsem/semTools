@@ -38,14 +38,14 @@ different. This function will help researchers identify the significant
 parameter.
 }
 \details{
-This function first identify the differences between these two models. The
+This function first identifies the differences between these two models. The
 model with more free parameters is referred to as parent model and the model
-with less free parameters is referred to as nested model. Three tests are
+with fewer free parameters is referred to as nested model. Two tests are
 implemented here:
 
 \enumerate{
  \item \code{free}: The nested model is used as a template. Then,
-one parameter indicating the differences between two models is free. The new
+one parameter indicating the differences between two models is freed. The new
 model is compared with the nested model. This process is repeated for all
 differences between two models.
  \item\code{fix}: The parent model is used
@@ -88,11 +88,11 @@ models <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
                                 group = "school")
 singleParamTest(models[[1]], models[[2]])
 
-## Note that the comparison between weak (Model 2) and scalar invariance
-## (Model 3) cannot be done by this function # because the weak invariance
+## Note that the comparison between metric (Model 2) and scalar invariance
+## (Model 3) cannot be done by this function because the metric invariance
 ## model fixes factor means as 0 in Group 2 but the strong invariance model
-## frees the factor means in Group 2. Users may try to compare
-## strong (Model 3) and means invariance models by this function.
+## frees the factor means in Group 2. Users may use this function to compare
+## scalar invariance (Model 3) to a homogeneous-means model.
 
 }
 \author{
