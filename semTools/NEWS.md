@@ -1,4 +1,11 @@
-# semTools 0.5-5 (in development)
+# semTools 0.5-6 (in development)
+
+## New Features:
+
+## Bug Fixes:
+
+
+# semTools 0.5-5
 
 ## New Features:
 

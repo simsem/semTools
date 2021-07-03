@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Andrew R. Johnson
-### Last updated: 8 June 2021
+### Last updated: 3 July 2021
 ### function to derive ordinal-scale moments implied by LRV-scale moments
 
 
@@ -12,7 +12,9 @@
 ##' a corresponding latent response variable that is typically assumed to be
 ##' normally distributed (Kamata & Bauer, 2008; Wirth & Edwards, 2007).
 ##'
+##' @importFrom stats dnorm setNames
 ##' @importFrom lavaan lavInspect
+##' @importFrom pbivnorm pbivnorm
 ##'
 ##' @param Sigma Population covariance \code{\link{matrix}}, with variable names
 ##'   saved in the \code{\link{dimnames}} attribute.
@@ -264,8 +266,7 @@ lrv2ord <- function(Sigma, Mu, thresholds, cWts) {
     tCombos <- cbind(expand.grid(i = i.thr, j = j.thr),
                      expand.grid(cat1 = c(0, seq_along(cWts[[i]])),
                                  cat2 = c(0, seq_along(cWts[[j]]))))
-    tCombos$cp <- pbivnorm::pbivnorm(x = tCombos$i, y = tCombos$j,
-                                     rho = out$R_LRV[i,j])
+    tCombos$cp <- pbivnorm(x = tCombos$i, y = tCombos$j, rho = out$R_LRV[i,j])
     ## loop over rows & columns
     for (RR in seq_along(cWts[[i]])) for (CC in seq_along(cWts[[j]])) {
       ## calculate joint probabilities
@@ -312,7 +313,7 @@ lrv2ord <- function(Sigma, Mu, thresholds, cWts) {
       ## Note: polyserial correlation divides by sqrt(diag(Sigma_ord)[CAT]),
       ##       but that cancels out when scaling by both SDs to get covariance
       Sigma_ord[CON, CAT] <- Sigma_ord[CAT, CON] <-
-        R_LRV[CON, CAT] * sum(DENS) * sqrt(diag(Sigma_LRV)[CON])
+        out$R_LRV[CON, CAT] * sum(DENS) * sqrt(diag(out$Sigma_LRV)[CON])
 
     }
   }
