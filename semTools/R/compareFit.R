@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 1 April 2021
+### Last updated: 3 July 2021
 ### source code for compareFit() function and FitDiff class
 
 
@@ -485,7 +485,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	  diffTab <- as.data.frame(do.call(cbind, lapply(fitTab, diff)))
 	  rownames(diffTab) <- paste(names(mods)[-1], "-", names(mods)[-length(names(mods))])
 
-	} else fit.diff <- data.frame(df = diff(fit))
+	} else diffTab <- data.frame(df = diff(fit))
 
 	new("FitDiff", name = names(mods), model.class = modClass,
 	    nested = nestedout, fit = fit, fit.diff = diffTab)
