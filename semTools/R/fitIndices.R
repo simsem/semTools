@@ -3,7 +3,7 @@
 ###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ###          Aaron Boulton <aboulton@ku.edu>,
 ###          Ruben Arslan <rubenarslan@gmail.com>
-### Last updated: 10 January 2021
+### Last updated: 3 July 2021
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -494,7 +494,7 @@ chisqSmallN <- function(fit0, fit1 = NULL,
       K <- max(K, K1)
     }
 
-    try(AOV <- compareFit(fit0, fit1, argsLRT = list(...), indices = FALSE),
+    AOV <- try(compareFit(fit0, fit1, argsLRT = list(...), indices = FALSE),
         silent = TRUE)
     if (inherits(AOV, "try-error")) stop('Model comparison failed. Try using ',
                                          'lavTestLRT() to investigate why.')
