@@ -1,6 +1,6 @@
 Encoding:UTF-8
 Package: semTools
-Version: 0.5-5
+Version: 0.5-5.901
 Title: Useful Tools for Structural Equation Modeling
 Description: Provides tools for structural equation modeling, many of which extend the 'lavaan' package; for example, to pool results from multiple imputations, probe latent interactions, or test measurement invariance.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
@@ -38,6 +38,6 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2021-07-03
+Date/Publication: 2021-07-07
 RoxygenNote: 7.1.1
 Roxygen: list(old_usage = TRUE)

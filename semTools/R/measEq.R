@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 4 June 2021
+### Last updated: 7 July 2021
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1325,7 +1325,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
       if (!lavInspect(lavTemplate, "options")$meanstructure && mc$meanstructure)
         stop('Request for meanstructure=TRUE requires configural.model to be ',
              'fitted with meanstructure=TRUE')
-    }
+    } else mc$meanstructure <- lavInspect(lavTemplate, "options")$meanstructure # just in case
+
   } else {
     lavArgs <- dots
     if (ID.fac != "ul") lavArgs$std.lv <- TRUE
