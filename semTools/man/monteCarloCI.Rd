@@ -4,8 +4,9 @@
 \alias{monteCarloCI}
 \title{Monte Carlo Confidence Intervals to Test Functions of Parameter Estimates}
 \usage{
-monteCarloCI(object = NULL, expr, coefs, ACM, nRep = 2e+05, fast = TRUE,
-  level = 0.95, na.rm = TRUE, return.samples = FALSE, plot = FALSE,
+monteCarloCI(object = NULL, expr, coefs, ACM, nRep = 2e+05,
+  standardized = FALSE, fast = TRUE, level = 0.95, na.rm = TRUE,
+  return.samples = FALSE, plot = FALSE,
   ask = getOption("device.ask.default"), ...)
 }
 \arguments{
@@ -35,6 +36,11 @@ in popular SEM software is described in \strong{Details}.}
 \item{nRep}{\code{integer}. The number of samples to draw, to obtain an
 empirical sampling distribution of model parameters. Many thousand are
 recommended to minimize Monte Carlo error of the estimated CIs.}
+
+\item{standardized}{\code{logical} indicating whether to obtain CIs for the
+fully standardized (\code{"std.all"}) estimates, using their asymptotic
+sampling covariance matrix.  Only valid when \code{object} is of class
+\code{\linkS4class{lavaan}}, not \code{\linkS4class{lavaan.mi}}.}
 
 \item{fast}{\code{logical} indicating whether to use a fast algorithm that
 assumes all functions of parameters (in \code{object} or \code{expr}) use

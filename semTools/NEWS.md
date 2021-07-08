@@ -2,10 +2,13 @@
 
 ## New Features:
 
+- `monteCarloMed()` now works for `lavaan.mi` objects, which is much easier than combining multiple imputation with bootstrapping.
+- `monteCarloMed()` now optionally returns CIs for the standardized solution, only for `lavaan` objects (not `lavaan.mi`).
+
 ## Bug Fixes:
 
 
-# semTools 0.5-5
+# semTools 0.5-5 (on CRAN 8 July 2021)
 
 ## New Features:
 

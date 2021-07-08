@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 16 April 2021
+### Last updated: 8 July 2021
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -62,7 +62,8 @@
 ##'
 ##'
 ##' @importFrom stats quantile
-##' @importFrom lavaan parTable
+##' @importFrom methods getMethod
+##' @importFrom lavaan parTable lavInspect
 ##'
 ##' @param object A object of class \code{\linkS4class{lavaan}} in which
 ##'   functions of parameters have already been defined using the \code{:=}
@@ -86,6 +87,10 @@
 ##' @param nRep \code{integer}. The number of samples to draw, to obtain an
 ##'   empirical sampling distribution of model parameters. Many thousand are
 ##'   recommended to minimize Monte Carlo error of the estimated CIs.
+##' @param standardized \code{logical} indicating whether to obtain CIs for the
+##'   fully standardized (\code{"std.all"}) estimates, using their asymptotic
+##'   sampling covariance matrix.  Only valid when \code{object} is of class
+##'   \code{\linkS4class{lavaan}}, not \code{\linkS4class{lavaan.mi}}.
 ##' @param fast \code{logical} indicating whether to use a fast algorithm that
 ##'   assumes all functions of parameters (in \code{object} or \code{expr}) use
 ##'   standard operations. Set to \code{FALSE} if using (e.g.) \code{\link{c}()}
@@ -174,12 +179,12 @@
 ##'              plot = TRUE, ask = TRUE) # print a plot for each
 ##'
 ##' @export
-monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e5, fast = TRUE,
-                         level = 0.95, na.rm = TRUE, return.samples = FALSE,
-                         plot = FALSE, ask = getOption("device.ask.default"),
-                         ...) {
+monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e5,
+                         standardized = FALSE, fast = TRUE, level = 0.95,
+                         na.rm = TRUE, return.samples = FALSE, plot = FALSE,
+                         ask = getOption("device.ask.default"), ...) {
 
-  if (class(object) == "lavaan") {
+  if (inherits(object, c("lavaan","lavaan.mi"))) {
     ## extract user-defined parameters from parTable (order of user-defined
     PT <- parTable(object) # parameters must be correct for model to be fitted)
     ## create expression vector
@@ -196,13 +201,29 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e5, fast = TRU
   })))
 
   ## isolate names of model parameters (not user-defined), which get sampled
-  if (class(object) == "lavaan") coefs <- lavaan::coef(object)
+  if (class(object) == "lavaan") {
+    if (standardized) {
+      STD <- lavaan::standardizedSolution(object)
+      coefRows <- !(STD$op %in% c(":=","==","<",">","<=",">="))
+      coefs <- STD$est.std[coefRows]
+      names(coefs) <- lavaan::lav_partable_labels(STD[coefRows, ])
+    } else coefs <- lavaan::coef(object)
+  } else if (class(object) == "lavaan.mi") {
+    coefs <- getMethod("coef", "lavaan.mi")(object)
+  }
   sampVars <- intersect(names(coefs), funcVars)
 
   ## If a lavaan object is provided, extract coefs and ACM
   if (class(object) == "lavaan") {
     coefs <- coefs[sampVars]
-    ACM <- lavaan::vcov(object)[sampVars, sampVars]
+    if (standardized) {
+      ACM <- lavInspect(object, "vcov.std.all")[sampVars, sampVars]
+    } else {
+      ACM <- lavaan::vcov(object)[sampVars, sampVars]
+    }
+  } else if (class(object) == "lavaan.mi") {
+    coefs <- coefs[sampVars]
+    ACM <- getMethod("vcov", "lavaan.mi")(object)[sampVars, sampVars]
   }
 
   ## Apply the expression(s) to POINT ESTIMATES
@@ -211,6 +232,7 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e5, fast = TRU
   })[names(expr)]
   EST <- data.frame(est = do.call("c", estList))
   rownames(EST) <- names(expr)
+  if (standardized && class(object) == "lavaan") colnames(EST) <- "est.std"
 
   ## Matrix of sampled values
   dat <- data.frame(MASS::mvrnorm(n = nRep, mu = coefs, Sigma = ACM))
