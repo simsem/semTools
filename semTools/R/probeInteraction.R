@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 29 March 2021
+### Last updated: 10 July 2021
 
 
 
@@ -334,9 +334,9 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
 	  targetcol <- PT$label[newRows]
 	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste(nameY, "~", nameX[i],
-	                          ifelse(nG > 1L && group.number > 1L, no = "",
-	                                 yes = paste0(".g", group.number)))
+	    targetcol[i] <- paste0(nameY, "~", nameX[i],
+	                           ifelse(nG > 1L && group.number > 1L, no = "",
+	                                  yes = paste0(".g", group.number)))
 	  }
 
 		# Transform it to non-centering SE
@@ -733,9 +733,9 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
 	  targetcol <- PT$label[newRows]
 	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste(nameY, "~", nameX[i],
-	                          ifelse(nG > 1L && group.number > 1L, no = "",
-	                                 yes = paste0(".g", group.number)))
+	    targetcol[i] <- paste0(nameY, "~", nameX[i],
+	                           ifelse(nG > 1L && group.number > 1L, no = "",
+	                                  yes = paste0(".g", group.number)))
 	  }
 	  varEstSlopeRC <- varEst[targetcol, targetcol]
 
@@ -1113,9 +1113,9 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
 	  targetcol <- PT$label[newRows]
 	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste(nameY, "~", nameX[i],
-	                          ifelse(nG > 1L && group.number > 1L, no = "",
-	                                 yes = paste0(".g", group.number)))
+	    targetcol[i] <- paste0(nameY, "~", nameX[i],
+	                           ifelse(nG > 1L && group.number > 1L, no = "",
+	                                  yes = paste0(".g", group.number)))
 	  }
 
 		# Transform it to non-centering SE
@@ -1572,9 +1572,9 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
 	  targetcol <- PT$label[newRows]
 	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste(nameY, "~", nameX[i],
-	                          ifelse(nG > 1L && group.number > 1L, no = "",
-	                                 yes = paste0(".g", group.number)))
+	    targetcol[i] <- paste0(nameY, "~", nameX[i],
+	                           ifelse(nG > 1L && group.number > 1L, no = "",
+	                                  yes = paste0(".g", group.number)))
 	  }
 		varEstSlopeRC <- varEst[targetcol, targetcol]
 
