@@ -3,7 +3,7 @@
 ###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
 ###          Aaron Boulton <aboulton@ku.edu>,
 ###          Ruben Arslan <rubenarslan@gmail.com>
-### Last updated: 3 July 2021
+### Last updated: 28 July 2021
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -49,15 +49,18 @@
 ##'
 ##' \deqn{ bic.priorN = f + k\log{(1 + N/N_{prior})},}
 ##'
+##' where \eqn{f} is the \eqn{-2 \times LL}.
+##'
 ##' Stochastic information criterion (SIC; Preacher, 2006) is similar to AIC or
 ##' BIC. This index will account for model complexity in the model's function
 ##' form, in addition to the number of free parameters. This index will be
 ##' provided only when the \eqn{\chi^2} value is not scaled. The SIC can be
 ##' computed by
 ##'
-##' \deqn{ sic = \frac{1}{2}\left(f - \log{\det{I(\hat{\theta})}}\right),}
+##' \deqn{ sic = f + \log{\det{I(\hat{\theta})}},}
 ##'
-##' where \eqn{I(\hat{\theta})} is the information matrix of the parameters.
+##' where \eqn{I(\hat{\theta})} is the observed information matrix of the
+##' estimated parameters.
 ##'
 ##' Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for
 ##' model selection similar to AIC or BIC.
