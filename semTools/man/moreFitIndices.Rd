@@ -14,30 +14,40 @@ moreFitIndices(object, fit.measures = "all", nPrior = 1)
 fit measures are calculated by default}
 
 \item{nPrior}{The sample size on which prior is based. This argument is used
-to compute BIC*.}
+to compute \code{bic.priorN}.}
 }
 \value{
+A \code{numeric} \code{lavaan.vector} including any of the
+  following requested via \code{fit.measures=}
 \enumerate{
- \item \code{gammaHat}: Gamma Hat
- \item \code{adjGammaHat}: Adjusted Gamma Hat
- \item \code{baseline.rmsea}: RMSEA of the Baseline (Null) Model
- \item \code{aic.smallN}: Corrected (for small sample size) Akaike Information Criterion
- \item \code{bic.priorN}: Bayesian Information Criterion with specified prior sample size
- \item \code{sic}: Stochastic Information Criterion
- \item \code{hqc}: Hannan-Quinn Information Criterion
- \item \code{gammaHat.scaled}: Gamma Hat using scaled \eqn{\chi^2}
- \item \code{adjGammaHat.scaled}: Adjusted Gamma Hat using scaled \eqn{\chi^2}
- \item \code{baseline.rmsea.scaled}: RMSEA of the Baseline (Null) Model using scaled \eqn{\chi^2}
+ \item \code{gammaHat}: Gamma-Hat
+ \item \code{adjGammaHat}: Adjusted Gamma-Hat
+ \item \code{baseline.rmsea}: RMSEA of the default baseline (i.e., independence) model
+ \item \code{gammaHat.scaled}: Gamma-Hat using scaled \eqn{\chi^2}
+ \item \code{adjGammaHat.scaled}: Adjusted Gamma-Hat using scaled \eqn{\chi^2}
+ \item \code{baseline.rmsea.scaled}: RMSEA of the default baseline (i.e.,
+       independence) model using scaled \eqn{\chi^2}
+ \item \code{aic.smallN}: Corrected (for small sample size) AIC
+ \item \code{bic.priorN}: BIC with specified prior sample size
+ \item \code{spbic}: Scaled Unit-Information Prior BIC (SPBIC)
+ \item \code{hbic}: Haughton's BIC (HBIC)
+ \item \code{ibic}: Information-matrix-based BIC (IBIC)
+ \item \code{sic}: Stochastic Information Criterion (SIC)
+ \item \code{hqc}: Hannan-Quinn Information Criterion (HQC)
 }
 }
 \description{
 Calculate more fit indices that are not already provided in lavaan.
 }
 \details{
-Gamma Hat (gammaHat; West, Taylor, & Wu, 2012) is a global fit index which
-can be computed (assuming equal number of indicators across groups) by
+See \code{\link{nullRMSEA}} for the further details of the computation of
+RMSEA of the null model.
 
-\deqn{ gammaHat =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N}} ,}
+Gamma-Hat (\code{gammaHat}; West, Taylor, & Wu, 2012) is a global
+goodness-of-fit index which can be computed (assuming equal number of
+indicators across groups) by
+
+  \deqn{ \hat{\Gamma} =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N}},}
 
 where \eqn{p} is the number of variables in the model, \eqn{\chi^{2}_{k}} is
 the \eqn{\chi^2} test statistic value of the target model, \eqn{df_{k}} is
@@ -45,55 +55,70 @@ the degree of freedom when fitting the target model, and \eqn{N} is the
 sample size (or sample size minus the number of groups if \code{mimic} is
 set to \code{"EQS"}).
 
-Adjusted Gamma Hat (adjGammaHat; West, Taylor, & Wu, 2012) is a global fit
-index which can be computed by
+Adjusted Gamma-Hat (\code{adjGammaHat}; West, Taylor, & Wu, 2012) is a
+global fit index which can be computed by
 
-\deqn{ adjGammaHat = \left(1 - \frac{K \times p \times (p + 1)}{2 \times
-df_{k}} \right) \times \left( 1 - gammaHat \right) ,}
+  \deqn{ \hat{\Gamma}_\text{adj} = \left(1 - \frac{K \times p \times
+  (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - \hat{\Gamma} \right),}
 
-where \eqn{K} is the number of groups (please refer to Dudgeon, 2004 for the
-multiple-group adjustment for agfi*).
+where \eqn{K} is the number of groups (please refer to Dudgeon, 2004, for
+the multiple-group adjustment for \code{adjGammaHat}).
 
-Corrected Akaike Information Criterion (aic.smallN; Burnham & Anderson,
-2003) is a corrected version of AIC for small sample size, often abbreviated
-AICc:
+The remaining indices are information criteria calculated using the
+\code{object}'s \eqn{-2 \times} log-likelihood, abbreviated \eqn{-2LL}.
 
-\deqn{ aic.smallN = AIC + \frac{2k(k + 1)}{N - k - 1},}
+Corrected Akaike Information Criterion (\code{aic.smallN}; Burnham &
+Anderson, 2003) is a corrected version of AIC for small sample size, often
+abbreviated AICc:
 
-where \eqn{AIC} is the original AIC: \eqn{-2 \times LL + 2k} (where \eqn{k}
+  \deqn{ \text{AIC}_{\text{small}-N} = AIC + \frac{2q(q + 1)}{N - q - 1},}
+
+where \eqn{AIC} is the original AIC: \eqn{-2LL + 2q} (where \eqn{q}
 = the number of estimated parameters in the target model). Note that AICc is
 a small-sample correction derived for univariate regression models, so it is
 probably \emph{not} appropriate for comparing SEMs.
 
-Corrected Bayesian Information Criterion (bic.priorN; Kuha, 2004) is similar
-to BIC but explicitly specifying the sample size on which the prior is based
-(\eqn{N_{prior}}).
+Corrected Bayesian Information Criterion (\code{bic.priorN}; Kuha, 2004) is
+similar to BIC but explicitly specifying the sample size on which the prior
+is based (\eqn{N_{prior}}) using the \code{nPrior} argument.
 
-\deqn{ bic.priorN = f + k\log{(1 + N/N_{prior})},}
+  \deqn{ \text{BIC}_{\text{prior}-N} = -2LL + q\log{( 1 + \frac{N}{N_{prior}} )}.}
 
-where \eqn{f} is the \eqn{-2 \times LL}.
+Bollen et al. (2014) discussed additional BICs that incorporate more terms
+from a Taylor series expansion, which the standard BIC drops.  The "Scaled
+Unit-Information Prior" BIC is calculated depending on whether the product
+of the vector of estimated model parameters (\eqn{\hat{\theta}}) and the
+observed information matrix (FIM) exceeds the number of estimated model
+parameters (Case 1) or not (Case 2), which is checked internally:
 
-Stochastic information criterion (SIC; Preacher, 2006) is similar to AIC or
-BIC. This index will account for model complexity in the model's function
-form, in addition to the number of free parameters. This index will be
-provided only when the \eqn{\chi^2} value is not scaled. The SIC can be
+  \deqn{ \text{SPBIC}_{\text{Case 1}} = -2LL + q(1 - \frac{q}{\hat{\theta}^{'} \text{FIM} \hat{\theta}}), or}
+  \deqn{ \text{SPBIC}_{\text{Case 2}} = -2LL + \hat{\theta}^{'} \text{FIM} \hat{\theta},}
+
+Bollen et al. (2014) credit the HBIC to Haughton (1988):
+
+  \deqn{ \text{HBIC}_{\text{Case 1}} = -2LL - q\log{2 \times \pi},}
+
+and proposes the information-matrix-based BIC by adding another term:
+
+  \deqn{ \text{IBIC}_{\text{Case 1}} = -2LL - q\log{2 \times \pi} - \log{\det{\text{ACOV}}},}
+
+Stochastic information criterion (SIC; see Preacher, 2006, for details) is
+similar to IBIC but does not subtract the term \eqn{q\log{2 \times \pi}}
+that is also in HBIC. SIC and IBIC account for model complexity in a model's
+functional form, not merely the number of free parameters.  The SIC can be
 computed by
 
-\deqn{ sic = f + \log{\det{I(\hat{\theta})}},}
+  \deqn{ \text{SIC} = -2LL + \log{\det{\text{FIM}^{-1}}} = -2LL - \log{\det{\text{ACOV}}},}
 
-where \eqn{I(\hat{\theta})} is the observed information matrix of the
-estimated parameters.
+where the inverse of FIM is the asymptotic sampling covariance matrix (ACOV).
 
-Hannan-Quinn Information Criterion (hqc; Hannan & Quinn, 1979) is used for
-model selection similar to AIC or BIC.
+Hannan--Quinn Information Criterion (HQC; Hannan & Quinn, 1979) is used for
+model selection, similar to AIC or BIC.
 
-\deqn{ hqc = f + 2k\log{(\log{N})},}
+\deqn{ \text{HQC} = -2LL + 2k\log{(\log{N})},}
 
-Note that if Satorra--Bentler or Yuan--Bentler's method is used, the fit
+Note that if Satorra--Bentler's or Yuan--Bentler's method is used, the fit
 indices using the scaled \eqn{\chi^2} values are also provided.
-
-See \code{\link{nullRMSEA}} for the further details of the computation of
-RMSEA of the null model.
 }
 \examples{
 
@@ -109,6 +134,11 @@ moreFitIndices(fit2)
 
 }
 \references{
+Bollen, K. A., Ray, S., Zavisca, J., & Harden, J. J. (2012). A comparison of
+Bayes factor approximation methods including two new methods.
+\emph{Sociological Methods & Research, 41}(2), 294--324.
+\doi{10.1177/0049124112452393}
+
 Burnham, K., & Anderson, D. (2003). \emph{Model selection and
 multimodel inference: A practical--theoretic approach}. New York, NY:
 Springer--Verlag.
@@ -128,19 +158,21 @@ modeling. \emph{Multivariate Behavioral Research, 43}(3), 227-259.
 
 West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection
 in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of
-Structural Equation Modeling} (pp. 209--231). New York, NY: Guilford.
+structural equation modeling} (pp. 209--231). New York, NY: Guilford.
 }
 \seealso{
-\itemize{ \item \code{\link{miPowerFit}} For the modification
-indices and their power approach for model fit evaluation \item
-\code{\link{nullRMSEA}} For RMSEA of the null model }
+\itemize{
+\item \code{\link{miPowerFit}} For the modification indices and their
+       power approach for model fit evaluation
+\item \code{\link{nullRMSEA}} For RMSEA of the default independence model
+}
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
-Aaron Boulton (University of North Carolina, Chapel Hill; \email{aboulton@email.unc.edu})
+Aaron Boulton (University of Delaware)
 
 Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
 
