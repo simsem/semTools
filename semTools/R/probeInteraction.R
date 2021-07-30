@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 10 July 2021
+### Last updated: 30 July 2021
 
 
 
@@ -122,6 +122,15 @@
 ##' }
 ##'
 ##' @references
+##'
+##' Tutorial:
+##'
+##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
+##' latent variable interactions using the \code{semTools} package.
+##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##'
+##' Background literature:
+##'
 ##' Aiken, L. S., & West, S. G. (1991). \emph{Multiple regression: Testing
 ##' and interpreting interactions}. Newbury Park, CA: Sage.
 ##'
@@ -461,6 +470,14 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'   latent interaction.
 ##' }
 ##' @references
+##'
+##' Tutorial:
+##'
+##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
+##' latent variable interactions using the \code{semTools} package.
+##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##'
+##' Background literature:
 ##'
 ##' Lance, C. E. (1988). Residual centering, exploratory and confirmatory
 ##' moderator analysis, and decomposition of effects in path models containing
@@ -904,6 +921,14 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' }
 ##'
 ##' @references
+##' Tutorial:
+##'
+##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
+##' latent variable interactions using the \code{semTools} package.
+##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##'
+##' Background literature:
+##'
 ##' Aiken, L. S., & West, S. G. (1991). \emph{Multiple regression: Testing
 ##' and interpreting interactions}. Newbury Park, CA: Sage.
 ##'
@@ -1250,6 +1275,14 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' }
 ##'
 ##' @references
+##' Tutorial:
+##'
+##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
+##' latent variable interactions using the \code{semTools} package.
+##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##'
+##' Background literature:
+##'
 ##' Geldhof, G. J., Pornprasertmanit, S., Schoemann, A., & Little,
 ##' T. D. (2013). Orthogonalizing through residual centering: Extended
 ##' applications and caveats. \emph{Educational and Psychological Measurement,
@@ -1648,6 +1681,12 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##'  \item \code{\link{probe3WayRC}} For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
 ##' }
+##'
+##' @references
+##'
+##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
+##' latent variable interactions using the \code{semTools} package.
+##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
 ##'
 ##' @examples
 ##'

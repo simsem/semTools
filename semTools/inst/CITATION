@@ -1,4 +1,4 @@
-citHeader("The maintainer and *primary* contributors to this package are listed as authors, but this package is a collaborative work. The maintainer(s) cannot take credit for others' contributions. Whenever possible, please cite the paper(s) associated with the development of a particular function (e.g., permuteMeasEq or parcelAllocation), listed in the References section of its associated help page.  Otherwise, please use the following citation for the package as a whole:")
+citHeader("The maintainer and *primary* contributors to this package are listed as authors, but this package is a collaborative work. The maintainer(s) cannot take credit for others' contributions. Whenever possible, please cite the paper(s) associated with the development of a particular function (e.g., permuteMeasEq or parcelAllocation) or tutorials about how to use them (e.g., probe2WayMC and related functions), which are listed in the References section of its associated help page.  Otherwise, please use the following citation for the package as a whole:")
 
 year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
 vers <- paste("R package version", meta$Version)

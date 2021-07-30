@@ -135,6 +135,14 @@ probe3WayMC(fitRC3way, nameX = c("f1" ,"f2" ,"f3",
 
 }
 \references{
+Tutorial:
+
+Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
+latent variable interactions using the \code{semTools} package.
+\emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+
+Background literature:
+
 Geldhof, G. J., Pornprasertmanit, S., Schoemann, A., & Little,
 T. D. (2013). Orthogonalizing through residual centering: Extended
 applications and caveats. \emph{Educational and Psychological Measurement,

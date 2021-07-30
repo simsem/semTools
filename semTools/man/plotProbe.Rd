@@ -116,6 +116,11 @@ result3wayMC <- probe3WayMC(fitMC3way, nameX = c("f1", "f2", "f3", "f12",
 plotProbe(result3wayMC, xlim = c(-2, 2))
 
 }
+\references{
+Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
+latent variable interactions using the \code{semTools} package.
+\emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+}
 \seealso{
 \itemize{
  \item \code{\link{indProd}} For creating the indicator products with no

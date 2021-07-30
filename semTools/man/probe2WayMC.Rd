@@ -150,6 +150,14 @@ probe2WayMC(fit2, nameX = c("f1", "f2", "f12"), nameY = "f3",
 
 }
 \references{
+Tutorial:
+
+Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
+latent variable interactions using the \code{semTools} package.
+\emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+
+Background literature:
+
 Aiken, L. S., & West, S. G. (1991). \emph{Multiple regression: Testing
 and interpreting interactions}. Newbury Park, CA: Sage.
 
