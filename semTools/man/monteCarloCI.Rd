@@ -2,6 +2,7 @@
 % Please edit documentation in R/monteCarloCI.R
 \name{monteCarloCI}
 \alias{monteCarloCI}
+\alias{monteCarloMed}
 \title{Monte Carlo Confidence Intervals to Test Functions of Parameter Estimates}
 \usage{
 monteCarloCI(object = NULL, expr, coefs, ACM, nRep = 2e+05,

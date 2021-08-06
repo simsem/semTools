@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 8 July 2021
+### Last updated: 6 August 2021
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -136,6 +136,8 @@
 ##' assessing mediation: An interactive tool for creating confidence intervals
 ##' for indirect effects [Computer software]. Available from
 ##' \url{http://quantpsy.org/}.
+##'
+##' @aliases monteCarloCI monteCarloMed
 ##'
 ##' @examples
 ##'
