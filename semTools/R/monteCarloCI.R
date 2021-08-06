@@ -99,21 +99,24 @@
 ##'   parameters.
 ##' @param level \code{numeric} confidence level, between 0--1
 ##' @param na.rm \code{logical} passed to \code{\link[stats]{quantile}}
-##' @param return.samples \code{logical} indicating whether to return the
+##' @param append.samples \code{logical} indicating whether to return the
 ##'   simulated empirical sampling distribution of parameters (in \code{coefs})
-##'   and functions (in \code{expr})
+##'   and functions (in \code{expr}) in a \code{list} with the results. This
+##'   could be useful to calculate more precise highest-density intervals (see
+##'   examples).
 ##' @param plot \code{logical} indicating whether to plot the empirical sampling
 ##'   distribution of each function in \code{expr}
 ##' @param ask whether to prompt user before printing each plot
 ##' @param \dots arguments passed to \code{\link[graphics]{hist}} when
 ##'   \code{plot = TRUE}.
 ##'
-##' @return A \code{lavaan.data.frame} (to use lavaan's \code{print} method).
-##'   By default, a \code{data.frame} with point estimates and confidence limits
-##'   of each requested function of parameters in \code{expr} is returned.
-##'   If \code{return.samples = TRUE}, output will be a \code{data.frame} with
-##'   the samples (in rows) of each parameter (in columns), and an additional
-##'   column for each requested function of those parameters.
+##' @return A \code{lavaan.data.frame} (to use lavaan's \code{print} method)
+##'   with point estimates and confidence limits of each requested function of
+##'   parameters in \code{expr} is returned. If \code{append.samples = TRUE},
+##'   output will be a \code{list} with the same \code{$Results} along with a
+##'   second \code{data.frame} with the \code{$Samples} (in rows) of each
+##'   parameter (in columns), and an additional column for each requested
+##'   function of those parameters.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
@@ -166,6 +169,13 @@
 ##' set.seed(1234)
 ##' monteCarloCI(fit) # CIs more robust than delta method in smaller samples
 ##'
+##' ## save samples to calculate more precise intervals:
+##' \dontrun{
+##' set.seed(1234)
+##' foo <- monteCarloCI(fit, append.samples = TRUE)
+##' library(HDInterval)
+##' hdi(fit$Samples)
+##' }
 ##'
 ##' ## Parameter can also be obtained from an external analysis
 ##' myParams <- c("a","b","c")
@@ -183,7 +193,7 @@
 ##' @export
 monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e5,
                          standardized = FALSE, fast = TRUE, level = 0.95,
-                         na.rm = TRUE, return.samples = FALSE, plot = FALSE,
+                         na.rm = TRUE, append.samples = FALSE, plot = FALSE,
                          ask = getOption("device.ask.default"), ...) {
 
   if (inherits(object, c("lavaan","lavaan.mi"))) {
@@ -281,8 +291,10 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e5,
     if (length(expr) > 1L && ask) grDevices::devAskNewPage(ask = opar)
   }
 
-  ## Return simulated values OR point and interval estimates
-  out <- if (return.samples) samples else cbind(EST, CIs)
+  ## Always return point and interval estimates
+  out <- cbind(EST, CIs)
   class(out) <- c("lavaan.data.frame","data.frame")
+  ## also simulated values? (e.g., to calculate highest-density intervals)
+  if (append.samples) return(list(Results = out, Samples = samples))
   out
 }
