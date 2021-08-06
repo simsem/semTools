@@ -298,3 +298,9 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
   if (append.samples) return(list(Results = out, Samples = samples))
   out
 }
+
+#FIXME: Remove after a few version updates
+monteCarloMed <- function(...) {
+  .Defunct("monteCarloCI",
+           msg = "monteCarloMed() has been replaced by monteCarloCI()")
+}
