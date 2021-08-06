@@ -5,7 +5,7 @@
 \alias{monteCarloMed}
 \title{Monte Carlo Confidence Intervals to Test Functions of Parameter Estimates}
 \usage{
-monteCarloCI(object = NULL, expr, coefs, ACM, nRep = 2e+05,
+monteCarloCI(object = NULL, expr, coefs, ACM, nRep = 20000,
   standardized = FALSE, fast = TRUE, level = 0.95, na.rm = TRUE,
   append.samples = FALSE, plot = FALSE,
   ask = getOption("device.ask.default"), ...)
@@ -143,7 +143,7 @@ library(HDInterval)
 hdi(fit$Samples)
 }
 
-## Parameter can also be obtained from an external analysis
+## Parameters can also be obtained from an external analysis
 myParams <- c("a","b","c")
 (coefs <- coef(fit)[myParams]) # names must match those in the "expression"
 ## Asymptotic covariance matrix from an external analysis

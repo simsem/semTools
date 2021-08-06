@@ -177,7 +177,7 @@
 ##' hdi(fit$Samples)
 ##' }
 ##'
-##' ## Parameter can also be obtained from an external analysis
+##' ## Parameters can also be obtained from an external analysis
 ##' myParams <- c("a","b","c")
 ##' (coefs <- coef(fit)[myParams]) # names must match those in the "expression"
 ##' ## Asymptotic covariance matrix from an external analysis
@@ -191,7 +191,7 @@
 ##'              plot = TRUE, ask = TRUE) # print a plot for each
 ##'
 ##' @export
-monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e5,
+monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
                          standardized = FALSE, fast = TRUE, level = 0.95,
                          na.rm = TRUE, append.samples = FALSE, plot = FALSE,
                          ask = getOption("device.ask.default"), ...) {
