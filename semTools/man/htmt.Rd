@@ -2,10 +2,10 @@
 % Please edit documentation in R/htmt.R
 \name{htmt}
 \alias{htmt}
-\title{Assessing Discriminant Validity using Heterotrait-Monotrait Ratio}
+\title{Assessing Discriminant Validity using Heterotrait--Monotrait Ratio}
 \usage{
 htmt(model, data = NULL, sample.cov = NULL, missing = "listwise",
-  ordered = NULL, absolute = TRUE)
+  ordered = NULL, absolute = TRUE, htmt2 = TRUE)
 }
 \arguments{
 \item{model}{lavaan \link[lavaan]{model.syntax} of a confirmatory factor
@@ -29,24 +29,30 @@ Treat these variables as ordered (ordinal) variables. Importantly, all
 other variables will be treated as numeric (unless \code{is.ordered} in
 \code{data}). (see also \link[lavaan]{lavCor})}
 
-\item{absolute}{logical. Whether HTMT values should be estimated based on
-absolute correlations (recommended and default is \code{TRUE})}
+\item{absolute}{\code{logical} indicating whether HTMT values should be
+estimated based on absolute correlations (default is \code{TRUE}). This
+is recommended for HTMT but required for HTMT2 (so silently ignored).}
+
+\item{htmt2}{\code{logical} indicating whether to use the geometric mean
+(default, appropriate for congeneric indicators) or arithmetic mean
+(which assumes tau-equivalence).}
 }
 \value{
-A matrix showing HTMT values (i.e., discriminant validity) between
-  each pair of factors
+A matrix showing HTMT(2) values (i.e., discriminant validity)
+  between each pair of factors.
 }
 \description{
 This function assesses discriminant validity through the
 heterotrait-monotrait ratio (HTMT) of the correlations (Henseler, Ringlet &
-Sarstedt, 2015). Specifically, it assesses the geometric-mean correlation
-among indicators across constructs (i.e. heterotrait-heteromethod
+Sarstedt, 2015). Specifically, it assesses the arithmetic (Henseler et al.,
+) or geometric (Roemer et al., 2021) mean correlation
+among indicators across constructs (i.e. heterotrait--heteromethod
 correlations) relative to the geometric-mean correlation among indicators
-within the same construct (i.e. monotrait-heteromethod correlations).
-The resulting HTMT values are interpreted as estimates of inter-construct
+within the same construct (i.e. monotrait--heteromethod correlations).
+The resulting HTMT(2) values are interpreted as estimates of inter-construct
 correlations. Absolute values of the correlations are recommended to
-calculate the HTMT matrix. Correlations are estimated using the
-\code{\link[lavaan]{lavCor}} function in the \pkg{lavaan} package.
+calculate the HTMT matrix, and are required to calculate HTMT2. Correlations
+are estimated using the \code{\link[lavaan]{lavCor}} function.
 }
 \examples{
 
@@ -57,6 +63,11 @@ HS.model <- ' visual  =~ x1 + x2 + x3
 dat <- HolzingerSwineford1939[, paste0("x", 1:9)]
 htmt(HS.model, dat)
 
+## save covariance matrix
+HS.cov <- cov(HolzingerSwineford1939[, paste0("x", 1:9)])
+## HTMT using arithmetic mean
+htmt(HS.model, sample.cov = HS.cov, htmt2 = FALSE)
+
 }
 \references{
 Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for
@@ -64,8 +75,13 @@ Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for
   modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
   115--135. \doi{10.1007/s11747-014-0403-8}
 
+  Roemer, E., Schuberth, F., & Henseler, J. (2021). HTMT2-An improved
+  criterion for assessing discriminant validity in structural equation
+  modeling. \emph{Industrial Management & Data Systems}.
+  \doi{10.1108/IMDS-02-2021-0082}
+
   Voorhees, C. M., Brady, M. K., Calantone, R., & Ramirez, E. (2016).
-  Discriminant validity testing in marketing: an analysis, causes for
+  Discriminant validity testing in marketing: An analysis, causes for
   concern, and proposed remedies.
   \emph{Journal of the Academy of Marketing Science, 44}(1), 119--134.
   \doi{10.1007/s11747-015-0455-4}

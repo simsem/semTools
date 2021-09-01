@@ -1,8 +1,6 @@
 ### Title: Compute more fit indices
-### Authors: Terrence D. Jorgensen <TJorgensen314@gmail.com>
-###          Sunthud Pornprasertmanit <psunthud@ku.edu>,
-###          Aaron Boulton <aboulton@ku.edu>,
-###          Ruben Arslan <rubenarslan@gmail.com>
+### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
+###          Aaron Boulton, Ruben Arslan
 ### Last updated: 30 July 2021
 ### Description: Calculations for promising alternative fit indices
 
