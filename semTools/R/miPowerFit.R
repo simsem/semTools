@@ -86,27 +86,25 @@
 ##'
 ##' @return A data frame with these variables:
 ##'  \enumerate{
-##'   \item lhs: The left-hand side variable, with respect to the operator in
+##'   \item \code{lhs}: The left-hand side variable, with respect to the operator in
 ##'    in the lavaan \code{\link[lavaan]{model.syntax}}
-##'   \item op: The lavaan syntax operator: "~~" represents covariance,
+##'   \item \code{op}: The lavaan syntax operator: "~~" represents covariance,
 ##'     "=~" represents factor loading, "~" represents regression, and
 ##'     "~1" represents intercept.
-##'   \item rhs: The right-hand side variable
-##'   \item group: The level of the group variable for the parameter in question
-##'   \item mi: The modification index of the fixed parameter
-##'   \item epc: The expected parameter change if the parameter is freely
-##'    estimated
-##'   \item target.epc: The target expected parameter change that represents
-##'    the minimum size of misspecification that one would like to be detected
+##'   \item \code{rhs}: The right-hand side variable
+##'   \item \code{group}: The level of the group variable for the parameter in question
+##'   \item \code{mi}: The modification index of the fixed parameter
+##'   \item \code{epc}: The EPC if the parameter is freely estimated
+##'   \item \code{target.epc}: The target EPC that represents the minimum size
+##'    of misspecification that one would like to be detected
 ##'    by the test with a high power
-##'   \item std.epc: The standardized expected parameter change if the parameter
-##'    is freely estimated
-##'   \item std.target.epc: The standardized target expected parameter change
-##'   \item significant.mi: Represents whether the modification index value is
+##'   \item \code{std.epc}: The standardized EPC if the parameter is freely estimated
+##'   \item \code{std.target.epc}: The standardized target expected parameter change
+##'   \item \code{significant.mi}: Represents whether the modification index value is
 ##'     significant
-##'   \item high.power: Represents whether the power is enough to detect the
+##'   \item \code{high.power}: Represents whether the power is enough to detect the
 ##'    target expected parameter change
-##'   \item decision.pow: The decision whether the parameter is misspecified
+##'   \item \code{decision.pow}: The decision whether the parameter is misspecified
 ##'    or not based on Saris et al's method: \code{"M"} represents the parameter
 ##'    is misspecified, \code{"NM"} represents the parameter is not misspecified,
 ##'    \code{"EPC:M"} represents the parameter is misspecified decided by
@@ -114,17 +112,15 @@
 ##'    the parameter is not misspecified decided by checking the expected
 ##'    parameter change value, and \code{"I"} represents the decision is
 ##'    inconclusive.
-##'   \item se.epc: The standard errors of the expected parameter changes.
-##'   \item lower.epc: The lower bound of the confidence interval of expected
+##'   \item \code{se.epc}: The standard errors of the expected parameter changes.
+##'   \item \code{lower.epc}: The lower bound of the confidence interval of expected
 ##'    parameter changes.
-##'   \item upper.epc: The upper bound of the confidence interval of expected
+##'   \item \code{upper.epc}: The upper bound of the confidence interval of expected
 ##'    parameter changes.
-##'   \item lower.std.epc: The lower bound of the confidence interval of
-##'    standardized expected parameter changes.
-##'   \item upper.std.epc: The upper bound of the confidence interval of
-##'    standardized expected parameter changes.
-##'   \item decision.ci: The decision whether the parameter is misspecified or
-##'    not based on the confidence interval method: \code{"M"} represents the
+##'   \item \code{lower.std.epc}: Lower confidence limit of standardized EPCs
+##'   \item \code{upper.std.epc}: Upper confidence limit of standardized EPCs
+##'   \item \code{decision.ci}: Decision whether the parameter is misspecified
+##'    based on the CI method: \code{"M"} represents the
 ##'    parameter is misspecified, \code{"NM"} represents the parameter is not
 ##'    misspecified, and \code{"I"} represents the decision is inconclusive.
 ##' }
@@ -155,13 +151,11 @@
 ##'
 ##' library(lavaan)
 ##'
-##' HS.model <- ' visual  =~ x1 + x2 + x3
-##'               textual =~ x4 + x5 + x6
-##'               speed   =~ x7 + x8 + x9 '
-##'
+##' HS.model <- ' visual  =~ x1 + x2 + x3 '
 ##' fit <- cfa(HS.model, data = HolzingerSwineford1939,
-##'            group = "sex", meanstructure = TRUE)
-##' miPowerFit(fit)
+##'            group = "sex", group.equal = c("loadings","intercepts"))
+##' miPowerFit(fit, free.remove = FALSE, op = "=~") # loadings
+##' miPowerFit(fit, free.remove = FALSE, op = "~1") # intercepts
 ##'
 ##' model <- '
 ##'   # latent variable definitions
@@ -232,7 +226,7 @@ miPowerFit <- function(lavaanObj, stdLoad = 0.4, cor = 0.1, stdBeta = 0.1,
 	                      "std.epc","std.target.epc","significant.mi",
 	                      "high.power","decision.pow","se.epc","lower.epc",
 	                      "upper.epc","lower.std.epc","upper.std.epc","decision.ci")
-	result <- format(result, scientific = FALSE, digits = 4)
+	class(result) <- c("lavaan.data.frame","data.frame")
 	return(result)
 }
 
