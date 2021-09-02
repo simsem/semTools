@@ -1,5 +1,5 @@
-### Sunthud Pornprasertmanit
-### Last updated: 10 January 2021
+### Sunthud Pornprasertmanit and Terrence D. Jorgensen (added ... argument)
+### Last updated: 2 September 2021
 
 
 ##' Modification indices and their power approach for model fit evaluation
@@ -7,34 +7,44 @@
 ##' The model fit evaluation approach using modification indices and expected
 ##' parameter changes.
 ##'
-##' In the lavaan object, one can inspect the modification indices and expected
-##' parameter changes. Those values can be used to evaluate model fit by two
-##' methods.
+##' To decide whether a parameter should be freed, one can inspect its
+##' modification index (MI) and expected parameter change (EPC).
+##' Those values can be used to evaluate model fit by 2 methods.
 ##'
-##' First, Saris, Satorra, and van der Veld (2009, pp. 570-573) used the power
-##' to detect modification indices and expected parameter changes to evaluate
-##' model fit. First, one should evaluate whether the modification index of each
-##' parameter is significant. Second, one should evaluate whether the power to
-##' detect a target expected parameter change is high enough. If the
-##' modification index is not significant and the power is high, there is no
-##' misspecification. If the modification index is significant and the power is
-##' low, the fixed parameter is misspecified. If the modification index is
-##' significant and the power is high, the expected parameter change is
-##' investigated. If the expected parameter change is large (greater than the
-##' the target expected parameter change), the parameter is misspecified. If the
-##' expected parameter change is low (lower than the target expected parameter
-##' change), the parameter is not misspecificied. If the modification index is
-##' not significant and the power is low, the decision is inconclusive.
+##' Method  1: Saris, Satorra, and van der Veld (2009, pp. 570--573) used
+##' power (probability of detecting a significant MI) and EPC to decide whether
+##' to free a parametr.  First, one should evaluate whether a parameter's MI
+##' is significant. Second, one should evaluate whether the power to detect a
+##' target EPC is high enough.  The combination of criteria leads to the
+##' so-called "JRule" first implemented with LISREL (van der Veld et al., 2008):
 ##'
-##' Second, the confidence intervals of the expected parameter changes are
-##' formed. These confidence intervals are compared with the range of trivial
+##' \itemize{
+##'   \item If the MI is not significant and the power is low,
+##'         the test is inconclusive.
+##'   \item If the MI is not significant and the power is high,
+##'         there is no misspecification.
+##'   \item If the MI is significant and the power is low,
+##'         the fixed parameter is misspecified.
+##'   \item If the MI is significant and the power is high,
+##'         the EPC is investigated.  If the EPC is large (greater than the
+##'         the target EPC), the parameter is misspecified.  If the EPC is low
+##'         (lower than the target EPC), the parameter is not misspecificied.
+##' }
+##'
+##' Method 2:  The confidence interval (CI) of an EPC is calculated.
+##' These CIs are compared with the range of trivial
 ##' misspecification, which could be (-\code{delta}, \code{delta}) or (0,
-##' \code{delta}) for nonnegative parameters. If the confidence intervals are
-##' outside of the range of trivial misspecification, the fixed parameters are
-##' severely misspecified. If the confidence intervals are inside the range of
-##' trivial misspecification, the fixed parameters are trivially misspecified.
-##' If confidence intervals are overlapped the range of trivial
-##' misspecification, the decision is inconclusive.
+##' \code{delta}) for nonnegative parameters.
+##'
+##' \itemize{
+##'   \item If a CI overlaps with the range of trivial misspecification,
+##'         the test is inconclusive.
+##'   \item If a CI completely exceeds the range of trivial misspecification,
+##'         the fixed parameters are severely misspecified.
+##'   \item If a CI is completely within the range of trivial misspecification,
+##'         the fixed parameters are trivially misspecified.
+##' }
+##'
 ##'
 ##' @aliases miPowerFit miPowerFit
 ##' @importFrom lavaan lavInspect
@@ -42,33 +52,38 @@
 ##'
 ##' @param lavaanObj The lavaan model object used to evaluate model fit
 ##' @param stdLoad The amount of standardized factor loading that one would like
-##' to be detected (rejected). The default value is 0.4, which is suggested by
-##' Saris and colleagues (2009, p. 571).
+##'   to be detected (rejected). The default value is 0.4, which is suggested by
+##'   Saris and colleagues (2009, p. 571).
 ##' @param cor The amount of factor or error correlations that one would like to
-##' be detected (rejected). The default value is 0.1, which is suggested by
-##' Saris and colleagues (2009, p. 571).
+##'   be detected (rejected). The default value is 0.1, which is suggested by
+##'   Saris and colleagues (2009, p. 571).
 ##' @param stdBeta The amount of standardized regression coefficients that one
-##' would like to be detected (rejected). The default value is 0.1, which is
-##' suggested by Saris and colleagues (2009, p. 571).
+##'   would like to be detected (rejected). The default value is 0.1, which is
+##'   suggested by Saris and colleagues (2009, p. 571).
 ##' @param intcept The amount of standardized intercept (similar to Cohen's
-##' \emph{d} that one would like to be detected (rejected). The default value is
-##' 0.2, which is equivalent to a low effect size proposed by Cohen (1988,
-##' 1992).
+##'   \emph{d} that one would like to be detected (rejected). The default value
+##'   is 0.2, which is equivalent to a low effect size proposed by Cohen (1988,
+##'   1992).
 ##' @param stdDelta The vector of the standardized parameters that one would
-##' like to be detected (rejected). If this argument is specified, the value
-##' here will overwrite the other arguments above. The order of the vector must
-##' be the same as the row order from modification indices from the
-##' \code{lavaan} object. If a single value is specified, the value will be
-##' applied to all parameters.
+##'   like to be detected (rejected). If this argument is specified, the value
+##'   here will overwrite the other arguments above. The order of the vector
+##'   must be the same as the row order from modification indices from the
+##'   \code{lavaan} object. If a single value is specified, the value will be
+##'   applied to all parameters.
 ##' @param delta The vector of the unstandardized parameters that one would like
-##' to be detected (rejected). If this argument is specified, the value here
-##' will overwrite the other arguments above. The order of the vector must be
-##' the same as the row order from modification indices from the \code{lavaan}
-##' object. If a single value is specified, the value will be applied to all
-##' parameters.
+##'   to be detected (rejected). If this argument is specified, the value here
+##'   will overwrite the other arguments above. The order of the vector must be
+##'   the same as the row order from modification indices from the \code{lavaan}
+##'   object. If a single value is specified, the value will be applied to all
+##'   parameters.
 ##' @param cilevel The confidence level of the confidence interval of expected
-##' parameter changes. The confidence intervals are used in the equivalence
-##' testing.
+##'   parameter changes. The confidence intervals are used in the equivalence
+##'   testing.
+##' @param \dots arguments passed to \code{\link[lavaan]{modificationIndices}},
+##'   except for \code{delta}, which is already an argument (which can be
+##'   substituted for \code{stdDelta} or specific sets of parameters using
+##'   \code{stdLoad}, \code{cor}, \code{stdBeta}, and \code{intcept}).
+##'
 ##' @return A data frame with these variables:
 ##'  \enumerate{
 ##'   \item lhs: The left-hand side variable, with respect to the operator in
@@ -118,9 +133,12 @@
 ##'  \code{inspect(object, "mi")} function.
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
 ##' @seealso \code{\link{moreFitIndices}} For the additional fit indices
 ##' information
-##' @references Cohen, J. (1988). \emph{Statistical power analysis for the
+##'
+##' @references
+##' Cohen, J. (1988). \emph{Statistical power analysis for the
 ##' behavioral sciences} (2nd ed.). Hillsdale, NJ: Erlbaum.
 ##'
 ##' Cohen, J. (1992). A power primer. \emph{Psychological Bulletin, 112}(1),
@@ -129,6 +147,10 @@
 ##' Saris, W. E., Satorra, A., & van der Veld, W. M. (2009). Testing structural
 ##' equation models or detection of misspecifications? \emph{Structural Equation
 ##' Modeling, 16}(4), 561--582. \doi{10.1080/10705510903203433}
+##'
+##' van der Veld, W. M., Saris, W. E., & Satorra, A. (2008).
+##' \emph{JRule 3.0 Users Guide}. \doi{10.13140/RG.2.2.13609.90729}
+##'
 ##' @examples
 ##'
 ##' library(lavaan)
@@ -164,8 +186,8 @@
 ##' @export
 miPowerFit <- function(lavaanObj, stdLoad = 0.4, cor = 0.1, stdBeta = 0.1,
                        intcept = 0.2, stdDelta = NULL, delta = NULL,
-                       cilevel = 0.90) {
-	mi <- lavInspect(lavaanObj, "mi")
+                       cilevel = 0.90, ...) {
+	mi <- lavaan::modificationIndices(lavaanObj, ...)
 	mi <- mi[mi$op != "==",]
 	sigma <- mi[,"epc"] / sqrt(mi[,"mi"])
 	if (is.null(delta)) {

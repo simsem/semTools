@@ -7,6 +7,7 @@
 - `htmt()` gains an argument `htmt2=TRUE` to use the geometric mean (default) rather than the arithmetic mean (which assumes tau-equivalence).
 - `probe2/3WayM/RC()` help pages have a new Reference entry to a tutorial paper written about how to use them.
 - `moreFitIndices()` includes 3 new extended BICs discussed by [Bollen et al. (2014)](https://doi.org/10.1177/0049124112452393) 
+- `miPowerFit()` can now pass further arguments to `lavaan::modificationIndices()` via `...`
 
 ## Bug Fixes:
 
