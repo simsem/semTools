@@ -8,6 +8,8 @@
 - `probe2/3WayM/RC()` help pages have a new Reference entry to a tutorial paper written about how to use them.
 - `moreFitIndices()` includes 3 new extended BICs discussed by [Bollen et al. (2014)](https://doi.org/10.1177/0049124112452393) 
 - `miPowerFit()` can now pass further arguments to `lavaan::modificationIndices()` via `...`
+- Added a `tag=` argument to customize character used to flag preferred models in `summary()` method for `FitDiff` class (i.e., `compareFit()` output).  Set `tag=NA` or `NULL` to omit tags.
+
 
 ## Bug Fixes:
 

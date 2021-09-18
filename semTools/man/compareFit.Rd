@@ -79,7 +79,7 @@ measEqOut <- compareFit(fit.config, fit.metric, fit.scalar, fit.strict,
                         moreIndices = TRUE) # include moreFitIndices()
 summary(measEqOut)
 summary(measEqOut, fit.measures = "all")
-summary(measEqOut, fit.measures = c("aic", "bic", "sic"))
+summary(measEqOut, fit.measures = c("aic", "bic", "sic", "ibic"))
 
 
 \dontrun{

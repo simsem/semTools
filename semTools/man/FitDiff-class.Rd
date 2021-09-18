@@ -9,7 +9,7 @@
 \usage{
 \S4method{show}{FitDiff}(object)
 
-\S4method{summary}{FitDiff}(object, fit.measures = "default", nd = 3)
+\S4method{summary}{FitDiff}(object, fit.measures = "default", nd = 3, tag = "†")
 }
 \arguments{
 \item{object}{object of class \code{FitDiff}}
@@ -21,6 +21,9 @@ fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli",
 measures will be returned.}
 
 \item{nd}{number of digits printed}
+
+\item{tag}{single \code{character} used to flag the model preferred by each
+fit index. To omit tags, set to \code{NULL} or \code{NA}.}
 }
 \description{
 This class contains model fit measures and model fit comparisons among
