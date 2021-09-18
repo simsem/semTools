@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
 ###          Aaron Boulton, Ruben Arslan
-### Last updated: 30 July 2021
+### Last updated: 18 September 2021
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -245,17 +245,32 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
       } else result["spbic"] <- f + junk # Case 2
     }
     if ("hbic" %in% fit.measures) result["hbic"] <- f - nParam*log(2*pi)
-    if ("ibic" %in% fit.measures) {
+
+    ## check determinant of ACOV for IBIC and SIC
+    if (any(c("ibic","sic") %in% fit.measures)) {
       ACOV <- lavInspect(object, "vcov")
-      result["ibic"] <- f - nParam*log(2*pi) - log(det(ACOV))
+      detACOV <- det(ACOV)
+      if (detACOV <= 0) {
+        ## look for duplicate names (simple equality constraints) to
+        ## remove any obviously redundant parameters
+        #TODO: any way to check for redundancies implied by "==" constraints?
+        RN <- unique(rownames(ACOV))
+        if (length(RN) < nrow(ACOV)) detACOV <- det(ACOV[RN, RN])
+      }
+    }
+    if ("ibic" %in% fit.measures) {
+      if (detACOV <= 0) {
+        result["ibic"] <- NA
+        message('Determinant of vcov(object) <= 0, so IBIC cannot be calculated')
+      } else result["ibic"] <- f - nParam*log(2*pi) - log(detACOV)
     }
     if ("sic" %in% fit.measures) {
-      ACOV <- lavInspect(object, "vcov")
-      if (det(ACOV) <= 0) {
+      if (detACOV <= 0) {
         result["sic"] <- NA
         message('Determinant of vcov(object) <= 0, so SIC cannot be calculated')
-      } else result["sic"] <- f - log(det(ACOV))
+      } else result["sic"] <- f - log(detACOV)
     }
+
     if ("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(N)) * nParam
   }
 
