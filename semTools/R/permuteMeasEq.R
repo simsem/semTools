@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 January 2021
+### Last updated: 29 September 2021
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -704,12 +704,11 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' textual =~ x4 + x5 + x6
 ##' speed   =~ x7 + x8 + x9
 ##' '
-##' miout <- measurementInvariance(model = mod.config, data = HS, std.lv = TRUE,
-##'                                group = "ageGroup")
-##'
-##' (fit.config <- miout[["fit.configural"]])
-##' (fit.metric <- miout[["fit.loadings"]])
-##' (fit.scalar <- miout[["fit.intercepts"]])
+##' fit.config <- cfa(mod.config, data = HS, std.lv = TRUE, group = "ageGroup")
+##' fit.metric <- cfa(mod.config, data = HS, std.lv = TRUE, group = "ageGroup",
+##'                   group.equal = "loadings")
+##' fit.scalar <- cfa(mod.config, data = HS, std.lv = TRUE, group = "ageGroup",
+##'                   group.equal = c("loadings","intercepts"))
 ##'
 ##'
 ##' ####################### Permutation Method

@@ -301,12 +301,11 @@ visual  =~ x1 + x2 + x3
 textual =~ x4 + x5 + x6
 speed   =~ x7 + x8 + x9
 '
-miout <- measurementInvariance(model = mod.config, data = HS, std.lv = TRUE,
-                               group = "ageGroup")
-
-(fit.config <- miout[["fit.configural"]])
-(fit.metric <- miout[["fit.loadings"]])
-(fit.scalar <- miout[["fit.intercepts"]])
+fit.config <- cfa(mod.config, data = HS, std.lv = TRUE, group = "ageGroup")
+fit.metric <- cfa(mod.config, data = HS, std.lv = TRUE, group = "ageGroup",
+                  group.equal = "loadings")
+fit.scalar <- cfa(mod.config, data = HS, std.lv = TRUE, group = "ageGroup",
+                  group.equal = c("loadings","intercepts"))
 
 
 ####################### Permutation Method
