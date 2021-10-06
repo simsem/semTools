@@ -41,7 +41,9 @@ vertical axis. The user should indicate the lower and upper values for
 sample size and the sample size between each estimate ("step size") We
 strongly urge the user to read the sources below (see References) before
 proceeding.  A web version of this function is available at:
-\url{http://quantpsy.org/rmsea/rmseaplot.htm}.
+\url{http://quantpsy.org/rmsea/rmseaplot.htm}. This function is also
+implemented in the web application "power4SEM":
+\url{https://sjak.shinyapps.io/power4SEM/}
 }
 \examples{
 
@@ -76,6 +78,11 @@ index. \emph{Structural Equation Modeling, 5}(4), 411--419.
 Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests
 for the number of factors.} Paper presented at the annual meeting of the
 Psychometric Society, Iowa City, IA.
+
+ Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+ (2021). Analytical power calculations for structural equation modeling:
+ A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+ \doi{10.3758/s13428-020-01479-0}
 }
 \seealso{
 \itemize{

@@ -42,6 +42,11 @@ findRMSEAsamplesize(rmsea0 = .05, rmseaA = .08, df = 20, power = 0.80)
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 and determination of sample size for covariance structure modeling.
 \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
+
+ Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+ (2021). Analytical power calculations for structural equation modeling:
+ A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+ \doi{10.3758/s13428-020-01479-0}
 }
 \seealso{
 \itemize{

@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Alexander M. Schoemann, Kristopher J. Preacher, Donna Coffman
-### Last updated: 3 March 2021
+### Last updated: 6 October 2021
 
 
 ##' Plot power curves for RMSEA
@@ -12,7 +12,9 @@
 ##' sample size and the sample size between each estimate ("step size") We
 ##' strongly urge the user to read the sources below (see References) before
 ##' proceeding.  A web version of this function is available at:
-##' \url{http://quantpsy.org/rmsea/rmseaplot.htm}.
+##' \url{http://quantpsy.org/rmsea/rmseaplot.htm}. This function is also
+##' implemented in the web application "power4SEM":
+##' \url{https://sjak.shinyapps.io/power4SEM/}
 ##'
 ##'
 ##' @importFrom stats qchisq pchisq
@@ -28,7 +30,9 @@
 ##' @param alpha Alpha level used in power calculations
 ##' @param group The number of group that is used to calculate RMSEA.
 ##' @param \dots The additional arguments for the plot function.
+##'
 ##' @return Plot of power for RMSEA against a range of sample sizes
+##'
 ##' @author
 ##' Alexander M. Schoemann (East Carolina University; \email{schoemanna@@ecu.edu})
 ##'
@@ -43,6 +47,7 @@
 ##' \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
 ##'   a given statistical power based on population RMSEA
 ##' }
+##'
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 ##' differences between nested covariance structure models: Power analysis and
@@ -70,6 +75,12 @@
 ##' Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests
 ##' for the number of factors.} Paper presented at the annual meeting of the
 ##' Psychometric Society, Iowa City, IA.
+##'
+##'  Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+##'  (2021). Analytical power calculations for structural equation modeling:
+##'  A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+##'  \doi{10.3758/s13428-020-01479-0}
+##'
 ##' @examples
 ##'
 ##' plotRMSEApower(rmsea0 = .025, rmseaA = .075, df = 23,
@@ -132,7 +143,9 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 ##' @param rmseaScale If \code{TRUE}, the RMSEA scale is used in the x-axis. If
 ##' \code{FALSE}, the chi-square scale is used in the x-axis.
 ##' @param group The number of group that is used to calculate RMSEA.
+##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
 ##' @seealso \itemize{
 ##'  \item \code{\link{plotRMSEApower}} to plot the statistical power
 ##'    based on population RMSEA given the sample size
@@ -141,6 +154,7 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 ##'  \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
 ##'   a given statistical power based on population RMSEA
 ##' }
+##'
 ##' @references
 ##' Dudgeon, P. (2004). A note on extending Steiger's (1998)
 ##' multiple sample RMSEA adjustment to other noncentrality parameter-based
@@ -154,6 +168,7 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 ##' Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit
 ##' index. \emph{Structural Equation Modeling, 5}(4), 411--419.
 ##' \doi{10.1080/10705519809540115}
+##'
 ##' @examples
 ##'
 ##' plotRMSEAdist(c(.05, .08), n = 200, df = 20, ptile = .95, rmseaScale = TRUE)
@@ -217,7 +232,9 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 ##' @param n Sample size of a dataset
 ##' @param alpha Alpha level used in power calculations
 ##' @param group The number of group that is used to calculate RMSEA.
+##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
 ##' @seealso \itemize{
 ##'  \item \code{\link{plotRMSEApower}} to plot the statistical power based on
 ##'   population RMSEA given the sample size
@@ -225,15 +242,16 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 ##'  \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
 ##'   a given statistical power based on population RMSEA
 ##' }
+##'
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 ##' and determination of sample size for covariance structure modeling.
 ##' \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
 ##'
-##' Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
-##' (in press). Analytical power calculations for structural equation modeling:
-##' A tutorial and Shiny app. \emph{Behavior Research Methods}.
-##' https://doi.org/10.3758/s13428-020-01479-0
+##'  Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+##'  (2021). Analytical power calculations for structural equation modeling:
+##'  A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+##'  \doi{10.3758/s13428-020-01479-0}
 ##'
 ##' @examples
 ##'
@@ -275,7 +293,9 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 ##' close fit) or retain good model (test of not-close fit)
 ##' @param alpha Alpha level used in power calculations
 ##' @param group The number of group that is used to calculate RMSEA.
+##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
 ##' @seealso \itemize{
 ##'  \item \code{\link{plotRMSEApower}} to plot the statistical power based on
 ##'   population RMSEA given the sample size
@@ -283,10 +303,16 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 ##'  \item \code{\link{findRMSEApower}} to find the statistical power based on
 ##'   population RMSEA given a sample size
 ##' }
+##'
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 ##' and determination of sample size for covariance structure modeling.
 ##' \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
+##'
+##'  Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+##'  (2021). Analytical power calculations for structural equation modeling:
+##'  A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+##'  \doi{10.3758/s13428-020-01479-0}
 ##'
 ##' @examples
 ##'
