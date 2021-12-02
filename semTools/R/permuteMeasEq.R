@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 29 September 2021
+### Last updated: 2 December 2021
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -958,7 +958,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
     close(mypb)
   } else if (parallelType == "multicore") {
     if (length(iseed)) set.seed(iseed)
-    argList$FUN <- paste("permuteOnce", modelType, sep = ".")
+    argList$FUN <- as.name(paste("permuteOnce", modelType, sep = "."))
     argList$X <- 1:nPermute
     argList$mc.cores <- ncpus
     argList$mc.set.seed <- TRUE
