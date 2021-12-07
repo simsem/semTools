@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 2 May 2021
+### Last updated: 7 December 2021
 
 
 ## -------------
@@ -22,8 +22,14 @@
 ##' item \emph{i} observed variances, \eqn{\sigma_{ij}} is the observed
 ##' covariance of items \emph{i} and \emph{j}.
 ##'
-##' The coefficient omega (Bollen, 1980; see also Raykov, 2001) can be
-##' calculated by
+##' Several coefficients for factor-analysis reliability have been termed
+##' "omega", which Cho (2021) argues is a misleading misnomer and argues for
+##' using \eqn{\rho} to represent them all, differentiated by descriptive
+##' subscripts.  In our package, we number \eqn{\omega} based on commonly
+##' applied calculations.  Bentler (1968) first introduced factor-analysis
+##' reliability for a unidimensional factor model with congeneric indicators.
+##' However, assuming there are no cross-loadings in a multidimensional CFA,
+##' this reliability coefficient can be calculated for each factor in the model.
 ##'
 ##' \deqn{ \omega_1 =\frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
 ##' Var\left( \psi \right)}{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
@@ -33,33 +39,38 @@
 ##' where \eqn{\lambda_i} is the factor loading of item \emph{i}, \eqn{\psi} is
 ##' the factor variance, \eqn{\theta_{ii}} is the variance of measurement errors
 ##' of item \emph{i}, and \eqn{\theta_{ij}} is the covariance of measurement
-##' errors from item \emph{i} and \emph{j}.
+##' errors from item \emph{i} and \emph{j}. McDonald (1999) later referred to
+##' this \emph{and other reliability coefficients} as "omega", which is a source
+##' of confusion when reporting coefficients (Cho, 2021).
 ##'
-##' The second coefficient omega (Bentler, 1972, 2009) can be calculated by
+##' The additional coefficients generalize the first formula by accounting for
+##' multidimenisionality (possibly with cross-loadings) and correlated errors.
+##' By setting \code{return.total=TRUE}, one can estimate reliability for a
+##' single composite calculated using all indicators in the multidimensional
+##' CFA (Bentler, 1972, 2009).  \code{"omega2"} is calculated by
 ##'
 ##' \deqn{ \omega_2 = \frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
 ##' Var\left( \psi \right)}{\bold{1}^\prime \hat{\Sigma} \bold{1}}, }
 ##'
 ##' where \eqn{\hat{\Sigma}} is the model-implied covariance matrix, and
 ##' \eqn{\bold{1}} is the \eqn{k}-dimensional vector of 1. The first and the
-##' second coefficients omega will have the same value when the model has simple
-##' structure, but different values when there are (for example) cross-loadings
+##' second coefficients omega will have the same value per factor in models with
+##' simple structure, but they differ when there are (e.g.) cross-loadings
 ##' or method factors. The first coefficient omega can be viewed as the
 ##' reliability controlling for the other factors (like \eqn{\eta^2_{partial}} in
 ##' ANOVA). The second coefficient omega can be viewed as the unconditional
 ##' reliability (like \eqn{\eta^2} in ANOVA).
 ##'
-##' The third coefficient omega (McDonald, 1999), which is sometimes referred to
+##' The \code{"omega3"} coefficient (McDonald, 1999), sometimes referred to as
 ##' hierarchical omega, can be calculated by
 ##'
 ##' \deqn{ \omega_3 =\frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
 ##' Var\left( \psi \right)}{\bold{1}^\prime \Sigma \bold{1}}, }
 ##'
 ##' where \eqn{\Sigma} is the observed covariance matrix. If the model fits the
-##' data well, the third coefficient omega will be similar to the
-##' \eqn{\omega_2}. Note that if there is a directional effect in the model, all
-##' coefficients omega will use the total factor variances, which is calculated
-##' by \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
+##' data well, \eqn{\omega_3} will be similar to \eqn{\omega_2}. Note that if
+##' there is a directional effect in the model, all coefficients are calcualted
+##' from total factor variances: \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
 ##'
 ##' In conclusion, \eqn{\omega_1}, \eqn{\omega_2}, and \eqn{\omega_3} are
 ##' different in the denominator. The denominator of the first formula assumes
@@ -166,10 +177,6 @@
 ##' of weighted composite
 ##'
 ##' @references
-##' Bollen, K. A. (1980). Issues in the comparative measurement of
-##' political democracy. \emph{American Sociological Review, 45}(3), 370--390.
-##' \doi{10.2307/2095172}
-##'
 ##' Bentler, P. M. (1972). A lower-bound method for the dimension-free
 ##' measurement of internal consistency. \emph{Social Science Research, 1}(4),
 ##' 343--357. \doi{10.1016/0049-089X(72)90082-8}
@@ -181,6 +188,10 @@
 ##' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of
 ##' ordinal alpha. \emph{Educational and Psychological Measurement, 78}(6),
 ##' 1056--1071. \doi{10.1177/0013164417727036}
+##'
+##' Cho, E. (2021) Neither Cronbach’s alpha nor McDonald’s omega: A commentary
+##' on Sijtsma and Pfadt. *Psychometrika, 86*(4), 877--886.
+##' \doi{10.1007/s11336-021-09801-1}
 ##'
 ##' Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
 ##' tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
