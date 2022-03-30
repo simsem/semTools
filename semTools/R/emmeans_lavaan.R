@@ -130,8 +130,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   # re-shape to deal with any missing estimates
   temp_bhat <- rep(0, length = length(emmb$bhat))
   temp_bhat[seq_len(nrow(pars))] <- pars$est
-  names(temp_bhat) <- c(par_names,
-                        colnames(emmb$V)[!colnames(emmb$V) %in% par_names])
+  names(temp_bhat) <- .emlab_find_term_names(par_names, colnames(emmb$V))
 
   # re-order
   b_ind <- match(colnames(emmb$V), names(temp_bhat))
@@ -168,8 +167,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   temp_vcov <- matrix(0, nrow = nrow(emmb$V), ncol = ncol(emmb$V))
   temp_vcov[seq_len(ncol(lavVCOV)), seq_len(ncol(lavVCOV))] <- lavVCOV
   colnames(temp_vcov) <-
-    rownames(temp_vcov) <- c(par_names,
-                             colnames(emmb$V)[!colnames(emmb$V) %in% par_names])
+    rownames(temp_vcov) <- .emlab_find_term_names(par_names, colnames(emmb$V))
 
   # re-order
   v_ind <- match(colnames(emmb$V), colnames(temp_vcov))
@@ -319,6 +317,28 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
   return(pars[, colnames(pars) %in% c("lhs", "op", "rhs", "label", "est")])
 }
+
+##' @keywords internal
+.emlab_find_term_names <- function(terms, candidates) {
+  terms_split <- strsplit(terms, split = ":")
+  candidates_split <- strsplit(candidates, split = ":")
+
+  is_in <- matrix(NA,
+                  nrow = length(terms_split),
+                  ncol = length(candidates_split))
+  for (i in seq_along(terms_split)) {
+    for (j in seq_along(candidates_split)) {
+      is_in[i,j] <-
+        all(candidates_split[[j]] %in% terms_split[[i]]) &&
+        all(terms_split[[i]] %in% candidates_split[[j]])
+    }
+  }
+  if (length(terms) > 1L) is_in <- apply(is_in, 2, any)
+  c(terms, if (any(!is_in)) candidates[!is_in])
+}
+
+# Test --------------------------------------------------------------------
+
 
 ##' @keywords internal test
 .emlav_run_tests <- function() {
