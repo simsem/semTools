@@ -54,7 +54,11 @@
 ##'
 ##' \subsection{Dealing with Missing Data}{
 ##' Limited testing suggests that these functions do work when the model was fit
-##' to incomplete data.
+##' to incomplete data. However, when FIML is used, the default method for
+##' \code{\link[emmeans:ref_grid]{cov.reduce}} might fail; We recommend that
+##' users explicitly set either the \code{at = } argument or the
+##' \code{cov.reduce = } argument with a function (or functions) that properly
+##' deal with missing data.
 ##' }
 ##'
 ##' \subsection{Dealing with Factors}{
@@ -100,6 +104,16 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
 
   # Fill attributes (but keep lavaan_data in case of missing data)
   mostattributes(lavaan_data) <- attributes(recovered)
+
+  if (anyNA(lavaan_data)) {
+    warning(
+      "Data used for modeling contains missing values.",
+      "\n  Concider setting the `at = ` argument explicitly" ,
+      "\n  or pass a function(s) that deals with missing values to",
+      "\n  the `cov.reduce = ` argument. ", call. = FALSE
+    )
+  }
+
   return(lavaan_data)
 }
 
@@ -522,6 +536,21 @@ grade ~ ageyr
                           group = "school")
     rg <- suppressWarnings(emmeans::ref_grid(semFit, lavaan.DV = c("LAT3", "grade")))
     testthat::expect_s4_class(rg, "emmGrid")
+  })
+
+  testthat::test_that("missing data - warn", {
+    data("mtcars")
+    mtcars$hp[1] <- NA
+
+    model <- "
+  mpg ~ hp + drat + hp:drat
+"
+
+    fit <- sem(model, mtcars, missing = "fiml.x")
+
+    testthat::expect_warning(
+      emmeans::ref_grid(fit, lavaan.DV = "mpg")
+    )
   })
 
   message("All good!")
