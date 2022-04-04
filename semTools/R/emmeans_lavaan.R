@@ -108,7 +108,7 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
   if (anyNA(lavaan_data)) {
     warning(
       "Data used for modeling contains missing values.",
-      "\n  Concider setting the `at = ` argument explicitly" ,
+      "\n  Consider setting the `at = ` argument explicitly" ,
       "\n  or pass a function(s) that deals with missing values to",
       "\n  the `cov.reduce = ` argument. ", call. = FALSE
     )
