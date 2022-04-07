@@ -165,7 +165,7 @@ semTools::runMI()
   - ask Yves to pass standardized= argument from vcov(...) to lavaan's
     internal hidden function that returns SEs in standardizedSolution()
   - https://groups.google.com/d/msg/lavaan/OfaPfUYqVVI/MWvL4TZkDAAJ
-
+- add new "D4" LRT
 
 semTools::plausibleValues()
 - add latent item-responses (LRESPONSES in Mplus) when available in blavaan
@@ -187,9 +187,10 @@ New function to implement Chung & Cai's approach for DWLS
 Interactions suite
 ==================
 
-semTools::plotProbe Rework code to create figures in ggplot for greater customizability
+semTools::plotProbe
+- Rework code to create figures in ggplot for greater customizability
+- New function (or option in plotProbe) to create a J-N plot?
 
-New function (or option in plotProbe) to create a J-N plot
 
 ======================
 Miscellaneous semTools

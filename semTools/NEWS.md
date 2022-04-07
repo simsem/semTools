@@ -13,6 +13,8 @@
 
 ## Bug Fixes:
 
+- `probe2/3WayM/RC()`: When the moderator was listed first in `nameX=` **and** some (not all) slopes were labeled in the user's model syntax, an error was caused by creating incorrect labels: https://github.com/simsem/semTools/issues/103
+
 
 # semTools 0.5-5 (on CRAN 8 July 2021)
 

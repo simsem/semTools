@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 30 July 2021
+### Last updated: 7 April 2022
 
 
 
@@ -343,9 +343,9 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
 	  targetcol <- PT$label[newRows]
 	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste0(nameY, "~", nameX[i],
-	                           ifelse(nG > 1L && group.number > 1L, no = "",
-	                                  yes = paste0(".g", group.number)))
+      targetcol[i] <- paste0(nameY, "~", PT$rhs[ newRows[i] ],
+                             ifelse(nG > 1L && group.number > 1L, no = "",
+                                    yes = paste0(".g", group.number)))
 	  }
 
 		# Transform it to non-centering SE
@@ -750,7 +750,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
 	  targetcol <- PT$label[newRows]
 	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste0(nameY, "~", nameX[i],
+	    targetcol[i] <- paste0(nameY, "~", PT$rhs[ newRows[i] ],
 	                           ifelse(nG > 1L && group.number > 1L, no = "",
 	                                  yes = paste0(".g", group.number)))
 	  }
@@ -1138,7 +1138,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
 	  targetcol <- PT$label[newRows]
 	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste0(nameY, "~", nameX[i],
+	    targetcol[i] <- paste0(nameY, "~", PT$rhs[ newRows[i] ],
 	                           ifelse(nG > 1L && group.number > 1L, no = "",
 	                                  yes = paste0(".g", group.number)))
 	  }
@@ -1605,7 +1605,7 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
 	  targetcol <- PT$label[newRows]
 	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste0(nameY, "~", nameX[i],
+	    targetcol[i] <- paste0(nameY, "~", PT$rhs[ newRows[i] ],
 	                           ifelse(nG > 1L && group.number > 1L, no = "",
 	                                  yes = paste0(".g", group.number)))
 	  }
