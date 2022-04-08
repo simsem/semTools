@@ -1,5 +1,237 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 7 December 2021
+### Last updated: 7 April 2022
+
+
+
+## -----
+## ave()
+## -----
+
+##' Calculate average variance extracted
+##'
+##' Calculate average variance extracted (AVE) per factor from `lavaan` object
+##'
+##' The average variance extracted (AVE) can be calculated by
+##'
+##' \deqn{ AVE = \frac{\bold{1}^\prime
+##' \textrm{diag}\left(\Lambda\Psi\Lambda^\prime\right)\bold{1}}{\bold{1}^\prime
+##' \textrm{diag}\left(\hat{\Sigma}\right) \bold{1}}, }
+##'
+##' Note that this formula is modified from Fornell & Larcker (1981) in the case
+##' that factor variances are not 1. The proposed formula from Fornell & Larcker
+##' (1981) assumes that the factor variances are 1. Note that AVE will not be
+##' provided for factors consisting of items with dual loadings. AVE is the
+##' property of items but not the property of factors. AVE is calculated with
+##' polychoric correlations when ordinal indicators are used.
+##'
+##' @importFrom lavaan lavInspect lavNames
+##' @importFrom methods getMethod
+##'
+##' @param object A \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
+##'   exogenous common factors (i.e., a CFA model). Cross-loadings are not
+##'   allowed and will result in \code{NA} for any factor with indicator(s)
+##'   that cross-load.
+##' @param obs.var \code{logical} indicating whether to compute AVE using
+##'   observed variances in the denominator. Setting \code{FALSE} triggers
+##'   using model-implied variances in the denominator.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'   imputations from pooled results.  Can include any of
+##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   default setting, which excludes any imputations that did not
+##'   converge or for which standard errors could not be computed.  The
+##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   yielded a nonpositive definite covariance matrix for observed or
+##'   latent variables, which would include any "improper solutions" such
+##'   as Heywood cases.  NPD solutions are not excluded by default because
+##'   they are likely to occur due to sampling error, especially in small
+##'   samples.  However, gross model misspecification could also cause
+##'   NPD solutions, users can compare pooled results with and without
+##'   this setting as a sensitivity analysis to see whether some
+##'   imputations warrant further investigation.
+##' @param omit.factors \code{character} vector naming any common factors
+##'   modeled in \code{object} whose indicators' AVE is not of interest.
+##' @param dropSingle \code{logical} indicating whether to exclude factors
+##'   defined by a single indicator from the returned results. If \code{TRUE}
+##'   (default), single indicators will still be included in the \code{total}
+##'   column when \code{return.total = TRUE}.
+##'
+##' @return Average variance extracted from indicators per factor in each
+##'   "block" (any combination of groups and levels).
+##'
+##' @author
+##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##' @references
+##' Fornell, C., & Larcker, D. F. (1981). Evaluating structural equation models
+##' with unobservable variables and measurement errors. \emph{Journal of
+##' Marketing Research, 18}(1), 39--50. \doi{10.2307/3151312}
+##'
+##' @seealso
+##'
+##' @examples
+##' data(HolzingerSwineford1939)
+##' HS9 <- HolzingerSwineford1939[ , c("x7","x8","x9")]
+##' HSbinary <- as.data.frame( lapply(HS9, cut, 2, labels=FALSE) )
+##' names(HSbinary) <- c("y7","y8","y9")
+##' HS <- cbind(HolzingerSwineford1939, HSbinary)
+##'
+##' HS.model <- ' visual  =~ x1 + x2 + x3
+##'               textual =~ x4 + x5 + x6
+##'               speed   =~ y7 + y8 + y9 '
+##'
+##' fit <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
+##'
+##' ## works for factors with exclusively continuous OR categorical indicators
+##' ave(fit) # uses observed (or unconstrained polychoric/polyserial) by default
+##' ave(fit, obs.var = FALSE)
+##'
+##'
+##' ## works for multigroup models and for multilevel models (and both)
+##' data(Demo.twolevel)
+##' ## assign clusters to arbitrary groups
+##' Demo.twolevel$g <- ifelse(Demo.twolevel$cluster %% 2L, "type1", "type2")
+##' model2 <- ' group: type1
+##'   level: within
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'   level: between
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'
+##' group: type2
+##'   level: within
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'   level: between
+##'     fac =~ y1 + L2*y2 + L3*y3
+##' '
+##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
+##' ave(fit2)
+##'
+##'@export
+ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
+                omit.factors = character(0), dropSingle = TRUE) {
+  ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
+  nlevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nlevels #FIXME: always true?
+  group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
+  #FIXME? lavInspect(object, "level.labels")
+  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  if (nblocks > 1L) {
+    block.label <- paste(rep(group.label, each = nlevels), clus.label,
+                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+  }
+
+  ## check for categorical
+  anyCategorical <- lavInspect(object, "categorical")
+
+  if (inherits(object, "lavaan")) {
+    ## common-factor variance
+    PHI <- lavInspect(object, "cov.lv")
+    if (nblocks == 1L) PHI <- list(PHI)
+
+    ## total variance
+    SIGMA <- lavInspect(object, ifelse(obs.var, "sampstat", "fitted"))
+    if (nblocks > 1L) {
+      SIGMA <- sapply(SIGMA, "[[", i = "cov", simplify = FALSE)
+    } else SIGMA <- list(SIGMA$cov)
+
+  } else if (inherits(object, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(object@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+    ## common-factor variance
+    phiList <- object@phiList[useImps]
+    if (nblocks == 1L) for (i in 1:m) phiList[[i]] <- list(phiList[[i]])
+    PHI <- list()
+    for (b in 1:nblocks) {
+      PHI[[ block.label[b] ]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
+    }
+
+    ## total variance
+    if (obs.var) {
+      SIGMA <- vector("list", nblocks)
+      ## loop over blocks to pool saturated-model (observed) matrices
+      for (b in 1:nblocks) {
+        covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
+        SIGMA[[ block.label[b] ]] <- Reduce("+", covList) / m
+      }
+    } else {
+      ## pooled model-implied matrices
+      if (nblocks == 1L) {
+        SIGMA <- getMethod("fitted", class(object))(object)["cov"] # retain list format
+      } else {
+        SIGMA <- sapply(getMethod("fitted", class(object))(object),
+                        "[[", "cov", simplify = FALSE)
+      }
+    }
+
+  } # end lavaan vs. lavaan.mi conditional
+
+  ## scale polychoric/polyserial to modeled LRV scale
+  if (anyCategorical) {
+    SDs <- sapply(getScales(object, omit.imps = omit.imps),
+                  FUN = function(x) diag(1 / as.numeric(x)),
+                  simplify = FALSE)
+
+    for (b in 1:nblocks) {
+      dimnames(SDs[[b]]) <- dimnames(SIGMA[[b]])
+      SIGMA[[b]] <- SDs[[b]] %*% SIGMA[[b]] %*% SDs[[b]]
+    }
+  }
+
+  ## extract factor and indicator names
+  EST <- lavInspect(object, "est")
+  if (nblocks == 1L) EST <- list(EST)
+
+  avevar <- list()
+  for (b in 1:nblocks) {
+    LY <- EST[[b]]$lambda
+    allIndNames <- rownames(LY)
+    allFacNames <- colnames(LY)
+    myFacNames <- setdiff(allFacNames, omit.factors)
+    if (dropSingle) {
+      multInd <- sapply(myFacNames, function(fn) sum(LY[,fn] != 0) > 1L)
+      myFacNames <- myFacNames[multInd]
+    }
+    subLY <- LY[ , myFacNames, drop = FALSE]
+    myIndNames <- rownames(subLY)[apply(subLY, 1L, function(x) any(x != 0))]
+
+    ## check for cross-loadings
+    Xload <- apply(subLY, 1L, function(x) sum(round(x, 5) != 0) > 1L)
+
+    avevar[[b]] <- setNames(rep(NA, length(myFacNames)), nm = myFacNames)
+
+    ## loop over factors
+    for (fn in myFacNames) {
+      idx <- which(subLY[,fn] != 0)
+      if (any(Xload[idx])) next # cross-loading violates AVE definition
+      commonVar <- sum(subLY[idx, fn]^2) * PHI[[b]][fn, fn]
+      avevar[[b]][fn] <- commonVar / sum(diag(SIGMA[[b]])[ myIndNames[idx] ])
+    }
+
+  }
+
+  ## drop list structure?
+  if (nblocks == 1L) {
+    avevar <- avevar[[1]]
+  } else names(avevar) <- block.label
+
+  avevar
+}
+
+
+## ------------
+## compRelSEM()
+## ------------
+
 
 
 ## -------------

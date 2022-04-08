@@ -3,6 +3,7 @@
 export(PAVranking)
 export(SSpower)
 export(auxiliary)
+export(ave)
 export(bsBootMiss)
 export(calculate.D2)
 export(cfa.2stage)
