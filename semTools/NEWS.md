@@ -2,6 +2,8 @@
 
 ## New Features:
 
+- Average variance extracted now has a dedicated `ave()` function. 
+- A new `compRelSEM()` function provides more comprehensive options for estimating composite reliability coefficients (various alphas and omegas) than the `reliability()` function.  `compRelSEM()` also implements [Lai's (2021)](http://dx.doi.org/10.1037/met0000287) recently proposed composite-reliability coefficients for different types of multilevel constructs.
 - `monteCarloMed()` now works for `lavaan.mi` objects, which is much easier than combining multiple imputation with bootstrapping.
 - `monteCarloMed()` now optionally returns CIs for the standardized solution, only for `lavaan` objects (not `lavaan.mi`).
 - `htmt()` gains an argument `htmt2=TRUE` to use the geometric mean (default) rather than the arithmetic mean (which assumes tau-equivalence).

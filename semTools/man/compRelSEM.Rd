@@ -57,7 +57,7 @@ listed in \code{omit.indicators}) of factors not listed in
 \code{omit.factors}.  Ignored in 1-factor models, and should only be set
 \code{TRUE} if all factors represent scale dimensions that could be
 meaningfully collapsed to a single composite (scale sum or scale mean).
-Setting a negative value (e.g., \code{-1} returns **only** the
+Setting a negative value (e.g., \code{-1} returns \bold{only} the
 total-composite reliability (excluding coefficients per factor), except
 when requesting Lai's (2021) coefficients for multilevel \code{config}ural
 or \code{shared=} constructs.}
@@ -100,7 +100,7 @@ A \code{numeric} vector of composite reliability coefficients per
   indicators combine into a single composite, users can request
   \code{return.total=TRUE} to add a column including a reliability
   coefficient for the total composite, or.\code{return.total = -1} to
-  return **only** the total-composite reliability.
+  return \bold{only} the total-composite reliability.
 }
 \description{
 Calculate composite reliability from estimated factor-model parameters
@@ -131,7 +131,7 @@ default) or from the hypothesized CFA model, controlled by the
 \code{obs.var} argument. A \eqn{k}-dimensional vector \eqn{\bold{1}} is used
 to sum elements in the matrix. Note that if the model includes any directed
 effects (latent regression slopes), all coefficients are calculated
-from **total** factor variances:
+from \bold{total} factor variances:
 \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
 
 Assuming (essential) tau-equivalence (\code{tau.eq=TRUE}) makes \eqn{\omega}
@@ -151,9 +151,9 @@ the observed or model-implied covariance matrix.
 By setting \code{return.total=TRUE}, one can estimate reliability for a
 single composite calculated using all indicators in a multidimensional
 CFA (Bentler, 1972, 2009). Setting \code{return.total = -1} will return
-**only** the total-composite reliability (not per factor).
+\bold{only} the total-composite reliability (not per factor).
 
-**Categorical Indicators**:
+\bold{Categorical Indicators}:
 When all indicators (per composite) are ordinal, the \code{ord.scale}
 argument controls whether the coefficient is calculated on the
 latent-response scale (\code{FALSE}) or on the observed ordinal scale
@@ -179,7 +179,7 @@ be calculated separately for those factors, but \code{return.total} must be
 \code{FALSE} (unless \code{omit.factors} is used to isolate factors with
 indicators of the same type).
 
-**Multilevel Measurement Models**:
+\bold{Multilevel Measurement Models}:
 Under the default settings, \code{compRelSEM()} will apply the same formula
 in each "block" (group and/or level of analysis). In the case of multilevel
 SEMs, this yields "reliability" for latent within- and between-level
@@ -195,6 +195,7 @@ that overall scale-reliability can be estimated for a shared construct by
 including it in \code{config}.  Instead of organizing the output by block
 (the default), specifying \code{config=} and/or \code{shared=} will prompt
 organizing the output by \code{$config} and/or \code{$shared}.
+
 \itemize{
   \item The overall (\code{_2L}) scale reliability for \code{config}ural
   constructs is returned, along with the reliability of a purely
@@ -212,6 +213,16 @@ organizing the output by \code{$config} and/or \code{$shared}.
   modeled at both levels (as recommended by Jak et al., 2021) rather than
   saturating the within-level model (Lai, 2021).
 }
+
+Be careful about including Level-2 variables in the model, especially
+whether it makes sense to include them in a total composite for a Level-2
+construct.  \code{dropSingle=TRUE} only prevents estimating reliability for
+a single-indicator construct, not from including such an indicator in a
+total composite.  When specifying \code{shared=} constructs, it does not
+make sense to include any Level-2 variables.  If it is necessary to model
+them (e.g., to justify the missing-at-random assumption when using
+\code{missing = "FIML" estimation}), they should be placed in the
+\code{omit.indicators=} argument to exclude them from total composites.
 }
 \examples{
 
@@ -271,7 +282,7 @@ compRelSEM(fit2)
 }
 \references{
 Bentler, P. M. (1968). Alpha-maximized factor analysis (alphamax): Its
-relation to alpha and canonical factor analysis. *Psychometrika, 33*(3),
+relation to alpha and canonical factor analysis. \emph{Psychometrika, 33}(3),
 335--345. \doi{10.1007/BF02289328}
 
 Bentler, P. M. (1972). A lower-bound method for the dimension-free
@@ -287,7 +298,7 @@ ordinal alpha. \emph{Educational and Psychological Measurement, 78}(6),
 1056--1071. \doi{10.1177/0013164417727036}
 
 Cho, E. (2021) Neither Cronbach’s alpha nor McDonald’s omega: A commentary
-on Sijtsma and Pfadt. *Psychometrika, 86*(4), 877--886.
+on Sijtsma and Pfadt. \emph{Psychometrika, 86}(4), 877--886.
 \doi{10.1007/s11336-021-09801-1}
 
 Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
@@ -295,24 +306,24 @@ tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
 
 Geldhof, G. J., Preacher, K. J., & Zyphur, M. J. (2014). Reliability
 estimation in a multilevel confirmatory factor analysis framework.
-*Psychological Methods, 19*(1), 72--91. \doi{10.1037/a0032138}
+\emph{Psychological Methods, 19}(1), 72--91. \doi{10.1037/a0032138}
 
 Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using
 structural equation modeling: An alternative to coefficient alpha.
 \emph{Psychometrika, 74}(1), 155--167. \doi{10.1007/s11336-008-9099-3}
 
 Jak, S., Jorgensen, T. D., & Rosseel, Y. (2021). Evaluating cluster-level
-factor models with `lavaan` and M*plus*. *Psych, 3*(2), 134-152.
-\doi{10.3390/psych3020012}
+factor models with \code{lavaan} and M\emph{plus}. \emph{Psych, 3}(2),
+134--152. \doi{10.3390/psych3020012}
 
 Lai, M. H. C. (2021). Composite reliability of multilevel data: It’s about
-observed scores and construct meanings. *Psychological Methods, 26*(1),
+observed scores and construct meanings. \emph{Psychological Methods, 26}(1),
 90--102. \doi{10.1037/met0000287}
 
 Lüdtke, O., Marsh, H. W., Robitzsch, A., & Trautwein, U. (2011).
 A 2 \eqn{\times} 2 taxonomy of multilevel latent contextual models:
 Accuracy--bias trade-offs in full and partial error correction models.
-*Psychological Methods, 16*(4), 444--467. \doi{10.1037/a0024376}
+\emph{Psychological Methods, 16}(4), 444--467. \doi{10.1037/a0024376}
 
 McDonald, R. P. (1999). \emph{Test theory: A unified treatment}. Mahwah, NJ:
 Erlbaum.
