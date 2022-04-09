@@ -110,14 +110,14 @@
 ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
                 omit.factors = character(0), dropSingle = TRUE) {
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
-  nlevels <- lavInspect(object, "nlevels")
-  nblocks <- ngroups*nlevels #FIXME: always true?
+  nLevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nLevels #FIXME: always true?
   group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
   #FIXME? lavInspect(object, "level.labels")
-  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  clus.label <- if (nLevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
   if (nblocks > 1L) {
-    block.label <- paste(rep(group.label, each = nlevels), clus.label,
-                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+    block.label <- paste(rep(group.label, each = nLevels), clus.label,
+                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
   }
 
   ## check for categorical
@@ -489,15 +489,15 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
                        omit.indicators = character(0),
                        omit.imps = c("no.conv","no.se")) {
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
-  nlevels <- lavInspect(object, "nlevels")
-  nblocks <- ngroups*nlevels #FIXME: always true?
+  nLevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nLevels #FIXME: always true?
   return.total <- rep(return.total, nblocks)
   group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
   #FIXME? lavInspect(object, "level.labels")
-  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  clus.label <- if (nLevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
   if (nblocks > 1L) {
-    block.label <- paste(rep(group.label, each = nlevels), clus.label,
-                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+    block.label <- paste(rep(group.label, each = nLevels), clus.label,
+                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
   }
 
   ## check for categorical
@@ -794,6 +794,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
   #TODO: add arguments
   #     - config = character(0) for _2L
   #     - shared = character(0) for _B & IRR
+  if (nLevels)
+
   rel
 }
 
@@ -1077,15 +1079,15 @@ reliability <- function(object,
                         omit.imps = c("no.conv","no.se")) {
 
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
-  nlevels <- lavInspect(object, "nlevels")
-  nblocks <- ngroups*nlevels #FIXME: always true?
+  nLevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nLevels #FIXME: always true?
   return.total <- rep(return.total, nblocks)
   group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
   #FIXME? lavInspect(object, "level.labels")
-  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  clus.label <- if (nLevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
   if (nblocks > 1L) {
-    block.label <- paste(rep(group.label, each = nlevels), clus.label,
-                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+    block.label <- paste(rep(group.label, each = nLevels), clus.label,
+                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
   }
 
   ## check for categorical (determines what S will be)
@@ -1562,14 +1564,14 @@ reliabilityL2 <- function(object, secondFactor,
   secondFactor <- as.character(secondFactor)[1] # only one at a time
 
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
-  nlevels <- lavInspect(object, "nlevels")
-  nblocks <- ngroups*nlevels #FIXME: always true?
+  nLevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nLevels #FIXME: always true?
   group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
   #FIXME? lavInspect(object, "level.labels")
-  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  clus.label <- if (nLevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
   if (nblocks > 1L) {
-    block.label <- paste(rep(group.label, each = nlevels), clus.label,
-                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+    block.label <- paste(rep(group.label, each = nLevels), clus.label,
+                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
   }
 
   ## parameters in GLIST format (not flat, need block-level list)
@@ -1803,14 +1805,14 @@ reliabilityL2 <- function(object, secondFactor,
 ##' @export
 maximalRelia <- function(object, omit.imps = c("no.conv","no.se")) {
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
-  nlevels <- lavInspect(object, "nlevels")
-  nblocks <- ngroups*nlevels #FIXME: always true?
+  nLevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nLevels #FIXME: always true?
   group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
   #FIXME? lavInspect(object, "level.labels")
-  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  clus.label <- if (nLevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
   if (nblocks > 1L) {
-    block.label <- paste(rep(group.label, each = nlevels), clus.label,
-                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+    block.label <- paste(rep(group.label, each = nLevels), clus.label,
+                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
   }
 
   ## parameters in GLIST format (not flat, need block-level list)
