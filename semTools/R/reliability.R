@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 7 April 2022
+### Last updated: 9 April 2022
 
 
 
@@ -24,7 +24,7 @@
 ##' property of items but not the property of factors. AVE is calculated with
 ##' polychoric correlations when ordinal indicators are used.
 ##'
-##' @importFrom lavaan lavInspect lavNames
+##' @importFrom lavaan lavInspect
 ##' @importFrom methods getMethod
 ##'
 ##' @param object A \code{\linkS4class{lavaan}} or
@@ -124,15 +124,18 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
   anyCategorical <- lavInspect(object, "categorical")
 
   if (inherits(object, "lavaan")) {
-    ## common-factor variance
-    PHI <- lavInspect(object, "cov.lv")
-    if (nblocks == 1L) PHI <- list(PHI)
-
-    ## total variance
-    SIGMA <- lavInspect(object, ifelse(obs.var, "sampstat", "fitted"))
-    if (nblocks > 1L) {
+    PHI   <- lavInspect(object, "cov.lv") # common-factor variance
+    EST   <- lavInspect(object, "est")    # to extract loadings
+    SIGMA <- lavInspect(object,           # total variance
+                        ifelse(obs.var, "sampstat", "fitted"))
+    if (nblocks == 1L) {
+      PHI    <- list(PHI)
+      LAMBDA <- list(EST$lambda)
+      SIGMA  <- list(SIGMA$cov)
+    } else {
+      LAMBDA <- sapply(EST, "[[", i = "lambda", simplify = FALSE)
       SIGMA <- sapply(SIGMA, "[[", i = "cov", simplify = FALSE)
-    } else SIGMA <- list(SIGMA$cov)
+    }
 
   } else if (inherits(object, "lavaan.mi")) {
     useImps <- rep(TRUE, length(object@DataList))
@@ -153,6 +156,18 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
     PHI <- list()
     for (b in 1:nblocks) {
       PHI[[ block.label[b] ]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
+    }
+
+    ## loadings
+    if (nblocks == 1L) {
+      lamList <- lapply(object@coefList[useImps], "[[", i = "lambda")
+      LAMBDA <- Reduce("+", lamList) / length(lamList)
+    } else {
+      LAMBDA <- vector("list", nblocks)
+      for (b in 1:nblocks) {
+        lamList <- lapply(object@coefList[useImps], function(i) i[[b]]$lambda)
+        LAMBDA[[b]] <- Reduce("+", lamList) / length(lamList)
+      }
     }
 
     ## total variance
@@ -187,13 +202,10 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
     }
   }
 
-  ## extract factor and indicator names
-  EST <- lavInspect(object, "est")
-  if (nblocks == 1L) EST <- list(EST)
-
   avevar <- list()
   for (b in 1:nblocks) {
-    LY <- EST[[b]]$lambda
+    ## extract factor and indicator names
+    LY <- LAMBDA[[b]]
     allIndNames <- rownames(LY)
     allFacNames <- colnames(LY)
     myFacNames <- setdiff(allFacNames, omit.factors)
@@ -232,6 +244,559 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ## compRelSEM()
 ## ------------
 
+##' Composite Reliability using SEM
+##'
+##' Calculate composite reliability from estimated factor-model parameters
+##'
+##' Several coefficients for factor-analysis reliability have been termed
+##' "omega", which Cho (2021) argues is a misleading misnomer and argues for
+##' using \eqn{\rho} to represent them all, differentiated by descriptive
+##' subscripts.  In our package, we number \eqn{\omega} based on commonly
+##' applied calculations.
+##'
+##' Bentler (1968) first introduced factor-analysis reliability for a
+##' unidimensional factor model with congeneric indicators, labeling the
+##' coeficients \eqn{\alpha}.  McDonald (1999) later referred to this
+##' \emph{and other reliability coefficients}, first as \eqn{\theta} (in 1970),
+##' then as \eqn{\omega}, which is a source of confusion when reporting
+##' coefficients (Cho, 2021).  Coefficients based on factor models were later
+##' generalized to account for multidimenisionality (possibly with
+##' cross-loadings) and correlated errors. The general \eqn{\omega} formula
+##' implemented in this function is:
+##'
+##' \deqn{ \omega = \frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
+##' Var\left( \psi \right)}{\bold{1}^\prime \hat{\Sigma} \bold{1}}, }
+##'
+##' where \eqn{\hat{\Sigma}} can be the model-implied covariance matrix from
+##' either the saturated model (i.e., the "observed" covariance matrix, used by
+##' default) or from the hypothesized CFA model, controlled by the
+##' \code{obs.var} argument. A \eqn{k}-dimensional vector \eqn{\bold{1}} is used
+##' to sum elements in the matrix. Note that if the model includes any directed
+##' effects (latent regression slopes), all coefficients are calculated
+##' from **total** factor variances:
+##' \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
+##'
+##' Assuming (essential) tau-equivalence makes \eqn{\omega} equivalent to the
+##' coefficient \eqn{\alpha} from classical test theory (Cronbach, 1951):
+##'
+##' \deqn{ \alpha = \frac{k}{k - 1}\left[ 1 - \frac{\sum^{k}_{i = 1}
+##' \sigma_{ii}}{\sum^{k}_{i = 1} \sigma_{ii} + 2\sum_{i < j} \sigma_{ij}}
+##' \right],}
+##'
+##' where \eqn{k} is the number of items in a factor's compositte,
+##' \eqn{\sigma_{ii}} signifies item \emph{i}'s variance, and \eqn{\sigma_{ij}}
+##' signifies the covariance between items \emph{i} and \emph{j}. Again, the
+##' \code{obs.var} argument controls whether \eqn{\alpha} is calculated using
+##' the observed or model-implied covariance matrix.
+##'
+##' By setting \code{return.total=TRUE}, one can estimate reliability for a
+##' single composite calculated using all indicators in a multidimensional
+##' CFA (Bentler, 1972, 2009). Setting \code{return.total = -1} will return
+##' **only** the total-composite reliability (not per factor).
+##'
+##' When all indicators (per composite) are ordinal, the \code{ord.scale}
+##' argument controls whether the coefficient is calculated on the
+##' latent-response scale (\code{FALSE}) or on the observed ordinal scale
+##' (\code{TRUE}, the default).  For \eqn{\omega}-type coefficients
+##' (\code{tau.eq=FALSE}), Green and Yang's (2009, formula 21) approach is used
+##' to transform factor-model results back to the ordinal response scale.
+##' When \code{ord.scale=TRUE}, coefficient \eqn{\alpha} is calculated using the
+##' covariance matrix calculated from the integer-valued numeric weights for
+##' ordinal categories, consistent with its definition (Chalmers, 2018) and the
+##' \code{alpha} function in the \code{psych} package; this implies
+##' \code{obs.var=TRUE}, so \code{obs.var=FALSE} will be ignored.  When
+##' \code{ord.scale=FALSE}, the standard \eqn{\alpha} formula is applied to the
+##' polychoric correlation matrix ("ordinal \eqn{\alpha}"; Zumbo et al., 2007),
+##' estimated from the saturated or hypothesized model (see \code{obs.var}),
+##' and \eqn{\omega} is calculated from CFA results without applying Green and
+##' Yang's (2009) correction (see Zumbo & Kroc's, 2019, for a rationalization).
+##' No method has been proposed for calculating reliability with a mixture of
+##' categorical and continuous indicators, so an error is returned if
+##' \code{object} includes factors with a mixture of indicator types (unless
+##' omitted using \code{omit.factors}). If categorical indicators load on a
+##' different factor(s) than continuous indicators, then reliability will still
+##' be calculated separately for those factors, but \code{return.total} must be
+##' \code{FALSE} (unless \code{omit.factors} is used to isolate factors with
+##' indicators of the same type).
+##'
+##TODO: MLSEM section
+##'
+##'
+##' @importFrom lavaan lavInspect lavNames
+##' @importFrom methods getMethod
+##'
+##' @param object A \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
+##'   exogenous common factors (i.e., a CFA model).
+##' @param obs.var \code{logical} indicating whether to compute AVE using
+##'   observed variances in the denominator. Setting \code{FALSE} triggers
+##'   using model-implied variances in the denominator.
+##' @param tau.eq \code{logical} indicating whether to assume (essential)
+##'   tau-equivalence, yielding a coefficient analogous to \eqn{\alpha}.
+##'   Setting \code{FALSE} yields an \eqn{\omega}-type coefficient.
+##' @param ord.scale \code{logical} indicating whether to apply Green and Yang's
+##'   (2009, formula 21) correction, so that reliability is calculated for the
+##'   actual ordinal response scale (ignored for factors with continuous
+##'   indicators).  Setting \code{FALSE} yields coefficients that are
+##'   only applicable to the continuous latent-response scale.
+##' @param return.total \code{logical} indicating whether to return a final
+##'   column containing the reliability of a composite of all indicators (not
+##'   listed in \code{omit.indicators}) of factors not listed in
+##'   \code{omit.factors}.  Ignored in 1-factor models, and should only be set
+##'   \code{TRUE} if all factors represent scale dimensions that could be
+##'   meaningfully collapsed to a single composite (scale sum or scale mean).
+##'   Setting a negative value (e.g., \code{-1} returns **only** the
+##'   total-composite reliability (excluding coefficients per factor).
+##' @param dropSingle \code{logical} indicating whether to exclude factors
+##'   defined by a single indicator from the returned results. If \code{TRUE}
+##'   (default), single indicators will still be included in the \code{total}
+##'   column when \code{return.total = TRUE}.
+##' @param omit.factors \code{character} vector naming any common factors
+##'   modeled in \code{object} whose composite reliability is not of
+##'   interest. For example, higher-order or method factors. Note that
+##'   \code{\link{reliabilityL2}()} should be used to calculate composite
+##'   reliability of a higher-order factor.
+##' @param omit.indicators \code{character} vector naming any observed variables
+##'   that should be ignored when calculating composite reliability. This can
+##'   be useful, for example, to estimate reliability when an indicator is
+##'   removed.
+##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'   imputations from pooled results.  Can include any of
+##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   default setting, which excludes any imputations that did not
+##'   converge or for which standard errors could not be computed.  The
+##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   yielded a nonpositive definite covariance matrix for observed or
+##'   latent variables, which would include any "improper solutions" such
+##'   as Heywood cases.  NPD solutions are not excluded by default because
+##'   they are likely to occur due to sampling error, especially in small
+##'   samples.  However, gross model misspecification could also cause
+##'   NPD solutions, users can compare pooled results with and without
+##'   this setting as a sensitivity analysis to see whether some
+##'   imputations warrant further investigation.
+##'
+##' @return A \code{numeric} vector of composite reliability coefficients per
+##'   factor, or a \code{list} of vectors per "block" (group and/or level of
+##'   analysis). If there are multiple factors, whose multidimensional
+##'   indicators combine into a single composite, users can request
+##'   \code{return.total=TRUE} to add a column including a reliability
+##'   coefficient for the total composite, or.\code{return.total = -1} to
+##'   return **only** the total-composite reliability.
+##'
+##' @author
+##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##'   Uses hidden functions written by Sunthud Pornprasertmanit
+##'   (\email{psunthud@@gmail.com}) for original \code{reliability()} function.
+##'
+##' @seealso \code{\link{reliabilityL2}} for reliability value of a desired
+##' second-order factor, \code{\link{maximalRelia}} for the maximal reliability
+##' of weighted composite
+##'
+##' @references
+##' Bentler, P. M. (1972). A lower-bound method for the dimension-free
+##' measurement of internal consistency. \emph{Social Science Research, 1}(4),
+##' 343--357. \doi{10.1016/0049-089X(72)90082-8}
+##'
+##' Bentler, P. M. (2009). Alpha, dimension-free, and model-based internal
+##' consistency reliability. \emph{Psychometrika, 74}(1), 137--143.
+##' \doi{10.1007/s11336-008-9100-1}
+##'
+##' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of
+##' ordinal alpha. \emph{Educational and Psychological Measurement, 78}(6),
+##' 1056--1071. \doi{10.1177/0013164417727036}
+##'
+##' Cho, E. (2021) Neither Cronbach’s alpha nor McDonald’s omega: A commentary
+##' on Sijtsma and Pfadt. *Psychometrika, 86*(4), 877--886.
+##' \doi{10.1007/s11336-021-09801-1}
+##'
+##' Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
+##' tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
+##'
+##' Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using
+##' structural equation modeling: An alternative to coefficient alpha.
+##' \emph{Psychometrika, 74}(1), 155--167. \doi{10.1007/s11336-008-9099-3}
+##'
+##' McDonald, R. P. (1999). \emph{Test theory: A unified treatment}. Mahwah, NJ:
+##' Erlbaum.
+##'
+##' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of
+##' coefficients alpha and theta for Likert rating scales.
+##' \emph{Journal of Modern Applied Statistical Methods, 6}(1), 21--29.
+##' \doi{10.22237/jmasm/1177992180}
+##'
+##' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens’
+##' scales of measurement do not help make it: A response to Chalmers.
+##' \emph{Educational and Psychological Measurement, 79}(6), 1184--1197.
+##' \doi{10.1177/0013164419844305}
+##'
+##'
+##' @examples
+##'
+##' data(HolzingerSwineford1939)
+##' HS9 <- HolzingerSwineford1939[ , c("x7","x8","x9")]
+##' HSbinary <- as.data.frame( lapply(HS9, cut, 2, labels=FALSE) )
+##' names(HSbinary) <- c("y7","y8","y9")
+##' HS <- cbind(HolzingerSwineford1939, HSbinary)
+##'
+##' HS.model <- ' visual  =~ x1 + x2 + x3
+##'               textual =~ x4 + x5 + x6
+##'               speed   =~ y7 + y8 + y9 '
+##'
+##' fit <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
+##'
+##' ## works for factors with exclusively continuous OR categorical indicators
+##' compRelSEM(fit)
+##'
+##' ## reliability for ALL indicators only available when they are
+##' ## all continuous or all categorical
+##' compRelSEM(fit, omit.factors = "speed", return.total = TRUE)
+##'
+##'
+##' ## loop over visual indicators to calculate alpha if one indicator is removed
+##' for (i in paste0("x", 1:3)) {
+##'   cat("Drop x", i, ":\n")
+##'   print(compRelSEM(fit, omit.factors = c("textual","speed"),
+##'                    omit.indicators = i, tau.eq = TRUE))
+##' }
+##'
+##'
+##' ## works for multigroup models and for multilevel models (and both)
+##' data(Demo.twolevel)
+##' ## assign clusters to arbitrary groups
+##' Demo.twolevel$g <- ifelse(Demo.twolevel$cluster %% 2L, "type1", "type2")
+##' model2 <- ' group: type1
+##'   level: within
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'   level: between
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'
+##' group: type2
+##'   level: within
+##'     fac =~ y1 + L2*y2 + L3*y3
+##'   level: between
+##'     fac =~ y1 + L2*y2 + L3*y3
+##' '
+##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
+##' compRelSEM(fit2)
+##'
+##'
+##'
+##' @export
+compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
+                       return.total = FALSE, dropSingle = TRUE,
+                       omit.factors = character(0),
+                       omit.indicators = character(0),
+                       omit.imps = c("no.conv","no.se")) {
+  ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
+  nlevels <- lavInspect(object, "nlevels")
+  nblocks <- ngroups*nlevels #FIXME: always true?
+  return.total <- rep(return.total, nblocks)
+  group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
+  #FIXME? lavInspect(object, "level.labels")
+  clus.label <- if (nlevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
+  if (nblocks > 1L) {
+    block.label <- paste(rep(group.label, each = nlevels), clus.label,
+                         sep = if (ngroups > 1L && nlevels > 1L) "_" else "")
+  }
+
+  ## check for categorical
+  anyCategorical <- lavInspect(object, "categorical")
+  threshold <- if (anyCategorical) getThreshold(object, omit.imps = omit.imps) else NULL
+  latScales <- if (anyCategorical) getScales(object, omit.imps = omit.imps) else NULL
+
+  if (inherits(object, "lavaan")) {
+    ## common-factor variance
+    PHI <- lavInspect(object, "cov.lv") # ignored if tau.eq
+    if (nblocks == 1L) PHI <- list(PHI)
+
+    ## factor loadings
+    EST   <- lavInspect(object, "est", drop.list.single.group = FALSE)
+    LAMBDA <- sapply(EST, "[[", i = "lambda", simplify = FALSE)
+
+    ## possibly higher-order loadings?
+    BETA <- if ("beta" %in% names(lavaan::lavTech(object, "est"))) {
+      sapply(EST, "[[", i = "beta", simplify = FALSE)
+    } else NULL
+
+    ## total variance
+    if (anyCategorical && tau.eq && ord.scale) {
+      ## calculate SIGMA from data for alpha
+      #FIXME when MLSEM available for ordinal indicators
+      #     (Level 2 components available?  Extend conditional?)
+      rawData <- try(lavInspect(object, "data", drop.list.single.group = FALSE),
+                     silent = TRUE)
+      if (inherits(rawData, "try-error"))
+        stop('Error in lavInspect(fit, "data"); tau.eq= and ord.scale= cannot ',
+             'both be TRUE for models fitted to summary statistics of ',
+             'categorial data.')
+      SIGMA <- lapply(rawData, cov)
+      names(SIGMA) <- block.label
+
+    } else {
+      SIGMA <- sapply(lavInspect(object, drop.list.single.group = FALSE,
+                                 what = ifelse(obs.var, "sampstat", "fitted")),
+                      "[[", i = "cov", simplify = FALSE)
+    }
+
+  } else if (inherits(object, "lavaan.mi")) {
+    useImps <- rep(TRUE, length(object@DataList))
+    if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
+    if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
+    if ("no.npd" %in% omit.imps) {
+      Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
+      Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
+      useImps <- useImps & !(Heywood.lv | Heywood.ov)
+    }
+    m <- sum(useImps)
+    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
+    useImps <- which(useImps)
+
+    ## common-factor variance
+    phiList <- object@phiList[useImps]
+    if (nblocks == 1L) for (i in 1:m) phiList[[i]] <- list(phiList[[i]])
+    PHI <- vector("list", nblocks)
+    for (b in 1:nblocks) {
+      PHI[[ block.label[b] ]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
+    }
+
+    ## loadings
+    if (nblocks == 1L) {
+      lamList <- lapply(object@coefList[useImps], "[[", i = "lambda")
+      LAMBDA <- Reduce("+", lamList) / length(lamList)
+    } else {
+      LAMBDA <- vector("list", nblocks)
+      for (b in 1:nblocks) {
+        lamList <- lapply(object@coefList[useImps], function(i) i[[b]]$lambda)
+        LAMBDA[[b]] <- Reduce("+", lamList) / length(lamList)
+      }
+    }
+
+    ## total variance
+    if (anyCategorical && tau.eq && ord.scale) {
+      ## calculate SIGMA from data for alpha
+      #FIXME when MLSEM available for ordinal indicators
+      #     (Level 2 components available?  Extend conditional?)
+      dataList <- object@DataList[useImps]
+      SIGMA <- vector("list", nblocks)
+      if (nblocks == 1L) {
+        VV <- lavNames(object, type = "ov")
+        impCovList <- lapply(dataList, function(DD) {
+          dat <- do.call(cbind, sapply(DD[VV], as.numeric, simplify = FALSE))
+          cov(dat)
+        })
+        SIGMA[[1]] <- Reduce("+", impCovList) / length(impCovList)
+
+      } else {
+        ## multigroup models need separate data matrices per group
+        G <- lavInspect(object, "group")
+
+        for (g in seq_along(group.label)) {
+          VV <- try(lavNames(object, type = "ov", group = group.label[g]),
+                    silent = TRUE)
+          if (inherits(VV, "try-error")) {
+            VV <- lavNames(object, type = "ov", group = g)
+          }
+          impCovList <- lapply(dataList, function(DD) {
+            RR <- DD[,G] == group.label[g]
+            dat <- do.call(cbind, sapply(DD[RR, VV], as.numeric, simplify = FALSE))
+            cov(dat)
+          })
+          SIGMA[[g]] <- Reduce("+", impCovList) / length(impCovList)
+        } # g
+      }
+
+    } else {
+      ## use model-implied SIGMA from h0 or h1 model
+      if (obs.var) {
+        SIGMA <- vector("list", nblocks)
+        ## loop over blocks to pool saturated-model (observed) matrices
+        for (b in 1:nblocks) {
+          covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
+          SIGMA[[ block.label[b] ]] <- Reduce("+", covList) / m
+        }
+      } else {
+        ## pooled model-implied matrices
+        if (nblocks == 1L) {
+          SIGMA <- getMethod("fitted", class(object))(object)["cov"] # retain list format
+        } else {
+          SIGMA <- sapply(getMethod("fitted", class(object))(object),
+                          "[[", "cov", simplify = FALSE)
+        }
+      }
+
+    }
+
+  } # end lavaan vs. lavaan.mi conditional
+
+  ## scale polychoric/polyserial to modeled LRV scale
+  if (anyCategorical) {
+    SDs <- sapply(latScales, function(x) diag(1 / x),
+                  simplify = FALSE)
+    for (b in 1:nblocks) {
+      dimnames(SDs[[b]]) <- dimnames(SIGMA[[b]])
+      SIGMA[[b]] <- SDs[[b]] %*% SIGMA[[b]] %*% SDs[[b]]
+    }
+  }
+
+  rel <- list() # output
+  warnTotal <- FALSE
+  warnHigher <- character(0) # collect list of potential higher-order factors
+  for (b in 1:nblocks) {
+
+    LY <- LAMBDA[[b]]
+    allIndNames <- rownames(LY)
+    allFacNames <- colnames(LY)
+    myFacNames <- setdiff(allFacNames, omit.factors)
+    if (dropSingle) {
+      multInd <- sapply(myFacNames, function(fn) sum(LY[,fn] != 0) > 1L)
+      myFacNames <- myFacNames[multInd]
+    }
+    subLY <- LY[ , myFacNames, drop = FALSE]
+    myIndNames <- rownames(subLY)[apply(subLY, 1L, function(x) any(x != 0))]
+    ## remove unwanted indicators
+    myIndNames <- setdiff(myIndNames, omit.indicators)
+    subLY <- subLY[myIndNames, , drop = FALSE]
+
+    ## distinguish between categorical, continuous, and latent indicators
+    nameArgs <- list(object = object)
+    if (nblocks > 1L) nameArgs$block <- b
+    ordNames <- do.call(lavNames, c(nameArgs, list(type = "ov.ord")))
+    numNames <- do.call(lavNames, c(nameArgs, list(type = "ov.num")))
+    if (anyCategorical) {
+      ## identify when the (sub)set of factors are all categorical
+      blockCat <- all(myIndNames %in% ordNames)
+      ## identify when the (sub)set of factors have mixed indicators, so no total
+      mix <- any(myIndNames %in% ordNames) && any(myIndNames %in% numNames)
+    } else {
+      blockCat <- FALSE
+      mix <- FALSE
+    }
+
+    if (mix && return.total[b]) {
+      return.total[b] <- FALSE
+      if (!(tau.eq && ord.scale)) warnTotal <- TRUE
+    }
+
+    ## identify POSSIBLE higher-order factors (that affect other latent vars)
+    latInds  <- do.call(lavNames, c(nameArgs, list(type = "lv.ind")))
+    higher <- if (length(latInds) == 0L) character(0) else {
+      allFacNames[apply(beta[[b]], MARGIN = 2, function(x) any(x != 0))]
+    }
+    ## keep track of factor indices to skip
+    #FIXME: remove?
+    # idx.drop <- numeric(0)
+
+    ## set result missing by default
+    rel[[b]] <- setNames(rep(NA, length(myFacNames)), nm = myFacNames)
+
+    warnAlpha <- warnOmega <- FALSE
+    ## compute reliability per factor?
+    if (return.total[b] >= 0) for (fn in myFacNames) {
+      ## names of indicators with nonzero loadings
+      fIndNames <- myIndNames[which(subLY[,fn] != 0)]
+
+      ## check for ANY indicators (possibly skip purely higher-order factors)
+      if (length(fIndNames) == 0L) next
+      ## check for single indicators
+      if (dropSingle && length(fIndNames) == 1L) next
+      ## check for categorical (or mixed) indicators
+      fCat <- any(fIndNames %in% ordNames)
+      ## identify when this factor has mixed indicators, so no omegas
+      fMix <- fCat && any(fIndNames %in% numNames)
+      ## check for latent indicators
+      if (allFacNames[fn] %in% higher && !(allFacNames[fn] %in% omit.factors)) {
+        warnHigher <- c(warnHigher, allFacNames[fn])
+      }
+
+      ## ALPHA
+      totalCov  <- SIGMA[[b]][fIndNames, fIndNames, drop = FALSE]
+      if (tau.eq) {
+        if (fMix && !ord.scale) {
+          ## can't mix observed and latent scales
+          warnAlpha <- TRUE #TODO
+          next
+        }
+        rel[[b]][fn] <- computeAlpha(totalCov)
+        next
+      } # else compute omega
+
+      ## OMEGA
+      if (fMix) {
+        warnOmega <- TRUE # can't (yet) mix observed and latent scales
+        next
+      }
+      Lf <- subLY[fIndNames, fn, drop = FALSE]
+      commonCov <- Lf %*% PHI[[b]][fn, fn] %*% t(Lf)
+      if (fCat && ord.scale) {
+        ## Green & Yang (2009)
+        rel[[b]][fn] <- omegaCat(truevar = commonCov, denom = totalCov,
+                                 threshold = threshold[[b]][fIndNames],
+                                 scales = latScales[[b]][fIndNames])
+        next
+      } # else, all continuous or all LRV-scale
+      rel[[b]][fn] <- sum(commonCov) / sum(totalCov)
+    } # end loop over factors
+
+    ## compute for total composite?
+    if (return.total[b] && length(myFacNames) > 1L) {
+
+      ## ALPHA
+      totalCov  <- SIGMA[[b]][myIndNames, myIndNames, drop = FALSE]
+      if (tau.eq) {
+        rel[[b]]["total"] <- computeAlpha(totalCov)
+        next
+      } # else compute omega
+
+      ## OMEGA
+      commonCov <- sum(subLY %*% PHI[[b]][myFacNames, myFacNames] %*% t(subLY))
+      if (blockCat && ord.scale) {
+        ## Green & Yang (2009)
+        rel[[b]]["total"] <- omegaCat(truevar = commonCov, denom = totalCov,
+                                      threshold = threshold[[b]][myIndNames],
+                                      scales = latScales[[b]][myIndNames])
+        next
+      } # else, all continuous or all LRV-scale
+      rel[[b]]["total"] <- sum(commonCov) / sum(totalCov)
+    }
+
+  }
+
+
+  if (length(warnHigher)) warning('Possible higher-order factors detected:\n',
+                                  paste(unique(warnHigher), sep = ", "))
+  if (warnTotal) {
+    message('Cannot return.total when model contains both continuous and ',
+            'binary/ordinal observed indicators. Use the ',
+            'omit.factors= argument to choose factors with only categorical ',
+            'or continuous indicators, if that is a composite of interest.\n')
+  }
+  if (warnAlpha) {
+    message('Coefficient alpha cannot be computed for factors as though a ',
+            'composite would be calculated using both observed-response scales',
+            ' (for continuous indicators) and latent-response scales (for ',
+            'categorical indicators).  If you want to assume tau-equivalence, ',
+            'either set ord.scale=FALSE or fit a model that treats ordinal ',
+            'indicators as continuous.')
+  }
+  if (warnOmega) {
+    message('Composite reliability (omega) cannot be computed for factors ',
+            'with mixed categorical and continuous indicators, unless a model ',
+            'is fitted by treating ordinal indicators as continuous.')
+  }
+
+  ## drop list structure?
+  if (nblocks == 1L) {
+    rel <- rel[[1]]
+  } else names(rel) <- block.label
+
+  ## add any of Lai's multilevel coefficients?
+  #TODO: add arguments
+  #     - config = character(0) for _2L
+  #     - shared = character(0) for _B & IRR
+  rel
+}
+
 
 
 ## -------------
@@ -239,10 +804,9 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ## -------------
 
 
-##' Calculate reliability values of factors
+##' Composite Reliability using SEM
 ##'
-##' Calculate reliability values of factors by coefficients alpha and omega,
-##' as well as the average variance extracted (AVE)
+##' Calculate composite reliability from estimated factor-model parameters
 ##'
 ##' The coefficient alpha (Cronbach, 1951) can be calculated by
 ##'
@@ -694,7 +1258,7 @@ reliability <- function(object,
 		omega1 <- omega2 <- omega3 <- rep(NA, length(common))
 		impliedTotal <- rep(NA, length(common))
 		avevar <- rep(NA, length(common))
-
+		warnOmega <- FALSE
 		## loop over j factors
 		for (j in 1:length(common)) {
 		  ## skip this factor?
@@ -1374,7 +1938,7 @@ omegaCat <- function(truevar, threshold, scales, denom) {
   		addprobn2 <- 0
   		## for each pair of items, loop over all their thresholds
   		t1 <- threshold[[j]]  * scales[j] # on standardized latent scale
-  		t2 <- threshold[[jp]] * scales[jp]
+  		t2 <- threshold[[jp]] * scales[jp] #FIXME: subtract intercept (or marginal mean?)
   		for (c in 1:length(t1)) {
     		for (cp in 1:length(t2)) {
     			sumprobn2 <- sumprobn2 + p2(t1[c], t2[cp], R[j, jp])

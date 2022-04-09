@@ -2,7 +2,7 @@
 % Please edit documentation in R/reliability.R
 \name{reliability}
 \alias{reliability}
-\title{Calculate reliability values of factors}
+\title{Composite Reliability using SEM}
 \usage{
 reliability(object, what = c("alpha", "omega", "omega2", "omega3", "ave"),
   return.total = FALSE, dropSingle = TRUE, omit.factors = character(0),
@@ -63,8 +63,7 @@ Reliability values (coefficient alpha, coefficients omega, average
   factors, a \code{total} column can optionally be included.
 }
 \description{
-Calculate reliability values of factors by coefficients alpha and omega,
-as well as the average variance extracted (AVE)
+Calculate composite reliability from estimated factor-model parameters
 }
 \details{
 The coefficient alpha (Cronbach, 1951) can be calculated by
