@@ -276,14 +276,15 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' from **total** factor variances:
 ##' \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
 ##'
-##' Assuming (essential) tau-equivalence makes \eqn{\omega} equivalent to the
-##' coefficient \eqn{\alpha} from classical test theory (Cronbach, 1951):
+##' Assuming (essential) tau-equivalence (\code{tau.eq=TRUE}) makes \eqn{\omega}
+##' equivalent to coefficient \eqn{\alpha} from classical test theory
+##' (Cronbach, 1951):
 ##'
 ##' \deqn{ \alpha = \frac{k}{k - 1}\left[ 1 - \frac{\sum^{k}_{i = 1}
 ##' \sigma_{ii}}{\sum^{k}_{i = 1} \sigma_{ii} + 2\sum_{i < j} \sigma_{ij}}
 ##' \right],}
 ##'
-##' where \eqn{k} is the number of items in a factor's compositte,
+##' where \eqn{k} is the number of items in a factor's composite,
 ##' \eqn{\sigma_{ii}} signifies item \emph{i}'s variance, and \eqn{\sigma_{ij}}
 ##' signifies the covariance between items \emph{i} and \emph{j}. Again, the
 ##' \code{obs.var} argument controls whether \eqn{\alpha} is calculated using
@@ -294,6 +295,7 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' CFA (Bentler, 1972, 2009). Setting \code{return.total = -1} will return
 ##' **only** the total-composite reliability (not per factor).
 ##'
+##' **Categorical Indicators**:
 ##' When all indicators (per composite) are ordinal, the \code{ord.scale}
 ##' argument controls whether the coefficient is calculated on the
 ##' latent-response scale (\code{FALSE}) or on the observed ordinal scale
@@ -319,10 +321,42 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' \code{FALSE} (unless \code{omit.factors} is used to isolate factors with
 ##' indicators of the same type).
 ##'
-##TODO: MLSEM section
+##' **Multilevel Measurement Models**:
+##' Under the default settings, \code{compRelSEM()} will apply the same formula
+##' in each "block" (group and/or level of analysis). In the case of multilevel
+##' SEMs, this yields "reliability" for latent within- and between-level
+##' components, as proposed by Geldhof et al. (2014).  This is not recommended
+##' because the coefficients do not correspond to actual composites that would
+##' be calculated from the observed data.  Lai (2021) proposed coefficients for
+##' reliability of actual composites, depending on the type of construct, which
+##' requires specifying the names of constructs for which reliability is desired
+##' (or multiple constructs whose indicators would compose a multidimensional
+##' composite). Configural (\code{config=}) and/or \code{shared=} constructs
+##' can be specified; the same construct can be specified in both arguments, so
+##' that overall scale-reliability can be estimated for a shared construct by
+##' including it in \code{config}.  Instead of organizing the output by block
+##' (the default), specifying \code{config=} and/or \code{shared=} will prompt
+##' organizing the output by \code{$config} and/or \code{$shared}.
+##' \itemize{
+##'   \item The overall (\code{_2L}) scale reliability for \code{config}ural
+##'   constructs is returned, along with the reliability of a purely
+##'   individual-level composite (\code{_W}, calculated by cluster-mean
+##'   centering).
+##'   \item The reliability for a \code{shared} construct quantifies
+##'   generalizability across both indicators and raters (i.e., subjects rating
+##'   their cluster's construct).  Lüdtke et al. (2011) refer to these as
+##'   measurement error and sampling error, respectively.  An interrater
+##'   reliability (IRR) coefficient is also returned, quantifying
+##'   generalizability across rater/sampling-error only. To obtain a
+##'   scale-reliability coefficient (quantifying a shared construct's
+##'   generalizability across indicator/measurement-error only), include the
+##'   same factor name in \code{config=}.  This requires the construct to be
+##'   modeled at both levels (as recommended by Jak et al., 2021) rather than
+##'   saturating the within-level model (Lai, 2021).
+##' }
 ##'
 ##'
-##' @importFrom lavaan lavInspect lavNames
+##' @importFrom lavaan lavInspect lavNames parTable
 ##' @importFrom methods getMethod
 ##'
 ##' @param object A \code{\linkS4class{lavaan}} or
@@ -339,6 +373,27 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   actual ordinal response scale (ignored for factors with continuous
 ##'   indicators).  Setting \code{FALSE} yields coefficients that are
 ##'   only applicable to the continuous latent-response scale.
+##' @param config \code{character} vector naming any configural constructs in
+##'   a multilevel CFA. For these constructs (and optional total composite),
+##'   Lai's (2021) coefficients \eqn{\omega^\text{W}} and \eqn{\omega^\text{2L}}
+##'   are returned (or corresponding \eqn{\alpha} coefficients when
+##'   \code{tau.eq=TRUE}), rather than Geldhof et al.'s (2014) coefficients for
+##'   hypothetical composites of latent components (although the same formula
+##'   is used for \eqn{\omega^\text{W}} in either case).
+##' @param shared \code{character} vector naming any shared constructs in
+##'   a multilevel CFA. For these constructs (and optional total composite),
+##'   Lai's (2021) coefficient \eqn{\omega^\text{B}} or \eqn{\alpha^\text{B}} is
+##'   returned, rather than Geldhof et al.'s (2014) between-level coefficient
+##'   for hypothetical composites of latent cluster means. Lai's (2021)
+##'   coefficient quantifies reliability relative to error associated with both
+##'   indicators (measurement error) and subjects (sampling error), like a
+##'   generalizability coefficient.  Given that subjects can be considered as
+##'   raters of their cluster's shared construct, an interrater reliability
+##'   (IRR) coefficient is also returned, quantifying reliability relative to
+##'   rater/sampling error alone.  To quantify reliability relative to
+##'   indicator/measurement error alone (i.e., \eqn{\omega^\text{2L}}), the
+##'   \code{shared=} construct name(s) can additionally be included in
+##'   \code{config=} argument.
 ##' @param return.total \code{logical} indicating whether to return a final
 ##'   column containing the reliability of a composite of all indicators (not
 ##'   listed in \code{omit.indicators}) of factors not listed in
@@ -346,7 +401,9 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   \code{TRUE} if all factors represent scale dimensions that could be
 ##'   meaningfully collapsed to a single composite (scale sum or scale mean).
 ##'   Setting a negative value (e.g., \code{-1} returns **only** the
-##'   total-composite reliability (excluding coefficients per factor).
+##'   total-composite reliability (excluding coefficients per factor), except
+##'   when requesting Lai's (2021) coefficients for multilevel \code{config}ural
+##'   or \code{shared=} constructs.
 ##' @param dropSingle \code{logical} indicating whether to exclude factors
 ##'   defined by a single indicator from the returned results. If \code{TRUE}
 ##'   (default), single indicators will still be included in the \code{total}
@@ -394,6 +451,10 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' of weighted composite
 ##'
 ##' @references
+##' Bentler, P. M. (1968). Alpha-maximized factor analysis (alphamax): Its
+##' relation to alpha and canonical factor analysis. *Psychometrika, 33*(3),
+##' 335--345. \doi{10.1007/BF02289328}
+##'
 ##' Bentler, P. M. (1972). A lower-bound method for the dimension-free
 ##' measurement of internal consistency. \emph{Social Science Research, 1}(4),
 ##' 343--357. \doi{10.1016/0049-089X(72)90082-8}
@@ -413,9 +474,26 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
 ##' tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
 ##'
+##' Geldhof, G. J., Preacher, K. J., & Zyphur, M. J. (2014). Reliability
+##' estimation in a multilevel confirmatory factor analysis framework.
+##' *Psychological Methods, 19*(1), 72--91. \doi{10.1037/a0032138}
+##'
 ##' Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using
 ##' structural equation modeling: An alternative to coefficient alpha.
 ##' \emph{Psychometrika, 74}(1), 155--167. \doi{10.1007/s11336-008-9099-3}
+##'
+##' Jak, S., Jorgensen, T. D., & Rosseel, Y. (2021). Evaluating cluster-level
+##' factor models with `lavaan` and M*plus*. *Psych, 3*(2), 134-152.
+##' \doi{10.3390/psych3020012}
+##'
+##' Lai, M. H. C. (2021). Composite reliability of multilevel data: It’s about
+##' observed scores and construct meanings. *Psychological Methods, 26*(1),
+##' 90--102. \doi{10.1037/met0000287}
+##'
+##' Lüdtke, O., Marsh, H. W., Robitzsch, A., & Trautwein, U. (2011).
+##' A 2 \eqn{\times} 2 taxonomy of multilevel latent contextual models:
+##' Accuracy--bias trade-offs in full and partial error correction models.
+##' *Psychological Methods, 16*(4), 444--467. \doi{10.1037/a0024376}
 ##'
 ##' McDonald, R. P. (1999). \emph{Test theory: A unified treatment}. Mahwah, NJ:
 ##' Erlbaum.
@@ -466,16 +544,20 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' ## assign clusters to arbitrary groups
 ##' Demo.twolevel$g <- ifelse(Demo.twolevel$cluster %% 2L, "type1", "type2")
 ##' model2 <- ' group: type1
-##'   level: within
-##'     fac =~ y1 + L2*y2 + L3*y3
-##'   level: between
-##'     fac =~ y1 + L2*y2 + L3*y3
+##'   level: 1
+##'     f1 =~ y1 + L2*y2 + L3*y3
+##'     f2 =~ y4 + L5*y5 + L6*y6
+##'   level: 2
+##'     f1 =~ y1 + L2*y2 + L3*y3
+##'     f2 =~ y4 + L5*y5 + L6*y6
 ##'
 ##' group: type2
-##'   level: within
-##'     fac =~ y1 + L2*y2 + L3*y3
-##'   level: between
-##'     fac =~ y1 + L2*y2 + L3*y3
+##'   level: 1
+##'     f1 =~ y1 + L2*y2 + L3*y3
+##'     f2 =~ y4 + L5*y5 + L6*y6
+##'   level: 2
+##'     f1 =~ y1 + L2*y2 + L3*y3
+##'     f2 =~ y4 + L5*y5 + L6*y6
 ##' '
 ##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
 ##' compRelSEM(fit2)
@@ -484,21 +566,38 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'
 ##' @export
 compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
+                       config = character(0), shared = character(0),
                        return.total = FALSE, dropSingle = TRUE,
                        omit.factors = character(0),
                        omit.indicators = character(0),
                        omit.imps = c("no.conv","no.se")) {
+  ## numbers of blocks
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
   nLevels <- lavInspect(object, "nlevels")
   nblocks <- ngroups*nLevels #FIXME: always true?
   return.total <- rep(return.total, nblocks)
-  group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
-  #FIXME? lavInspect(object, "level.labels")
-  clus.label <- if (nLevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
-  if (nblocks > 1L) {
-    block.label <- paste(rep(group.label, each = nLevels), clus.label,
-                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
+
+  ## labels for groups
+  if (ngroups > 1L) {
+    group.label <- lavInspect(object, "group.label")
+    blk.g.lab <- if (!length(group.label)) paste0("g", 1:ngroups) else group.label
+  } else {
+    group.label <- blk.g.lab <- NULL
   }
+  ## labels for clusters
+  if (nLevels > 1L) {
+    #FIXME? lavInspect(object, "level.label") is always ==
+    #       c("within", lavInspect(object, "cluster"))
+    PT <- parTable(object)
+    clus.label <- unique(PT$level)
+    clus.label <- clus.label[which(clus.label != "")]
+    clus.label <- clus.label[which(clus.label != 0)]
+  } else clus.label <- NULL
+  ## labels for blocks
+  if (nblocks > 1L) {
+    block.label <- paste(rep(blk.g.lab, each = nLevels), clus.label,
+                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
+  } else block.label <- NULL
 
   ## check for categorical
   anyCategorical <- lavInspect(object, "categorical")
@@ -509,10 +608,12 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     ## common-factor variance
     PHI <- lavInspect(object, "cov.lv") # ignored if tau.eq
     if (nblocks == 1L) PHI <- list(PHI)
+    names(PHI) <- block.label
 
     ## factor loadings
     EST   <- lavInspect(object, "est", drop.list.single.group = FALSE)
     LAMBDA <- sapply(EST, "[[", i = "lambda", simplify = FALSE)
+    names(LAMBDA) <- block.label
 
     ## possibly higher-order loadings?
     BETA <- if ("beta" %in% names(lavaan::lavTech(object, "est"))) {
@@ -537,6 +638,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       SIGMA <- sapply(lavInspect(object, drop.list.single.group = FALSE,
                                  what = ifelse(obs.var, "sampstat", "fitted")),
                       "[[", i = "cov", simplify = FALSE)
+      names(SIGMA) <- block.label
     }
 
   } else if (inherits(object, "lavaan.mi")) {
@@ -556,6 +658,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     phiList <- object@phiList[useImps]
     if (nblocks == 1L) for (i in 1:m) phiList[[i]] <- list(phiList[[i]])
     PHI <- vector("list", nblocks)
+    names(PHI) <- block.label
     for (b in 1:nblocks) {
       PHI[[ block.label[b] ]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
     }
@@ -566,9 +669,10 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       LAMBDA <- Reduce("+", lamList) / length(lamList)
     } else {
       LAMBDA <- vector("list", nblocks)
+      names(LAMBDA) <- block.label
       for (b in 1:nblocks) {
         lamList <- lapply(object@coefList[useImps], function(i) i[[b]]$lambda)
-        LAMBDA[[b]] <- Reduce("+", lamList) / length(lamList)
+        LAMBDA[[ block.label[b] ]] <- Reduce("+", lamList) / length(lamList)
       }
     }
 
@@ -579,6 +683,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       #     (Level 2 components available?  Extend conditional?)
       dataList <- object@DataList[useImps]
       SIGMA <- vector("list", nblocks)
+      names(SIGMA) <- group.label #FIXME when MLSEMs can have ordinal indicators
       if (nblocks == 1L) {
         VV <- lavNames(object, type = "ov")
         impCovList <- lapply(dataList, function(DD) {
@@ -592,13 +697,13 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
         G <- lavInspect(object, "group")
 
         for (g in seq_along(group.label)) {
-          VV <- try(lavNames(object, type = "ov", group = group.label[g]),
-                    silent = TRUE)
-          if (inherits(VV, "try-error")) {
-            VV <- lavNames(object, type = "ov", group = g)
-          }
+          VV <- lavNames(object, type = "ov",
+                         group = ifelse(length(group.label),
+                                        yes = group.label[g], no = g))
+
           impCovList <- lapply(dataList, function(DD) {
-            RR <- DD[,G] == group.label[g]
+            RR <- DD[,G] == ifelse(length(group.label),
+                                   yes = group.label[g], no = g)
             dat <- do.call(cbind, sapply(DD[RR, VV], as.numeric, simplify = FALSE))
             cov(dat)
           })
@@ -610,6 +715,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       ## use model-implied SIGMA from h0 or h1 model
       if (obs.var) {
         SIGMA <- vector("list", nblocks)
+        names(SIGMA) <- block.label
         ## loop over blocks to pool saturated-model (observed) matrices
         for (b in 1:nblocks) {
           covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
@@ -622,6 +728,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
         } else {
           SIGMA <- sapply(getMethod("fitted", class(object))(object),
                           "[[", "cov", simplify = FALSE)
+          names(SIGMA) <- block.label
         }
       }
 
@@ -640,9 +747,9 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
   }
 
   rel <- list() # output
-  warnTotal <- FALSE
+  warnTotal <- warnAlpha <- warnOmega <- FALSE
   warnHigher <- character(0) # collect list of potential higher-order factors
-  for (b in 1:nblocks) {
+  if (!length(c(config, shared))) for (b in 1:nblocks) {
 
     LY <- LAMBDA[[b]]
     allIndNames <- rownames(LY)
@@ -683,60 +790,59 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     higher <- if (length(latInds) == 0L) character(0) else {
       allFacNames[apply(beta[[b]], MARGIN = 2, function(x) any(x != 0))]
     }
-    ## keep track of factor indices to skip
-    #FIXME: remove?
-    # idx.drop <- numeric(0)
 
-    ## set result missing by default
-    rel[[b]] <- setNames(rep(NA, length(myFacNames)), nm = myFacNames)
-
-    warnAlpha <- warnOmega <- FALSE
     ## compute reliability per factor?
-    if (return.total[b] >= 0) for (fn in myFacNames) {
-      ## names of indicators with nonzero loadings
-      fIndNames <- myIndNames[which(subLY[,fn] != 0)]
+    if (return.total[b] >= 0) {
 
-      ## check for ANY indicators (possibly skip purely higher-order factors)
-      if (length(fIndNames) == 0L) next
-      ## check for single indicators
-      if (dropSingle && length(fIndNames) == 1L) next
-      ## check for categorical (or mixed) indicators
-      fCat <- any(fIndNames %in% ordNames)
-      ## identify when this factor has mixed indicators, so no omegas
-      fMix <- fCat && any(fIndNames %in% numNames)
-      ## check for latent indicators
-      if (allFacNames[fn] %in% higher && !(allFacNames[fn] %in% omit.factors)) {
-        warnHigher <- c(warnHigher, allFacNames[fn])
-      }
+      ## set result missing by default
+      rel[[b]] <- setNames(rep(NA, length(myFacNames)), nm = myFacNames)
 
-      ## ALPHA
-      totalCov  <- SIGMA[[b]][fIndNames, fIndNames, drop = FALSE]
-      if (tau.eq) {
-        if (fMix && !ord.scale) {
-          ## can't mix observed and latent scales
-          warnAlpha <- TRUE #TODO
+      for (fn in myFacNames) {
+        ## names of indicators with nonzero loadings
+        fIndNames <- myIndNames[which(subLY[,fn] != 0)]
+
+        ## check for ANY indicators (possibly skip purely higher-order factors)
+        if (length(fIndNames) == 0L) next
+        ## check for single indicators
+        if (dropSingle && length(fIndNames) == 1L) next
+        ## check for categorical (or mixed) indicators
+        fCat <- any(fIndNames %in% ordNames)
+        ## identify when this factor has mixed indicators, so no omegas
+        fMix <- fCat && any(fIndNames %in% numNames)
+        ## check for latent indicators
+        if (allFacNames[fn] %in% higher && !(allFacNames[fn] %in% omit.factors)) {
+          warnHigher <- c(warnHigher, allFacNames[fn])
+        }
+
+        ## ALPHA
+        totalCov  <- SIGMA[[b]][fIndNames, fIndNames, drop = FALSE]
+        if (tau.eq) {
+          if (fMix && !ord.scale) {
+            ## can't mix observed and latent scales
+            warnAlpha <- TRUE #TODO
+            next
+          }
+          rel[[b]][fn] <- computeAlpha(totalCov)
+          next
+        } # else compute omega
+
+        ## OMEGA
+        if (fMix) {
+          warnOmega <- TRUE # can't (yet) mix observed and latent scales
           next
         }
-        rel[[b]][fn] <- computeAlpha(totalCov)
-        next
-      } # else compute omega
-
-      ## OMEGA
-      if (fMix) {
-        warnOmega <- TRUE # can't (yet) mix observed and latent scales
-        next
-      }
-      Lf <- subLY[fIndNames, fn, drop = FALSE]
-      commonCov <- Lf %*% PHI[[b]][fn, fn] %*% t(Lf)
-      if (fCat && ord.scale) {
-        ## Green & Yang (2009)
-        rel[[b]][fn] <- omegaCat(truevar = commonCov, denom = totalCov,
-                                 threshold = threshold[[b]][fIndNames],
-                                 scales = latScales[[b]][fIndNames])
-        next
-      } # else, all continuous or all LRV-scale
-      rel[[b]][fn] <- sum(commonCov) / sum(totalCov)
-    } # end loop over factors
+        Lf <- subLY[fIndNames, fn, drop = FALSE]
+        commonCov <- Lf %*% PHI[[b]][fn, fn] %*% t(Lf)
+        if (fCat && ord.scale) {
+          ## Green & Yang (2009)
+          rel[[b]][fn] <- omegaCat(truevar = commonCov, denom = totalCov,
+                                   threshold = threshold[[b]][fIndNames],
+                                   scales = latScales[[b]][fIndNames])
+          next
+        } # else, all continuous or all LRV-scale
+        rel[[b]][fn] <- sum(commonCov) / sum(totalCov)
+      } # end loop over factors
+    } else rel[[b]] <- c(total = as.numeric(NA))
 
     ## compute for total composite?
     if (return.total[b] && length(myFacNames) > 1L) {
@@ -785,16 +891,126 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
             'is fitted by treating ordinal indicators as continuous.')
   }
 
+
+  ## otherwise, only use Lai's MULTILEVEL coefficients
+  if (nLevels > 1L && length(c(config, shared))) {
+
+    ## group-level list, each containing 2 coefs per factor/total in data.frame
+    rel <- vector("list", length = ngroups)
+
+    for (g in 1:ngroups) {
+
+      gLab <- ifelse(length(group.label), yes = group.label[g], no = g)
+      nameArgs <- list(object = object, type = "lv")
+      if (ngroups > 1L) nameArgs$group <- gLab
+      lv.names1 <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
+      lv.names2 <- do.call(lavNames, c(nameArgs, list(level = clus.label[2L])))
+
+      PT <- parTable(object)
+      PT <- PT[PT$op == "=~", ]
+      if (ngroups > 1L) PT <- PT[PT$group == gLab, ]
+
+      ## block indices for 2 levels in this group
+      idx1 <- 1 + (g-1)*2 # within
+      idx2 <- 2 + (g-1)*2 # cluster
+
+      ## configural construct(s) defined at both levels this group?
+      for (fn in config) {
+        if (fn %in% omit.factors) {
+          ## why would they do this?
+          config <- setdiff(config, omit.factors)
+          next
+        }
+        if (fn %in% lv.names1 && fn %in% lv.names2) {
+          ## same indicators for this construct at both levels?
+          indNames1 <- setdiff(PT$rhs[PT$lhs == fn & PT$level == clus.label[1L]],
+                               omit.indicators)
+          indNames2 <- setdiff(PT$rhs[PT$lhs == fn & PT$level == clus.label[2L]],
+                               omit.indicators)
+          if (!all.equal(indNames1, indNames2)) {
+            stop('After removing omit.indicators=, the indicators of factor ',
+                 fn, ' do not match across levels',
+                 ifelse(ngroups > 1L, paste(' in group', gLab), ""))
+            next
+          }
+          if (dropSingle && length(indNames1) == 1L) next
+
+          Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
+          Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
+
+          if (tau.eq) {
+            ## ALPHA
+            rel[[g]]$config[[fn]] <- c(`omega_W`  = computeAlpha(Sigma1),
+                                       `omega_2L` = computeAlpha(Sigma1 + Sigma2))
+          } else {
+            ## OMEGA
+            lam1 <- LAMBDA[[idx1]][indNames1, fn, drop = FALSE]
+            lam2 <- LAMBDA[[idx2]][indNames2, fn, drop = FALSE]
+            if (!isTRUE(all.equal(lam1, lam2)))
+              warning('Unequal loadings across levels detected for factor ', fn,
+                      ifelse(ngroups > 1L, paste(' in group', gLab), ""),
+                      '. omega_2L for configural constructs assumes invariance.')
+            phi1 <- PHI[[idx1]][fn, fn, drop = FALSE]
+            phi2 <- PHI[[idx2]][fn, fn, drop = FALSE]
+            commonCov1 <- lam1 %*% phi1 %*% t(lam1)
+            commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+            rel[[g]]$config[[fn]] <- c(`omega_W`  = sum(commonCov1)              / sum(Sigma1),
+                                       `omega_2L` = sum(commonCov1 + commonCov2) / sum(Sigma1 + Sigma2))
+          }
+
+        } else config <- setdiff(config, fn) # rm non-configural construct
+      }
+      ## after removing ineligible config, still multiple for total?
+      if (length(config) > 1L && return.total[idx1]) {
+        facNames1 <- setdiff(PT$lhs[PT$level == clus.label[1]], omit.factors)
+        facNames2 <- setdiff(PT$lhs[PT$level == clus.label[2]], omit.factors)
+        indNames1 <- setdiff(PT$rhs[PT$level == clus.label[1]], omit.indicators)
+        indNames2 <- setdiff(PT$rhs[PT$level == clus.label[2]], omit.indicators)
+        Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
+        Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
+
+        if (tau.eq) {
+          ## ALPHA
+          rel[[g]]$config$total <- c(`omega_W`  = computeAlpha(Sigma1),
+                                     `omega_2L` = computeAlpha(Sigma1 + Sigma2))
+        } else {
+          ## OMEGA
+          lam1 <- LAMBDA[[idx1]][indNames1, facNames1, drop = FALSE]
+          lam2 <- LAMBDA[[idx2]][indNames2, facNames2, drop = FALSE]
+          phi1 <- PHI[[idx1]][facNames1, facNames1, drop = FALSE]
+          phi2 <- PHI[[idx2]][facNames2, facNames2, drop = FALSE]
+          commonCov1 <- lam1 %*% phi1 %*% t(lam1)
+          commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+          rel[[g]]$config$total <- c(`omega_W`  = sum(commonCov1)              / sum(Sigma1),
+                                     `omega_2L` = sum(commonCov1 + commonCov2) / sum(Sigma1 + Sigma2))
+        }
+      }
+
+
+      ## shared construct(s) defined at between level in this group?
+      #TODO:  _B (g-coef) & IRR
+
+
+    } # end loop over groups
+  }
+
+
   ## drop list structure?
   if (nblocks == 1L) {
     rel <- rel[[1]]
-  } else names(rel) <- block.label
+  } else if (length(c(config, shared))) {
+    names(rel) <- group.label
+    if (ngroups == 1L) rel <- rel[[1]]
 
-  ## add any of Lai's multilevel coefficients?
-  #TODO: add arguments
-  #     - config = character(0) for _2L
-  #     - shared = character(0) for _B & IRR
-  if (nLevels)
+    ## or make it a matrix?
+    # 1 group:
+    # do.call(cbind, compRelSEM(fit2, config = c("f1","f2"), return.total = T)$config)
+    # 2 groups:
+    # lapply(compRelSEM(fit2g, config = c("f1","f2"), return.total = T),
+    #        function(x) do.call(cbind, x$config))
+  } else {
+    names(rel) <- block.label
+  }
 
   rel
 }
