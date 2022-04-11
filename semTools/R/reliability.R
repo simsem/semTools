@@ -1201,6 +1201,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 
 ## -------------
 ## reliability()
+## (deprecated)
 ## -------------
 
 
@@ -1467,6 +1468,34 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' '
 ##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
 ##' reliability(fit2, what = c("alpha","omega3"))
+##'
+##' @name reliability-deprecated
+##' @usage
+##' reliability(object, what = c("alpha", "omega", "omega2", "omega3", "ave"),
+##'             return.total = FALSE, dropSingle = TRUE, omit.factors = character(0),
+##'             omit.indicators = character(0), omit.imps = c("no.conv", "no.se"))
+##' @seealso \code{\link{semTools-deprecated}}
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
+##' @section Reliability:
+##' Original \code{reliability} function was suboptimally designed.
+##' For example, AVE was returned, which is not a reliability index. Also,
+##' alpha and several omega-type coefficients were returned, including the
+##' original formula that was in appropriate for models with complex structure.
+##' Some features could be controlled by the user for one but not both types of
+##' index  For example, alpha for categorical indicators was returned on both
+##' the observed and latent-response scales, but this was not an option for any
+##' omega-type indices.  The omegas differed in terms of whether the observed or
+##' model-implied covariance matrix was used in the denominator, but alpha was
+##' only computed using the observed matrix.  These inconsistencies have been
+##' resolved in the new \code{\link{compRelSEM}} function, which returns only
+##' one reliability index (per factor, optionally total score) according to the
+##' user's requested features, for which there is much more flexibility.
+##' Average variance extracted is now available in a dedicated \code{\link{AVE}}
+##' function.
 ##'
 ##' @export
 reliability <- function(object,

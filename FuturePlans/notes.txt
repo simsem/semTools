@@ -196,6 +196,12 @@ semTools::plotProbe
 Miscellaneous semTools
 ======================
 
+semTools::compRelSEM()
+- add weights= argument to pass custom weights for composite (default = 1)
+- weights = "maximal" triggers estimating weights, deprecate maximalRelia()
+- add higherOrder= argument to deprecate reliabilityL2()
+
+
 semTools::miPowerFit()
 - optionally work with lavTestScore() output?
   - https://groups.google.com/d/msg/lavaan/b2mB9kHUYho/vFad-F8UDgAJ
