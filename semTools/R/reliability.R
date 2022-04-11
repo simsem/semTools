@@ -635,8 +635,13 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'     f2 =~ y4 + L5*y5 + L6*y6
 ##' '
 ##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
-##' compRelSEM(fit2)
+##' compRelSEM(fit2) # Geldhof's indices (hypothetical, for latent components)
 ##'
+##' ## Lai's (2021) indices for Level-1 and configural constructs
+##' compRelSEM(fit2, config = c("f1","f2"))
+##' ## Lai's (2021) indices for shared (Level-2) constructs
+##' ## (also an interrater reliability coefficient)
+##' compRelSEM(fit2, shared = c("f1","f2"))
 ##'
 ##'
 ##' @export
