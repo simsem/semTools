@@ -7,7 +7,8 @@
 compRelSEM(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
   config = character(0), shared = character(0), return.total = FALSE,
   dropSingle = TRUE, omit.factors = character(0),
-  omit.indicators = character(0), omit.imps = c("no.conv", "no.se"))
+  omit.indicators = character(0), omit.imps = c("no.conv", "no.se"),
+  return.df = TRUE)
 }
 \arguments{
 \item{object}{A \code{\linkS4class{lavaan}} or
@@ -92,15 +93,23 @@ samples.  However, gross model misspecification could also cause
 NPD solutions, users can compare pooled results with and without
 this setting as a sensitivity analysis to see whether some
 imputations warrant further investigation.}
+
+\item{return.df}{\code{logical} indicating whether to return reliability
+coefficients in a \code{data.frame} (one row per group/level), which is
+possible when every model block includes the same factors (after excluding
+those in \code{omit.factors} and applying \code{dropSingle}).}
 }
 \value{
 A \code{numeric} vector of composite reliability coefficients per
   factor, or a \code{list} of vectors per "block" (group and/or level of
-  analysis). If there are multiple factors, whose multidimensional
-  indicators combine into a single composite, users can request
-  \code{return.total=TRUE} to add a column including a reliability
-  coefficient for the total composite, or.\code{return.total = -1} to
-  return \bold{only} the total-composite reliability.
+  analysis), optionally returned as a \code{data.frame} when possible (see
+  \code{return.df=} argument description for caveat). If there are multiple
+  factors, whose multidimensional indicators combine into a single
+  composite, users can request \code{return.total=TRUE} to add a column
+  including a reliability coefficient for the total composite, or
+  \code{return.total = -1} to return \bold{only} the total-composite
+  reliability (ignored when \code{config=} or \code{shared=} is specified
+  because each factor's specification must be checked across levels).
 }
 \description{
 Calculate composite reliability from estimated factor-model parameters

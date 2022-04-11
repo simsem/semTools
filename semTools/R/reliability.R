@@ -1,10 +1,10 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 10 April 2022
+### Last updated: 11 April 2022
 
 
 
 ## -----
-## ave()
+## AVE()
 ## -----
 
 ##' Calculate average variance extracted
@@ -55,9 +55,16 @@
 ##'   defined by a single indicator from the returned results. If \code{TRUE}
 ##'   (default), single indicators will still be included in the \code{total}
 ##'   column when \code{return.total = TRUE}.
+##' @param return.df \code{logical} indicating whether to return reliability
+##'   coefficients in a \code{data.frame} (one row per group/level), which is
+##'   possible when every model block includes the same factors (after excluding
+##'   those in \code{omit.factors} and applying \code{dropSingle}).
 ##'
-##' @return Average variance extracted from indicators per factor in each
-##'   "block" (any combination of groups and levels).
+##' @return \code{numeric} vector of average variance extracted from indicators
+##'   per factor.  For models with multiple "blocks" (any combination of groups
+##'   and levels), vectors may be returned as columns in a \code{data.frame}
+##'   with additional columns indicating the group/level (see \code{return.df=}
+##'   argument description for caveat).
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -83,8 +90,8 @@
 ##' fit <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
 ##'
 ##' ## works for factors with exclusively continuous OR categorical indicators
-##' ave(fit) # uses observed (or unconstrained polychoric/polyserial) by default
-##' ave(fit, obs.var = FALSE)
+##' AVE(fit) # uses observed (or unconstrained polychoric/polyserial) by default
+##' AVE(fit, obs.var = FALSE)
 ##'
 ##'
 ##' ## works for multigroup models and for multilevel models (and both)
@@ -104,21 +111,41 @@
 ##'     fac =~ y1 + L2*y2 + L3*y3
 ##' '
 ##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
-##' ave(fit2)
+##' AVE(fit2)
 ##'
 ##'@export
-ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
-                omit.factors = character(0), dropSingle = TRUE) {
-  ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
+AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
+                omit.factors = character(0), dropSingle = TRUE,
+                return.df = TRUE) {
+  ## numbers of blocks
+  ngroups <- lavInspect(object, "ngroups")
   nLevels <- lavInspect(object, "nlevels")
   nblocks <- ngroups*nLevels #FIXME: always true?
-  group.label <- if (ngroups > 1L) lavInspect(object, "group.label") else NULL
-  #FIXME? lavInspect(object, "level.labels")
-  clus.label <- if (nLevels > 1L) c("within", lavInspect(object, "cluster")) else NULL
-  if (nblocks > 1L) {
-    block.label <- paste(rep(group.label, each = nLevels), clus.label,
-                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
+
+  ## labels for groups
+  if (ngroups > 1L) {
+    group.label <- lavInspect(object, "group.label")
+    blk.g.lab <- if (!length(group.label)) paste0("g", 1:ngroups) else group.label
+  } else {
+    group.label <- blk.g.lab <- NULL
   }
+  ## labels for clusters
+  if (nLevels > 1L) {
+    #FIXME? lavInspect(object, "level.label") is always ==
+    #       c("within", lavInspect(object, "cluster"))
+    PT <- parTable(object)
+    clus.label <- unique(PT$level)
+    clus.label <- clus.label[which(clus.label != "")]
+    clus.label <- clus.label[which(clus.label != 0)]
+    blk.clus.lab <- if (is.numeric(clus.label)) {
+      c("within", lavInspect(object, "cluster"))
+    } else clus.label
+  } else clus.label <- blk.clus.lab <- NULL
+  ## labels for blocks
+  if (nblocks > 1L) {
+    block.label <- paste(rep(blk.g.lab, each = nLevels), blk.clus.lab,
+                         sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
+  } else block.label <- NULL
 
   ## check for categorical
   anyCategorical <- lavInspect(object, "categorical")
@@ -234,10 +261,40 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
   ## drop list structure?
   if (nblocks == 1L) {
     avevar <- avevar[[1]]
-  } else names(avevar) <- block.label
+    class(avevar) <- c("lavaan.vector","numeric")
+    return(avevar)
 
-  avevar
+  } else {
+    facList <- lapply(avevar, names)
+    sameNames <- all(sapply(2:nblocks, function(i) {
+      isTRUE(all.equal(facList[[1]], facList[[i]]))
+    } ))
+    if (!(sameNames && return.df)) {
+      ## can't simplify, return as a list
+      for (i in seq_along(avevar)) class(avevar[[i]]) <- c("lavaan.vector","numeric")
+      names(avevar) <- block.label
+      return(avevar)
+    }
+  }
+
+  ## concatenate each factor's AVE across blocks
+  facRel <- sapply(facList[[1]], simplify = FALSE, FUN = function(nn) {
+    sapply(avevar, "[[", i = nn, USE.NAMES = FALSE) # extract AVE for factor i
+  })
+  if (ngroups > 1L && nLevels > 1L) {
+    out <- data.frame(group = rep(blk.g.lab, each = nLevels),
+                      level = rep(blk.clus.lab, times = ngroups),
+                      facRel)
+  } else if (ngroups > 1L) {
+    out <- data.frame(group = blk.g.lab, facRel)
+  } else if (nLevels > 1L) {
+    out <- data.frame(level = blk.clus.lab, facRel)
+  }
+  class(out) <- c("lavaan.data.frame","data.frame")
+
+  out
 }
+
 
 
 ## ------------
@@ -442,14 +499,21 @@ ave <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   NPD solutions, users can compare pooled results with and without
 ##'   this setting as a sensitivity analysis to see whether some
 ##'   imputations warrant further investigation.
+##' @param return.df \code{logical} indicating whether to return reliability
+##'   coefficients in a \code{data.frame} (one row per group/level), which is
+##'   possible when every model block includes the same factors (after excluding
+##'   those in \code{omit.factors} and applying \code{dropSingle}).
 ##'
 ##' @return A \code{numeric} vector of composite reliability coefficients per
 ##'   factor, or a \code{list} of vectors per "block" (group and/or level of
-##'   analysis). If there are multiple factors, whose multidimensional
-##'   indicators combine into a single composite, users can request
-##'   \code{return.total=TRUE} to add a column including a reliability
-##'   coefficient for the total composite, or.\code{return.total = -1} to
-##'   return \bold{only} the total-composite reliability.
+##'   analysis), optionally returned as a \code{data.frame} when possible (see
+##'   \code{return.df=} argument description for caveat). If there are multiple
+##'   factors, whose multidimensional indicators combine into a single
+##'   composite, users can request \code{return.total=TRUE} to add a column
+##'   including a reliability coefficient for the total composite, or
+##'   \code{return.total = -1} to return \bold{only} the total-composite
+##'   reliability (ignored when \code{config=} or \code{shared=} is specified
+##'   because each factor's specification must be checked across levels).
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -581,9 +645,9 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
                        return.total = FALSE, dropSingle = TRUE,
                        omit.factors = character(0),
                        omit.indicators = character(0),
-                       omit.imps = c("no.conv","no.se")) {
+                       omit.imps = c("no.conv","no.se"), return.df = TRUE) {
   ## numbers of blocks
-  ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
+  ngroups <- lavInspect(object, "ngroups")
   nLevels <- lavInspect(object, "nlevels")
   nblocks <- ngroups*nLevels #FIXME: always true?
   return.total <- rep(return.total, nblocks)
@@ -603,10 +667,13 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     clus.label <- unique(PT$level)
     clus.label <- clus.label[which(clus.label != "")]
     clus.label <- clus.label[which(clus.label != 0)]
-  } else clus.label <- NULL
+    blk.clus.lab <- if (is.numeric(clus.label)) {
+      c("within", lavInspect(object, "cluster"))
+    } else clus.label
+  } else clus.label <- blk.clus.lab <- NULL
   ## labels for blocks
   if (nblocks > 1L) {
-    block.label <- paste(rep(blk.g.lab, each = nLevels), clus.label,
+    block.label <- paste(rep(blk.g.lab, each = nLevels), blk.clus.lab,
                          sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
   } else block.label <- NULL
 
@@ -885,8 +952,38 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     ## drop list structure
     if (nblocks == 1L) {
       rel <- rel[[1]]
-    } else names(rel) <- block.label
+      class(rel) <- c("lavaan.vector","numeric")
+      return(rel)
 
+    } else {
+      facList <- lapply(rel, names)
+      sameNames <- all(sapply(2:nblocks, function(i) {
+        isTRUE(all.equal(facList[[1]], facList[[i]]))
+      } ))
+      if (!(sameNames && return.df)) {
+        ## can't simplify, return as a list
+        for (i in seq_along(rel)) class(rel[[i]]) <- c("lavaan.vector","numeric")
+        names(rel) <- block.label
+        return(rel)
+      }
+    }
+
+    ## concatenate each factor's reliability across blocks
+    facRel <- sapply(facList[[1]], simplify = FALSE, FUN = function(nn) {
+      sapply(rel, "[[", i = nn, USE.NAMES = FALSE) # extract reliability for factor i
+    })
+    if (ngroups > 1L && nLevels > 1L) {
+      out <- data.frame(group = rep(blk.g.lab, each = nLevels),
+                        level = rep(blk.clus.lab, times = ngroups),
+                        facRel)
+    } else if (ngroups > 1L) {
+      out <- data.frame(group = blk.g.lab, facRel)
+    } else if (nLevels > 1L) {
+      out <- data.frame(level = blk.clus.lab, facRel)
+    }
+    class(out) <- c("lavaan.data.frame","data.frame")
+
+    return(out)
   }
 
   if (length(warnHigher)) warning('Possible higher-order factors detected:\n',
@@ -1093,6 +1190,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     } else names(rel) <- group.label
 
   }
+
+
 
 
   rel
