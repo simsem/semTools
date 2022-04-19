@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 11 April 2022
+### Last updated: 19 April 2022
 
 
 
@@ -408,18 +408,18 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   generalizability across rater/sampling-error only. To obtain a
 ##'   scale-reliability coefficient (quantifying a shared construct's
 ##'   generalizability across indicator/measurement-error only), include the
-##'   same factor name in \code{config=}.  This requires the construct to be
-##'   modeled at both levels (as recommended by Jak et al., 2021) rather than
-##'   saturating the within-level model (Lai, 2021).
+##'   same factor name in \code{config=}.  Jak et al. (2021) recommended
+##'   modeling components of the same construct at both levels, but users may
+##'   also saturate the within-level model (Lai, 2021).
 ##' }
 ##'
 ##' Be careful about including Level-2 variables in the model, especially
 ##' whether it makes sense to include them in a total composite for a Level-2
 ##' construct.  \code{dropSingle=TRUE} only prevents estimating reliability for
 ##' a single-indicator construct, not from including such an indicator in a
-##' total composite.  When specifying \code{shared=} constructs, it does not
-##' make sense to include any Level-2 variables.  If it is necessary to model
-##' them (e.g., to justify the missing-at-random assumption when using
+##' total composite.  It is permissible for \code{shared=} constructs to have
+##' indicators at Level-2 only.  If it is necessary to model other Level-2
+##' variables (e.g., to justify the missing-at-random assumption when using
 ##' \code{missing = "FIML" estimation}), they should be placed in the
 ##' \code{omit.indicators=} argument to exclude them from total composites.
 ##'
@@ -447,7 +447,9 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   are returned (or corresponding \eqn{\alpha} coefficients when
 ##'   \code{tau.eq=TRUE}), rather than Geldhof et al.'s (2014) coefficients for
 ##'   hypothetical composites of latent components (although the same formula
-##'   is used for \eqn{\omega^\text{W}} in either case).
+##'   is used for \eqn{\omega^\text{W}} in either case). Note that the same name
+##'   must be used for the factor component represented at each level of the
+##'   model.
 ##' @param shared \code{character} vector naming any shared constructs in
 ##'   a multilevel CFA. For these constructs (and optional total composite),
 ##'   Lai's (2021) coefficient \eqn{\omega^\text{B}} or \eqn{\alpha^\text{B}} is
@@ -643,6 +645,37 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' ## (also an interrater reliability coefficient)
 ##' compRelSEM(fit2, shared = c("f1","f2"))
 ##'
+##'
+##' ## Shared construct using saturated within-level model
+##' mod.sat1 <- ' level: 1
+##'   y1 ~~ y1 + y2 + y3 + y4 + y5 + y6
+##'   y2 ~~ y2 + y3 + y4 + y5 + y6
+##'   y3 ~~ y3 + y4 + y5 + y6
+##'   y4 ~~ y4 + y5 + y6
+##'   y5 ~~ y5 + y6
+##'   y6 ~~ y6
+##'
+##'   level: 2
+##'   f1 =~ y1 + L2*y2 + L3*y3
+##'   f2 =~ y4 + L5*y5 + L6*y6
+##' '
+##' fit.sat1 <- sem(mod.sat1, data = Demo.twolevel, cluster = "cluster")
+##' compRelSEM(fit.sat1, shared = c("f1","f2"))
+##'
+##'
+##' ## Simultaneous shared-and-configural model (Stapleton et al, 2016, 2019),
+##' ## not recommended, but possible by omitting shared or configural factor.
+##' mod.both <- ' level: 1
+##'     fc =~ y1 + L2*y2 + L3*y3 + L4*y4 + L5*y5 + L6*y6
+##'   level: 2
+##'   ## configural construct
+##'     fc =~ y1 + L2*y2 + L3*y3 + L4*y4 + L5*y5 + L6*y6
+##'   ## orthogonal shared construct
+##'     fs =~ NA*y1 + y2 + y3 + y4 + y5 + y6
+##'     fs ~~ 1*fs + 0*fc
+##' '
+##' fit.both <- sem(mod.both, data = Demo.twolevel, cluster = "cluster")
+##' compRelSEM(fit.both, shared = "fs", config = "fc")
 ##'
 ##' @export
 compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
@@ -1080,7 +1113,13 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
                                        `omega_2L` = sum(commonCov1 + commonCov2) / sum(Sigma1 + Sigma2))
           }
 
-        } else config <- setdiff(config, fn) # rm non-configural construct
+        } else {
+          warning('Configural factor ', fn, 'not detected at both levels of ',
+                  'analysis, so removed from config= list.  Please use the ',
+                  'same name for the within- and between-level component of a ',
+                  'configural construct in your syntax.')
+          config <- setdiff(config, fn) # rm non-configural construct
+        }
       }
       ## after removing ineligible config, still multiple for total?
       if (length(config) > 1L) {
@@ -1129,6 +1168,14 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
                                omit.indicators)
           ## only Level-2 single-indicator factors are relevant to drop
           if (dropSingle && length(indNames2) == 1L) next
+          ## check for empty Level-1 names (e.g., saturated Level-1 model)
+          if (!length(indNames1)) {
+            ## capture within-level variance components of same indicators
+            ## (make sure none are Level-2 only)
+            nameArgs$type <- "ov"
+            ov.names1 <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
+            indNames1 <- intersect(indNames2, ov.names1)
+          }
 
           Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
           Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
