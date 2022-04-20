@@ -1060,6 +1060,9 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       if (ngroups > 1L) nameArgs$group <- gLab
       lv.names1 <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
       lv.names2 <- do.call(lavNames, c(nameArgs, list(level = clus.label[2L])))
+      nameArgs$type <- "ov"
+      ov.names1 <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
+      # ov.names2 <- do.call(lavNames, c(nameArgs, list(level = clus.label[2L])))
 
       PT <- parTable(object)
       PT <- PT[PT$op == "=~", ]
@@ -1172,8 +1175,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
           if (!length(indNames1)) {
             ## capture within-level variance components of same indicators
             ## (make sure none are Level-2 only)
-            nameArgs$type <- "ov"
-            ov.names1 <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
             indNames1 <- intersect(indNames2, ov.names1)
           }
 
@@ -1208,6 +1209,12 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
         if (return.total[idx2]) {
           indNames1 <- setdiff(PT$rhs[PT$level == clus.label[1]], omit.indicators)
           indNames2 <- setdiff(PT$rhs[PT$level == clus.label[2]], omit.indicators)
+          ## check for empty Level-1 names (e.g., saturated Level-1 model)
+          if (!length(indNames1)) {
+            ## capture within-level variance components of same indicators
+            ## (make sure none are Level-2 only)
+            indNames1 <- intersect(indNames2, ov.names1)
+          }
           Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
           Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
 
