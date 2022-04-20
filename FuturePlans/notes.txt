@@ -111,7 +111,7 @@ semTools::alignment()
              then align as usual given the first alignment
 
 
-New CFI for invariance tests?
+Lai & Yoon's new CFI for invariance tests?
 - general incremental-fit function accepts 2-3 models, returns vector of indices
   - detect robust correction
   - utilize Yves' new @h1 and @baseline slots when available
@@ -252,9 +252,8 @@ with ordinal?  Necessary to use a robust ACOV as the weight matrix?
 
 
 lavaan::lavNames()
-- add ... option level=1/2 or within/between?
-  - block is already available for this
-- somehow access @Data@ov.names.l list
+- type = "ov.L2" for level-2 only variables
+- same with level-1 only, and for "lv.*"
 
 
 lavaan::lavaanList()

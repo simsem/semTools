@@ -23,7 +23,7 @@ export(
   indProd, orthogonalize,
 
   ## Sunthud with Yves Rosseel
-  reliability, mvrnonnorm,
+  mvrnonnorm,
   ## with Yves and Terrence
   measurementInvariance, longInvariance, measurementInvarianceCat, ###### deprecated
 
@@ -34,6 +34,7 @@ export(
   poolMAlloc,
 
   ## Terrence
+  AVE, compRelSEM, # replaces reliability()
   bsBootMiss, net, chisqSmallN,
   permuteMeasEq, measEq.syntax,
   twostage, lavaan.2stage, cfa.2stage, sem.2stage, growth.2stage,

@@ -114,7 +114,7 @@ with unobservable variables and measurement errors. \emph{Journal of
 Marketing Research, 18}(1), 39--50. \doi{10.2307/3151312}
 }
 \seealso{
-
+\code{\link{compRelSEM}} for composite reliability estimates
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

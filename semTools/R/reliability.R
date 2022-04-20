@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 19 April 2022
+### Last updated: 20 April 2022
 
 
 
@@ -74,7 +74,7 @@
 ##' with unobservable variables and measurement errors. \emph{Journal of
 ##' Marketing Research, 18}(1), 39--50. \doi{10.2307/3151312}
 ##'
-##' @seealso
+##' @seealso \code{\link{compRelSEM}} for composite reliability estimates
 ##'
 ##' @examples
 ##' data(HolzingerSwineford1939)
@@ -1190,8 +1190,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
             onlyCov2 <- Sigma2
             diag(onlyCov2) <- 0
 
-            rel[[g]]$shared[[fn]] <- c(`alpha_B` = nI*sum(onlyCov2) / (nI-1)*sum(Sigma1*Ns, Sigma2),
-                                       `IRR`     = nI*sum( Sigma2 ) / (nI-1)*sum(Sigma1*Ns, Sigma2))
+            rel[[g]]$shared[[fn]] <- c(`alpha_B` = (nI / (nI-1))*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
+                                       `IRR`     = (nI / (nI-1))*sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
           } else {
             ## OMEGA
             lam2 <- LAMBDA[[idx2]][indNames2, fn, drop = FALSE]
@@ -1217,8 +1217,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
             onlyCov2 <- Sigma2
             diag(onlyCov2) <- 0
 
-            rel[[g]]$shared$total <- c(`alpha_B` = nI*sum(onlyCov2) / (nI-1)*sum(Sigma1*Ns, Sigma2),
-                                       `IRR`     = nI*sum( Sigma2 ) / (nI-1)*sum(Sigma1*Ns, Sigma2))
+            rel[[g]]$shared$total <- c(`alpha_B` = (nI / (nI-1))*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
+                                       `IRR`     = (nI / (nI-1))*sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
           } else {
             ## OMEGA
             lam2 <- LAMBDA[[idx2]][indNames2, shared, drop = FALSE]
@@ -1242,9 +1242,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     } else names(rel) <- group.label
 
   }
-
-
-
 
   rel
 }
