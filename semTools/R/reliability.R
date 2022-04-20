@@ -1187,12 +1187,13 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
               stop('Coefficient alpha is undefined for a single indicator. ',
                    'Set tau.eq=FALSE or dropSingle=TRUE')
             }
+            kw <- nI / (nI-1) # weight for alpha based on number of items
             ## ALPHA
             onlyCov2 <- Sigma2
             diag(onlyCov2) <- 0
 
-            rel[[g]]$shared[[fn]] <- c(`alpha_B` = (nI / (nI-1))*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
-                                       `IRR`     = (nI / (nI-1))*sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
+            rel[[g]]$shared[[fn]] <- c(`alpha_B` = kw*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
+                                       `IRR`     =    sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
           } else {
             ## OMEGA
             lam2 <- LAMBDA[[idx2]][indNames2, fn, drop = FALSE]
@@ -1221,11 +1222,12 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
           if (tau.eq) {
             ## ALPHA
             nI <- length(indNames2)
+            kw <- nI / (nI-1) # weight for alpha based on number of items
             onlyCov2 <- Sigma2
             diag(onlyCov2) <- 0
 
-            rel[[g]]$shared$total <- c(`alpha_B` = (nI / (nI-1))*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
-                                       `IRR`     = (nI / (nI-1))*sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
+            rel[[g]]$shared$total <- c(`alpha_B` = kw*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
+                                       `IRR`     =    sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
           } else {
             ## OMEGA
             lam2 <- LAMBDA[[idx2]][indNames2, shared, drop = FALSE]
