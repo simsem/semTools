@@ -5,8 +5,8 @@
 \title{Composite Reliability using SEM}
 \usage{
 compRelSEM(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
-  config = character(0), shared = character(0), return.total = FALSE,
-  dropSingle = TRUE, omit.factors = character(0),
+  config = character(0), shared = character(0), higher = character(0),
+  return.total = FALSE, dropSingle = TRUE, omit.factors = character(0),
   omit.indicators = character(0), omit.imps = c("no.conv", "no.se"),
   return.df = TRUE)
 }
@@ -54,9 +54,14 @@ indicator/measurement error alone (i.e., \eqn{\omega^\text{2L}}), the
 \code{shared=} construct name(s) can additionally be included in
 \code{config=} argument.}
 
+\item{higher}{\code{character} vector naming any higher-order constructs in
+\code{object} for which composite reliability should be calculated.
+Ignored when \code{tau.eq=TRUE} because alpha is not based on a CFA model;
+instead. users must fit a CFA with tau-equivalence constraints.}
+
 \item{return.total}{\code{logical} indicating whether to return a final
 column containing the reliability of a composite of all indicators (not
-listed in \code{omit.indicators}) of factors not listed in
+listed in \code{omit.indicators}) of first-order factors not listed in
 \code{omit.factors}.  Ignored in 1-factor models, and should only be set
 \code{TRUE} if all factors represent scale dimensions that could be
 meaningfully collapsed to a single composite (scale sum or scale mean).
@@ -259,10 +264,21 @@ compRelSEM(fit, omit.factors = "speed", return.total = TRUE)
 
 ## loop over visual indicators to calculate alpha if one indicator is removed
 for (i in paste0("x", 1:3)) {
-  cat("Drop x", i, ":\n")
+  cat("Drop ", i, ":\n", sep = "")
   print(compRelSEM(fit, omit.factors = c("textual","speed"),
                    omit.indicators = i, tau.eq = TRUE))
 }
+
+
+## Reliability of a composite that represents a higher-order factor
+mod.hi <- ' visual  =~ x1 + x2 + x3
+            textual =~ x4 + x5 + x6
+            speed   =~ x7 + x8 + x9
+            general =~ visual + textual + speed '
+
+fit.hi <- cfa(mod.hi, data = HolzingerSwineford1939)
+compRelSEM(fit.hi, higher = "general")
+## reliabilities for lower-order composites also returned
 
 
 ## works for multigroup models and for multilevel models (and both)

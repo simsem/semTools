@@ -464,9 +464,13 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   indicator/measurement error alone (i.e., \eqn{\omega^\text{2L}}), the
 ##'   \code{shared=} construct name(s) can additionally be included in
 ##'   \code{config=} argument.
+##' @param higher \code{character} vector naming any higher-order constructs in
+##'   \code{object} for which composite reliability should be calculated.
+##'   Ignored when \code{tau.eq=TRUE} because alpha is not based on a CFA model;
+##'   instead. users must fit a CFA with tau-equivalence constraints.
 ##' @param return.total \code{logical} indicating whether to return a final
 ##'   column containing the reliability of a composite of all indicators (not
-##'   listed in \code{omit.indicators}) of factors not listed in
+##'   listed in \code{omit.indicators}) of first-order factors not listed in
 ##'   \code{omit.factors}.  Ignored in 1-factor models, and should only be set
 ##'   \code{TRUE} if all factors represent scale dimensions that could be
 ##'   meaningfully collapsed to a single composite (scale sum or scale mean).
@@ -610,10 +614,21 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'
 ##' ## loop over visual indicators to calculate alpha if one indicator is removed
 ##' for (i in paste0("x", 1:3)) {
-##'   cat("Drop x", i, ":\n")
+##'   cat("Drop ", i, ":\n", sep = "")
 ##'   print(compRelSEM(fit, omit.factors = c("textual","speed"),
 ##'                    omit.indicators = i, tau.eq = TRUE))
 ##' }
+##'
+##'
+##' ## Reliability of a composite that represents a higher-order factor
+##' mod.hi <- ' visual  =~ x1 + x2 + x3
+##'             textual =~ x4 + x5 + x6
+##'             speed   =~ x7 + x8 + x9
+##'             general =~ visual + textual + speed '
+##'
+##' fit.hi <- cfa(mod.hi, data = HolzingerSwineford1939)
+##' compRelSEM(fit.hi, higher = "general")
+##' ## reliabilities for lower-order composites also returned
 ##'
 ##'
 ##' ## works for multigroup models and for multilevel models (and both)
@@ -680,6 +695,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' @export
 compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
                        config = character(0), shared = character(0),
+                       higher = character(0),
                        return.total = FALSE, dropSingle = TRUE,
                        omit.factors = character(0),
                        omit.indicators = character(0),
@@ -730,11 +746,9 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     EST   <- lavInspect(object, "est", drop.list.single.group = FALSE)
     LAMBDA <- sapply(EST, "[[", i = "lambda", simplify = FALSE)
     names(LAMBDA) <- block.label
-
     ## possibly higher-order loadings?
-    BETA <- if ("beta" %in% names(lavaan::lavTech(object, "est"))) {
-      sapply(EST, "[[", i = "beta", simplify = FALSE)
-    } else NULL
+    BETA   <- sapply(EST, "[[", i = "beta",   simplify = FALSE)
+    names(BETA)   <- block.label
 
     ## total variance
     if (anyCategorical && tau.eq && ord.scale) {
@@ -779,16 +793,24 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       PHI[[ block.label[b] ]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
     }
 
-    ## loadings
+    ## loadings (including higher-order in Beta)
     if (nblocks == 1L) {
       lamList <- lapply(object@coefList[useImps], "[[", i = "lambda")
-      LAMBDA <- Reduce("+", lamList) / length(lamList)
+      LAMBDA <- list(Reduce("+", lamList) / length(lamList))
+
+      betList <- lapply(object@coefList[useImps], "[[", i = "beta")
+      if (length(betList)) {
+        BETA <- list(Reduce("+", betList) / length(betList))
+      } else BETA <- list(NULL)
+
     } else {
-      LAMBDA <- vector("list", nblocks)
-      names(LAMBDA) <- block.label
+      LAMBDA <- BETA <- vector("list", nblocks)
+      names(LAMBDA) <- names(BETA) <- block.label
       for (b in 1:nblocks) {
         lamList <- lapply(object@coefList[useImps], function(i) i[[b]]$lambda)
         LAMBDA[[ block.label[b] ]] <- Reduce("+", lamList) / length(lamList)
+        betList <- lapply(object@coefList[useImps], function(i) i[[b]]$beta  )
+        BETA[[   block.label[b] ]] <- Reduce("+", betList) / length(betList)
       }
     }
 
@@ -863,7 +885,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
   }
 
   warnTotal <- warnAlpha <- warnOmega <- FALSE
-  warnHigher <- character(0) # collect list of potential higher-order factors
   if (!length(c(config, shared))) {
 
     rel <- vector("list", length = nblocks)
@@ -904,12 +925,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
         if (!(tau.eq && ord.scale)) warnTotal <- TRUE
       }
 
-      ## identify POSSIBLE higher-order factors (that affect other latent vars)
-      latInds  <- do.call(lavNames, c(nameArgs, list(type = "lv.ind")))
-      higher <- if (length(latInds) == 0L) character(0) else {
-        allFacNames[apply(beta[[b]], MARGIN = 2, function(x) any(x != 0))]
-      }
-
       ## compute reliability per factor?
       if (return.total[b] >= 0) {
 
@@ -920,7 +935,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
           ## names of indicators with nonzero loadings
           fIndNames <- myIndNames[which(subLY[,fn] != 0)]
 
-          ## check for ANY indicators (possibly skip purely higher-order factors)
+          ## check for ANY indicators
           if (length(fIndNames) == 0L) next
           ## check for single indicators
           if (dropSingle && length(fIndNames) == 1L) next
@@ -928,10 +943,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
           fCat <- any(fIndNames %in% ordNames)
           ## identify when this factor has mixed indicators, so no omegas
           fMix <- fCat && any(fIndNames %in% numNames)
-          ## check for latent indicators
-          if (allFacNames[fn] %in% higher && !(allFacNames[fn] %in% omit.factors)) {
-            warnHigher <- c(warnHigher, allFacNames[fn])
-          }
 
           ## ALPHA
           totalCov  <- SIGMA[[b]][fIndNames, fIndNames, drop = FALSE]
@@ -985,6 +996,35 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
         rel[[b]]["total"] <- sum(commonCov) / sum(totalCov)
       }
 
+      ## composite(s) representing higher-order factor(s)?
+      for (hf in higher) {
+        # latInds  <- do.call(lavNames, c(nameArgs, list(type = "lv.ind")))
+        # otherHigher <- if (length(latInds) == 0L) character(0) else {
+        #   allFacNames[apply(BETA[[b]], MARGIN = 2, function(x) any(x != 0))]
+        # }
+        ## find latent indicators
+        L2 <- BETA[[b]][,hf]
+        latInds <- setdiff(names(L2)[L2 != 0], omit.factors)
+        ## find observed indicators
+        indList <- lapply(c(hf, latInds), function(i) names(LY[,i])[ LY[,i] != 0])
+        myIndNames <- setdiff(unique(do.call(c, indList)), omit.indicators)
+
+        totalCov  <- SIGMA[[b]][myIndNames, myIndNames] # no need for drop = FALSE
+        L <- LY[myIndNames, c(hf, latInds)]
+        B <- BETA[[b]][c(hf, latInds), c(hf, latInds)]
+        Phi <- PHI[[b]][c(hf, latInds), c(hf, latInds)]
+        commonCov <- sum(L %*% B %*% Phi %*% t(B) %*% t(L))
+        if (blockCat && ord.scale) {
+          ## Green & Yang (2009)
+          rel[[b]][hf] <- omegaCat(truevar = commonCov, denom = totalCov,
+                                   threshold = threshold[[b]][myIndNames],
+                                   scales = latScales[[b]][myIndNames])
+          next
+        } # else, all continuous or all LRV-scale
+        rel[[b]][hf] <- sum(commonCov) / sum(totalCov)
+
+      }
+
     }
 
     ## drop list structure
@@ -1024,8 +1064,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     return(out)
   }
 
-  if (length(warnHigher)) warning('Possible higher-order factors detected:\n',
-                                  paste(unique(warnHigher), sep = ", "))
   if (warnTotal) {
     message('Cannot return.total when model contains both continuous and ',
             'binary/ordinal observed indicators. Use the ',
@@ -1048,6 +1086,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 
 
   ## otherwise, only use Lai's MULTILEVEL coefficients
+  #TODO: check whether listed factors are higher-order, adapt eqs to include BETA
   if (nLevels > 1L && length(c(config, shared))) {
 
     ## group-level list, each containing 2 coefs per factor/total in data.frame
@@ -2037,7 +2076,7 @@ reliability <- function(object,
 ##' HS.model3 <- ' visual  =~ x1 + x2 + x3
 ##'                textual =~ x4 + x5 + x6
 ##'                speed   =~ x7 + x8 + x9
-##' 			         higher =~ visual + textual + speed'
+##'                higher =~ visual + textual + speed'
 ##'
 ##' fit6 <- cfa(HS.model3, data = HolzingerSwineford1939)
 ##' reliability(fit6) # Should provide a warning for the endogenous variables
