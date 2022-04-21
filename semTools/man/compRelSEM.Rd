@@ -57,7 +57,12 @@ indicator/measurement error alone (i.e., \eqn{\omega^\text{2L}}), the
 \item{higher}{\code{character} vector naming any higher-order constructs in
 \code{object} for which composite reliability should be calculated.
 Ignored when \code{tau.eq=TRUE} because alpha is not based on a CFA model;
-instead. users must fit a CFA with tau-equivalence constraints.}
+instead, users must fit a CFA with tau-equivalence constraints.
+To obtain Lai's (2021) multilevel composite-reliability indices for a
+higher-order factor, do not use this argument; instead, specify the
+higher-order factor(s) using the \code{shared=} or \code{config=} argument
+(\code{compRelSEM} will automatically check whether it includes latent
+indicators and apply the appropriate formula).}
 
 \item{return.total}{\code{logical} indicating whether to return a final
 column containing the reliability of a composite of all indicators (not
@@ -168,6 +173,40 @@ By setting \code{return.total=TRUE}, one can estimate reliability for a
 single composite calculated using all indicators in a multidimensional
 CFA (Bentler, 1972, 2009). Setting \code{return.total = -1} will return
 \bold{only} the total-composite reliability (not per factor).
+
+\bold{Higher-Order Factors}:
+The reliability of a composite that represents a higher-order construct
+requires partitioning the model-implied factor covariance matrix \eqn{\Phi}
+in order to isolate the common-factor variance associated only with the
+higher-order factor. Using a second-order factor model, the model-implied
+covariance matrix of observed indicators \eqn{\hat{\Sigma}} can be
+partitioned into 3 sources:
+\enumerate{
+  \item the second-order common-factor (co)variance:
+        \eqn{\Lambda \bold{B} \Phi_2 \bold{B}^{\prime} \Lambda^{\prime}}
+  \item the residual variance of the first-order common factors (i.e., not
+        accounted for by the second-order factor):
+        \eqn{\Lambda \Psi_{u} \Lambda^{\prime}}
+  \item the measurement error of observed indicators: \eqn{\Theta}
+}
+
+where \eqn{\Lambda} contains first-order factor loadings, \eqn{\bold{B}}
+contains second-order factor loadings, \eqn{\Phi_2} is the model-implied
+covariance matrix of the second-order factor(s), and \eqn{\Psi_{u}} is the
+covariance matrix of first-order factor disturbances. In practice, we can
+use the full \eqn{\bold{B}} matrix and full model-implied \eqn{\Phi} matrix
+(i.e., including all latent factors) because the zeros in \eqn{\bold{B}}
+will cancel out unwanted components of \eqn{\Phi}. Thus, we can calculate
+the proportion of variance of a composite score calculated from the observed
+indicators (e.g., a total score or scale mean) that is attributable to the
+second-order factor (i.e., coefficient \eqn{\omega}):
+
+\deqn{\omega_{L1}=\frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi \bold{B}^{\prime}
+  \Lambda^{\prime} \bold{1} }{ \bold{1}^{\prime} \hat{\Sigma} \bold{1}}, }
+
+where \eqn{\bold{1}} is the \emph{k}-dimensional vector of 1s and \emph{k}
+is the number of observed indicators in the composite. Note that a
+higher-order factor can also have observed indicators.
 
 \bold{Categorical Indicators}:
 When all indicators (per composite) are ordinal, the \code{ord.scale}
@@ -402,13 +441,11 @@ scales of measurement do not help make it: A response to Chalmers.
 \doi{10.1177/0013164419844305}
 }
 \seealso{
-\code{\link{reliabilityL2}} for reliability value of a desired
-second-order factor, \code{\link{maximalRelia}} for the maximal reliability
-of weighted composite
+\code{\link{maximalRelia}} for the maximal reliability of weighted composite
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
   Uses hidden functions written by Sunthud Pornprasertmanit
-  (\email{psunthud@gmail.com}) for original \code{reliability()} function.
+  (\email{psunthud@gmail.com}) for the old \code{reliability()} function.
 }

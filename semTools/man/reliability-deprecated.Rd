@@ -267,10 +267,6 @@ scales of measurement do not help make it: A response to Chalmers.
 \doi{10.1177/0013164419844305}
 }
 \seealso{
-\code{\link{reliabilityL2}} for reliability value of a desired
-second-order factor, \code{\link{maximalRelia}} for the maximal reliability
-of weighted composite
-
 \code{\link{semTools-deprecated}}
 }
 \author{

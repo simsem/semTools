@@ -7,6 +7,7 @@
 \alias{measurementInvariance}
 \alias{measurementInvarianceCat}
 \alias{reliability}
+\alias{reliabilityL2}
 \title{Deprecated functions in package \pkg{semTools}.}
 \usage{
 longInvariance(model, varList, auto = "all", constrainAuto = FALSE,
@@ -26,6 +27,8 @@ measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE,
 reliability(object, what = c("alpha", "omega", "omega2", "omega3", "ave"),
   return.total = FALSE, dropSingle = TRUE, omit.factors = character(0),
   omit.indicators = character(0), omit.imps = c("no.conv", "no.se"))
+
+reliabilityL2(object, secondFactor, omit.imps = c("no.conv", "no.se"))
 }
 \description{
 The functions listed below are deprecated and will be defunct
@@ -45,7 +48,7 @@ measures, models fit to multiple imputations with \code{\link{runMI}}).
 
 \section{Reliability}{
 
-Original \code{reliability} function was suboptimally designed.
+The original \code{reliability} function was suboptimally designed.
 For example, AVE was returned, which is not a reliability index. Also,
 alpha and several omega-type coefficients were returned, including the
 original formula that was in appropriate for models with complex structure.
@@ -60,6 +63,16 @@ one reliability index (per factor, optionally total score) according to the
 user's requested features, for which there is much more flexibility.
 Average variance extracted is now available in a dedicated \code{\link{AVE}}
 function.
+}
+
+\section{Higher-Order Reliability}{
+
+Originally, composite reliability of a single higher-order factor was
+estimated in a separate function: \code{reliabilityL2}.  It is now available
+for multiple higher-order factors in the same model, and from the same
+\code{\link{compRelSEM}} function that estimates reliability for first-order
+factors, using the \code{higher=} argument to name higher-order factors in
+the fitted model.
 }
 
 \keyword{internal}

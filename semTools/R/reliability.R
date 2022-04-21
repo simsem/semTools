@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 20 April 2022
+### Last updated: 22 April 2022
 
 
 
@@ -352,6 +352,40 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' CFA (Bentler, 1972, 2009). Setting \code{return.total = -1} will return
 ##' \bold{only} the total-composite reliability (not per factor).
 ##'
+##' \bold{Higher-Order Factors}:
+##' The reliability of a composite that represents a higher-order construct
+##' requires partitioning the model-implied factor covariance matrix \eqn{\Phi}
+##' in order to isolate the common-factor variance associated only with the
+##' higher-order factor. Using a second-order factor model, the model-implied
+##' covariance matrix of observed indicators \eqn{\hat{\Sigma}} can be
+##' partitioned into 3 sources:
+##' \enumerate{
+##'   \item the second-order common-factor (co)variance:
+##'         \eqn{\Lambda \bold{B} \Phi_2 \bold{B}^{\prime} \Lambda^{\prime}}
+##'   \item the residual variance of the first-order common factors (i.e., not
+##'         accounted for by the second-order factor):
+##'         \eqn{\Lambda \Psi_{u} \Lambda^{\prime}}
+##'   \item the measurement error of observed indicators: \eqn{\Theta}
+##' }
+##'
+##' where \eqn{\Lambda} contains first-order factor loadings, \eqn{\bold{B}}
+##' contains second-order factor loadings, \eqn{\Phi_2} is the model-implied
+##' covariance matrix of the second-order factor(s), and \eqn{\Psi_{u}} is the
+##' covariance matrix of first-order factor disturbances. In practice, we can
+##' use the full \eqn{\bold{B}} matrix and full model-implied \eqn{\Phi} matrix
+##' (i.e., including all latent factors) because the zeros in \eqn{\bold{B}}
+##' will cancel out unwanted components of \eqn{\Phi}. Thus, we can calculate
+##' the proportion of variance of a composite score calculated from the observed
+##' indicators (e.g., a total score or scale mean) that is attributable to the
+##' second-order factor (i.e., coefficient \eqn{\omega}):
+##'
+##' \deqn{\omega_{L1}=\frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi \bold{B}^{\prime}
+##'   \Lambda^{\prime} \bold{1} }{ \bold{1}^{\prime} \hat{\Sigma} \bold{1}}, }
+##'
+##' where \eqn{\bold{1}} is the \emph{k}-dimensional vector of 1s and \emph{k}
+##' is the number of observed indicators in the composite. Note that a
+##' higher-order factor can also have observed indicators.
+##'
 ##' \bold{Categorical Indicators}:
 ##' When all indicators (per composite) are ordinal, the \code{ord.scale}
 ##' argument controls whether the coefficient is calculated on the
@@ -467,7 +501,12 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' @param higher \code{character} vector naming any higher-order constructs in
 ##'   \code{object} for which composite reliability should be calculated.
 ##'   Ignored when \code{tau.eq=TRUE} because alpha is not based on a CFA model;
-##'   instead. users must fit a CFA with tau-equivalence constraints.
+##'   instead, users must fit a CFA with tau-equivalence constraints.
+##'   To obtain Lai's (2021) multilevel composite-reliability indices for a
+##'   higher-order factor, do not use this argument; instead, specify the
+##'   higher-order factor(s) using the \code{shared=} or \code{config=} argument
+##'   (\code{compRelSEM} will automatically check whether it includes latent
+##'   indicators and apply the appropriate formula).
 ##' @param return.total \code{logical} indicating whether to return a final
 ##'   column containing the reliability of a composite of all indicators (not
 ##'   listed in \code{omit.indicators}) of first-order factors not listed in
@@ -525,11 +564,10 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##'   Uses hidden functions written by Sunthud Pornprasertmanit
-##'   (\email{psunthud@@gmail.com}) for original \code{reliability()} function.
+##'   (\email{psunthud@@gmail.com}) for the old \code{reliability()} function.
 ##'
-##' @seealso \code{\link{reliabilityL2}} for reliability value of a desired
-##' second-order factor, \code{\link{maximalRelia}} for the maximal reliability
-##' of weighted composite
+##' @seealso
+##' \code{\link{maximalRelia}} for the maximal reliability of weighted composite
 ##'
 ##' @references
 ##' Bentler, P. M. (1968). Alpha-maximized factor analysis (alphamax): Its
@@ -998,10 +1036,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 
       ## composite(s) representing higher-order factor(s)?
       for (hf in higher) {
-        # latInds  <- do.call(lavNames, c(nameArgs, list(type = "lv.ind")))
-        # otherHigher <- if (length(latInds) == 0L) character(0) else {
-        #   allFacNames[apply(BETA[[b]], MARGIN = 2, function(x) any(x != 0))]
-        # }
         ## find latent indicators
         L2 <- BETA[[b]][,hf]
         latInds <- setdiff(names(L2)[L2 != 0], omit.factors)
@@ -1086,7 +1120,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 
 
   ## otherwise, only use Lai's MULTILEVEL coefficients
-  #TODO: check whether listed factors are higher-order, adapt eqs to include BETA
   if (nLevels > 1L && length(c(config, shared))) {
 
     ## group-level list, each containing 2 coefs per factor/total in data.frame
@@ -1101,13 +1134,19 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       lv.names2 <- do.call(lavNames, c(nameArgs, list(level = clus.label[2L])))
       nameArgs$type <- "ov"
       ov.names1 <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
-      # ov.names2 <- do.call(lavNames, c(nameArgs, list(level = clus.label[2L])))
+      ov.names2 <- do.call(lavNames, c(nameArgs, list(level = clus.label[2L])))
+      nameArgs$type <- "lv.ind"
+      allLatInds <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
+
+      ## erase higher= argument, use it to collect factor names for later checks
+      higher <- character(0)
 
       PT <- parTable(object)
       PT <- PT[PT$op == "=~", ]
       if (ngroups > 1L) PT <- PT[PT$group == gLab, ]
 
       ## block indices for 2 levels in this group
+      #FIXME: eventually possible to model partial clustering?
       idx1 <- 1 + (g-1)*2 # within
       idx2 <- 2 + (g-1)*2 # cluster
 
@@ -1128,29 +1167,77 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
             stop('After removing omit.indicators=, the indicators of factor ',
                  fn, ' do not match across levels',
                  ifelse(ngroups > 1L, paste(' in group', gLab), ""))
-            next
           }
           if (dropSingle && length(indNames1) == 1L) next
+          ## is it a higher-order factor?
+          latInds1 <- intersect(indNames1, allLatInds)
+          if (length(latInds1)) {
+            lowList <- lapply(latInds1, function(fn1) {
+              indNames1 <- setdiff(PT$rhs[PT$lhs == fn1 & PT$level == clus.label[1L]],
+                                   omit.indicators)
+              indNames2 <- setdiff(PT$rhs[PT$lhs == fn1 & PT$level == clus.label[2L]],
+                                   omit.indicators)
+              ## check indicators also match for lower-order factors
+              if (!all.equal(indNames1, indNames2)) {
+                stop('After removing omit.indicators=, the indicators of factor ',
+                     fn1, ' do not match across levels',
+                     ifelse(ngroups > 1L, paste(' in group', gLab), ""))
+              }
+              ## check indicators of lower-order factors are not also latent
+              lowerLatent <- intersect(indNames1, allLatInds)
+              if (length(lowerLatent))
+                stop('Indicators of lower-order factor ', fn1,
+                     ifelse(ngroups > 1L, paste(' in group', gLab), ""),
+                     ' cannot also be latent')
+              indNames1
+            })
+            ## update indicator list to only include relevant observed variables
+            indNames1 <- intersect(c(indNames1, do.call(c, lowList)), ov.names1)
+            ## update list of higher-order factors
+            higher <- c(higher, fn)
+          }
 
           Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
-          Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
+          Sigma2 <- SIGMA[[idx2]][indNames1, indNames1, drop = FALSE]
 
           if (tau.eq) {
-            ## ALPHA
-            rel[[g]]$config[[fn]] <- c(`alpha_W`  = computeAlpha(Sigma1),
-                                       `alpha_2L` = computeAlpha(Sigma1 + Sigma2))
+            if (fn %in% higher) {
+              warning('Cannot apply alpha (tau.eq=TRUE) to higher-order factor ',
+                      fn, '. Instead, fit a higher-order CFA that imposes ',
+                      'tau-equivalence constraints.')
+            } else {
+              ## ALPHA
+              rel[[g]]$config[[fn]] <- c(`alpha_W`  = computeAlpha(Sigma1),
+                                         `alpha_2L` = computeAlpha(Sigma1 + Sigma2))
+            }
+
           } else {
             ## OMEGA
-            lam1 <- LAMBDA[[idx1]][indNames1, fn, drop = FALSE]
-            lam2 <- LAMBDA[[idx2]][indNames2, fn, drop = FALSE]
+            lam1 <- LAMBDA[[idx1]][indNames1, c(fn, latInds1), drop = FALSE]
+            lam2 <- LAMBDA[[idx2]][indNames1, c(fn, latInds1), drop = FALSE]
             if (!isTRUE(all.equal(lam1, lam2)))
-              warning('Unequal loadings across levels detected for factor ', fn,
-                      ifelse(ngroups > 1L, paste(' in group', gLab), ""),
+              warning('Unequal observed-indicator loadings across levels ',
+                      'detected among factors (', paste(c(fn, latInds1), collapse = ","),
+                      ifelse(ngroups > 1L, paste(') in group', gLab), ")"),
                       '. omega_2L for configural constructs assumes invariance.')
-            phi1 <- PHI[[idx1]][fn, fn, drop = FALSE]
-            phi2 <- PHI[[idx2]][fn, fn, drop = FALSE]
-            commonCov1 <- lam1 %*% phi1 %*% t(lam1)
-            commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+            phi1 <-  PHI[[idx1]][c(fn, latInds1), c(fn, latInds1), drop = FALSE]
+            phi2 <-  PHI[[idx2]][c(fn, latInds1), c(fn, latInds1), drop = FALSE]
+
+            if (length(latInds1)) {
+              bet1 <- BETA[[idx1]][c(fn, latInds1), c(fn, latInds1), drop = FALSE]
+              bet2 <- BETA[[idx2]][c(fn, latInds1), c(fn, latInds1), drop = FALSE]
+              if (!isTRUE(all.equal(bet1, bet2)))
+                warning('Unequal higher-order loadings detected across levels ',
+                        'detected for factor ', fn,
+                        ifelse(ngroups > 1L, paste(' in group', gLab), ""),
+                        '. omega_2L for configural constructs assumes invariance.')
+              commonCov1 <- lam1 %*% bet1 %*% phi1 %*% t(bet1) %*% t(lam1)
+              commonCov2 <- lam2 %*% bet2 %*% phi2 %*% t(bet2) %*% t(lam2)
+            } else {
+              commonCov1 <- lam1 %*% phi1 %*% t(lam1)
+              commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+            }
+
             rel[[g]]$config[[fn]] <- c(`omega_W`  = sum(commonCov1)              / sum(Sigma1),
                                        `omega_2L` = sum(commonCov1 + commonCov2) / sum(Sigma1 + Sigma2))
           }
@@ -1165,24 +1252,48 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       }
       ## after removing ineligible config, still multiple for total?
       if (length(config) > 1L) {
-        if (return.total[idx1]) {
-          indNames1 <- setdiff(PT$rhs[PT$level == clus.label[1]], omit.indicators)
-          indNames2 <- setdiff(PT$rhs[PT$level == clus.label[2]], omit.indicators)
+        ## only possible if NONE of config= are higher-order factors, or if
+        ## the first-order factors in config= are not latent indicators of any
+        ## higher-order factors in config=
+        if (return.total[idx1] && !(length(higher) && any(config %in% allLatInds))) {
+
+          indNames1 <- setdiff(PT$rhs[PT$lhs %in% config & PT$level == clus.label[1]],
+                               omit.indicators)
+          ## include observed indicators of any latent indicators
+          latInds1 <- intersect(indNames1, allLatInds)
+          indNames1 <- setdiff(PT$rhs[PT$lhs %in% c(config, latInds1) & PT$level == clus.label[1]],
+                               omit.indicators)
+
           Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
-          Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
+          Sigma2 <- SIGMA[[idx2]][indNames1, indNames1, drop = FALSE]
 
           if (tau.eq) {
-            ## ALPHA
-            rel[[g]]$config$total <- c(`alpha_W`  = computeAlpha(Sigma1),
-                                       `alpha_2L` = computeAlpha(Sigma1 + Sigma2))
+            if (any(config %in% higher)) {
+              warning('Cannot apply alpha (tau.eq=TRUE) to total composite ',
+                      'that includes higher-order configural factor(s):\n',
+                      paste(intersect(shared, higher), collapse = ", "),
+                      '\nInstead, impose tau-equiv. in a higher-order CFA')
+            } else {
+              ## ALPHA
+              rel[[g]]$config$total <- c(`alpha_W`  = computeAlpha(Sigma1),
+                                         `alpha_2L` = computeAlpha(Sigma1 + Sigma2))
+            }
+
           } else {
             ## OMEGA
-            lam1 <- LAMBDA[[idx1]][indNames1, config, drop = FALSE]
-            lam2 <- LAMBDA[[idx2]][indNames2, config, drop = FALSE]
-            phi1 <- PHI[[idx1]][config, config, drop = FALSE]
-            phi2 <- PHI[[idx2]][config, config, drop = FALSE]
-            commonCov1 <- lam1 %*% phi1 %*% t(lam1)
-            commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+            lam1 <- LAMBDA[[idx1]][indNames1, c(config, latInds1), drop = FALSE]
+            lam2 <- LAMBDA[[idx2]][indNames1, c(config, latInds1), drop = FALSE]
+            phi1 <-  PHI[[idx1]][c(config, latInds1), c(config, latInds1), drop = FALSE]
+            phi2 <-  PHI[[idx2]][c(config, latInds1), c(config, latInds1), drop = FALSE]
+            if (length(latInds1)) {
+              bet1 <- BETA[[idx1]][c(config, latInds1), c(config, latInds1), drop = FALSE]
+              bet2 <- BETA[[idx2]][c(config, latInds1), c(config, latInds1), drop = FALSE]
+              commonCov1 <- lam1 %*% bet1 %*% phi1 %*% t(bet1) %*% t(lam1)
+              commonCov2 <- lam2 %*% bet2 %*% phi2 %*% t(bet2) %*% t(lam2)
+            } else {
+              commonCov1 <- lam1 %*% phi1 %*% t(lam1)
+              commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+            }
             rel[[g]]$config$total <- c(`omega_W`  = sum(commonCov1)              / sum(Sigma1),
                                        `omega_2L` = sum(commonCov1 + commonCov2) / sum(Sigma1 + Sigma2))
           }
@@ -1196,6 +1307,9 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       ## (reciprocal of) harmonic-mean cluster size
       Ns <- mean(1 / lavInspect(object, "cluster.size",
                                 drop.list.single.group = FALSE)[[g]])
+      ## reset higher= argument for later checks
+      higher <- character(0)
+
       ## shared construct(s) defined at between level in this group?
       for (fn in shared) {
         if (fn %in% omit.factors) {
@@ -1204,40 +1318,65 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
           next
         }
         if (fn %in% lv.names2) {
-          indNames1 <- setdiff(PT$rhs[PT$lhs == fn & PT$level == clus.label[1L]],
-                               omit.indicators)
           indNames2 <- setdiff(PT$rhs[PT$lhs == fn & PT$level == clus.label[2L]],
                                omit.indicators)
           ## only Level-2 single-indicator factors are relevant to drop
           if (dropSingle && length(indNames2) == 1L) next
-          ## check for empty Level-1 names (e.g., saturated Level-1 model)
-          if (!length(indNames1)) {
-            ## capture within-level variance components of same indicators
-            ## (make sure none are Level-2 only)
-            indNames1 <- intersect(indNames2, ov.names1)
+          ## is it a higher-order factor?
+          latInds2 <- intersect(indNames2, allLatInds)
+          if (length(latInds2)) {
+            lowList <- lapply(latInds2, function(fn2) {
+              indNames2 <- setdiff(PT$rhs[PT$lhs == fn2 & PT$level == clus.label[2L]],
+                                   omit.indicators)
+              ## check indicators of lower-order factors are not also latent
+              lowerLatent <- intersect(indNames2, allLatInds)
+              if (length(lowerLatent))
+                stop('Indicators of lower-order factor ', fn2,
+                     ifelse(ngroups > 1L, paste(' in group', gLab), ""),
+                     ' cannot also be latent')
+              indNames2
+            })
+            ## update indicator list to only include relevant observed variables
+            indNames2 <- intersect(c(indNames2, do.call(c, lowList)), ov.names2)
+            ## update list of higher-order factors
+            higher <- c(higher, fn)
           }
+          ## capture within-level variance components of same indicators
+          ## (make sure none are Level-2 only)
+          indNames1 <- intersect(indNames2, ov.names1)
 
           Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
           Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
 
           if (tau.eq) {
-            nI <- length(indNames2)
-            if (nI == 1L) {
-              stop('Coefficient alpha is undefined for a single indicator. ',
-                   'Set tau.eq=FALSE or dropSingle=TRUE')
-            }
-            kw <- nI / (nI-1) # weight for alpha based on number of items
-            ## ALPHA
-            onlyCov2 <- Sigma2
-            diag(onlyCov2) <- 0
+            if (fn %in% higher) {
+              warning('Cannot apply alpha (tau.eq=TRUE) to higher-order factor ',
+                      fn, '. Instead, fit a higher-order CFA that imposes ',
+                      'tau-equivalence constraints.')
+            } else {
+              nI <- length(indNames2)
+              if (nI == 1L) {
+                stop('Coefficient alpha is undefined for a single indicator. ',
+                     'Set tau.eq=FALSE or dropSingle=TRUE')
+              }
+              kw <- nI / (nI-1) # weight for alpha based on number of items
+              ## ALPHA
+              onlyCov2 <- Sigma2
+              diag(onlyCov2) <- 0
 
-            rel[[g]]$shared[[fn]] <- c(`alpha_B` = kw*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
-                                       `IRR`     =    sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
+              rel[[g]]$shared[[fn]] <- c(`alpha_B` = kw*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
+                                         `IRR`     =    sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
+            }
+
           } else {
             ## OMEGA
-            lam2 <- LAMBDA[[idx2]][indNames2, fn, drop = FALSE]
-            phi2 <- PHI[[idx2]][fn, fn, drop = FALSE]
-            commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+            lam2 <- LAMBDA[[idx2]][indNames2, c(fn, latInds2), drop = FALSE]
+            phi2 <- PHI[[idx2]][c(fn, latInds2), c(fn, latInds2), drop = FALSE]
+            if (length(latInds2)) {
+              bet2 <- BETA[[idx2]][c(fn, latInds2), c(fn, latInds2), drop = FALSE]
+              commonCov2 <- lam2 %*% bet2 %*% phi2 %*% t(bet2) %*% t(lam2)
+            } else commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+
             rel[[g]]$shared[[fn]] <- c(`omega_B` = sum(commonCov2) / sum(Sigma1*Ns, Sigma2),
                                        `IRR`     = sum(  Sigma2  ) / sum(Sigma1*Ns, Sigma2))
           }
@@ -1246,32 +1385,49 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       }
       ## after removing ineligible shared, still multiple for total?
       if (length(shared) > 1L) {
-        if (return.total[idx2]) {
-          indNames1 <- setdiff(PT$rhs[PT$level == clus.label[1]], omit.indicators)
-          indNames2 <- setdiff(PT$rhs[PT$level == clus.label[2]], omit.indicators)
-          ## check for empty Level-1 names (e.g., saturated Level-1 model)
-          if (!length(indNames1)) {
-            ## capture within-level variance components of same indicators
-            ## (make sure none are Level-2 only)
-            indNames1 <- intersect(indNames2, ov.names1)
-          }
+        ## only possible if NONE of shared= are higher-order factors, or if
+        ## the first-order factors in shared= are not latent indicators of any
+        ## higher-order factors in shared=
+        if (return.total[idx2] && !(length(higher) && any(shared %in% allLatInds))) {
+          indNames2 <- setdiff(PT$rhs[PT$lhs %in% shared & PT$level == clus.label[2]],
+                               omit.indicators)
+          ## include observed indicators of any latent indicators
+          latInds2 <- intersect(indNames2, allLatInds)
+          indNames2 <- setdiff(PT$rhs[PT$lhs %in% c(shared, latInds2) & PT$level == clus.label[2]],
+                               omit.indicators)
+          ## capture within-level variance components of same indicators
+          ## (make sure none are Level-2 only)
+          indNames1 <- intersect(indNames2, ov.names1)
+
           Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
           Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
 
           if (tau.eq) {
-            ## ALPHA
-            nI <- length(indNames2)
-            kw <- nI / (nI-1) # weight for alpha based on number of items
-            onlyCov2 <- Sigma2
-            diag(onlyCov2) <- 0
+            if (any(shared %in% higher)) {
+              warning('Cannot apply alpha (tau.eq=TRUE) to total composite ',
+                      'that includes higher-order shared factor(s):\n',
+                      paste(intersect(shared, higher), collapse = ", "),
+                      '\nInstead, impose tau-equiv. in a higher-order CFA')
+            } else {
+              ## ALPHA
+              nI <- length(indNames2) #TODO: justify when > length(indNames1)
+                                      #     (Level-1 component exists with SD=0)
+              kw <- nI / (nI-1) # weight for alpha based on number of items
+              onlyCov2 <- Sigma2
+              diag(onlyCov2) <- 0
 
-            rel[[g]]$shared$total <- c(`alpha_B` = kw*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
-                                       `IRR`     =    sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
+              rel[[g]]$shared$total <- c(`alpha_B` = kw*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
+                                         `IRR`     =    sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
+            }
+
           } else {
             ## OMEGA
-            lam2 <- LAMBDA[[idx2]][indNames2, shared, drop = FALSE]
-            phi2 <- PHI[[idx2]][shared, shared, drop = FALSE]
-            commonCov2 <- lam2 %*% phi2 %*% t(lam2)
+            lam2 <- LAMBDA[[idx2]][indNames2, c(shared, latInds2), drop = FALSE]
+            phi2 <- PHI[[idx2]][c(shared, latInds2), c(shared, latInds2), drop = FALSE]
+            if (length(latInds1)) {
+              bet2 <- BETA[[idx2]][c(shared, latInds2), c(shared, latInds2), drop = FALSE]
+              commonCov2 <- lam2 %*% bet2 %*% phi2 %*% t(bet2) %*% t(lam2)
+            } else commonCov2 <- lam2 %*% phi2 %*% t(lam2)
             rel[[g]]$shared$total <- c(`omega_B` = sum(commonCov2) / sum(Sigma1*Ns, Sigma2),
                                        `IRR`     = sum(  Sigma2  ) / sum(Sigma1*Ns, Sigma2))
           }
@@ -1466,10 +1622,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##'
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso \code{\link{reliabilityL2}} for reliability value of a desired
-##' second-order factor, \code{\link{maximalRelia}} for the maximal reliability
-##' of weighted composite
-##'
 ##' @references
 ##' Bentler, P. M. (1972). A lower-bound method for the dimension-free
 ##' measurement of internal consistency. \emph{Social Science Research, 1}(4),
@@ -1578,7 +1730,7 @@ NULL
 
 ##' @rdname semTools-deprecated
 ##' @section Reliability:
-##' Original \code{reliability} function was suboptimally designed.
+##' The original \code{reliability} function was suboptimally designed.
 ##' For example, AVE was returned, which is not a reliability index. Also,
 ##' alpha and several omega-type coefficients were returned, including the
 ##' original formula that was in appropriate for models with complex structure.
@@ -1965,6 +2117,7 @@ reliability <- function(object,
 
 ## ---------------
 ## reliabilityL2()
+## (deprecated)
 ## ---------------
 
 ##' Calculate the reliability values of a second-order factor
@@ -2068,9 +2221,6 @@ reliability <- function(object,
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
-##' @seealso
-##'   \code{\link{reliability}} for the reliability of the first-order factors.
-##'
 ##' @examples
 ##'
 ##' HS.model3 <- ' visual  =~ x1 + x2 + x3
@@ -2081,6 +2231,23 @@ reliability <- function(object,
 ##' fit6 <- cfa(HS.model3, data = HolzingerSwineford1939)
 ##' reliability(fit6) # Should provide a warning for the endogenous variables
 ##' reliabilityL2(fit6, "higher")
+##'
+##' @name reliabilityL2-deprecated
+##' @usage
+##' reliabilityL2(object, secondFactor, omit.imps = c("no.conv", "no.se"))
+##' @seealso \code{\link{semTools-deprecated}}
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
+##' @section Higher-Order Reliability:
+##' Originally, composite reliability of a single higher-order factor was
+##' estimated in a separate function: \code{reliabilityL2}.  It is now available
+##' for multiple higher-order factors in the same model, and from the same
+##' \code{\link{compRelSEM}} function that estimates reliability for first-order
+##' factors, using the \code{higher=} argument to name higher-order factors in
+##' the fitted model.
 ##'
 ##' @export
 reliabilityL2 <- function(object, secondFactor,
