@@ -79,10 +79,10 @@ Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests
 for the number of factors.} Paper presented at the annual meeting of the
 Psychometric Society, Iowa City, IA.
 
- Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
- (2021). Analytical power calculations for structural equation modeling:
- A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
- \doi{10.3758/s13428-020-01479-0}
+Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+(2021). Analytical power calculations for structural equation modeling:
+A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+\doi{10.3758/s13428-020-01479-0}
 }
 \seealso{
 \itemize{
@@ -98,5 +98,5 @@ Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})
 
 Kristopher J. Preacher (Vanderbilt University; \email{kris.preacher@vanderbilt.edu})
 
-Donna L. Coffman (Pennsylvania State University; \email{dlc30@psu.edu.})
+Donna L. Coffman (Pennsylvania State University; \email{dlc30@psu.edu})
 }
