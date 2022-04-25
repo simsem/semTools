@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 18 May 2021
+### Last updated: 22 April 2022
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -71,11 +71,13 @@
 ##' @param nDraws \code{integer} specifying the number of draws, analogous to
 ##'   the number of imputed data sets. If \code{object} is of class
 ##'   \code{\linkS4class{lavaan.mi}}, this will be the number of draws taken
-##'   \emph{per imputation}.  Ignored if \code{object} is of class
-##'   \code{\link[blavaan]{blavaan}}, in which case the number of draws is the
-##'   number of MCMC samples from the posterior.
-##' @param seed \code{integer} passed to \code{\link{set.seed}()}.  Ignored if
-##'   \code{object} is of class \code{\link[blavaan]{blavaan}},
+##'   \emph{per imputation}.  If \code{object} is of class
+##'   \code{\link[blavaan]{blavaan}}, \code{nDraws} cannot exceed
+##'   \code{blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")}
+##'   (number of MCMC samples from the posterior). The drawn samples will be
+##'   evenly spaced (after permutation for \code{target="stan"}), using
+##'   \code{\link{ceiling}} to resolve decimals.
+##' @param seed \code{integer} passed to \code{\link{set.seed}()}.
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
 ##'   imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.
 ##'   Can include any of \code{c("no.conv", "no.se", "no.npd")}.
@@ -221,9 +223,8 @@ plausibleValues <- function(object, nDraws = 20L, seed = 12345,
     PV <- plaus.mi(object, seeds = seeds, omit.imps = omit.imps, ...)
 
   } else if (class(object) == "blavaan") {
-    ## requireNamespace("blavaan")
-    ## blavaan::blavInspect(object, "lvs")
-    PV <- plaus.blavaan(object)
+    PV <- plaus.blavaan(object, nDraws = nDraws, seed = seed, ...)
+    #TODO: pass nDraws to sample() iterations?
 
   } else stop("object's class not valid: ", class(object))
 
@@ -488,7 +489,7 @@ plaus.mi <- function(object, seeds = 1:5, omit.imps = c("no.conv","no.se"), ...)
 
 ## draw 1 set of plausible values from a blavaan object
 ##' @importFrom lavaan lavNames lavInspect
-plaus.blavaan <- function(object) {
+plaus.blavaan <- function(object, nDraws = 20L, seed = 12345, ...) {
   stopifnot(inherits(object, "blavaan"))
   requireNamespace("blavaan")
   if (!"package:blavaan" %in% search()) attachNamespace("blavaan")
@@ -500,28 +501,63 @@ plaus.blavaan <- function(object) {
   # nL <- lavInspect(object, "nlevels")
   case.idx <- lavInspect(object, "case.idx")
 
+  ## plausible values of what? (could be latent item responses)
+  dots <- list(...)
+  if (is.null(dots$type)) dots$type <- "lv" # default to factor scores
+  dots$object <- object
+
   ## stack factor scores from each chain (one row per PV)
-  FS <- do.call(rbind, blavaan::blavInspect(object, "lvs"))
-  ## column names contain indices to store PVs in matrix
-  eta.idx <- colnames(FS)
-  ## N and latent variable names, to know dimensions of PV
-  N <- lavInspect(object, "ntotal")
-  etas <- lavNames(object, "lv") #FIXME: assumes same model in both groups
-  PV <- list()
-  ## loop over rows (draws), assign columns to eta matrix, save in PV list
-  for (i in 1:nrow(FS)) {
+  FS <- do.call(blavaan::blavPredict, dots)
+  #NOTE: might be latent responses
 
-    eta <- matrix(NA, nrow = N, ncol = length(etas), dimnames = list(NULL, etas))
-    for (j in eta.idx) eval(parse(text = paste(j, "<-", FS[i, j]) ))
-    PV[[i]] <- data.frame(eta)
-
-    ## add case indices, and groups (if applicable)
-    if (nG == 1L) PV[[i]]$case.idx <- case.idx else {
-      PV[[i]]$case.idx <- do.call(c, case.idx)
-      PV[[i]][ , group] <- rep(group.label, times = lavInspect(object, "nobs"))
-    }
-
+  ## only save nDraws from posterior
+  if (nDraws >= length(FS)) {
+    ## why would anyone want this many?  Or sample so few during estimation?
+    message('nDraws cannot exceed number of iterations in `object=`. \nSet to ',
+            'nDraws = blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")')
+    nDraws <- length(FS)
   }
+  set.seed(seed)
+  idx.sample <- ceiling(1:nDraws * length(FS)/nDraws)
+
+  #FIXME: if Ed accepts pull request, format will be the same as c("yhat","ypred")
+  if (dots$type == "lv" && compareVersion(packageDescription('blavaan')$Version, '0.4-2.949') >= 0L) {
+    ## column names contain indices to store PVs in matrix
+    eta.idx <- colnames(FS)
+    ## N and latent variable names, to know dimensions of PV
+    N <- lavInspect(object, "ntotal")
+    etas <- lavNames(object, "lv") #FIXME: assumes same model in both groups
+    PV <- list()
+    ## loop over nDraws rows, assign columns to eta matrix, save in PV list
+    set.seed(seed)
+    idx.sample <- ceiling(1:nDraws * length(FS)/nDraws)
+    for (i in idx.sample) {
+
+      eta <- matrix(NA, nrow = N, ncol = length(etas), dimnames = list(NULL, etas))
+      for (j in eta.idx) eval(parse(text = paste(j, "<-", FS[i, j]) ))
+      PV[[i]] <- data.frame(eta)
+
+      ## add case indices, and groups (if applicable)
+      if (nG == 1L) PV[[i]]$case.idx <- case.idx else {
+        PV[[i]]$case.idx <- do.call(c, case.idx)
+        PV[[i]][ , group] <- rep(group.label, times = lavInspect(object, "nobs"))
+      }
+
+    }
+  } else {
+    ## latent responses, already a list
+    PV <- list()
+    for (i in idx.sample) {
+      ## convert matrix to data.frame
+      PV[[i]] <- data.frame(FS[[i]])
+      ## add case indices, and groups (if applicable)
+      if (nG == 1L) PV[[i]]$case.idx <- case.idx else {
+        PV[[i]]$case.idx <- do.call(c, case.idx)
+        PV[[i]][ , group] <- rep(group.label, times = lavInspect(object, "nobs"))
+      }
+    }
+  } #else stop('Not implemented for blavPredict(object, type="', dots$type,'")')
+
 
   PV
 }
@@ -600,4 +636,105 @@ plaus.blavaan <- function(object) {
 # lapply(ml2PV2, head)
 
 
+## ordered-categorical data
+# data(datCat)
+#
+# modc <- ' ## Set thresholds equal across groups
+#   ## thresholds at Time 1
+#     u1 | c(tau1.1, tau1.1)*t1 + c(tau1.2, tau1.2)*t2 + c(tau1.3, tau1.3)*t3 + c(tau1.4, tau1.4)*t4
+#     u2 | c(tau2.1, tau2.1)*t1 + c(tau2.2, tau2.2)*t2 + c(tau2.3, tau2.3)*t3 + c(tau2.4, tau2.4)*t4
+#     u3 | c(tau3.1, tau3.1)*t1 + c(tau3.2, tau3.2)*t2 + c(tau3.3, tau3.3)*t3 + c(tau3.4, tau3.4)*t4
+#     u4 | c(tau4.1, tau4.1)*t1 + c(tau4.2, tau4.2)*t2 + c(tau4.3, tau4.3)*t3 + c(tau4.4, tau4.4)*t4
+#   ## thresholds at Time 2 equal to Time 1
+#     u5 | c(tau1.1, tau1.1)*t1 + c(tau1.2, tau1.2)*t2 + c(tau1.3, tau1.3)*t3 + c(tau1.4, tau1.4)*t4
+#     u6 | c(tau2.1, tau2.1)*t1 + c(tau2.2, tau2.2)*t2 + c(tau2.3, tau2.3)*t3 + c(tau2.4, tau2.4)*t4
+#     u7 | c(tau3.1, tau3.1)*t1 + c(tau3.2, tau3.2)*t2 + c(tau3.3, tau3.3)*t3 + c(tau3.4, tau3.4)*t4
+#     u8 | c(tau4.1, tau4.1)*t1 + c(tau4.2, tau4.2)*t2 + c(tau4.3, tau4.3)*t3 + c(tau4.4, tau4.4)*t4
+#   ## define latent responses as single-indicator factors (resid. var = 0)
+#     y1 =~ 1*u1   ;   u1 ~~ c(0, 0)*u1
+#     y2 =~ 1*u2   ;   u2 ~~ c(0, 0)*u2
+#     y3 =~ 1*u3   ;   u3 ~~ c(0, 0)*u3
+#     y4 =~ 1*u4   ;   u4 ~~ c(0, 0)*u4
+#     y5 =~ 1*u5   ;   u5 ~~ c(0, 0)*u5
+#     y6 =~ 1*u6   ;   u6 ~~ c(0, 0)*u6
+#     y7 =~ 1*u7   ;   u7 ~~ c(0, 0)*u7
+#     y8 =~ 1*u8   ;   u8 ~~ c(0, 0)*u8
+#   ## only fix mean=0 in first group/occasion
+#     y1 + y2 + y3 + y4 ~ c( 0, NA)*1
+#     y5 + y6 + y7 + y8 ~ c(NA, NA)*1
+#   ## only fix variance=1 in first groop/occasion
+#     y1 ~~ c( 1, NA)*y1
+#     y2 ~~ c( 1, NA)*y2
+#     y3 ~~ c( 1, NA)*y3
+#     y4 ~~ c( 1, NA)*y4
+#     y5 ~~ c(NA, NA)*y5
+#     y6 ~~ c(NA, NA)*y6
+#     y7 ~~ c(NA, NA)*y7
+#     y8 ~~ c(NA, NA)*y8
+#   ## estimate all covariances
+#     y1 ~~ y2 + y3 + y4 + y5 + y6 + y7 + y8
+#     y2 ~~ y3 + y4 + y5 + y6 + y7 + y8
+#     y3 ~~ y4 + y5 + y6 + y7 + y8
+#     y4 ~~ y5 + y6 + y7 + y8
+#     y5 ~~ y6 + y7 + y8
+#     y6 ~~ y7 + y8
+#     y7 ~~ y8
+# '
+# ## fit in lavaan for sanity check
+# fitc <- lavaan(modc, data = datCat, group = "g", parameterization = "theta")
+# summary(fitc)
+#
+# ## impose 5% MCAR
+# set.seed(123)
+# for (i in 1:8) datCat[sample(1:nrow(datCat), size = .05*nrow(datCat)), i] <- NA
+#
+# ## try with pairwise deletion
+# fitcm <- lavaan(modc, data = datCat, group = "g", parameterization = "theta",
+#                 missing = "pairwise")
+# summary(fitcm)
+#
+# ## try blavaan
+# data(datCat) # doesn't yet work with missing ordinal data
+# bfitc <- blavaan(modc, data = datCat, group = "g", ordered = TRUE, # why is this needed when they are already ordered?
+#                  n.chains = 2, burnin = 500, sample = 101, seed = 123,
+#                  bcontrol = list(cores = 2),
+#                  save.lvs = TRUE)
+# summary(bfitc)
+# LIRs <- blavPredict(bfitc, type = "ypred")
+# yhats <- blavPredict(bfitc, type = "yhat") # same when resid. var = 0?
+# fscores <- blavPredict(bfitc, type = "lv") # same as LIRs?
+#
+#
+# length(LIRs)  # list: 1 N*p matrix per chain
+# length(yhats) # list: 1 N*p matrix per chain
+# length(fscores) # matrix: 1 row per chain, 1 column per [N, fs]
+# ## all are basically interchangeable
+# ch <- 2
+# cor(cbind(yhats = as.numeric(yhats[[ch]]),
+#           LIRs = as.numeric(LIRs[[ch]]),
+#           fscores = fscores[ch,]))
+# ## compare means (by group)
+# aggregate(yhats[[ch]], by = datCat["g"], FUN = mean)
+# aggregate( LIRs[[ch]], by = datCat["g"], FUN = mean)
+# aggregate(matrix(fscores[ch,], ncol = 8), by = datCat["g"], FUN = mean)
+# ## compare to lavaan
+# do.call(rbind, sapply(lavInspect(fitc, "est"),
+#                       function(i) i$alpha[,1], simplify = FALSE))
+#
+#
+#
+# ## now a CFA (so there are latent item responses and common factors)
+# mod <- ' FU1 =~ u1 + u2 + u3 + u4
+#          FU2 =~ u5 + u6 + u7 + u8 '
+# fit  <-  cfa(mod, data = datCat, std.lv = TRUE)
+# bfit <- bcfa(mod, data = datCat, std.lv = TRUE, ordered = TRUE,
+#              n.chains = 2, burnin = 100, sample = 101, seed = 123,
+#              save.lvs = TRUE)
+# summary(bfit)
+# fscores <- blavPredict(bfit, type = "lv")
+# LIRs <- blavPredict(bfit, type = "ypred")
 
+
+
+# FS <- plausibleValues(bfitc)
+# LIRs <- plausibleValues(bfitc, type = "ypred")

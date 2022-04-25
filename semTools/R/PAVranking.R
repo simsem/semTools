@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 22 April 2022
 
 
 ##' Parcel-Allocation Variability in Model Ranking
@@ -323,7 +323,6 @@ PAVranking <- function(model0, model1, data, parcel.names, item.syntax,
         favorBIC <- favorBIC2
       } else favorBIC <- cbind(favorBIC, favorBIC2)
     }
-    #TODO: add bic.priorN from moreFitIndices()
 
     class(favorBIC) <- c("lavaan.data.frame","data.frame")
     attr(favorBIC, "header") <- paste("Percent of Allocations with |BIC Diff| >",

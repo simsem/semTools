@@ -14,12 +14,14 @@ plausibleValues(object, nDraws = 20L, seed = 12345,
 \item{nDraws}{\code{integer} specifying the number of draws, analogous to
 the number of imputed data sets. If \code{object} is of class
 \code{\linkS4class{lavaan.mi}}, this will be the number of draws taken
-\emph{per imputation}.  Ignored if \code{object} is of class
-\code{\link[blavaan]{blavaan}}, in which case the number of draws is the
-number of MCMC samples from the posterior.}
+\emph{per imputation}.  If \code{object} is of class
+\code{\link[blavaan]{blavaan}}, \code{nDraws} cannot exceed
+\code{blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")}
+(number of MCMC samples from the posterior). The drawn samples will be
+evenly spaced (after permutation for \code{target="stan"}), using
+\code{\link{ceiling}} to resolve decimals.}
 
-\item{seed}{\code{integer} passed to \code{\link{set.seed}()}.  Ignored if
-\code{object} is of class \code{\link[blavaan]{blavaan}},}
+\item{seed}{\code{integer} passed to \code{\link{set.seed}()}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.

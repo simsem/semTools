@@ -8,15 +8,15 @@
 - `monteCarloMed()` now works for `lavaan.mi` objects, which is much easier than combining multiple imputation with bootstrapping.
 - `monteCarloMed()` now optionally returns CIs for the standardized solution, only for `lavaan` objects (not `lavaan.mi`).
 - `htmt()` gains an argument `htmt2=TRUE` to use the geometric mean (default) rather than the arithmetic mean (which assumes tau-equivalence).
-- `probe2/3WayM/RC()` help pages have a new Reference entry to a tutorial paper written about how to use them.
 - `moreFitIndices()` includes 3 new extended BICs discussed by [Bollen et al. (2014)](https://doi.org/10.1177/0049124112452393) 
 - `miPowerFit()` can now pass further arguments to `lavaan::modificationIndices()` via `...`
 - Added a `tag=` argument to customize character used to flag preferred models in `summary()` method for `FitDiff` class (i.e., `compareFit()` output).  Set `tag=NA` or `NULL` to omit tags.
-
+- `plausibleValues()` applied to `blavaan` objects now passes (via `...`) arguments to `blavaan::blavPredict()`, just as it already passed arguments to `lavPredict()` for objects of `lavaan` or `lavaan.mi` classes.  Thus, setting `type="ypred"` will return plausible values of latent item-responses underlying ordinal observations (analogous to M*plus* option `SAVE: LRESPONSES`).
 
 ## Bug Fixes:
 
-- `probe2/3WayM/RC()`: When the moderator was listed first in `nameX=` **and** some (not all) slopes were labeled in the user's model syntax, an error was caused by creating incorrect labels: https://github.com/simsem/semTools/issues/103
+- `probe2/3WayM/RC()`: When the moderator was listed first in `nameX=` **and** some (not all) slopes were labeled in the user's model syntax, an error was caused by creating incorrect labels.  Fixes [issue 103](https://github.com/simsem/semTools/issues/103).
+    - Also, `probe2/3WayM/RC()` help pages have a new **Reference** entry to a tutorial paper written about how to use them.
 
 
 # semTools 0.5-5 (on CRAN 8 July 2021)
