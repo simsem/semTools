@@ -521,7 +521,7 @@ plaus.blavaan <- function(object, nDraws = 20L, seed = 12345, ...) {
   idx.sample <- ceiling(1:nDraws * length(FS)/nDraws)
 
   #FIXME: if Ed accepts pull request, format will be the same as c("yhat","ypred")
-  if (dots$type == "lv" && compareVersion(packageDescription('blavaan')$Version, '0.4-2.949') >= 0L) {
+  if (dots$type == "lv" && utils::compareVersion(packageDescription('blavaan')$Version, '0.4-2.949') >= 0L) {
     ## column names contain indices to store PVs in matrix
     eta.idx <- colnames(FS)
     ## N and latent variable names, to know dimensions of PV

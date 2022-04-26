@@ -71,17 +71,6 @@ semTools::measEq.syntax()
   - resolves underidentified common-factor means when indicators are ordinal
   - THIS IS A PAPER (short note or Teacher Corner in SEM?)
 - add OpenMx to as.character()
-- add block.equal=T/F argument to measEq.syntax to test invariance across
-  either groups or levels (or combination).
-  - if configural invariance is required across groups or levels, no need to
-    distinguish between what "block" represents (potentially both)
-  - thus, write syntax via blocks to avoid issues with group-blocks?  Or make
-    it an argument: as.blocks=TRUE.  That would necessitate knowing whether to
-    write level: or group: in the syntax.  Maybe blocks = NULL for traditional
-    multigroup, blocks = c("within","cluster") for MLSEM, and a named list
-    of strings for combo, e.g., list(boys  = c("within","cluster"),
-                                     girls = c("within","cluster"))
-  - no, no, no ... need to enable invariance across groups and levels separately
 - more advanced check for ordinal indicators + higher-order factor?
   https://groups.google.com/d/msg/lavaan/vgQZCbzAKRU/8UFuE-IKBwAJ
 - accompanying measEq.null.syntax() function with some options:
@@ -168,8 +157,8 @@ semTools::runMI()
 - add new "D4" LRT
 
 semTools::plausibleValues()
-- add latent item-responses (LRESPONSES in Mplus) when available in blavaan
 - account for different factor-score matrices per missing-data pattern?
+- look for `type="ymis"`, do something with model-based imputations? use lavaan.mi
 
 
 New function to implement Chung & Cai's approach for DWLS
@@ -195,12 +184,6 @@ semTools::plotProbe
 ======================
 Miscellaneous semTools
 ======================
-
-semTools::compRelSEM()
-- add weights= argument to pass custom weights for composite (default = 1)
-- weights = "maximal" triggers estimating weights, deprecate maximalRelia()
-- add higherOrder= argument to deprecate reliabilityL2()
-
 
 semTools::miPowerFit()
 - optionally work with lavTestScore() output?
