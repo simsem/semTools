@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 August 2021
+### Last updated: 9 May 2022
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -213,27 +213,27 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
   })))
 
   ## isolate names of model parameters (not user-defined), which get sampled
-  if (class(object) == "lavaan") {
+  if (inherits(object, "lavaan")) {
     if (standardized) {
       STD <- lavaan::standardizedSolution(object)
       coefRows <- !(STD$op %in% c(":=","==","<",">","<=",">="))
       coefs <- STD$est.std[coefRows]
       names(coefs) <- lavaan::lav_partable_labels(STD[coefRows, ])
     } else coefs <- lavaan::coef(object)
-  } else if (class(object) == "lavaan.mi") {
+  } else if (inherits(object, "lavaan.mi")) {
     coefs <- getMethod("coef", "lavaan.mi")(object)
   }
   sampVars <- intersect(names(coefs), funcVars)
 
   ## If a lavaan object is provided, extract coefs and ACM
-  if (class(object) == "lavaan") {
+  if (inherits(object, "lavaan")) {
     coefs <- coefs[sampVars]
     if (standardized) {
       ACM <- lavInspect(object, "vcov.std.all")[sampVars, sampVars]
     } else {
       ACM <- lavaan::vcov(object)[sampVars, sampVars]
     }
-  } else if (class(object) == "lavaan.mi") {
+  } else if (inherits(object, "lavaan.mi")) {
     coefs <- coefs[sampVars]
     ACM <- getMethod("vcov", "lavaan.mi")(object)[sampVars, sampVars]
   }
@@ -244,7 +244,7 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
   })[names(expr)]
   EST <- data.frame(est = do.call("c", estList))
   rownames(EST) <- names(expr)
-  if (standardized && class(object) == "lavaan") colnames(EST) <- "est.std"
+  if (standardized && inherits(object, "lavaan")) colnames(EST) <- "est.std"
 
   ## Matrix of sampled values
   dat <- data.frame(MASS::mvrnorm(n = nRep, mu = coefs, Sigma = ACM))

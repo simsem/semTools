@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 10 January 2021
+### Last updated: 9 May 2022
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -426,8 +426,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
         ADD$user  <- rep(10, nrow(ADD))
       } else stop("'add' must be lavaan model syntax or a parameter table.")
       # nR <- try(nrow(ADD), silent = TRUE)
-      # if (class(nR) == "try-error" || is.null(nR)) return(list(gradient = NULL,
-      #                                                          information = NULL))
+      # if (inherits(nR, "try-error") || is.null(nR)) return(list(gradient = NULL,
+      #                                                           information = NULL))
       # ADD$free <- rep(1L, nR)
       # ADD$user <- rep(10L, nR)
 

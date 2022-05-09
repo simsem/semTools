@@ -208,21 +208,21 @@
 plausibleValues <- function(object, nDraws = 20L, seed = 12345,
                             omit.imps = c("no.conv","no.se"), ...) {
 
-  if (class(object) == "lavaan") {
+  if (inherits(object, "lavaan")) {
     ## generate vector of seeds
     set.seed(seed)
     seeds <- sample(100000:9999999, size = nDraws, replace = FALSE)
 
     PV <- lapply(seeds, plaus.lavaan, object = object, ...)
 
-  } else if (class(object) == "lavaan.mi") {
+  } else if (inherits(object, "lavaan.mi")) {
     ## generate vector of seeds
     set.seed(seed)
     seeds <- sample(100000:9999999, size = nDraws, replace = FALSE)
 
     PV <- plaus.mi(object, seeds = seeds, omit.imps = omit.imps, ...)
 
-  } else if (class(object) == "blavaan") {
+  } else if (inherits(object, "blavaan")) {
     PV <- plaus.blavaan(object, nDraws = nDraws, seed = seed, ...)
     #TODO: pass nDraws to sample() iterations?
 

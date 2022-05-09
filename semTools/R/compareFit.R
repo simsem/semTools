@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 21 September 2021
+### Last updated: 9 May 2022
 ### source code for compareFit() function and FitDiff class
 
 
@@ -442,7 +442,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	## TEST STATISTICS
 	if (nested) {
 
-	  if (class(mods[[1]]) == "lavaan") {
+	  if (inherits(mods[[1]], "lavaan")) {
 	    argsLRT$model.names <- names(mods)
 	    argsLRT$object <- mods[[1]]
 	    nestedout <- do.call(lavTestLRT, c(mods[-1], argsLRT))

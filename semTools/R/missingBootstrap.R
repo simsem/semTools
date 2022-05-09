@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 9 May 2022
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 
@@ -347,20 +347,20 @@ bsBootMiss <- function(x, transformation = 2, nBoot = 500, model, rawData,
     }
 
     ## If user supplies one-group data & moments, convert to lists.
-    if (class(rawData) == "data.frame") rawData <- list(rawData)
-    if (class(rawData) != "list") {
+    if ( inherits(rawData, "data.frame")) rawData <- list(rawData)
+    if (!inherits(rawData, "list")) {
       stop("The \"rawData\" argument must be a data.frame or list of data frames.")
     } else {
       if (!all(sapply(rawData, is.data.frame))) stop("Every element of \"rawData\" must be a data.frame")
     }
-    if (class(Sigma) == "matrix") Sigma <- list(Sigma)
+    if (inherits(Sigma, "matrix")) Sigma <- list(Sigma)
     if (is.numeric(Mu)) Mu <- list(Mu)
 
     ## check whether EMcov was supplied for starting values in Trans2/Trans3
     if (!hasArg(EMcov)) {
       EMcov <- vector("list", length(Sigma))
     } else {
-      if (class(EMcov) == "matrix") EMcov <- list(EMcov)
+      if (inherits(EMcov, "matrix")) EMcov <- list(EMcov)
       ## check EMcov is symmetric and dimensions match Sigma
       for (g in seq_along(EMcov)) {
         if (!isSymmetric(EMcov[[g]])) stop("EMcov in group ", g, " not symmetric.")

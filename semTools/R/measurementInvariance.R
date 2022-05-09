@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, and Terrence D. Jorgensen
-### Last updated: 1 September 2018
+### Last updated: 9 May 2022
 
 
 ##' Measurement Invariance Tests
@@ -129,7 +129,7 @@ measurementInvariance <- function(..., std.lv = FALSE, strict = FALSE,
 	configural <- dotdotdot
 	configural$group.equal <- ""
 	template <- try(do.call(lavaancfa, configural), silent = TRUE)
-	if (class(template) == "try-error") stop('Configural model did not converge.')
+	if (inherits(template, "try-error")) stop('Configural model did not converge.')
 	pttemplate <- parTable(template)
 	varnames <- unique(pttemplate$rhs[pttemplate$op == "=~"])
 	facnames <- unique(pttemplate$lhs[(pttemplate$op == "=~") & (pttemplate$rhs %in% varnames)])

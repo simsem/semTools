@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 December 2021
+### Last updated: 9 May 2022
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -1142,13 +1142,13 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
       fixedCall$param <- NULL
       fixedCall <- c(fixedCall, list(param = NULL))
     }
-    if (class(con) != "lavaan") stop(notLavaan)
+    if (!inherits(con, "lavaan")) stop(notLavaan)
   } else {
-    if (class(con) != "lavaan") stop(notLavaan)
-    if (class(uncon) != "lavaan") stop(notLavaan)
+    if (!inherits(con, "lavaan")) stop(notLavaan)
+    if (!inherits(uncon, "lavaan")) stop(notLavaan)
   }
   if (!is.null(null)) {
-    if (class(null) != "lavaan") stop(notLavaan)
+    if (!inherits(uncon, "null")) stop(notLavaan)
   }
 
   ############ FIXME: check that lavInspect(con, "options")$conditional.x = FALSE (find defaults for continuous/ordered indicators)
