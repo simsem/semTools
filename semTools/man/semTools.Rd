@@ -32,8 +32,8 @@ functions a \emph{suite}. Our suites include:
   \code{\link{plotRMSEApowernested}}, and
   \code{\link{findRMSEAsamplesizenested}}}
 \item{Missing Data Analysis:
-  \code{\link{auxiliary}},
   \code{\link{runMI}},
+  \code{\link{auxiliary}},
   \code{\link{twostage}},
   \code{\link{fmi}},
   \code{\link{bsBootMiss}},
@@ -54,9 +54,9 @@ functions a \emph{suite}. Our suites include:
   \code{\link{oblqRotate}}, and
   \code{\link{funRotate}}}
 \item{Reliability Estimation:
-  \code{\link{reliability}},
-  \code{\link{reliabilityL2}}, and
-  \code{\link{maximalRelia}}}
+  \code{\link{compRelSEM}} and
+  \code{\link{maximalRelia}}
+  (see also \code{\link{AVE}})}
 \item{Parceling:
   \code{\link{parcelAllocation}},
   \code{\link{PAVranking}}, and

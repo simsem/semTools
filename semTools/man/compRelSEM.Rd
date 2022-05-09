@@ -31,17 +31,17 @@ only applicable to the continuous latent-response scale.}
 
 \item{config}{\code{character} vector naming any configural constructs in
 a multilevel CFA. For these constructs (and optional total composite),
-Lai's (2021) coefficients \eqn{\omega^\text{W}} and \eqn{\omega^\text{2L}}
+Lai's (2021) coefficients \eqn{\omega^\textrm{W}} and \eqn{\omega^\textrm{2L}}
 are returned (or corresponding \eqn{\alpha} coefficients when
 \code{tau.eq=TRUE}), rather than Geldhof et al.'s (2014) coefficients for
 hypothetical composites of latent components (although the same formula
-is used for \eqn{\omega^\text{W}} in either case). Note that the same name
+is used for \eqn{\omega^\textrm{W}} in either case). Note that the same name
 must be used for the factor component represented at each level of the
 model.}
 
 \item{shared}{\code{character} vector naming any shared constructs in
 a multilevel CFA. For these constructs (and optional total composite),
-Lai's (2021) coefficient \eqn{\omega^\text{B}} or \eqn{\alpha^\text{B}} is
+Lai's (2021) coefficient \eqn{\omega^\textrm{B}} or \eqn{\alpha^\textrm{B}} is
 returned, rather than Geldhof et al.'s (2014) between-level coefficient
 for hypothetical composites of latent cluster means. Lai's (2021)
 coefficient quantifies reliability relative to error associated with both
@@ -50,7 +50,7 @@ generalizability coefficient.  Given that subjects can be considered as
 raters of their cluster's shared construct, an interrater reliability
 (IRR) coefficient is also returned, quantifying reliability relative to
 rater/sampling error alone.  To quantify reliability relative to
-indicator/measurement error alone (i.e., \eqn{\omega^\text{2L}}), the
+indicator/measurement error alone (i.e., \eqn{\omega^\textrm{2L}}), the
 \code{shared=} construct name(s) can additionally be included in
 \code{config=} argument.}
 

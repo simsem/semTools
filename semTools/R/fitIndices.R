@@ -28,7 +28,7 @@
 ##' Adjusted Gamma-Hat (\code{adjGammaHat}; West, Taylor, & Wu, 2012) is a
 ##' global fit index which can be computed by
 ##'
-##'   \deqn{ \hat{\Gamma}_\text{adj} = \left(1 - \frac{K \times p \times
+##'   \deqn{ \hat{\Gamma}_\textrm{adj} = \left(1 - \frac{K \times p \times
 ##'   (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - \hat{\Gamma} \right),}
 ##'
 ##' where \eqn{K} is the number of groups (please refer to Dudgeon, 2004, for
@@ -41,7 +41,7 @@
 ##' Anderson, 2003) is a corrected version of AIC for small sample size, often
 ##' abbreviated AICc:
 ##'
-##'   \deqn{ \text{AIC}_{\text{small}-N} = AIC + \frac{2q(q + 1)}{N - q - 1},}
+##'   \deqn{ \textrm{AIC}_{\textrm{small}-N} = AIC + \frac{2q(q + 1)}{N - q - 1},}
 ##'
 ##' where \eqn{AIC} is the original AIC: \eqn{-2LL + 2q} (where \eqn{q}
 ##' = the number of estimated parameters in the target model). Note that AICc is
@@ -52,7 +52,7 @@
 ##' similar to BIC but explicitly specifying the sample size on which the prior
 ##' is based (\eqn{N_{prior}}) using the \code{nPrior} argument.
 ##'
-##'   \deqn{ \text{BIC}_{\text{prior}-N} = -2LL + q\log{( 1 + \frac{N}{N_{prior}} )}.}
+##'   \deqn{ \textrm{BIC}_{\textrm{prior}-N} = -2LL + q\log{( 1 + \frac{N}{N_{prior}} )}.}
 ##'
 ##' Bollen et al. (2014) discussed additional BICs that incorporate more terms
 ##' from a Taylor series expansion, which the standard BIC drops.  The "Scaled
@@ -61,16 +61,16 @@
 ##' observed information matrix (FIM) exceeds the number of estimated model
 ##' parameters (Case 1) or not (Case 2), which is checked internally:
 ##'
-##'   \deqn{ \text{SPBIC}_{\text{Case 1}} = -2LL + q(1 - \frac{q}{\hat{\theta}^{'} \text{FIM} \hat{\theta}}), or}
-##'   \deqn{ \text{SPBIC}_{\text{Case 2}} = -2LL + \hat{\theta}^{'} \text{FIM} \hat{\theta},}
+##'   \deqn{ \textrm{SPBIC}_{\textrm{Case 1}} = -2LL + q(1 - \frac{q}{\hat{\theta}^{'} \textrm{FIM} \hat{\theta}}), or}
+##'   \deqn{ \textrm{SPBIC}_{\textrm{Case 2}} = -2LL + \hat{\theta}^{'} \textrm{FIM} \hat{\theta},}
 ##'
 ##' Bollen et al. (2014) credit the HBIC to Haughton (1988):
 ##'
-##'   \deqn{ \text{HBIC}_{\text{Case 1}} = -2LL - q\log{2 \times \pi},}
+##'   \deqn{ \textrm{HBIC}_{\textrm{Case 1}} = -2LL - q\log{2 \times \pi},}
 ##'
 ##' and proposes the information-matrix-based BIC by adding another term:
 ##'
-##'   \deqn{ \text{IBIC}_{\text{Case 1}} = -2LL - q\log{2 \times \pi} - \log{\det{\text{ACOV}}},}
+##'   \deqn{ \textrm{IBIC}_{\textrm{Case 1}} = -2LL - q\log{2 \times \pi} - \log{\det{\textrm{ACOV}}},}
 ##'
 ##' Stochastic information criterion (SIC; see Preacher, 2006, for details) is
 ##' similar to IBIC but does not subtract the term \eqn{q\log{2 \times \pi}}
@@ -78,14 +78,14 @@
 ##' functional form, not merely the number of free parameters.  The SIC can be
 ##' computed by
 ##'
-##'   \deqn{ \text{SIC} = -2LL + \log{\det{\text{FIM}^{-1}}} = -2LL - \log{\det{\text{ACOV}}},}
+##'   \deqn{ \textrm{SIC} = -2LL + \log{\det{\textrm{FIM}^{-1}}} = -2LL - \log{\det{\textrm{ACOV}}},}
 ##'
 ##' where the inverse of FIM is the asymptotic sampling covariance matrix (ACOV).
 ##'
 ##' Hannan--Quinn Information Criterion (HQC; Hannan & Quinn, 1979) is used for
 ##' model selection, similar to AIC or BIC.
 ##'
-##' \deqn{ \text{HQC} = -2LL + 2k\log{(\log{N})},}
+##' \deqn{ \textrm{HQC} = -2LL + 2k\log{(\log{N})},}
 ##'
 ##' Note that if Satorra--Bentler's or Yuan--Bentler's method is used, the fit
 ##' indices using the scaled \eqn{\chi^2} values are also provided.
