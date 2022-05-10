@@ -12,8 +12,8 @@
 - `reliability()` and `reliabilityL2()` deprecated.
     - Average variance extracted now has a dedicated `AVE()` function. 
     - A new `compRelSEM()` function provides more comprehensive options for estimating composite reliability coefficients (various alphas and omegas) than the `reliability()` function.  `compRelSEM()` also estimates reliability for a composite representing a higher-order factor (using the `higher=` argument to name such factors) and implements [Lai's (2021)](https://doi.org/10.1037/met0000287) recently proposed composite-reliability coefficients for different types of multilevel constructs (named with the `config=` and `shared=` arguments).  See [issue 106](https://github.com/simsem/semTools/issues/106) for a conversation with Lai about the implementation, as well as links to documentation of tests.
-- `monteCarloMed()` now works for `lavaan.mi` objects, which is much easier than combining multiple imputation with bootstrapping.
-- `monteCarloMed()` now optionally returns CIs for the standardized solution, only for `lavaan` objects (not `lavaan.mi`).
+- `monteCarloCI()` now works for `lavaan.mi` objects, which is much easier than combining multiple imputation with bootstrapping.
+- `monteCarloCI()` now optionally returns CIs for the standardized solution, only for `lavaan` objects (not `lavaan.mi`).
 - `htmt()` gains an argument `htmt2=TRUE` to use the geometric mean (default) rather than the arithmetic mean (which assumes tau-equivalence).
 - `moreFitIndices()` includes 3 new extended BICs discussed by [Bollen et al. (2014)](https://doi.org/10.1177/0049124112452393) 
 - `miPowerFit()` can now pass further arguments to `lavaan::modificationIndices()` via `...`
