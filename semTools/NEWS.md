@@ -1,4 +1,11 @@
-# semTools 0.5-6 (in development)
+# semTools 0.5-7 (in development)
+
+## New Features:
+
+## Bug Fixes:
+
+
+# semTools 0.5-6 (on CRAN 10 May 2022)
 
 ## New Features:
 

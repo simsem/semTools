@@ -1,6 +1,6 @@
 Encoding: UTF-8
 Package: semTools
-Version: 0.5-5.926
+Version: 0.5-6
 Title: Useful Tools for Structural Equation Modeling
 Description: Provides tools for structural equation modeling, many of which extend the 'lavaan' package; for example, to pool results from multiple imputations, probe latent interactions, or test measurement invariance.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
@@ -30,14 +30,14 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Mikko", family = "Rönkkö", role = "ctb", email = "mikko.ronkko@jyu.fi", comment = c(ORCID = "0000-0001-7988-7609")),
 		person(given = "Andrew R.", family = "Johnson", role = "ctb", email = "andrew.johnson@curtin.edu.au", comment = c(ORCID = "0000-0001-7000-8065"))
 		)
-Depends: R(>= 3.4), utils, stats, graphics, lavaan(>= 0.6-7)
-Imports: methods, pbivnorm
-Suggests: MASS, foreign, parallel, boot, Amelia, mice, GPArotation, mnormt, blavaan, emmeans, testthat
+Depends: R(>= 4.0), lavaan(>= 0.6-11), methods
+Imports: graphics, pbivnorm, stats, utils
+Suggests: Amelia, blavaan, emmeans, foreign, MASS, mice, GPArotation, mnormt, parallel, testthat
 License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2022-04-26
+Date/Publication: 2022-05-09
 RoxygenNote: 7.1.2
 Roxygen: list(old_usage = TRUE)
