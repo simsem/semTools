@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 10 May 2022
 ### new auxiliary function does NOT create a lavaanStar-class instance
 
 ##' Implement Saturated Correlates with FIML
@@ -118,7 +118,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	    startArgs <- lavArgs
 	    startArgs$model <- model
 	    startArgs$do.fit <- FALSE
-	    model$start <- parTable(do.call(fun, startArgs))$start
+	    model$start <- parTable(do.call(fun, startArgs, envir = getNamespace("lavaan")))$start
 	  }
 
 	  missingCols <- setdiff(PTcols, names(model))
@@ -130,7 +130,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	  ptArgs <- lavArgs
 	  ptArgs$model <- model
 	  ptArgs$do.fit <- FALSE
-	  PT <- parTable(do.call(fun, ptArgs))[PTcols]
+	  PT <- parTable(do.call(fun, ptArgs, envir = getNamespace("lavaan")))[PTcols]
 	} else stop("The 'model' argument must be a character vector of",
 	            " lavaan syntax or a parameter table")
 
@@ -187,7 +187,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
 	#   mergedPT$start[newRows] <- startVals
 	# }
 	lavArgs$model <- lavaan::lav_partable_complete(rbind(mergedPT, CON))
-  result <- do.call(fun, lavArgs)
+  result <- do.call(fun, lavArgs, envir = getNamespace("lavaan"))
 
   ## specify, fit, and attach an appropriate independence model
   baseArgs <- list()
@@ -206,7 +206,7 @@ auxiliary <- function(model, data, aux, fun, ...) {
   baseArgs$control                <- lavArgs$control
   baseArgs$optim.method           <- lavArgs$optim.method
 
-  result@external$baseline.model  <- do.call(lavaan::lavaan, baseArgs)
+  result@external$baseline.model  <- do.call("lavaan", baseArgs, envir = getNamespace("lavaan"))
   result@external$aux             <- aux
   result@external$baseline.syntax <- satMod
 	result
