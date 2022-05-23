@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 9 May 2022
+### Last updated: 23 May 2022
 
 
 
@@ -308,8 +308,13 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' Several coefficients for factor-analysis reliability have been termed
 ##' "omega", which Cho (2021) argues is a misleading misnomer and argues for
 ##' using \eqn{\rho} to represent them all, differentiated by descriptive
-##' subscripts.  In our package, we number \eqn{\omega} based on commonly
-##' applied calculations.
+##' subscripts.  In our package, we strive to provide unlabeled coefficients,
+##' leaving it to the user to decide on a label in their report.  But we do
+##' use the symbols \eqn{\alpha} and \eqn{\omega} in the formulas below in order
+##' to distinguish coefficients that do (not) assume essential tau-equivalence.
+##' For higher-order constructs with latent indicators, only \eqn{\omega} is
+##' available. Lai's (2021) multilevel coefficients are labeled in accordance
+##' with the symbols used in that article (more details below).
 ##'
 ##' Bentler (1968) first introduced factor-analysis reliability for a
 ##' unidimensional factor model with congeneric indicators, labeling the
@@ -379,7 +384,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' indicators (e.g., a total score or scale mean) that is attributable to the
 ##' second-order factor (i.e., coefficient \eqn{\omega}):
 ##'
-##' \deqn{\omega_{L1}=\frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi \bold{B}^{\prime}
+##' \deqn{\omega=\frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi \bold{B}^{\prime}
 ##'   \Lambda^{\prime} \bold{1} }{ \bold{1}^{\prime} \hat{\Sigma} \bold{1}}, }
 ##'
 ##' where \eqn{\bold{1}} is the \emph{k}-dimensional vector of 1s and \emph{k}
@@ -392,31 +397,33 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' latent-response scale (\code{FALSE}) or on the observed ordinal scale
 ##' (\code{TRUE}, the default).  For \eqn{\omega}-type coefficients
 ##' (\code{tau.eq=FALSE}), Green and Yang's (2009, formula 21) approach is used
-##' to transform factor-model results back to the ordinal response scale.
-##' When \code{ord.scale=TRUE}, coefficient \eqn{\alpha} is calculated using the
-##' covariance matrix calculated from the integer-valued numeric weights for
-##' ordinal categories, consistent with its definition (Chalmers, 2018) and the
-##' \code{alpha} function in the \code{psych} package; this implies
-##' \code{obs.var=TRUE}, so \code{obs.var=FALSE} will be ignored.  When
-##' \code{ord.scale=FALSE}, the standard \eqn{\alpha} formula is applied to the
-##' polychoric correlation matrix ("ordinal \eqn{\alpha}"; Zumbo et al., 2007),
+##' to transform factor-model results back to the ordinal response scale. When
+##' \code{ord.scale=TRUE} and \code{tau.eq=TRUE}, coefficient \eqn{\alpha} is
+##' calculated using the covariance matrix calculated from the integer-valued
+##' numeric weights for ordinal categories, consistent with its definition
+##' (Chalmers, 2018) and the \code{alpha} function in the \code{psych} package;
+##' this implies \code{obs.var=TRUE}, so \code{obs.var=FALSE} will be ignored
+##' When \code{ord.scale=FALSE}, the standard \eqn{\alpha} formula is applied to
+##' the polychoric correlation matrix ("ordinal \eqn{\alpha}"; Zumbo et al., 2007),
 ##' estimated from the saturated or hypothesized model (see \code{obs.var}),
 ##' and \eqn{\omega} is calculated from CFA results without applying Green and
-##' Yang's (2009) correction (see Zumbo & Kroc's, 2019, for a rationalization).
-##' No method has been proposed for calculating reliability with a mixture of
-##' categorical and continuous indicators, so an error is returned if
-##' \code{object} includes factors with a mixture of indicator types (unless
-##' omitted using \code{omit.factors}). If categorical indicators load on a
-##' different factor(s) than continuous indicators, then reliability will still
-##' be calculated separately for those factors, but \code{return.total} must be
-##' \code{FALSE} (unless \code{omit.factors} is used to isolate factors with
-##' indicators of the same type).
+##' Yang's (2009) correction (see Zumbo & Kroc, 2019, for a rationalization).
+##' No method analogous to Green and Yang (2009) has been proposed for
+##' calculating reliability with a mixture of categorical and continuous
+##' indicators, so an error is returned if \code{object} includes factors with a
+##' mixture of indicator types (unless omitted using \code{omit.factors}). If
+##' categorical indicators load on a different factor(s) than continuous
+##' indicators, then reliability will still be calculated separately for those
+##' factors, but \code{return.total} must be \code{FALSE} (unless
+##' \code{omit.factors} is used to isolate factors with indicators of the same
+##' type).
 ##'
 ##' \bold{Multilevel Measurement Models}:
 ##' Under the default settings, \code{compRelSEM()} will apply the same formula
 ##' in each "block" (group and/or level of analysis). In the case of multilevel
-##' SEMs, this yields "reliability" for latent within- and between-level
-##' components, as proposed by Geldhof et al. (2014).  This is not recommended
+##' (ML-)SEMs, this yields "reliability" for latent within- and between-level
+##' components, as proposed by Geldhof et al. (2014).  Although this works fine
+##' to calculate reliability per group, this is not recommended for ML-SEMs
 ##' because the coefficients do not correspond to actual composites that would
 ##' be calculated from the observed data.  Lai (2021) proposed coefficients for
 ##' reliability of actual composites, depending on the type of construct, which
@@ -427,7 +434,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' that overall scale-reliability can be estimated for a shared construct by
 ##' including it in \code{config}.  Instead of organizing the output by block
 ##' (the default), specifying \code{config=} and/or \code{shared=} will prompt
-##' organizing the output by \code{$config} and/or \code{$shared}.
+##' organizing the list of output by \code{$config} and/or \code{$shared}.
 ##'
 ##' \itemize{
 ##'   \item The overall (\code{_2L}) scale reliability for \code{config}ural
@@ -452,9 +459,9 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' construct.  \code{dropSingle=TRUE} only prevents estimating reliability for
 ##' a single-indicator construct, not from including such an indicator in a
 ##' total composite.  It is permissible for \code{shared=} constructs to have
-##' indicators at Level-2 only.  If it is necessary to model other Level-2
-##' variables (e.g., to justify the missing-at-random assumption when using
-##' \code{missing = "FIML" estimation}), they should be placed in the
+##' additional indicators at Level-2 only.  If it is necessary to model other
+##' Level-2 variables (e.g., to justify the missing-at-random assumption when
+##' using \code{missing="FIML" estimation}), they should be placed in the
 ##' \code{omit.indicators=} argument to exclude them from total composites.
 ##'
 ##'
@@ -656,7 +663,10 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   print(compRelSEM(fit, omit.factors = c("textual","speed"),
 ##'                    omit.indicators = i, tau.eq = TRUE))
 ##' }
-##'
+##' ## item-total correlations obtainable by adding a composite to the data
+##' HS$Visual <- HS$x1 + HS$x2 + HS$x3
+##' cor(HS$Visual, y = HS[paste0("x", 1:3)])
+##' ## comparable to psych::alpha(HS[paste0("x", 1:3)])
 ##'
 ##' ## Reliability of a composite that represents a higher-order factor
 ##' mod.hi <- ' visual  =~ x1 + x2 + x3
