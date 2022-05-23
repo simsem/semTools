@@ -2,6 +2,10 @@
 
 ## New Features:
 
+- `auxiliary()` has 2 new arguments
+    - `envir=` is passed to `do.call()`, which prevents problems not finding the `lavaan` package when `semTools` is not loaded via `library()`
+    - `return.syntax=TRUE` will return model syntax for the saturated-correlates parameters, which can be added to the target-model syntax.  This enables adding saturated correlates easily to a `blavaan` model.
+
 ## Bug Fixes:
 
 

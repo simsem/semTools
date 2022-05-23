@@ -117,7 +117,6 @@ semTools::auxiliary()
 - try setting PT$user == 9 for auxiliary parameters
   - create lavaan branch, change coef(), parameterEstimates(), etc.
 - add example of alternative null model to help page
-- add argument to simply return extra syntax (no FIML for categorical?)
 
 
 semTools::bsBootMiss() additions:

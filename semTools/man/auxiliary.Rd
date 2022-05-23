@@ -8,15 +8,16 @@
 \alias{growth.auxiliary}
 \title{Implement Saturated Correlates with FIML}
 \usage{
-auxiliary(model, data, aux, fun, ...)
+auxiliary(model, data, aux, fun, ..., envir = getNamespace("lavaan"),
+  return.syntax = FALSE)
 
-lavaan.auxiliary(model, data, aux, ...)
+lavaan.auxiliary(model, data, aux, ..., envir = getNamespace("lavaan"))
 
-cfa.auxiliary(model, data, aux, ...)
+cfa.auxiliary(model, data, aux, ..., envir = getNamespace("lavaan"))
 
-sem.auxiliary(model, data, aux, ...)
+sem.auxiliary(model, data, aux, ..., envir = getNamespace("lavaan"))
 
-growth.auxiliary(model, data, aux, ...)
+growth.auxiliary(model, data, aux, ..., envir = getNamespace("lavaan"))
 }
 \arguments{
 \item{model}{The analysis model can be specified with 1 of 2 objects:
@@ -38,7 +39,15 @@ any observed variables in the \code{model}}
 \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
 \code{"sem"}, or \code{"growth"}). Only required for \code{auxiliary}.}
 
-\item{...}{additional arguments to pass to \code{\link[lavaan]{lavaan}}.}
+\item{...}{Additional arguments to pass to \code{fun=}.}
+
+\item{envir}{Passed to \code{\link{do.call}}.}
+
+\item{return.syntax}{\code{logical} indicating whether to return a
+\code{character} string of \code{\link[lavaan]{model.syntax}} that can be
+added to a target \code{model=} that is also a \code{character} string.
+This can be advantageous, for example, to use add saturated correlates to
+a \pkg{blavaan} model.}
 }
 \value{
 a fitted \code{\linkS4class{lavaan}} object.  Additional
@@ -64,7 +73,7 @@ information maximum likelihood (FIML) to handle missing data
 These functions are wrappers around the corresponding lavaan functions.
 You can use them the same way you use \code{\link[lavaan]{lavaan}}, but you
 \emph{must} pass your full \code{data.frame} to the \code{data} argument.
-Because the saturated-correlates approaches (Enders, 2008) treates exogenous
+Because the saturated-correlates approaches (Enders, 2008) treats exogenous
 variables as random, \code{fixed.x} must be set to \code{FALSE}. Because FIML
 requires continuous data (although nonnormality corrections can still be
 requested), no variables in the model nor auxiliary variables specified in
@@ -97,11 +106,12 @@ fitMeasures(fitaux2, fit.measures = c("cfi","tli"))
 ##       is the independence model plus saturated auxiliary parameters
 lavInspect(fitaux2@external$baseline.model, "free")
 
+
 }
 \references{
-Enders, C. K. (2008). A note on the use of missing auxiliary
-  variables in full information maximum likelihood-based structural equation
-  models. \emph{Structural Equation Modeling, 15}(3), 434--448.
+Enders, C. K. (2008). A note on the use of missing auxiliary variables in
+  full information maximum likelihood-based structural equation models.
+  \emph{Structural Equation Modeling, 15}(3), 434--448.
   \doi{10.1080/10705510802154307}
 }
 \author{
