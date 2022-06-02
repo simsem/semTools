@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
 ###          Aaron Boulton, Ruben Arslan
-### Last updated: 18 September 2021
+### Last updated: 2 June 2022
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -34,6 +34,9 @@
 ##' where \eqn{K} is the number of groups (please refer to Dudgeon, 2004, for
 ##' the multiple-group adjustment for \code{adjGammaHat}).
 ##'
+##' Note that if Satorra--Bentler's or Yuan--Bentler's method is used, the fit
+##' indices using the scaled \eqn{\chi^2} values are also provided.
+##'
 ##' The remaining indices are information criteria calculated using the
 ##' \code{object}'s \eqn{-2 \times} log-likelihood, abbreviated \eqn{-2LL}.
 ##'
@@ -54,41 +57,44 @@
 ##'
 ##'   \deqn{ \textrm{BIC}_{\textrm{prior}-N} = -2LL + q\log{( 1 + \frac{N}{N_{prior}} )}.}
 ##'
-##' Bollen et al. (2014) discussed additional BICs that incorporate more terms
-##' from a Taylor series expansion, which the standard BIC drops.  The "Scaled
-##' Unit-Information Prior" BIC is calculated depending on whether the product
-##' of the vector of estimated model parameters (\eqn{\hat{\theta}}) and the
-##' observed information matrix (FIM) exceeds the number of estimated model
+##' Bollen et al. (2012, 2014) discussed additional BICs that incorporate more
+##' terms from a Taylor series expansion, which the standard BIC drops.  The
+##' "Scaled Unit-Information Prior" BIC is calculated depending on whether the
+##' product of the vector of estimated model parameters (\eqn{\hat{\theta}}) and
+##' the observed information matrix (FIM) exceeds the number of estimated model
 ##' parameters (Case 1) or not (Case 2), which is checked internally:
 ##'
-##'   \deqn{ \textrm{SPBIC}_{\textrm{Case 1}} = -2LL + q(1 - \frac{q}{\hat{\theta}^{'} \textrm{FIM} \hat{\theta}}), or}
+##'   \deqn{ \textrm{SPBIC}_{\textrm{Case 1}} = -2LL + q(1 - \frac{q}{\hat{\theta}^{'} \textrm{FIM} \hat{\theta}}), \textrm{ or}}
 ##'   \deqn{ \textrm{SPBIC}_{\textrm{Case 2}} = -2LL + \hat{\theta}^{'} \textrm{FIM} \hat{\theta},}
 ##'
-##' Bollen et al. (2014) credit the HBIC to Haughton (1988):
+##' Note that this implementation of SPBIC is calculated on the assumption that
+##' priors for all estimated parameters are centered at zero, which is
+##' inappropriate for most SEMs (e.g., variances should not have priors centered
+##' at the lowest possible value; Bollen, 2014, p. 6).
 ##'
-##'   \deqn{ \textrm{HBIC}_{\textrm{Case 1}} = -2LL - q\log{2 \times \pi},}
+##' Bollen et al. (2014, eq. 14) credit the HBIC to Haughton (1988):
 ##'
-##' and proposes the information-matrix-based BIC by adding another term:
+##'   \deqn{ \textrm{HBIC} = -2LL + q\log{\frac{N}{2 \pi}}.}
 ##'
-##'   \deqn{ \textrm{IBIC}_{\textrm{Case 1}} = -2LL - q\log{2 \times \pi} - \log{\det{\textrm{ACOV}}},}
+##' Bollen et al. (2012, p. 305) proposed the information-matrix-based BIC by
+##' adding another term:
+##'
+##'   \deqn{ \textrm{IBIC} = -2LL + q\log{\frac{N}{2 \pi}} + \log{\det{\textrm{ACOV}}}.}
 ##'
 ##' Stochastic information criterion (SIC; see Preacher, 2006, for details) is
-##' similar to IBIC but does not subtract the term \eqn{q\log{2 \times \pi}}
+##' similar to IBIC but does not add the term \eqn{q\log{\frac{N}{2 \pi}}}
 ##' that is also in HBIC. SIC and IBIC account for model complexity in a model's
 ##' functional form, not merely the number of free parameters.  The SIC can be
 ##' computed by
 ##'
-##'   \deqn{ \textrm{SIC} = -2LL + \log{\det{\textrm{FIM}^{-1}}} = -2LL - \log{\det{\textrm{ACOV}}},}
+##'   \deqn{ \textrm{SIC} = -2LL + \log{\det{\textrm{FIM}^{-1}}} = -2LL + \log{\det{\textrm{ACOV}}},}
 ##'
 ##' where the inverse of FIM is the asymptotic sampling covariance matrix (ACOV).
 ##'
 ##' Hannan--Quinn Information Criterion (HQC; Hannan & Quinn, 1979) is used for
 ##' model selection, similar to AIC or BIC.
 ##'
-##' \deqn{ \textrm{HQC} = -2LL + 2k\log{(\log{N})},}
-##'
-##' Note that if Satorra--Bentler's or Yuan--Bentler's method is used, the fit
-##' indices using the scaled \eqn{\chi^2} values are also provided.
+##' \deqn{ \textrm{HQC} = -2LL + 2q\log{(\log{N})},}
 ##'
 ##'
 ##' @importFrom lavaan lavInspect
@@ -129,6 +135,9 @@
 ##'
 ##' Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
 ##'
+##' A great deal of feedback was provided by Kris Preacher regarding Bollen et
+##' al.'s (2012, 2014) extensions of BIC.
+##'
 ##' @seealso
 ##' \itemize{
 ##' \item \code{\link{miPowerFit}} For the modification indices and their
@@ -142,6 +151,11 @@
 ##' Bayes factor approximation methods including two new methods.
 ##' \emph{Sociological Methods & Research, 41}(2), 294--324.
 ##' \doi{10.1177/0049124112452393}
+##'
+##' Bollen, K. A., Harden, J. J., Ray, S., & Zavisca, J. (2014). BIC and
+##' alternative Bayesian information criteria in the selection of structural
+##' equation models. \emph{Structural Equation Modeling, 21}(1), 1--19.
+##' \doi{10.1080/10705511.2014.856691}
 ##'
 ##' Burnham, K., & Anderson, D. (2003). \emph{Model selection and
 ##' multimodel inference: A practical--theoretic approach}. New York, NY:
@@ -244,7 +258,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
         result["spbic"] <- f + nParam*(1 - log(nParam / junk)) # Case 1
       } else result["spbic"] <- f + junk # Case 2
     }
-    if ("hbic" %in% fit.measures) result["hbic"] <- f - nParam*log(2*pi)
+    if ("hbic" %in% fit.measures) result["hbic"] <- f + nParam*log(N/(2*pi))
 
     ## check determinant of ACOV for IBIC and SIC
     if (any(c("ibic","sic") %in% fit.measures)) {
@@ -262,16 +276,16 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
       if (detACOV <= 0) {
         result["ibic"] <- NA
         message('Determinant of vcov(object) <= 0, so IBIC cannot be calculated')
-      } else result["ibic"] <- f - nParam*log(2*pi) - log(detACOV)
+      } else result["ibic"] <- f + nParam*log(N/(2*pi)) + log(detACOV)
     }
     if ("sic" %in% fit.measures) {
       if (detACOV <= 0) {
         result["sic"] <- NA
         message('Determinant of vcov(object) <= 0, so SIC cannot be calculated')
-      } else result["sic"] <- f - log(detACOV)
+      } else result["sic"] <- f + log(detACOV)
     }
 
-    if ("hqc" %in% fit.measures) result["hqc"] <- f + 2 * log(log(N)) * nParam
+    if ("hqc" %in% fit.measures) result["hqc"] <- f + 2*nParam*log(log(N))
   }
 
   result <- unlist(result[fit.measures])

@@ -8,6 +8,8 @@
 
 ## Bug Fixes:
 
+- Formulas implementing Bollen et al.'s (2012, 2014) BIC extensions have been corrected in the documentation and source code.
+
 
 # semTools 0.5-6 (on CRAN 10 May 2022)
 
