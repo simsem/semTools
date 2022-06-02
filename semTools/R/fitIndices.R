@@ -76,20 +76,23 @@
 ##'
 ##'   \deqn{ \textrm{HBIC} = -2LL + q\log{\frac{N}{2 \pi}}.}
 ##'
-##' Bollen et al. (2012, p. 305) proposed the information-matrix-based BIC by
+##' Bollen et al. (2012, p. 305) proposed the information matrix (\eqn{I})-based BIC by
 ##' adding another term:
 ##'
-##'   \deqn{ \textrm{IBIC} = -2LL + q\log{\frac{N}{2 \pi}} + \log{\det{\textrm{ACOV}}}.}
+##'   \deqn{ \textrm{IBIC} = -2LL + q\log{\frac{N}{2 \pi}} + \log{\det{\textrm{FIM}}},}
+##'
+##' or equivalently, using the inverse information (the asymptotic sampling
+##' covariance matrix of estimated parameters: ACOV):
+##'
+##'   \deqn{ \textrm{IBIC} = -2LL - q\log{2 \pi} - \log{\det{\textrm{ACOV}}}.}
 ##'
 ##' Stochastic information criterion (SIC; see Preacher, 2006, for details) is
-##' similar to IBIC but does not add the term \eqn{q\log{\frac{N}{2 \pi}}}
-##' that is also in HBIC. SIC and IBIC account for model complexity in a model's
+##' similar to IBIC but does not include the \eqn{q\log{2 \pi}} term that is
+##' also in HBIC.  SIC and IBIC both account for model complexity in a model's
 ##' functional form, not merely the number of free parameters.  The SIC can be
-##' computed by
+##' computed as:
 ##'
-##'   \deqn{ \textrm{SIC} = -2LL + \log{\det{\textrm{FIM}^{-1}}} = -2LL + \log{\det{\textrm{ACOV}}},}
-##'
-##' where the inverse of FIM is the asymptotic sampling covariance matrix (ACOV).
+##'   \deqn{ \textrm{SIC} = -2LL + q\log{N} + \log{\det{\textrm{FIM}}} = -2LL - \log{\det{\textrm{ACOV}}}.}
 ##'
 ##' Hannan--Quinn Information Criterion (HQC; Hannan & Quinn, 1979) is used for
 ##' model selection, similar to AIC or BIC.
@@ -276,13 +279,13 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
       if (detACOV <= 0) {
         result["ibic"] <- NA
         message('Determinant of vcov(object) <= 0, so IBIC cannot be calculated')
-      } else result["ibic"] <- f + nParam*log(N/(2*pi)) + log(detACOV)
+      } else result["ibic"] <- f - nParam*log(2*pi) - log(detACOV)
     }
     if ("sic" %in% fit.measures) {
       if (detACOV <= 0) {
         result["sic"] <- NA
         message('Determinant of vcov(object) <= 0, so SIC cannot be calculated')
-      } else result["sic"] <- f + log(detACOV)
+      } else result["sic"] <- f - log(detACOV)
     }
 
     if ("hqc" %in% fit.measures) result["hqc"] <- f + 2*nParam*log(log(N))
