@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 25 June 2018
+### Last updated: 2 June 2022
 
 
 ##' Single Parameter Test Divided from Nested Model Comparison
@@ -226,10 +226,8 @@ paramNameFromPt <- function(pt) {
 refit <- function(pt, object, resetstart = TRUE) {
 	if (resetstart && "start" %in% names(pt)) pt <- pt[-which("start" == names(pt))]
 	previousCall <- lavInspect(object, "call")
-	args <- previousCall[-1]
-	args$model <- pt
-	funcall <- as.character(previousCall[[1]])
-	tempfit <- do.call(funcall[length(funcall)], args)
+	previousCall$model <- pt
+	eval(previousCall)
 }
 
 

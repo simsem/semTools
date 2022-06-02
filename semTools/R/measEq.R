@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 21 September 2021
+### Last updated: 2 June 2022
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1332,7 +1332,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     if (ID.fac != "ul") lavArgs$std.lv <- TRUE
     lavArgs$model <- configural.model # let lavaan() do its own checks
     lavArgs$do.fit <- FALSE
-    lavTemplate <- do.call("cfa", lavArgs) #FIXME: violates NAMESPACE rules?  Import cfa()?
+    lavTemplate <- do.call("cfa", lavArgs, envir = getNamespace("lavaan"))
     mc$meanstructure <- lavInspect(lavTemplate, "options")$meanstructure # just in case
     mc$configural.model <- lavTemplate
   }
@@ -2824,7 +2824,8 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     } else {
       lavArgs$model <- as.character(out)
       lavArgs$do.fit <- TRUE
-      fit <- try(do.call("cfa", lavArgs), silent = TRUE)
+      fit <- try(do.call("cfa", lavArgs, envir = getNamespace("lavaan")),
+                 silent = TRUE)
     }
 
     ## check whether the model could be fit

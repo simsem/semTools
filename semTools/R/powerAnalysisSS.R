@@ -1,5 +1,5 @@
 ### Alexander M. Schoemann & Terrence D. Jorgensen
-### Last updated: 6 October 2021
+### Last updated: 2 June 2022
 ### Function to apply Satorra & Saris method for chi-squared power analysis
 
 
@@ -154,7 +154,8 @@ SSpower <- function(powerModel, n, nparam, popModel, mu, Sigma,
 
     ## specify (vector of) sample size(s) for optional multigroup syntax to work
     popMoments <- lavaan::fitted(do.call(fun, list(model = popModel,
-                                                   sample.nobs = n)))
+                                                   sample.nobs = n),
+                                         envir = getNamespace("lavaan")))
     ## without data, can't apply fitted() to multigroup model syntax, so
     ## save the same fitted moments for each group
     if (length(n) > 1L) {
@@ -200,7 +201,7 @@ SSpower <- function(powerModel, n, nparam, popModel, mu, Sigma,
   funArgs <- list(model = powerModel, sample.cov = Sigma,
                   sample.mean = mu, sample.nobs = n)
   useArgs <- c(funArgs, dots[setdiff(names(dots), names(funArgs))])
-  fit <- do.call(fun, useArgs)
+  fit <- do.call(fun, useArgs, envir = getNamespace("lavaan"))
 
   ## get NCP from chi square
   ncp <- lavaan::fitmeasures(fit)["chisq"]
