@@ -226,8 +226,14 @@ paramNameFromPt <- function(pt) {
 refit <- function(pt, object, resetstart = TRUE) {
 	if (resetstart && "start" %in% names(pt)) pt <- pt[-which("start" == names(pt))]
 	previousCall <- lavInspect(object, "call")
-	previousCall$model <- pt
-	eval(previousCall)
+	## Why this?
+	args <- previousCall[-1]
+	args$model <- pt
+	funcall <- as.character(previousCall[[1]])
+	do.call(funcall[length(funcall)], args)
+	## instead of this?
+	# previousCall$model <- pt
+	# eval(previousCall)
 }
 
 
