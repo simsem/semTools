@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 23 May 2022
+### Last updated: 15 June 2022
 
 
 
@@ -471,8 +471,8 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' @param object A \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
-##' @param obs.var \code{logical} indicating whether to compute AVE using
-##'   observed variances in the denominator. Setting \code{FALSE} triggers
+##' @param obs.var \code{logical} indicating whether to compute reliability
+##'   using observed variances in the denominator. Setting \code{FALSE} triggers
 ##'   using model-implied variances in the denominator.
 ##' @param tau.eq \code{logical} indicating whether to assume (essential)
 ##'   tau-equivalence, yielding a coefficient analogous to \eqn{\alpha}.

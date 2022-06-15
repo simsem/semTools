@@ -15,8 +15,8 @@ compRelSEM(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 \code{\linkS4class{lavaan.mi}} object, expected to contain only
 exogenous common factors (i.e., a CFA model).}
 
-\item{obs.var}{\code{logical} indicating whether to compute AVE using
-observed variances in the denominator. Setting \code{FALSE} triggers
+\item{obs.var}{\code{logical} indicating whether to compute reliability
+using observed variances in the denominator. Setting \code{FALSE} triggers
 using model-implied variances in the denominator.}
 
 \item{tau.eq}{\code{logical} indicating whether to assume (essential)
