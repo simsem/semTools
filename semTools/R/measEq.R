@@ -1346,7 +1346,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
 
 
   ## prevent inconsistency
-  if (lavInspect(lavTemplate, "options")$categorical &&
+  if (lavInspect(lavTemplate, "categorical") &&
       ID.cat %in% c("wu","mplus") &&
       ID.fac != "uv") warning('For factors measured only by categorical ',
                               'indicators, constraints on intercepts are ',
