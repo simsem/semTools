@@ -63,7 +63,11 @@ the name matching the \code{group} argument supplied when fitting the model.
 
 \subsection{Dealing with Missing Data}{
 Limited testing suggests that these functions do work when the model was fit
-to incomplete data.
+to incomplete data. However, when FIML is used, the default method for
+\code{\link[emmeans:ref_grid]{cov.reduce}} might fail; We recommend that
+users explicitly set either the \code{at = } argument or the
+\code{cov.reduce = } argument with a function (or functions) that properly
+deal with missing data.
 }
 
 \subsection{Dealing with Factors}{

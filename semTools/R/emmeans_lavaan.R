@@ -54,7 +54,11 @@
 ##'
 ##' \subsection{Dealing with Missing Data}{
 ##' Limited testing suggests that these functions do work when the model was fit
-##' to incomplete data.
+##' to incomplete data. However, when FIML is used, the default method for
+##' \code{\link[emmeans:ref_grid]{cov.reduce}} might fail; We recommend that
+##' users explicitly set either the \code{at = } argument or the
+##' \code{cov.reduce = } argument with a function (or functions) that properly
+##' deal with missing data.
 ##' }
 ##'
 ##' \subsection{Dealing with Factors}{
@@ -100,6 +104,16 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
 
   # Fill attributes (but keep lavaan_data in case of missing data)
   mostattributes(lavaan_data) <- attributes(recovered)
+
+  if (anyNA(lavaan_data)) {
+    warning(
+      "Data used for modeling contains missing values.",
+      "\n  Consider setting the `at = ` argument explicitly" ,
+      "\n  or pass a function(s) that deals with missing values to",
+      "\n  the `cov.reduce = ` argument. ", call. = FALSE
+    )
+  }
+
   return(lavaan_data)
 }
 
@@ -130,8 +144,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   # re-shape to deal with any missing estimates
   temp_bhat <- rep(0, length = length(emmb$bhat))
   temp_bhat[seq_len(nrow(pars))] <- pars$est
-  names(temp_bhat) <- c(par_names,
-                        colnames(emmb$V)[!colnames(emmb$V) %in% par_names])
+  names(temp_bhat) <- .emlab_find_term_names(par_names, colnames(emmb$V))
 
   # re-order
   b_ind <- match(colnames(emmb$V), names(temp_bhat))
@@ -168,8 +181,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   temp_vcov <- matrix(0, nrow = nrow(emmb$V), ncol = ncol(emmb$V))
   temp_vcov[seq_len(ncol(lavVCOV)), seq_len(ncol(lavVCOV))] <- lavVCOV
   colnames(temp_vcov) <-
-    rownames(temp_vcov) <- c(par_names,
-                             colnames(emmb$V)[!colnames(emmb$V) %in% par_names])
+    rownames(temp_vcov) <- .emlab_find_term_names(par_names, colnames(emmb$V))
 
   # re-order
   v_ind <- match(colnames(emmb$V), colnames(temp_vcov))
@@ -319,6 +331,28 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
   return(pars[, colnames(pars) %in% c("lhs", "op", "rhs", "label", "est")])
 }
+
+##' @keywords internal
+.emlab_find_term_names <- function(terms, candidates) {
+  terms_split <- strsplit(terms, split = ":")
+  candidates_split <- strsplit(candidates, split = ":")
+
+  is_in <- matrix(NA,
+                  nrow = length(terms_split),
+                  ncol = length(candidates_split))
+  for (i in seq_along(terms_split)) {
+    for (j in seq_along(candidates_split)) {
+      is_in[i,j] <-
+        all(candidates_split[[j]] %in% terms_split[[i]]) &&
+        all(terms_split[[i]] %in% candidates_split[[j]])
+    }
+  }
+  if (length(terms) > 1L) is_in <- apply(is_in, 2, any)
+  c(terms, if (any(!is_in)) candidates[!is_in])
+}
+
+# Test --------------------------------------------------------------------
+
 
 ##' @keywords internal test
 .emlav_run_tests <- function() {
@@ -502,6 +536,21 @@ grade ~ ageyr
                           group = "school")
     rg <- suppressWarnings(emmeans::ref_grid(semFit, lavaan.DV = c("LAT3", "grade")))
     testthat::expect_s4_class(rg, "emmGrid")
+  })
+
+  testthat::test_that("missing data - warn", {
+    data("mtcars")
+    mtcars$hp[1] <- NA
+
+    model <- "
+  mpg ~ hp + drat + hp:drat
+"
+
+    fit <- sem(model, mtcars, missing = "fiml.x")
+
+    testthat::expect_warning(
+      emmeans::ref_grid(fit, lavaan.DV = "mpg")
+    )
   })
 
   message("All good!")
