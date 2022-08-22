@@ -87,9 +87,7 @@ interest. For example, higher-order or method factors. Note that
 reliability of a higher-order factor.}
 
 \item{omit.indicators}{\code{character} vector naming any observed variables
-that should be ignored when calculating composite reliability. This can
-be useful, for example, to estimate reliability when an indicator is
-removed.}
+that should be omitted from the composite whose reliability is calculated.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results.  Can include any of

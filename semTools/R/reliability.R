@@ -534,9 +534,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   \code{\link{reliabilityL2}()} should be used to calculate composite
 ##'   reliability of a higher-order factor.
 ##' @param omit.indicators \code{character} vector naming any observed variables
-##'   that should be ignored when calculating composite reliability. This can
-##'   be useful, for example, to estimate reliability when an indicator is
-##'   removed.
+##'   that should be omitted from the composite whose reliability is calculated.
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
 ##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
