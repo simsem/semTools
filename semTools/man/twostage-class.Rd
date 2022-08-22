@@ -35,9 +35,11 @@ Missing Data}
 \S4method{fitted}{twostage}(object, model = c("target", "saturated",
   "baseline"), type = "moments", labels = TRUE)
 
-\S4method{residuals}{twostage}(object, type = c("raw", "cor", "normalized", "standardized"))
+\S4method{residuals}{twostage}(object, type = c("raw", "cor", "normalized",
+  "standardized"))
 
-\S4method{resid}{twostage}(object, type = c("raw", "cor", "normalized", "standardized"))
+\S4method{resid}{twostage}(object, type = c("raw", "cor", "normalized",
+  "standardized"))
 }
 \arguments{
 \item{object}{An object of class \code{twostage}.}

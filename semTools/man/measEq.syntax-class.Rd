@@ -16,7 +16,8 @@
 
 \S4method{summary}{measEq.syntax}(object, verbose = TRUE)
 
-\S4method{update}{measEq.syntax}(object, ..., evaluate = TRUE, change.syntax = NULL)
+\S4method{update}{measEq.syntax}(object, ..., evaluate = TRUE,
+  change.syntax = NULL)
 }
 \arguments{
 \item{x, object}{an object of class \code{measEq.syntax}}

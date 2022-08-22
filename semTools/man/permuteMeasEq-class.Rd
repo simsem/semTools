@@ -11,7 +11,8 @@ Equivalence and DIF}
 \usage{
 \S4method{show}{permuteMeasEq}(object)
 
-\S4method{summary}{permuteMeasEq}(object, alpha = 0.05, nd = 3, extra = FALSE)
+\S4method{summary}{permuteMeasEq}(object, alpha = 0.05, nd = 3,
+  extra = FALSE)
 
 \S4method{hist}{permuteMeasEq}(x, ..., AFI, alpha = 0.05, nd = 3,
   printLegend = TRUE, legendArgs = list(x = "topleft"))

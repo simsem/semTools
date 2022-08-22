@@ -4,7 +4,8 @@
 \alias{mvrnonnorm}
 \title{Generate Non-normal Data using Vale and Maurelli (1983) method}
 \usage{
-mvrnonnorm(n, mu, Sigma, skewness = NULL, kurtosis = NULL, empirical = FALSE)
+mvrnonnorm(n, mu, Sigma, skewness = NULL, kurtosis = NULL,
+  empirical = FALSE)
 }
 \arguments{
 \item{n}{Sample size}

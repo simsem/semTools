@@ -9,7 +9,8 @@
 \usage{
 \S4method{show}{FitDiff}(object)
 
-\S4method{summary}{FitDiff}(object, fit.measures = "default", nd = 3, tag = "†")
+\S4method{summary}{FitDiff}(object, fit.measures = "default", nd = 3,
+  tag = "†")
 }
 \arguments{
 \item{object}{object of class \code{FitDiff}}

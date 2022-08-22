@@ -4,7 +4,8 @@
 \alias{efaUnrotate}
 \title{Analyze Unrotated Exploratory Factor Analysis Model}
 \usage{
-efaUnrotate(data = NULL, nf, varList = NULL, start = TRUE, aux = NULL, ...)
+efaUnrotate(data = NULL, nf, varList = NULL, start = TRUE, aux = NULL,
+  ...)
 }
 \arguments{
 \item{data}{A target \code{data.frame}}

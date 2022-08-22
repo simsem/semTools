@@ -27,7 +27,8 @@
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
-\S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE, omit.imps = c("no.conv", "no.se"))
+\S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE,
+  omit.imps = c("no.conv", "no.se"))
 
 \S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between", "within",
   "ariv"), scale.W = TRUE, omit.imps = c("no.conv", "no.se"))
@@ -44,11 +45,14 @@
 
 \S4method{fitted}{lavaan.mi}(object, omit.imps = c("no.conv", "no.se"))
 
-\S4method{fitted.values}{lavaan.mi}(object, omit.imps = c("no.conv", "no.se"))
+\S4method{fitted.values}{lavaan.mi}(object, omit.imps = c("no.conv",
+  "no.se"))
 
-\S4method{residuals}{lavaan.mi}(object, type = c("raw", "cor"), omit.imps = c("no.conv", "no.se"))
+\S4method{residuals}{lavaan.mi}(object, type = c("raw", "cor"),
+  omit.imps = c("no.conv", "no.se"))
 
-\S4method{resid}{lavaan.mi}(object, type = c("raw", "cor"), omit.imps = c("no.conv", "no.se"))
+\S4method{resid}{lavaan.mi}(object, type = c("raw", "cor"),
+  omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
 \item{object}{An object of class \code{lavaan.mi}}

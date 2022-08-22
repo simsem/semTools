@@ -9,7 +9,8 @@ centering, or residual centering}
 indProd(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
   residualC = FALSE, doubleMC = TRUE, namesProd = NULL)
 
-orthogonalize(data, var1, var2, var3 = NULL, match = TRUE, namesProd = NULL)
+orthogonalize(data, var1, var2, var3 = NULL, match = TRUE,
+  namesProd = NULL)
 }
 \arguments{
 \item{data}{The desired data to be transformed.}
