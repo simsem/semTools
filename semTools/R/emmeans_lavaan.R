@@ -1,5 +1,5 @@
-### Mattan S. Ben-Shachar
-### Last updated: 27 May 2020
+### Mattan S. Ben-Shachar & Terrence D. Jorgensen
+### Last updated: 22 August 2022
 ### emmeans support for lavaan objects
 
 
@@ -81,6 +81,8 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
   .emlav_test_DV(object, lavaan.DV)
   ## testing multi-group requires access to ...
   dots <- list(...)
+  #FIXME: the nesting= argument is not passed to ... here, so the warning is
+  #       annoyingly printed even when nesting = NULL is specified.
   if (lavInspect(object, 'ngroups') > 1L && !("nesting" %in% names(dots))) {
     warning(
       "For multi-group models, don't forget to set 'nesting = NULL'.\n",
@@ -130,8 +132,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   # re-shape to deal with any missing estimates
   temp_bhat <- rep(0, length = length(emmb$bhat))
   temp_bhat[seq_len(nrow(pars))] <- pars$est
-  names(temp_bhat) <- c(par_names,
-                        colnames(emmb$V)[!colnames(emmb$V) %in% par_names])
+  names(temp_bhat) <- .emlab_find_term_names(par_names, colnames(emmb$V))
 
   # re-order
   b_ind <- match(colnames(emmb$V), names(temp_bhat))
@@ -167,9 +168,8 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   # re-shape to deal with any missing estimates
   temp_vcov <- matrix(0, nrow = nrow(emmb$V), ncol = ncol(emmb$V))
   temp_vcov[seq_len(ncol(lavVCOV)), seq_len(ncol(lavVCOV))] <- lavVCOV
-  colnames(temp_vcov) <-
-    rownames(temp_vcov) <- c(par_names,
-                             colnames(emmb$V)[!colnames(emmb$V) %in% par_names])
+  colnames(temp_vcov) <- .emlab_find_term_names(par_names, colnames(emmb$V))
+  rownames(temp_vcov) <- .emlab_find_term_names(par_names, colnames(emmb$V))
 
   # re-order
   v_ind <- match(colnames(emmb$V), colnames(temp_vcov))
@@ -187,6 +187,25 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   # emmb$misc <- list()
 
   return(emmb)
+}
+
+##' @keywords internal
+.emlab_find_term_names <- function(terms, candidates) {
+  terms_split <- strsplit(terms, split = ":")
+  candidates_split <- strsplit(candidates, split = ":")
+
+  is_in <- matrix(NA,
+                  nrow = length(terms_split),
+                  ncol = length(candidates_split))
+  for (i in seq_along(terms_split)) {
+    for (j in seq_along(candidates_split)) {
+      is_in[i,j] <-
+        all(candidates_split[[j]] %in% terms_split[[i]]) &&
+        all(terms_split[[i]] %in% candidates_split[[j]])
+    }
+  }
+  if (length(terms) > 1L) is_in <- apply(is_in, 2, any)
+  c(terms, if (any(!is_in)) candidates[!is_in])
 }
 
 ##' @keywords internal
@@ -232,26 +251,45 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 ##' @keywords internal
 ##' @importFrom lavaan lavInspect
 .emlav_recover_data <- function(object){
-  data_obs <- lavInspect(object, "data")
-  data_lat <- lavaan::lavPredict(object, type = "lv")
-
-  # If multi group
-  if (lavInspect(object, 'ngroups') > 1L) {
-    # make single data frame + add group labels
-    group_labels <- sapply(seq_along(names(data_obs)), function(i) {
-      label_ <- names(data_obs)[i]
-      nobs_ <- nrow(data_obs[[i]])
-      rep(label_, times = nobs_)
-    })
-
-    data_obs <- data.frame(do.call(rbind, data_obs))
-    data_obs[[lavInspect(object, "group")]] <- unlist(group_labels)
-    data_lat <- do.call(rbind, data_lat)
+  ##This function  was contributed by TDJ
+  dat <- lavaan::lavPredict(object, type = "lv",
+                            assemble = TRUE,
+                            append.data = TRUE)
+  ## mean-impute any NAs
+  for (i in seq_along(dat)) {
+    ## ignore non-numeric variables
+    if (!is.numeric(dat[,i])) next
+    ## any NAs?
+    idx.na <- which(is.na(dat[,i]))
+    if (length(idx.na)) {
+      dat[idx.na, i] <- mean(dat[,i], na.rm = TRUE)
+    }
   }
-
-  data_full <- cbind(data_obs, data_lat)
-  return(data.frame(data_full))
+  ## convert to data.frame, if necessary (single group)
+  as.data.frame(dat)
 }
+#TODO: delete old function after verifying the new one (above) works
+# function(object){
+#   data_obs <- lavInspect(object, "data")
+#   data_lat <- lavaan::lavPredict(object, type = "lv")
+#
+#   # If multi group
+#   if (lavInspect(object, 'ngroups') > 1L) {
+#     # make single data frame + add group labels
+#     group_labels <- sapply(seq_along(names(data_obs)), function(i) {
+#       label_ <- names(data_obs)[i]
+#       nobs_ <- nrow(data_obs[[i]])
+#       rep(label_, times = nobs_)
+#     }, simplify = FALSE)
+#
+#     data_obs <- data.frame(do.call(rbind, data_obs))
+#     data_obs[[lavInspect(object, "group")]] <- unlist(group_labels)
+#     data_lat <- do.call(rbind, data_lat)
+#   }
+#
+#   data_full <- cbind(data_obs, data_lat)
+#   return(data.frame(data_full))
+# }
 
 ##' @keywords internal
 ##' @importFrom lavaan lavInspect
@@ -503,6 +541,21 @@ grade ~ ageyr
     rg <- suppressWarnings(emmeans::ref_grid(semFit, lavaan.DV = c("LAT3", "grade")))
     testthat::expect_s4_class(rg, "emmGrid")
   })
+
+
+  testthat::test_that("missing data - warn", {
+    data("mtcars")
+    mtcars$hp[1] <- NA
+
+    model <- " mpg ~ hp + drat + hp:drat "
+
+    fit <- sem(model, mtcars, missing = "fiml.x")
+
+    testthat::expect_warning(
+      emmeans::ref_grid(fit, lavaan.DV = "mpg")
+    )
+  })
+
 
   message("All good!")
 
