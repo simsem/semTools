@@ -255,8 +255,10 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   dat <- lavaan::lavPredict(object, type = "lv",
                             assemble = TRUE,
                             append.data = TRUE)
+  ## convert to data.frame, if necessary (single group)
+  dat <- as.data.frame(dat)
   ## mean-impute any NAs
-  for (i in seq_along(dat)) {
+  for (i in 1:ncol(dat)) {
     ## ignore non-numeric variables
     if (!is.numeric(dat[,i])) next
     ## any NAs?
@@ -265,8 +267,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
       dat[idx.na, i] <- mean(dat[,i], na.rm = TRUE)
     }
   }
-  ## convert to data.frame, if necessary (single group)
-  as.data.frame(dat)
+  dat
 }
 #TODO: delete old function after verifying the new one (above) works
 # function(object){
