@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
-###          Aaron Boulton, Ruben Arslan
-### Last updated: 2 June 2022
+###          Aaron Boulton, Ruben Arslan, Mauricio Garnier-Villarreal
+### Last updated: 10 September 2022
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -99,6 +99,12 @@
 ##'
 ##' \deqn{ \textrm{HQC} = -2LL + 2q\log{(\log{N})},}
 ##'
+##' Bozdogan Information Complexity (ICOMP) Criteria (Howe et al., 2011), 
+##' instead of penalizing the number of free parameters directly, 
+##' ICOMP penalizes the covariance complexity of the model. 
+##' 
+##' \deqn{ \textrm{ICOMP} = -2LL + slog(\frac{\bar{\lambda_a}}{\bar{\lambda_g}}) }
+##' 
 ##'
 ##' @importFrom lavaan lavInspect
 ##'
@@ -126,6 +132,7 @@
 ##'  \item \code{ibic}: Information-matrix-based BIC (IBIC)
 ##'  \item \code{sic}: Stochastic Information Criterion (SIC)
 ##'  \item \code{hqc}: Hannan-Quinn Information Criterion (HQC)
+##'  \item \code{icomp}: Bozdogan Information Complexity (ICOMP) Criteria
 ##' }
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -138,6 +145,8 @@
 ##'
 ##' Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
 ##'
+##' Mauricio Garnier-Villarreal (Vrije Universiteit Amsterdam; \email{mgv@pm.me})
+##' 
 ##' A great deal of feedback was provided by Kris Preacher regarding Bollen et
 ##' al.'s (2012, 2014) extensions of BIC.
 ##'
@@ -181,6 +190,12 @@
 ##' in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of
 ##' structural equation modeling} (pp. 209--231). New York, NY: Guilford.
 ##'
+##' Howe, E. D., Bozdogan, H., & Katragadda, S. (2011). Structural equation 
+##' modeling (SEM) of categorical and mixed-data using the novel Gifi 
+##' transformations and information complexity (ICOMP) criterion. 
+##' \emph{Istanbul University Journal of the School of Business Administration, 40}(1), 86-123.
+##' 
+##'
 ##' @examples
 ##'
 ##' HS.model <- ' visual  =~ x1 + x2 + x3
@@ -198,7 +213,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
   ## check for validity of user-specified "fit.measures" argument
   fit.choices <- c("gammaHat","adjGammaHat","baseline.rmsea",
                    "gammaHat.scaled","adjGammaHat.scaled","baseline.rmsea.scaled",
-                   "aic.smallN","bic.priorN","spbic","hbic","ibic","sic","hqc")
+                   "aic.smallN","bic.priorN","spbic","hbic","ibic","sic","hqc","icomp")
   flags <- setdiff(fit.measures, c("all", fit.choices))
   if (length(flags)) stop(paste("Argument 'fit.measures' includes invalid options:",
                                 paste(flags, collapse = ", "),
@@ -262,6 +277,12 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
       } else result["spbic"] <- f + junk # Case 2
     }
     if ("hbic" %in% fit.measures) result["hbic"] <- f + nParam*log(N/(2*pi))
+    if ("icomp" %in% fit.measures) {
+      Fhatinv <- lavInspect(object,"inverted.information.expected")
+      s <- qr(Fhatinv)$rank
+      C1 <- (s/2)*log((sum(diag(Fhatinv)))/s)-.5*log(det(Fhatinv))
+      result["icomp"] <- f + 2*C1
+    }  
 
     ## check determinant of ACOV for IBIC and SIC
     if (any(c("ibic","sic") %in% fit.measures)) {
