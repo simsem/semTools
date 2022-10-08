@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 15 June 2022
+### Last updated: 8 October 2022
 
 
 
@@ -1055,7 +1055,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
         L <- LY[myIndNames, c(hf, latInds)]
         B <- BETA[[b]][c(hf, latInds), c(hf, latInds)]
         Phi <- PHI[[b]][c(hf, latInds), c(hf, latInds)]
-        commonCov <- sum(L %*% B %*% Phi %*% t(B) %*% t(L))
+        commonCov <- L %*% B %*% Phi %*% t(B) %*% t(L)
         if (blockCat && ord.scale) {
           ## Green & Yang (2009)
           rel[[b]][hf] <- omegaCat(truevar = commonCov, denom = totalCov,
