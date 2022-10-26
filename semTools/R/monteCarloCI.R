@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 May 2022
+### Last updated: 26 October 2022
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -174,7 +174,7 @@
 ##' set.seed(1234)
 ##' foo <- monteCarloCI(fit, append.samples = TRUE)
 ##' library(HDInterval)
-##' hdi(fit$Samples)
+##' hdi(foo$Samples)
 ##' }
 ##'
 ##' ## Parameters can also be obtained from an external analysis

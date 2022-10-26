@@ -140,7 +140,7 @@ monteCarloCI(fit) # CIs more robust than delta method in smaller samples
 set.seed(1234)
 foo <- monteCarloCI(fit, append.samples = TRUE)
 library(HDInterval)
-hdi(fit$Samples)
+hdi(foo$Samples)
 }
 
 ## Parameters can also be obtained from an external analysis
