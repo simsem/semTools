@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 7 April 2022
+### Last updated: 8 November 2022
 
 
 
@@ -1660,7 +1660,7 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' @param legend \code{logical}. If \code{TRUE} (default), a legend is printed.
 ##' @param legendArgs \code{list} of arguments passed to \code{\link{legend}}
 ##'   function if \code{legend=TRUE}.
-##' @param \dots Any addition argument for the \code{\link{plot}} function
+##' @param \dots Any additional argument for the \code{\link{plot}} function
 ##'
 ##' @return None. This function will plot the simple main effect only.
 ##'
