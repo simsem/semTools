@@ -5,6 +5,7 @@
 - `auxiliary()` has 2 new arguments
     - `envir=` is passed to `do.call()`, which prevents problems not finding the `lavaan` package when `semTools` is not loaded via `library()`
     - `return.syntax=TRUE` will return model syntax for the saturated-correlates parameters, which can be added to the target-model syntax.  This enables adding saturated correlates easily to a `blavaan` model.
+- `efaUnrotate()` deprecated, along with rotation functions `orthRotate()`, `oblqRotate()`, and `funRotate()`.  Users can now directly use `lavaan::efa()` and its `rotation=` argument. Exploratory SEM (ESEM) is also supported by `lavaan` using special `model.syntax()` operators; see <https://github.com/yrosseel/lavaan/issues/112}> for details.
 
 ## Bug Fixes:
 

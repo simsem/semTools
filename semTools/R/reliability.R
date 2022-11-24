@@ -1462,7 +1462,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 
 ## -------------
 ## reliability()
-## (deprecated)
+## (deprecated 10 May 2022)
 ## -------------
 
 
@@ -2125,7 +2125,7 @@ reliability <- function(object,
 
 ## ---------------
 ## reliabilityL2()
-## (deprecated)
+## (deprecated 10 May 2022)
 ## ---------------
 
 ##' Calculate the reliability values of a second-order factor
