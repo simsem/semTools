@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 8 October 2022
+### Last updated: 29 November 2022
 
 
 
@@ -1031,7 +1031,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
         } # else compute omega
 
         ## OMEGA
-        commonCov <- sum(subLY %*% PHI[[b]][myFacNames, myFacNames] %*% t(subLY))
+        commonCov <- subLY %*% PHI[[b]][myFacNames, myFacNames] %*% t(subLY)
         if (blockCat && ord.scale) {
           ## Green & Yang (2009)
           rel[[b]]["total"] <- omegaCat(truevar = commonCov, denom = totalCov,

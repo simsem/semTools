@@ -104,6 +104,8 @@ Lai & Yoon's new CFI for invariance tests?
 - general incremental-fit function accepts 2-3 models, returns vector of indices
   - detect robust correction
   - utilize Yves' new @h1 and @baseline slots when available
+- or write a lavBaseline() function with some automated replacements for default
+  - similar to lav_partable_baseline()?
 
 
 ==================
@@ -129,13 +131,10 @@ semTools::bsBootMiss() additions:
 
 
 semTools::twostage() edits/additions:
-- check why my point estimates and SEs are slightly different from Yves
-	- sample.cov.rescale?
-- check whether ACOV/Info is scaled correctly for chisq.scaled computation
-- add to anova() method options for fit indices
-	- utilize the fitMeasures() source code I stole for lavaan.mi
-- write methods: show, summary, coef, vcov, nobs, anova, fitted, resid, predict?
-- omit once in lavaan?  (use auxiliary() the same way as with FIML?)
+- now in lavaan (but without auxiliary variables)
+- adapt to simply create a lavMoments list
+  - let lavaan do all the work
+  - return lavaan object, no need for class/methods
 
 
 semTools::runMI()
@@ -153,7 +152,6 @@ semTools::runMI()
   - ask Yves to pass standardized= argument from vcov(...) to lavaan's
     internal hidden function that returns SEs in standardizedSolution()
   - https://groups.google.com/d/msg/lavaan/OfaPfUYqVVI/MWvL4TZkDAAJ
-- add new "D4" LRT
 
 semTools::plausibleValues()
 - account for different factor-score matrices per missing-data pattern?
