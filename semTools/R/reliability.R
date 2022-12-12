@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 29 November 2022
+### Last updated: 12 December 2022
 
 
 
@@ -182,15 +182,15 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
     if (nblocks == 1L) for (i in 1:m) phiList[[i]] <- list(phiList[[i]])
     PHI <- list()
     for (b in 1:nblocks) {
-      PHI[[ block.label[b] ]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
+      PHI[[b]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
     }
 
     ## loadings
+    LAMBDA <- vector("list", nblocks)
     if (nblocks == 1L) {
       lamList <- lapply(object@coefList[useImps], "[[", i = "lambda")
-      LAMBDA <- Reduce("+", lamList) / length(lamList)
+      LAMBDA[[1]] <- Reduce("+", lamList) / length(lamList)
     } else {
-      LAMBDA <- vector("list", nblocks)
       for (b in 1:nblocks) {
         lamList <- lapply(object@coefList[useImps], function(i) i[[b]]$lambda)
         LAMBDA[[b]] <- Reduce("+", lamList) / length(lamList)
@@ -203,7 +203,8 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
       ## loop over blocks to pool saturated-model (observed) matrices
       for (b in 1:nblocks) {
         covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
-        SIGMA[[ block.label[b] ]] <- Reduce("+", covList) / m
+        SIGMA[[b]] <- Reduce("+", covList) / m
+        rownames(SIGMA[[b]]) <- colnames(SIGMA[[b]]) <- lavNames(object, block = b)
       }
     } else {
       ## pooled model-implied matrices
@@ -836,7 +837,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     PHI <- vector("list", nblocks)
     names(PHI) <- block.label
     for (b in 1:nblocks) {
-      PHI[[ block.label[b] ]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
+      PHI[[b]] <- Reduce("+", lapply(phiList, "[[", i = b) ) / m
     }
 
     ## loadings (including higher-order in Beta)
@@ -854,9 +855,9 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
       names(LAMBDA) <- names(BETA) <- block.label
       for (b in 1:nblocks) {
         lamList <- lapply(object@coefList[useImps], function(i) i[[b]]$lambda)
-        LAMBDA[[ block.label[b] ]] <- Reduce("+", lamList) / length(lamList)
+        LAMBDA[[b]] <- Reduce("+", lamList) / length(lamList)
         betList <- lapply(object@coefList[useImps], function(i) i[[b]]$beta  )
-        BETA[[   block.label[b] ]] <- Reduce("+", betList) / length(betList)
+        BETA[[b]]   <- Reduce("+", betList) / length(betList)
       }
     }
 
@@ -903,7 +904,9 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
         ## loop over blocks to pool saturated-model (observed) matrices
         for (b in 1:nblocks) {
           covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
-          SIGMA[[ block.label[b] ]] <- Reduce("+", covList) / m
+          SIGMA[[b]] <- Reduce("+", covList) / m
+          ## The slot does not contain dimnames, so add them
+          rownames(SIGMA[[b]]) <- colnames(SIGMA[[b]]) <- lavNames(object, block = b)
         }
       } else {
         ## pooled model-implied matrices
