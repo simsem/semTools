@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 14 December 2022
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -253,11 +253,14 @@ net <- function(..., crit = .0001) {
 ## Hidden Function to test whether model "x" is nested within model "y"
 ## --------------------------------------------------------------------
 
-#' @importFrom lavaan lavInspect lavNames
+#' @importFrom lavaan lavInspect lavNames parTable
 x.within.y <- function(x, y, crit = .0001) {
   if (!lavInspect(x, "converged")) return(NA)
   if (!lavInspect(y, "converged")) return(NA)
 
+  ## not possible for clustered data
+  if (length(lavInspect(x, "cluster")) || length(lavInspect(y, "cluster")))
+    stop('The net() function does not work with models for clustered data.')
   ## not currently implemented unless all variables are considered random
   exoX <- lavInspect(x, "options")$fixed.x & length(lavNames(x, "ov.x"))
   exoY <- lavInspect(y, "options")$fixed.x & length(lavNames(y, "ov.x"))
@@ -292,7 +295,9 @@ x.within.y <- function(x, y, crit = .0001) {
     stop("x cannot be nested within y because y is more restricted than x")
   ## check sample sizes
   N <- lavInspect(x, "nobs")
-  if (!all(N == lavInspect(y, "nobs"))) stop("Sample sizes differ. Models must apply to the same data")
+  if (!all(N == lavInspect(y, "nobs"))) {
+    stop("Sample sizes differ. Models must apply to the same data")
+  }
 
   ## model-implied moments
   Sigma <- lavInspect(x, "cov.ov")
@@ -325,16 +330,24 @@ x.within.y <- function(x, y, crit = .0001) {
   }
 
   ## fit model and check that chi-squared < crit
+  PT <- parTable(y)
+  PT$start <- PT$est
+  PT$est <- PT$se <- NULL
+  CALL <- lavInspect(y, "call")
+  CALL$model       <- PT
+  CALL$data        <- NULL
+  CALL$sample.cov  <- Sigma
+  CALL$sample.mean <- Mu
+  CALL$sample.nobs <- N
+  CALL$sample.th   <- Thr
+  CALL$estimator   <- estimator
+  CALL$WLS.V       <- WLS.V
+  CALL$NACOV       <- NACOV
+  CALL$se          <- "none" # to save time
+  CALL$test        <- "standard"
 
-  suppressWarnings(try(newFit <- lavaan::update(y, data = NULL,
-                                                sample.cov = Sigma,
-                                                sample.mean = Mu,
-                                                sample.nobs = N,
-                                                sample.th = Thr,
-                                                estimator = estimator,
-                                                WLS.V = WLS.V, NACOV = NACOV,
-                                                se = "none", # to save time
-                                                test = "standard")))
+
+  suppressWarnings(try( newFit <- eval(as.call(CALL)) ))
   if (!lavInspect(newFit, "converged")) return(NA) else {
     result <- lavInspect(newFit, "fit")[["chisq"]] < crit
     if (lavInspect(x, "fit")["df"] ==
