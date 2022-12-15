@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 December 2022
+### Last updated: 15 December 2022
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -82,6 +82,9 @@ function(object) {
   DFs <- object@df
   x <- object@test
   mods <- colnames(x)
+
+  ## keep track of how many are printed
+  nPrinted <- 0L
   for (R in 2:nrow(x)) {
     for (C in (R - 1):1) {
       ## if model didn't converge (logical value is missing), go to next iteration
@@ -91,12 +94,15 @@ function(object) {
       ## choose message based on whether models are equivalent or nested
       if (identical(DFs[R], DFs[C])) {
         rel <- "equivalent to"
+        nPrinted <- nPrinted + 1L
       } else {
         rel <- "nested within"
+        nPrinted <- nPrinted + 1L
       }
       cat("Model \"", mods[R], "\" is ", rel, " model \"", mods[C], "\"\n", sep = "")
     }
   }
+  if (nPrinted == 0L) cat('No models were determined as nested/equivalent.\n')
   invisible(object)
 })
 
