@@ -75,9 +75,9 @@ Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for
   modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
   115--135. \doi{10.1007/s11747-014-0403-8}
 
-  Roemer, E., Schuberth, F., & Henseler, J. (2021). HTMT2-An improved
+  Roemer, E., Schuberth, F., & Henseler, J. (2021). HTMT2---An improved
   criterion for assessing discriminant validity in structural equation
-  modeling. \emph{Industrial Management & Data Systems}.
+  modeling. \emph{Industrial Management & Data Systems, 121}(21), 2637--2650.
   \doi{10.1108/IMDS-02-2021-0082}
 
   Voorhees, C. M., Brady, M. K., Calantone, R., & Ramirez, E. (2016).
