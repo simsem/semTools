@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 11 April 2017
+### Last updated: 3 February 2023
 ### Copy or save each aspect of the lavaan object into a clipboard or a file
 
 
@@ -24,7 +24,7 @@
 #' yet.
 #' @param file A file name used for saving the result
 #' @param tableFormat If \code{TRUE}, save the result in the table format using
-#'   tabs for seperation. Otherwise, save the result as the output screen
+#'   tabs for separation. Otherwise, save the result as the output screen
 #'   printed in the R console.
 #' @param fit.measures \code{character} vector specifying names of fit measures
 #'   returned by \code{\link[lavaan]{fitMeasures}} to be copied/saved.  Only
@@ -93,7 +93,7 @@ clipboard <- function(object, what = "summary", ...) {
 		saveFile(object, file="clipboard-128", what=what, tableFormat=TRUE, ...)
 		cat("File saved in the clipboard; please paste it in any program you wish.\n")
 	} else {
-		if (system("pbcopy", ignore.stderr = TRUE) == 0) {
+		if (system("pbcopy -help", ignore.stderr = TRUE) == 0) {
 			saveFile(object, file=pipe("pbcopy", "w"), what=what, tableFormat=TRUE, ...)
 			cat("File saved in the clipboard; please paste it in any program you wish. If you cannot paste it, it is okay because this function works for some computers, which I still have no explanation currently. Please consider using the 'saveFile' function instead.\n")
 		} else if (system("xclip -version", ignore.stderr = TRUE) == 0) {
