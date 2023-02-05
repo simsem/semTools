@@ -12,24 +12,24 @@ saveFile(object, file, what = "summary", tableFormat = FALSE,
   fit.measures = "default", writeArgs = list(), ...)
 }
 \arguments{
-\item{object}{The \code{lavaan} or \code{\linkS4class{FitDiff}} object}
+\item{object}{An object of class \code{\linkS4class{lavaan}} or
+\code{\linkS4class{FitDiff}}.}
 
 \item{what}{The attributes of the \code{lavaan} object to be copied in the
 clipboard. \code{"summary"} is to copy the screen provided from the
 \code{summary} function. \code{"mifit"} is to copy the result from the
 \code{\link{miPowerFit}} function. Other attributes listed in the
-\code{inspect} method in the \link[lavaan]{lavaan-class} could also be used,
-such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and so on.
-For the The \code{\linkS4class{FitDiff}} object, this argument is not active
-yet.}
+\code{inspect} method in the \code{\linkS4class{lavaan}} could also be
+used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and
+so on.  Ignored for \code{\linkS4class{FitDiff}}-class objects.}
 
 \item{\dots}{Additional argument listed in the \code{\link{miPowerFit}}
 function (for \code{lavaan} object only).}
 
-\item{file}{A file name used for saving the result}
+\item{file}{A file name used for saving the result.}
 
 \item{tableFormat}{If \code{TRUE}, save the result in the table format using
-tabs for seperation. Otherwise, save the result as the output screen
+tabs for separation. Otherwise, save the result as the output screen
 printed in the R console.}
 
 \item{fit.measures}{\code{character} vector specifying names of fit measures
@@ -56,14 +56,14 @@ of the output.
 library(lavaan)
 HW.model <- ' visual  =~ x1 + c1*x2 + x3
               textual =~ x4 + c1*x5 + x6
-               speed   =~ x7 + x8 + x9 '
+              speed   =~ x7 +    x8 + x9 '
 
-fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
+fit <- cfa(HW.model, data = HolzingerSwineford1939, group = "school")
 
 # Copy the summary of the lavaan object
 clipboard(fit)
 
-# Copy the modification indices and the model fit from the miPowerFit function
+# Copy modification indices and fit stats from the miPowerFit() function
 clipboard(fit, "mifit")
 
 # Copy the parameter estimates
@@ -81,7 +81,7 @@ clipboard(fit, "fit")
 # Save the summary of the lavaan object
 saveFile(fit, "out.txt")
 
-# Save the modification indices and the model fit from the miPowerFit function
+# Save modification indices and fit stats from the miPowerFit() function
 saveFile(fit, "out.txt", "mifit")
 
 # Save the parameter estimates
