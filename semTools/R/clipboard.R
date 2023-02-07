@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 6 February 2023
+### Last updated: 7 February 2023
 ### Copy or save each aspect of the lavaan object into a clipboard or a file
 
 
@@ -32,8 +32,8 @@
 ##'   relevant if \code{object} is class \code{\linkS4class{FitDiff}}.
 ##' @param writeArgs \code{list} of additional arguments to be passed to
 ##'   \code{\link[utils]{write.table}}
-##' @param \dots Additional argument listed in the \code{\link{miPowerFit}}
-##'   function (for \code{lavaan} object only).
+##' @param \dots Additional arguments when passing a \code{lavaan} object to the
+##'   \code{summary} or \code{\link{miPowerFit}} function.
 ##'
 ##' @return The resulting output will be saved into a clipboard or a file. If
 ##'   using the \code{clipboard} function, users may paste it in the other
@@ -56,6 +56,9 @@
 ##'
 ##' # Copy the summary of the lavaan object
 ##' clipboard(fit)
+##'
+##' # pass additional arguments to summary() method for class?lavaan
+##' clipboard(fit, rsquare = TRUE, standardized = TRUE, fit.measures = TRUE)
 ##'
 ##' # Copy modification indices and fit stats from the miPowerFit() function
 ##' clipboard(fit, "mifit")
@@ -154,11 +157,10 @@ saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
 
 	if (what == "summary") {
 		if (tableFormat) {
-		  writeArgs <- copySummary(object, file = file, writeArgs = writeArgs)
+		  writeArgs <- copySummary(object, file = file, writeArgs = writeArgs, ...)
 		} else {
-			write(paste(utils::capture.output(summary(object, rsquare = TRUE, fit = TRUE,
-			                                          standardize = TRUE)),
-			            collapse = "\n"), file = file)
+		  writeArgs$x <- paste(utils::capture.output(summary(object, ...)),
+		                       collapse = "\n")
 		}
 	} else if (what == "mifit") {
 		if (tableFormat) {
@@ -166,8 +168,8 @@ saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
 		  if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
 		  if (is.null(writeArgs$col.names)) writeArgs$col.names <- TRUE
 		} else {
-			write(paste(utils::capture.output(miPowerFit(object, ...)),
-			            collapse = "\n"), file = file)
+		  writeArgs$x <- paste(utils::capture.output(miPowerFit(object, ...)),
+		                       collapse = "\n")
 		}
 	} else {
 		target <- lavInspect(object, what=what)
@@ -195,7 +197,7 @@ saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
 			  if (is.null(writeArgs$col.names)) writeArgs$col.names <- TRUE
 			}
 		} else {
-			write(paste(utils::capture.output(target), collapse = "\n"), file = file)
+		  writeArgs$x <- paste(utils::capture.output(target), collapse = "\n")
 		}
 	}
   do.call("write.table", writeArgs)
@@ -205,9 +207,9 @@ saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
 ## copySummary: copy the summary of the lavaan object into the clipboard and
 ## potentially be useful if users paste it into the Excel application
 ## object = lavaan object input
-copySummary <- function(object, file, writeArgs = list()) {
+copySummary <- function(object, file, writeArgs = list(), ...) {
 	# Capture the output of the lavaan class
-	outputText <- utils::capture.output(lavaan::summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE))
+	outputText <- utils::capture.output(lavaan::summary(object, ...))
 
 	# Split the text by two spaces
 	outputText <- strsplit(outputText, "  ")
@@ -220,6 +222,10 @@ copySummary <- function(object, file, writeArgs = list()) {
 	# Group the output into three sections: fit, parameter estimates, and r-squared
 	cut1 <- grep("Estimate", outputText)[1]
 	cut2 <- grep("R-Square", outputText)[1]
+	if (is.na(cut2)) {
+	  ## no R-squared output requested, so set2 == set3
+	  cut2 <- length(outputText)
+	}
 	set1 <- outputText[1:(cut1 - 1)]
 	set2 <- outputText[cut1:(cut2 - 1)]
 	set3 <- outputText[cut2:length(outputText)]

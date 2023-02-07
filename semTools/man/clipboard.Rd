@@ -23,8 +23,8 @@ clipboard. \code{"summary"} is to copy the screen provided from the
 used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and
 so on.  Ignored for \code{\linkS4class{FitDiff}}-class objects.}
 
-\item{\dots}{Additional argument listed in the \code{\link{miPowerFit}}
-function (for \code{lavaan} object only).}
+\item{\dots}{Additional arguments when passing a \code{lavaan} object to the
+\code{summary} or \code{\link{miPowerFit}} function.}
 
 \item{file}{A file name used for saving the result.}
 
@@ -62,6 +62,9 @@ fit <- cfa(HW.model, data = HolzingerSwineford1939, group = "school")
 
 # Copy the summary of the lavaan object
 clipboard(fit)
+
+# pass additional arguments to summary() method for class?lavaan
+clipboard(fit, rsquare = TRUE, standardized = TRUE, fit.measures = TRUE)
 
 # Copy modification indices and fit stats from the miPowerFit() function
 clipboard(fit, "mifit")
