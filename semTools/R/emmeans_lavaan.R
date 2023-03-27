@@ -91,13 +91,13 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
     )
   }
 
+  lavaan_data <- .emlav_recover_data(object, ...)
 
   # Fake it
-  recovered <- emmeans::recover_data(.emlav_fake_fit(object, lavaan.DV, ...),
-                                     ...)
+  fakefit <- .emlav_fake_fit(object, lavaan.DV, lavaan_data, ...)
+  recovered <- emmeans::recover_data(fakefit, ...)
 
   # Make it
-  lavaan_data <- .emlav_recover_data(object, ...)
   if (anyNA(lavaan_data)) {
     warning("Data contains missing values. Concider passing a new data frame with 'data='.")
   }
@@ -105,6 +105,7 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
 
   # Fill attributes (but keep lavaan_data in case of missing data)
   mostattributes(lavaan_data) <- attributes(recovered)
+  attr(lavaan_data, "misc") <- list(fakefit = fakefit)
   return(lavaan_data)
 }
 
@@ -116,8 +117,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   }
 
   # Fake it
-  emmb <- emmeans::emm_basis(.emlav_fake_fit(object, lavaan.DV, ...),
-                             trms, xlev, grid, ...)
+  emmb <- emmeans::emm_basis(list(...)$misc$fakefit, trms, xlev, grid, ...)
 
   # bhat --------------------------------------------------------------------
   pars <- .emlav_clean_pars_tab(object, lavaan.DV, "bhat")
@@ -282,9 +282,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 ##' @keywords internal
 ##' @importFrom lavaan lavInspect
-.emlav_fake_fit <- function(object, lavaan.DV, ...){
-  lavaan_data <- .emlav_recover_data(object, ...)
-
+.emlav_fake_fit <- function(object, lavaan.DV, lavaan_data, ...){
   # Fake it
   pars <- lavaan::parameterEstimates(object)
   pars <- pars[pars$lhs %in% lavaan.DV & pars$op == "~", ]
