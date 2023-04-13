@@ -5,12 +5,14 @@
 - `auxiliary()` has 2 new arguments
     - `envir=` is passed to `do.call()`, which prevents problems not finding the `lavaan` package when `semTools` is not loaded via `library()`
     - `return.syntax=TRUE` will return model syntax for the saturated-correlates parameters, which can be added to the target-model syntax.  This enables adding saturated correlates easily to a `blavaan` model.
+- `efaUnrotate()` deprecated, along with rotation functions `orthRotate()`, `oblqRotate()`, and `funRotate()`.  Users can now directly use `lavaan::efa()` and its `rotation=` argument. Exploratory SEM (ESEM) is also supported by `lavaan` using special `model.syntax()` operators; see <https://github.com/yrosseel/lavaan/issues/112}> for details.
 
 ## Bug Fixes:
 
 - Formulas implementing Bollen et al.'s (2012, 2014) BIC extensions have been corrected in the documentation and source code.
 - `emmeans` functionality made more robust to different ordering of names in a specified interaction term.
-- `compRelSEM()` no longer gives an error for a `higher=` order factor when indicators are categorical.
+- `compRelSEM()` no longer gives an error for a `higher=` order factor when indicators are categorical.  A bug for single-group `lavaan.mi` objects was also fixed.
+- Fixed an old bug which prevented `clipboard()` from working, particularly on a Mac OS: <https://github.com/simsem/semTools/issues/56>
 
 
 # semTools 0.5-6 (on CRAN 10 May 2022)

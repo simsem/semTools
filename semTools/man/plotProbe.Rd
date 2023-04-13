@@ -24,7 +24,7 @@ independent variable}
 \item{legendArgs}{\code{list} of arguments passed to \code{\link{legend}}
 function if \code{legend=TRUE}.}
 
-\item{\dots}{Any addition argument for the \code{\link{plot}} function}
+\item{\dots}{Any additional argument for the \code{\link{plot}} function}
 }
 \value{
 None. This function will plot the simple main effect only.

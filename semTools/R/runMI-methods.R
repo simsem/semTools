@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 2 November 2022
 ### Class and Methods for lavaan.mi object, returned by runMI()
 
 
@@ -1308,11 +1308,11 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
   est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
   setpar <- lavaan::lav_model_set_parameters(object@Model, x = est)
   impMats <- lavaan::lav_model_implied(setpar)
-  if (lavListInspect(object, "categorical")) {
-    th.idx <- lavListInspect(object, "th.idx") # to select $(res.)th
-    if (nBlocks == 1L) th.idx <- list(th.idx)  # to loop over
-    #FIXME when multilevel accepts categorical
-  }
+  # if (lavListInspect(object, "categorical")) {
+  #   th.idx <- lavListInspect(object, "th.idx") # to select $(res.)th
+  #   if (nBlocks == 1L) th.idx <- list(th.idx)  # to loop over
+  #   #FIXME when multilevel accepts categorical
+  # }
 
   #TODO: adapt to multilevel, multigroup, or both
   ## loop over (blocks and) moments
@@ -1341,7 +1341,7 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
         ##      apply once (not to each level, like for all groups).
         ##      Will lavaan return a vector of zeros for all but "within"?
         ##      If not, it will not exist for each block, so count over groups.
-        Implied[[b]][[nm]] <- as.numeric(Implied[[b]][[nm]])[ th.idx[[b]] ] # remove matrix & numeric -means
+        Implied[[b]][[nm]] <- as.numeric(Implied[[b]][[nm]]) #[ th.idx[[b]] ] # remove matrix & numeric -means
         names(Implied[[b]][[nm]]) <- lavNames(object, type = "th",
                                               block = b) #FIXME?
         class(Implied[[b]][[nm]]) <- c("lavaan.vector","numeric")

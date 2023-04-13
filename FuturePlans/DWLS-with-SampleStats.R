@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 30 May 2020
+### Last updated: 1 November 2022
 ### sandbox for manual (D)WLS estimation with sample stats
 ### Eventual uses:
 ### - Fit SRM in lavaan
@@ -56,7 +56,8 @@ fit6.wls <- sem(model, data = Data, ordered = paste0("x", 1:6), std.lv = TRUE)
 ##   ALL 6 variables are ordered
 ## -------------------------------------
 
-# data summary
+## save data summary from fitted model
+## NOTE: Equivalently, use cor.wls (saturated model)
 sample.cov  <- lavInspect(fit6.wls, "sampstat")$cov
 sample.mean <- lavInspect(fit6.wls, "sampstat")$mean
 sample.th   <- lavInspect(fit6.wls, "sampstat")$th
@@ -150,7 +151,7 @@ summary(fit6.wls)
 ##   ONLY 3 variables are ordered
 ## -------------------------------------
 
-# data summary
+## save data summary from fitted model
 sample.cov  <- lavInspect(fit3.wls, "sampstat")$cov
 sample.mean <- lavInspect(fit3.wls, "sampstat")$mean
 sample.th   <- lavInspect(fit3.wls, "sampstat")$th
@@ -165,6 +166,24 @@ fit3.sum1 <- cfa(model, std.lv = TRUE,
                  sample.th = sample.th, sample.nobs = sample.nobs,
                  WLS.V = WLS.V, NACOV = NACOV)
 fit3.wls # identical
+
+
+## Equivalently, use cov.wls (saturated-model estimates)
+sample.cov  <- lavInspect(cov.wls, "cov.ov")
+sample.mean <- lavInspect(cov.wls, "mean.ov")
+sample.th   <- lavInspect(cov.wls, "thresholds")
+attr(sample.th, "th.idx") <- lavInspect(cov.wls, "th.idx")
+sample.nobs <- lavInspect(cov.wls, "nobs")
+WLS.V <- lavInspect(cov.wls, "WLS.V")
+NACOV <- lavInspect(cov.wls, "gamma")
+
+# using sample statistics FROM A FITTED lavaan MODEL
+fit3.sum2 <- cfa(model, std.lv = TRUE,
+                 sample.cov = sample.cov, sample.mean = sample.mean,
+                 sample.th = sample.th, sample.nobs = sample.nobs,
+                 WLS.V = WLS.V, NACOV = NACOV)
+fit3.wls # identical
+
 
 
 
@@ -205,8 +224,37 @@ fit3.wls # identical
 
 
 
+## ------------------------------------------------
+## try capturing order from lavInspect(fit, "free")
+## ------------------------------------------------
 
+free.idx <- lavInspect(cov.wls, "free")
+nn0    <- lavNames(cov.wls)
+nn.num <- lavNames(cov.wls, "ov.num")
+nn.ord <- lavNames(cov.wls, "ov.ord")
 
+mth.idx <- integer()
+for (i in nn0) {
+  if (i %in% nn.num) {
+    mth.idx <- c(mth.idx, free.idx$nu[i, 1])
+  }
+  if (i %in% nn.ord) {
+    nn.thr <- rownames(free.idx$tau)
+    row.thr <- grep(pattern = paste0(i, "|"), nn.thr, fixed = TRUE)
+    mth.idx <- c(mth.idx, free.idx$tau[row.thr, 1])
+  }
+  #TODO: any other possibilities?
+}
 
+## or, simpler?
+mth.idx <- lavInspect(cov.wls, "th.idx")
+num.idx <- setdiff(seq_along(nn0), mth.idx)
+mth.idx[mth.idx != 0] <- free.idx$tau[ , 1]
+mth.idx[mth.idx == 0] <- free.idx$nu[num.idx, 1]
+
+wls.idx <- c(mth.idx, # interleaved thresholds + (negative) means
+             diag(free.idx$theta)[num.idx], # variances
+             lav_matrix_vech(free.idx$theta, diagonal = FALSE)) # covariances
+all(idx == wls.idx) # same: cbind(idx, wls.idx)
 
 

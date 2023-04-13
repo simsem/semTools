@@ -1,112 +1,128 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 11 April 2017
+### Last updated: 7 February 2023
 ### Copy or save each aspect of the lavaan object into a clipboard or a file
 
 
-#' Copy or save the result of \code{lavaan} or \code{FitDiff} objects into a
-#' clipboard or a file
-#'
-#' Copy or save the result of \code{lavaan} or \code{\linkS4class{FitDiff}}
-#' object into a clipboard or a file. From the clipboard, users may paste the
-#' result into the Microsoft Excel or spreadsheet application to create a table
-#' of the output.
-#'
-#'
-#' @aliases clipboard saveFile
-#' @param object The \code{lavaan} or \code{\linkS4class{FitDiff}} object
-#' @param what The attributes of the \code{lavaan} object to be copied in the
-#' clipboard. \code{"summary"} is to copy the screen provided from the
-#' \code{summary} function. \code{"mifit"} is to copy the result from the
-#' \code{\link{miPowerFit}} function. Other attributes listed in the
-#' \code{inspect} method in the \link[lavaan]{lavaan-class} could also be used,
-#' such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and so on.
-#' For the The \code{\linkS4class{FitDiff}} object, this argument is not active
-#' yet.
-#' @param file A file name used for saving the result
-#' @param tableFormat If \code{TRUE}, save the result in the table format using
-#'   tabs for seperation. Otherwise, save the result as the output screen
-#'   printed in the R console.
-#' @param fit.measures \code{character} vector specifying names of fit measures
-#'   returned by \code{\link[lavaan]{fitMeasures}} to be copied/saved.  Only
-#'   relevant if \code{object} is class \code{\linkS4class{FitDiff}}.
-#' @param writeArgs \code{list} of additional arguments to be passed to
-#'   \code{\link[utils]{write.table}}
-#' @param \dots Additional argument listed in the \code{\link{miPowerFit}}
-#'   function (for \code{lavaan} object only).
-#' @return The resulting output will be saved into a clipboard or a file. If
-#'   using the \code{clipboard} function, users may paste it in the other
-#'   applications.
-#' @author
-#'  Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
-#'
-#'  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
-#' @examples
-#'
-#' \dontrun{
-#' library(lavaan)
-#' HW.model <- ' visual  =~ x1 + c1*x2 + x3
-#'               textual =~ x4 + c1*x5 + x6
-#'                speed   =~ x7 + x8 + x9 '
-#'
-#' fit <- cfa(HW.model, data=HolzingerSwineford1939, group="school", meanstructure=TRUE)
-#'
-#' # Copy the summary of the lavaan object
-#' clipboard(fit)
-#'
-#' # Copy the modification indices and the model fit from the miPowerFit function
-#' clipboard(fit, "mifit")
-#'
-#' # Copy the parameter estimates
-#' clipboard(fit, "coef")
-#'
-#' # Copy the standard errors
-#' clipboard(fit, "se")
-#'
-#' # Copy the sample statistics
-#' clipboard(fit, "samp")
-#'
-#' # Copy the fit measures
-#' clipboard(fit, "fit")
-#'
-#' # Save the summary of the lavaan object
-#' saveFile(fit, "out.txt")
-#'
-#' # Save the modification indices and the model fit from the miPowerFit function
-#' saveFile(fit, "out.txt", "mifit")
-#'
-#' # Save the parameter estimates
-#' saveFile(fit, "out.txt", "coef")
-#'
-#' # Save the standard errors
-#' saveFile(fit, "out.txt", "se")
-#'
-#' # Save the sample statistics
-#' saveFile(fit, "out.txt", "samp")
-#'
-#' # Save the fit measures
-#' saveFile(fit, "out.txt", "fit")
-#' }
-#'
-#' @export
+##' Copy or save the result of \code{lavaan} or \code{FitDiff} objects into a
+##' clipboard or a file
+##'
+##' Copy or save the result of \code{lavaan} or \code{\linkS4class{FitDiff}}
+##' object into a clipboard or a file. From the clipboard, users may paste the
+##' result into the Microsoft Excel or spreadsheet application to create a table
+##' of the output.
+##'
+##'
+##' @aliases clipboard saveFile
+##'
+##' @param object An object of class \code{\linkS4class{lavaan}} or
+##'   \code{\linkS4class{FitDiff}}.
+##' @param what The attributes of the \code{lavaan} object to be copied in the
+##'   clipboard. \code{"summary"} is to copy the screen provided from the
+##'   \code{summary} function. \code{"mifit"} is to copy the result from the
+##'   \code{\link{miPowerFit}} function. Other attributes listed in the
+##'   \code{inspect} method in the \code{\linkS4class{lavaan}} could also be
+##'   used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and
+##'   so on.  Ignored for \code{\linkS4class{FitDiff}}-class objects.
+##' @param file A file name used for saving the result.
+##' @param tableFormat If \code{TRUE}, save the result in the table format using
+##'   tabs for separation. Otherwise, save the result as the output screen
+##'   printed in the R console.
+##' @param fit.measures \code{character} vector specifying names of fit measures
+##'   returned by \code{\link[lavaan]{fitMeasures}} to be copied/saved.  Only
+##'   relevant if \code{object} is class \code{\linkS4class{FitDiff}}.
+##' @param writeArgs \code{list} of additional arguments to be passed to
+##'   \code{\link[utils]{write.table}}
+##' @param \dots Additional arguments when passing a \code{lavaan} object to the
+##'   \code{summary} or \code{\link{miPowerFit}} function.
+##'
+##' @return The resulting output will be saved into a clipboard or a file. If
+##'   using the \code{clipboard} function, users may paste it in the other
+##'   applications.
+##'
+##' @author
+##'  Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
+##'  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+##'
+##' @examples
+##'
+##' \dontrun{
+##' library(lavaan)
+##' HW.model <- ' visual  =~ x1 + c1*x2 + x3
+##'               textual =~ x4 + c1*x5 + x6
+##'               speed   =~ x7 +    x8 + x9 '
+##'
+##' fit <- cfa(HW.model, data = HolzingerSwineford1939, group = "school")
+##'
+##' # Copy the summary of the lavaan object
+##' clipboard(fit)
+##'
+##' # pass additional arguments to summary() method for class?lavaan
+##' clipboard(fit, rsquare = TRUE, standardized = TRUE, fit.measures = TRUE)
+##'
+##' # Copy modification indices and fit stats from the miPowerFit() function
+##' clipboard(fit, "mifit")
+##'
+##' # Copy the parameter estimates
+##' clipboard(fit, "coef")
+##'
+##' # Copy the standard errors
+##' clipboard(fit, "se")
+##'
+##' # Copy the sample statistics
+##' clipboard(fit, "samp")
+##'
+##' # Copy the fit measures
+##' clipboard(fit, "fit")
+##'
+##' # Save the summary of the lavaan object
+##' saveFile(fit, "out.txt")
+##'
+##' # Save modification indices and fit stats from the miPowerFit() function
+##' saveFile(fit, "out.txt", "mifit")
+##'
+##' # Save the parameter estimates
+##' saveFile(fit, "out.txt", "coef")
+##'
+##' # Save the standard errors
+##' saveFile(fit, "out.txt", "se")
+##'
+##' # Save the sample statistics
+##' saveFile(fit, "out.txt", "samp")
+##'
+##' # Save the fit measures
+##' saveFile(fit, "out.txt", "fit")
+##' }
+##'
+##' @export
 clipboard <- function(object, what = "summary", ...) {
 	if (.Platform$OS.type == "windows") {
-		saveFile(object, file="clipboard-128", what=what, tableFormat=TRUE, ...)
+		saveFile(object, file = "clipboard-128", what = what, tableFormat = TRUE, ...)
 		cat("File saved in the clipboard; please paste it in any program you wish.\n")
+
 	} else {
-		if (system("pbcopy", ignore.stderr = TRUE) == 0) {
-			saveFile(object, file=pipe("pbcopy", "w"), what=what, tableFormat=TRUE, ...)
+	  ## Mac OS?
+		if (system("pbcopy -help", ignore.stderr = TRUE) == 0) {
+		  CON <- pipe("pbcopy", "w")
+		  on.exit(close(CON))
+		  saveFile(object, file = CON, what = what, tableFormat = TRUE, ...)
 			cat("File saved in the clipboard; please paste it in any program you wish. If you cannot paste it, it is okay because this function works for some computers, which I still have no explanation currently. Please consider using the 'saveFile' function instead.\n")
+
 		} else if (system("xclip -version", ignore.stderr = TRUE) == 0) {
-			saveFile(object, file=pipe("xclip -i", "w") , what=what, tableFormat=TRUE, ...)
+		  ## Linux OS?
+		  CON <- pipe("xclip -i", "w")
+		  on.exit(close(CON))
+		  saveFile(object, file = CON, what = what, tableFormat = TRUE, ...)
 			cat("File saved in the xclip; please paste it in any program you wish. If you cannot paste it, it is okay because this function works for some computers, which I still have no explanation currently. Please consider using the 'saveFile' function instead.\n")
+
 		} else {
 			stop("For Mac users, the 'pbcopy' command in the shell file does not work. For linux users, this function depends on the 'xclip' application. Please install and run the xclip application before using this function in R (it does not guarantee to work though). Alternatively, use the 'saveFile' function to write the output into a file.")
 		}
 	}
 }
 
-#' @rdname clipboard
-#' @export
+##' @rdname clipboard
+##' @export
 saveFile <- function(object, file, what = "summary", tableFormat = FALSE,
                      fit.measures = "default", writeArgs = list(), ...) {
 	# Check whether the object is in the lavaan class
@@ -117,8 +133,8 @@ saveFile <- function(object, file, what = "summary", tableFormat = FALSE,
 		saveFileFitDiff(object, file, what = what, tableFormat = tableFormat,
 		                fit.measures = fit.measures, writeArgs = writeArgs)
 	} else {
-		stop("The object must be in the `lavaan' output or the",
-		     " output from the compareFit function.")
+		stop("The object must be a class?lavaan object or the",
+		     " output from the compareFit() function.")
 	}
 }
 
@@ -128,7 +144,7 @@ saveFile <- function(object, file, what = "summary", tableFormat = FALSE,
 ## Hidden functions
 ## ----------------
 
-#' @importFrom lavaan lavInspect
+##' @importFrom lavaan lavInspect
 saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
                            writeArgs = list(), ...) {
 	if (length(what) > 1) message("only the first `what' option is used")
@@ -141,11 +157,10 @@ saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
 
 	if (what == "summary") {
 		if (tableFormat) {
-			copySummary(object, file = file, writeArgs = writeArgs)
+		  writeArgs <- copySummary(object, file = file, writeArgs = writeArgs, ...)
 		} else {
-			write(paste(utils::capture.output(summary(object, rsquare = TRUE, fit = TRUE,
-			                                          standardize = TRUE)),
-			            collapse = "\n"), file = file)
+		  writeArgs$x <- paste(utils::capture.output(summary(object, ...)),
+		                       collapse = "\n")
 		}
 	} else if (what == "mifit") {
 		if (tableFormat) {
@@ -153,8 +168,8 @@ saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
 		  if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
 		  if (is.null(writeArgs$col.names)) writeArgs$col.names <- TRUE
 		} else {
-			write(paste(utils::capture.output(miPowerFit(object, ...)),
-			            collapse = "\n"), file = file)
+		  writeArgs$x <- paste(utils::capture.output(miPowerFit(object, ...)),
+		                       collapse = "\n")
 		}
 	} else {
 		target <- lavInspect(object, what=what)
@@ -182,19 +197,19 @@ saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
 			  if (is.null(writeArgs$col.names)) writeArgs$col.names <- TRUE
 			}
 		} else {
-			write(paste(utils::capture.output(target), collapse = "\n"), file = file)
+		  writeArgs$x <- paste(utils::capture.output(target), collapse = "\n")
 		}
 	}
   do.call("write.table", writeArgs)
 }
 
 
-# copySummary: copy the summary of the lavaan object into the clipboard and
-# potentially be useful if users paste it into the Excel application
-# object = lavaan object input
-copySummary <- function(object, file, writeArgs = list()) {
+## copySummary: copy the summary of the lavaan object into the clipboard and
+## potentially be useful if users paste it into the Excel application
+## object = lavaan object input
+copySummary <- function(object, file, writeArgs = list(), ...) {
 	# Capture the output of the lavaan class
-	outputText <- utils::capture.output(lavaan::summary(object, rsquare=TRUE, standardize=TRUE, fit.measure=TRUE))
+	outputText <- utils::capture.output(lavaan::summary(object, ...))
 
 	# Split the text by two spaces
 	outputText <- strsplit(outputText, "  ")
@@ -207,6 +222,10 @@ copySummary <- function(object, file, writeArgs = list()) {
 	# Group the output into three sections: fit, parameter estimates, and r-squared
 	cut1 <- grep("Estimate", outputText)[1]
 	cut2 <- grep("R-Square", outputText)[1]
+	if (is.na(cut2)) {
+	  ## no R-squared output requested, so set2 == set3
+	  cut2 <- length(outputText)
+	}
 	set1 <- outputText[1:(cut1 - 1)]
 	set2 <- outputText[cut1:(cut2 - 1)]
 	set3 <- outputText[cut2:length(outputText)]
@@ -275,17 +294,18 @@ copySummary <- function(object, file, writeArgs = list()) {
 	if (is.null(writeArgs$sep)) writeArgs$sep <- "\t"
 	if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
 	if (is.null(writeArgs$col.names)) writeArgs$col.names <- FALSE
-	do.call("write.table", writeArgs)
+	# do.call("write.table", writeArgs)
+	writeArgs
 }
 
-# trim function from the R.oo package
+## trim function from the R.oo package
 trim <- function(object) {
 	s <- sub("^[\t\n\f\r ]*", "", as.character(object));
 	s <- sub("[\t\n\f\r ]*$", "", s);
 	s;
 }
 
-# listToDataFrame: Change a list with multiple elements into a single data.frame
+## listToDataFrame: Change a list with multiple elements into a single data.frame
 listToDataFrame <- function(object) {
 	name <- names(object)
 
@@ -303,7 +323,8 @@ listToDataFrame <- function(object) {
 	target[-1,]
 }
 
-# niceDataFrame: Change an object into a data.frame with a specified number of columns and the row and column names are included in the data.frame
+## niceDataFrame: Change an object into a data.frame with a specified number of
+## columns and the row and column names are included in the data.frame
 niceDataFrame <- function(object, numcol) {
 	temp <- NULL
 	if (is(object, "lavaan.matrix.symmetric")) {
