@@ -5,7 +5,7 @@
 \title{Fraction of Missing Information.}
 \usage{
 fmi(data, method = "saturated", group = NULL, ords = NULL,
-  varnames = NULL, exclude = NULL, fewImps = FALSE)
+  varnames = NULL, exclude = NULL, fewImps = FALSE, return.fit = FALSE)
 }
 \arguments{
 \item{data}{Either a single \code{data.frame} with incomplete observations,
@@ -40,6 +40,10 @@ the analysis.}
 a correction to the estimated between-imputation variance. Recommended when
 there are few imputations; makes little difference when there are many
 imputations. Ignored when \code{data} is not a list of imputed data sets.}
+
+\item{return.fit}{logical. If \code{TRUE}, the fitted
+\code{\linkS4class[lavaan]{lavaan}} or \code{\linkS4class{lavaan.mi}}
+model is returned, so FMI can be found from \code{summary(..., fmi=TRUE)}.}
 }
 \value{
 \code{fmi} returns a list with at least 2 of the following:
@@ -54,7 +58,6 @@ imputations. Ignored when \code{data} is not a list of imputed data sets.}
 \item{Means}{The estimated/pooled mean for each numeric variable.}
 \item{Thresholds}{The estimated/pooled threshold(s) for each
   ordered-categorical variable.}
-\item{message}{A message indicating caution when the null model is used.}
 }
 \description{
 This function estimates the Fraction of Missing Information (FMI) for

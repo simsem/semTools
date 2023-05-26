@@ -48,6 +48,9 @@
 ##'   a correction to the estimated between-imputation variance. Recommended when
 ##'   there are few imputations; makes little difference when there are many
 ##'   imputations. Ignored when \code{data} is not a list of imputed data sets.
+##' @param return.fit logical. If \code{TRUE}, the fitted
+##'   \code{\linkS4class[lavaan]{lavaan}} or \code{\linkS4class{lavaan.mi}}
+##'   model is returned, so FMI can be found from \code{summary(..., fmi=TRUE)}.
 ##'
 ##' @return \code{fmi} returns a list with at least 2 of the following:
 ##'
@@ -61,7 +64,6 @@
 ##' \item{Means}{The estimated/pooled mean for each numeric variable.}
 ##' \item{Thresholds}{The estimated/pooled threshold(s) for each
 ##'   ordered-categorical variable.}
-##' \item{message}{A message indicating caution when the null model is used.}
 ##'
 ##' @author
 ##' Mauricio Garnier Villarreal (Vrije Universiteit Amsterdam; \email{m.garniervillarreal@@vu.nl})
@@ -114,7 +116,8 @@
 ##'
 ##' @export
 fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
-                varnames = NULL, exclude = NULL, fewImps = FALSE) {
+                varnames = NULL, exclude = NULL, fewImps = FALSE,
+                return.fit = FALSE) {
   fiml <- is.data.frame(data)
   ## check for single data set or list of imputed data sets
   data1 <- if (fiml) data else data[[1]]
@@ -149,6 +152,7 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
   ## fit model
   if (fiml) {
     fit <- lavaan::lavaan(model, data = data, missing = "fiml", group = group)
+    if (return.fit) return(fit)
     comb.results <- lavaan::parameterEstimates(fit, fmi = TRUE, zstat = FALSE,
                                                pvalue = FALSE, ci = FALSE)
     nG <- lavInspect(fit, "ngroups")
@@ -156,6 +160,7 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     group.label <- lavInspect(fit, "group.label")
   } else {
     fit <- lavaan.mi(model, data, group = group, ordered = ordvars, auto.th = TRUE)
+    if (return.fit) return(fit)
     comb.results <- getMethod("summary","lavaan.mi")(fit, fmi = TRUE, ci = FALSE,
                                                      output = "data.frame")
     nG <- lavListInspect(fit, "ngroups")
@@ -179,6 +184,8 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
       colnames(Variances)[c(1, 3)] <- c("variable","coef")
       if (nG > 1L) Variances$group <- group.label[Variances$group]
       class(Variances) <- c("lavaan.data.frame","data.frame")
+      attr(Variances, "header") <- paste("Null-model estimates may not be as",
+                                         "accurate as saturated-model estimates.")
       ## start list of results
       results <- list(Variances = Variances)
     } else results <- list()
@@ -224,7 +231,7 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     if (nG > 1L) results$Means$group <- group.label[results$Means$group]
     class(results$Means) <- c("lavaan.data.frame","data.frame")
   }
-  ## Thresholds, if  applicable
+  ## Thresholds, if applicable
   if (length(ordvars)) {
     results$Thresholds <- comb.results[comb.results$op == "|",
                                   c("lhs","rhs","group","est","fmi")]
@@ -233,10 +240,6 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     class(results$Thresholds) <- c("lavaan.data.frame","data.frame")
   }
 
-  ## return results, with message if using null model
-  if (method == "null")
-    results$message <- paste("Null-model estimates may not be as",
-                             "precise as saturated-model estimates.")
   results
 }
 
