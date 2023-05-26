@@ -1,6 +1,6 @@
 Encoding: UTF-8
 Package: semTools
-Version: 0.5-6.917
+Version: 0.5-6.918
 Title: Useful Tools for Structural Equation Modeling
 Description: Provides tools for structural equation modeling, many of which extend the 'lavaan' package; for example, to pool results from multiple imputations, probe latent interactions, or test measurement invariance.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
@@ -9,7 +9,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Yves", family = "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be", comment = c(ORCID = "0000-0002-4129-4477")),
 		person(given = "Patrick", family = "Miller", role = "ctb", email="pmille13@nd.edu"),
 		person(given = "Corbin", family = "Quick", role = "ctb", email="corbinq@umich.edu"),
-		person(given = "Mauricio", family = "Garnier-Villarreal", role = "ctb", email="mauricio.garniervillarreal@marquette.edu", comment = c(ORCID = "0000-0002-2951-6647")),
+		person(given = "Mauricio", family = "Garnier-Villarreal", role = "ctb", email="m.garniervillarreal@vu.nl", comment = c(ORCID = "0000-0002-2951-6647")),
 		person(given = "James", family = "Selig", role = "ctb", email="selig@unm.edu"),
 		person(given = "Aaron", family = "Boulton", role = "ctb", email="aboulton@email.unc.edu"),
 		person(given = "Kristopher", family = "Preacher", role = "ctb", email="kris.preacher@vanderbilt.edu"),
@@ -38,6 +38,6 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2023-02-07
+Date/Publication: 2023-05-26
 RoxygenNote: 7.2.3
 Roxygen: list(old_usage = TRUE)

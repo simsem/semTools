@@ -158,17 +158,6 @@ semTools::plausibleValues()
 - look for `type="ymis"`, do something with model-based imputations? use lavaan.mi
 
 
-New function to implement Chung & Cai's approach for DWLS
-- Continuous: https://doi.org/10.3102%2F1076998612458320
-- Categorical: https://doi.org/10.1080/00273171.2018.1523000
-- pool thresholds & polychorics + VCOV first, then pass to lavaan
-  - see how Yves passes weight matrix:
-    https://groups.google.com/d/msg/lavaan/KZFGMlCuCDo/ayI3MNDSAAAJ
-- Side benefit: similar procedure for SRM in lavaan?  How to choose N?
-- design:
-  - "pooled.h1" S4 class slots: imputations, pooled moments + (N)ACOV, WLS.V
-  - runMI() checks if (class(data) == "pooled.h1"), returns lavaan object instead
-
 ==================
 Interactions suite
 ==================

@@ -43,16 +43,18 @@ imputations. Ignored when \code{data} is not a list of imputed data sets.}
 }
 \value{
 \code{fmi} returns a list with at least 2 of the following:
+
 \item{Covariances}{A list of symmetric matrices: (1) the estimated/pooled
-covariance matrix, or a list of group-specific matrices (if applicable) and
-(2) a matrix of FMI, or a list of group-specific matrices (if applicable).
-Only available if \code{method = "saturated"}.} \item{Variances}{The
-estimated/pooled variance for each numeric variable. Only available if
-\code{method = "null"} (otherwise, it is on the diagonal of Covariances).}
+  covariance matrix, or a list of group-specific matrices (if applicable)
+  and (2) a matrix of FMI, or a list of group-specific matrices (if
+  applicable). Only available if \code{method = "saturated"}.}
+\item{Variances}{The estimated/pooled variance for each numeric variable.
+  Only available if \code{method = "null"} (otherwise, it is on the diagonal
+  of Covariances).}
 \item{Means}{The estimated/pooled mean for each numeric variable.}
 \item{Thresholds}{The estimated/pooled threshold(s) for each
-ordered-categorical variable.} \item{message}{A message indicating caution
-when the null model is used.}
+  ordered-categorical variable.}
+\item{message}{A message indicating caution when the null model is used.}
 }
 \description{
 This function estimates the Fraction of Missing Information (FMI) for
@@ -102,8 +104,8 @@ fmi(imps, group = "g")
 
 }
 \references{
-Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse
-in surveys}. New York, NY: Wiley.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+New York, NY: Wiley.
 
 Savalei, V. & Rhemtulla, M. (2012). On obtaining estimates of the fraction
 of missing information from full information maximum likelihood.
@@ -115,7 +117,7 @@ monitoring the quality of survey data. \emph{Public Opinion Quarterly,
 74}(2), 223--243. \doi{10.1093/poq/nfq007}
 }
 \author{
-Mauricio Garnier Villarreal (University of Kansas;
-\email{mauricio.garniervillarreal@marquette.edu}) Terrence Jorgensen
-(University of Amsterdam; \email{TJorgensen314@gmail.com})
+Mauricio Garnier Villarreal (Vrije Universiteit Amsterdam; \email{m.garniervillarreal@vu.nl})
+
+Terrence Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

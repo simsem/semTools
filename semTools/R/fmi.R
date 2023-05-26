@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 26 May 2023
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -23,47 +23,54 @@
 ##' @importFrom lavaan lavListInspect lavInspect
 ##'
 ##' @param data Either a single \code{data.frame} with incomplete observations,
-##' or a \code{list} of imputed data sets.
+##'   or a \code{list} of imputed data sets.
 ##' @param method character. If \code{"saturated"} or \code{"sat"} (default),
-##' the model used to estimate FMI is a freely estimated covariance matrix and
-##' mean vector for numeric variables, and/or polychoric correlations and
-##' thresholds for ordered categorical variables, for each group (if
-##' applicable). If \code{"null"}, only means and variances are estimated for
-##' numeric variables, and/or thresholds for ordered categorical variables
-##' (i.e., covariances and/or polychoric correlations are constrained to zero).
-##' See Details for more information.
+##'   the model used to estimate FMI is a freely estimated covariance matrix and
+##'   mean vector for numeric variables, and/or polychoric correlations and
+##'   thresholds for ordered categorical variables, for each group (if
+##'   applicable). If \code{"null"}, only means and variances are estimated for
+##'   numeric variables, and/or thresholds for ordered categorical variables
+##'   (i.e., covariances and/or polychoric correlations are constrained to zero).
+##'   See Details for more information.
 ##' @param group character. The optional name of a grouping variable, to request
-##' FMI in each group.
+##'   FMI in each group.
 ##' @param ords character. Optional vector of names of ordered-categorical
-##' variables, which are not already stored as class \code{ordered} in
-##' \code{data}.
+##'   variables, which are not already stored as class \code{ordered} in
+##'   \code{data}.
 ##' @param varnames character. Optional vector of variable names, to calculate
-##' FMI for a subset of variables in \code{data}. By default, all numeric and
-##' ordered variables will be included, unless \code{data} is a single
-##' incomplete \code{data.frame}, in which case only numeric variables can be
-##' used with FIML estimation. Other variable types will be removed.
+##'   FMI for a subset of variables in \code{data}. By default, all numeric and
+##'   ordered variables will be included, unless \code{data} is a single
+##'   incomplete \code{data.frame}, in which case only numeric variables can be
+##'   used with FIML estimation. Other variable types will be removed.
 ##' @param exclude character. Optional vector of variable names to exclude from
-##' the analysis.
+##'   the analysis.
 ##' @param fewImps logical. If \code{TRUE}, use the estimate of FMI that applies
-##' a correction to the estimated between-imputation variance. Recommended when
-##' there are few imputations; makes little difference when there are many
-##' imputations. Ignored when \code{data} is not a list of imputed data sets.
+##'   a correction to the estimated between-imputation variance. Recommended when
+##'   there are few imputations; makes little difference when there are many
+##'   imputations. Ignored when \code{data} is not a list of imputed data sets.
+##'
 ##' @return \code{fmi} returns a list with at least 2 of the following:
+##'
 ##' \item{Covariances}{A list of symmetric matrices: (1) the estimated/pooled
-##' covariance matrix, or a list of group-specific matrices (if applicable) and
-##' (2) a matrix of FMI, or a list of group-specific matrices (if applicable).
-##' Only available if \code{method = "saturated"}.} \item{Variances}{The
-##' estimated/pooled variance for each numeric variable. Only available if
-##' \code{method = "null"} (otherwise, it is on the diagonal of Covariances).}
+##'   covariance matrix, or a list of group-specific matrices (if applicable)
+##'   and (2) a matrix of FMI, or a list of group-specific matrices (if
+##'   applicable). Only available if \code{method = "saturated"}.}
+##' \item{Variances}{The estimated/pooled variance for each numeric variable.
+##'   Only available if \code{method = "null"} (otherwise, it is on the diagonal
+##'   of Covariances).}
 ##' \item{Means}{The estimated/pooled mean for each numeric variable.}
 ##' \item{Thresholds}{The estimated/pooled threshold(s) for each
-##' ordered-categorical variable.} \item{message}{A message indicating caution
-##' when the null model is used.}
-##' @author Mauricio Garnier Villarreal (University of Kansas;
-##' \email{mauricio.garniervillarreal@@marquette.edu}) Terrence Jorgensen
-##' (University of Amsterdam; \email{TJorgensen314@@gmail.com})
-##' @references Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse
-##' in surveys}. New York, NY: Wiley.
+##'   ordered-categorical variable.}
+##' \item{message}{A message indicating caution when the null model is used.}
+##'
+##' @author
+##' Mauricio Garnier Villarreal (Vrije Universiteit Amsterdam; \email{m.garniervillarreal@@vu.nl})
+##'
+##' Terrence Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
+##'
+##' @references
+##' Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##' New York, NY: Wiley.
 ##'
 ##' Savalei, V. & Rhemtulla, M. (2012). On obtaining estimates of the fraction
 ##' of missing information from full information maximum likelihood.
@@ -73,6 +80,7 @@
 ##' Wagner, J. (2010). The fraction of missing information as a tool for
 ##' monitoring the quality of survey data. \emph{Public Opinion Quarterly,
 ##' 74}(2), 223--243. \doi{10.1093/poq/nfq007}
+##'
 ##' @examples
 ##'
 ##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
