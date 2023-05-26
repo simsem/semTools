@@ -49,7 +49,7 @@
 ##'   there are few imputations; makes little difference when there are many
 ##'   imputations. Ignored when \code{data} is not a list of imputed data sets.
 ##' @param return.fit logical. If \code{TRUE}, the fitted
-##'   \code{\linkS4class[lavaan]{lavaan}} or \code{\linkS4class{lavaan.mi}}
+##'   \code{\linkS4class{lavaan}} or \code{\linkS4class{lavaan.mi}}
 ##'   model is returned, so FMI can be found from \code{summary(..., fmi=TRUE)}.
 ##'
 ##' @return \code{fmi} returns a list with at least 2 of the following:
@@ -57,7 +57,8 @@
 ##' \item{Covariances}{A list of symmetric matrices: (1) the estimated/pooled
 ##'   covariance matrix, or a list of group-specific matrices (if applicable)
 ##'   and (2) a matrix of FMI, or a list of group-specific matrices (if
-##'   applicable). Only available if \code{method = "saturated"}.}
+##'   applicable). Only available if \code{method = "saturated"}.  When
+##'   \code{method="cor"}, this element is replaced by \code{Correlations}.}
 ##' \item{Variances}{The estimated/pooled variance for each numeric variable.
 ##'   Only available if \code{method = "null"} (otherwise, it is on the diagonal
 ##'   of Covariances).}
@@ -96,7 +97,10 @@
 ##' (out1 <- fmi(HSMiss, exclude = "school"))
 ##' (out2 <- fmi(HSMiss, exclude = "school", method = "null"))
 ##' (out3 <- fmi(HSMiss, varnames = c("x5","x6","x7","x8","x9")))
-##' (out4 <- fmi(HSMiss, group = "school"))
+##' (out4 <- fmi(HSMiss, method = "cor", group = "school")) # correlations by group
+##' ## significance tests in lavaan(.mi) object
+##' out5 <- fmi(HSMiss, method = "cor", return.fit = TRUE)
+##' summary(out5) # factor loading == SD, covariance = correlation
 ##'
 ##' \dontrun{
 ##' ## ordered-categorical data
@@ -132,6 +136,8 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
   vars <- union(numvars, ordvars)
   numvars <- setdiff(vars, ordvars)
   if (fiml) {
+    #TODO: enable estimator = "PML"
+    #      pass missing= option as another fmi() argument?
     if (length(ordvars)) message(c("By providing a single data set, only the ",
                                    "FIML option is available to calculate FMI,",
                                    " which requires continuous variables. The ",
@@ -142,25 +148,52 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
   }
 
   ## construct model
-  covstruc <- outer(vars, vars, function(x, y) paste(x, "~~", y))
   if (method == "saturated" | method == "sat") {
-    diag(covstruc)[which(ordvars %in% vars)] <- ""
+    covstruc <- outer(vars, vars, function(x, y) paste(x, "~~", y))
+    diag(covstruc)[which(vars %in% ordvars)] <- ""
     model <- covstruc[lower.tri(covstruc, diag = TRUE)]
-  } else if (method == "null") model <- diag(covstruc)
-  if (length(numvars)) model <- c(model, paste(numvars, "~1"))
+
+  } else if (method == "null") {
+    covstruc <- outer(vars, vars, function(x, y) paste(x, "~~", y))
+    diag(covstruc)[which(vars %in% ordvars)] <- ""
+    model <- diag(covstruc)
+
+  } else if (method == "cor") {
+    # phantoms <- paste0(".", vars, ".")
+    model <- c(paste0(".", vars, ". =~ ", ifelse(vars %in% ordvars, "1*", "NA*"),
+                      vars), # loadings = SDs (fixed to 1 when ordinal)
+               paste0(vars, " ~~ 0*", vars))     # "residual" variances = 0
+
+  } else stop('Invalid method= argument: "', method, '"')
+  if (length(numvars)) model <- c(model, paste(numvars, "~ 1"))
 
   ## fit model
   if (fiml) {
-    fit <- lavaan::lavaan(model, data = data, missing = "fiml", group = group)
+    if (method == "cor") {
+      fit <- lavaan::cfa(model, data = data, missing = "fiml", group = group,
+                         std.lv = TRUE)
+    } else {
+      fit <- lavaan::lavaan(model, data = data, missing = "fiml", group = group)
+    }
     if (return.fit) return(fit)
+
     comb.results <- lavaan::parameterEstimates(fit, fmi = TRUE, zstat = FALSE,
                                                pvalue = FALSE, ci = FALSE)
     nG <- lavInspect(fit, "ngroups")
     if (nG == 1L) comb.results$group <- 1L
     group.label <- lavInspect(fit, "group.label")
+
+
   } else {
-    fit <- lavaan.mi(model, data, group = group, ordered = ordvars, auto.th = TRUE)
+    if (method == "cor") {
+      fit <- cfa.mi(model, data = data, group = group,
+                    ordered = ordvars, std.lv = TRUE)
+    } else {
+      fit <- lavaan.mi(model, data = data, group = group,
+                       ordered = ordvars, auto.th = TRUE)
+    }
     if (return.fit) return(fit)
+
     comb.results <- getMethod("summary","lavaan.mi")(fit, fmi = TRUE, ci = FALSE,
                                                      output = "data.frame")
     nG <- lavListInspect(fit, "ngroups")
@@ -192,20 +225,28 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
   } else {
     ## covariances from saturated model, including polychorics (if applicable)
     if (fiml) {
-      covmat <- lavInspect(fit, "theta")
-      if (nG == 1L) covmat <- list(covmat)
+      if (nG == 1L) {
+        covmat <- lavInspect(fit, "est")[[ifelse(method == "cor", "psi", "theta")]]
+        covmat <- list(covmat)
+      } else {
+        covmat <- sapply(lavInspect(fit, "est"),    "[[",
+                         i = ifelse(method == "cor", "psi", "theta"),
+                         simplify = FALSE)
+      }
+
     } else {
       useImps <- sapply(fit@convergence, "[[", "converged")
       m <- sum(useImps)
       if (nG == 1L) {
-        ThetaList <- lapply(fit@coefList[useImps], function(x) x$theta)
-        covmat <- list(Reduce("+", ThetaList) / m)
+        CovList <- lapply(fit@coefList[useImps],
+                            function(x) x[[ifelse(method == "cor", "psi", "theta")]])
+        covmat <- list(Reduce("+", CovList) / m)
       } else {
         covmat <- list()
         for (i in group.label) {
           groupList <- lapply(fit@coefList[useImps],"[[", i)
-          ThetaList <- lapply(groupList, function(x) x$theta)
-          covmat[[i]] <- Reduce("+", ThetaList) / m
+          CovList <- lapply(groupList, function(x) x[[ifelse(method == "cor", "psi", "theta")]])
+          covmat[[i]] <- Reduce("+", CovList) / m
         }
       }
     }
@@ -213,14 +254,24 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     fmimat <- covmat
     covars <- comb.results[comb.results$op == "~~", c("lhs","rhs","group","est","fmi")]
     for (i in 1:nG) {
-      fmimat[[i]][as.matrix(covars[covars$group == i, 1:2])] <- covars$fmi[covars$group == i]
-      fmimat[[i]][as.matrix(covars[covars$group == i, 2:1])] <- covars$fmi[covars$group == i]
+      theseCovars <- covars[covars$group == i,]
+      if (method == "cor") {
+        phantomRows <- !(theseCovars$lhs %in% vars)
+        theseCovars <- theseCovars[phantomRows,]
+      }
+      fmimat[[i]][as.matrix(theseCovars[, 1:2])] <- theseCovars$fmi
+      fmimat[[i]][as.matrix(theseCovars[, 2:1])] <- theseCovars$fmi
+      if (method == "cor") {
+        ## reset variable names
+        dimnames(fmimat[[i]]) <- dimnames(covmat[[i]]) <- list(vars, vars)
+      }
     }
     if (nG == 1L) {
       Covariances <- list(coef = covmat[[1]], fmi = fmimat[[1]])
     } else Covariances <- list(coef = covmat, fmi = fmimat)
     ## start list of results
-    results <- list(Covariances = Covariances)
+    results <- setNames(list(Covariances),
+                        nm = ifelse(method == "cor", "Correlations", "Covariances"))
   }
 
   ## Means, if applicable

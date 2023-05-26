@@ -42,7 +42,7 @@ there are few imputations; makes little difference when there are many
 imputations. Ignored when \code{data} is not a list of imputed data sets.}
 
 \item{return.fit}{logical. If \code{TRUE}, the fitted
-\code{\linkS4class[lavaan]{lavaan}} or \code{\linkS4class{lavaan.mi}}
+\code{\linkS4class{lavaan}} or \code{\linkS4class{lavaan.mi}}
 model is returned, so FMI can be found from \code{summary(..., fmi=TRUE)}.}
 }
 \value{
@@ -51,7 +51,8 @@ model is returned, so FMI can be found from \code{summary(..., fmi=TRUE)}.}
 \item{Covariances}{A list of symmetric matrices: (1) the estimated/pooled
   covariance matrix, or a list of group-specific matrices (if applicable)
   and (2) a matrix of FMI, or a list of group-specific matrices (if
-  applicable). Only available if \code{method = "saturated"}.}
+  applicable). Only available if \code{method = "saturated"}.  When
+  \code{method="cor"}, this element is replaced by \code{Correlations}.}
 \item{Variances}{The estimated/pooled variance for each numeric variable.
   Only available if \code{method = "null"} (otherwise, it is on the diagonal
   of Covariances).}
@@ -87,7 +88,10 @@ HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
 (out1 <- fmi(HSMiss, exclude = "school"))
 (out2 <- fmi(HSMiss, exclude = "school", method = "null"))
 (out3 <- fmi(HSMiss, varnames = c("x5","x6","x7","x8","x9")))
-(out4 <- fmi(HSMiss, group = "school"))
+(out4 <- fmi(HSMiss, method = "cor", group = "school")) # correlations by group
+## significance tests in lavaan(.mi) object
+out5 <- fmi(HSMiss, method = "cor", return.fit = TRUE)
+summary(out5) # factor loading == SD, covariance = correlation
 
 \dontrun{
 ## ordered-categorical data
