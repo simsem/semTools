@@ -218,7 +218,8 @@ discriminantValidity <- function(object, cutoff = .9, merge = FALSE, level = .95
     j <- which(thisPt$free != 0)
     thisPt$free[j] <- seq_along(j)
 
-    lavaan::update(object, model = thisPt[,1:12])
+    lavaan::update(object, model = thisPt[,1:12],
+                   se = "none") # Disable SEs to save computational time
   })
 
   lrTests <- lapply(constrainedModels, function(constrained) {
