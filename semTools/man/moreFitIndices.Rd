@@ -34,6 +34,7 @@ A \code{numeric} \code{lavaan.vector} including any of the
  \item \code{ibic}: Information-matrix-based BIC (IBIC)
  \item \code{sic}: Stochastic Information Criterion (SIC)
  \item \code{hqc}: Hannan-Quinn Information Criterion (HQC)
+ \item \code{icomp}: Bozdogan Information Complexity (ICOMP) Criteria
 }
 }
 \description{
@@ -128,6 +129,12 @@ Hannan--Quinn Information Criterion (HQC; Hannan & Quinn, 1979) is used for
 model selection, similar to AIC or BIC.
 
 \deqn{ \textrm{HQC} = -2LL + 2q\log{(\log{N})},}
+
+Bozdogan Information Complexity (ICOMP) Criteria (Howe et al., 2011),
+instead of penalizing the number of free parameters directly,
+ICOMP penalizes the covariance complexity of the model.
+
+\deqn{ \textrm{ICOMP} = -2LL + s \times log(\frac{\bar{\lambda_a}}{\bar{\lambda_g}}) }
 }
 \examples{
 
@@ -162,12 +169,17 @@ RMSEA adjustment to other noncentrality parameter-based statistic.
 \emph{Structural Equation Modeling, 11}(3), 305--319.
 \doi{10.1207/s15328007sem1103_1}
 
+Howe, E. D., Bozdogan, H., & Katragadda, S. (2011). Structural equation
+modeling (SEM) of categorical and mixed-data using the novel Gifi
+transformations and information complexity (ICOMP) criterion.
+\emph{Istanbul University Journal of the School of Business Administration, 40}(1), 86--123.
+
 Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance.
 \emph{Sociological Methods Research, 33}(2), 188--229.
 \doi{10.1177/0049124103262065}
 
 Preacher, K. J. (2006). Quantifying parsimony in structural equation
-modeling. \emph{Multivariate Behavioral Research, 43}(3), 227-259.
+modeling. \emph{Multivariate Behavioral Research, 43}(3), 227--259.
 \doi{10.1207/s15327906mbr4103_1}
 
 West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection
@@ -191,6 +203,8 @@ Aaron Boulton (University of Delaware)
 Ruben Arslan (Humboldt-University of Berlin, \email{rubenarslan@gmail.com})
 
 Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+
+Mauricio Garnier-Villarreal (Vrije Universiteit Amsterdam; \email{mgv@pm.me})
 
 A great deal of feedback was provided by Kris Preacher regarding Bollen et
 al.'s (2012, 2014) extensions of BIC.

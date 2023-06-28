@@ -103,7 +103,7 @@ for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
 ## impute data m = 3 times
 library(Amelia)
 set.seed(456)
-impout <- amelia(datCat, m = 3, noms = "g", ords = paste0("u", 1:8), p2s = FALSE)
+impout <- amelia(datCat, m = 5, noms = "g", ords = paste0("u", 1:8), p2s = FALSE)
 imps <- impout$imputations
 ## calculate FMI, using list of imputed data sets
 fmi(imps, group = "g")
