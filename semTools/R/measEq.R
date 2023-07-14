@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 June 2022
+### Last updated: 14 July 2023
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -3413,12 +3413,12 @@ char2update <- function(object, model, return.object = TRUE) {
   labels.DF <- data.frame(NULL)
   for (RR in 1:nrow(PT)) {
     ## check whether numbers match
-    if (nValues > 1L && nValues != nBlocks) {
+    if (nValues[RR] > 1L && nValues[RR] != nBlocks) {
       stop('Number of fixed/free values (', nValues[RR],
            ') specified for parameter "', PT$lhs[RR], PT$op[RR], PT$rhs[RR],
            '" does not match the number of groups (', nBlocks, ')')
     }
-    if (nLabels > 1L && nLabels != nBlocks) {
+    if (nLabels[RR] > 1L && nLabels[RR] != nBlocks) {
       stop('Number of labels (', nLabels[RR],
            ') specified for parameter "', PT$lhs[RR], PT$op[RR], PT$rhs[RR],
            '" does not match the number of groups (', nBlocks, ')')
