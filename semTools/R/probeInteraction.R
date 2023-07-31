@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 8 November 2022
+### Last updated: 31 July 2023
 
 
 
@@ -1649,10 +1649,20 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' models, it will only generate a plot for 1 group, as specified in the
 ##' function used to obtain the first argument.
 ##'
+##' @note
+##' If the \code{object} does not contain simple intercepts (i.e., if the
+##' \code{object$SimpleIntcept} element is \code{NULL}), then all simple
+##' intercepts are arbitrarily set to zero in order to plot the simple slopes.
+##' This may not be consistent with the fitted model, but might be an inevitable
+##' result of (double-)mean-centering with \code{\link{indProd}}. In this case,
+##' although the relative steepness of simple slopes can still meaningfully be
+##' compared, the relative vertical positions of lines at any point along the
+##' \emph{x}-axis should not be interpreted.
 ##'
-##' @param object The result of probing latent interaction obtained from
-##'   \code{\link{probe2WayMC}}, \code{\link{probe2WayRC}},
-##'   \code{\link{probe3WayMC}}, or \code{\link{probe3WayRC}} function.
+##' @param object A \code{list}, typically the result of probing a latent 2-way
+##'   or 3-way interaction obtained from the \code{\link{probe2WayMC}},
+##'   \code{\link{probe2WayRC}}, \code{\link{probe3WayMC}}, or
+##'   \code{\link{probe3WayRC}} functions.
 ##' @param xlim The vector of two numbers: the minimum and maximum values of the
 ##'   independent variable
 ##' @param xlab The label of the x-axis
@@ -1790,8 +1800,14 @@ plotProbe <- function(object, xlim, xlab = "Indepedent Variable",
   # Extract simple intercept. If the simple intercept is not provided, the intercept
   # will be fixed as 0.
   estIntercept <- NULL
-  if (!is.null(object$SimpleIntcept))
-    estIntercept <- object$SimpleIntcept[, ncol(slope) - 3]
+  if (is.null(object$SimpleIntcept)) {
+    warning("Simple intercepts unavailable from object. All lines therefore ",
+            "arbitrarily intersect at the origin. Relative vertical positions ",
+            "of lines at any point on the x-axis are therefore arbitrary and ",
+            "should not be interpreted. Only the relative steepness of simple ",
+            "slopes can meaningfully be compared.")
+  } else estIntercept <- object$SimpleIntcept[, ncol(slope) - 3]
+
   if (numInt == 2) {
     if (is.null(legendArgs$title)) legendArgs$title <- colnames(slope)[1]
     if (is.null(legendArgs$legend)) legendArgs$legend <- slope[, 1]
@@ -1830,6 +1846,7 @@ plotProbe <- function(object, xlim, xlab = "Indepedent Variable",
     stop("Please make sure that the object argument is obtained from",
          " 'probe2wayMC', 'probe2wayRC', 'probe3wayMC', or 'probe3wayRC'.")
   }
+  invisible(NULL)
 }
 
 

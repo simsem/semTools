@@ -8,9 +8,10 @@ plotProbe(object, xlim, xlab = "Indepedent Variable",
   ylab = "Dependent Variable", legend = TRUE, legendArgs = list(), ...)
 }
 \arguments{
-\item{object}{The result of probing latent interaction obtained from
-\code{\link{probe2WayMC}}, \code{\link{probe2WayRC}},
-\code{\link{probe3WayMC}}, or \code{\link{probe3WayRC}} function.}
+\item{object}{A \code{list}, typically the result of probing a latent 2-way
+or 3-way interaction obtained from the \code{\link{probe2WayMC}},
+\code{\link{probe2WayRC}}, \code{\link{probe3WayMC}}, or
+\code{\link{probe3WayRC}} functions.}
 
 \item{xlim}{The vector of two numbers: the minimum and maximum values of the
 independent variable}
@@ -34,6 +35,16 @@ This function will plot the line graphs representing the simple effect of
 the independent variable given the values of the moderator. For multigroup
 models, it will only generate a plot for 1 group, as specified in the
 function used to obtain the first argument.
+}
+\note{
+If the \code{object} does not contain simple intercepts (i.e., if the
+\code{object$SimpleIntcept} element is \code{NULL}), then all simple
+intercepts are arbitrarily set to zero in order to plot the simple slopes.
+This may not be consistent with the fitted model, but might be an inevitable
+result of (double-)mean-centering with \code{\link{indProd}}. In this case,
+although the relative steepness of simple slopes can still meaningfully be
+compared, the relative vertical positions of lines at any point along the
+\emph{x}-axis should not be interpreted.
 }
 \examples{
 
