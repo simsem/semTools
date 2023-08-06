@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 6 August 2023
 ### runMI creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -191,7 +191,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
       all(!is.null(dots$se), tolower(dots$se) %in% c("boot","bootstrap"))) {
     stop('Bootstraping unavailable (and not recommended) in combination with ',
          'multiple imputations. For robust confidence intervals of indirect',
-         ' effects, see the ?semTools::monteCarloMed help page. To bootstrap ',
+         ' effects, see the ?semTools::monteCarloCI help page. To bootstrap ',
          'within each imputation, users can pass a custom function to the ',
          'FUN= argument (see ?lavaanList) to save bootstrap distributions in ',
          'the @funList slot, then manually combine afterward.')
