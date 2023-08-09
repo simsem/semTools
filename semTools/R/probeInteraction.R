@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 31 July 2023
+### Last updated: 9 August 2023
 
 
 
@@ -26,7 +26,7 @@
 ##' to probe the interaction.
 ##'
 ##' Let that the latent interaction model regressing the dependent variable
-##' (\eqn{Y}) on the independent varaible (\eqn{X}) and the moderator (\eqn{Z})
+##' (\eqn{Y}) on the independent variable (\eqn{X}) and the moderator (\eqn{Z})
 ##' be \deqn{ Y = b_0 + b_1X + b_2Z + b_3XZ + r, } where \eqn{b_0} is the
 ##' estimated intercept or the expected value of \eqn{Y} when both \eqn{X} and
 ##' \eqn{Z} are 0, \eqn{b_1} is the effect of \eqn{X} when \eqn{Z} is 0,
@@ -34,21 +34,25 @@
 ##' interaction effect between \eqn{X} and \eqn{Z}, and \eqn{r} is the residual
 ##' term.
 ##'
-##' For probing two-way interaction, the simple intercept of the independent
+##' To probe a two-way interaction, the simple intercept of the independent
 ##' variable at each value of the moderator (Aiken & West, 1991; Cohen, Cohen,
 ##' West, & Aiken, 2003; Preacher, Curran, & Bauer, 2006) can be obtained by
-##' \deqn{ b_{0|X = 0, Z} = b_0 + b_2Z. }
+##' \deqn{ b_{0|X = 0, Z} = b_0 + b_2 Z. }
 ##'
 ##' The simple slope of the independent varaible at each value of the moderator
-##' can be obtained by \deqn{ b_{X|Z} = b_1 + b_3Z. }
+##' can be obtained by
+##' \deqn{ b_{X|Z} = b_1 + b_3 Z. }
 ##'
-##' The variance of the simple intercept formula is \deqn{ Var\left(b_{0|X = 0,
-##' Z}\right) = Var\left(b_0\right) + 2ZCov\left(b_0, b_2\right) +
-##' Z^2Var\left(b_2\right) } where \eqn{Var} denotes the variance of a parameter
+##' The variance of the simple intercept formula is
+##' \deqn{ Var\left(b_{0|X = 0, Z}\right) =
+##'        Var\left(b_0\right) + 2Z \times Cov\left(b_0, b_2\right) +
+##'        Z^2 \times Var\left(b_2\right) },
+##' where \eqn{Var} denotes the variance of a parameter
 ##' estimate and \eqn{Cov} denotes the covariance of two parameter estimates.
 ##'
-##' The variance of the simple slope formula is \deqn{ Var\left(b_{X|Z}\right) =
-##' Var\left(b_1\right) + 2ZCov\left(b_1, b_3\right) + Z^2Var\left(b_3\right) }
+##' The variance of the simple slope formula is
+##' \deqn{ Var\left(b_{X|Z}\right) = Var\left(b_1\right) + 2Z \times
+##'        Cov\left(b_1, b_3\right) + Z^2 \times Var\left(b_3\right) }
 ##'
 ##' Wald \emph{z} statistic is used for test statistic (even for objects of
 ##' class \code{\linkS4class{lavaan.mi}}).
@@ -91,17 +95,16 @@
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The intercepts given each value of the
-##'   moderator. This element will be \code{NULL} unless the factor intercept is
-##'   estimated (e.g., not fixed at 0).
-##'  \item \code{SimpleSlope}: The slopes given each value of the moderator.
+##'  \item \code{SimpleIntercept}: The simple intercepts given each value of the
+##'   moderator.
+##'  \item \code{SimpleSlope}: The simple slopes given each value of the moderator.
 ##' }
-##' In each element, the first column represents the values of the moderators
+##' In each element, the first column represents the values of the moderator
 ##' specified in the \code{valProbe} argument. The second column is the simple
 ##' intercept or simple slope. The third column is the \emph{SE} of the simple
 ##' intercept or simple slope. The fourth column is the Wald (\emph{z})
-##' statistic. The fifth column is the \emph{p} value testing whether the simple
-##' intercepts or slopes are different from 0.
+##' statistic, and the fifth column is the associated \emph{p} value testing
+##' the null hypothesis that each simple intercept or slope is 0.
 ##'
 ##' @author
 ##' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -150,7 +153,7 @@
 ##'
 ##' @examples
 ##'
-##' dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+##' dat2wayMC <- indProd(dat2way, 1:3, 4:6) # double mean centered by default
 ##'
 ##' model1 <- "
 ##' f1 =~ x1 + x2 + x3
@@ -158,9 +161,7 @@
 ##' f12 =~ x1.x4 + x2.x5 + x3.x6
 ##' f3 =~ x7 + x8 + x9
 ##' f3 ~ f1 + f2 + f12
-##' f12 ~~ 0*f1 + 0*f2
-##' x1 + x4 + x1.x4 + x7 ~ 0*1 # identify latent means
-##' f1 + f2 + f12 + f3 ~ NA*1
+##' f12 ~~ 0*f1 + 0*f2 # not necessary, but implied by double mean centering
 ##' "
 ##'
 ##' fitMC2way <- sem(model1, data = dat2wayMC, meanstructure = TRUE)
@@ -180,9 +181,6 @@
 ##' f3 =~ x7 + x8 + x9
 ##' f3 ~ c(b1.g1, b1.g2)*f1 + c(b2.g1, b2.g2)*f2 + c(b12.g1, b12.g2)*f12
 ##' f12 ~~ 0*f1 + 0*f2
-##' x1 + x4 + x1.x4 + x7 ~ 0*1 # identify latent means
-##' f1 + f2 + f12 ~ NA*1
-##' f3 ~ NA*1 + c(b0.g1, b0.g2)*1
 ##' "
 ##' fit2 <- sem(model2, data = dat2wayMC, group = "g")
 ##' probe2WayMC(fit2, nameX = c("f1", "f2", "f12"), nameY = "f3",
@@ -194,10 +192,7 @@
 probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
                         omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
-  if (inherits(fit, "lavaan")) {
-    est <- lavInspect(fit, "est")[[group]]
-
-  } else if (inherits(fit, "lavaan.mi")) {
+  if (inherits(fit, "lavaan.mi")) {
     useImps <- rep(TRUE, length(fit@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
@@ -214,8 +209,11 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
     if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
     useImps <- which(useImps)
 
-  } else stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+  } else if (!inherits(fit, "lavaan")) {
+    stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+  }
 
+  meanstruc <- lavInspect(fit, "options")$meanstructure
 
 	# Check whether modVar is correct
 	if (is.character(modVar)) modVar <- match(modVar, nameX)
@@ -235,45 +233,27 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	  ## check that character is a group
 	  if (!as.character(group) %in% group.label)
 	    stop('"group" must be a character string naming a group of interest, or ',
-	         'an integer corresponding to a group in  lavInspect(fit, "group.label")')
+	         'an integer corresponding to a group in lavInspect(fit, "group.label")')
 	  group.number <- which(group.label == group)
 	} else group.number <- 1L
-
-	# Extract all varEst
-	if (inherits(fit, "lavaan")) {
-	  varEst <- lavaan::vcov(fit)
-	} else if (inherits(fit, "lavaan.mi")) {
-	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
-	}
-
-	## Check whether the outcome's intercept is estimated
-	PT <- parTable(fit)
-	if (lavInspect(fit, "options")$meanstructure) {
-	  targetcol <- PT$label[PT$lhs == nameY & PT$op == "~1" & PT$group == group.number]
-	  if (targetcol == "") {
-	    ## no custom label, use default
-	    targetcol <- paste0(nameY, "~1")
-	    if (nG > 1L && group.number > 1L) {
-	      targetcol <- paste0(targetcol, ".g", group.number)
-	    }
-	  }
-	  ## check it is actually estimated (thus, has sampling variance)
-	  estimateIntcept <- targetcol %in% rownames(varEst)
-
-	} else estimateIntcept <- FALSE
-
 
 	## Get the parameter estimates for that group
 	if (nG > 1L) {
 
 	  if (inherits(fit, "lavaan")) {
 	    est <- lavInspect(fit, "est")[[group]]
+	    if (!meanstruc) {
+	      est$alpha <- matrix(0, 1, 1, dimnames = list(nameY, "intercept"))
+	    }
+
 	  } else if (inherits(fit, "lavaan.mi")) {
 	    est <- list()
 	    GLIST <- fit@coefList[useImps]
 	    est$beta <- Reduce("+", lapply(GLIST, function(i) i[[group]]$beta)) / m
-	    if (estimateIntcept) {
+	    if (meanstruc) {
 	      est$alpha <- Reduce("+", lapply(GLIST, function(i) i[[group]]$alpha)) / m
+	    } else {
+	      est$alpha <- matrix(0, 1, 1, dimnames = list(nameY, "intercept"))
 	    }
 	  }
 
@@ -282,91 +262,103 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 
 	  if (inherits(fit, "lavaan")) {
 	    est <- lavInspect(fit, "est")
+	    if (!meanstruc) {
+	      est$alpha <- matrix(0, 1, 1, dimnames = list(nameY, "intercept"))
+	    }
+
 	  } else if (inherits(fit, "lavaan.mi")) {
 	    est <- list()
 	    est$beta <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "beta")) / m
-	    if (estimateIntcept) {
+	    if (meanstruc) {
 	      est$alpha <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "alpha")) / m
+	    } else {
+	      est$alpha <- matrix(0, 1, 1, dimnames = list(nameY, "intercept"))
 	    }
 	  }
 
 	}
-
-	# Compute the intercept of no-centering
+	## extract relevant slopes
 	betaNC <- matrix(est$beta[nameY, nameX], ncol = 1,
 	                 dimnames = list(nameX, nameY))
+	if (modVar == 1) betaNC <- betaNC[c(2, 1, 3)]
 
-	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
+	## Extract all sampling (co)variances
+	if (inherits(fit, "lavaan")) {
+	  varEst <- lavaan::vcov(fit)
+	} else if (inherits(fit, "lavaan.mi")) {
+	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	}
+	## for indexing the sampling (co)variances
+	PT <- parTable(fit)
 
-	resultIntcept <- NULL
-	resultSlope <- NULL
-	if (estimateIntcept) {
-		# Extract SE from centered result
-	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
-	  newLabels <- PT$label[newRows]
-	  if (any(newLabels == "")) for (i in which(newLabels == "")) {
-	    newLabels[i] <- paste0(nameY, "~", nameX[i],
+	## index slopes in varEst
+	slope.idx <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
+	## check for user-defined labels; otherwise, set defaults
+	slope.label <- PT$label[slope.idx]
+	if (any(slope.label == "")) for (i in which(slope.label == "")) {
+	  slope.label[i] <- paste0(nameY, "~", nameX[i],
 	                           ifelse(nG > 1L && group.number > 1L, no = "",
 	                                  yes = paste0(".g", group.number)))
+	}
+	if (modVar == 1) slope.label <- slope.label[c(3, 2, 4)]
+
+	## index intercept in varEst
+	if (meanstruc) {
+	  int.idx <- PT$label[PT$lhs == nameY & PT$op == "~1" & PT$group == group.number]
+	  if (int.idx == "") {
+	    ## no custom label, use default
+	    int.idx <- paste0(nameY, "~1")
+	    if (nG > 1L && group.number > 1L) {
+	      int.idx <- paste0(int.idx, ".g", group.number)
+	    }
 	  }
-		targetcol <- c(targetcol, newLabels)
-
-		# Transform it to non-centering SE
-		usedVar <-  varEst[targetcol, targetcol]
-		usedBeta <- rbind(est$alpha[nameY,], betaNC)
-
-		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		if (modVar == 1) {
-			usedVar <- usedVar[c(1, 3, 2, 4), c(1, 3, 2, 4)]
-			usedBeta <- usedBeta[c(1, 3, 2, 4)]
-		}
-
-		# Find simple intercept
-		simpleIntcept <- usedBeta[1] + usedBeta[3] * valProbe
-		varIntcept <- usedVar[1, 1] + 2 * valProbe * usedVar[1, 3] + (valProbe^2) * usedVar[3, 3]
-		zIntcept <- simpleIntcept/sqrt(varIntcept)
-		pIntcept <- pvalue(zIntcept)
-		resultIntcept <- data.frame(valProbe, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
-		colnames(resultIntcept) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultIntcept) <- c("lavaan.data.frame","data.frame")
-
-		# Find simple slope
-		simpleSlope <- usedBeta[2] + usedBeta[4] * valProbe
-		varSlope <- usedVar[2, 2] + 2 * valProbe * usedVar[2, 4] + (valProbe^2) * usedVar[4, 4]
-		zSlope <- simpleSlope / sqrt(varSlope)
-		pSlope <- pvalue(zSlope)
-		resultSlope <- data.frame(valProbe, simpleSlope, sqrt(varSlope), zSlope, pSlope)
-		colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultSlope) <- c("lavaan.data.frame","data.frame")
+	  ## check whether it is actually estimated (appears in $alpha and varEst)
+	  estimateIntcept <- int.idx %in% rownames(varEst)
 
 	} else {
-	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
-	  targetcol <- PT$label[newRows]
-	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-      targetcol[i] <- paste0(nameY, "~", PT$rhs[ newRows[i] ],
-                             ifelse(nG > 1L && group.number > 1L, no = "",
-                                    yes = paste0(".g", group.number)))
+	  estimateIntcept <- FALSE
+	  ## use default label
+	  int.idx <- paste0(nameY, "~1")
+	  if (nG > 1L && group.number > 1L) {
+	    int.idx <- paste0(int.idx, ".g", group.number)
 	  }
-
-		# Transform it to non-centering SE
-		usedVar <-  varEst[targetcol, targetcol]
-		usedBeta <- betaNC
-
-		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		if(modVar == 1) {
-			usedVar <- usedVar[c(2, 1, 3), c(2, 1, 3)]
-			usedBeta <- usedBeta[c(2, 1, 3)]
-		}
-
-		# Find simple slope
-		simpleSlope <- usedBeta[1] + usedBeta[3] * valProbe
-		varSlope <- usedVar[1, 1] + 2 * valProbe * usedVar[1, 3] + (valProbe^2) * usedVar[3, 3]
-		zSlope <- simpleSlope/sqrt(varSlope)
-		pSlope <- pvalue(zSlope)
-		resultSlope <- data.frame(valProbe, simpleSlope, sqrt(varSlope), zSlope, pSlope)
-		colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultSlope) <- c("lavaan.data.frame","data.frame")
 	}
+
+	## if intercept is not estimated, add a row/column with zero sampling variance
+	if (!estimateIntcept) {
+	  dn <- c(rownames(varEst), int.idx)
+	  varEst <- rbind(cbind(varEst, 0), 0)
+	  dimnames(varEst) <- list(dn, dn)
+	}
+
+	## save all indices in a vector
+	targetcol <- c(int.idx, slope.label)
+
+	## collect relevant estimates and variances to probe the interaction
+	usedBeta <- rbind(est$alpha[nameY,], betaNC) # point estimates
+	usedVar <-  varEst[targetcol, targetcol]     # sampling (co)variances
+
+	## function to calculate p values for Wald z tests
+	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
+
+
+	## Calculate simple intercepts
+	simpleIntcept <- usedBeta[1] + usedBeta[3] * valProbe
+	varIntcept <- usedVar[1, 1] + 2 * valProbe * usedVar[1, 3] + (valProbe^2) * usedVar[3, 3]
+	zIntcept <- simpleIntcept / sqrt(varIntcept)
+	pIntcept <- pvalue(zIntcept)
+	resultIntcept <- data.frame(valProbe, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
+	colnames(resultIntcept) <- c(nameX[modVar], "est", "se", "z", "pvalue")
+	class(resultIntcept) <- c("lavaan.data.frame","data.frame")
+
+	## Calculate simple slopes
+	simpleSlope <- usedBeta[2] + usedBeta[4] * valProbe
+	varSlope <- usedVar[2, 2] + 2 * valProbe * usedVar[2, 4] + (valProbe^2) * usedVar[4, 4]
+	zSlope <- simpleSlope / sqrt(varSlope)
+	pSlope <- pvalue(zSlope)
+	resultSlope <- data.frame(valProbe, simpleSlope, sqrt(varSlope), zSlope, pSlope)
+	colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
+	class(resultSlope) <- c("lavaan.data.frame","data.frame")
 
 	list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope)
 }
@@ -396,8 +388,8 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'
 ##' The probing process on residual-centered latent interaction is based on
 ##' transforming the residual-centered result into the no-centered result. See
-##' Geldhof et al. (2013) for further details. Note that this approach based on
-##' a strong assumption that the first-order latent variables are normally
+##' Geldhof et al. (2013) for further details. Note that this approach is based
+##' on a strong assumption that the first-order latent variables are normally
 ##' distributed. The probing process is applied after the no-centered result
 ##' (parameter estimates and their covariance matrix among parameter estimates)
 ##' has been computed. See the \code{\link{probe2WayMC}} for further details.
@@ -440,17 +432,16 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The intercepts given each value of the
-##'   moderator. This element will be \code{NULL} unless the factor intercept is
-##'   estimated (e.g., not fixed at 0).
-##'  \item \code{SimpleSlope}: The slopes given each value of the moderator.
+##'  \item \code{SimpleIntercept}: The simple intercepts given each value of the
+##'   moderator.
+##'  \item \code{SimpleSlope}: The simple slopes given each value of the moderator.
 ##' }
 ##' In each element, the first column represents the values of the moderators
 ##' specified in the \code{valProbe} argument. The second column is the simple
 ##' intercept or simple slope. The third column is the standard error of the
-##' simple intercept or simple slope. The fourth column is the Wald (\emph{z})
-##' statistic. The fifth column is the \emph{p} value testing whether the simple
-##' intercepts or slopes are different from 0.
+##' simple intercept or slope. The fourth column is the Wald (\emph{z})
+##' statistic, and the fifth column is the associated \emph{p} value testing
+##' the null hypothesis that each simple intercept or slope is 0.
 ##'
 ##' @author
 ##' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -545,10 +536,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
                         omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
-  if (inherits(fit, "lavaan")) {
-    est <- lavInspect(fit, "est")[[group]]
-
-  } else if (inherits(fit, "lavaan.mi")) {
+  if (inherits(fit, "lavaan.mi")) {
     useImps <- rep(TRUE, length(fit@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
@@ -565,7 +553,9 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
     if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
     useImps <- which(useImps)
 
-  } else stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+  } else if (!inherits(fit, "lavaan")) {
+    stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+  }
 
   if (!lavInspect(fit, "options")$meanstructure)
     stop('This function requires the model to be fit with a mean structure.',
@@ -590,33 +580,9 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	  ## check that character is a group
 	  if (!as.character(group) %in% group.label)
 	    stop('"group" must be a character string naming a group of interest, or ',
-	         'an integer corresponding to a group in  lavInspect(fit, "group.label")')
+	         'an integer corresponding to a group in lavInspect(fit, "group.label")')
 	  group.number <- which(group.label == group)
 	} else group.number <- 1L
-
-	# Extract all varEst
-	if (inherits(fit, "lavaan")) {
-	  varEst <- lavaan::vcov(fit)
-	} else if (inherits(fit, "lavaan.mi")) {
-	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
-	}
-
-	## Check whether the outcome's intercept is estimated
-	PT <- parTable(fit)
-	if (lavInspect(fit, "options")$meanstructure) {
-	  targetcol <- PT$label[PT$lhs == nameY & PT$op == "~1" & PT$group == group.number]
-	  if (targetcol == "") {
-	    ## no custom label, use default
-	    targetcol <- paste0(nameY, "~1")
-	    if (nG > 1L && group.number > 1L) {
-	      targetcol <- paste0(targetcol, ".g", group.number)
-	    }
-	  }
-	  ## check it is actually estimated (thus, has sampling variance)
-	  estimateIntcept <- targetcol %in% rownames(varEst)
-
-	} else estimateIntcept <- FALSE
-
 
 	## Get the parameter estimates for that group
 	if (nG > 1L) {
@@ -646,14 +612,13 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	}
 
 	# Find the mean and covariance matrix of independent factors
-	varX <- est$psi[nameX, nameX]
-	meanX <- matrix(est$alpha[nameX,], ncol = 1, dimnames = list(NULL, "intcept"))
+	varX  <- est$psi[  nameX, nameX]
+	meanX <- est$alpha[nameX, , drop = FALSE]
 
 	# Find the intercept, regression coefficients, and residual variance of residual-centered regression
 	intceptRC <- est$alpha[nameY,]
-	resVarRC <- est$psi[nameY, nameY]
-	betaRC <- matrix(est$beta[nameY, nameX], ncol = 1,
-	                 dimnames = list(nameX, nameY))
+	resVarRC  <- est$psi[  nameY, nameY]
+	betaRC    <- est$beta[ nameY, nameX, drop = FALSE]
 
 	# Find the number of observations
 	numobs <- lavInspect(fit, "nobs")[group.number]
@@ -702,79 +667,76 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	# Compute residual variance on non-centering
 	resVarNC <- varY - (t(betaNCWithIntcept) %*% SSNC %*% betaNCWithIntcept)/numobs + meanY^2
 
+	## function to calculate p values for Wald z tests
 	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
 
-	resultIntcept <- NULL
-	resultSlope <- NULL
-	if (estimateIntcept) {
-		# Extract SE from residual centering
-	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
-	  newLabels <- PT$label[newRows]
-	  if (any(newLabels == "")) for (i in which(newLabels == "")) {
-	    newLabels[i] <- paste0(nameY, "~", nameX[i],
-	                           ifelse(nG > 1L && group.number > 1L, no = "",
-	                                  yes = paste0(".g", group.number)))
-	  }
-	  targetcol <- c(targetcol, newLabels)
-		varEstSlopeRC <- varEst[targetcol, targetcol]
-
-		# Transform it to non-centering SE
-		usedVar <-  as.numeric(resVarNC/resVarRC) * (varEstSlopeRC %*% SSRC %*% solve(SSNC))
-		usedBeta <- betaNCWithIntcept
-
-		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		if (modVar == 1) {
-			usedVar <- usedVar[c(1, 3, 2, 4), c(1, 3, 2, 4)]
-			usedBeta <- usedBeta[c(1, 3, 2, 4)]
-		}
-
-		# Find simple intercept
-		simpleIntcept <- usedBeta[1] + usedBeta[3] * valProbe
-		varIntcept <- usedVar[1, 1] + 2 * valProbe * usedVar[1, 3] + (valProbe^2) * usedVar[3, 3]
-		zIntcept <- simpleIntcept/sqrt(varIntcept)
-		pIntcept <- pvalue(zIntcept)
-		resultIntcept <- data.frame(valProbe, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
-		colnames(resultIntcept) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultIntcept) <- c("lavaan.data.frame","data.frame")
-
-		# Find simple slope
-		simpleSlope <- usedBeta[2] + usedBeta[4] * valProbe
-		varSlope <- usedVar[2, 2] + 2 * valProbe * usedVar[2, 4] + (valProbe^2) * usedVar[4, 4]
-		zSlope <- simpleSlope/sqrt(varSlope)
-		pSlope <- pvalue(zSlope)
-		resultSlope <- data.frame(valProbe, simpleSlope, sqrt(varSlope), zSlope, pSlope)
-		colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultSlope) <- c("lavaan.data.frame","data.frame")
-
-	} else {
-	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
-	  targetcol <- PT$label[newRows]
-	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste0(nameY, "~", PT$rhs[ newRows[i] ],
-	                           ifelse(nG > 1L && group.number > 1L, no = "",
-	                                  yes = paste0(".g", group.number)))
-	  }
-	  varEstSlopeRC <- varEst[targetcol, targetcol]
-
-		# Transform it to non-centering SE
-		usedVar <-  as.numeric(resVarNC/resVarRC) * (varEstSlopeRC %*% SSRC[2:4, 2:4] %*% solve(SSNC[2:4, 2:4]))
-		usedBeta <- betaNC
-
-		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		if (modVar == 1) {
-			usedVar <- usedVar[c(2, 1, 3), c(2, 1, 3)]
-			usedBeta <- usedBeta[c(2, 1, 3)]
-		}
-
-		# Find simple slope
-		simpleSlope <- usedBeta[1] + usedBeta[3] * valProbe
-		varSlope <- usedVar[1, 1] + 2 * valProbe * usedVar[1, 3] + (valProbe^2) * usedVar[3, 3]
-		zSlope <- simpleSlope/sqrt(varSlope)
-		pSlope <- pvalue(zSlope)
-		resultSlope <- data.frame(valProbe, simpleSlope, sqrt(varSlope), zSlope, pSlope)
-		colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultSlope) <- c("lavaan.data.frame","data.frame")
+	## Extract all sampling (co)variances
+	if (inherits(fit, "lavaan")) {
+	  varEst <- lavaan::vcov(fit)
+	} else if (inherits(fit, "lavaan.mi")) {
+	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
 	}
+
+	## for indexing sampling (co)variances
+	PT <- parTable(fit)
+	int.idx <- PT$label[PT$lhs == nameY & PT$op == "~1" & PT$group == group.number]
+	if (int.idx == "") {
+	  ## no custom label, use default
+	  int.idx <- paste0(nameY, "~1")
+	  if (nG > 1L && group.number > 1L) {
+	    int.idx <- paste0(int.idx, ".g", group.number)
+	  }
+	}
+	## check intercept is actually estimated (thus, has sampling variance)
+	estimateIntcept <- int.idx %in% rownames(varEst)
+	## if intercept is not estimated, add a row/column with zero sampling variance
+	if (!estimateIntcept) {
+	  dn <- c(rownames(varEst), int.idx)
+	  varEst <- rbind(cbind(varEst, 0), 0)
+	  dimnames(varEst) <- list(dn, dn)
+	}
+
+	## index slopes in varEst
+	slope.idx <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
+	## check for user-defined labels; otherwise, set defaults
+	slope.label <- PT$label[slope.idx]
+	if (any(slope.label == "")) for (i in which(slope.label == "")) {
+	  slope.label[i] <- paste0(nameY, "~", nameX[i],
+	                           ifelse(nG > 1L && group.number > 1L, no = "",
+	                                  yes = paste0(".g", group.number)))
+	}
+
+  ## save all indices in a vector
+	targetcol <- c(int.idx, slope.label)
+	varEstSlopeRC <- varEst[targetcol, targetcol]
+
+	## collect relevant estimates and variances to probe the interaction
+	usedVar <-  as.numeric(resVarNC/resVarRC) * (varEstSlopeRC %*% SSRC %*% solve(SSNC))
+	usedBeta <- betaNCWithIntcept
+
+	# Change the order of usedVar and usedBeta if the moderator variable is listed first
+	if (modVar == 1) {
+	  usedVar <- usedVar[c(1, 3, 2, 4), c(1, 3, 2, 4)]
+	  usedBeta <- usedBeta[c(1, 3, 2, 4)]
+	}
+
+	## Calculate simple intercepts
+	simpleIntcept <- usedBeta[1] + usedBeta[3] * valProbe
+	varIntcept <- usedVar[1, 1] + 2 * valProbe * usedVar[1, 3] + (valProbe^2) * usedVar[3, 3]
+	zIntcept <- simpleIntcept/sqrt(varIntcept)
+	pIntcept <- pvalue(zIntcept)
+	resultIntcept <- data.frame(valProbe, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
+	colnames(resultIntcept) <- c(nameX[modVar], "est", "se", "z", "pvalue")
+	class(resultIntcept) <- c("lavaan.data.frame","data.frame")
+
+	## Calculate simple slopes
+	simpleSlope <- usedBeta[2] + usedBeta[4] * valProbe
+	varSlope <- usedVar[2, 2] + 2 * valProbe * usedVar[2, 4] + (valProbe^2) * usedVar[4, 4]
+	zSlope <- simpleSlope/sqrt(varSlope)
+	pSlope <- pvalue(zSlope)
+	resultSlope <- data.frame(valProbe, simpleSlope, sqrt(varSlope), zSlope, pSlope)
+	colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
+	class(resultSlope) <- c("lavaan.data.frame","data.frame")
 
 	list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope)
 }
@@ -804,7 +766,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' to probe the interaction.
 ##'
 ##' Let that the latent interaction model regressing the dependent variable
-##' (\eqn{Y}) on the independent varaible (\eqn{X}) and two moderators (\eqn{Z}
+##' (\eqn{Y}) on the independent variable (\eqn{X}) and two moderators (\eqn{Z}
 ##' and \eqn{W}) be \deqn{ Y = b_0 + b_1X + b_2Z + b_3W + b_4XZ + b_5XW + b_6ZW
 ##' + b_7XZW + r, } where \eqn{b_0} is the estimated intercept or the expected
 ##' value of \eqn{Y} when \eqn{X}, \eqn{Z}, and \eqn{W} are 0, \eqn{b_1} is the
@@ -817,32 +779,34 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' three-way interaction effect between \eqn{X}, \eqn{Z}, and \eqn{W}, and
 ##' \eqn{r} is the residual term.
 ##'
-##' For probing three-way interaction, the simple intercept of the independent
+##' To probe a three-way interaction, the simple intercept of the independent
 ##' variable at the specific values of the moderators (Aiken & West, 1991) can
-##' be obtained by \deqn{ b_{0|X = 0, Z, W} = b_0 + b_2Z + b_3W + b_6ZW. }
+##' be obtained by
+##' \deqn{ b_{0|X = 0, Z, W} = b_0 + b_2Z + b_3W + b_6ZW. }
+##' The simple slope of the independent variable at the specific values of the
+##' moderators can be obtained by
+##' \deqn{ b_{X|Z, W} = b_1 + b_3Z + b_4W + b_7ZW.}
+##' The variance of the simple intercept formula is
+##' \deqn{ Var\left(b_{0|X = 0, Z, W}\right) =
+##'     Var\left(b_0\right) + Z^2Var\left(b_2\right) + W^2Var\left(b_3\right) +
+##'     Z^2W^2Var\left(b_6\right)}
+##' \deqn{+ 2ZCov\left(b_0, b_2\right)    + 2WCov\left(b_0, b_3\right)  +
+##'         2ZWCov\left(b_0, b_6\right)   + 2ZWCov\left(b_2, b_3\right) +
+##'         2Z^2WCov\left(b_2, b_6\right) + 2ZW^2Cov\left(b_3, b_6\right), }
+##' where \eqn{Var} denotes the variance of a parameter estimate and \eqn{Cov}
+##' denotes the covariance of two parameter estimates.
 ##'
-##' The simple slope of the independent varaible at the specific values of the
-##' moderators can be obtained by \deqn{ b_{X|Z, W} = b_1 + b_3Z + b_4W + b_7ZW.
-##' }
+##' The variance of the simple slope formula is
+##' \deqn{ Var\left(b_{X|Z, W}\right) =
+##'       Var\left(b_1\right) + Z^2Var\left(b_4\right) + W^2Var\left(b_5\right)
+##'       + Z^2W^2Var\left(b_7\right) }
+##' \deqn{+ 2ZCov\left(b_1, b_4\right)    + 2WCov\left(b_1, b_5\right)  +
+##'         2ZWCov\left(b_1, b_7\right)   + 2ZWCov\left(b_4, b_5\right) +
+##'         2Z^2WCov\left(b_4, b_7\right) + 2ZW^2Cov\left(b_5, b_7\right). }
 ##'
-##' The variance of the simple intercept formula is \deqn{ Var\left(b_{0|X = 0,
-##' Z, W}\right) = Var\left(b_0\right) + Z^2Var\left(b_2\right) +
-##' W^2Var\left(b_3\right) + Z^2W^2Var\left(b_6\right) + 2ZCov\left(b_0,
-##' b_2\right) + 2WCov\left(b_0, b_3\right) + 2ZWCov\left(b_0, b_6\right) +
-##' 2ZWCov\left(b_2, b_3\right) + 2Z^2WCov\left(b_2, b_6\right) +
-##' 2ZW^2Cov\left(b_3, b_6\right) } where \eqn{Var} denotes the variance of a
-##' parameter estimate and \eqn{Cov} denotes the covariance of two parameter
-##' estimates.
-##'
-##' The variance of the simple slope formula is \deqn{ Var\left(b_{X|Z,
-##' W}\right) = Var\left(b_1\right) + Z^2Var\left(b_4\right) +
-##' W^2Var\left(b_5\right) + Z^2W^2Var\left(b_7\right) + 2ZCov\left(b_1,
-##' b_4\right) + 2WCov\left(b_1, b_5\right) + 2ZWCov\left(b_1, b_7\right) +
-##' 2ZWCov\left(b_4, b_5\right) + 2Z^2WCov\left(b_4, b_7\right) +
-##' 2ZW^2Cov\left(b_5, b_7\right) }
-##'
-##' Wald \emph{z} statistic is used for test statistic (even for objects of
-##' class \code{\linkS4class{lavaan.mi}}).
+##' Wald \emph{z} statistics are calculated (even for objects of class
+##' \code{\linkS4class{lavaan.mi}}) to test null hypotheses that simple
+##' intercepts or slopes are 0.
 ##'
 ##'
 ##' @importFrom lavaan lavInspect parTable
@@ -861,8 +825,8 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'   interaction.
 ##' @param nameY The name of factor that is used as the dependent variable.
 ##' @param modVar The name of two factors that are used as the moderators. The
-##'   effect of the independent factor on each combination of the moderator
-##'   variable values will be probed.
+##'   effect of the independent factor will be probed at each combination of
+##'   the moderator variables' chosen values.
 ##' @param valProbe1 The values of the first moderator that will be used to
 ##'   probe the effect of the independent factor.
 ##' @param valProbe2 The values of the second moderator that will be used to
@@ -888,19 +852,19 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The intercepts given each combination of
-##'   moderator values. This element will be shown only if the factor intercept
-##'   is estimated (e.g., not fixed at 0).
-##'  \item \code{SimpleSlope}: The slopes given each combination of moderator
-##'   values.
+##'  \item \code{SimpleIntercept}: The model-implied intercepts given each
+##'        combination of moderator values.
+##'  \item \code{SimpleSlope}: The model-implied slopes given each combination
+##'        of moderator values.
 ##' }
 ##' In each element, the first column represents values of the first moderator
 ##' specified in the \code{valProbe1} argument. The second column represents
 ##' values of the second moderator specified in the \code{valProbe2} argument.
 ##' The third column is the simple intercept or simple slope. The fourth column
 ##' is the standard error of the simple intercept or simple slope. The fifth
-##' column is the Wald (\emph{z}) statistic. The sixth column is the \emph{p}
-##' value testing whether the simple intercepts or slopes are different from 0.
+##' column is the Wald (\emph{z}) statistic, and the sixth column is its
+##' associated \emph{p} value to test the null hypothesis that each simple
+##' intercept or simple slope equals 0.
 ##'
 ##' @author
 ##' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -958,21 +922,18 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' f4 ~ b1*f1 + b2*f2 + b3*f3 + b12*f12 + b13*f13 + b23*f23 + b123*f123
 ##'
 ##' ## orthogonal terms among predictors
+##' ## (not necessary, but implied by double mean centering)
 ##' f1 ~~ 0*f12 + 0*f13 + 0*f123
 ##' f2 ~~ 0*f12 + 0*f23 + 0*f123
 ##' f3 ~~ 0*f13 + 0*f23 + 0*f123
 ##' f12 + f13 + f23 ~~ 0*f123
-##'
-##' ## identify latent means
-##' x1 + x4 + x7 + x1.x4 + x1.x7 + x4.x7 + x1.x4.x7 + x10 ~ 0*1
-##' f1 + f2 + f3 + f12 + f13 + f23 + f123 + f4 ~ NA*1
 ##' "
 ##'
 ##' fitMC3way <- sem(model3, data = dat3wayMC, meanstructure = TRUE)
 ##' summary(fitMC3way)
 ##'
 ##' probe3WayMC(fitMC3way, nameX = c("f1" ,"f2" ,"f3",
-##'                                  "f12","f13","f23", # the order matters!
+##'                                  "f12","f13","f23", # this order matters!
 ##'                                  "f123"),           # 3-way interaction
 ##'             nameY = "f4", modVar = c("f1", "f2"),
 ##'             valProbe1 = c(-1, 0, 1), valProbe2 = c(-1, 0, 1))
@@ -981,10 +942,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
                         group = 1L, omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
-  if (inherits(fit, "lavaan")) {
-    est <- lavInspect(fit, "est")[[group]]
-
-  } else if (inherits(fit, "lavaan.mi")) {
+  if (inherits(fit, "lavaan.mi")) {
     useImps <- rep(TRUE, length(fit@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
@@ -1001,8 +959,11 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
     if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
     useImps <- which(useImps)
 
-  } else stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+  } else if (!inherits(fit, "lavaan")) {
+    stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+  }
 
+  meanstruc <- lavInspect(fit, "options")$meanstructure
 
   # Check whether modVar is correct
 	if (is.character(modVar)) modVar <- match(modVar, nameX)
@@ -1022,45 +983,27 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	  ## check that character is a group
 	  if (!as.character(group) %in% group.label)
 	    stop('"group" must be a character string naming a group of interest, or ',
-	         'an integer corresponding to a group in  lavInspect(fit, "group.label")')
+	         'an integer corresponding to a group in lavInspect(fit, "group.label")')
 	  group.number <- which(group.label == group)
 	} else group.number <- 1L
-
-	# Extract all varEst
-	if (inherits(fit, "lavaan")) {
-	  varEst <- lavaan::vcov(fit)
-	} else if (inherits(fit, "lavaan.mi")) {
-	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
-	}
-
-	## Check whether the outcome's intercept is estimated
-	PT <- parTable(fit)
-	if (lavInspect(fit, "options")$meanstructure) {
-	  targetcol <- PT$label[PT$lhs == nameY & PT$op == "~1" & PT$group == group.number]
-	  if (targetcol == "") {
-	    ## no custom label, use default
-	    targetcol <- paste0(nameY, "~1")
-	    if (nG > 1L && group.number > 1L) {
-	      targetcol <- paste0(targetcol, ".g", group.number)
-	    }
-	  }
-	  ## check it is actually estimated (thus, has sampling variance)
-	  estimateIntcept <- targetcol %in% rownames(varEst)
-
-	} else estimateIntcept <- FALSE
-
 
 	## Get the parameter estimates for that group
 	if (nG > 1L) {
 
 	  if (inherits(fit, "lavaan")) {
 	    est <- lavInspect(fit, "est")[[group]]
+	    if (!meanstruc) {
+	      est$alpha <- matrix(0, 1, 1, dimnames = list(nameY, "intercept"))
+	    }
+
 	  } else if (inherits(fit, "lavaan.mi")) {
 	    est <- list()
 	    GLIST <- fit@coefList[useImps]
 	    est$beta <- Reduce("+", lapply(GLIST, function(i) i[[group]]$beta)) / m
-	    if (estimateIntcept) {
+	    if (meanstruc) {
 	      est$alpha <- Reduce("+", lapply(GLIST, function(i) i[[group]]$alpha)) / m
+	    } else {
+	      est$alpha <- matrix(0, 1, 1, dimnames = list(nameY, "intercept"))
 	    }
 	  }
 
@@ -1069,101 +1012,110 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 
 	  if (inherits(fit, "lavaan")) {
 	    est <- lavInspect(fit, "est")
+	    if (!meanstruc) {
+	      est$alpha <- matrix(0, 1, 1, dimnames = list(nameY, "intercept"))
+	    }
+
 	  } else if (inherits(fit, "lavaan.mi")) {
 	    est <- list()
 	    est$beta <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "beta")) / m
-	    if (estimateIntcept) {
+	    if (meanstruc) {
 	      est$alpha <- Reduce("+", lapply(fit@coefList[useImps], "[[", i = "alpha")) / m
+	    } else {
+	      est$alpha <- matrix(0, 1, 1, dimnames = list(nameY, "intercept"))
 	    }
 	  }
 
 	}
-
-
-	# Compute the intercept of no-centering
+	## extract relevant slopes
 	betaNC <- matrix(est$beta[nameY, nameX], ncol = 1,
 	                 dimnames = list(nameX, nameY))
 
-	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
+	## Extract all sampling (co)variances
+	if (inherits(fit, "lavaan")) {
+	  varEst <- lavaan::vcov(fit)
+	} else if (inherits(fit, "lavaan.mi")) {
+	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	}
+	## for indexing the sampling (co)variances
+	PT <- parTable(fit)
 
-	# Find the order to rearrange
-	ord <- c(setdiff(1:3, modVar), modVar)
-	ord <- c(ord, 7 - rev(ord))
-
-	resultIntcept <- NULL
-	resultSlope <- NULL
-	if(estimateIntcept) {
-		# Extract SE from centered result
-	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
-	  newLabels <- PT$label[newRows]
-	  if (any(newLabels == "")) for (i in which(newLabels == "")) {
-	    newLabels[i] <- paste0(nameY, "~", nameX[i],
+	## index slopes in varEst
+	slope.idx <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
+	## check for user-defined labels; otherwise, set defaults
+	slope.label <- PT$label[slope.idx]
+	if (any(slope.label == "")) for (i in which(slope.label == "")) {
+	  slope.label[i] <- paste0(nameY, "~", nameX[i],
 	                           ifelse(nG > 1L && group.number > 1L, no = "",
 	                                  yes = paste0(".g", group.number)))
+	}
+
+	## index intercept in varEst
+	if (meanstruc) {
+	  int.idx <- PT$label[PT$lhs == nameY & PT$op == "~1" & PT$group == group.number]
+	  if (int.idx == "") {
+	    ## no custom label, use default
+	    int.idx <- paste0(nameY, "~1")
+	    if (nG > 1L && group.number > 1L) {
+	      int.idx <- paste0(int.idx, ".g", group.number)
+	    }
 	  }
-	  targetcol <- c(targetcol, newLabels)
-
-		# Transform it to non-centering SE
-		usedVar <-  varEst[targetcol, targetcol]
-		usedBeta <- rbind(est$alpha[nameY,], betaNC)
-		if (sum(diag(usedVar) < 0) > 0)
-		  stop("This method does not work. The resulting calculation provided negative standard errors.") # JG: edited this error
-
-		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		usedVar <- usedVar[c(1, ord+1, 8), c(1, ord+1, 8)]
-		usedBeta <- usedBeta[c(1, ord+1, 8)]
-
-		# Find probe value
-		val <- expand.grid(valProbe1, valProbe2)
-
-		# Find simple intercept
-		simpleIntcept <- usedBeta[1] + usedBeta[3] * val[,1] + usedBeta[4] * val[,2] + usedBeta[7] * val[,1] * val[,2]
-		varIntcept <- usedVar[1, 1] + val[,1]^2 * usedVar[3, 3] + val[,2]^2 * usedVar[4, 4] + val[,1]^2 * val[,2]^2 * usedVar[7, 7] + 2 * val[,1] * usedVar[1, 3] + 2 * val[,2] * usedVar[1, 4] + 2 * val[,1] * val[,2] * usedVar[1, 7] + 2 * val[,1] * val[,2] * usedVar[3, 4] + 2 * val[,1]^2 * val[,2] * usedVar[3, 7] + 2* val[,1] * val[,2]^2 * usedVar[4, 7]
-		zIntcept <- simpleIntcept / sqrt(varIntcept)
-		pIntcept <- pvalue(zIntcept)
-		resultIntcept <- data.frame(val, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
-		colnames(resultIntcept) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultIntcept) <- c("lavaan.data.frame","data.frame")
-
-		# Find simple slope
-		simpleSlope <- usedBeta[2] + usedBeta[5] * val[,1] + usedBeta[6] * val[,2] + usedBeta[8] * val[,1] * val[,2]
-		varSlope <- usedVar[2, 2] + val[,1]^2 * usedVar[5, 5] + val[,2]^2 * usedVar[6, 6] + val[,1]^2 * val[,2]^2 * usedVar[8, 8] + 2 * val[,1] * usedVar[2, 5] + 2 * val[,2] * usedVar[2, 6] + 2 * val[,1] * val[,2] * usedVar[2, 8] + 2 * val[,1] * val[,2] * usedVar[5, 6] + 2 * val[,1]^2 * val[,2] * usedVar[5, 8] + 2 * val[,1] * val[,2]^2 * usedVar[6, 8]
-		zSlope <- simpleSlope / sqrt(varSlope)
-		pSlope <- pvalue(zSlope)
-		resultSlope <- data.frame(val, simpleSlope, sqrt(varSlope), zSlope, pSlope)
-		colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultSlope) <- c("lavaan.data.frame","data.frame")
+	  ## check whether it is actually estimated (appears in $alpha and varEst)
+	  estimateIntcept <- int.idx %in% rownames(varEst)
 
 	} else {
-	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
-	  targetcol <- PT$label[newRows]
-	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste0(nameY, "~", PT$rhs[ newRows[i] ],
-	                           ifelse(nG > 1L && group.number > 1L, no = "",
-	                                  yes = paste0(".g", group.number)))
+	  estimateIntcept <- FALSE
+	  ## use default label
+	  int.idx <- paste0(nameY, "~1")
+	  if (nG > 1L && group.number > 1L) {
+	    int.idx <- paste0(int.idx, ".g", group.number)
 	  }
-
-		# Transform it to non-centering SE
-		usedVar <-  varEst[targetcol, targetcol]
-		usedBeta <- betaNC
-		if (sum(diag(usedVar) < 0) > 0) stop("This method does not work. The resulting calculation provided negative standard errors.") # JG: edited this error
-
-		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		usedVar <- usedVar[c(ord, 7), c(ord, 7)]
-		usedBeta <- usedBeta[c(ord, 7)]
-
-		# Find probe value
-		val <- expand.grid(valProbe1, valProbe2)
-
-		# Find simple slope
-		simpleSlope <- usedBeta[1] + usedBeta[4] * val[,1] + usedBeta[5] * val[,2] + usedBeta[7] * val[,1] * val[,2]
-		varSlope <- usedVar[1, 1] + val[,1]^2 * usedVar[4, 4] + val[,2]^2 * usedVar[5, 5] + val[,1]^2 * val[,2]^2 * usedVar[7, 7] + 2 * val[,1] * usedVar[1, 4] + 2 * val[,2] * usedVar[1, 5] + 2 * val[,1] * val[,2] * usedVar[1, 7] + 2 * val[,1] * val[,2] * usedVar[4, 5] + 2 * val[,1]^2 * val[,2] * usedVar[4, 7] + 2 * val[,1] * val[,2]^2 * usedVar[5, 7]
-		zSlope <- simpleSlope / sqrt(varSlope)
-		pSlope <- pvalue(zSlope)
-		resultSlope <- data.frame(val, simpleSlope, sqrt(varSlope), zSlope, pSlope)
-		colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultSlope) <- c("lavaan.data.frame","data.frame")
 	}
+
+	## if intercept is not estimated, add a row/column with zero sampling variance
+	if (!estimateIntcept) {
+	  dn <- c(rownames(varEst), int.idx)
+	  varEst <- rbind(cbind(varEst, 0), 0)
+	  dimnames(varEst) <- list(dn, dn)
+	}
+
+	## save all indices in a vector
+	targetcol <- c(int.idx, slope.label)
+
+	## collect relevant estimates and variances to probe the interaction
+	usedBeta <- rbind(est$alpha[nameY,], betaNC) # point estimates
+	usedVar <-  varEst[targetcol, targetcol]     # sampling (co)variances
+
+	## In case a moderator is listed first, find the order to rearrange
+	ord <- c(setdiff(1:3, modVar), modVar)
+	ord <- c(ord, 7 - rev(ord))
+	usedBeta <- usedBeta[c(1, ord+1, 8)]
+	usedVar  <- usedVar[ c(1, ord+1, 8), c(1, ord+1, 8)]
+
+	## set all combinations of moderator values
+	val <- expand.grid(valProbe1, valProbe2)
+
+	## function to calculate p values for Wald z tests
+	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
+
+
+	## Calculate simple intercepts
+	simpleIntcept <- usedBeta[1] + usedBeta[3] * val[,1] + usedBeta[4] * val[,2] + usedBeta[7] * val[,1] * val[,2]
+	varIntcept <- usedVar[1, 1] + val[,1]^2 * usedVar[3, 3] + val[,2]^2 * usedVar[4, 4] + val[,1]^2 * val[,2]^2 * usedVar[7, 7] + 2 * val[,1] * usedVar[1, 3] + 2 * val[,2] * usedVar[1, 4] + 2 * val[,1] * val[,2] * usedVar[1, 7] + 2 * val[,1] * val[,2] * usedVar[3, 4] + 2 * val[,1]^2 * val[,2] * usedVar[3, 7] + 2* val[,1] * val[,2]^2 * usedVar[4, 7]
+	zIntcept <- simpleIntcept / sqrt(varIntcept)
+	pIntcept <- pvalue(zIntcept)
+	resultIntcept <- cbind(val, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
+	colnames(resultIntcept) <- c(nameX[modVar], "est", "se", "z", "pvalue")
+	class(resultIntcept) <- c("lavaan.data.frame","data.frame")
+
+	## Calculate simple slopes
+	simpleSlope <- usedBeta[2] + usedBeta[5] * val[,1] + usedBeta[6] * val[,2] + usedBeta[8] * val[,1] * val[,2]
+	varSlope <- usedVar[2, 2] + val[,1]^2 * usedVar[5, 5] + val[,2]^2 * usedVar[6, 6] + val[,1]^2 * val[,2]^2 * usedVar[8, 8] + 2 * val[,1] * usedVar[2, 5] + 2 * val[,2] * usedVar[2, 6] + 2 * val[,1] * val[,2] * usedVar[2, 8] + 2 * val[,1] * val[,2] * usedVar[5, 6] + 2 * val[,1]^2 * val[,2] * usedVar[5, 8] + 2 * val[,1] * val[,2]^2 * usedVar[6, 8]
+	zSlope <- simpleSlope / sqrt(varSlope)
+	pSlope <- pvalue(zSlope)
+	resultSlope <- cbind(val, simpleSlope, sqrt(varSlope), zSlope, pSlope)
+	colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
+	class(resultSlope) <- c("lavaan.data.frame","data.frame")
 
 	list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope)
 }
@@ -1243,18 +1195,19 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The intercepts given each value of the moderator.
-##'    This element will be shown only if the factor intercept is estimated
-##'    (e.g., not fixed as 0).
-##'  \item \code{SimpleSlope}: The slopes given each value of the moderator.
+##'  \item \code{SimpleIntercept}: The model-implied intercepts given each
+##'        combination of moderator values.
+##'  \item \code{SimpleSlope}: The model-implied slopes given each combination
+##'        of moderator values.
 ##' }
 ##' In each element, the first column represents values of the first moderator
 ##' specified in the \code{valProbe1} argument. The second column represents
 ##' values of the second moderator specified in the \code{valProbe2} argument.
 ##' The third column is the simple intercept or simple slope. The fourth column
 ##' is the \emph{SE} of the simple intercept or simple slope. The fifth column
-##' is the Wald (\emph{z}) statistic. The sixth column is the \emph{p} value
-##' testing whether the simple intercepts or slopes are different from 0.
+##' is the Wald (\emph{z}) statistic, and the sixth column is its associated
+##' \emph{p} value to test the null hypothesis that each simple intercept or
+##' simple slope equals 0.
 ##'
 ##' @author
 ##' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -1342,7 +1295,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' summary(fitRC3way)
 ##'
 ##' probe3WayMC(fitRC3way, nameX = c("f1" ,"f2" ,"f3",
-##'                                  "f12","f13","f23", # the order matters!
+##'                                  "f12","f13","f23", # this order matters!
 ##'                                  "f123"),           # 3-way interaction
 ##'             nameY = "f4", modVar = c("f1", "f2"),
 ##'             valProbe1 = c(-1, 0, 1), valProbe2 = c(-1, 0, 1))
@@ -1351,10 +1304,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
                         group = 1L, omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
-  if (inherits(fit, "lavaan")) {
-    est <- lavInspect(fit, "est")[[group]]
-
-  } else if (inherits(fit, "lavaan.mi")) {
+  if (inherits(fit, "lavaan.mi")) {
     useImps <- rep(TRUE, length(fit@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
@@ -1371,7 +1321,9 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
     if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
     useImps <- which(useImps)
 
-  } else stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+  } else if (!inherits(fit, "lavaan")) {
+    stop('"fit" must inherit from lavaan or lavaan.mi class', call. = FALSE)
+  }
 
   if (!lavInspect(fit, "options")$meanstructure)
     stop('This function requires the model to be fit with a mean structure.',
@@ -1400,30 +1352,6 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	  group.number <- which(group.label == group)
 	} else group.number <- 1L
 
-	# Extract all varEst
-	if (inherits(fit, "lavaan")) {
-	  varEst <- lavaan::vcov(fit)
-	} else if (inherits(fit, "lavaan.mi")) {
-	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
-	}
-
-	## Check whether the outcome's intercept is estimated
-	PT <- parTable(fit)
-	if (lavInspect(fit, "options")$meanstructure) {
-	  targetcol <- PT$label[PT$lhs == nameY & PT$op == "~1" & PT$group == group.number]
-	  if (targetcol == "") {
-	    ## no custom label, use default
-	    targetcol <- paste0(nameY, "~1")
-	    if (nG > 1L && group.number > 1L) {
-	      targetcol <- paste0(targetcol, ".g", group.number)
-	    }
-	  }
-	  ## check it is actually estimated (thus, has sampling variance)
-	  estimateIntcept <- targetcol %in% rownames(varEst)
-
-	} else estimateIntcept <- FALSE
-
-
 	## Get the parameter estimates for that group
 	if (nG > 1L) {
 
@@ -1451,16 +1379,15 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 
 	}
 
-
-	# Find the mean and covariance matrix of independent factors
-	varX <- est$psi[nameX, nameX]
-	meanX <- matrix(est$alpha[nameX,], ncol = 1, dimnames = list(NULL, "intcept"))
+	## Find the mean and covariance matrix of predictors
+	varX  <- est$psi[ nameX, nameX]
+	meanX <-est$alpha[nameX, , drop = FALSE]
 
 	# Find the intercept, regression coefficients, and residual variance of residual-centered regression
-	intceptRC <- est$alpha[nameY,]
-	resVarRC <- est$psi[nameY, nameY]
-	if (resVarRC < 0) stop("The residual variance is negative. The model did not converge!") # JG: Changed error
-	betaRC <- as.matrix(est$beta[nameY, nameX]); colnames(betaRC) <- nameY
+	intceptRC <- est$alpha[nameY, , drop = FALSE]
+	resVarRC  <- est$psi[  nameY, nameY]
+	if (resVarRC < 0) warning("The residual variance is negative. The model did not converge on a proper solution.")
+	betaRC <- t(est$beta[nameY, nameX, drop = FALSE])
 
 	# Find the number of observations
 	numobs <- lavInspect(fit, "nobs")[group.number]
@@ -1551,87 +1478,79 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	resVarNC <- varY - (t(betaNCWithIntcept) %*% SSNC %*% betaNCWithIntcept)/numobs + meanY^2
 
 
-	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
+	## Extract all sampling (co)variances
+	if (inherits(fit, "lavaan")) {
+	  varEst <- lavaan::vcov(fit)
+	} else if (inherits(fit, "lavaan.mi")) {
+	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	}
 
-	# Find the order to rearrange
+	## for indexing sampling (co)variances
+	PT <- parTable(fit)
+	int.idx <- PT$label[PT$lhs == nameY & PT$op == "~1" & PT$group == group.number]
+	if (int.idx == "") {
+	  ## no custom label, use default
+	  int.idx <- paste0(nameY, "~1")
+	  if (nG > 1L && group.number > 1L) {
+	    int.idx <- paste0(int.idx, ".g", group.number)
+	  }
+	}
+	## check intercept is actually estimated (thus, has sampling variance)
+	estimateIntcept <- int.idx %in% rownames(varEst)
+	## if intercept is not estimated, add a row/column with zero sampling variance
+	if (!estimateIntcept) {
+	  dn <- c(rownames(varEst), int.idx)
+	  varEst <- rbind(cbind(varEst, 0), 0)
+	  dimnames(varEst) <- list(dn, dn)
+	}
+
+	## index slopes in varEst
+	slope.idx <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
+	## check for user-defined labels; otherwise, set defaults
+	slope.label <- PT$label[slope.idx]
+	if (any(slope.label == "")) for (i in which(slope.label == "")) {
+	  slope.label[i] <- paste0(nameY, "~", nameX[i],
+	                           ifelse(nG > 1L && group.number > 1L, no = "",
+	                                  yes = paste0(".g", group.number)))
+	}
+
+	## save all indices in a vector
+	targetcol <- c(int.idx, slope.label)
+	varEstSlopeRC <- varEst[targetcol, targetcol]
+
+	## collect relevant estimates and variances to probe the interaction
+	usedVar <-  as.numeric(resVarNC/resVarRC) * (varEstSlopeRC %*% SSRC %*% solve(SSNC))
+	usedBeta <- betaNCWithIntcept
+
+	## In case a moderator is listed first, find the order to rearrange
 	ord <- c(setdiff(1:3, modVar), modVar)
 	ord <- c(ord, 7 - rev(ord))
+	usedBeta <- usedBeta[c(1, ord+1, 8)]
+	usedVar  <- usedVar[ c(1, ord+1, 8), c(1, ord+1, 8)]
 
-	resultIntcept <- NULL
-	resultSlope <- NULL
-	if (estimateIntcept) {
-		# Extract SE from residual centering
-	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
-	  newLabels <- PT$label[newRows]
-	  if (any(newLabels == "")) for (i in which(newLabels == "")) {
-	    newLabels[i] <- paste0(nameY, "~", nameX[i],
-	                           ifelse(nG > 1L && group.number > 1L, no = "",
-	                                  yes = paste0(".g", group.number)))
-	  }
-	  targetcol <- c(targetcol, newLabels)
-		varEstSlopeRC <- varEst[targetcol, targetcol]
+	## set all combinations of moderator values
+	val <- expand.grid(valProbe1, valProbe2)
 
-		# Transform it to non-centering SE
-		usedVar <-  as.numeric(resVarNC/resVarRC) * (varEstSlopeRC %*% SSRC %*% solve(SSNC))
-		usedBeta <- betaNCWithIntcept
-		if (sum(diag(usedVar) < 0) > 0) stop("This method does not work. The resulting calculation provided negative standard errors.") # JG: edited this error
+	## function to calculate p values for Wald z tests
+	pvalue <- function(x) (1 - pnorm(abs(x))) * 2
 
-		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		usedVar <- usedVar[c(1, ord+1, 8), c(1, ord+1, 8)]
-		usedBeta <- usedBeta[c(1, ord+1, 8)]
+	## Calculate simple intercepts
+	simpleIntcept <- usedBeta[1] + usedBeta[3] * val[,1] + usedBeta[4] * val[,2] + usedBeta[7] * val[,1] * val[,2]
+	varIntcept <- usedVar[1, 1] + val[,1]^2 * usedVar[3, 3] + val[,2]^2 * usedVar[4, 4] + val[,1]^2 * val[,2]^2 * usedVar[7, 7] + 2 * val[,1] * usedVar[1, 3] + 2 * val[,2] * usedVar[1, 4] + 2 * val[,1] * val[,2] * usedVar[1, 7] + 2 * val[,1] * val[,2] * usedVar[3, 4] + 2 * val[,1]^2 * val[,2] * usedVar[3, 7] + 2* val[,1] * val[,2]^2 * usedVar[4, 7]
+	zIntcept <- simpleIntcept / sqrt(varIntcept)
+	pIntcept <- pvalue(zIntcept)
+	resultIntcept <- cbind(val, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
+	colnames(resultIntcept) <- c(nameX[modVar], "est", "se", "z", "pvalue")
+	class(resultIntcept) <- c("lavaan.data.frame","data.frame")
 
-		# Find probe value
-		val <- expand.grid(valProbe1, valProbe2)
-
-		# Find simple intercept
-		simpleIntcept <- usedBeta[1] + usedBeta[3] * val[,1] + usedBeta[4] * val[,2] + usedBeta[7] * val[,1] * val[,2]
-		varIntcept <- usedVar[1, 1] + val[,1]^2 * usedVar[3, 3] + val[,2]^2 * usedVar[4, 4] + val[,1]^2 * val[,2]^2 * usedVar[7, 7] + 2 * val[,1] * usedVar[1, 3] + 2 * val[,2] * usedVar[1, 4] + 2 * val[,1] * val[,2] * usedVar[1, 7] + 2 * val[,1] * val[,2] * usedVar[3, 4] + 2 * val[,1]^2 * val[,2] * usedVar[3, 7] + 2* val[,1] * val[,2]^2 * usedVar[4, 7]
-		zIntcept <- simpleIntcept / sqrt(varIntcept)
-		pIntcept <- pvalue(zIntcept)
-		resultIntcept <- data.frame(val, simpleIntcept, sqrt(varIntcept), zIntcept, pIntcept)
-		colnames(resultIntcept) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultIntcept) <- c("lavaan.data.frame","data.frame")
-
-		# Find simple slope
-		simpleSlope <- usedBeta[2] + usedBeta[5] * val[,1] + usedBeta[6] * val[,2] + usedBeta[8] * val[,1] * val[,2]
-		varSlope <- usedVar[2, 2] + val[,1]^2 * usedVar[5, 5] + val[,2]^2 * usedVar[6, 6] + val[,1]^2 * val[,2]^2 * usedVar[8, 8] + 2 * val[,1] * usedVar[2, 5] + 2 * val[,2] * usedVar[2, 6] + 2 * val[,1] * val[,2] * usedVar[2, 8] + 2 * val[,1] * val[,2] * usedVar[5, 6] + 2 * val[,1]^2 * val[,2] * usedVar[5, 8] + 2 * val[,1] * val[,2]^2 * usedVar[6, 8]
-		zSlope <- simpleSlope / sqrt(varSlope)
-		pSlope <- pvalue(zSlope)
-		resultSlope <- data.frame(val, simpleSlope, sqrt(varSlope), zSlope, pSlope)
-		colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultSlope) <- c("lavaan.data.frame","data.frame")
-
-	} else {
-	  newRows <- which(PT$lhs == nameY & PT$op == "~" & PT$rhs %in% nameX & PT$group == group.number)
-	  targetcol <- PT$label[newRows]
-	  if (any(targetcol == "")) for (i in which(targetcol == "")) {
-	    targetcol[i] <- paste0(nameY, "~", PT$rhs[ newRows[i] ],
-	                           ifelse(nG > 1L && group.number > 1L, no = "",
-	                                  yes = paste0(".g", group.number)))
-	  }
-		varEstSlopeRC <- varEst[targetcol, targetcol]
-
-		# Transform it to non-centering SE
-		usedVar <-  as.numeric(resVarNC/resVarRC) * (varEstSlopeRC %*% SSRC[2:8, 2:8] %*% solve(SSNC[2:8, 2:8]))
-		usedBeta <- betaNC
-		if(sum(diag(usedVar) < 0) > 0) stop("This method does not work. The resulting calculation provided negative standard errors.") # JG: edited this error
-
-		# Change the order of usedVar and usedBeta if the moderator variable is listed first
-		usedVar <- usedVar[c(ord, 7), c(ord, 7)]
-		usedBeta <- usedBeta[c(ord, 7)]
-
-		# Find probe value
-		val <- expand.grid(valProbe1, valProbe2)
-
-		# Find simple slope
-		simpleSlope <- usedBeta[1] + usedBeta[4] * val[,1] + usedBeta[5] * val[,2] + usedBeta[7] * val[,1] * val[,2]
-		varSlope <- usedVar[1, 1] + val[,1]^2 * usedVar[4, 4] + val[,2]^2 * usedVar[5, 5] + val[,1]^2 * val[,2]^2 * usedVar[7, 7] + 2 * val[,1] * usedVar[1, 4] + 2 * val[,2] * usedVar[1, 5] + 2 * val[,1] * val[,2] * usedVar[1, 7] + 2 * val[,1] * val[,2] * usedVar[4, 5] + 2 * val[,1]^2 * val[,2] * usedVar[4, 7] + 2 * val[,1] * val[,2]^2 * usedVar[5, 7]
-		zSlope <- simpleSlope / sqrt(varSlope)
-		pSlope <- pvalue(zSlope)
-		resultSlope <- data.frame(val, simpleSlope, sqrt(varSlope), zSlope, pSlope)
-		colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
-		class(resultSlope) <- c("lavaan.data.frame","data.frame")
-	}
+	## Calculate simple slopes
+	simpleSlope <- usedBeta[2] + usedBeta[5] * val[,1] + usedBeta[6] * val[,2] + usedBeta[8] * val[,1] * val[,2]
+	varSlope <- usedVar[2, 2] + val[,1]^2 * usedVar[5, 5] + val[,2]^2 * usedVar[6, 6] + val[,1]^2 * val[,2]^2 * usedVar[8, 8] + 2 * val[,1] * usedVar[2, 5] + 2 * val[,2] * usedVar[2, 6] + 2 * val[,1] * val[,2] * usedVar[2, 8] + 2 * val[,1] * val[,2] * usedVar[5, 6] + 2 * val[,1]^2 * val[,2] * usedVar[5, 8] + 2 * val[,1] * val[,2]^2 * usedVar[6, 8]
+	zSlope <- simpleSlope / sqrt(varSlope)
+	pSlope <- pvalue(zSlope)
+	resultSlope <- cbind(val, simpleSlope, sqrt(varSlope), zSlope, pSlope)
+	colnames(resultSlope) <- c(nameX[modVar], "est", "se", "z", "pvalue")
+	class(resultSlope) <- c("lavaan.data.frame","data.frame")
 
 	list(SimpleIntcept = resultIntcept, SimpleSlope = resultSlope)
 }
@@ -1653,8 +1572,8 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' If the \code{object} does not contain simple intercepts (i.e., if the
 ##' \code{object$SimpleIntcept} element is \code{NULL}), then all simple
 ##' intercepts are arbitrarily set to zero in order to plot the simple slopes.
-##' This may not be consistent with the fitted model, but might be an inevitable
-##' result of (double-)mean-centering with \code{\link{indProd}}. In this case,
+##' This may not be consistent with the fitted model, but was (up until version
+##' 0.5-7) the default behavior when the y-intercept was fixed to 0. In this case,
 ##' although the relative steepness of simple slopes can still meaningfully be
 ##' compared, the relative vertical positions of lines at any point along the
 ##' \emph{x}-axis should not be interpreted.
@@ -1996,6 +1915,7 @@ plotSingleProbe <- function(estSlope, estIntercept = NULL, xlim,
 		if (is.null(legendArgs$lty)) legendArgs$lty <- 1:length(estSlope)
 		do.call(graphics::legend, legendArgs)
 	}
+	invisible(NULL)
 }
 
 

@@ -55,18 +55,19 @@ imputations warrant further investigation.}
 \value{
 A list with two elements:
 \enumerate{
- \item \code{SimpleIntercept}: The intercepts given each value of the moderator.
-   This element will be shown only if the factor intercept is estimated
-   (e.g., not fixed as 0).
- \item \code{SimpleSlope}: The slopes given each value of the moderator.
+ \item \code{SimpleIntercept}: The model-implied intercepts given each
+       combination of moderator values.
+ \item \code{SimpleSlope}: The model-implied slopes given each combination
+       of moderator values.
 }
 In each element, the first column represents values of the first moderator
 specified in the \code{valProbe1} argument. The second column represents
 values of the second moderator specified in the \code{valProbe2} argument.
 The third column is the simple intercept or simple slope. The fourth column
 is the \emph{SE} of the simple intercept or simple slope. The fifth column
-is the Wald (\emph{z}) statistic. The sixth column is the \emph{p} value
-testing whether the simple intercepts or slopes are different from 0.
+is the Wald (\emph{z}) statistic, and the sixth column is its associated
+\emph{p} value to test the null hypothesis that each simple intercept or
+simple slope equals 0.
 }
 \description{
 Probing interaction for simple intercept and simple slope for the
@@ -128,7 +129,7 @@ fitRC3way <- sem(model3, data = dat3wayRC, meanstructure = TRUE)
 summary(fitRC3way)
 
 probe3WayMC(fitRC3way, nameX = c("f1" ,"f2" ,"f3",
-                                 "f12","f13","f23", # the order matters!
+                                 "f12","f13","f23", # this order matters!
                                  "f123"),           # 3-way interaction
             nameY = "f4", modVar = c("f1", "f2"),
             valProbe1 = c(-1, 0, 1), valProbe2 = c(-1, 0, 1))

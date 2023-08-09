@@ -48,17 +48,16 @@ imputations warrant further investigation.}
 \value{
 A list with two elements:
 \enumerate{
- \item \code{SimpleIntercept}: The intercepts given each value of the
-  moderator. This element will be \code{NULL} unless the factor intercept is
-  estimated (e.g., not fixed at 0).
- \item \code{SimpleSlope}: The slopes given each value of the moderator.
+ \item \code{SimpleIntercept}: The simple intercepts given each value of the
+  moderator.
+ \item \code{SimpleSlope}: The simple slopes given each value of the moderator.
 }
 In each element, the first column represents the values of the moderators
 specified in the \code{valProbe} argument. The second column is the simple
 intercept or simple slope. The third column is the standard error of the
-simple intercept or simple slope. The fourth column is the Wald (\emph{z})
-statistic. The fifth column is the \emph{p} value testing whether the simple
-intercepts or slopes are different from 0.
+simple intercept or slope. The fourth column is the Wald (\emph{z})
+statistic, and the fifth column is the associated \emph{p} value testing
+the null hypothesis that each simple intercept or slope is 0.
 }
 \description{
 Probing interaction for simple intercept and simple slope for the
@@ -79,8 +78,8 @@ probe the interaction.
 
 The probing process on residual-centered latent interaction is based on
 transforming the residual-centered result into the no-centered result. See
-Geldhof et al. (2013) for further details. Note that this approach based on
-a strong assumption that the first-order latent variables are normally
+Geldhof et al. (2013) for further details. Note that this approach is based
+on a strong assumption that the first-order latent variables are normally
 distributed. The probing process is applied after the no-centered result
 (parameter estimates and their covariance matrix among parameter estimates)
 has been computed. See the \code{\link{probe2WayMC}} for further details.

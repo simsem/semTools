@@ -40,8 +40,8 @@ function used to obtain the first argument.
 If the \code{object} does not contain simple intercepts (i.e., if the
 \code{object$SimpleIntcept} element is \code{NULL}), then all simple
 intercepts are arbitrarily set to zero in order to plot the simple slopes.
-This may not be consistent with the fitted model, but might be an inevitable
-result of (double-)mean-centering with \code{\link{indProd}}. In this case,
+This may not be consistent with the fitted model, but was (up until version
+0.5-7) the default behavior when the y-intercept was fixed to 0. In this case,
 although the relative steepness of simple slopes can still meaningfully be
 compared, the relative vertical positions of lines at any point along the
 \emph{x}-axis should not be interpreted.

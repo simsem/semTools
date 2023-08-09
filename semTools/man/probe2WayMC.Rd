@@ -49,17 +49,16 @@ imputations warrant further investigation.}
 \value{
 A list with two elements:
 \enumerate{
- \item \code{SimpleIntercept}: The intercepts given each value of the
-  moderator. This element will be \code{NULL} unless the factor intercept is
-  estimated (e.g., not fixed at 0).
- \item \code{SimpleSlope}: The slopes given each value of the moderator.
+ \item \code{SimpleIntercept}: The simple intercepts given each value of the
+  moderator.
+ \item \code{SimpleSlope}: The simple slopes given each value of the moderator.
 }
-In each element, the first column represents the values of the moderators
+In each element, the first column represents the values of the moderator
 specified in the \code{valProbe} argument. The second column is the simple
 intercept or simple slope. The third column is the \emph{SE} of the simple
 intercept or simple slope. The fourth column is the Wald (\emph{z})
-statistic. The fifth column is the \emph{p} value testing whether the simple
-intercepts or slopes are different from 0.
+statistic, and the fifth column is the associated \emph{p} value testing
+the null hypothesis that each simple intercept or slope is 0.
 }
 \description{
 Probing interaction for simple intercept and simple slope for the
@@ -79,7 +78,7 @@ term below. Once the lavaan result is obtained, this function will be used
 to probe the interaction.
 
 Let that the latent interaction model regressing the dependent variable
-(\eqn{Y}) on the independent varaible (\eqn{X}) and the moderator (\eqn{Z})
+(\eqn{Y}) on the independent variable (\eqn{X}) and the moderator (\eqn{Z})
 be \deqn{ Y = b_0 + b_1X + b_2Z + b_3XZ + r, } where \eqn{b_0} is the
 estimated intercept or the expected value of \eqn{Y} when both \eqn{X} and
 \eqn{Z} are 0, \eqn{b_1} is the effect of \eqn{X} when \eqn{Z} is 0,
@@ -87,28 +86,32 @@ estimated intercept or the expected value of \eqn{Y} when both \eqn{X} and
 interaction effect between \eqn{X} and \eqn{Z}, and \eqn{r} is the residual
 term.
 
-For probing two-way interaction, the simple intercept of the independent
+To probe a two-way interaction, the simple intercept of the independent
 variable at each value of the moderator (Aiken & West, 1991; Cohen, Cohen,
 West, & Aiken, 2003; Preacher, Curran, & Bauer, 2006) can be obtained by
-\deqn{ b_{0|X = 0, Z} = b_0 + b_2Z. }
+\deqn{ b_{0|X = 0, Z} = b_0 + b_2 Z. }
 
 The simple slope of the independent varaible at each value of the moderator
-can be obtained by \deqn{ b_{X|Z} = b_1 + b_3Z. }
+can be obtained by
+\deqn{ b_{X|Z} = b_1 + b_3 Z. }
 
-The variance of the simple intercept formula is \deqn{ Var\left(b_{0|X = 0,
-Z}\right) = Var\left(b_0\right) + 2ZCov\left(b_0, b_2\right) +
-Z^2Var\left(b_2\right) } where \eqn{Var} denotes the variance of a parameter
+The variance of the simple intercept formula is
+\deqn{ Var\left(b_{0|X = 0, Z}\right) =
+       Var\left(b_0\right) + 2Z \times Cov\left(b_0, b_2\right) +
+       Z^2 \times Var\left(b_2\right) },
+where \eqn{Var} denotes the variance of a parameter
 estimate and \eqn{Cov} denotes the covariance of two parameter estimates.
 
-The variance of the simple slope formula is \deqn{ Var\left(b_{X|Z}\right) =
-Var\left(b_1\right) + 2ZCov\left(b_1, b_3\right) + Z^2Var\left(b_3\right) }
+The variance of the simple slope formula is
+\deqn{ Var\left(b_{X|Z}\right) = Var\left(b_1\right) + 2Z \times
+       Cov\left(b_1, b_3\right) + Z^2 \times Var\left(b_3\right) }
 
 Wald \emph{z} statistic is used for test statistic (even for objects of
 class \code{\linkS4class{lavaan.mi}}).
 }
 \examples{
 
-dat2wayMC <- indProd(dat2way, 1:3, 4:6)
+dat2wayMC <- indProd(dat2way, 1:3, 4:6) # double mean centered by default
 
 model1 <- "
 f1 =~ x1 + x2 + x3
@@ -116,9 +119,7 @@ f2 =~ x4 + x5 + x6
 f12 =~ x1.x4 + x2.x5 + x3.x6
 f3 =~ x7 + x8 + x9
 f3 ~ f1 + f2 + f12
-f12 ~~ 0*f1 + 0*f2
-x1 + x4 + x1.x4 + x7 ~ 0*1 # identify latent means
-f1 + f2 + f12 + f3 ~ NA*1
+f12 ~~ 0*f1 + 0*f2 # not necessary, but implied by double mean centering
 "
 
 fitMC2way <- sem(model1, data = dat2wayMC, meanstructure = TRUE)
@@ -138,9 +139,6 @@ f12 =~ x1.x4 + x2.x5 + x3.x6
 f3 =~ x7 + x8 + x9
 f3 ~ c(b1.g1, b1.g2)*f1 + c(b2.g1, b2.g2)*f2 + c(b12.g1, b12.g2)*f12
 f12 ~~ 0*f1 + 0*f2
-x1 + x4 + x1.x4 + x7 ~ 0*1 # identify latent means
-f1 + f2 + f12 ~ NA*1
-f3 ~ NA*1 + c(b0.g1, b0.g2)*1
 "
 fit2 <- sem(model2, data = dat2wayMC, group = "g")
 probe2WayMC(fit2, nameX = c("f1", "f2", "f12"), nameY = "f3",
