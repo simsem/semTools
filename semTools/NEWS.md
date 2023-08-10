@@ -5,16 +5,16 @@
 - `auxiliary()` has 2 new arguments
     - `envir=` is passed to `do.call()`, which prevents problems not finding the `lavaan` package when `semTools` is not loaded via `library()`
     - `return.syntax=TRUE` will return model syntax for the saturated-correlates parameters, which can be added to the target-model syntax.  This enables adding saturated correlates easily to a `blavaan` model.
-- `efaUnrotate()` deprecated, along with rotation functions `orthRotate()`, `oblqRotate()`, and `funRotate()`.  Users can now directly use `lavaan::efa()` and its `rotation=` argument. Exploratory SEM (ESEM) is also supported by `lavaan` using special `model.syntax()` operators; see [Issue #112](https://github.com/yrosseel/lavaan/issues/112) for details.
+- `efaUnrotate()` deprecated, along with rotation functions `orthRotate()`, `oblqRotate()`, and `funRotate()`.  Users can now directly use `lavaan::efa()` and its `rotation=` argument. Exploratory SEM (ESEM) is also supported by `lavaan` using special `model.syntax()` operators, as shown in its [Issue #112](https://github.com/yrosseel/lavaan/issues/112).
 
 ## Bug Fixes:
 
 - Formulas implementing Bollen et al.'s (2012, 2014) BIC extensions have been corrected in the documentation and source code.
 - `emmeans` functionality made more robust to different ordering of names in a specified interaction term.
 - `compRelSEM()` no longer gives an error for a `higher=` order factor when indicators are categorical.  A bug for single-group `lavaan.mi` objects was also fixed.
-- Fixed an old bug which prevented `clipboard()` from working, particularly on a Mac OS (see [Issue #56](https://github.com/simsem/semTools/issues/56)).
+- Fixed an old bug which prevented `clipboard()` from working, particularly on a Mac OS: https://github.com/simsem/semTools/issues/56
 - Fixed a bug in the `update()` method for a `measEq.syntax-class` object, preventing an error that occurred when changing values/labels for a parameter across multiple groups.
-- Simple intercepts are now always returned by `probe2WayMC()`, `probe2WayRC()`, `probe3WayMC()`, and `probe3WayRC()`, even when the y-intercept is fixed in the fitted model.  This is not actually a bug, but the old default behavior led to `plotProbe()` incorrectly plotting all regression lines through the origin (see [Issue #125](https://github.com/simsem/semTools/issues/125) and [Issue #127](https://github.com/simsem/semTools/issues/127)).
+- Simple intercepts are now always returned by `probe2WayMC()`, `probe2WayRC()`, `probe3WayMC()`, and `probe3WayRC()`, even when the y-intercept is fixed in the fitted model.  This is not actually a bug, but the old default behavior led to `plotProbe()` incorrectly plotting all regression lines through the origin (see https://github.com/simsem/semTools/issues/125 and https://github.com/simsem/semTools/issues/127).
 
 
 # semTools 0.5-6 (on CRAN 10 May 2022)
@@ -23,7 +23,7 @@
 
 - `reliability()` and `reliabilityL2()` deprecated.
     - Average variance extracted now has a dedicated `AVE()` function. 
-    - A new `compRelSEM()` function provides more comprehensive options for estimating composite reliability coefficients (various alphas and omegas) than the `reliability()` function.  `compRelSEM()` also estimates reliability for a composite representing a higher-order factor (using the `higher=` argument to name such factors) and implements [Lai's (2021)](https://doi.org/10.1037/met0000287) recently proposed composite-reliability coefficients for different types of multilevel constructs (named with the `config=` and `shared=` arguments).  See [Issue #106](https://github.com/simsem/semTools/issues/106) for a conversation with Lai about the implementation, as well as links to documentation of tests.
+    - A new `compRelSEM()` function provides more comprehensive options for estimating composite reliability coefficients (various alphas and omegas) than the `reliability()` function.  `compRelSEM()` also estimates reliability for a composite representing a higher-order factor (using the `higher=` argument to name such factors) and implements [Lai's (2021)](https://doi.org/10.1037/met0000287) recently proposed composite-reliability coefficients for different types of multilevel constructs (named with the `config=` and `shared=` arguments).  See https://github.com/simsem/semTools/issues/106 for a conversation with Lai about the implementation, as well as links to documentation of tests.
 - `monteCarloCI()` now works for `lavaan.mi` objects, which is much easier than combining multiple imputation with bootstrapping.
 - `monteCarloCI()` now optionally returns CIs for the standardized solution, only for `lavaan` objects (not `lavaan.mi`).
 - `htmt()` gains an argument `htmt2=TRUE` to use the geometric mean (default) rather than the arithmetic mean (which assumes tau-equivalence).
@@ -34,7 +34,7 @@
 
 ## Bug Fixes:
 
-- `probe2/3WayM/RC()`: When the moderator was listed first in `nameX=` **and** some (not all) slopes were labeled in the user's model syntax, an error was caused by creating incorrect labels.  Fixes [issue 103](https://github.com/simsem/semTools/issues/103).
+- `probe2/3WayM/RC()`: When the moderator was listed first in `nameX=` **and** some (not all) slopes were labeled in the user's model syntax, an error was caused by creating incorrect labels.  Fixes https://github.com/simsem/semTools/issues/103
     - Also, `probe2/3WayM/RC()` help pages have a new **Reference** entry to a tutorial paper written about how to use them.
 
 
