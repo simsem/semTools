@@ -1148,7 +1148,7 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
     if (!inherits(uncon, "lavaan")) stop(notLavaan)
   }
   if (!is.null(null)) {
-    if (!inherits(uncon, "null")) stop(notLavaan)
+    if (!inherits(uncon, "lavaan")) stop(notLavaan)
   }
 
   ############ FIXME: check that lavInspect(con, "options")$conditional.x = FALSE (find defaults for continuous/ordered indicators)
