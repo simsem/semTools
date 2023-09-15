@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 July 2023
+### Last updated: 15 September 2023
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -33,7 +33,7 @@ measEq <- function(configural.model,
 
   #TODO: add argument to accept measEq.partial output, to continue sequence (or make and update() method?)
   if (is.character(group.partial)) {
-    if (group.partial == "" && length(group.partial) == 1L) {
+    if ((group.partial == "")[1L] && length(group.partial) == 1L) {
       group.partial <- data.frame(stringsAsFactors = FALSE, lhs = character(0),
                                   op = character(0), rhs = character(0))
     } else {
@@ -43,7 +43,7 @@ measEq <- function(configural.model,
     }
   } #TODO: else {extract information from a measEq.partial object}
   if (is.character(long.partial)) {
-    if (long.partial == "" && length(long.partial) == 1L) {
+    if ((long.partial == "")[1L] && length(long.partial) == 1L) {
       long.partial <- data.frame(stringsAsFactors = FALSE, lhs = character(0),
                                  op = character(0), rhs = character(0))
     } else {
@@ -1359,7 +1359,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
 
   ## convert *.partial strings to parTables
   if (is.character(group.partial)) {
-    if (group.partial == "" && length(group.partial) == 1L) {
+    if ((group.partial == "")[1L] && length(group.partial) == 1L) {
       group.partial <- data.frame(stringsAsFactors = FALSE, lhs = character(0),
                                   op = character(0), rhs = character(0))
     } else {
@@ -1369,7 +1369,7 @@ measEq.syntax <- function(configural.model, ..., ID.fac = "std.lv",
     }
   } #TODO: else {extract information from a measEq.partial object}
   if (is.character(long.partial)) {
-    if (long.partial == "" && length(long.partial) == 1L) {
+    if ((long.partial == "")[1L] && length(long.partial) == 1L) {
       long.partial <- data.frame(stringsAsFactors = FALSE, lhs = character(0),
                                  op = character(0), rhs = character(0))
     } else {
