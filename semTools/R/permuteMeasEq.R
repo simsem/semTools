@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 18 August 2023
+### Last updated: 2 November 2023
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -1133,8 +1133,10 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
     fixedCall <- c(fixedCall, list(ncpus = NULL))
   } else fixedCall$ncpus <- ncpus
 
-  ## check that "param" is NULL if uncon is NULL, and check for lavaan class
+  ## Check that "param" is NULL if uncon is NULL, and check for lavaan class.
+  ## Also check that models are fitted to raw data, not summary stats.
   notLavaan <- "Non-NULL 'con', 'uncon', or 'null' must be fitted lavaan object."
+  notRawData <- "lavaan models ('con', 'uncon', or 'null') must be fitted to raw data=, not summary statistics (e.g., sample.cov=)"
   if (is.null(uncon)) {
     if (!is.null(fixedCall$param) && fixedCall$modelType == "mgcfa") {
       message(c(" When 'uncon = NULL', only configural invariance is tested.",
@@ -1143,12 +1145,16 @@ checkPermArgs <- function(nPermute, modelType, con, uncon, null,
       fixedCall <- c(fixedCall, list(param = NULL))
     }
     if (!inherits(con, "lavaan")) stop(notLavaan)
+    stopifnot(con@Data@data.type != "full")
   } else {
     if (!inherits(con, "lavaan")) stop(notLavaan)
     if (!inherits(uncon, "lavaan")) stop(notLavaan)
+    stopifnot(  con@Data@data.type != "full")
+    stopifnot(uncon@Data@data.type != "full")
   }
   if (!is.null(null)) {
     if (!inherits(null, "lavaan")) stop(notLavaan)
+    stopifnot(null@Data@data.type != "full")
   }
 
   ############ FIXME: check that lavInspect(con, "options")$conditional.x = FALSE (find defaults for continuous/ordered indicators)
