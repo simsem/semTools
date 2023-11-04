@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 May 2022
+### Last updated: 3 November 2023
 ### package documentation, along with convenience documentation (e.g., imports)
 
 
@@ -78,6 +78,7 @@
 ##'
 ##' @docType package
 ##' @name semTools
+##' @aliases semTools-package
 NULL
 
 
