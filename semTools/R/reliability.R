@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 12 December 2022
+### Last updated: 7 December 2023
 
 
 
@@ -389,8 +389,11 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   \Lambda^{\prime} \bold{1} }{ \bold{1}^{\prime} \hat{\Sigma} \bold{1}}, }
 ##'
 ##' where \eqn{\bold{1}} is the \emph{k}-dimensional vector of 1s and \emph{k}
-##' is the number of observed indicators in the composite. Note that a
-##' higher-order factor can also have observed indicators.
+##' is the number of observed indicators in the composite. Note that if a
+##' higher-order factor also has observed indicators, it is necessary to model
+##' the observed indicators as single-indicator constructs, so that all of the
+##' higher-order factor indicators are latent (with loadings in the Beta matrix,
+##' not Lambda).
 ##'
 ##' \bold{Categorical Indicators}:
 ##' When all indicators (per composite) are ordinal, the \code{ord.scale}
