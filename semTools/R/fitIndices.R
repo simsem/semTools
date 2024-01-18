@@ -389,7 +389,11 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 ##'
 ##' @export
 nullRMSEA <- function(object, scaled = FALSE, silent = FALSE) {
-  fit <- lavaan::update(object, model = lavaan::lav_partable_independence(object))
+  fit <- lavaan::update(
+    object,
+    model = lavaan::lav_partable_independence(object),
+    data = object@Data
+  )
 	fits <- lavaan::fitMeasures(fit, fit.measures = c("rmsea","rmsea.scaled",
 	                                                  "rmsea.robust"))
 	if (scaled) {
