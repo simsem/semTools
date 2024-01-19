@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
 ###          Aaron Boulton, Ruben Arslan, Mauricio Garnier-Villarreal
-### Last updated: 28 June 2023
+### Last updated: 19 January 2024
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -389,7 +389,8 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 ##'
 ##' @export
 nullRMSEA <- function(object, scaled = FALSE, silent = FALSE) {
-  fit <- lavaan::update(object, model = lavaan::lav_partable_independence(object))
+  fit <- lavaan::update(object, slotData = object@Data,
+                        model = lavaan::lav_partable_independence(object))
 	fits <- lavaan::fitMeasures(fit, fit.measures = c("rmsea","rmsea.scaled",
 	                                                  "rmsea.robust"))
 	if (scaled) {
