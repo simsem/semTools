@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Andrew R. Johnson
-### Last updated: 3 July 2021
+### Last updated: 23 January 2024
 ### function to derive ordinal-scale moments implied by LRV-scale moments
 
 
@@ -11,6 +11,8 @@
 ##' a threshold model that links each observed categorical response variable to
 ##' a corresponding latent response variable that is typically assumed to be
 ##' normally distributed (Kamata & Bauer, 2008; Wirth & Edwards, 2007).
+##' This function can be useful for real-data analysis or for designing
+##' Monte Carlo simulations, as described by Jorgensen and Johnson (2022).
 ##'
 ##' @importFrom stats dnorm setNames
 ##' @importFrom lavaan lavInspect
@@ -46,6 +48,11 @@
 ##'   Andrew Johnson (Curtin University; \email{andrew.johnson@@curtin.edu.au})
 ##'
 ##' @references
+##'
+##' Jorgensen, T. D., & Johnson, A. R. (2022). How to derive expected values of
+##'   structural equation model parameters when treating discrete data as
+##'   continuous. \emph{Structural Equation Modeling, 29}(4), 639--650.
+##'   \doi{10.1080/10705511.2021.1988609}
 ##'
 ##' Kamata, A., & Bauer, D. J. (2008). A note on the relation between factor
 ##'   analytic and item response theory models.
