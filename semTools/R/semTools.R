@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 November 2023
+### Last updated: 23 January 2024
 ### package documentation, along with convenience documentation (e.g., imports)
 
 
@@ -76,7 +76,6 @@
 ##' \pkg{roxygen2} package for details:
 ##' \code{vignette("rd", package = "roxygen2")}
 ##'
-##' @docType package
 ##' @name semTools
 ##' @aliases semTools-package
 NULL
