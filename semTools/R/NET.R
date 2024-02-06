@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 15 December 2022
+### Last updated: 6 February 2024
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -351,7 +351,7 @@ x.within.y <- function(x, y, crit = .0001) {
   CALL$NACOV       <- NACOV
   CALL$se          <- "none" # to save time
   CALL$test        <- "standard"
-
+  CALL$group.label <- NULL # unnecessary, and causes an error when is.integer()
 
   suppressWarnings(try( newFit <- eval(as.call(CALL)) ))
   if (!lavInspect(newFit, "converged")) return(NA) else {
