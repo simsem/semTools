@@ -91,17 +91,21 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
     )
   }
 
+  lavaan_data <- .emlav_recover_data(object, ...)
 
   # Fake it
-  recovered <- emmeans::recover_data(.emlav_fake_fit(object, lavaan.DV),
-                                     ...)
+  fakefit <- .emlav_fake_fit(object, lavaan.DV, lavaan_data, ...)
+  recovered <- emmeans::recover_data(fakefit, ...)
 
   # Make it
-  lavaan_data <- .emlav_recover_data(object)
+  if (anyNA(lavaan_data)) {
+    warning("Data contains missing values. Concider passing a new data frame with 'data='.")
+  }
   lavaan_data <- lavaan_data[, colnames(recovered), drop = FALSE]
 
   # Fill attributes (but keep lavaan_data in case of missing data)
   mostattributes(lavaan_data) <- attributes(recovered)
+  attr(lavaan_data, "misc") <- list(fakefit = fakefit)
   return(lavaan_data)
 }
 
@@ -113,8 +117,7 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
   }
 
   # Fake it
-  emmb <- emmeans::emm_basis(.emlav_fake_fit(object, lavaan.DV),
-                             trms, xlev, grid, ...)
+  emmb <- emmeans::emm_basis(list(...)$misc$fakefit, trms, xlev, grid, ...)
 
   # bhat --------------------------------------------------------------------
   pars <- .emlav_clean_pars_tab(object, lavaan.DV, "bhat")
@@ -250,53 +253,36 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 ##' @keywords internal
 ##' @importFrom lavaan lavInspect
-.emlav_recover_data <- function(object){
-  ##This function  was contributed by TDJ
-  dat <- lavaan::lavPredict(object, type = "lv",
-                            assemble = TRUE,
-                            append.data = TRUE)
-  ## convert to data.frame, if necessary (single group)
-  dat <- as.data.frame(dat)
-  ## mean-impute any NAs
-  for (i in 1:ncol(dat)) {
-    ## ignore non-numeric variables
-    if (!is.numeric(dat[,i])) next
-    ## any NAs?
-    idx.na <- which(is.na(dat[,i]))
-    if (length(idx.na)) {
-      dat[idx.na, i] <- mean(dat[,i], na.rm = TRUE)
-    }
+.emlav_recover_data <- function(object, data = NULL, ...){
+  if (missing(data) || is.null(data)) {
+    data_obs <- lavInspect(object, "data")
+    data_lat <- lavaan::lavPredict(object, type = "lv")
+  } else {
+    data_obs <- data
+    data_lat <- lavaan::lavPredict(object, newdata = data, type = "lv")
   }
-  dat
+
+  # If multi group
+  if (lavInspect(object, 'ngroups') > 1L) {
+    # make single data frame + add group labels
+    group_labels <- sapply(seq_along(names(data_obs)), function(i) {
+      label_ <- names(data_obs)[i]
+      nobs_ <- nrow(data_obs[[i]])
+      rep(label_, times = nobs_)
+    }, simplify = FALSE)
+
+    data_obs <- data.frame(do.call(rbind, data_obs))
+    data_obs[[lavInspect(object, "group")]] <- unlist(group_labels)
+    data_lat <- do.call(rbind, data_lat)
+  }
+
+  data_full <- cbind(data_obs, data_lat)
+  return(data.frame(data_full))
 }
-#TODO: delete old function after verifying the new one (above) works
-# function(object){
-#   data_obs <- lavInspect(object, "data")
-#   data_lat <- lavaan::lavPredict(object, type = "lv")
-#
-#   # If multi group
-#   if (lavInspect(object, 'ngroups') > 1L) {
-#     # make single data frame + add group labels
-#     group_labels <- sapply(seq_along(names(data_obs)), function(i) {
-#       label_ <- names(data_obs)[i]
-#       nobs_ <- nrow(data_obs[[i]])
-#       rep(label_, times = nobs_)
-#     }, simplify = FALSE)
-#
-#     data_obs <- data.frame(do.call(rbind, data_obs))
-#     data_obs[[lavInspect(object, "group")]] <- unlist(group_labels)
-#     data_lat <- do.call(rbind, data_lat)
-#   }
-#
-#   data_full <- cbind(data_obs, data_lat)
-#   return(data.frame(data_full))
-# }
 
 ##' @keywords internal
 ##' @importFrom lavaan lavInspect
-.emlav_fake_fit <- function(object, lavaan.DV){
-  lavaan_data <- .emlav_recover_data(object)
-
+.emlav_fake_fit <- function(object, lavaan.DV, lavaan_data, ...){
   # Fake it
   pars <- lavaan::parameterEstimates(object)
   pars <- pars[pars$lhs %in% lavaan.DV & pars$op == "~", ]
@@ -546,6 +532,7 @@ grade ~ ageyr
 
   testthat::test_that("missing data - warn", {
     data("mtcars")
+    raw_mtcars <- mtcars
     mtcars$hp[1] <- NA
 
     model <- " mpg ~ hp + drat + hp:drat "
@@ -555,8 +542,11 @@ grade ~ ageyr
     testthat::expect_warning(
       emmeans::ref_grid(fit, lavaan.DV = "mpg")
     )
-  })
 
+    testthat::expect_warning(
+      emmeans::ref_grid(fit, lavaan.DV = "mpg", data = raw_mtcars), regexp = NA
+    )
+  })
 
   message("All good!")
 
