@@ -43,8 +43,9 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          working-directory: './semTools'
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          working-directory: semTools
+          working-directory: './semTools'
