@@ -34,11 +34,11 @@ ignored because it is set internally to \code{type="lv"}.}
 }
 \value{
 A \code{list} of length \code{nDraws}, each of which is a
-  \code{data.frame} containing plausible values, which can be treated as
-  a \code{list} of imputed data sets to be passed to \code{\link{runMI}}
-  (see \bold{Examples}). If \code{object} is of class
-  \code{\linkS4class{lavaan.mi}}, the \code{list} will be of length
-  \code{nDraws*m}, where \code{m} is the number of imputations.
+\code{data.frame} containing plausible values, which can be treated as
+a \code{list} of imputed data sets to be passed to \code{\link{runMI}}
+(see \bold{Examples}). If \code{object} is of class
+\code{\linkS4class{lavaan.mi}}, the \code{list} will be of length
+\code{nDraws*m}, where \code{m} is the number of imputations.
 }
 \description{
 Draw plausible values of factor scores estimated from a fitted
@@ -190,13 +190,13 @@ lapply(impPVs, head)
 }
 \references{
 Asparouhov, T. & Muthen, B. O. (2010). \emph{Plausible values for latent
-  variables using M}plus. Technical Report. Retrieved from
-  www.statmodel.com/download/Plausible.pdf
+variables using M}plus. Technical Report. Retrieved from
+www.statmodel.com/download/Plausible.pdf
 }
 \seealso{
 \code{\link{runMI}}, \code{\linkS4class{lavaan.mi}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 }

@@ -59,8 +59,8 @@ imputations warrant further investigation.}
 }
 \value{
 Reliability values (coefficient alpha, coefficients omega, average
-  variance extracted) of each factor in each group. If there are multiple
-  factors, a \code{total} column can optionally be included.
+variance extracted) of each factor in each group. If there are multiple
+factors, a \code{total} column can optionally be included.
 }
 \description{
 Calculate composite reliability from estimated factor-model parameters
@@ -234,7 +234,7 @@ ordinal alpha. \emph{Educational and Psychological Measurement, 78}(6),
 1056--1071. \doi{10.1177/0013164417727036}
 
 Cho, E. (2021) Neither Cronbach’s alpha nor McDonald’s omega: A commentary
-on Sijtsma and Pfadt. *Psychometrika, 86*(4), 877--886.
+on Sijtsma and Pfadt. \emph{Psychometrika, 86}(4), 877--886.
 \doi{10.1007/s11336-021-09801-1}
 
 Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
@@ -272,8 +272,8 @@ scales of measurement do not help make it: A response to Chalmers.
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 
-  Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
-  Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \keyword{internal}

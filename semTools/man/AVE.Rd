@@ -48,13 +48,13 @@ those in \code{omit.factors} and applying \code{dropSingle}).}
 }
 \value{
 \code{numeric} vector of average variance extracted from indicators
-  per factor.  For models with multiple "blocks" (any combination of groups
-  and levels), vectors may be returned as columns in a \code{data.frame}
-  with additional columns indicating the group/level (see \code{return.df=}
-  argument description for caveat).
+per factor.  For models with multiple "blocks" (any combination of groups
+and levels), vectors may be returned as columns in a \code{data.frame}
+with additional columns indicating the group/level (see \code{return.df=}
+argument description for caveat).
 }
 \description{
-Calculate average variance extracted (AVE) per factor from `lavaan` object
+Calculate average variance extracted (AVE) per factor from \code{lavaan} object
 }
 \details{
 The average variance extracted (AVE) can be calculated by

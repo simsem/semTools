@@ -52,48 +52,48 @@ substituted for \code{stdDelta} or specific sets of parameters using
 }
 \value{
 A data frame with these variables:
- \enumerate{
-  \item \code{lhs}: The left-hand side variable, with respect to the operator in
-   in the lavaan \code{\link[lavaan]{model.syntax}}
-  \item \code{op}: The lavaan syntax operator: "~~" represents covariance,
-    "=~" represents factor loading, "~" represents regression, and
-    "~1" represents intercept.
-  \item \code{rhs}: The right-hand side variable
-  \item \code{group}: The level of the group variable for the parameter in question
-  \item \code{mi}: The modification index of the fixed parameter
-  \item \code{epc}: The EPC if the parameter is freely estimated
-  \item \code{target.epc}: The target EPC that represents the minimum size
-   of misspecification that one would like to be detected
-   by the test with a high power
-  \item \code{std.epc}: The standardized EPC if the parameter is freely estimated
-  \item \code{std.target.epc}: The standardized target expected parameter change
-  \item \code{significant.mi}: Represents whether the modification index value is
-    significant
-  \item \code{high.power}: Represents whether the power is enough to detect the
-   target expected parameter change
-  \item \code{decision.pow}: The decision whether the parameter is misspecified
-   or not based on Saris et al's method: \code{"M"} represents the parameter
-   is misspecified, \code{"NM"} represents the parameter is not misspecified,
-   \code{"EPC:M"} represents the parameter is misspecified decided by
-   checking the expected parameter change value, \code{"EPC:NM"} represents
-   the parameter is not misspecified decided by checking the expected
-   parameter change value, and \code{"I"} represents the decision is
-   inconclusive.
-  \item \code{se.epc}: The standard errors of the expected parameter changes.
-  \item \code{lower.epc}: The lower bound of the confidence interval of expected
-   parameter changes.
-  \item \code{upper.epc}: The upper bound of the confidence interval of expected
-   parameter changes.
-  \item \code{lower.std.epc}: Lower confidence limit of standardized EPCs
-  \item \code{upper.std.epc}: Upper confidence limit of standardized EPCs
-  \item \code{decision.ci}: Decision whether the parameter is misspecified
-   based on the CI method: \code{"M"} represents the
-   parameter is misspecified, \code{"NM"} represents the parameter is not
-   misspecified, and \code{"I"} represents the decision is inconclusive.
+\enumerate{
+\item \code{lhs}: The left-hand side variable, with respect to the operator in
+in the lavaan \code{\link[lavaan]{model.syntax}}
+\item \code{op}: The lavaan syntax operator: "~~" represents covariance,
+"=~" represents factor loading, "~" represents regression, and
+"~1" represents intercept.
+\item \code{rhs}: The right-hand side variable
+\item \code{group}: The level of the group variable for the parameter in question
+\item \code{mi}: The modification index of the fixed parameter
+\item \code{epc}: The EPC if the parameter is freely estimated
+\item \code{target.epc}: The target EPC that represents the minimum size
+of misspecification that one would like to be detected
+by the test with a high power
+\item \code{std.epc}: The standardized EPC if the parameter is freely estimated
+\item \code{std.target.epc}: The standardized target expected parameter change
+\item \code{significant.mi}: Represents whether the modification index value is
+significant
+\item \code{high.power}: Represents whether the power is enough to detect the
+target expected parameter change
+\item \code{decision.pow}: The decision whether the parameter is misspecified
+or not based on Saris et al's method: \code{"M"} represents the parameter
+is misspecified, \code{"NM"} represents the parameter is not misspecified,
+\code{"EPC:M"} represents the parameter is misspecified decided by
+checking the expected parameter change value, \code{"EPC:NM"} represents
+the parameter is not misspecified decided by checking the expected
+parameter change value, and \code{"I"} represents the decision is
+inconclusive.
+\item \code{se.epc}: The standard errors of the expected parameter changes.
+\item \code{lower.epc}: The lower bound of the confidence interval of expected
+parameter changes.
+\item \code{upper.epc}: The upper bound of the confidence interval of expected
+parameter changes.
+\item \code{lower.std.epc}: Lower confidence limit of standardized EPCs
+\item \code{upper.std.epc}: Upper confidence limit of standardized EPCs
+\item \code{decision.ci}: Decision whether the parameter is misspecified
+based on the CI method: \code{"M"} represents the
+parameter is misspecified, \code{"NM"} represents the parameter is not
+misspecified, and \code{"I"} represents the decision is inconclusive.
 }
 
- The row numbers matches with the results obtained from the
- \code{inspect(object, "mi")} function.
+The row numbers matches with the results obtained from the
+\code{inspect(object, "mi")} function.
 }
 \description{
 The model fit evaluation approach using modification indices and expected
@@ -112,16 +112,16 @@ target EPC is high enough.  The combination of criteria leads to the
 so-called "JRule" first implemented with LISREL (van der Veld et al., 2008):
 
 \itemize{
-  \item If the MI is not significant and the power is low,
-        the test is inconclusive.
-  \item If the MI is not significant and the power is high,
-        there is no misspecification.
-  \item If the MI is significant and the power is low,
-        the fixed parameter is misspecified.
-  \item If the MI is significant and the power is high,
-        the EPC is investigated.  If the EPC is large (greater than the
-        the target EPC), the parameter is misspecified.  If the EPC is low
-        (lower than the target EPC), the parameter is not misspecificied.
+\item If the MI is not significant and the power is low,
+the test is inconclusive.
+\item If the MI is not significant and the power is high,
+there is no misspecification.
+\item If the MI is significant and the power is low,
+the fixed parameter is misspecified.
+\item If the MI is significant and the power is high,
+the EPC is investigated.  If the EPC is large (greater than the
+the target EPC), the parameter is misspecified.  If the EPC is low
+(lower than the target EPC), the parameter is not misspecificied.
 }
 
 Method 2:  The confidence interval (CI) of an EPC is calculated.
@@ -130,12 +130,12 @@ misspecification, which could be (-\code{delta}, \code{delta}) or (0,
 \code{delta}) for nonnegative parameters.
 
 \itemize{
-  \item If a CI overlaps with the range of trivial misspecification,
-        the test is inconclusive.
-  \item If a CI completely exceeds the range of trivial misspecification,
-        the fixed parameters are severely misspecified.
-  \item If a CI is completely within the range of trivial misspecification,
-        the fixed parameters are trivially misspecified.
+\item If a CI overlaps with the range of trivial misspecification,
+the test is inconclusive.
+\item If a CI completely exceeds the range of trivial misspecification,
+the fixed parameters are severely misspecified.
+\item If a CI is completely within the range of trivial misspecification,
+the fixed parameters are trivially misspecified.
 }
 }
 \examples{

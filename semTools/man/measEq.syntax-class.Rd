@@ -67,24 +67,24 @@ while maintaining equality constraints among other groups.}
 }
 \value{
 \item{summary}{\code{signature(object = "measEq.syntax", verbose = TRUE)}:
-    A \code{character} matrix indicating the pattern of \code{numeric},
-    \code{ordered}, or latent indicators loading on common factors.
-    By default (\code{verbose = TRUE}), \code{summary} also prints descriptive
-    details about the model, including the numbers of indicators and factors,
-    and which parameters are constrained to equality.}
-  \item{show}{\code{signature(object = "measEq.syntax")}: Prints a message
-    about how to use the \code{object} for model fitting. Invisibly
-    returns the \code{object}.}
-  \item{update}{\code{signature(object = "measEq.syntax", ...,
+A \code{character} matrix indicating the pattern of \code{numeric},
+\code{ordered}, or latent indicators loading on common factors.
+By default (\code{verbose = TRUE}), \code{summary} also prints descriptive
+details about the model, including the numbers of indicators and factors,
+and which parameters are constrained to equality.}
+\item{show}{\code{signature(object = "measEq.syntax")}: Prints a message
+about how to use the \code{object} for model fitting. Invisibly
+returns the \code{object}.}
+\item{update}{\code{signature(object = "measEq.syntax", ...,
     evaluate = TRUE, change.syntax = NULL)}: Creates a new
-    \code{object} with updated arguments in \code{...}, or updated
-    parameter labels or fixed/free specifications in \code{object}.}
-  \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
-    Converts the \code{measEq.syntax} object to model syntax that can be
-    copy/pasted or written to a syntax file to be edited before analysis,
-    or simply passed to \code{\link[lavaan]{lavaan}} to fit the model to
-    data. Generated M\emph{plus} syntax could also be utilized using the
-    \pkg{MplusAuthomation} package.}
+\code{object} with updated arguments in \code{...}, or updated
+parameter labels or fixed/free specifications in \code{object}.}
+\item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
+Converts the \code{measEq.syntax} object to model syntax that can be
+copy/pasted or written to a syntax file to be edited before analysis,
+or simply passed to \code{\link[lavaan]{lavaan}} to fit the model to
+data. Generated M\emph{plus} syntax could also be utilized using the
+\pkg{MplusAuthomation} package.}
 }
 \description{
 This class of object stores information used to automatically generate

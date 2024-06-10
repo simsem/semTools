@@ -56,10 +56,10 @@ imputations warrant further investigation.}
 \value{
 A list with two elements:
 \enumerate{
- \item \code{SimpleIntercept}: The model-implied intercepts given each
-       combination of moderator values.
- \item \code{SimpleSlope}: The model-implied slopes given each combination
-       of moderator values.
+\item \code{SimpleIntercept}: The model-implied intercepts given each
+combination of moderator values.
+\item \code{SimpleSlope}: The model-implied slopes given each combination
+of moderator values.
 }
 In each element, the first column represents values of the first moderator
 specified in the \code{valProbe1} argument. The second column represents
@@ -187,16 +187,16 @@ indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
 }
 \seealso{
 \itemize{
- \item \code{\link{indProd}} For creating the indicator products with no
-  centering, mean centering, double-mean centering, or residual centering.
- \item \code{\link{probe2WayMC}} For probing the two-way latent interaction
-  when the results are obtained from mean-centering, or double-mean centering
- \item \code{\link{probe2WayRC}} For probing the two-way latent interaction
-  when the results are obtained from residual-centering approach.
- \item \code{\link{probe3WayRC}} For probing the two-way latent interaction
-  when the results are obtained from residual-centering approach.
- \item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
-  latent interaction.
+\item \code{\link{indProd}} For creating the indicator products with no
+centering, mean centering, double-mean centering, or residual centering.
+\item \code{\link{probe2WayMC}} For probing the two-way latent interaction
+when the results are obtained from mean-centering, or double-mean centering
+\item \code{\link{probe2WayRC}} For probing the two-way latent interaction
+when the results are obtained from residual-centering approach.
+\item \code{\link{probe3WayRC}} For probing the two-way latent interaction
+when the results are obtained from residual-centering approach.
+\item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
+latent interaction.
 }
 }
 \author{

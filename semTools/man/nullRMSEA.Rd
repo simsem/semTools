@@ -17,7 +17,7 @@ is returned. Ignored if a robust test statistic was not requested.}
 }
 \value{
 A value of RMSEA of the null model (a \code{numeric} vector)
-  returned invisibly.
+returned invisibly.
 }
 \description{
 Calculate the RMSEA of the null (baseline) model
@@ -60,9 +60,9 @@ performance of RMSEA in models with small degrees of freedom.
 }
 \seealso{
 \itemize{
-  \item \code{\link{miPowerFit}} For the modification indices and their
-     power approach for model fit evaluation
-  \item \code{\link{moreFitIndices}} For other fit indices
+\item \code{\link{miPowerFit}} For the modification indices and their
+power approach for model fit evaluation
+\item \code{\link{moreFitIndices}} For other fit indices
 }
 }
 \author{

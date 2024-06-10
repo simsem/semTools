@@ -33,8 +33,8 @@ placing the legend at the top-left of the figure.}
 }
 \value{
 The \code{hist} method returns a list of \code{length == 2},
- containing the arguments for the call to \code{hist} and the arguments
- to the call for \code{legend}, respectively.
+containing the arguments for the call to \code{hist} and the arguments
+to the call for \code{legend}, respectively.
 }
 \description{
 This class contains the results of Bollen-Stine bootstrap with missing data.

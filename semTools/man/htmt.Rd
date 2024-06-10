@@ -39,7 +39,7 @@ is recommended for HTMT but required for HTMT2 (so silently ignored).}
 }
 \value{
 A matrix showing HTMT(2) values (i.e., discriminant validity)
-  between each pair of factors.
+between each pair of factors.
 }
 \description{
 This function assesses discriminant validity through the
@@ -71,20 +71,20 @@ htmt(HS.model, sample.cov = HS.cov, htmt2 = FALSE)
 }
 \references{
 Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for
-  assessing discriminant validity in variance-based structural equation
-  modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
-  115--135. \doi{10.1007/s11747-014-0403-8}
+assessing discriminant validity in variance-based structural equation
+modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
+115--135. \doi{10.1007/s11747-014-0403-8}
 
-  Roemer, E., Schuberth, F., & Henseler, J. (2021). HTMT2---An improved
-  criterion for assessing discriminant validity in structural equation
-  modeling. \emph{Industrial Management & Data Systems, 121}(21), 2637--2650.
-  \doi{10.1108/IMDS-02-2021-0082}
+Roemer, E., Schuberth, F., & Henseler, J. (2021). HTMT2---An improved
+criterion for assessing discriminant validity in structural equation
+modeling. \emph{Industrial Management & Data Systems, 121}(21), 2637--2650.
+\doi{10.1108/IMDS-02-2021-0082}
 
-  Voorhees, C. M., Brady, M. K., Calantone, R., & Ramirez, E. (2016).
-  Discriminant validity testing in marketing: An analysis, causes for
-  concern, and proposed remedies.
-  \emph{Journal of the Academy of Marketing Science, 44}(1), 119--134.
-  \doi{10.1007/s11747-015-0455-4}
+Voorhees, C. M., Brady, M. K., Calantone, R., & Ramirez, E. (2016).
+Discriminant validity testing in marketing: An analysis, causes for
+concern, and proposed remedies.
+\emph{Journal of the Academy of Marketing Science, 44}(1), 119--134.
+\doi{10.1007/s11747-015-0455-4}
 }
 \author{
 Ylenio Longo (University of Nottingham; \email{yleniolongo@gmail.com})

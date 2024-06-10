@@ -18,7 +18,7 @@
 \item{fit.measures}{\code{character} vector naming fit indices the user can
 request from \code{\link[lavaan]{fitMeasures}}. If \code{"default"}, the
 fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli",
-"rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit
+  "rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit
 measures will be returned.}
 
 \item{nd}{number of digits printed}
@@ -49,7 +49,7 @@ the \code{fit} slot}
 
 \section{Objects from the Class}{
  Objects can be created via the
- \code{\link{compareFit}} function.
+\code{\link{compareFit}} function.
 }
 
 \examples{
@@ -84,7 +84,7 @@ clipboard(measEqOut)
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 
-  Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
+Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }

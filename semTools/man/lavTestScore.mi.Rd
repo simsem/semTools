@@ -92,24 +92,24 @@ control of Type I errors.}
 }
 \value{
 A list containing at least one \code{data.frame}:
- \itemize{
-   \item{\code{$test}: The total score test, with columns for the score
-     test statistic (\code{X2}), its degrees of freedom (\code{df}), its
-     \emph{p} value under the \eqn{\chi^2} distribution (\code{p.value}),
-     and if \code{asymptotic=FALSE}, the average relative invrease in
-     variance (ARIV) used to calculate the denominator \emph{df} is also
-     returned as a missing-data diagnostic, along with the fraction missing
-     information (FMI = ARIV / (1 + ARIV)).}
-   \item{\code{$uni}: Optional (if \code{univariate=TRUE}).
-     Each 1-\emph{df} score test, equivalent to modification indices. Also
-     includes EPCs if \code{epc=TRUE}, and RIV and FMI if
-     \code{asymptotic=FALSE}.}
-   \item{\code{$cumulative}: Optional (if \code{cumulative=TRUE}).
-     Cumulative score tests, with ARIV and FMI if \code{asymptotic=FALSE}.}
-   \item{\code{$epc}: Optional (if \code{epc=TRUE}). Parameter estimates,
-     expected parameter changes, and expected parameter values if ALL
-     the tested constraints were freed.}
- }
+\itemize{
+\item{\code{$test}: The total score test, with columns for the score
+test statistic (\code{X2}), its degrees of freedom (\code{df}), its
+\emph{p} value under the \eqn{\chi^2} distribution (\code{p.value}),
+and if \code{asymptotic=FALSE}, the average relative invrease in
+variance (ARIV) used to calculate the denominator \emph{df} is also
+returned as a missing-data diagnostic, along with the fraction missing
+information (FMI = ARIV / (1 + ARIV)).}
+\item{\code{$uni}: Optional (if \code{univariate=TRUE}).
+Each 1-\emph{df} score test, equivalent to modification indices. Also
+includes EPCs if \code{epc=TRUE}, and RIV and FMI if
+\code{asymptotic=FALSE}.}
+\item{\code{$cumulative}: Optional (if \code{cumulative=TRUE}).
+Cumulative score tests, with ARIV and FMI if \code{asymptotic=FALSE}.}
+\item{\code{$epc}: Optional (if \code{epc=TRUE}). Parameter estimates,
+expected parameter changes, and expected parameter values if ALL
+the tested constraints were freed.}
+}
 See \code{\link[lavaan]{lavTestScore}} for details.
 }
 \description{
@@ -160,21 +160,21 @@ lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
 }
 \references{
 Bentler, P. M., & Chou, C.-P. (1992). Some new covariance structure model
-  improvement statistics. \emph{Sociological Methods & Research, 21}(2),
-  259--282. \doi{10.1177/0049124192021002006}
+improvement statistics. \emph{Sociological Methods & Research, 21}(2),
+259--282. \doi{10.1177/0049124192021002006}
 
-  Enders, C. K. (2010). \emph{Applied missing data analysis}.
-  New York, NY: Guilford.
+Enders, C. K. (2010). \emph{Applied missing data analysis}.
+New York, NY: Guilford.
 
-  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-  Significance levels from repeated \emph{p}-values with multiply-imputed
-  data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  \url{https://www.jstor.org/stable/24303994}
+Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+Significance levels from repeated \emph{p}-values with multiply-imputed
+data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+\url{https://www.jstor.org/stable/24303994}
 
-  Mansolf, M., Jorgensen, T. D., & Enders, C. K. (2020). A multiple
-  imputation score test for model modification in structural equation
-  models. \emph{Psychological Methods, 25}(4), 393--411.
-  \doi{10.1037/met0000243}
+Mansolf, M., Jorgensen, T. D., & Enders, C. K. (2020). A multiple
+imputation score test for model modification in structural equation
+models. \emph{Psychological Methods, 25}(4), 393--411.
+\doi{10.1037/met0000243}
 }
 \seealso{
 \code{\link[lavaan]{lavTestScore}}
@@ -183,9 +183,9 @@ Bentler, P. M., & Chou, C.-P. (1992). Some new covariance structure model
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
 Adapted from \pkg{lavaan} source code, written by
-  Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
 \code{test = "D1"} method proposed by
-  Maxwell Mansolf (University of California, Los Angeles;
-  \email{mamansolf@gmail.com})
+Maxwell Mansolf (University of California, Los Angeles;
+\email{mamansolf@gmail.com})
 }

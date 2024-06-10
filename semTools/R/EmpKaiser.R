@@ -11,8 +11,8 @@
 ##' data or covariance matrix and the reference eigenvalues. The number of
 ##' factors suggested by the Empirical Kaiser Criterion (i.e. the sample
 ##' eigenvalues greater than the reference eigenvalues), and the number of
-##' factors suggested by the original Kaiser Criterion (i.e. sample eigenvalues
-##' > 1) is printed above the output.
+##' factors suggested by the original Kaiser Criterion
+##' (i.e. sample eigenvalues > 1) is printed above the output.
 ##'
 ##'
 ##' @importFrom stats cov cov2cor

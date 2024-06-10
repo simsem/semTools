@@ -134,16 +134,16 @@ latent variable interactions using the \code{semTools} package.
 }
 \seealso{
 \itemize{
- \item \code{\link{indProd}} For creating the indicator products with no
-  centering, mean centering, double-mean centering, or residual centering.
- \item \code{\link{probe2WayMC}} For probing the two-way latent interaction
-  when the results are obtained from mean-centering, or double-mean centering
- \item \code{\link{probe3WayMC}} For probing the three-way latent interaction
-  when the results are obtained from mean-centering, or double-mean centering
- \item \code{\link{probe2WayRC}} For probing the two-way latent interaction
-  when the results are obtained from residual-centering approach.
- \item \code{\link{probe3WayRC}} For probing the two-way latent interaction
-  when the results are obtained from residual-centering approach.
+\item \code{\link{indProd}} For creating the indicator products with no
+centering, mean centering, double-mean centering, or residual centering.
+\item \code{\link{probe2WayMC}} For probing the two-way latent interaction
+when the results are obtained from mean-centering, or double-mean centering
+\item \code{\link{probe3WayMC}} For probing the three-way latent interaction
+when the results are obtained from mean-centering, or double-mean centering
+\item \code{\link{probe2WayRC}} For probing the two-way latent interaction
+when the results are obtained from residual-centering approach.
+\item \code{\link{probe3WayRC}} For probing the two-way latent interaction
+when the results are obtained from residual-centering approach.
 }
 }
 \author{

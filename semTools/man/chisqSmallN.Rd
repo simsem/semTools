@@ -29,12 +29,12 @@ optionally \code{fit1}) is a \linkS4class{lavaan.mi} object. See
 }
 \value{
 A \code{list} of \code{numeric} vectors: one for the originally
-  requested statistic(s), along with one per requested \code{smallN.method}.
-  All include the the (un)adjusted test statistic, its \emph{df}, and the
-  \emph{p} value for the test under the null hypothesis that the model fits
-  perfectly (or that the 2 models have equivalent fit).
-  The adjusted chi-squared statistic(s) also include(s) the scaling factor
-  for the small-\emph{N} adjustment.
+requested statistic(s), along with one per requested \code{smallN.method}.
+All include the the (un)adjusted test statistic, its \emph{df}, and the
+\emph{p} value for the test under the null hypothesis that the model fits
+perfectly (or that the 2 models have equivalent fit).
+The adjusted chi-squared statistic(s) also include(s) the scaling factor
+for the small-\emph{N} adjustment.
 }
 \description{
 Calculate small-\emph{N} corrections for \eqn{chi^2} model-fit test
@@ -70,14 +70,14 @@ chisqSmallN(fit1, fit0)
 }
 \references{
 Deng, L., Yang, M., & Marcoulides, K. M. (2018). Structural equation
-  modeling with many variables: A systematic review of issues and
-  developments. \emph{Frontiers in Psychology, 9}, 580.
-  \doi{10.3389/fpsyg.2018.00580}
+modeling with many variables: A systematic review of issues and
+developments. \emph{Frontiers in Psychology, 9}, 580.
+\doi{10.3389/fpsyg.2018.00580}
 
-  Shi, D., Lee, T., & Terry, R. A. (2018). Revisiting the model
-  size effect in structural equation modeling.
-  \emph{Structural Equation Modeling, 25}(1), 21--40.
-  \doi{10.1080/10705511.2017.1369088}
+Shi, D., Lee, T., & Terry, R. A. (2018). Revisiting the model
+size effect in structural equation modeling.
+\emph{Structural Equation Modeling, 25}(1), 21--40.
+\doi{10.1080/10705511.2017.1369088}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

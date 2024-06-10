@@ -137,13 +137,13 @@ legend("bottomright", c("80\% Power","90\% Power"), lty = c("dotted","dashed"))
 }
 \references{
 Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
- test in covariance structure analysis. \emph{Psychometrika, 50}(1), 83--90.
- \doi{10.1007/BF02294150}
+test in covariance structure analysis. \emph{Psychometrika, 50}(1), 83--90.
+\doi{10.1007/BF02294150}
 
- Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
- (2021). Analytical power calculations for structural equation modeling:
- A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
- \doi{10.3758/s13428-020-01479-0}
+Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+(2021). Analytical power calculations for structural equation modeling:
+A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+\doi{10.3758/s13428-020-01479-0}
 }
 \author{
 Alexander M. Schoemann (East Carolina University; \email{schoemanna@ecu.edu})

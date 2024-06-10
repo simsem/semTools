@@ -53,13 +53,13 @@ only if \code{test = "D2"} and \code{pool.robust = TRUE}}
 }
 \value{
 A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
-  statistic, depending on the \code{asymptotic} argument), its degrees of
-  freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
-  \emph{p} value, and 2 missing-data diagnostics: the relative invrease
-  in variance (RIV, or average for multiparameter tests: ARIV) and the
-  fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
-  will also include the average (across imputations) scaling factor and
-  (if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
+statistic, depending on the \code{asymptotic} argument), its degrees of
+freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
+\emph{p} value, and 2 missing-data diagnostics: the relative invrease
+in variance (RIV, or average for multiparameter tests: ARIV) and the
+fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
+will also include the average (across imputations) scaling factor and
+(if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
 }
 \description{
 Likelihood ratio test (LRT) for lavaan models fitted to multiple imputed
@@ -122,24 +122,24 @@ lavTestLRT.mi(fit1, h1 = fit0, asymptotic = TRUE, test = "D2",
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}.
-  New York, NY: Guilford.
+New York, NY: Guilford.
 
-  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-  Significance levels from repeated \emph{p}-values with multiply-imputed
-  data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  \url{https://www.jstor.org/stable/24303994}
+Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+Significance levels from repeated \emph{p}-values with multiply-imputed
+data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+\url{https://www.jstor.org/stable/24303994}
 
-  Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-  multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
-  \doi{10.2307/2337151}
+Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
+multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
+\doi{10.2307/2337151}
 
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+New York, NY: Wiley.
 }
 \seealso{
 \code{\link[lavaan]{lavTestLRT}}, \code{\link{compareFit}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 }

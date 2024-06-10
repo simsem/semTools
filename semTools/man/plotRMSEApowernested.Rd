@@ -51,11 +51,11 @@ null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
 }
 \seealso{
 \itemize{
- \item \code{\link{findRMSEApowernested}} to find the power for a given
-  sample size in nested model comparison based on population RMSEA
- \item \code{\link{findRMSEAsamplesizenested}} to find the minium sample
-  size for a given statistical power in nested model comparison based on
-  population RMSEA
+\item \code{\link{findRMSEApowernested}} to find the power for a given
+sample size in nested model comparison based on population RMSEA
+\item \code{\link{findRMSEAsamplesizenested}} to find the minium sample
+size for a given statistical power in nested model comparison based on
+population RMSEA
 }
 }
 \author{

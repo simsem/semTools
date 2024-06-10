@@ -28,7 +28,7 @@ generate in the first iteration of the algorithm.}
 \item{nAllocAdd}{The number of allocations to add with each iteration of the
 algorithm. Note that if only one iteration is desired, \code{nAllocAdd} can
 be set to \eqn{0} and results will be output for \code{nAllocStart}
- allocationsonly.}
+allocations only.}
 
 \item{parceloutput}{Optional \code{character}. Path (folder/directory) where
 \emph{M} (the final selected number of allocations) parceled data sets will
@@ -113,9 +113,9 @@ Rights (2016).}
 allocations at the iteration where stopping criteria were met. Columns
 correspond to individual parameter name, pooled estimate, pooled standard
 error, \emph{p}-value for a \emph{z}-test of the parameter, \emph{z}-based
-95\% confidence interval, \emph{p}-value for a \emph{t}-test of the
+95\\% confidence interval, \emph{p}-value for a \emph{t}-test of the
 parameter (using degrees of freedom described in Sterba & Rights, 2016), and
-\emph{t}-based 95\% confidence interval for the parameter.}
+\emph{t}-based 95\\% confidence interval for the parameter.}
 \item{Fit}{A table containing results related to model fit from the \emph{M}
 allocations at the iteration where stopping criteria were met. Columns
 correspond to fit index names, the average of each index across allocations,
@@ -264,11 +264,11 @@ selection: Parcel-allocation variability in model ranking.
 }
 \seealso{
 \code{\link{runMI}} for treating allocations as multiple imputations to
-  pool results across allocations. See \bold{Examples} on help pages for:
-  \itemize{
-    \item{\code{\link{parcelAllocation}} for fitting a single model}
-    \item{\code{\link{PAVranking}} for comparing 2 models}
-  }
+pool results across allocations. See \bold{Examples} on help pages for:
+\itemize{
+\item{\code{\link{parcelAllocation}} for fitting a single model}
+\item{\code{\link{PAVranking}} for comparing 2 models}
+}
 }
 \author{
 Jason D. Rights (Vanderbilt University; \email{jason.d.rights@vanderbilt.edu})

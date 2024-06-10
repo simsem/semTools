@@ -28,8 +28,8 @@ imputations warrant further investigation.}
 }
 \value{
 Maximal reliability values of each group. The maximal-reliability
-  weights are also provided. Users may extracted the weighted by the
-  \code{attr} function (see example below).
+weights are also provided. Users may extracted the weighted by the
+\code{attr} function (see example below).
 }
 \description{
 Calculate maximal reliability of a scale
@@ -110,7 +110,7 @@ equation modeling} (pp. 472--494). New York, NY: Guilford.
 }
 \seealso{
 \code{\link{reliability}} for reliability of an unweighted
-  composite score
+composite score
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})

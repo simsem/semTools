@@ -25,9 +25,9 @@ with \code{df1}.}
 }
 \value{
 A \code{numeric} vector containing the test statistic, \emph{df},
-  its \emph{p} value, and 2 missing-data diagnostics: the relative invrease
-  in variance (RIV, or average for multiparameter tests: ARIV) and the
-  fraction missing information (FMI = ARIV / (1 + ARIV)).
+its \emph{p} value, and 2 missing-data diagnostics: the relative invrease
+in variance (RIV, or average for multiparameter tests: ARIV) and the
+fraction missing information (FMI = ARIV / (1 + ARIV)).
 }
 \description{
 This is a utility function used to calculate the "D2" statistic for pooling
@@ -59,18 +59,18 @@ calculate.D2(Z) # default DF = 0 will square Z to make chisq(DF = 1)
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. New
-  York, NY: Guilford.
+York, NY: Guilford.
 
-  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-  Significance levels from repeated \emph{p}-values with multiply-imputed
-  data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  \url{https://www.jstor.org/stable/24303994}
+Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+Significance levels from repeated \emph{p}-values with multiply-imputed
+data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+\url{https://www.jstor.org/stable/24303994}
 }
 \seealso{
 \code{\link{lavTestLRT.mi}}, \code{\link{lavTestWald.mi}},
-  \code{\link{lavTestScore.mi}}
+\code{\link{lavTestScore.mi}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 }

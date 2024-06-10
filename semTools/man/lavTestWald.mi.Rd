@@ -62,13 +62,13 @@ matrix and the estimated restricted values.}
 }
 \value{
 A vector containing the Wald test statistic (either an \code{F} or
-  \eqn{\chi^2} statistic, depending on the \code{asymptotic} argument),
-  the degrees of freedom (numerator and denominator, if
-  \code{asymptotic = FALSE}), and a \emph{p} value. If
-  \code{asymptotic = FALSE}, the relative invrease in variance (RIV, or
-  average for multiparameter tests: ARIV) used to calculate the denominator
-  \emph{df} is also returned as a missing-data diagnostic, along with the
-  fraction missing information (FMI = ARIV / (1 + ARIV)).
+\eqn{\chi^2} statistic, depending on the \code{asymptotic} argument),
+the degrees of freedom (numerator and denominator, if
+\code{asymptotic = FALSE}), and a \emph{p} value. If
+\code{asymptotic = FALSE}, the relative invrease in variance (RIV, or
+average for multiparameter tests: ARIV) used to calculate the denominator
+\emph{df} is also returned as a missing-data diagnostic, along with the
+fraction missing information (FMI = ARIV / (1 + ARIV)).
 }
 \description{
 Wald test for testing a linear hypothesis about the parameters of lavaan
@@ -132,23 +132,23 @@ lavTestWald.mi(fit, constraints = con, asymptotic = TRUE) # chi-squared
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}.
-  New York, NY: Guilford.
+New York, NY: Guilford.
 
-  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-  Significance levels from repeated \emph{p}-values with multiply-imputed
-  data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  \url{https://www.jstor.org/stable/24303994}
+Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+Significance levels from repeated \emph{p}-values with multiply-imputed
+data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+\url{https://www.jstor.org/stable/24303994}
 
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+New York, NY: Wiley.
 }
 \seealso{
 \code{\link[lavaan]{lavTestWald}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 
-  Adapted from \pkg{lavaan} source code, written by
-  Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+Adapted from \pkg{lavaan} source code, written by
+Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 }

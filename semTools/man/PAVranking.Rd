@@ -73,17 +73,17 @@ A \code{list} with 3 elements.  The first two (\code{model0.results} and
 for \code{model0} and \code{model1}, respectively.
 The third element (\code{model0.v.model1}) is a \code{list} of
 model-comparison results, including the following:
-  \item{\code{LRT_Summary:}}{ The average likelihood ratio test across
-    allocations, as well as the \emph{SD}, minimum, maximum, range, and the
-    proportion of allocations for which the test was significant.}
-  \item{\code{Fit_Index_Differences:}}{ Differences in fit indices, organized
-    by what proportion favored each model and among those, what the average
-    difference was.}
-  \item{\code{Favored_by_BIC:}}{ The proportion of allocations in which each
-    model met the criterion (\code{bic.crit}) for a substantial difference
-    in fit.}
-  \item{\code{Convergence_Summary:}}{ The proportion of allocations in which
-    each model (and both models) converged on a solution.}
+\item{\code{LRT_Summary:}}{ The average likelihood ratio test across
+allocations, as well as the \emph{SD}, minimum, maximum, range, and the
+proportion of allocations for which the test was significant.}
+\item{\code{Fit_Index_Differences:}}{ Differences in fit indices, organized
+by what proportion favored each model and among those, what the average
+difference was.}
+\item{\code{Favored_by_BIC:}}{ The proportion of allocations in which each
+model met the criterion (\code{bic.crit}) for a substantial difference
+in fit.}
+\item{\code{Convergence_Summary:}}{ The proportion of allocations in which
+each model (and both models) converged on a solution.}
 
 Histograms are also printed to the current plot-output device.
 }
@@ -112,11 +112,11 @@ models to each allocation, and providing summaryies of PAV for each model.
 Additionally, \code{PAVranking} provides the following new summaries:
 
 \itemize{
-  \item{PAV in model selection index values and model ranking between
-     Models \code{model0} and \code{model1}.}
-  \item{The proportion of allocations that converged and the proportion of
-    proper solutions (results are summarized for allocations with both
-    converged and proper  allocations only).}
+\item{PAV in model selection index values and model ranking between
+Models \code{model0} and \code{model1}.}
+\item{The proportion of allocations that converged and the proportion of
+proper solutions (results are summarized for allocations with both
+converged and proper  allocations only).}
 }
 
 For further details on the benefits of the random allocation of items to
@@ -127,9 +127,9 @@ across allocations using the same methods available for pooling results
 across multiple imputations of missing data (see \bold{Examples}).
 
 \emph{Note}: This function requires the \code{lavaan} package. Missing data
- must be coded as \code{NA}. If the function returns \code{"Error in
+must be coded as \code{NA}. If the function returns \code{"Error in
  plot.new() : figure margins too large"}, the user may need to increase
- size of the plot window (e.g., in RStudio) and rerun the function.
+size of the plot window (e.g., in RStudio) and rerun the function.
 }
 \examples{
 
@@ -207,7 +207,7 @@ selection: Parcel-allocation variability in model ranking.
 }
 \seealso{
 \code{\link{parcelAllocation}} for fitting a single model,
-  \code{\link{poolMAlloc}} for choosing the number of allocations
+\code{\link{poolMAlloc}} for choosing the number of allocations
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

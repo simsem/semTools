@@ -22,12 +22,12 @@ growth.auxiliary(model, data, aux, ..., envir = getNamespace("lavaan"))
 \arguments{
 \item{model}{The analysis model can be specified with 1 of 2 objects:
 \enumerate{
-  \item  lavaan \code{\link[lavaan]{model.syntax}} specifying a hypothesized
-         model \emph{without} mention of auxiliary variables in \code{aux}
-  \item  a parameter table, as returned by \code{\link[lavaan]{parTable}},
-         specifying the target model \emph{without} auxiliary variables.
-         This option requires these columns (and silently ignores all others):
-         \code{c("lhs","op","rhs","user","group","free","label","plabel","start")}
+\item  lavaan \code{\link[lavaan]{model.syntax}} specifying a hypothesized
+model \emph{without} mention of auxiliary variables in \code{aux}
+\item  a parameter table, as returned by \code{\link[lavaan]{parTable}},
+specifying the target model \emph{without} auxiliary variables.
+This option requires these columns (and silently ignores all others):
+\code{c("lhs","op","rhs","user","group","free","label","plabel","start")}
 }}
 
 \item{data}{\code{data.frame} that includes auxiliary variables as well as
@@ -51,19 +51,19 @@ a \pkg{blavaan} model.}
 }
 \value{
 a fitted \code{\linkS4class{lavaan}} object.  Additional
-  information is stored as a \code{list} in the \code{@external} slot:
-  \itemize{
-    \item \code{baseline.model}. a fitted \code{\linkS4class{lavaan}}
-          object. Results of fitting an appropriate independence model for
-          the calculation of incremental fit indices (e.g., CFI, TLI) in
-          which the auxiliary variables remain saturated, so only the target
-          variables are constrained to be orthogonal. See Examples for how
-          to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
-    \item \code{aux}. The character vector of auxiliary variable names.
-    \item \code{baseline.syntax}. A character vector generated within the
-          \code{auxiliary} function, specifying the \code{baseline.model}
-          syntax.
-  }
+information is stored as a \code{list} in the \code{@external} slot:
+\itemize{
+\item \code{baseline.model}. a fitted \code{\linkS4class{lavaan}}
+object. Results of fitting an appropriate independence model for
+the calculation of incremental fit indices (e.g., CFI, TLI) in
+which the auxiliary variables remain saturated, so only the target
+variables are constrained to be orthogonal. See Examples for how
+to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
+\item \code{aux}. The character vector of auxiliary variable names.
+\item \code{baseline.syntax}. A character vector generated within the
+\code{auxiliary} function, specifying the \code{baseline.model}
+syntax.
+}
 }
 \description{
 Automatically add auxiliary variables to a lavaan model when using full
@@ -110,9 +110,9 @@ lavInspect(fitaux2@external$baseline.model, "free")
 }
 \references{
 Enders, C. K. (2008). A note on the use of missing auxiliary variables in
-  full information maximum likelihood-based structural equation models.
-  \emph{Structural Equation Modeling, 15}(3), 434--448.
-  \doi{10.1080/10705510802154307}
+full information maximum likelihood-based structural equation models.
+\emph{Structural Equation Modeling, 15}(3), 434--448.
+\doi{10.1080/10705510802154307}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

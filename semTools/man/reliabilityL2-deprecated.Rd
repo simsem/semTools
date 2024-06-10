@@ -32,7 +32,7 @@ imputations warrant further investigation.}
 }
 \value{
 Reliability values at Levels 1 and 2 of the second-order factor, as
-  well as the partial reliability value at Level 1
+well as the partial reliability value at Level 1
 }
 \description{
 Calculate the reliability values (coefficient omega) of a second-order

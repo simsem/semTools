@@ -80,13 +80,13 @@ works with only one scale, and only with continuous indicators.
 If \code{strict = FALSE}, the following four models are tested in order:
 \enumerate{
 \item Model 1: configural invariance. The same factor structure is
-  imposed on all units.
+imposed on all units.
 \item Model 2: weak invariance. The factor loadings are constrained to be
- equal across units.
+equal across units.
 \item Model 3: strong invariance. The factor loadings and intercepts are
- constrained to be equal across units.
+constrained to be equal across units.
 \item Model 4: The factor loadings, intercepts and means are constrained to
- be equal across units.
+be equal across units.
 }
 
 Each time a more restricted model is fitted, a \eqn{\Delta\chi^2} test is
@@ -98,15 +98,15 @@ If \code{strict = TRUE}, the following five models are tested in order:
 
 \enumerate{
 \item Model 1: configural invariance. The same factor structure is imposed
- on all units.
+on all units.
 \item Model 2: weak invariance. The factor loadings are constrained to be
- equal across units.
+equal across units.
 \item Model 3: strong invariance. The factor loadings and intercepts are
- constrained to be equal across units.
+constrained to be equal across units.
 \item Model 4: strict invariance. The factor loadings, intercepts and
- residual variances are constrained to be equal across units.
+residual variances are constrained to be equal across units.
 \item Model 5: The factor loadings, intercepts, residual variances and
- means are constrained to be equal across units.
+means are constrained to be equal across units.
 }
 
 Note that if the \eqn{\chi^2} test statistic is scaled (eg. a Satorra-Bentler
@@ -137,10 +137,10 @@ longInvariance(model, auto = 1, constrainAuto = TRUE,
 }
 \references{
 Vandenberg, R. J., and Lance, C. E. (2000). A review and
-  synthesis of the measurement invariance literature: Suggestions,
-  practices, and recommendations for organizational research.
-  \emph{Organizational Research Methods, 3}(1), 4--70.
-  \doi{10.1177/109442810031002}
+synthesis of the measurement invariance literature: Suggestions,
+practices, and recommendations for organizational research.
+\emph{Organizational Research Methods, 3}(1), 4--70.
+\doi{10.1177/109442810031002}
 }
 \seealso{
 \code{\link{semTools-deprecated}}
@@ -148,8 +148,8 @@ Vandenberg, R. J., and Lance, C. E. (2000). A review and
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 
- Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
- Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \keyword{internal}

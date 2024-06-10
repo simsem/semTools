@@ -38,11 +38,11 @@ indices.}
 }
 \value{
 A \code{\linkS4class{FitDiff}} object that saves model fit
-  comparisons across multiple models. If the models are not nested, only
-  fit indices for each model are returned. If the models are nested, the
-  differences in fit indices are additionally returned, as well as test
-  statistics comparing each sequential pair of models (ordered by their
-  degrees of freedom).
+comparisons across multiple models. If the models are not nested, only
+fit indices for each model are returned. If the models are nested, the
+differences in fit indices are additionally returned, as well as test
+statistics comparing each sequential pair of models (ordered by their
+degrees of freedom).
 }
 \description{
 This function will create the template to compare fit indices across
@@ -119,7 +119,7 @@ summary(out2, fit.measures = c("ariv","fmi","df","crmr","srmr",
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 }

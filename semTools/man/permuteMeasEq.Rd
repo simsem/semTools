@@ -180,7 +180,7 @@ changed to \code{"snow"} with a message.}
 
 \item{ncpus}{Integer: number of processes to be used in parallel operation.
 If \code{NULL} (the default) and \code{parallelType %in%
-c("multicore","snow")}, the default is one less than the maximum number of
+  c("multicore","snow")}, the default is one less than the maximum number of
 processors detected by \code{\link[parallel]{detectCores}}. This default is
 also silently set if the user specifies more than the number of processors
 detected.}
@@ -203,8 +203,8 @@ set the state of the RNG when not using parallel options, call
 }
 \value{
 The \linkS4class{permuteMeasEq} object representing the results of
-  testing measurement equivalence (the multiparameter omnibus test) and DIF
-  (modification indices), as well as diagnostics and any \code{extra} output.
+testing measurement equivalence (the multiparameter omnibus test) and DIF
+(modification indices), as well as diagnostics and any \code{extra} output.
 }
 \description{
 The function \code{permuteMeasEq} provides tests of hypotheses involving
@@ -215,26 +215,26 @@ models.
 The function \code{permuteMeasEq} provides tests of hypotheses involving
 measurement equivalence, in one of two frameworks:
 \enumerate{
-  \item{1} For multiple-group CFA models, provide a pair of nested lavaan objects,
-  the less constrained of which (\code{uncon}) freely estimates a set of
-  measurement parameters (e.g., factor loadings, intercepts, or thresholds;
-  specified in \code{param}) in all groups, and the more constrained of which
-  (\code{con}) constrains those measurement parameters to equality across
-  groups. Group assignment is repeatedly permuted and the models are fit to
-  each permutation, in order to produce an empirical distribution under the
-  null hypothesis of no group differences, both for (a) changes in
-  user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for
-  (b) the maximum modification index among the user-specified equality
-  constraints. Configural invariance can also be tested by providing that
-  fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which
-  case \code{param} must be \code{NULL} as well.
+\item{1} For multiple-group CFA models, provide a pair of nested lavaan objects,
+the less constrained of which (\code{uncon}) freely estimates a set of
+measurement parameters (e.g., factor loadings, intercepts, or thresholds;
+specified in \code{param}) in all groups, and the more constrained of which
+(\code{con}) constrains those measurement parameters to equality across
+groups. Group assignment is repeatedly permuted and the models are fit to
+each permutation, in order to produce an empirical distribution under the
+null hypothesis of no group differences, both for (a) changes in
+user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for
+(b) the maximum modification index among the user-specified equality
+constraints. Configural invariance can also be tested by providing that
+fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which
+case \code{param} must be \code{NULL} as well.
 
-  \item{2} In MIMIC models, one or a set of continuous and/or discrete
-  \code{covariates} can be permuted, and a constrained model is fit to each
-  permutation in order to provide a distribution of any fit measures (namely,
-  the maximum modification index among fixed parameters in \code{param}) under
-  the null hypothesis of measurement equivalence across levels of those
-  covariates.
+\item{2} In MIMIC models, one or a set of continuous and/or discrete
+\code{covariates} can be permuted, and a constrained model is fit to each
+permutation in order to provide a distribution of any fit measures (namely,
+the maximum modification index among fixed parameters in \code{param}) under
+the null hypothesis of measurement equivalence across levels of those
+covariates.
 }
 
 In either framework, modification indices for equality constraints or fixed
@@ -501,8 +501,8 @@ Methods, 8}(1), 16--37. \doi{10.1037/1082-989X.8.1.16}
 }
 \seealso{
 \code{\link[stats]{TukeyHSD}}, \code{\link[lavaan]{lavTestScore}},
-  \code{\link[semTools]{measurementInvariance}},
-  \code{\link[semTools]{measurementInvarianceCat}}
+\code{\link[semTools]{measurementInvariance}},
+\code{\link[semTools]{measurementInvarianceCat}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

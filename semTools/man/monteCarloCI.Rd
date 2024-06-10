@@ -70,12 +70,12 @@ distribution of each function in \code{expr}}
 }
 \value{
 A \code{lavaan.data.frame} (to use lavaan's \code{print} method)
-  with point estimates and confidence limits of each requested function of
-  parameters in \code{expr} is returned. If \code{append.samples = TRUE},
-  output will be a \code{list} with the same \code{$Results} along with a
-  second \code{data.frame} with the \code{$Samples} (in rows) of each
-  parameter (in columns), and an additional column for each requested
-  function of those parameters.
+with point estimates and confidence limits of each requested function of
+parameters in \code{expr} is returned. If \code{append.samples = TRUE},
+output will be a \code{list} with the same \code{$Results} along with a
+second \code{data.frame} with the \code{$Samples} (in rows) of each
+parameter (in columns), and an additional column for each requested
+function of those parameters.
 }
 \description{
 Robust confidence intervals for functions of parameter estimates,
@@ -99,13 +99,13 @@ For further information on the Monte Carlo method, see MacKinnon et al.
 The asymptotic covariance matrix can be obtained easily from many popular
 SEM software packages.
 \itemize{
- \item LISREL: Including the EC option on the OU line will print the ACM
-   to a seperate file. The file contains the lower triangular elements of
-   the ACM in free format and scientific notation
- \item Mplus Include the command TECH3; in the OUTPUT section. The ACM will
-   be printed in the output.
- \item \code{lavaan}: Use the \code{vcov} method on the fitted
-   \code{\linkS4class{lavaan}} object to return the ACM.
+\item LISREL: Including the EC option on the OU line will print the ACM
+to a seperate file. The file contains the lower triangular elements of
+the ACM in free format and scientific notation
+\item Mplus Include the command TECH3; in the OUTPUT section. The ACM will
+be printed in the output.
+\item \code{lavaan}: Use the \code{vcov} method on the fitted
+\code{\linkS4class{lavaan}} object to return the ACM.
 }
 }
 \examples{
@@ -165,8 +165,8 @@ for the indirect effect: Distribution of the product and resampling methods.
 
 Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method
 for assessing multilevel mediation: An interactive tool for creating
-confidence intervals for indirect effects in 1-1-1 multilevel models
-[Computer software]. Available from \url{http://quantpsy.org/}.
+confidence intervals for indirect effects in 1-1-1 multilevel models.
+Computer software available from \url{http://quantpsy.org/}.
 
 Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
 intervals for indirect effects. \emph{Communication Methods and Measures,
@@ -174,7 +174,7 @@ intervals for indirect effects. \emph{Communication Methods and Measures,
 
 Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 assessing mediation: An interactive tool for creating confidence intervals
-for indirect effects [Computer software]. Available from
+for indirect effects. Computer software available from
 \url{http://quantpsy.org/}.
 }
 \author{

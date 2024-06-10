@@ -29,24 +29,24 @@ Provide emmeans support for lavaan objects
 }
 \details{
 \subsection{Supported DVs}{
-  \code{lavaan.DV} must be an \emph{endogenous variable}, by appearing on
-  the left-hand side of either a regression operator (\code{"~"})
-  or an intercept operator (\code{"~1"}), or both.
-  \cr\cr
-  \code{lavaan.DV} can also be a vector of endogenous variable, in which
-  case they will be treated by \code{emmeans} as a multivariate outcome
-  (often, this indicates repeated measures) represented by an additional
-  factor named \code{rep.meas} by default.  The \code{rep.meas=} argument
-  can be used to overwrite this default name.
+\code{lavaan.DV} must be an \emph{endogenous variable}, by appearing on
+the left-hand side of either a regression operator (\code{"~"})
+or an intercept operator (\code{"~1"}), or both.
+\cr\cr
+\code{lavaan.DV} can also be a vector of endogenous variable, in which
+case they will be treated by \code{emmeans} as a multivariate outcome
+(often, this indicates repeated measures) represented by an additional
+factor named \code{rep.meas} by default.  The \code{rep.meas=} argument
+can be used to overwrite this default name.
 }
 
 \subsection{Unsupported Models}{
-  This functionality does not support the following models:
-  \itemize{
-    \item Multi-level models are not supported.
-    \item Models not fit to a \code{data.frame} (i.e., models fit to a
-          covariance matrix).
-  }
+This functionality does not support the following models:
+\itemize{
+\item Multi-level models are not supported.
+\item Models not fit to a \code{data.frame} (i.e., models fit to a
+covariance matrix).
+}
 }
 
 \subsection{Dealing with Fixed Parameters}{
@@ -246,5 +246,5 @@ See example below.
 }
 \author{
 Mattan S. Ben-Shachar (Ben-Gurion University of the Negev;
-  \email{matanshm@post.bgu.ac.il})
+\email{matanshm@post.bgu.ac.il})
 }

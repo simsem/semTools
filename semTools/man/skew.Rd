@@ -47,18 +47,18 @@ skew(1:5)
 }
 \references{
 Weisstein, Eric W. (n.d.). \emph{Skewness}. Retrived from
- \emph{MathWorld}--A Wolfram Web Resource:
- \url{http://mathworld.wolfram.com/Skewness.html}
+\emph{MathWorld}--A Wolfram Web Resource:
+\url{http://mathworld.wolfram.com/Skewness.html}
 }
 \seealso{
 \itemize{
-  \item \code{\link{kurtosis}} Find the univariate excessive kurtosis
-   of a variable
-  \item \code{\link{mardiaSkew}} Find Mardia's multivariate skewness
-   of a set of variables
-  \item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate
-   kurtosis of a set of variables
- }
+\item \code{\link{kurtosis}} Find the univariate excessive kurtosis
+of a variable
+\item \code{\link{mardiaSkew}} Find Mardia's multivariate skewness
+of a set of variables
+\item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate
+kurtosis of a set of variables
+}
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})

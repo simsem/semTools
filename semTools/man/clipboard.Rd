@@ -41,8 +41,8 @@ relevant if \code{object} is class \code{\linkS4class{FitDiff}}.}
 }
 \value{
 The resulting output will be saved into a clipboard or a file. If
-  using the \code{clipboard} function, users may paste it in the other
-  applications.
+using the \code{clipboard} function, users may paste it in the other
+applications.
 }
 \description{
 Copy or save the result of \code{lavaan} or \code{\linkS4class{FitDiff}}
@@ -104,5 +104,5 @@ saveFile(fit, "out.txt", "fit")
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 
- Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

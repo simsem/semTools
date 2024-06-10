@@ -45,10 +45,10 @@ null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
 }
 \seealso{
 \itemize{
- \item \code{\link{plotRMSEApowernested}} to plot the statistical power for
-  nested model comparison based on population RMSEA given the sample size
- \item \code{\link{findRMSEApowernested}} to find the power for a given
-  sample size in nested model comparison based on population RMSEA
+\item \code{\link{plotRMSEApowernested}} to plot the statistical power for
+nested model comparison based on population RMSEA given the sample size
+\item \code{\link{findRMSEApowernested}} to find the power for a given
+sample size in nested model comparison based on population RMSEA
 }
 }
 \author{

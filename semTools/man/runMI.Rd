@@ -190,10 +190,10 @@ catout@funList[[2]]$zeroCells # zero-cell tables for second imputation ...
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. New
-  York, NY: Guilford.
+York, NY: Guilford.
 
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+New York, NY: Wiley.
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

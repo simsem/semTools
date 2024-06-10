@@ -45,17 +45,17 @@ is, residual variances are modeled instead of the total variance of
 underlying normal variate for each item.  Five models can be tested based on
 different constraints across groups.
 \enumerate{
- \item Model 1: configural invariance. The same factor structure is imposed
-  on all groups.
- \item Model 2: weak invariance. The factor loadings are constrained to be
-  equal across groups.
- \item Model 3: strong invariance. The factor loadings and thresholds are
-  constrained to be equal across groups.
- \item Model 4: strict invariance. The factor loadings, thresholds and
-  residual variances are constrained to be equal across groups.
-  For categorical variables, all residual variances are fixed as 1.
- \item Model 5: The factor loadings, threshoulds, residual variances and
-  means are constrained to be equal across groups.
+\item Model 1: configural invariance. The same factor structure is imposed
+on all groups.
+\item Model 2: weak invariance. The factor loadings are constrained to be
+equal across groups.
+\item Model 3: strong invariance. The factor loadings and thresholds are
+constrained to be equal across groups.
+\item Model 4: strict invariance. The factor loadings, thresholds and
+residual variances are constrained to be equal across groups.
+For categorical variables, all residual variances are fixed as 1.
+\item Model 5: The factor loadings, threshoulds, residual variances and
+means are constrained to be equal across groups.
 }
 
 However, if all items have two items (dichotomous), scalar invariance and
@@ -78,8 +78,8 @@ measurementInvarianceCat(model = syntax, data = datCat, group = "g",
 }
 \references{
 Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial
-  invariance in ordered-categorical measures. \emph{Multivariate Behavioral
-  Research, 39}(3), 479--515. \doi{10.1207/S15327906MBR3903_4}
+invariance in ordered-categorical measures. \emph{Multivariate Behavioral
+Research, 39}(3), 479--515. \doi{10.1207/S15327906MBR3903_4}
 }
 \seealso{
 \code{\link{semTools-deprecated}}
@@ -87,8 +87,8 @@ Millsap, R. E., & Yun-Tein, J. (2004). Assessing factorial
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})
 
- Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
+Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})
 
- Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
+Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }
 \keyword{internal}

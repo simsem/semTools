@@ -36,21 +36,21 @@ printed.}
 \value{
 The output value from using the quark function is a list. It will
 return a list with 7 components.
- \item{ID Columns}{Is a vector of the identifier columns entered when
-  running quark.}
- \item{ID Variables}{Is a subset of the dataset that contains the identifiers
-  as acknowledged when running quark.}
- \item{Used Data}{Is a matrix / dataframe of the data provided by user as
-  the basis for quark to process.}
- \item{Imputed Data}{Is a matrix / dataframe of the data after the multiple
-  method imputation process.}
- \item{Big Matrix}{Is the expanded product and polynomial matrix.}
- \item{Principal Components}{Is the entire dataframe of principal components
-  for the dataset.  This dataset will have the same number of rows of the big
-  matrix, but will have 1 less column (as is the case with principal
-  component analyses).}
- \item{Percent Variance Explained}{Is a vector of the percent variance
-  explained with each column of principal components.}
+\item{ID Columns}{Is a vector of the identifier columns entered when
+running quark.}
+\item{ID Variables}{Is a subset of the dataset that contains the identifiers
+as acknowledged when running quark.}
+\item{Used Data}{Is a matrix / dataframe of the data provided by user as
+the basis for quark to process.}
+\item{Imputed Data}{Is a matrix / dataframe of the data after the multiple
+method imputation process.}
+\item{Big Matrix}{Is the expanded product and polynomial matrix.}
+\item{Principal Components}{Is the entire dataframe of principal components
+for the dataset.  This dataset will have the same number of rows of the big
+matrix, but will have 1 less column (as is the case with principal
+component analyses).}
+\item{Percent Variance Explained}{Is a vector of the percent variance
+explained with each column of principal components.}
 }
 \description{
 The \code{quark} function provides researchers with the ability to calculate

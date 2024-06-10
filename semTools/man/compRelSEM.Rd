@@ -111,15 +111,15 @@ those in \code{omit.factors} and applying \code{dropSingle}).}
 }
 \value{
 A \code{numeric} vector of composite reliability coefficients per
-  factor, or a \code{list} of vectors per "block" (group and/or level of
-  analysis), optionally returned as a \code{data.frame} when possible (see
-  \code{return.df=} argument description for caveat). If there are multiple
-  factors, whose multidimensional indicators combine into a single
-  composite, users can request \code{return.total=TRUE} to add a column
-  including a reliability coefficient for the total composite, or
-  \code{return.total = -1} to return \bold{only} the total-composite
-  reliability (ignored when \code{config=} or \code{shared=} is specified
-  because each factor's specification must be checked across levels).
+factor, or a \code{list} of vectors per "block" (group and/or level of
+analysis), optionally returned as a \code{data.frame} when possible (see
+\code{return.df=} argument description for caveat). If there are multiple
+factors, whose multidimensional indicators combine into a single
+composite, users can request \code{return.total=TRUE} to add a column
+including a reliability coefficient for the total composite, or
+\code{return.total = -1} to return \bold{only} the total-composite
+reliability (ignored when \code{config=} or \code{shared=} is specified
+because each factor's specification must be checked across levels).
 }
 \description{
 Calculate composite reliability from estimated factor-model parameters
@@ -185,12 +185,12 @@ higher-order factor. Using a second-order factor model, the model-implied
 covariance matrix of observed indicators \eqn{\hat{\Sigma}} can be
 partitioned into 3 sources:
 \enumerate{
-  \item the second-order common-factor (co)variance:
-        \eqn{\Lambda \bold{B} \Phi_2 \bold{B}^{\prime} \Lambda^{\prime}}
-  \item the residual variance of the first-order common factors (i.e., not
-        accounted for by the second-order factor):
-        \eqn{\Lambda \Psi_{u} \Lambda^{\prime}}
-  \item the measurement error of observed indicators: \eqn{\Theta}
+\item the second-order common-factor (co)variance:
+\eqn{\Lambda \bold{B} \Phi_2 \bold{B}^{\prime} \Lambda^{\prime}}
+\item the residual variance of the first-order common factors (i.e., not
+accounted for by the second-order factor):
+\eqn{\Lambda \Psi_{u} \Lambda^{\prime}}
+\item the measurement error of observed indicators: \eqn{\Theta}
 }
 
 where \eqn{\Lambda} contains first-order factor loadings, \eqn{\bold{B}}
@@ -260,21 +260,21 @@ including it in \code{config}.  Instead of organizing the output by block
 organizing the list of output by \code{$config} and/or \code{$shared}.
 
 \itemize{
-  \item The overall (\code{_2L}) scale reliability for \code{config}ural
-  constructs is returned, along with the reliability of a purely
-  individual-level composite (\code{_W}, calculated by cluster-mean
-  centering).
-  \item The reliability for a \code{shared} construct quantifies
-  generalizability across both indicators and raters (i.e., subjects rating
-  their cluster's construct).  Lüdtke et al. (2011) refer to these as
-  measurement error and sampling error, respectively.  An interrater
-  reliability (IRR) coefficient is also returned, quantifying
-  generalizability across rater/sampling-error only. To obtain a
-  scale-reliability coefficient (quantifying a shared construct's
-  generalizability across indicator/measurement-error only), include the
-  same factor name in \code{config=}.  Jak et al. (2021) recommended
-  modeling components of the same construct at both levels, but users may
-  also saturate the within-level model (Lai, 2021).
+\item The overall (\code{_2L}) scale reliability for \code{config}ural
+constructs is returned, along with the reliability of a purely
+individual-level composite (\code{_W}, calculated by cluster-mean
+centering).
+\item The reliability for a \code{shared} construct quantifies
+generalizability across both indicators and raters (i.e., subjects rating
+their cluster's construct).  Lüdtke et al. (2011) refer to these as
+measurement error and sampling error, respectively.  An interrater
+reliability (IRR) coefficient is also returned, quantifying
+generalizability across rater/sampling-error only. To obtain a
+scale-reliability coefficient (quantifying a shared construct's
+generalizability across indicator/measurement-error only), include the
+same factor name in \code{config=}.  Jak et al. (2021) recommended
+modeling components of the same construct at both levels, but users may
+also saturate the within-level model (Lai, 2021).
 }
 
 Be careful about including Level-2 variables in the model, especially
@@ -457,6 +457,6 @@ scales of measurement do not help make it: A response to Chalmers.
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
-  Uses hidden functions written by Sunthud Pornprasertmanit
-  (\email{psunthud@gmail.com}) for the old \code{reliability()} function.
+Uses hidden functions written by Sunthud Pornprasertmanit
+(\email{psunthud@gmail.com}) for the old \code{reliability()} function.
 }

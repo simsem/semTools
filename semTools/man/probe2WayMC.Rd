@@ -49,9 +49,9 @@ imputations warrant further investigation.}
 \value{
 A list with two elements:
 \enumerate{
- \item \code{SimpleIntercept}: The simple intercepts given each value of the
-  moderator.
- \item \code{SimpleSlope}: The simple slopes given each value of the moderator.
+\item \code{SimpleIntercept}: The simple intercepts given each value of the
+moderator.
+\item \code{SimpleSlope}: The simple slopes given each value of the moderator.
 }
 In each element, the first column represents the values of the moderator
 specified in the \code{valProbe} argument. The second column is the simple
@@ -175,16 +175,16 @@ Statistics, 31}(4), 437--448. \doi{10.3102/10769986031004437}
 }
 \seealso{
 \itemize{
- \item \code{\link{indProd}} For creating the indicator products with no
-  centering, mean centering, double-mean centering, or residual centering.
- \item \code{\link{probe3WayMC}} For probing the three-way latent interaction
-  when the results are obtained from mean-centering, or double-mean centering
- \item \code{\link{probe2WayRC}} For probing the two-way latent interaction
-  when the results are obtained from residual-centering approach.
- \item \code{\link{probe3WayRC}} For probing the two-way latent interaction
-  when the results are obtained from residual-centering approach.
- \item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
-  latent interaction.
+\item \code{\link{indProd}} For creating the indicator products with no
+centering, mean centering, double-mean centering, or residual centering.
+\item \code{\link{probe3WayMC}} For probing the three-way latent interaction
+when the results are obtained from mean-centering, or double-mean centering
+\item \code{\link{probe2WayRC}} For probing the two-way latent interaction
+when the results are obtained from residual-centering approach.
+\item \code{\link{probe3WayRC}} For probing the two-way latent interaction
+when the results are obtained from residual-centering approach.
+\item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
+latent interaction.
 }
 }
 \author{

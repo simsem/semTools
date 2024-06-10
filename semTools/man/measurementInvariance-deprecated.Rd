@@ -42,14 +42,14 @@ model comparison tests.
 \details{
 If \code{strict = FALSE}, the following four models are tested in order:
 \enumerate{
- \item Model 1: configural invariance. The same factor structure
+\item Model 1: configural invariance. The same factor structure
 is imposed on all groups.
- \item Model 2: weak invariance. The factor loadings are constrained to
-  be equal across groups.
- \item Model 3: strong invariance. The factor loadings and intercepts
-  are constrained to be equal across groups.
- \item Model 4: The factor loadings, intercepts and means are constrained
-  to be equal across groups.
+\item Model 2: weak invariance. The factor loadings are constrained to
+be equal across groups.
+\item Model 3: strong invariance. The factor loadings and intercepts
+are constrained to be equal across groups.
+\item Model 4: The factor loadings, intercepts and means are constrained
+to be equal across groups.
 }
 
 Each time a more restricted model is fitted, a \eqn{\Delta\chi^2} test is
@@ -59,16 +59,16 @@ difference in CFI is also reported (\eqn{\Delta}CFI).
 
 If \code{strict = TRUE}, the following five models are tested in order:
 \enumerate{
- \item Model 1: configural invariance. The same factor structure
-   is imposed on all groups.
- \item Model 2: weak invariance. The factor loadings are constrained to be
-   equal across groups.
- \item Model 3: strong invariance. The factor loadings and intercepts are
-   constrained to be equal across groups.
- \item Model 4: strict invariance. The factor loadings, intercepts and
-   residual variances are constrained to be equal across groups.
- \item Model 5: The factor loadings, intercepts, residual variances and means
-   are constrained to be equal across groups.
+\item Model 1: configural invariance. The same factor structure
+is imposed on all groups.
+\item Model 2: weak invariance. The factor loadings are constrained to be
+equal across groups.
+\item Model 3: strong invariance. The factor loadings and intercepts are
+constrained to be equal across groups.
+\item Model 4: strict invariance. The factor loadings, intercepts and
+residual variances are constrained to be equal across groups.
+\item Model 5: The factor loadings, intercepts, residual variances and means
+are constrained to be equal across groups.
 }
 
 Note that if the \eqn{\chi^2} test statistic is scaled (e.g., a Satorra-Bentler
@@ -87,9 +87,9 @@ measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
 }
 \references{
 Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the
-  measurement invariance literature: Suggestions, practices, and
-  recommendations for organizational research. \emph{Organizational
-  Research Methods, 3,} 4--70.
+measurement invariance literature: Suggestions, practices, and
+recommendations for organizational research. \emph{Organizational
+Research Methods, 3,} 4--70.
 }
 \seealso{
 \code{\link{semTools-deprecated}}

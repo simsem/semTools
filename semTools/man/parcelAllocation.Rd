@@ -70,22 +70,22 @@ is returned with the \code{list} of results across allocations}
 }
 \value{
 \item{Estimates}{A \code{data.frame} containing results related to
-    parameter estimates with columns corresponding to their names; average
-    and standard deviation across allocations; minimum, maximum, and range
-    across allocations; and the proportion of allocations in which each
-    parameter estimate was significant.}
-  \item{SE}{A \code{data.frame} containing results similar to
-    \code{Estimates}, but related to the standard errors of parameter
-    estimates.}
-  \item{Fit}{A \code{data.frame} containing results related to model fit,
-    with columns corresponding to fit index names; their average and
-    standard deviation across allocations; the minimum, maximum, and range
-    across allocations; and (if the test statistic or RMSEA is included in
-    \code{fit.measures}) the proportion of allocations in which each
-    test of (exact or close) fit was significant.}
-  \item{Model}{A \code{\link[lavaan]{lavaanList}} object containing results
-    of the \code{model} fitted to each parcel allocation. Only returned if
-    \code{return.fit = TRUE}.}
+parameter estimates with columns corresponding to their names; average
+and standard deviation across allocations; minimum, maximum, and range
+across allocations; and the proportion of allocations in which each
+parameter estimate was significant.}
+\item{SE}{A \code{data.frame} containing results similar to
+\code{Estimates}, but related to the standard errors of parameter
+estimates.}
+\item{Fit}{A \code{data.frame} containing results related to model fit,
+with columns corresponding to fit index names; their average and
+standard deviation across allocations; the minimum, maximum, and range
+across allocations; and (if the test statistic or RMSEA is included in
+\code{fit.measures}) the proportion of allocations in which each
+test of (exact or close) fit was significant.}
+\item{Model}{A \code{\link[lavaan]{lavaanList}} object containing results
+of the \code{model} fitted to each parcel allocation. Only returned if
+\code{return.fit = TRUE}.}
 }
 \description{
 This function generates a given number of randomly generated item-to-parcel
@@ -211,7 +211,7 @@ selection: Parcel-allocation variability in model ranking.
 }
 \seealso{
 \code{\link{PAVranking}} for comparing 2 models,
-  \code{\link{poolMAlloc}} for choosing the number of allocations
+\code{\link{poolMAlloc}} for choosing the number of allocations
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

@@ -45,33 +45,33 @@ placing the legend at the top-left of the figure.}
 \value{
 \itemize{
 \item The \code{show} method prints a summary of the multiparameter
-  omnibus test results, using the user-specified AFIs. The parametric
- (\eqn{\Delta})\eqn{\chi^2} test is also displayed.
+omnibus test results, using the user-specified AFIs. The parametric
+(\eqn{\Delta})\eqn{\chi^2} test is also displayed.
 \item The \code{summary} method prints the same information from the
-  \code{show} method, but when \code{extra = FALSE} (the default) it also
-  provides a table summarizing any requested follow-up tests of DIF using
-  modification indices in slot \code{MI.obs}. The user can also specify an
-  \code{alpha} level for flagging modification indices as significant, as
-  well as \code{nd} (the number of digits displayed). For each modification
-  index, the \emph{p} value is displayed using a central \eqn{\chi^2}
-  distribution with the \emph{df} shown in that column. Additionally, a
-  \emph{p} value is displayed using the permutation distribution of the
-  maximum index, which controls the familywise Type I error rate in a manner
-  similar to Tukey's studentized range test. If any indices are flagged as
-  significant using the \code{tukey.p.value}, then a message is displayed for
-  each flagged index. The invisibly returned \code{data.frame} is the
-  displayed table of modification indices, unless
-  \code{\link[semTools]{permuteMeasEq}} was called with \code{param = NULL},
-  in which case the invisibly returned object is \code{object}. If
-  \code{extra = TRUE}, the permutation-based \emph{p} values for each
-  statistic returned by the \code{extra} function are displayed and returned
-  in a \code{data.frame} instead of the modification indices requested in the
-  \code{param} argument.
+\code{show} method, but when \code{extra = FALSE} (the default) it also
+provides a table summarizing any requested follow-up tests of DIF using
+modification indices in slot \code{MI.obs}. The user can also specify an
+\code{alpha} level for flagging modification indices as significant, as
+well as \code{nd} (the number of digits displayed). For each modification
+index, the \emph{p} value is displayed using a central \eqn{\chi^2}
+distribution with the \emph{df} shown in that column. Additionally, a
+\emph{p} value is displayed using the permutation distribution of the
+maximum index, which controls the familywise Type I error rate in a manner
+similar to Tukey's studentized range test. If any indices are flagged as
+significant using the \code{tukey.p.value}, then a message is displayed for
+each flagged index. The invisibly returned \code{data.frame} is the
+displayed table of modification indices, unless
+\code{\link[semTools]{permuteMeasEq}} was called with \code{param = NULL},
+in which case the invisibly returned object is \code{object}. If
+\code{extra = TRUE}, the permutation-based \emph{p} values for each
+statistic returned by the \code{extra} function are displayed and returned
+in a \code{data.frame} instead of the modification indices requested in the
+\code{param} argument.
 \item The \code{hist} method returns a list of \code{length == 2},
-   containing the arguments for the call to \code{hist} and the arguments
-   to the call for \code{legend}, respectively. This list may facilitate
-   creating a customized histogram of \code{AFI.dist}, \code{MI.dist}, or
-   \code{extra.dist}
+containing the arguments for the call to \code{hist} and the arguments
+to the call for \code{legend}, respectively. This list may facilitate
+creating a customized histogram of \code{AFI.dist}, \code{MI.dist}, or
+\code{extra.dist}
 }
 }
 \description{
@@ -146,7 +146,7 @@ previous \code{.Random.seed} state, if desired, by running:
 
 \section{Objects from the Class}{
  Objects can be created via the
-  \code{\link[semTools]{permuteMeasEq}} function.
+\code{\link[semTools]{permuteMeasEq}} function.
 }
 
 \examples{
@@ -159,5 +159,5 @@ previous \code{.Random.seed} state, if desired, by running:
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 }

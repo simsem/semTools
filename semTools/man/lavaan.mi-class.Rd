@@ -125,75 +125,75 @@ should include parameter labels. Default is \code{TRUE}.}
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free",
   labels = TRUE, omit.imps = c("no.conv","no.se"))}:
-  See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
-  averaged across imputed data sets; see Rubin, 1987).}
+See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
+averaged across imputed data sets; see Rubin, 1987).}
 
 \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
   omit.imps = c("no.conv","no.se"),
   type = c("pooled","between","within","ariv"))}:  By default, returns the
-  pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
-  the within-imputations covariance matrix (\code{type = "within"}), the
-  between-imputations covariance matrix (\code{type = "between"}), or the
-  average relative increase in variance (\code{type = "ariv"}) due to
-  missing data.}
+pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
+the within-imputations covariance matrix (\code{type = "within"}), the
+between-imputations covariance matrix (\code{type = "between"}), or the
+average relative increase in variance (\code{type = "ariv"}) due to
+missing data.}
 
 \item{fitted.values}{\code{signature(object = "lavaan.mi",
   omit.imps = c("no.conv","no.se"))}: See \code{\linkS4class{lavaan}}.
-  Returns model-implied moments, evaluated at the pooled point estimates.}
+Returns model-implied moments, evaluated at the pooled point estimates.}
 \item{fitted}{alias for \code{fitted.values}}
 
 \item{residuals}{\code{signature(object = "lavaan.mi",
   type = c("raw","cor"), omit.imps = c("no.conv","no.se"))}:
-  See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
-  the difference between the model-implied moments from \code{fitted.values}
-  and the pooled observed moments (i.e., averaged across imputed data sets).
-  Standardized residuals are also available, using Bollen's
-  (\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's
-  (\code{type = "cor.bentler"}) formulas.}
+See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
+the difference between the model-implied moments from \code{fitted.values}
+and the pooled observed moments (i.e., averaged across imputed data sets).
+Standardized residuals are also available, using Bollen's
+(\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's
+(\code{type = "cor.bentler"}) formulas.}
 \item{resid}{alias for \code{residuals}}
 
 \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
-  the total (default) sample size or a vector of group sample sizes
-  (\code{total = FALSE}).}
+the total (default) sample size or a vector of group sample sizes
+(\code{total = FALSE}).}
 
 \item{anova}{\code{signature(object = "lavaan.mi", ...)}:
-  Returns a test of model fit for a single model (\code{object}) or test(s)
-  of the difference(s) in fit between nested models passed via \code{...}.
-  See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
+Returns a test of model fit for a single model (\code{object}) or test(s)
+of the difference(s) in fit between nested models passed via \code{...}.
+See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
 
 \item{fitMeasures}{\code{signature(object = "lavaan.mi",
   fit.measures = "all", baseline.model = NULL, output = "vector",
   omit.imps = c("no.conv","no.se"), ...)}: See lavaan's
-  \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
-  to \code{\link{lavTestLRT.mi}} via \code{...}.}
+\code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
+to \code{\link{lavTestLRT.mi}} via \code{...}.}
 \item{fitmeasures}{alias for \code{fitMeasures}.}
 
 \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
- convergence rates and estimation problems (if applicable) across imputed
- data sets.}
+convergence rates and estimation problems (if applicable) across imputed
+data sets.}
 
 \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
  scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
   header = TRUE, output = "text", fit.measures = FALSE, ...)}:
- see \code{\link[lavaan]{parameterEstimates}} for details.
- By default, \code{summary} returns pooled point and \emph{SE}
- estimates, along with \emph{t} test statistics and their associated
- \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
- are returned with the specified confidence \code{level} (default 95\% CI).
- If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
- returned. \code{standardized} solution(s) can also be requested by name
- (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
- \emph{R}-squared for endogenous variables can be requested, as well as the
- Fraction Missing Information (FMI) for parameter estimates. By default, the
- output will appear like \code{lavaan}'s \code{summary} output, but if
- \code{output == "data.frame"}, the returned \code{data.frame} will resemble
- the \code{parameterEstimates} output. The \code{scale.W} argument is
- passed to \code{vcov} (see description above).
- Setting \code{fit.measures=TRUE} will additionally print fit measures to
- the console, but they will not be returned; additional arguments may be
- passed via \code{...} to \code{\link[lavaan]{fitMeasures}} and
- subsequently to \code{\link{lavTestLRT.mi}}.}
+see \code{\link[lavaan]{parameterEstimates}} for details.
+By default, \code{summary} returns pooled point and \emph{SE}
+estimates, along with \emph{t} test statistics and their associated
+\emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
+are returned with the specified confidence \code{level} (default 95\\% CI).
+If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
+returned. \code{standardized} solution(s) can also be requested by name
+(\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
+\emph{R}-squared for endogenous variables can be requested, as well as the
+Fraction Missing Information (FMI) for parameter estimates. By default, the
+output will appear like \code{lavaan}'s \code{summary} output, but if
+\code{output == "data.frame"}, the returned \code{data.frame} will resemble
+the \code{parameterEstimates} output. The \code{scale.W} argument is
+passed to \code{vcov} (see description above).
+Setting \code{fit.measures=TRUE} will additionally print fit measures to
+the console, but they will not be returned; additional arguments may be
+passed via \code{...} to \code{\link[lavaan]{fitMeasures}} and
+subsequently to \code{\link{lavTestLRT.mi}}.}
 }
 \description{
 This class extends the \code{\linkS4class{lavaanList}} class, created by
@@ -254,8 +254,8 @@ table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
 
 \section{Objects from the Class}{
  See the \code{\link{runMI}} function for
-  details. Wrapper functions include \code{\link{lavaan.mi}},
-  \code{\link{cfa.mi}}, \code{\link{sem.mi}}, and \code{\link{growth.mi}}.
+details. Wrapper functions include \code{\link{lavaan.mi}},
+\code{\link{cfa.mi}}, \code{\link{sem.mi}}, and \code{\link{growth.mi}}.
 }
 
 \examples{
@@ -265,25 +265,25 @@ table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
 }
 \references{
 Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
-  with multiple imputation}. Technical Report. Retrieved from
-  \url{http://www.statmodel.com/}
+with multiple imputation}. Technical Report. Retrieved from
+\url{http://www.statmodel.com/}
 
-  Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
-  Guilford.
+Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
+Guilford.
 
-  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-  Significance levels from repeated \emph{p}-values with multiply-imputed
-  data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  \url{https://www.jstor.org/stable/24303994}
+Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+Significance levels from repeated \emph{p}-values with multiply-imputed
+data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+\url{https://www.jstor.org/stable/24303994}
 
-  Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-  multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
-  \doi{10.2307/2337151}
+Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
+multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
+\doi{10.2307/2337151}
 
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+New York, NY: Wiley.
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 }

@@ -16,8 +16,8 @@ their \eqn{\chi^2} fit statistics is less than this criterion.}
 }
 \value{
 The \linkS4class{Net} object representing the outputs for nesting
-  and equivalent testing, including a logical matrix of test results and a
-  vector of degrees of freedom for each model.
+and equivalent testing, including a logical matrix of test results and a
+vector of degrees of freedom for each model.
 }
 \description{
 This test examines whether pairs of SEMs are nested or equivalent.

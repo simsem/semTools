@@ -49,16 +49,16 @@ model is returned, so FMI can be found from \code{summary(..., fmi=TRUE)}.}
 \code{fmi} returns a list with at least 2 of the following:
 
 \item{Covariances}{A list of symmetric matrices: (1) the estimated/pooled
-  covariance matrix, or a list of group-specific matrices (if applicable)
-  and (2) a matrix of FMI, or a list of group-specific matrices (if
-  applicable). Only available if \code{method = "saturated"}.  When
-  \code{method="cor"}, this element is replaced by \code{Correlations}.}
+covariance matrix, or a list of group-specific matrices (if applicable)
+and (2) a matrix of FMI, or a list of group-specific matrices (if
+applicable). Only available if \code{method = "saturated"}.  When
+\code{method="cor"}, this element is replaced by \code{Correlations}.}
 \item{Variances}{The estimated/pooled variance for each numeric variable.
-  Only available if \code{method = "null"} (otherwise, it is on the diagonal
-  of Covariances).}
+Only available if \code{method = "null"} (otherwise, it is on the diagonal
+of Covariances).}
 \item{Means}{The estimated/pooled mean for each numeric variable.}
 \item{Thresholds}{The estimated/pooled threshold(s) for each
-  ordered-categorical variable.}
+ordered-categorical variable.}
 }
 \description{
 This function estimates the Fraction of Missing Information (FMI) for

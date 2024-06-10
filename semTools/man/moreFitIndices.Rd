@@ -18,23 +18,23 @@ to compute \code{bic.priorN}.}
 }
 \value{
 A \code{numeric} \code{lavaan.vector} including any of the
-  following requested via \code{fit.measures=}
+following requested via \code{fit.measures=}
 \enumerate{
- \item \code{gammaHat}: Gamma-Hat
- \item \code{adjGammaHat}: Adjusted Gamma-Hat
- \item \code{baseline.rmsea}: RMSEA of the default baseline (i.e., independence) model
- \item \code{gammaHat.scaled}: Gamma-Hat using scaled \eqn{\chi^2}
- \item \code{adjGammaHat.scaled}: Adjusted Gamma-Hat using scaled \eqn{\chi^2}
- \item \code{baseline.rmsea.scaled}: RMSEA of the default baseline (i.e.,
-       independence) model using scaled \eqn{\chi^2}
- \item \code{aic.smallN}: Corrected (for small sample size) AIC
- \item \code{bic.priorN}: BIC with specified prior sample size
- \item \code{spbic}: Scaled Unit-Information Prior BIC (SPBIC)
- \item \code{hbic}: Haughton's BIC (HBIC)
- \item \code{ibic}: Information-matrix-based BIC (IBIC)
- \item \code{sic}: Stochastic Information Criterion (SIC)
- \item \code{hqc}: Hannan-Quinn Information Criterion (HQC)
- \item \code{icomp}: Bozdogan Information Complexity (ICOMP) Criteria
+\item \code{gammaHat}: Gamma-Hat
+\item \code{adjGammaHat}: Adjusted Gamma-Hat
+\item \code{baseline.rmsea}: RMSEA of the default baseline (i.e., independence) model
+\item \code{gammaHat.scaled}: Gamma-Hat using scaled \eqn{\chi^2}
+\item \code{adjGammaHat.scaled}: Adjusted Gamma-Hat using scaled \eqn{\chi^2}
+\item \code{baseline.rmsea.scaled}: RMSEA of the default baseline (i.e.,
+independence) model using scaled \eqn{\chi^2}
+\item \code{aic.smallN}: Corrected (for small sample size) AIC
+\item \code{bic.priorN}: BIC with specified prior sample size
+\item \code{spbic}: Scaled Unit-Information Prior BIC (SPBIC)
+\item \code{hbic}: Haughton's BIC (HBIC)
+\item \code{ibic}: Information-matrix-based BIC (IBIC)
+\item \code{sic}: Stochastic Information Criterion (SIC)
+\item \code{hqc}: Hannan-Quinn Information Criterion (HQC)
+\item \code{icomp}: Bozdogan Information Complexity (ICOMP) Criteria
 }
 }
 \description{
@@ -48,7 +48,7 @@ Gamma-Hat (\code{gammaHat}; West, Taylor, & Wu, 2012) is a global
 goodness-of-fit index which can be computed (assuming equal number of
 indicators across groups) by
 
-  \deqn{ \hat{\Gamma} =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N}},}
+\deqn{ \hat{\Gamma} =\frac{p}{p + 2 \times \frac{\chi^{2}_{k} - df_{k}}{N}},}
 
 where \eqn{p} is the number of variables in the model, \eqn{\chi^{2}_{k}} is
 the \eqn{\chi^2} test statistic value of the target model, \eqn{df_{k}} is
@@ -59,7 +59,7 @@ set to \code{"EQS"}).
 Adjusted Gamma-Hat (\code{adjGammaHat}; West, Taylor, & Wu, 2012) is a
 global fit index which can be computed by
 
-  \deqn{ \hat{\Gamma}_\textrm{adj} = \left(1 - \frac{K \times p \times
+\deqn{ \hat{\Gamma}_\textrm{adj} = \left(1 - \frac{K \times p \times
   (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - \hat{\Gamma} \right),}
 
 where \eqn{K} is the number of groups (please refer to Dudgeon, 2004, for
@@ -75,7 +75,7 @@ Corrected Akaike Information Criterion (\code{aic.smallN}; Burnham &
 Anderson, 2003) is a corrected version of AIC for small sample size, often
 abbreviated AICc:
 
-  \deqn{ \textrm{AIC}_{\textrm{small}-N} = AIC + \frac{2q(q + 1)}{N - q - 1},}
+\deqn{ \textrm{AIC}_{\textrm{small}-N} = AIC + \frac{2q(q + 1)}{N - q - 1},}
 
 where \eqn{AIC} is the original AIC: \eqn{-2LL + 2q} (where \eqn{q}
 = the number of estimated parameters in the target model). Note that AICc is
@@ -86,7 +86,7 @@ Corrected Bayesian Information Criterion (\code{bic.priorN}; Kuha, 2004) is
 similar to BIC but explicitly specifying the sample size on which the prior
 is based (\eqn{N_{prior}}) using the \code{nPrior} argument.
 
-  \deqn{ \textrm{BIC}_{\textrm{prior}-N} = -2LL + q\log{( 1 + \frac{N}{N_{prior}} )}.}
+\deqn{ \textrm{BIC}_{\textrm{prior}-N} = -2LL + q\log{( 1 + \frac{N}{N_{prior}} )}.}
 
 Bollen et al. (2012, 2014) discussed additional BICs that incorporate more
 terms from a Taylor series expansion, which the standard BIC drops.  The
@@ -95,8 +95,8 @@ product of the vector of estimated model parameters (\eqn{\hat{\theta}}) and
 the observed information matrix (FIM) exceeds the number of estimated model
 parameters (Case 1) or not (Case 2), which is checked internally:
 
-  \deqn{ \textrm{SPBIC}_{\textrm{Case 1}} = -2LL + q(1 - \frac{q}{\hat{\theta}^{'} \textrm{FIM} \hat{\theta}}), \textrm{ or}}
-  \deqn{ \textrm{SPBIC}_{\textrm{Case 2}} = -2LL + \hat{\theta}^{'} \textrm{FIM} \hat{\theta},}
+\deqn{ \textrm{SPBIC}_{\textrm{Case 1}} = -2LL + q(1 - \frac{q}{\hat{\theta}^{'} \textrm{FIM} \hat{\theta}}), \textrm{ or}}
+\deqn{ \textrm{SPBIC}_{\textrm{Case 2}} = -2LL + \hat{\theta}^{'} \textrm{FIM} \hat{\theta},}
 
 Note that this implementation of SPBIC is calculated on the assumption that
 priors for all estimated parameters are centered at zero, which is
@@ -105,17 +105,17 @@ at the lowest possible value; Bollen, 2014, p. 6).
 
 Bollen et al. (2014, eq. 14) credit the HBIC to Haughton (1988):
 
-  \deqn{ \textrm{HBIC} = -2LL + q\log{\frac{N}{2 \pi}}.}
+\deqn{ \textrm{HBIC} = -2LL + q\log{\frac{N}{2 \pi}}.}
 
 Bollen et al. (2012, p. 305) proposed the information matrix (\eqn{I})-based BIC by
 adding another term:
 
-  \deqn{ \textrm{IBIC} = -2LL + q\log{\frac{N}{2 \pi}} + \log{\det{\textrm{FIM}}},}
+\deqn{ \textrm{IBIC} = -2LL + q\log{\frac{N}{2 \pi}} + \log{\det{\textrm{FIM}}},}
 
 or equivalently, using the inverse information (the asymptotic sampling
 covariance matrix of estimated parameters: ACOV):
 
-  \deqn{ \textrm{IBIC} = -2LL - q\log{2 \pi} - \log{\det{\textrm{ACOV}}}.}
+\deqn{ \textrm{IBIC} = -2LL - q\log{2 \pi} - \log{\det{\textrm{ACOV}}}.}
 
 Stochastic information criterion (SIC; see Preacher, 2006, for details) is
 similar to IBIC but does not include the \eqn{q\log{2 \pi}} term that is
@@ -123,7 +123,7 @@ also in HBIC.  SIC and IBIC both account for model complexity in a model's
 functional form, not merely the number of free parameters.  The SIC can be
 computed as:
 
-  \deqn{ \textrm{SIC} = -2LL + q\log{N} + \log{\det{\textrm{FIM}}} = -2LL - \log{\det{\textrm{ACOV}}}.}
+\deqn{ \textrm{SIC} = -2LL + q\log{N} + \log{\det{\textrm{FIM}}} = -2LL - \log{\det{\textrm{ACOV}}}.}
 
 Hannan--Quinn Information Criterion (HQC; Hannan & Quinn, 1979) is used for
 model selection, similar to AIC or BIC.
@@ -189,7 +189,7 @@ structural equation modeling} (pp. 209--231). New York, NY: Guilford.
 \seealso{
 \itemize{
 \item \code{\link{miPowerFit}} For the modification indices and their
-       power approach for model fit evaluation
+power approach for model fit evaluation
 \item \code{\link{nullRMSEA}} For RMSEA of the default independence model
 }
 }

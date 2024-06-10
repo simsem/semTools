@@ -76,7 +76,7 @@
 ##' @param nAllocAdd The number of allocations to add with each iteration of the
 ##' algorithm. Note that if only one iteration is desired, \code{nAllocAdd} can
 ##' be set to \eqn{0} and results will be output for \code{nAllocStart}
-##'  allocationsonly.
+##'  allocations only.
 ##' @param syntax lavaan syntax that defines the model.
 ##' @param dataset Item-level dataset
 ##' @param parceloutput Optional \code{character}. Path (folder/directory) where

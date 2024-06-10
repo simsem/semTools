@@ -128,8 +128,8 @@
 ##'
 ##' Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method
 ##' for assessing multilevel mediation: An interactive tool for creating
-##' confidence intervals for indirect effects in 1-1-1 multilevel models
-##' [Computer software]. Available from \url{http://quantpsy.org/}.
+##' confidence intervals for indirect effects in 1-1-1 multilevel models.
+##' Computer software available from \url{http://quantpsy.org/}.
 ##'
 ##' Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
 ##' intervals for indirect effects. \emph{Communication Methods and Measures,
@@ -137,7 +137,7 @@
 ##'
 ##' Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 ##' assessing mediation: An interactive tool for creating confidence intervals
-##' for indirect effects [Computer software]. Available from
+##' for indirect effects. Computer software available from
 ##' \url{http://quantpsy.org/}.
 ##'
 ##' @aliases monteCarloCI monteCarloMed

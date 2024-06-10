@@ -50,18 +50,18 @@ MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 and determination of sample size for covariance structure modeling.
 \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
 
- Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
- (2021). Analytical power calculations for structural equation modeling:
- A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
- \doi{10.3758/s13428-020-01479-0}
+Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
+(2021). Analytical power calculations for structural equation modeling:
+A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+\doi{10.3758/s13428-020-01479-0}
 }
 \seealso{
 \itemize{
- \item \code{\link{plotRMSEApower}} to plot the statistical power based on
-  population RMSEA given the sample size
- \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
- \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
-  a given statistical power based on population RMSEA
+\item \code{\link{plotRMSEApower}} to plot the statistical power based on
+population RMSEA given the sample size
+\item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
+\item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
+a given statistical power based on population RMSEA
 }
 }
 \author{

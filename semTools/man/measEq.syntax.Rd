@@ -15,20 +15,20 @@ measEq.syntax(configural.model, ..., ID.fac = "std.lv",
 (i.e., representing only configural invariance), unless required for model
 identification. \code{configural.model} can be either:
 \itemize{
-  \item lavaan \code{\link[lavaan]{model.syntax}} or a parameter table
-        (as returned by \code{\link[lavaan]{parTable}}) specifying the
-        configural model. Using this option, the user can also provide
-        either raw \code{data} or summary statistics via \code{sample.cov}
-        and (optionally) \code{sample.mean}. See argument descriptions in
-        \code{\link[lavaan]{lavaan}}. In order to include thresholds in
-        the generated syntax, either users must provide raw \code{data},
-        or the \code{configural.model} syntax must specify all thresholds
-        (see first example). If raw \code{data} are not provided, the
-        number of blocks (groups, levels, or combination) must be
-        indicated using an arbitrary \code{sample.nobs} argument (e.g.,
-        3 groups could be specified using \code{sample.nobs=rep(1, 3)}).
-  \item a fitted \code{\linkS4class{lavaan}} model (e.g., as returned by
-        \code{\link[lavaan]{cfa}}) estimating the configural model
+\item lavaan \code{\link[lavaan]{model.syntax}} or a parameter table
+(as returned by \code{\link[lavaan]{parTable}}) specifying the
+configural model. Using this option, the user can also provide
+either raw \code{data} or summary statistics via \code{sample.cov}
+and (optionally) \code{sample.mean}. See argument descriptions in
+\code{\link[lavaan]{lavaan}}. In order to include thresholds in
+the generated syntax, either users must provide raw \code{data},
+or the \code{configural.model} syntax must specify all thresholds
+(see first example). If raw \code{data} are not provided, the
+number of blocks (groups, levels, or combination) must be
+indicated using an arbitrary \code{sample.nobs} argument (e.g.,
+3 groups could be specified using \code{sample.nobs=rep(1, 3)}).
+\item a fitted \code{\linkS4class{lavaan}} model (e.g., as returned by
+\code{\link[lavaan]{cfa}}) estimating the configural model
 }
 Note that the specified or fitted model must not contain any latent
 structural parameters (i.e., it must be a CFA model), unless they are
@@ -42,19 +42,19 @@ function. See also \code{\link[lavaan]{lavOptions}}.}
 variances and (if \code{meanstructure = TRUE}) means. Three methods are
 available, which go by different names in the literature:
 \itemize{
-  \item Standardize the common factor (mean = 0, \emph{SD} = 1) by
-        specifying any of: \code{"std.lv"}, \code{"unit.variance"},
-        \code{"UV"}, \code{"fixed.factor"},
-        \code{"fixed-factor"}
-  \item Choose a reference indicator by specifying any of:
-        \code{"auto.fix.first"}, \code{"unit.loading"}, \code{"UL"},
-        \code{"marker"}, \code{"ref"},  \code{"ref.indicator"},
-        \code{"reference.indicator"}, \code{"reference-indicator"},
-        \code{"marker.variable"}, \code{"marker-variable"}
-  \item Apply effects-code constraints to loadings and intercepts by
-        specifying any of: \code{"FX"}, \code{"EC"}, \code{"effects"},
-        \code{"effects.coding"}, \code{"effects-coding"},
-        \code{"effects.code"}, \code{"effects-code"}
+\item Standardize the common factor (mean = 0, \emph{SD} = 1) by
+specifying any of: \code{"std.lv"}, \code{"unit.variance"},
+\code{"UV"}, \code{"fixed.factor"},
+\code{"fixed-factor"}
+\item Choose a reference indicator by specifying any of:
+\code{"auto.fix.first"}, \code{"unit.loading"}, \code{"UL"},
+\code{"marker"}, \code{"ref"},  \code{"ref.indicator"},
+\code{"reference.indicator"}, \code{"reference-indicator"},
+\code{"marker.variable"}, \code{"marker-variable"}
+\item Apply effects-code constraints to loadings and intercepts by
+specifying any of: \code{"FX"}, \code{"EC"}, \code{"effects"},
+\code{"effects.coding"}, \code{"effects-coding"},
+\code{"effects.code"}, \code{"effects-code"}
 }
 See Kloessner & Klopp (2019) for details about all three methods.}
 
@@ -62,21 +62,21 @@ See Kloessner & Klopp (2019) for details about all three methods.}
 variances and intercepts of latent item-responses underlying any
 \code{ordered} indicators. Four methods are available:
 \itemize{
-  \item To follow Wu & Estabrook's (2016) guidelines (default), specify
-        any of: \code{"Wu.Estabrook.2016"}, \code{"Wu.2016"},
-        \code{"Wu.Estabrook"}, \code{"Wu"}, \code{"Wu2016"}. For
-        consistency, specify \code{ID.fac = "std.lv"}.
-  \item To use the default settings of M\emph{plus} and \code{lavaan},
-        specify any of: \code{"default"}, \code{"Mplus"}, \code{"Muthen"}.
-        Details provided in Millsap & Tein (2004).
-  \item To use the constraints recommended by Millsap & Tein (2004; see
-        also Liu et al., 2017, for the longitudinal case)
-        specify any of: \code{"millsap"}, \code{"millsap.2004"},
-        \code{"millsap.tein.2004"}. For consistency, specify
-        \code{ID.fac = "marker"} and \code{parameterization = "theta"}.
-  \item To use the default settings of LISREL, specify \code{"LISREL"}
-        or \code{"Joreskog"}. Details provided in Millsap & Tein (2004).
-        For consistency, specify \code{parameterization = "theta"}.
+\item To follow Wu & Estabrook's (2016) guidelines (default), specify
+any of: \code{"Wu.Estabrook.2016"}, \code{"Wu.2016"},
+\code{"Wu.Estabrook"}, \code{"Wu"}, \code{"Wu2016"}. For
+consistency, specify \code{ID.fac = "std.lv"}.
+\item To use the default settings of M\emph{plus} and \code{lavaan},
+specify any of: \code{"default"}, \code{"Mplus"}, \code{"Muthen"}.
+Details provided in Millsap & Tein (2004).
+\item To use the constraints recommended by Millsap & Tein (2004; see
+also Liu et al., 2017, for the longitudinal case)
+specify any of: \code{"millsap"}, \code{"millsap.2004"},
+\code{"millsap.tein.2004"}. For consistency, specify
+\code{ID.fac = "marker"} and \code{parameterization = "theta"}.
+\item To use the default settings of LISREL, specify \code{"LISREL"}
+or \code{"Joreskog"}. Details provided in Millsap & Tein (2004).
+For consistency, specify \code{parameterization = "theta"}.
 }
 See \strong{Details} and \strong{References} for more information.}
 
@@ -144,9 +144,9 @@ were provided, this must be \code{FALSE}. If \code{TRUE}, the generated
 }
 \value{
 By default, an object of class \code{\linkS4class{measEq.syntax}}.
-  If \code{return.fit = TRUE}, a fitted \code{\link[lavaan]{lavaan}}
-  model, with the \code{measEq.syntax} object stored in the
-  \code{@external} slot, accessible by \code{fit@external$measEq.syntax}.
+If \code{return.fit = TRUE}, a fitted \code{\link[lavaan]{lavaan}}
+model, with the \code{measEq.syntax} object stored in the
+\code{@external} slot, accessible by \code{fit@external$measEq.syntax}.
 }
 \description{
 Automatically generates \code{lavaan} model syntax to specify a confirmatory
@@ -195,11 +195,11 @@ fixed values. This allows the user to retain additional constraints that
 might be necessary (e.g., if there are only 1 or 2 indicators). Some methods
 must be used in conjunction with other settings:
 \itemize{
-  \item \code{ID.cat = "Millsap"} requires \code{ID.fac = "UL"} and
-        \code{parameterization = "theta"}.
-  \item \code{ID.cat = "LISREL"} requires \code{parameterization = "theta"}.
-  \item \code{ID.fac = "effects.code"} is unavailable when there are any
-        cross-loadings.
+\item \code{ID.cat = "Millsap"} requires \code{ID.fac = "UL"} and
+\code{parameterization = "theta"}.
+\item \code{ID.cat = "LISREL"} requires \code{parameterization = "theta"}.
+\item \code{ID.fac = "effects.code"} is unavailable when there are any
+cross-loadings.
 }
 
 \strong{\code{ID.cat}:} Wu & Estabrook (2016) recommended constraining
@@ -502,28 +502,28 @@ summary(fit.metric)
 }
 \references{
 Kloessner, S., & Klopp, E. (2019). Explaining constraint interaction: How
-  to interpret estimated model parameters under alternative scaling methods.
-  \emph{Structural Equation Modeling, 26}(1), 143--155.
-  \doi{10.1080/10705511.2018.1517356}
+to interpret estimated model parameters under alternative scaling methods.
+\emph{Structural Equation Modeling, 26}(1), 143--155.
+\doi{10.1080/10705511.2018.1517356}
 
-  Liu, Y., Millsap, R. E., West, S. G., Tein, J.-Y., Tanaka, R., & Grimm,
-  K. J. (2017). Testing measurement invariance in longitudinal data with
-  ordered-categorical measures. \emph{Psychological Methods, 22}(3),
-  486--506. \doi{10.1037/met0000075}
+Liu, Y., Millsap, R. E., West, S. G., Tein, J.-Y., Tanaka, R., & Grimm,
+K. J. (2017). Testing measurement invariance in longitudinal data with
+ordered-categorical measures. \emph{Psychological Methods, 22}(3),
+486--506. \doi{10.1037/met0000075}
 
-  Millsap, R. E., & Tein, J.-Y. (2004). Assessing factorial invariance in
-  ordered-categorical measures. \emph{Multivariate Behavioral Research, 39}(3),
-  479--515. \doi{10.1207/S15327906MBR3903_4}
+Millsap, R. E., & Tein, J.-Y. (2004). Assessing factorial invariance in
+ordered-categorical measures. \emph{Multivariate Behavioral Research, 39}(3),
+479--515. \doi{10.1207/S15327906MBR3903_4}
 
-  Wu, H., & Estabrook, R. (2016). Identification of confirmatory factor
-  analysis models of different levels of invariance for ordered categorical
-  outcomes. \emph{Psychometrika, 81}(4), 1014--1045.
-  \doi{10.1007/s11336-016-9506-0}
+Wu, H., & Estabrook, R. (2016). Identification of confirmatory factor
+analysis models of different levels of invariance for ordered categorical
+outcomes. \emph{Psychometrika, 81}(4), 1014--1045.
+\doi{10.1007/s11336-016-9506-0}
 }
 \seealso{
 \code{\link{compareFit}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 }

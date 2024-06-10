@@ -33,9 +33,9 @@ A \code{data.frame} of latent variable correlation estimates, their
 confidence intervals, and a likelihood ratio tests against constrained models.
 with the following attributes:
 \describe{
- \item{baseline}{The baseline model after possible rescaling.}
- \item{constrained}{A \code{list} of the fitted constrained models
- used in the likelihood ratio test.}
+\item{baseline}{The baseline model after possible rescaling.}
+\item{constrained}{A \code{list} of the fitted constrained models
+used in the likelihood ratio test.}
 }
 }
 \description{

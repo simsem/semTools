@@ -30,8 +30,8 @@ differs from that of input, or input dataset is an R object. (If input is an
 R object and name is not specified, name will be "splitSample".)}
 }
 \value{
-If \code{path = "object"}, \code{list} of output data sets. 
-  Otherwise, output will saved to hard drive in the same format as input.
+If \code{path = "object"}, \code{list} of output data sets.
+Otherwise, output will saved to hard drive in the same format as input.
 }
 \description{
 This function randomly splits a data set into two halves, and saves the
@@ -40,10 +40,10 @@ resulting data sets to the same folder as the original.
 \details{
 This function randomly orders the rows of a data set, divides the data set
 into two halves, and saves the halves to the same folder as the original
-data set, preserving the original formatting. Data set type (*.csv or *.dat)
+data set, preserving the original formatting. Data set type (*.csv or \emph{.dat)
 and formatting (headers) are automatically detected, and output data sets
 will preserve input type and formatting unless specified otherwise. Input
-can be in the form of a file path (*.dat or *.csv), or an R object (matrix or
+can be in the form of a file path (}.dat or *.csv), or an R object (matrix or
 dataframe). If input is an R object and path is default, output data sets
 will be returned as a list object.
 }

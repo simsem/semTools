@@ -9,21 +9,21 @@ A \code{data.frame} with 800 observations of 18 variables.
 \describe{
 \item{f1item1}{Item 1 loading on factor 1}
 \item{f1item2}{Item 2 loading on factor 1}
-\item{f1item3}{Item 3 loading on factor 1} 
-\item{f1item4}{Item 4 loading on factor 1} 
+\item{f1item3}{Item 3 loading on factor 1}
+\item{f1item4}{Item 4 loading on factor 1}
 \item{f1item5}{Item 5 loading on factor 1}
-\item{f1item6}{Item 6 loading on factor 1} 
-\item{f1item7}{Item 7 loading on factor 1} 
-\item{f1item8}{Item 8 loading on factor 1} 
+\item{f1item6}{Item 6 loading on factor 1}
+\item{f1item7}{Item 7 loading on factor 1}
+\item{f1item8}{Item 8 loading on factor 1}
 \item{f1item9}{Item 9 loading on factor 1}
 \item{f2item1}{Item 1 loading on factor 2}
-\item{f2item2}{Item 2 loading on factor 2} 
-\item{f2item3}{Item 3 loading on factor 2} 
-\item{f2item4}{Item 4 loading on factor 2} 
-\item{f2item5}{Item 5 loading on factor 2} 
+\item{f2item2}{Item 2 loading on factor 2}
+\item{f2item3}{Item 3 loading on factor 2}
+\item{f2item4}{Item 4 loading on factor 2}
+\item{f2item5}{Item 5 loading on factor 2}
 \item{f2item6}{Item 6 loading on factor 2}
-\item{f2item7}{Item 7 loading on factor 2} 
-\item{f2item8}{Item 8 loading on factor 2} 
+\item{f2item7}{Item 7 loading on factor 2}
+\item{f2item8}{Item 8 loading on factor 2}
 \item{f2item9}{Item 9 loading on factor 2}
 }
 }
