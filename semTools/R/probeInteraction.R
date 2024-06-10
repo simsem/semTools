@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 9 August 2023
+### Last updated: 10 June 2024
 
 
 
@@ -617,8 +617,8 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 
 	# Find the intercept, regression coefficients, and residual variance of residual-centered regression
 	intceptRC <- est$alpha[nameY,]
-	resVarRC  <- est$psi[  nameY, nameY]
-	betaRC    <- est$beta[ nameY, nameX, drop = FALSE]
+	resVarRC  <-   est$psi[  nameY, nameY]
+	betaRC    <- t(est$beta[ nameY, nameX, drop = FALSE])
 
 	# Find the number of observations
 	numobs <- lavInspect(fit, "nobs")[group.number]
