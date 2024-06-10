@@ -68,6 +68,7 @@ Console, so that the seed will be controlled across cores.}
 \item{warn}{Whether to print warnings when fitting models to each allocation}
 }
 \value{
+\itemize{
 \item{model0.results}{Results returned by \code{\link{parcelAllocation}}
   for \code{model0} (see the \bold{Value} section).}
 \item{model1.results}{Results returned by \code{\link{parcelAllocation}}
@@ -86,6 +87,7 @@ Console, so that the seed will be controlled across cores.}
   \item{\code{Convergence_Summary:}}{ The proportion of allocations in which
     each model (and both models) converged on a solution.}
   } Histograms are also printed to the current plot-output device.}
+}
 }
 \description{
 This function quantifies and assesses the consequences of parcel-allocation

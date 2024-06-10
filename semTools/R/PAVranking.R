@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 22 April 2022
+### Last updated: 10 June 2024
 
 
 ##' Parcel-Allocation Variability in Model Ranking
@@ -97,6 +97,7 @@
 ##' @param warn Whether to print warnings when fitting models to each allocation
 ##'
 ##' @return
+##' \itemize{
 ##' \item{model0.results}{Results returned by \code{\link{parcelAllocation}}
 ##'   for \code{model0} (see the \bold{Value} section).}
 ##' \item{model1.results}{Results returned by \code{\link{parcelAllocation}}
@@ -115,6 +116,7 @@
 ##'   \item{\code{Convergence_Summary:}}{ The proportion of allocations in which
 ##'     each model (and both models) converged on a solution.}
 ##'   } Histograms are also printed to the current plot-output device.}
+##' }
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
