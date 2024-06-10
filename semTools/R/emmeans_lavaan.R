@@ -1,5 +1,5 @@
 ### Mattan S. Ben-Shachar & Terrence D. Jorgensen
-### Last updated: 22 August 2022
+### Last updated: 10 June 2024
 ### emmeans support for lavaan objects
 
 
@@ -545,12 +545,12 @@ grade ~ ageyr
 
 
   testthat::test_that("missing data - warn", {
-    data("mtcars")
+    utils::data("mtcars")
     mtcars$hp[1] <- NA
 
     model <- " mpg ~ hp + drat + hp:drat "
 
-    fit <- sem(model, mtcars, missing = "fiml.x")
+    fit <- lavaan::sem(model, mtcars, missing = "fiml.x")
 
     testthat::expect_warning(
       emmeans::ref_grid(fit, lavaan.DV = "mpg")
