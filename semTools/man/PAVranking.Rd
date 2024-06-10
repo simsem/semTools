@@ -68,13 +68,11 @@ Console, so that the seed will be controlled across cores.}
 \item{warn}{Whether to print warnings when fitting models to each allocation}
 }
 \value{
-\itemize{
-\item{model0.results}{Results returned by \code{\link{parcelAllocation}}
-  for \code{model0} (see the \bold{Value} section).}
-\item{model1.results}{Results returned by \code{\link{parcelAllocation}}
-  for \code{model1} (see the \bold{Value} section).}
-\item{model0.v.model1}{A \code{list} of model-comparison results, including
-  the following: \itemize{
+A \code{list} with 3 elements.  The first two (\code{model0.results} and
+\code{model1.results}) are results returned by \code{\link{parcelAllocation}}
+for \code{model0} and \code{model1}, respectively.
+The third element (\code{model0.v.model1}) is a \code{list} of
+model-comparison results, including the following:
   \item{\code{LRT_Summary:}}{ The average likelihood ratio test across
     allocations, as well as the \emph{SD}, minimum, maximum, range, and the
     proportion of allocations for which the test was significant.}
@@ -86,8 +84,8 @@ Console, so that the seed will be controlled across cores.}
     in fit.}
   \item{\code{Convergence_Summary:}}{ The proportion of allocations in which
     each model (and both models) converged on a solution.}
-  } Histograms are also printed to the current plot-output device.}
-}
+
+Histograms are also printed to the current plot-output device.
 }
 \description{
 This function quantifies and assesses the consequences of parcel-allocation
