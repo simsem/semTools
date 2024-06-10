@@ -48,11 +48,7 @@ functions a \emph{suite}. Our suites include:
   \code{\link{probe3WayRC}}, and
   \code{\link{plotProbe}}}
 \item{Exploratory Factor Analysis (EFA):
-  \code{\link{efa.ekc}},
-  \code{\link{efaUnrotate}},
-  \code{\link{orthRotate}},
-  \code{\link{oblqRotate}}, and
-  \code{\link{funRotate}}}
+  \code{\link{efa.ekc}}}
 \item{Reliability Estimation:
   \code{\link{compRelSEM}} and
   \code{\link{maximalRelia}}
