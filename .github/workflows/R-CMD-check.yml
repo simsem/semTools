@@ -47,6 +47,7 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
         with:
-          build_args: 'c("--no-manual", "--no-build-vignettes", "--ignore-vignettes")'
+          args: 'c("--no-manual", "--as-cran", "--no-build-vignettes", "--ignore-vignettes")'
+          build_args: 'c("--no-manual", "--no-build-vignettes")'
           upload-snapshots: true
           working-directory: './semTools'
