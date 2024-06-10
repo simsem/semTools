@@ -1,6 +1,7 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 27 May 2020
+### Last updated: 27 May      2020
 ###   DEPRECATED  24 November 2022
+###   REMOVED     10 June     2024
 ### fit and rotate EFA models in lavaan
 
 
@@ -88,7 +89,7 @@ efaUnrotate <- function(data = NULL, nf, varList = NULL,
 
   .Deprecated(msg = c("The efaUnrotate function is deprecated, and it will ",
                       "cease to be included in future versions of semTools. ",
-                      "The lavaan package itself now provides support EFA. ",
+                      "The lavaan package itself now provides EFA support. ",
                       "See help('semTools-deprecated) for details."))
 
   efaArgs <- list(...)
@@ -312,7 +313,7 @@ setMethod("summary", signature(object = "EFA"),
 ##' \code{\link[lavaan]{lav_func_jacobian_simple}} function.
 ##'
 ##' @aliases orthRotate oblqRotate funRotate
-##' @rdname rotate
+## @rdname rotate
 ##' @param object A lavaan output
 ##' @param method The method of rotations, such as \code{"varimax"},
 ##' \code{"quartimax"}, \code{"geomin"}, \code{"oblimin"}, or any gradient
