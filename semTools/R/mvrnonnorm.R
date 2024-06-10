@@ -1,5 +1,5 @@
 ### Yves Rosseel, Sunthud Pornprasertmanit, & Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 10 June 2024
 
 
 ##' Generate Non-normal Data using Vale and Maurelli (1983) method
@@ -21,8 +21,7 @@
 ##' unnamed), those will be used as variable names in the returned data matrix.
 ##' @param skewness A vector of skewness of the variables
 ##' @param kurtosis A vector of excessive kurtosis of the variables
-##' @param empirical If \code{TRUE}, \code{mu} and \code{Sigma} specify the
-##' empirical rather than population mean and covariance matrix
+##' @param empirical deprecated, ignored.
 ##' @return A data matrix
 ##' @author The original function is the \code{\link[lavaan]{simulateData}}
 ##' function written by Yves Rosseel in the \code{lavaan} package. The function
@@ -61,10 +60,8 @@ mvrnonnorm <- function(n, mu, Sigma, skewness = NULL,
     stop("'Sigma' is not positive definite")
   ## simulate X <- NULL
   if (is.null(skewness) && is.null(kurtosis)) {
-    X <- MASS::mvrnorm(n = n, mu = mu, Sigma = Sigma, empirical = empirical)
+    X <- mnormt::rmnorm(n = n, mean = mu, varcov = Sigma)
   } else {
-    if (empirical) warning(c("The empirical argument does not work when the ",
-                             "Vale and Maurelli's method is used."))
     if (is.null(skewness)) skewness <- rep(0, p)
     if (is.null(kurtosis)) kurtosis <- rep(0, p)
     Z <- ValeMaurelli1983copied(n = n, COR = cov2cor(Sigma),
@@ -174,10 +171,10 @@ ValeMaurelli1983copied <- function(n = 100L, COR, skewness, kurtosis,
          print( eigen(ICOR)$values )
     }
 
-    # generate Z ## FIXME: replace by rmvnorm once we use that package
-    X <- Z <- MASS::mvrnorm(n=n, mu=rep(0,nvar), Sigma=ICOR)
+    # generate Z
+    X <- Z <- mnormt::rmnorm(n = n, mean = rep(0,nvar), varcov = ICOR)
 
-    # transform Z using Fleishman constants
+    # transform Z using Fleischman constants
     for(i in 1:nvar) {
         X[,i] <- FTable[i,1L] + FTable[i,2L]*Z[,i] + FTable[i,3L]*Z[,i]^2 +
                  FTable[i,4L]*Z[,i]^3

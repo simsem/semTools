@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 October 2022
+### Last updated: 10 June 2024
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -247,7 +247,7 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
   if (standardized && inherits(object, "lavaan")) colnames(EST) <- "est.std"
 
   ## Matrix of sampled values
-  dat <- data.frame(MASS::mvrnorm(n = nRep, mu = coefs, Sigma = ACM))
+  dat <- data.frame(mnormt::rmnorm(n = nRep, mean = coefs, varcov = ACM))
   ## Apply the expression(s) to VECTORS of ESTIMATES
   if (fast) {
     samples <- within(dat, expr = {

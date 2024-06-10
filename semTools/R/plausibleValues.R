@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 May 2022
+### Last updated: 10 June 2024
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -312,7 +312,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
       ACOV <- attr(FS, "acov")[[1]]
       v.idx <- if (only.L2) 2L else 1L
       PV <- apply(FS[ , l.names[[v.idx]], drop = FALSE], 1, function(mu) {
-        MASS::mvrnorm(n = 1, mu = mu, Sigma = ACOV)
+        mnormt::rmnorm(n = 1, mean = mu, varcov = ACOV)
       })
       if (is.null(dim(PV))) {
         PV <- as.matrix(PV)
@@ -331,7 +331,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
         ACOV2 <- attr(FS2, "acov")[[1]]
         #FIXME: how will Yves handle lavPredict(fit, append=T, level=2)?
         PV2 <- apply(FS2, 1, function(mu) {
-          out <- MASS::mvrnorm(n = 1, mu = mu, Sigma = ACOV2)
+          out <- mnormt::rmnorm(n = 1, mean = mu, varcov = ACOV2)
         })
         if (is.null(dim(PV2))) {
           PV2 <- as.matrix(PV2)
@@ -351,7 +351,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
         ACOV[[gg]] <- attr(FS, "acov")[[gg]]
         v.idx <- if (only.L2) (2L + (gg - 1L)*nL) else (1L + (gg - 1L)*nL)
         PV[[gg]] <- apply(FS[[gg]][ , l.names[[v.idx]], drop = FALSE], 1, function(mu) {
-          MASS::mvrnorm(n = 1, mu = mu, Sigma = ACOV[[gg]])
+          mnormt::rmnorm(n = 1, mean = mu, varcov = ACOV[[gg]])
         })
         if (is.null(dim(PV[[gg]]))) {
           PV[[gg]] <- as.matrix(PV[[gg]])
@@ -375,7 +375,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
           ACOV2[[gg]] <- attr(FS2, "acov")[[gg]]
           #FIXME: how will Yves handle lavPredict(fit, append=T, level=2)?
           PV2[[gg]] <- apply(FS2[[gg]], 1, function(mu) {
-            MASS::mvrnorm(n = 1, mu = mu, Sigma = ACOV2[[gg]])
+            mnormt::rmnorm(n = 1, mean = mu, varcov = ACOV2[[gg]])
           })
           if (is.null(dim(PV2[[gg]]))) {
             PV2[[gg]] <- as.matrix(PV2[[gg]])

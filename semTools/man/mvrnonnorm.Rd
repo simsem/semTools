@@ -21,8 +21,7 @@ unnamed), those will be used as variable names in the returned data matrix.}
 
 \item{kurtosis}{A vector of excessive kurtosis of the variables}
 
-\item{empirical}{If \code{TRUE}, \code{mu} and \code{Sigma} specify the
-empirical rather than population mean and covariance matrix}
+\item{empirical}{deprecated, ignored.}
 }
 \value{
 A data matrix
