@@ -242,6 +242,8 @@ lavaan:::lav_object_inspect_vcov()
     $ diag(OUT)[diag(OUT) < 0 & abs(diag(OUT)) < .Machine$double.eps] <- 0
 - Would this cause problems with inversion within lavaan.mi methods?
 
+blavaan::ppmc()
+- add utils::txtProgressBar()
 
 blavaan::blavInspect()
 - add options "perc.npd" for theta and psi

@@ -45,7 +45,7 @@ parameters.}
 parameter changes. The confidence intervals are used in the equivalence
 testing.}
 
-\item{\dots}{arguments passed to \code{\link[lavaan]{modificationIndices}},
+\item{\dots}{arguments passed to \code{\link[lavaan:modificationIndices]{lavaan::modificationIndices()}},
 except for \code{delta}, which is already an argument (which can be
 substituted for \code{stdDelta} or specific sets of parameters using
 \code{stdLoad}, \code{cor}, \code{stdBeta}, and \code{intcept}).}
@@ -54,7 +54,7 @@ substituted for \code{stdDelta} or specific sets of parameters using
 A data frame with these variables:
 \enumerate{
 \item \code{lhs}: The left-hand side variable, with respect to the operator in
-in the lavaan \code{\link[lavaan]{model.syntax}}
+in the lavaan \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}}
 \item \code{op}: The lavaan syntax operator: "~~" represents covariance,
 "=~" represents factor loading, "~" represents regression, and
 "~1" represents intercept.
@@ -184,7 +184,7 @@ van der Veld, W. M., Saris, W. E., & Satorra, A. (2008).
 \emph{JRule 3.0 Users Guide}. \doi{10.13140/RG.2.2.13609.90729}
 }
 \seealso{
-\code{\link{moreFitIndices}} For the additional fit indices
+\code{\link[=moreFitIndices]{moreFitIndices()}} For the additional fit indices
 information
 }
 \author{

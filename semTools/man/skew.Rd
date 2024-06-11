@@ -52,11 +52,11 @@ Weisstein, Eric W. (n.d.). \emph{Skewness}. Retrived from
 }
 \seealso{
 \itemize{
-\item \code{\link{kurtosis}} Find the univariate excessive kurtosis
+\item \code{\link[=kurtosis]{kurtosis()}} Find the univariate excessive kurtosis
 of a variable
-\item \code{\link{mardiaSkew}} Find Mardia's multivariate skewness
+\item \code{\link[=mardiaSkew]{mardiaSkew()}} Find Mardia's multivariate skewness
 of a set of variables
-\item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate
+\item \code{\link[=mardiaKurtosis]{mardiaKurtosis()}} Find the Mardia's multivariate
 kurtosis of a set of variables
 }
 }

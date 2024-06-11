@@ -49,8 +49,8 @@
 ##'
 ##' @importFrom lavaan lavInspect lavNames parTable
 ##'
-##' @param object The \code{\linkS4class{lavaan}} model object returned by
-##'   the \code{\link[lavaan]{cfa}} function.
+##' @param object The [lavaan-class] model object returned by
+##'   the [lavaan::cfa()] function.
 ##' @param cutoff A cutoff to be used in the constrained models in likelihood
 ##'   ratio tests.
 ##' @param merge Whether the constrained models should be constructed by merging

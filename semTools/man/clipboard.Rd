@@ -12,19 +12,19 @@ saveFile(object, file, what = "summary", tableFormat = FALSE,
   fit.measures = "default", writeArgs = list(), ...)
 }
 \arguments{
-\item{object}{An object of class \code{\linkS4class{lavaan}} or
-\code{\linkS4class{FitDiff}}.}
+\item{object}{An object of class \linkS4class{lavaan} or
+\linkS4class{FitDiff}.}
 
 \item{what}{The attributes of the \code{lavaan} object to be copied in the
 clipboard. \code{"summary"} is to copy the screen provided from the
 \code{summary} function. \code{"mifit"} is to copy the result from the
-\code{\link{miPowerFit}} function. Other attributes listed in the
-\code{inspect} method in the \code{\linkS4class{lavaan}} could also be
+\code{\link[=miPowerFit]{miPowerFit()}} function. Other attributes listed in the
+\code{inspect} method in the \linkS4class{lavaan} could also be
 used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and
-so on.  Ignored for \code{\linkS4class{FitDiff}}-class objects.}
+so on.  Ignored for \linkS4class{FitDiff}-class objects.}
 
 \item{\dots}{Additional arguments when passing a \code{lavaan} object to the
-\code{summary} or \code{\link{miPowerFit}} function.}
+\code{summary} or \code{\link[=miPowerFit]{miPowerFit()}} function.}
 
 \item{file}{A file name used for saving the result.}
 
@@ -33,11 +33,11 @@ tabs for separation. Otherwise, save the result as the output screen
 printed in the R console.}
 
 \item{fit.measures}{\code{character} vector specifying names of fit measures
-returned by \code{\link[lavaan]{fitMeasures}} to be copied/saved.  Only
-relevant if \code{object} is class \code{\linkS4class{FitDiff}}.}
+returned by \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to be copied/saved.  Only
+relevant if \code{object} is class \linkS4class{FitDiff}.}
 
 \item{writeArgs}{\code{list} of additional arguments to be passed to
-\code{\link[utils]{write.table}}}
+\code{\link[utils:write.table]{utils::write.table()}}}
 }
 \value{
 The resulting output will be saved into a clipboard or a file. If
@@ -45,7 +45,7 @@ using the \code{clipboard} function, users may paste it in the other
 applications.
 }
 \description{
-Copy or save the result of \code{lavaan} or \code{\linkS4class{FitDiff}}
+Copy or save the result of \code{lavaan} or \linkS4class{FitDiff}
 object into a clipboard or a file. From the clipboard, users may paste the
 result into the Microsoft Excel or spreadsheet application to create a table
 of the output.

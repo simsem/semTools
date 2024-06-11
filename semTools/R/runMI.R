@@ -19,19 +19,18 @@
 ##' @importFrom lavaan lavInspect parTable
 ##' @importFrom methods getMethod
 ##'
-##' @param model The analysis model can be specified using lavaan
-##'   \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
-##'   \code{\link[lavaan]{parTable}}).
+##' @param model The analysis model can be specified using
+##'   [lavaan::model.syntax()] or a [lavaan::parTable()]
 ##' @param data A `data.frame` with missing observations, or a `list`
-##'   of imputed data sets (if data are imputed already). If `runMI` has
+##'   of imputed data sets (if data are imputed already). If `runMI()` has
 ##'   already been called, then imputed data sets are stored in the
 ##'   `@@DataList` slot, so `data` can also be a `lavaan.mi` object
 ##'   from which the same imputed data will be used for additional analyses.
 ##' @param fun `character`. Name of a specific lavaan function used to fit
 ##'   `model` to `data` (i.e., `"lavaan"`, `"cfa"`,
-##'   `"sem"`, or `"growth"`). Only required for `runMI`.
-##' @param \dots additional arguments to pass to \code{\link[lavaan]{lavaan}} or
-##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
+##'   `"sem"`, or `"growth"`). Only required for `runMI()`.
+##' @param \dots additional arguments to pass to [lavaan::lavaan()] or
+##'   [lavaan::lavaanList()]. See also [lavaan::lavOptions()].
 ##'   Note that `lavaanList` provides parallel computing options, as well as
 ##'   a `FUN` argument so the user can extract custom output after the model
 ##'   is fitted to each imputed data set (see **Examples**).  TIP: If a
@@ -53,7 +52,7 @@
 ##'   data. Ignored if `data` is already a `list` of imputed data sets
 ##'   or a `lavaan.mi` object.
 ##'
-##' @return A \code{\linkS4class{lavaan.mi}} object
+##' @return A [semTools::lavaan.mi-class] object
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -410,9 +409,9 @@ growth.mi <- function(model, data, ...,
 ##'
 ##' This is a utility function used to calculate the "D2" statistic for pooling
 ##' test statistics across multiple imputations. This function is called by
-##' several functions used for \code{\linkS4class{lavaan.mi}} objects, such as
-##' \code{\link{lavTestLRT.mi}}, \code{\link{lavTestWald.mi}}, and
-##' \code{\link{lavTestScore.mi}}. But this function can be used for any general
+##' several functions used for [semTools::lavaan.mi-class] objects, such as
+##' [lavTestLRT.mi()], [lavTestWald.mi()], and
+##' [lavTestScore.mi()]. But this function can be used for any general
 ##' scenario because it only requires a vector of \eqn{\chi^2} statistics (one
 ##' from each imputation) and the degrees of freedom for the test statistic.
 ##' See Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010, chapter 8) for
@@ -439,8 +438,8 @@ growth.mi <- function(model, data, ...,
 ##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
 ##'   fraction missing information (FMI = ARIV / (1 + ARIV)).
 ##'
-##' @seealso \code{\link{lavTestLRT.mi}}, \code{\link{lavTestWald.mi}},
-##'   \code{\link{lavTestScore.mi}}
+##' @seealso [lavTestLRT.mi()], [lavTestWald.mi()],
+##'   [lavTestScore.mi()]
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})

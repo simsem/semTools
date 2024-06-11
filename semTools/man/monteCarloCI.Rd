@@ -11,9 +11,9 @@ monteCarloCI(object = NULL, expr, coefs, ACM, nRep = 20000,
   ask = getOption("device.ask.default"), ...)
 }
 \arguments{
-\item{object}{A object of class \code{\linkS4class{lavaan}} in which
+\item{object}{A object of class \linkS4class{lavaan} in which
 functions of parameters have already been defined using the \verb{:=}
-operator in \code{lavaan}'s \code{\link[lavaan]{model.syntax}}. When
+operator in \code{lavaan}'s \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}}. When
 \code{NULL}, users must specify \code{expr}, \code{coefs}, and \code{ACM}.}
 
 \item{expr}{Optional \code{character} vector specifying functions of model
@@ -41,18 +41,18 @@ recommended to minimize Monte Carlo error of the estimated CIs.}
 \item{standardized}{\code{logical} indicating whether to obtain CIs for the
 fully standardized (\code{"std.all"}) estimates, using their asymptotic
 sampling covariance matrix.  Only valid when \code{object} is of class
-\code{\linkS4class{lavaan}}, not \code{\linkS4class{lavaan.mi}}.}
+\linkS4class{lavaan}, not \linkS4class{lavaan.mi}.}
 
 \item{fast}{\code{logical} indicating whether to use a fast algorithm that
 assumes all functions of parameters (in \code{object} or \code{expr}) use
-standard operations. Set to \code{FALSE} if using (e.g.) \code{\link{c}()}
+standard operations. Set to \code{FALSE} if using (e.g.) \code{\link[=c]{c()}}
 to concatenate parameters in the definition, which would have unintended
 consequences when vectorizing functions in \code{expr} across sampled
 parameters.}
 
 \item{level}{\code{numeric} confidence level, between 0--1}
 
-\item{na.rm}{\code{logical} passed to \code{\link[stats]{quantile}}}
+\item{na.rm}{\code{logical} passed to \code{\link[stats:quantile]{stats::quantile()}}}
 
 \item{append.samples}{\code{logical} indicating whether to return the
 simulated empirical sampling distribution of parameters (in \code{coefs})
@@ -65,7 +65,7 @@ distribution of each function in \code{expr}}
 
 \item{ask}{whether to prompt user before printing each plot}
 
-\item{\dots}{arguments passed to \code{\link[graphics]{hist}} when
+\item{\dots}{arguments passed to \code{\link[graphics:hist]{graphics::hist()}} when
 \code{plot = TRUE}.}
 }
 \value{
@@ -86,10 +86,10 @@ This function implements the Monte Carlo method of obtaining an empirical
 sampling distriution of estimated model parameters, as described by
 MacKinnon et al. (2004) for testing indirect effects in mediation models.
 The easiest way to use the function is to fit a SEM to data with
-\code{\link[lavaan]{lavaan}}, using the \verb{:=} operator in the
-\code{\link[lavaan]{model.syntax}} to specify user-defined parameters.
+\code{\link[lavaan:lavaan]{lavaan::lavaan()}}, using the \verb{:=} operator in the
+\code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} to specify user-defined parameters.
 All information is then available in the resulting
-\code{\linkS4class{lavaan}} object.  Alternatively (especially when using
+\linkS4class{lavaan} object.  Alternatively (especially when using
 external SEM software to fit the model), the expression(s) can be explicitly
 passed to the function, along with the vector of estimated model parameters
 and their associated asymptotic sampling covariance matrix (ACOV).
@@ -105,7 +105,7 @@ the ACM in free format and scientific notation
 \item Mplus Include the command TECH3; in the OUTPUT section. The ACM will
 be printed in the output.
 \item \code{lavaan}: Use the \code{vcov} method on the fitted
-\code{\linkS4class{lavaan}} object to return the ACM.
+\linkS4class{lavaan} object to return the ACM.
 }
 }
 \examples{

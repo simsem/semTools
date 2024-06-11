@@ -86,10 +86,10 @@ A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
 }
 \seealso{
 \itemize{
-\item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
-\item \code{\link{findRMSEApower}} to find the statistical power based on
+\item \code{\link[=plotRMSEAdist]{plotRMSEAdist()}} to visualize the RMSEA distributions
+\item \code{\link[=findRMSEApower]{findRMSEApower()}} to find the statistical power based on
 population RMSEA given a sample size
-\item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
+\item \code{\link[=findRMSEAsamplesize]{findRMSEAsamplesize()}} to find the minium sample size for
 a given statistical power based on population RMSEA
 }
 }

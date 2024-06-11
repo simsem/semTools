@@ -9,8 +9,8 @@ reliability(object, what = c("alpha", "omega", "omega2", "omega3", "ave"),
             omit.indicators = character(0), omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{object}{A \code{\linkS4class{lavaan}} or
-\code{\linkS4class{lavaan.mi}} object, expected to contain only
+\item{object}{A \linkS4class{lavaan} or
+\linkS4class{lavaan.mi} object, expected to contain only
 exogenous common factors (i.e., a CFA model).}
 
 \item{what}{\code{character} vector naming any reliability indices to
@@ -34,7 +34,7 @@ column when \code{return.total = TRUE}.}
 \item{omit.factors}{\code{character} vector naming any common factors
 modeled in \code{object} whose composite reliability is not of
 interest. For example, higher-order or method factors. Note that
-\code{\link{reliabilityL2}()} should be used to calculate composite
+\code{\link[=reliabilityL2]{reliabilityL2()}} should be used to calculate composite
 reliability of a higher-order factor.}
 
 \item{omit.indicators}{\code{character} vector naming any observed variables
@@ -123,8 +123,8 @@ Var\left( \psi \right)}{\bold{1}^\prime \Sigma \bold{1}}, }
 
 where \eqn{\Sigma} is the observed covariance matrix. If the model fits the
 data well, \eqn{\omega_3} will be similar to \eqn{\omega_2}. Note that if
-there is a directional effect in the model, all coefficients are calcualted
-from total factor variances: \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
+there is a directional effect in the model, all coefficients are calculated
+from total factor variances: \code{lavInspect(object, "cov.lv")}.
 
 In conclusion, \eqn{\omega_1}, \eqn{\omega_2}, and \eqn{\omega_3} are
 different in the denominator. The denominator of the first formula assumes
@@ -267,7 +267,7 @@ scales of measurement do not help make it: A response to Chalmers.
 \doi{10.1177/0013164419844305}
 }
 \seealso{
-\code{\link{semTools-deprecated}}
+\code{\link[=semTools-deprecated]{semTools-deprecated()}}
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})

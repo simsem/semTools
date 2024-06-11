@@ -34,21 +34,21 @@ auto-\emph{covariance} to be equal within the same item across factors.
 For example, the covariance of item 1 in time 1 and time 2 is equal to
 the covariance of item 1 in time 2 and time 3.}
 
-\item{fixed.x}{See \code{\link[lavaan]{lavaan}.}}
+\item{fixed.x}{See \code{\link[=lavOptions]{lavOptions()}}.}
 
-\item{std.lv}{See \code{\link[lavaan]{lavaan}.}}
+\item{std.lv}{See \code{\link[=lavOptions]{lavOptions()}}.}
 
-\item{group}{See \code{\link[lavaan]{lavaan}.}}
+\item{group}{See \code{\link[=lavaan]{lavaan()}}.}
 
-\item{group.equal}{See \code{\link[lavaan]{lavaan}.}}
+\item{group.equal}{See \code{\link[=lavOptions]{lavOptions()}}.}
 
-\item{group.partial}{See \code{\link[lavaan]{lavaan}.}}
+\item{group.partial}{See \code{\link[=lavOptions]{lavOptions()}}.}
 
 \item{strict}{If \code{TRUE}, the sequence requires strict invariance. See}
 
-\item{warn}{See \code{\link[lavaan]{lavaan}.}}
+\item{warn}{See See \code{\link[=lavOptions]{lavOptions()}}.}
 
-\item{debug}{See \code{\link[lavaan]{lavaan}.} details for more information.}
+\item{debug}{See See \code{\link[=lavOptions]{lavOptions()}}. details for more information.}
 
 \item{quiet}{If \code{FALSE} (default), a summary is printed out containing
 an overview of the different models that are fitted, together with some
@@ -58,13 +58,13 @@ model comparison tests. If \code{TRUE}, no summary is printed.}
 nested models.}
 
 \item{baseline.model}{custom baseline model passed to
-\code{\link[lavaan]{fitMeasures}}}
+\code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}}
 
 \item{method}{The method used to calculate likelihood ratio test. See
-\code{\link[lavaan]{lavTestLRT}} for available options}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} for available options}
 
-\item{...}{Additional arguments in the \code{\link[lavaan]{lavaan}}
-function. See also \code{\link[lavaan]{lavOptions}}}
+\item{...}{Additional arguments in the \code{\link[=lavaan]{lavaan()}}
+function. See also \code{\link[=lavOptions]{lavOptions()}}}
 }
 \value{
 Invisibly, all model fits in the sequence are returned as a list.
@@ -143,7 +143,7 @@ practices, and recommendations for organizational research.
 \doi{10.1177/109442810031002}
 }
 \seealso{
-\code{\link{semTools-deprecated}}
+\code{\link[=semTools-deprecated]{semTools-deprecated()}}
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})

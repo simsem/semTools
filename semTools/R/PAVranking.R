@@ -67,7 +67,7 @@
 ##'   parcels created using the same allocation scheme.
 ##' @param parcel.names `character` vector containing names of all parcels
 ##'   appearing as indicators in `model0=` or `model1=`.
-##' @param item.syntax \link[lavaan]{lavaan} model syntax specifying the model
+##' @param item.syntax [lavaan()] model syntax specifying the model
 ##'   that would be fit to all of the unparceled items, including items that
 ##'   should be randomly allocated to parcels appearing in `model0=` and `model1=`.
 ##' @param nAlloc The number of random items-to-parcels allocations to generate.
@@ -82,8 +82,8 @@
 ##'   to request from each fitted [lavaan-class] model.  See the
 ##'   output of [lavaan::fitMeasures()] for a list of available measures.
 ##' @param \dots Additional arguments to be passed to
-##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}
-##' @param show.progress If `TRUE`, show a \code{\link[utils]{txtProgressBar}}
+##'   [lavaan::lavaanList()]. See also [lavaan::lavOptions()]
+##' @param show.progress If `TRUE`, show a [utils::txtProgressBar()]
 ##'   indicating how fast each model-fitting iterates over allocations.
 ##' @param iseed (Optional) Random seed used for parceling items. When the same
 ##'   random seed is specified and the program is re-run, the same allocations
@@ -98,7 +98,7 @@
 ##'
 ##' @return
 ##' A `list` with 3 elements.  The first two (`model0.results` and
-##' `model1.results`) are results returned by \code{\link{parcelAllocation}}
+##' `model1.results`) are results returned by [parcelAllocation()]
 ##' for `model0` and `model1`, respectively.
 ##' The third element (`model0.v.model1`) is a `list` of
 ##' model-comparison results, including the following:
@@ -119,8 +119,8 @@
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso \code{\link{parcelAllocation}} for fitting a single model,
-##'   \code{\link{poolMAlloc}} for choosing the number of allocations
+##' @seealso [parcelAllocation()] for fitting a single model,
+##'   [poolMAlloc()] for choosing the number of allocations
 ##'
 ##' @references
 ##' Raftery, A. E. (1995). Bayesian model selection in social

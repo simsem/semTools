@@ -36,7 +36,7 @@
 ##' @importFrom lavaan lavInspect parTable
 ##'
 ##' @param ... The same arguments as for any lavaan model.  See
-##'   \code{\link{cfa}} for more information.
+##'   [cfa()] for more information.
 ##' @param std.lv If `TRUE`, the fixed-factor method of scale
 ##'   identification is used. If `FALSE`, the first variable for each
 ##'   factor is used as marker variable.
@@ -48,9 +48,9 @@
 ##' @param fit.measures Fit measures used to calculate the differences between
 ##'   nested models.
 ##' @param baseline.model custom baseline model passed to
-##'   \code{\link[lavaan]{fitMeasures}}
+##'   [lavaan::fitMeasures()]
 ##' @param method The method used to calculate likelihood ratio test. See
-##'   \code{\link[lavaan]{lavTestLRT}} for available options
+##'   [lavaan::lavTestLRT()] for available options
 ##'
 ##' @return Invisibly, all model fits in the sequence are returned as a list.
 ##'
@@ -79,7 +79,7 @@
 ##' measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE,
 ##'                          quiet = FALSE, fit.measures = "default",
 ##'                          baseline.model = NULL, method = "default")
-##' @seealso \code{\link{semTools-deprecated}}
+##' @seealso [semTools-deprecated()]
 ##' @keywords internal
 NULL
 

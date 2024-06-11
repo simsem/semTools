@@ -31,7 +31,7 @@ imputation method procedure.  Otherwise, use the default \code{order = 1}.}
 \item{silent}{If \code{FALSE}, the details of the \code{quark} process are
 printed.}
 
-\item{\dots}{additional arguments to pass to \code{\link[mice]{mice}}.}
+\item{\dots}{additional arguments to pass to \code{\link[mice:mice]{mice::mice()}}.}
 }
 \value{
 The output value from using the quark function is a list. It will
@@ -71,7 +71,7 @@ dataset contains all of the original data post imputation, the second third
 contains the means of the polynomial effects (squares and cubes), and the
 final third contains the means of the non-overlapping interaction effects. A
 full principal componenent analysis is conducted and the individual
-components are retained. The subsequent \code{\link{combinequark}} function
+components are retained. The subsequent \code{\link[=combinequark]{combinequark()}} function
 provides researchers the control in determining how many components to
 extract and retain. The function returns the dataset as submitted (with
 missing values) and the component scores as requested for a more accurate
@@ -102,7 +102,7 @@ Principal Components as Auxiliary Variables in Missing Data Estimation.
 \doi{10.1080/00273171.2014.999267}
 }
 \seealso{
-\code{\link{combinequark}}
+\code{\link[=combinequark]{combinequark()}}
 }
 \author{
 Steven R. Chesnut (University of Southern Mississippi;

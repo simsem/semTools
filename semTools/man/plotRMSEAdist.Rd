@@ -65,11 +65,11 @@ index. \emph{Structural Equation Modeling, 5}(4), 411--419.
 }
 \seealso{
 \itemize{
-\item \code{\link{plotRMSEApower}} to plot the statistical power
+\item \code{\link[=plotRMSEApower]{plotRMSEApower()}} to plot the statistical power
 based on population RMSEA given the sample size
-\item \code{\link{findRMSEApower}} to find the statistical power based on
+\item \code{\link[=findRMSEApower]{findRMSEApower()}} to find the statistical power based on
 population RMSEA given a sample size
-\item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
+\item \code{\link[=findRMSEAsamplesize]{findRMSEAsamplesize()}} to find the minium sample size for
 a given statistical power based on population RMSEA
 }
 }

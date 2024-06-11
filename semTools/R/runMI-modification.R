@@ -20,7 +20,7 @@
 ##' @importFrom methods getMethod
 ##' @importFrom stats cov pchisq qchisq
 ##'
-##' @param object An object of class \code{\linkS4class{lavaan.mi}}
+##' @param object An object of class [lavaan.mi-class]
 ##' @param test `character` indicating which pooling method to use.
 ##'  `"D1"` requests Mansolf, Jorgensen, & Enders' (2020) proposed
 ##'  Wald-like test for pooling the gradient and information, which are then
@@ -58,7 +58,7 @@
 ##'   covariances are scaled by the square-root of the diagonal elements of the
 ##'   model-implied covariance matrix of the latent variables.
 ##' @param information `character` indicating the type of information
-##'   matrix to use (check \code{\link{lavInspect}} for available options).
+##'   matrix to use (check [lavInspect()] for available options).
 ##'   `"expected"` information is the default, which provides better
 ##'   control of Type I errors.
 ##' @param power `logical`. If `TRUE`, the (post-hoc) power is

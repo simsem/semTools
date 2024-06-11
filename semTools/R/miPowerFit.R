@@ -79,7 +79,7 @@
 ##' @param cilevel The confidence level of the confidence interval of expected
 ##'   parameter changes. The confidence intervals are used in the equivalence
 ##'   testing.
-##' @param \dots arguments passed to \code{\link[lavaan]{modificationIndices}},
+##' @param \dots arguments passed to [lavaan::modificationIndices()],
 ##'   except for `delta`, which is already an argument (which can be
 ##'   substituted for `stdDelta` or specific sets of parameters using
 ##'   `stdLoad`, `cor`, `stdBeta`, and `intcept`).
@@ -87,7 +87,7 @@
 ##' @return A data frame with these variables:
 ##'  \enumerate{
 ##'   \item `lhs`: The left-hand side variable, with respect to the operator in
-##'    in the lavaan \code{\link[lavaan]{model.syntax}}
+##'    in the lavaan [lavaan::model.syntax()]
 ##'   \item `op`: The lavaan syntax operator: "~~" represents covariance,
 ##'     "=~" represents factor loading, "~" represents regression, and
 ##'     "~1" represents intercept.
@@ -130,7 +130,7 @@
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
-##' @seealso \code{\link{moreFitIndices}} For the additional fit indices
+##' @seealso [moreFitIndices()] For the additional fit indices
 ##' information
 ##'
 ##' @references

@@ -7,8 +7,8 @@
 lrv2ord(Sigma, Mu, thresholds, cWts)
 }
 \arguments{
-\item{Sigma}{Population covariance \code{\link{matrix}}, with variable names
-saved in the \code{\link{dimnames}} attribute.}
+\item{Sigma}{Population covariance \code{\link[=matrix]{matrix()}}, with variable names
+saved in the \code{\link[=dimnames]{dimnames()}} attribute.}
 
 \item{Mu}{Optional \code{numeric} vector of population means. If missing,
 all means will be set to zero.}

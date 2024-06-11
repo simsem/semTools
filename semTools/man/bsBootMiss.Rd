@@ -59,7 +59,7 @@ bootstrap data sets only.}
 
 \item{writeArgs}{Optional \code{list}. If \code{writeBootData = TRUE} or
 \code{writeBootData = TRUE}, user can pass arguments to the
-\code{\link[utils]{write.table}} function as a list.  Some default values
+\code{\link[utils:write.table]{utils::write.table()}} function as a list.  Some default values
 are provided: \code{file} = "bootstrappedSamples.dat", \code{row.names} =
 \code{FALSE}, and \code{na} = "-999", but the user can override all of these
 by providing other values for those arguments in the \code{writeArgs} list.}
@@ -72,11 +72,11 @@ function will be suppressed when fitting the model to each bootstrap sample.}
 \item{showProgress}{Logical. Indicating whether to display a progress bar
 while fitting models to bootstrap samples.}
 
-\item{\dots}{The additional arguments in the \code{\link[lavaan]{lavaan}}
-function. See also \code{\link[lavaan]{lavOptions}}}
+\item{\dots}{The additional arguments in the \code{\link[lavaan:lavaan]{lavaan::lavaan()}}
+function. See also \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}}
 }
 \value{
-As a default, this function returns a \code{\linkS4class{BootMiss}}
+As a default, this function returns a \linkS4class{BootMiss}
 object containing the results of the bootstrap samples. Use \code{show},
 \code{summary}, or \code{hist} to examine the results. Optionally, the
 transformed data set is returned if \code{transDataOnly = TRUE}. Optionally,
@@ -139,7 +139,7 @@ data: Obtaining a p-value for a test of exact fit. \emph{Multivariate
 Behavioral Research, 44}(6), 741--763. \doi{10.1080/00273170903333590}
 }
 \seealso{
-\code{\linkS4class{BootMiss}}
+\linkS4class{BootMiss}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

@@ -60,9 +60,9 @@ performance of RMSEA in models with small degrees of freedom.
 }
 \seealso{
 \itemize{
-\item \code{\link{miPowerFit}} For the modification indices and their
+\item \code{\link[=miPowerFit]{miPowerFit()}} For the modification indices and their
 power approach for model fit evaluation
-\item \code{\link{moreFitIndices}} For other fit indices
+\item \code{\link[=moreFitIndices]{moreFitIndices()}} For other fit indices
 }
 }
 \author{

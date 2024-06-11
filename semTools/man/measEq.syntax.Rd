@@ -15,28 +15,27 @@ measEq.syntax(configural.model, ..., ID.fac = "std.lv",
 (i.e., representing only configural invariance), unless required for model
 identification. \code{configural.model} can be either:
 \itemize{
-\item lavaan \code{\link[lavaan]{model.syntax}} or a parameter table
-(as returned by \code{\link[lavaan]{parTable}}) specifying the
+\item \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} or a \code{\link[lavaan:parTable]{lavaan::parTable()}} specifying the
 configural model. Using this option, the user can also provide
 either raw \code{data} or summary statistics via \code{sample.cov}
 and (optionally) \code{sample.mean}. See argument descriptions in
-\code{\link[lavaan]{lavaan}}. In order to include thresholds in
+\code{\link[lavaan:lavaan]{lavaan::lavaan()}}. In order to include thresholds in
 the generated syntax, either users must provide raw \code{data},
 or the \code{configural.model} syntax must specify all thresholds
 (see first example). If raw \code{data} are not provided, the
 number of blocks (groups, levels, or combination) must be
 indicated using an arbitrary \code{sample.nobs} argument (e.g.,
 3 groups could be specified using \code{sample.nobs=rep(1, 3)}).
-\item a fitted \code{\linkS4class{lavaan}} model (e.g., as returned by
-\code{\link[lavaan]{cfa}}) estimating the configural model
+\item a fitted \linkS4class{lavaan} model (e.g., as returned by
+\code{\link[lavaan:cfa]{lavaan::cfa()}}) estimating the configural model
 }
 Note that the specified or fitted model must not contain any latent
 structural parameters (i.e., it must be a CFA model), unless they are
 higher-order constructs with latent indicators (i.e., a second-order CFA).}
 
 \item{...}{Additional arguments (e.g., \code{data}, \code{ordered}, or
-\code{parameterization}) passed to the \code{\link[lavaan]{lavaan}}
-function. See also \code{\link[lavaan]{lavOptions}}.}
+\code{parameterization}) passed to the \code{\link[lavaan:lavaan]{lavaan::lavaan()}}
+function. See also \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
 \item{ID.fac}{\code{character}. The method for identifying common-factor
 variances and (if \code{meanstructure = TRUE}) means. Three methods are
@@ -88,15 +87,15 @@ additional threshold constrained for a reference indicator (ignored if
 binary).}
 
 \item{group}{optional \code{character} indicating the name of a grouping
-variable. See \code{\link[lavaan]{cfa}}.}
+variable. See \code{\link[lavaan:cfa]{lavaan::cfa()}}.}
 
 \item{group.equal}{optional \code{character} vector indicating type(s) of
 parameter to equate across groups. Ignored if \code{is.null(group)}.
-See \code{\link[lavaan]{lavOptions}}.}
+See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
 \item{group.partial}{optional \code{character} vector or a parameter table
 indicating exceptions to \code{group.equal} (see
-\code{\link[lavaan]{lavOptions}}). Any variables not appearing in the
+\code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}). Any variables not appearing in the
 \code{configural.model} will be ignored, and any parameter constraints
 needed for identification (e.g., two thresholds per indicator when
 \code{ID.cat = "Millsap"}) will be removed.}
@@ -128,23 +127,23 @@ between adjacently measured occasions). \code{auto = TRUE} or \code{"all"}
 will specify residual covariances among all possible lags per repeatedly
 measured indicator in \code{longIndNames}.}
 
-\item{warn, debug}{\code{logical}. Passed to \code{\link[lavaan]{lavaan}}
-and \code{\link[lavaan]{lavParseModelString}}.
-See \code{\link[lavaan]{lavOptions}}.}
+\item{warn, debug}{\code{logical}. Passed to \code{\link[lavaan:lavaan]{lavaan::lavaan()}}
+and \code{\link[lavaan:model.syntax]{lavaan::lavParseModelString()}}.
+See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
 \item{return.fit}{\code{logical} indicating whether the generated syntax
 should be fitted to the provided \code{data} (or summary statistics, if
 provided via \code{sample.cov}). If \code{configural.model} is a fitted
 lavaan model, the generated syntax will be fitted using the \code{update}
-method (see \code{\linkS4class{lavaan}}), and \dots will be passed to
-\code{\link[lavaan]{lavaan}}. If neither data nor a fitted lavaan model
+method (see \linkS4class{lavaan}), and \dots will be passed to
+\code{\link[lavaan:lavaan]{lavaan::lavaan()}}. If neither data nor a fitted lavaan model
 were provided, this must be \code{FALSE}. If \code{TRUE}, the generated
 \code{measEq.syntax} object will be included in the \code{lavaan} object's
 \verb{@external} slot, accessible by \code{fit@external$measEq.syntax}.}
 }
 \value{
-By default, an object of class \code{\linkS4class{measEq.syntax}}.
-If \code{return.fit = TRUE}, a fitted \code{\link[lavaan]{lavaan}}
+By default, an object of class \linkS4class{measEq.syntax}.
+If \code{return.fit = TRUE}, a fitted \code{\link[lavaan:lavaan]{lavaan::lavaan()}}
 model, with the \code{measEq.syntax} object stored in the
 \verb{@external} slot, accessible by \code{fit@external$measEq.syntax}.
 }
@@ -239,7 +238,7 @@ number of indicators. So the repeatedly measured first indicator
 generated as \code{"._factor_ind.1"}.
 
 The same types of parameter can be specified for \code{long.equal} as for
-\code{group.equal} (see \code{\link[lavaan]{lavOptions}} for a list), except
+\code{group.equal} (see \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}} for a list), except
 for \code{"residual.covariances"} or \code{"lv.covariances"}. Instead, users
 can constrain \emph{auto}covariances using keywords \code{"resid.autocov"}
 or \code{"lv.autocov"}. Note that \code{group.equal = "lv.covariances"} or
@@ -255,11 +254,11 @@ in bifactor models of repeatedly measured constructs), autocovariances of
 each repeatedly measured factor will still be freely estimated in the
 generated syntax.
 
-\strong{Missing Data:} If users wish to utilize the \code{\link{auxiliary}}
+\strong{Missing Data:} If users wish to utilize the \code{\link[=auxiliary]{auxiliary()}}
 function to automatically include auxiliary variables in conjunction with
 \code{missing = "FIML"}, they should first generate the hypothesized-model
 syntax, then submit that syntax as the model to \code{auxiliary()}.
-If users utilized \code{\link{runMI}} to fit their \code{configural.model}
+If users utilized \code{\link[=lavaan.mi]{lavaan.mi()}} to fit their \code{configural.model}
 to multiply imputed data, that model can also be passed to the
 \code{configural.model} argument, and if \code{return.fit = TRUE}, the
 generated model will be fitted to the multiple imputations.
@@ -521,7 +520,7 @@ outcomes. \emph{Psychometrika, 81}(4), 1014--1045.
 \doi{10.1007/s11336-016-9506-0}
 }
 \seealso{
-\code{\link{compareFit}}
+\code{\link[=compareFit]{compareFit()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

@@ -10,8 +10,8 @@
 ##' summary statistics of each variable, using either an incomplete data set or
 ##' a list of imputed data sets.
 ##'
-##' The function estimates a saturated model with \code{\link[lavaan]{lavaan}}
-##' for a single incomplete data set using FIML, or with \code{\link{lavaan.mi}}
+##' The function estimates a saturated model with [lavaan::lavaan()]
+##' for a single incomplete data set using FIML, or with [lavaan.mi()]
 ##' for a list of imputed data sets. If method = `"saturated"`, FMI will be
 ##' estiamted for all summary statistics, which could take a lot of time with
 ##' big data sets. If method = `"null"`, FMI will only be estimated for
@@ -49,7 +49,7 @@
 ##'   there are few imputations; makes little difference when there are many
 ##'   imputations. Ignored when `data` is not a list of imputed data sets.
 ##' @param return.fit logical. If `TRUE`, the fitted
-##'   \code{\linkS4class{lavaan}} or \code{\linkS4class{lavaan.mi}}
+##'   [lavaan-class] or [lavaan.mi-class]
 ##'   model is returned, so FMI can be found from `summary(..., fmi=TRUE)`.
 ##'
 ##' @return `fmi` returns a list with at least 2 of the following:

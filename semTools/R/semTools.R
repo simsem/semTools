@@ -12,57 +12,57 @@
 ##' functions a *suite*. Our suites include:
 ##' \itemize{
 ##' \item{Model Fit Evaluation:
-##'   \code{\link{moreFitIndices}},
-##'   \code{\link{nullRMSEA}},
-##'   \code{\link{singleParamTest}},
-##'   \code{\link{miPowerFit}}, and
-##'   \code{\link{chisqSmallN}}}
+##'   [moreFitIndices()],
+##'   [nullRMSEA()],
+##'   [singleParamTest()],
+##'   [miPowerFit()], and
+##'   [chisqSmallN()]}
 ##' \item{Measurement Invariance:
-##'   \code{\link{measEq.syntax}},
-##'   \code{\link{partialInvariance}},
-##'   \code{\link{partialInvarianceCat}}, and
-##'   \code{\link{permuteMeasEq}}}
+##'   [measEq.syntax()],
+##'   [partialInvariance()],
+##'   [partialInvarianceCat()], and
+##'   [permuteMeasEq()]}
 ##' \item{Power Analysis:
-##'   \code{\link{SSpower}},
-##'   \code{\link{findRMSEApower}},
-##'   \code{\link{plotRMSEApower}},
-##'   \code{\link{plotRMSEAdist}},
-##'   \code{\link{findRMSEAsamplesize}},
-##'   \code{\link{findRMSEApowernested}},
-##'   \code{\link{plotRMSEApowernested}}, and
-##'   \code{\link{findRMSEAsamplesizenested}}}
+##'   [SSpower()],
+##'   [findRMSEApower()],
+##'   [plotRMSEApower()],
+##'   [plotRMSEAdist()],
+##'   [findRMSEAsamplesize()],
+##'   [findRMSEApowernested()],
+##'   [plotRMSEApowernested()], and
+##'   [findRMSEAsamplesizenested()]}
 ##' \item{Missing Data Analysis:
-##'   \code{\link{runMI}},
-##'   \code{\link{auxiliary}},
-##'   \code{\link{twostage}},
-##'   \code{\link{fmi}},
-##'   \code{\link{bsBootMiss}},
-##'   \code{\link{quark}}, and
-##'   \code{\link{combinequark}}}
+##'   [runMI()],
+##'   [auxiliary()],
+##'   [twostage()],
+##'   [fmi()],
+##'   [bsBootMiss()],
+##'   [quark()], and
+##'   [combinequark()]}
 ##' \item{Latent Interactions:
-##'   \code{\link{indProd}},
-##'   \code{\link{orthogonalize}},
-##'   \code{\link{probe2WayMC}},
-##'   \code{\link{probe3WayMC}},
-##'   \code{\link{probe2WayRC}},
-##'   \code{\link{probe3WayRC}}, and
-##'   \code{\link{plotProbe}}}
+##'   [indProd()],
+##'   [orthogonalize()],
+##'   [probe2WayMC()],
+##'   [probe3WayMC()],
+##'   [probe2WayRC()],
+##'   [probe3WayRC()], and
+##'   [plotProbe()]}
 ##' \item{Exploratory Factor Analysis (EFA):
-##'   \code{\link{efa.ekc}}}
+##'   [efa.ekc()]}
 ##' \item{Reliability Estimation:
-##'   \code{\link{compRelSEM}} and
-##'   \code{\link{maximalRelia}}
-##'   (see also \code{\link{AVE}})}
+##'   [compRelSEM()] and
+##'   [maximalRelia()]
+##'   (see also [AVE()])}
 ##' \item{Parceling:
-##'   \code{\link{parcelAllocation}},
-##'   \code{\link{PAVranking}}, and
-##'   \code{\link{poolMAlloc}}}
+##'   [parcelAllocation()],
+##'   [PAVranking()], and
+##'   [poolMAlloc()]}
 ##' \item{Non-Normality:
-##'   \code{\link{skew}},
-##'   \code{\link{kurtosis}},
-##'   \code{\link{mardiaSkew}},
-##'   \code{\link{mardiaKurtosis}}, and
-##'   \code{\link{mvrnonnorm}}}
+##'   [skew()],
+##'   [kurtosis()],
+##'   [mardiaSkew()],
+##'   [mardiaKurtosis()], and
+##'   [mvrnonnorm()]}
 ##' }
 ##' All users of R (or SEM) are invited to submit functions or ideas for
 ##' functions by contacting the maintainer, Terrence Jorgensen

@@ -10,7 +10,7 @@ measurementInvariance(..., std.lv = FALSE, strict = FALSE, quiet = FALSE,
 }
 \arguments{
 \item{...}{The same arguments as for any lavaan model.  See
-\code{\link{cfa}} for more information.}
+\code{\link[=cfa]{cfa()}} for more information.}
 
 \item{std.lv}{If \code{TRUE}, the fixed-factor method of scale
 identification is used. If \code{FALSE}, the first variable for each factor
@@ -27,10 +27,10 @@ model comparison tests. If \code{TRUE}, no summary is printed.}
 nested models.}
 
 \item{baseline.model}{custom baseline model passed to
-\code{\link[lavaan]{fitMeasures}}}
+\code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}}
 
 \item{method}{The method used to calculate likelihood ratio test. See
-\code{\link[lavaan]{lavTestLRT}} for available options}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} for available options}
 }
 \value{
 Invisibly, all model fits in the sequence are returned as a list.
@@ -92,7 +92,7 @@ recommendations for organizational research. \emph{Organizational
 Research Methods, 3,} 4--70.
 }
 \seealso{
-\code{\link{semTools-deprecated}}
+\code{\link[=semTools-deprecated]{semTools-deprecated()}}
 }
 \author{
 Yves Rosseel (Ghent University; \email{Yves.Rosseel@UGent.be})

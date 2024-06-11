@@ -20,7 +20,7 @@
 ##' @docType class
 ##'
 ##' @slot PT A `data.frame` returned by a call to
-##'   \code{\link[lavaan]{parTable}} on the constrained model
+##'   [lavaan::parTable()] on the constrained model
 ##' @slot modelType A character indicating the specified `modelType` in the
 ##'   call to `permuteMeasEq`
 ##' @slot ANOVA A `numeric` vector indicating the results of the observed
@@ -37,7 +37,7 @@
 ##' @slot MI.obs A `data.frame` of observed Lagrange Multipliers
 ##'   (modification indices) associated with the equality constraints or fixed
 ##'   parameters specified in the `param` argument. This is a subset of the
-##'   output returned by a call to \code{\link[lavaan]{lavTestScore}} on the
+##'   output returned by a call to [lavaan::lavTestScore()] on the
 ##'   constrained model.
 ##' @slot MI.dist The permutation distribution of the maximum modification index
 ##'   (among those seen in slot `MI.obs$X2`) at each permutation of group
@@ -67,7 +67,7 @@
 ##'   previous `.Random.seed` state, if desired, by running:
 ##'   `.Random.seed[-1] <- permutedResults@oldSeed[-1]`
 ##' @section Objects from the Class: Objects can be created via the
-##'   \code{\link[semTools]{permuteMeasEq}} function.
+##'   [semTools::permuteMeasEq()] function.
 ##'
 ##' @return
 ##' \itemize{
@@ -88,7 +88,7 @@
 ##'   significant using the `tukey.p.value`, then a message is displayed for
 ##'   each flagged index. The invisibly returned `data.frame` is the
 ##'   displayed table of modification indices, unless
-##'   \code{\link[semTools]{permuteMeasEq}} was called with `param = NULL`,
+##'   [semTools::permuteMeasEq()] was called with `param = NULL`,
 ##'   in which case the invisibly returned object is `object`. If
 ##'   `extra = TRUE`, the permutation-based *p* values for each
 ##'   statistic returned by the `extra` function are displayed and returned
@@ -104,7 +104,7 @@
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso \code{\link[semTools]{permuteMeasEq}}
+##' @seealso [semTools::permuteMeasEq()]
 ##'
 ##' @examples
 ##'
@@ -249,7 +249,7 @@ summ.mimic <- function(object, alpha) {
 ##' @aliases hist,permuteMeasEq-method
 ##' @importFrom stats qchisq dchisq quantile
 ##' @param object,x object of class `permuteMeasEq`
-##' @param ... Additional arguments to pass to \code{\link[graphics]{hist}}
+##' @param ... Additional arguments to pass to [graphics::hist()]
 ##' @param AFI `character` indicating the fit measure whose permutation
 ##'  distribution should be plotted
 ##' @param alpha alpha level used to draw confidence limits in `hist` and
@@ -262,7 +262,7 @@ summ.mimic <- function(object, alpha) {
 ##' @param printLegend `logical`. If `TRUE` (default), a legend will
 ##'  be printed with the histogram
 ##' @param legendArgs `list` of arguments passed to the
-##'  \code{\link[graphics]{legend}} function.  The default argument is a list
+##'  [graphics::legend()] function.  The default argument is a list
 ##'  placing the legend at the top-left of the figure.
 ##' @export
 setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
@@ -421,13 +421,13 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##'
 ##' In either framework, modification indices for equality constraints or fixed
 ##' parameters specified in `param` are calculated from the constrained
-##' model (`con`) using the function \code{\link[lavaan]{lavTestScore}}.
+##' model (`con`) using the function [lavaan::lavTestScore()].
 ##'
 ##' For multiple-group CFA models, the multiparameter omnibus null hypothesis of
 ##' measurement equivalence/invariance is that there are no group differences in
 ##' any measurement parameters (of a particular type). This can be tested using
 ##' the `anova` method on nested `lavaan` objects, as seen in the
-##' output of \code{\link[semTools]{measurementInvariance}}, or by inspecting
+##' output of [semTools::measurementInvariance()], or by inspecting
 ##' the change in alternative fit indices (AFIs) such as the CFI. The
 ##' permutation randomization method employed by `permuteMeasEq` generates
 ##' an empirical distribution of any `AFIs` under the null hypothesis, so
@@ -455,7 +455,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' approach is only for testing null hypotheses about the effects of
 ##' `covariates` on indicators, controlling for common factors.
 ##'
-##' In either framework, \code{\link[lavaan]{lavaan}}'s `group.label`
+##' In either framework, [lavaan::lavaan()]'s `group.label`
 ##' argument is used to preserve the order of groups seen in `con` when
 ##' permuting the data.
 ##'
@@ -501,7 +501,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##'   must match those returned by `names(coef(con))`, but omitting any
 ##'   group-specific suffixes (e.g., `"f1~1"` rather than `"f1~1.g2"`)
 ##'   or user-specified labels (that is, the parameter names must follow the rules
-##'   of lavaan's \code{\link[lavaan]{model.syntax}}). Alternatively (or
+##'   of lavaan's [lavaan::model.syntax()]). Alternatively (or
 ##'   additionally), to test all constraints of a certain type (or multiple types)
 ##'   of parameter in `con`, `param` may take any combination of the
 ##'   following values: `"loadings"`, `"intercepts"`,
@@ -509,14 +509,14 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##'   `"means"`, `"lv.variances"`, and/or `"lv.covariances"`. When
 ##'   `modelType = "mimic"`, `param` must be a vector of individual
 ##'   parameters or a list of character strings to be passed one-at-a-time to
-##'   \code{\link[lavaan]{lavTestScore}}`(object = con, add = param[i])`,
+##'   `lavaan::lavTestScore(object = con, add = param[i])`,
 ##'   indicating which (sets of) regression paths fixed to zero in `con` that
 ##'   the user would consider freeing (i.e., exclude anchor items). If
 ##'   `modelType = "mimic"` and `param` is a list of character strings,
 ##'   the multivariate test statistic will be saved for each list element instead
 ##'   of 1-*df* modification indices for each individual parameter, and
 ##'   `names(param)` will name the rows of the `MI.obs` slot (see
-##'   \linkS4class{permuteMeasEq}). Set `param = NULL` (default) to avoid
+##'   [permuteMeasEq-class]). Set `param = NULL` (default) to avoid
 ##'   collecting modification indices for any follow-up tests.
 ##' @param freeParam An optional character vector, silently ignored when
 ##'   `modelType = "mimic"`. If `param` includes a type of parameter
@@ -530,7 +530,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##'   those returned by `names(coef(con))`, but omitting any group-specific
 ##'   suffixes (e.g., `"f1~1"` rather than `"f1~1.g2"`) or
 ##'   user-specified labels (that is, the parameter names must follow the rules of
-##'   lavaan \code{\link[lavaan]{model.syntax}}).
+##'   lavaan [lavaan::model.syntax()]).
 ##' @param covariates An optional character vector, only applicable when
 ##'   `modelType = "mimic"`. The observed data are partitioned into columns
 ##'   indicated by `covariates`, and the rows are permuted simultaneously for
@@ -544,12 +544,12 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' @param AFIs A character vector indicating which alternative fit indices (or
 ##'   chi-squared itself) are to be used to test the multiparameter omnibus null
 ##'   hypothesis that the constraints specified in `con` hold in the
-##'   population. Any fit measures returned by \code{\link[lavaan]{fitMeasures}}
+##'   population. Any fit measures returned by [lavaan::fitMeasures()]
 ##'   may be specified (including constants like `"df"`, which would be
 ##'   nonsensical). If both `AFIs` and `moreAFIs` are `NULL`, only
 ##'   `"chisq"` will be returned.
 ##' @param moreAFIs Optional. A character vector indicating which (if any)
-##'   alternative fit indices returned by \code{\link[semTools]{moreFitIndices}}
+##'   alternative fit indices returned by [semTools::moreFitIndices()]
 ##'   are to be used to test the multiparameter omnibus null hypothesis that the
 ##'   constraints specified in `con` hold in the population.
 ##' @param maxSparse Only applicable when `modelType = "mgcfa"` and at
@@ -572,7 +572,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' @param showProgress Logical. Indicating whether to display a progress bar
 ##'   while permuting. Silently set to `FALSE` when using parallel options.
 ##' @param warn Sets the handling of warning messages when fitting model(s) to
-##'   permuted data sets. See \code{\link[base]{options}}.
+##'   permuted data sets. See [base::options()].
 ##' @param datafun An optional function that can be applied to the data
 ##'   (extracted from `con`) after each permutation, but before fitting the
 ##'   model(s) to each permutation. The `datafun` function must have an
@@ -613,34 +613,34 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' @param ncpus Integer: number of processes to be used in parallel operation.
 ##'   If `NULL` (the default) and `parallelType %in%
 ##'   c("multicore","snow")`, the default is one less than the maximum number of
-##'   processors detected by \code{\link[parallel]{detectCores}}. This default is
+##'   processors detected by [parallel::detectCores()]. This default is
 ##'   also silently set if the user specifies more than the number of processors
 ##'   detected.
 ##' @param cl An optional \pkg{parallel} or \pkg{snow} cluster for use when
 ##'   `parallelType = "snow"`.  If `NULL`, a `"PSOCK"` cluster on
 ##'   the local machine is created for the duration of the `permuteMeasEq`
-##'   call. If a valid \code{\link[parallel]{makeCluster}} object is supplied,
+##'   call. If a valid [parallel::makeCluster()] object is supplied,
 ##'   `parallelType` is silently set to `"snow"`, and `ncpus` is
 ##'   silently set to `length(cl)`.
 ##' @param iseed Integer: Only used to set the states of the RNG when using
-##'   parallel options, in which case \code{\link[base]{RNGkind}} is set to
+##'   parallel options, in which case [base::RNGkind()] is set to
 ##'   `"L'Ecuyer-CMRG"` with a message. See
-##'   \code{\link[parallel]{clusterSetRNGStream}} and Section 6 of
+##'   [parallel::clusterSetRNGStream()] and Section 6 of
 ##'   `vignette("parallel", "parallel")` for more details. If user supplies
 ##'   an invalid value, `iseed` is silently set to the default (12345). To
 ##'   set the state of the RNG when not using parallel options, call
-##'   \code{\link[base]{set.seed}} before calling `permuteMeasEq`.
+##'   [base::set.seed()] before calling `permuteMeasEq`.
 ##'
-##' @return The \linkS4class{permuteMeasEq} object representing the results of
+##' @return The [permuteMeasEq-class] object representing the results of
 ##'   testing measurement equivalence (the multiparameter omnibus test) and DIF
 ##'   (modification indices), as well as diagnostics and any `extra` output.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##' \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso \code{\link[stats]{TukeyHSD}}, \code{\link[lavaan]{lavTestScore}},
-##'   \code{\link[semTools]{measurementInvariance}},
-##'   \code{\link[semTools]{measurementInvarianceCat}}
+##' @seealso [stats::TukeyHSD()], [lavaan::lavTestScore()],
+##'   [semTools::measurementInvariance()],
+##'   [semTools::measurementInvarianceCat()]
 ##'
 ##' @references
 ##'

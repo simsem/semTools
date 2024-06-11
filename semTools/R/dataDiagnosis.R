@@ -38,11 +38,11 @@
 ##' specified as `FALSE`
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##' @seealso \itemize{
-##'   \item \code{\link{kurtosis}} Find the univariate excessive kurtosis
+##'   \item [kurtosis()] Find the univariate excessive kurtosis
 ##'    of a variable
-##'   \item \code{\link{mardiaSkew}} Find Mardia's multivariate skewness
+##'   \item [mardiaSkew()] Find Mardia's multivariate skewness
 ##'    of a set of variables
-##'   \item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate
+##'   \item [mardiaKurtosis()] Find the Mardia's multivariate
 ##'    kurtosis of a set of variables
 ##'  }
 ##' @references Weisstein, Eric W. (n.d.). *Skewness*. Retrived from
@@ -105,10 +105,10 @@ skew <- function(object, population = FALSE) {
 ##' population is specified as `FALSE`
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##' @seealso \itemize{
-##'   \item \code{\link{skew}} Find the univariate skewness of a variable
-##'   \item \code{\link{mardiaSkew}} Find the Mardia's multivariate
+##'   \item [skew()] Find the univariate skewness of a variable
+##'   \item [mardiaSkew()] Find the Mardia's multivariate
 ##'    skewness of a set of variables
-##'   \item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate kurtosis
+##'   \item [mardiaKurtosis()] Find the Mardia's multivariate kurtosis
 ##'    of a set of variables
 ##' }
 ##' @references Weisstein, Eric W. (n.d.). *Kurtosis.* Retrieved from
@@ -158,15 +158,15 @@ kurtosis <- function(object, population = FALSE) {
 ##' @importFrom stats cov pchisq
 ##'
 ##' @param dat The target matrix or data frame with multiple variables
-##' @param use Missing data handling method from the \code{\link[stats]{cov}}
+##' @param use Missing data handling method from the [stats::cov()]
 ##' function.
 ##' @return A value of a Mardia's multivariate skewness with a test statistic
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##' @seealso \itemize{
-##'   \item \code{\link{skew}} Find the univariate skewness of a variable
-##'   \item \code{\link{kurtosis}} Find the univariate excessive
+##'   \item [skew()] Find the univariate skewness of a variable
+##'   \item [kurtosis()] Find the univariate excessive
 ##'     kurtosis of a variable
-##'   \item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate
+##'   \item [mardiaKurtosis()] Find the Mardia's multivariate
 ##'     kurtosis of a set of variables
 ##' }
 ##' @references Mardia, K. V. (1970). Measures of multivariate skewness and
@@ -218,15 +218,15 @@ mardiaSkew <- function(dat, use = "everything") {
 ##' @importFrom stats cov pnorm
 ##'
 ##' @param dat The target matrix or data frame with multiple variables
-##' @param use Missing data handling method from the \code{\link[stats]{cov}}
+##' @param use Missing data handling method from the [stats::cov()]
 ##' function.
 ##' @return A value of a Mardia's multivariate kurtosis with a test statistic
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##' @seealso \itemize{
-##'  \item \code{\link{skew}} Find the univariate skewness of a variable
-##'  \item \code{\link{kurtosis}} Find the univariate excessive kurtosis
+##'  \item [skew()] Find the univariate skewness of a variable
+##'  \item [kurtosis()] Find the univariate excessive kurtosis
 ##'   of a variable
-##'  \item \code{\link{mardiaSkew}} Find the Mardia's multivariate skewness
+##'  \item [mardiaSkew()] Find the Mardia's multivariate skewness
 ##'   of a set of variables
 ##' }
 ##' @references Mardia, K. V. (1970). Measures of multivariate skewness and

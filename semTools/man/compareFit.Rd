@@ -9,35 +9,35 @@ compareFit(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 }
 \arguments{
 \item{...}{fitted \code{lavaan} models or list(s) of \code{lavaan} objects.
-\code{\linkS4class{lavaan.mi}} objects are also accepted, but all models
+\linkS4class{lavaan.mi} objects are also accepted, but all models
 must belong to the same class.}
 
 \item{nested}{\code{logical} indicating whether the models in \code{...} are
-nested. See \code{\link{net}} for an empirical test of nesting.}
+nested. See \code{\link[=net]{net()}} for an empirical test of nesting.}
 
 \item{argsLRT}{\code{list} of arguments to pass to
-\code{\link[lavaan]{lavTestLRT}}, as well as to
-\code{\link{lavTestLRT.mi}} and \code{\link{fitMeasures}} when
-comparing \code{\linkS4class{lavaan.mi}} models.}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}, as well as to
+\code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} and \code{\link[=fitMeasures]{fitMeasures()}} when
+comparing \linkS4class{lavaan.mi} models.}
 
 \item{indices}{\code{logical} indicating whether to return fit indices from
-the \code{\link[lavaan]{fitMeasures}} function. Selecting particular
+the \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} function. Selecting particular
 indices is controlled in the \code{summary} method; see
-\code{\linkS4class{FitDiff}}.}
+\linkS4class{FitDiff}.}
 
 \item{moreIndices}{\code{logical} indicating whether to return fit indices
-from the \code{\link{moreFitIndices}} function. Selecting particular
+from the \code{\link[=moreFitIndices]{moreFitIndices()}} function. Selecting particular
 indices is controlled in the \code{summary} method; see
-\code{\linkS4class{FitDiff}}.}
+\linkS4class{FitDiff}.}
 
-\item{baseline.model}{optional fitted \code{\linkS4class{lavaan}} model
-passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit
+\item{baseline.model}{optional fitted \linkS4class{lavaan} model
+passed to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to calculate incremental fit
 indices.}
 
-\item{nPrior}{passed to \code{\link{moreFitIndices}}, if relevant}
+\item{nPrior}{passed to \code{\link[=moreFitIndices]{moreFitIndices()}}, if relevant}
 }
 \value{
-A \code{\linkS4class{FitDiff}} object that saves model fit
+A \linkS4class{FitDiff} object that saves model fit
 comparisons across multiple models. If the models are not nested, only
 fit indices for each model are returned. If the models are nested, the
 differences in fit indices are additionally returned, as well as test
@@ -115,7 +115,7 @@ summary(out2, fit.measures = c("ariv","fmi","df","crmr","srmr",
 
 }
 \seealso{
-\code{\linkS4class{FitDiff}}, \code{\link{clipboard}}
+\linkS4class{FitDiff}, \code{\link[=clipboard]{clipboard()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

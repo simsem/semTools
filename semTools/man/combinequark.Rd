@@ -7,7 +7,7 @@
 combinequark(quark, percent)
 }
 \arguments{
-\item{quark}{Provide the \code{\link{quark}} object that was returned.  It
+\item{quark}{Provide the \code{\link[=quark]{quark()}} object that was returned.  It
 should be a list of objects.  Make sure to include it in its entirety.}
 
 \item{percent}{Provide a percentage of variance that you would like to have
@@ -21,9 +21,9 @@ combined with enough principal component scores to be able to account for
 the amount of variance that was requested.
 }
 \description{
-This function builds upon the \code{\link{quark}} function to provide a
+This function builds upon the \code{\link[=quark]{quark()}} function to provide a
 final dataset comprised of the original dataset provided to
-\code{\link{quark}} and enough principal components to be able to account
+\code{\link[=quark]{quark()}} and enough principal components to be able to account
 for a certain level of variance in the data.
 }
 \examples{
@@ -40,7 +40,7 @@ final.data <- combinequark(quark = quark.list, percent = 80)
 
 }
 \seealso{
-\code{\link{quark}}
+\code{\link[=quark]{quark()}}
 }
 \author{
 Steven R. Chesnut (University of Southern Mississippi

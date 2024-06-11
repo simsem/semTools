@@ -28,7 +28,7 @@
 ##' @importFrom stats cov pchisq pf
 ##' @importFrom methods getMethod
 ##'
-##' @param object An object of class \code{\linkS4class{lavaan.mi}}.
+##' @param object An object of class [lavaan.mi-class].
 ##' @param add Either a `character` string (typically between single
 ##'   quotes) or a parameter table containing additional (currently
 ##'   fixed-to-zero) parameters for which the score test must be computed.
@@ -84,12 +84,12 @@
 ##'   `release`.
 ##' @param standardized If `TRUE`, two extra columns (`sepc.lv` and
 ##'   `sepc.all`) in the `$epc` table will contain standardized values
-##'   for the EPCs. See \code{\link{lavTestScore}}.
-##' @param cov.std `logical`. See \code{\link{standardizedSolution}}.
+##'   for the EPCs. See [lavTestScore()].
+##' @param cov.std `logical`. See [standardizedSolution()].
 ##' @param verbose `logical`. Not used for now.
 ##' @param warn `logical`. If `TRUE`, print warnings if they occur.
 ##' @param information `character` indicating the type of information
-##'   matrix to use (check \code{\link{lavInspect}} for available options).
+##'   matrix to use (check [lavInspect()] for available options).
 ##'   `"expected"` information is the default, which provides better
 ##'   control of Type I errors.
 ##'
@@ -113,7 +113,7 @@
 ##'      expected parameter changes, and expected parameter values if ALL
 ##'      the tested constraints were freed.}
 ##'  }
-##' See \code{\link[lavaan]{lavTestScore}} for details.
+##' See [lavaan::lavTestScore()] for details.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -143,7 +143,7 @@
 ##'   models. *Psychological Methods, 25*(4), 393--411.
 ##'   \doi{10.1037/met0000243}
 ##'
-##' @seealso \code{\link[lavaan]{lavTestScore}}
+##' @seealso [lavaan::lavTestScore()]
 ##'
 ##' @examples
 ##'  \dontrun{

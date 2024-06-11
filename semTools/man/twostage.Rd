@@ -20,10 +20,10 @@ sem.2stage(..., aux = NULL, baseline.model = NULL)
 growth.2stage(..., aux = NULL, baseline.model = NULL)
 }
 \arguments{
-\item{\dots}{Arguments passed to the \code{\link[lavaan]{lavaan}} function
+\item{\dots}{Arguments passed to the \code{\link[=lavaan]{lavaan()}} function
 specified in the \code{fun} argument.  See also
-\code{\link[lavaan]{lavOptions}}.  At a minimum, the user must supply the
-first two named arguments to \code{\link[lavaan]{lavaan}} (i.e.,
+\code{\link[=lavOptions]{lavOptions()}}.  At a minimum, the user must supply the
+first two named arguments to \code{\link[=lavaan]{lavaan()}} (i.e.,
 \code{model} and \code{data}).}
 
 \item{aux}{An optional character vector naming auxiliary variable(s) in
@@ -34,20 +34,20 @@ Step-2 hypothesized model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, or
 \code{"lavaan"}).}
 
 \item{baseline.model}{An optional character string, specifying the lavaan
-\code{\link[lavaan]{model.syntax}} for a user-specified baseline model.
+\code{\link[=model.syntax]{model.syntax()}} for a user-specified baseline model.
 Interested users can use the fitted baseline model to calculate incremental
 fit indices (e.g., CFI and TLI) using the corrected chi-squared values (see
-the \code{anova} method in \code{\linkS4class{twostage}}).  If \code{NULL},
+the \code{anova} method in \linkS4class{twostage}).  If \code{NULL},
 the default "independence model" (i.e., freely estimated means and
 variances, but all covariances constrained to zero) will be specified
 internally.}
 }
 \value{
-The \code{\linkS4class{twostage}} object contains 3 fitted lavaan
+The \linkS4class{twostage} object contains 3 fitted lavaan
 models (saturated, target/hypothesized, and baseline) as well as the names
 of auxiliary variables.  None of the individual models provide the correct
 model results (except the point estimates in the target model are unbiased).
-Use the methods in \code{\linkS4class{twostage}} to extract corrected
+Use the methods in \linkS4class{twostage} to extract corrected
 \emph{SE}s and test statistics.
 }
 \description{
@@ -68,9 +68,9 @@ varaibles in the Step-1 saturated model (\code{fixed.x = FALSE}), so data
 are assumed continuous, although not necessarily multivariate normal
 (dummy-coded auxiliary variables may be included in Step 1, but categorical
 endogenous variables in the Step-2 hypothesized model are not allowed).  To
-avoid assuming multivariate normality, request \code{se = "robust.huber.white"}.  CAUTION: In addition to setting \code{fixed.x = FALSE} and \code{conditional.x = FALSE} in \code{\link[lavaan]{lavaan}},
+avoid assuming multivariate normality, request \code{se = "robust.huber.white"}.  CAUTION: In addition to setting \code{fixed.x = FALSE} and \code{conditional.x = FALSE} in \code{\link[lavaan:lavaan]{lavaan::lavaan()}},
 this function will automatically set \code{meanstructure = TRUE},
-\code{estimator = "ML"}, \code{missing = "fiml"}, and \code{test = "standard"}.  \code{\link[lavaan]{lavaan}}'s \code{se} option can only be
+\code{estimator = "ML"}, \code{missing = "fiml"}, and \code{test = "standard"}.  \code{\link[lavaan:lavaan]{lavaan::lavaan()}}'s \code{se} option can only be
 set to \code{"standard"} to assume multivariate normality or to
 \code{"robust.huber.white"} to relax that assumption.
 }
@@ -131,7 +131,7 @@ robust full information maximum likelihood with incomplete nonnormal data.
 \doi{10.1080/10705511.2014.882692}
 }
 \seealso{
-\code{\linkS4class{twostage}}
+\linkS4class{twostage}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

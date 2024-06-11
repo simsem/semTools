@@ -9,7 +9,7 @@ lavTestWald.mi(object, constraints = NULL, test = c("D1", "D2"),
   "no.se"), verbose = FALSE, warn = TRUE)
 }
 \arguments{
-\item{object}{An object of class \code{\linkS4class{lavaan.mi}}.}
+\item{object}{An object of class \linkS4class{lavaan.mi}.}
 
 \item{constraints}{A \code{character} string (typically between single
 quotes) containing one or more equality constraints.
@@ -143,7 +143,7 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
 New York, NY: Wiley.
 }
 \seealso{
-\code{\link[lavaan]{lavTestWald}}
+\code{\link[lavaan:lavTestWald]{lavaan::lavTestWald()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

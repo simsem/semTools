@@ -16,8 +16,8 @@ partialInvarianceCat(fit, type, free = NULL, fix = NULL, refgroup = 1,
 \arguments{
 \item{fit}{A list of models for invariance testing. Each model should be
 assigned by appropriate names (see details). The result from
-\code{\link{measurementInvariance}} or
-\code{\link{measurementInvarianceCat}} could be used in this argument
+\code{\link[=measurementInvariance]{measurementInvariance()}} or
+\code{\link[=measurementInvarianceCat]{measurementInvarianceCat()}} could be used in this argument
 directly.}
 
 \item{type}{The types of invariance testing: "metric", "scalar", "strict",
@@ -39,7 +39,7 @@ standardization. Otherwise, the variances of the reference group are used
 for standardization.}
 
 \item{p.adjust}{The method used to adjust p values. See
-\code{\link[stats]{p.adjust}} for the options for adjusting p values. The
+\code{\link[stats:p.adjust]{stats::p.adjust()}} for the options for adjusting p values. The
 default is to not use any corrections.}
 
 \item{fbound}{The z-scores of factor that is used to calculate the effect
@@ -49,7 +49,7 @@ size of the loading difference proposed by Millsap and Olivera-Aguilar
 \item{return.fit}{Return the submodels fitted by this function}
 
 \item{method}{The method used to calculate likelihood ratio test. See
-\code{\link[lavaan]{lavTestLRT}} for available options}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} for available options}
 }
 \value{
 A list of results are provided. The list will consists of at least
@@ -159,7 +159,7 @@ likelihood-ratio test and the difference in CFI are provided.
 \item \code{wald}: This method is similar to the \code{fix} method. However,
 instead of building a new model and compare them with likelihood-ratio test,
 multivariate wald test is used to compare equality between parameter
-estimates. See \code{\link[lavaan]{lavTestWald}} for further details. Note
+estimates. See \code{\link[lavaan:lavTestWald]{lavaan::lavTestWald()}} for further details. Note
 that if any rows of the contrast cannot be summed to 0, the Wald test is not
 provided, such as comparing two means where one of the means is fixed as 0.
 This test statistic is not as accurate as likelihood-ratio test provided in
@@ -290,9 +290,9 @@ measurement invariance using confirmatory factor analysis. In R. H. Hoyle
 York, NY: Guilford.
 }
 \seealso{
-\code{\link{measurementInvariance}} for measurement invariance for
-continuous variables; \code{\link{measurementInvarianceCat}} for measurement
-invariance for categorical variables; \code{\link[lavaan]{lavTestWald}} for
+\code{\link[=measurementInvariance]{measurementInvariance()}} for measurement invariance for
+continuous variables; \code{\link[=measurementInvarianceCat]{measurementInvarianceCat()}} for measurement
+invariance for categorical variables; \code{\link[lavaan:lavTestWald]{lavaan::lavTestWald()}} for
 multivariate Wald test
 }
 \author{

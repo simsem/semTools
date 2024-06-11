@@ -9,7 +9,7 @@ lavTestLRT.mi(object, h1 = NULL, test = c("D3", "D2"),
   pool.robust = FALSE, ...)
 }
 \arguments{
-\item{object, h1}{An object of class \code{\linkS4class{lavaan.mi}}.
+\item{object, h1}{An object of class \linkS4class{lavaan.mi}.
 \code{object} should be nested within (more constrained than) \code{h1}.}
 
 \item{test}{\code{character} indicating which pooling method to use.
@@ -48,7 +48,7 @@ the naive test statistic (or difference statistic) and apply the average
 scale/shift parameter to it (unavailable for mean- and variance-adjusted
 difference statistics, so \code{pool.robust} will be set \code{TRUE}).}
 
-\item{...}{Additional arguments passed to \code{\link[lavaan]{lavTestLRT}},
+\item{...}{Additional arguments passed to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}},
 only if \code{test = "D2"} and \code{pool.robust = TRUE}}
 }
 \value{
@@ -77,10 +77,10 @@ Otherwise (e.g., DWLS for categorical outcomes), users are notified that
 \code{test = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
 (see Asparouhov & Muthen, 2010).
 
-Note that unlike \code{\link[lavaan]{lavTestLRT}}, \code{lavTestLRT} can
+Note that unlike \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}, \code{lavTestLRT} can
 only be used to compare a single pair of models, not a longer list of
 models.  To compare several nested models fitted to multiple imputations,
-see examples on the \code{\link{compareFit}} help page.
+see examples on the \code{\link[=compareFit]{compareFit()}} help page.
 }
 \examples{
  \dontrun{
@@ -137,7 +137,7 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
 New York, NY: Wiley.
 }
 \seealso{
-\code{\link[lavaan]{lavTestLRT}}, \code{\link{compareFit}}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}, \code{\link[=compareFit]{compareFit()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

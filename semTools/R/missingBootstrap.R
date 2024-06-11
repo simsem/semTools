@@ -17,7 +17,7 @@
 ##' hist,BootMiss-method
 ##' @docType class
 ##' @section Objects from the Class: Objects can be created via the
-##' \code{\link{bsBootMiss}} function.
+##' [bsBootMiss()] function.
 ##' @slot time A list containing 2 `difftime` objects (`transform`
 ##'  and `fit`), indicating the time elapsed for data transformation and
 ##'  for fitting the model to bootstrap data sets, respectively.
@@ -30,7 +30,7 @@
 ##'  bootstrap distribution
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##' \email{TJorgensen314@@gmail.com})
-##' @seealso \code{\link{bsBootMiss}}
+##' @seealso [bsBootMiss()]
 ##' @examples
 ##'
 ##' # See the example from the bsBootMiss function
@@ -81,13 +81,13 @@ function(object) {
 ##' @aliases hist,BootMiss-method
 ##' @importFrom stats qchisq dchisq quantile
 ##' @param object,x object of class `BootMiss`
-##' @param ... Additional arguments to pass to \code{\link[graphics]{hist}}
+##' @param ... Additional arguments to pass to [graphics::hist()]
 ##' @param alpha alpha level used to draw confidence limits
 ##' @param nd number of digits to display
 ##' @param printLegend `logical`. If `TRUE` (default), a legend will
 ##'  be printed with the histogram
 ##' @param legendArgs `list` of arguments passed to the
-##'  \code{\link[graphics]{legend}} function.  The default argument is a list
+##'  [graphics::legend()] function.  The default argument is a list
 ##'  placing the legend at the top-left of the figure.
 ##' @return The `hist` method returns a list of `length == 2`,
 ##'  containing the arguments for the call to `hist` and the arguments
@@ -214,7 +214,7 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ##' `TRUE`, and the list of bootstrap data sets are returned invisibly.
 ##' @param writeArgs Optional `list`. If `writeBootData = TRUE` or
 ##' `writeBootData = TRUE`, user can pass arguments to the
-##' \code{\link[utils]{write.table}} function as a list.  Some default values
+##' [utils::write.table()] function as a list.  Some default values
 ##' are provided: `file` = "bootstrappedSamples.dat", `row.names` =
 ##' `FALSE`, and `na` = "-999", but the user can override all of these
 ##' by providing other values for those arguments in the `writeArgs` list.
@@ -223,9 +223,9 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ##' function will be suppressed when fitting the model to each bootstrap sample.
 ##' @param showProgress Logical. Indicating whether to display a progress bar
 ##' while fitting models to bootstrap samples.
-##' @param \dots The additional arguments in the \code{\link[lavaan]{lavaan}}
-##' function. See also \code{\link[lavaan]{lavOptions}}
-##' @return As a default, this function returns a \code{\linkS4class{BootMiss}}
+##' @param \dots The additional arguments in the [lavaan::lavaan()]
+##' function. See also [lavaan::lavOptions()]
+##' @return As a default, this function returns a [BootMiss-class]
 ##' object containing the results of the bootstrap samples. Use `show`,
 ##' `summary`, or `hist` to examine the results. Optionally, the
 ##' transformed data set is returned if `transDataOnly = TRUE`. Optionally,
@@ -234,7 +234,7 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ##' \email{TJorgensen314@@gmail.com})
 ##'
 ##' Syntax for transformations borrowed from http://www2.psych.ubc.ca/~vsavalei/
-##' @seealso \code{\linkS4class{BootMiss}}
+##' @seealso [BootMiss-class]
 ##' @references
 ##'
 ##' Bollen, K. A., & Stine, R. A. (1992). Bootstrapping goodness-of-fit measures

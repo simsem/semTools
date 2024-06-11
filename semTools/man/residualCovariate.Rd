@@ -36,7 +36,7 @@ Extended applications and caveats. \emph{Educational and Psychological
 Measurement, 73}(1), 27--46. \doi{10.1177/0013164412445473}
 }
 \seealso{
-\code{\link{indProd}} For creating the indicator products with no
+\code{\link[=indProd]{indProd()}} For creating the indicator products with no
 centering, mean centering, double-mean centering, or residual centering.
 }
 \author{

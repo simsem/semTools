@@ -64,25 +64,25 @@
 ##'   auto-*covariance* to be equal within the same item across factors.
 ##'   For example, the covariance of item 1 in time 1 and time 2 is equal to
 ##'   the covariance of item 1 in time 2 and time 3.
-##' @param fixed.x See \code{\link[lavaan]{lavaan}.}
-##' @param std.lv See \code{\link[lavaan]{lavaan}.}
-##' @param group See \code{\link[lavaan]{lavaan}.}
-##' @param group.equal See \code{\link[lavaan]{lavaan}.}
-##' @param group.partial See \code{\link[lavaan]{lavaan}.}
+##' @param fixed.x See [lavOptions()].
+##' @param std.lv See [lavOptions()].
+##' @param group See [lavaan()].
+##' @param group.equal See [lavOptions()].
+##' @param group.partial See [lavOptions()].
 ##' @param strict If `TRUE`, the sequence requires strict invariance. See
-##' @param warn See \code{\link[lavaan]{lavaan}.}
-##' @param debug See \code{\link[lavaan]{lavaan}.} details for more information.
+##' @param warn See See [lavOptions()].
+##' @param debug See See [lavOptions()]. details for more information.
 ##' @param quiet If `FALSE` (default), a summary is printed out containing
 ##'   an overview of the different models that are fitted, together with some
 ##'   model comparison tests. If `TRUE`, no summary is printed.
 ##' @param fit.measures Fit measures used to calculate the differences between
 ##'   nested models.
 ##' @param baseline.model custom baseline model passed to
-##'  \code{\link[lavaan]{fitMeasures}}
+##'  [lavaan::fitMeasures()]
 ##' @param method The method used to calculate likelihood ratio test. See
-##'   \code{\link[lavaan]{lavTestLRT}} for available options
-##' @param ... Additional arguments in the \code{\link[lavaan]{lavaan}}
-##'   function. See also \code{\link[lavaan]{lavOptions}}
+##'   [lavaan::lavTestLRT()] for available options
+##' @param ... Additional arguments in the [lavaan()]
+##'   function. See also [lavOptions()]
 ##'
 ##' @return Invisibly, all model fits in the sequence are returned as a list.
 ##'
@@ -127,7 +127,7 @@
 ##'                warn = TRUE, debug = FALSE, quiet = FALSE,
 ##'                fit.measures = "default", baseline.model = NULL,
 ##'                method = "satorra.bentler.2001", ...)
-##' @seealso \code{\link{semTools-deprecated}}
+##' @seealso [semTools-deprecated()]
 ##' @keywords internal
 NULL
 

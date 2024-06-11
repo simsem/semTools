@@ -108,15 +108,15 @@ interactions among latent variables. \emph{Structural Equation Modeling,
 13}(4), 497--519. \doi{10.1207/s15328007sem1304_1}
 }
 \seealso{
-\itemize{ \item \code{\link{probe2WayMC}} For probing the two-way
+\itemize{ \item \code{\link[=probe2WayMC]{probe2WayMC()}} For probing the two-way
 latent interaction when the results are obtained from mean-centering, or
-double-mean centering.  \item \code{\link{probe3WayMC}} For probing the
+double-mean centering.  \item \code{\link[=probe3WayMC]{probe3WayMC()}} For probing the
 three-way latent interaction when the results are obtained from
-mean-centering, or double-mean centering.  \item \code{\link{probe2WayRC}}
+mean-centering, or double-mean centering.  \item \code{\link[=probe2WayRC]{probe2WayRC()}}
 For probing the two-way latent interaction when the results are obtained
-from residual-centering approach.  \item \code{\link{probe3WayRC}} For
+from residual-centering approach.  \item \code{\link[=probe3WayRC]{probe3WayRC()}} For
 probing the two-way latent interaction when the results are obtained from
-residual-centering approach.  \item \code{\link{plotProbe}} Plot the simple
+residual-centering approach.  \item \code{\link[=plotProbe]{plotProbe()}} Plot the simple
 intercepts and slopes of the latent interaction.  }
 }
 \author{

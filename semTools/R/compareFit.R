@@ -27,7 +27,7 @@
 ##'   the `fit` slot
 ##'
 ##' @section Objects from the Class: Objects can be created via the
-##'  \code{\link{compareFit}} function.
+##'  [compareFit()] function.
 ##'
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
@@ -35,7 +35,7 @@
 ##'
 ##'   Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
-##' @seealso \code{\link{compareFit}}; \code{\link{clipboard}}
+##' @seealso [compareFit()]; [clipboard()]
 ##'
 ##' @examples
 ##'
@@ -89,7 +89,7 @@ setMethod("show", signature(object = "FitDiff"), function(object) {
 ##'
 ##' @param object object of class `FitDiff`
 ##' @param fit.measures `character` vector naming fit indices the user can
-##'   request from \code{\link[lavaan]{fitMeasures}}. If `"default"`, the
+##'   request from [lavaan::fitMeasures()]. If `"default"`, the
 ##'   fit measures will be `c("chisq", "df", "pvalue", "cfi", "tli",
 ##'   "rmsea", "srmr", "aic", "bic")`. If `"all"`, all available fit
 ##'   measures will be returned.
@@ -225,28 +225,28 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##' @importMethodsFrom lavaan fitMeasures
 ##'
 ##' @param ...  fitted `lavaan` models or list(s) of `lavaan` objects.
-##'   \code{\linkS4class{lavaan.mi}} objects are also accepted, but all models
+##'   [lavaan.mi-class] objects are also accepted, but all models
 ##'   must belong to the same class.
 ##' @param nested `logical` indicating whether the models in `...` are
-##'   nested. See \code{\link{net}} for an empirical test of nesting.
+##'   nested. See [net()] for an empirical test of nesting.
 ##' @param argsLRT `list` of arguments to pass to
-##'   \code{\link[lavaan]{lavTestLRT}}, as well as to
-##'   \code{\link{lavTestLRT.mi}} and \code{\link{fitMeasures}} when
-##'   comparing \code{\linkS4class{lavaan.mi}} models.
+##'   [lavaan::lavTestLRT()], as well as to
+##'   [lavTestLRT.mi()] and [fitMeasures()] when
+##'   comparing [lavaan.mi-class] models.
 ##' @param indices `logical` indicating whether to return fit indices from
-##'   the \code{\link[lavaan]{fitMeasures}} function. Selecting particular
+##'   the [lavaan::fitMeasures()] function. Selecting particular
 ##'   indices is controlled in the `summary` method; see
-##'   \code{\linkS4class{FitDiff}}.
+##'   [FitDiff-class].
 ##' @param moreIndices `logical` indicating whether to return fit indices
-##'   from the \code{\link{moreFitIndices}} function. Selecting particular
+##'   from the [moreFitIndices()] function. Selecting particular
 ##'   indices is controlled in the `summary` method; see
-##'   \code{\linkS4class{FitDiff}}.
-##' @param baseline.model optional fitted \code{\linkS4class{lavaan}} model
-##'   passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit
+##'   [FitDiff-class].
+##' @param baseline.model optional fitted [lavaan-class] model
+##'   passed to [lavaan::fitMeasures()] to calculate incremental fit
 ##'   indices.
-##' @param nPrior passed to \code{\link{moreFitIndices}}, if relevant
+##' @param nPrior passed to [moreFitIndices()], if relevant
 ##'
-##' @return A \code{\linkS4class{FitDiff}} object that saves model fit
+##' @return A [FitDiff-class] object that saves model fit
 ##'   comparisons across multiple models. If the models are not nested, only
 ##'   fit indices for each model are returned. If the models are nested, the
 ##'   differences in fit indices are additionally returned, as well as test
@@ -258,7 +258,7 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##'
 ##' Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
-##' @seealso \code{\linkS4class{FitDiff}}, \code{\link{clipboard}}
+##' @seealso [FitDiff-class], [clipboard()]
 ##'
 ##' @examples
 ##'

@@ -69,7 +69,7 @@ measEq <- function(configural.model,
 ##' This class of object stores information used to automatically generate
 ##' lavaan model syntax to represent user-specified levels of measurement
 ##' equivalence/invariance across groups and/or repeated measures. See
-##' \code{\link{measEq.syntax}} for details.
+##' [measEq.syntax()] for details.
 ##'
 ##'
 ##' @name measEq.syntax-class
@@ -80,7 +80,7 @@ measEq <- function(configural.model,
 ##'
 ##' @slot package `character` indicating the software package used to
 ##'   represent the model. Currently, only `"lavaan"` is available, which
-##'   uses the LISREL representation (see \code{\link[lavaan]{lavOptions}}).
+##'   uses the LISREL representation (see [lavaan::lavOptions()]).
 ##'   In the future, `"OpenMx"` may become available, using RAM
 ##'   representation.
 ##' @slot model.type `character`. Currently, only "cfa" is available.
@@ -94,17 +94,17 @@ measEq <- function(configural.model,
 ##'   included in the model.
 ##' @slot numeric `character` vector naming `numeric` manifest indicators.
 ##' @slot ordered `character` vector naming `ordered` indicators.
-##' @slot parameterization `character`. See \code{\link[lavaan]{lavOptions}}.
+##' @slot parameterization `character`. See [lavaan::lavOptions()].
 ##' @slot specify `list` of parameter matrices, similar in form to the
-##'   output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
+##'   output of `lavInspect(fit, "free")`. These matrices
 ##'   are `logical`, indicating whether each parameter should be specified
 ##'   in the model syntax.
 ##' @slot values `list` of parameter matrices, similar in form to the
-##'   output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
+##'   output of `lavInspect(fit, "free")`. These matrices
 ##'   are `numeric`, indicating whether each parameter should be freely
 ##'   estimated (indicated by `NA`) or fixed to a particular value.
 ##' @slot labels `list` of parameter matrices, similar in form to the
-##'   output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
+##'   output of `lavInspect(fit, "free")`. These matrices
 ##'   contain `character` labels used to constrain parameters to equality.
 ##' @slot constraints `character` vector containing additional equality
 ##'   constraints used to identify the model when `ID.fac = "fx"`.
@@ -121,24 +121,24 @@ measEq <- function(configural.model,
 ##'   `"residuals"` or `"lv.variances"` will return covariances along
 ##'   with variances. By default (`NULL`), all types are printed.
 ##' @param single `logical` indicating whether to concatenate lavaan
-##'   \code{\link[lavaan]{model.syntax}} into a single `character` string.
+##'   [lavaan::model.syntax()] into a single `character` string.
 ##'   Setting `FALSE` will return a vector of strings, which may be
 ##'   convenient (or even necessary to prevent an error) in
 ##'   models with long variable names, many variables, or many groups.
 ##' @param groups.as.blocks `logical` indicating whether to write lavaan
-##'   \code{\link[lavaan]{model.syntax}} using vectors of labels and values
+##'   [lavaan::model.syntax()] using vectors of labels and values
 ##'   for multiple groups (the default: `FALSE`), or whether to write
 ##'   a separate "block" of syntax per group. The block structure could allow
 ##'   users to apply the generated multigroup syntax (after some editing) to
 ##'   test invariance across levels in a multilevel SEM (see final example on
-##'   \code{\link{measEq.syntax}} help page).
+##'   [measEq.syntax()] help page).
 ##' @param verbose `logical` indicating whether to print a summary to the
 ##'   screen (default). If `FALSE`, only a pattern matrix is returned.
 ##' @param ... Additional arguments to the `call`, or arguments with
 ##'   changed values.
 ##' @param evaluate If `TRUE`, evaluate the new `call`; otherwise,
 ##'   return the new `call`.
-##' @param change.syntax \code{lavaan \link[lavaan]{model.syntax}} specifying
+##' @param change.syntax [lavaan::model.syntax()] specifying
 ##'   labels or fixed/free values of parameters in `object`.
 ##'   These provide some flexibility to customize
 ##'   existing parameters without having to copy/paste the output of
@@ -164,7 +164,7 @@ measEq <- function(configural.model,
 ##'   \item{as.character}{`signature(x = "measEq.syntax", package = "lavaan")`:
 ##'     Converts the `measEq.syntax` object to model syntax that can be
 ##'     copy/pasted or written to a syntax file to be edited before analysis,
-##'     or simply passed to \code{\link[lavaan]{lavaan}} to fit the model to
+##'     or simply passed to [lavaan::lavaan()] to fit the model to
 ##'     data. Generated M*plus* syntax could also be utilized using the
 ##'     \pkg{MplusAuthomation} package.}
 ##'
@@ -806,7 +806,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' generated as `"._factor_ind.1"`.
 ##'
 ##' The same types of parameter can be specified for `long.equal` as for
-##' `group.equal` (see \code{\link[lavaan]{lavOptions}} for a list), except
+##' `group.equal` (see [lavaan::lavOptions()] for a list), except
 ##' for `"residual.covariances"` or `"lv.covariances"`. Instead, users
 ##' can constrain *auto*covariances using keywords `"resid.autocov"`
 ##' or `"lv.autocov"`. Note that `group.equal = "lv.covariances"` or
@@ -822,11 +822,11 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' each repeatedly measured factor will still be freely estimated in the
 ##' generated syntax.
 ##'
-##' **Missing Data:** If users wish to utilize the \code{\link{auxiliary}}
+##' **Missing Data:** If users wish to utilize the [auxiliary()]
 ##' function to automatically include auxiliary variables in conjunction with
 ##' `missing = "FIML"`, they should first generate the hypothesized-model
 ##' syntax, then submit that syntax as the model to `auxiliary()`.
-##' If users utilized \code{\link{runMI}} to fit their `configural.model`
+##' If users utilized [lavaan.mi()] to fit their `configural.model`
 ##' to multiply imputed data, that model can also be passed to the
 ##' `configural.model` argument, and if `return.fit = TRUE`, the
 ##' generated model will be fitted to the multiple imputations.
@@ -837,28 +837,27 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'   (i.e., representing only configural invariance), unless required for model
 ##'   identification. `configural.model` can be either:
 ##'   \itemize{
-##'     \item lavaan \code{\link[lavaan]{model.syntax}} or a parameter table
-##'           (as returned by \code{\link[lavaan]{parTable}}) specifying the
+##'     \item [lavaan::model.syntax()] or a [lavaan::parTable()] specifying the
 ##'           configural model. Using this option, the user can also provide
 ##'           either raw `data` or summary statistics via `sample.cov`
 ##'           and (optionally) `sample.mean`. See argument descriptions in
-##'           \code{\link[lavaan]{lavaan}}. In order to include thresholds in
+##'           [lavaan::lavaan()]. In order to include thresholds in
 ##'           the generated syntax, either users must provide raw `data`,
 ##'           or the `configural.model` syntax must specify all thresholds
 ##'           (see first example). If raw `data` are not provided, the
 ##'           number of blocks (groups, levels, or combination) must be
 ##'           indicated using an arbitrary `sample.nobs` argument (e.g.,
 ##'           3 groups could be specified using `sample.nobs=rep(1, 3)`).
-##'     \item a fitted \code{\linkS4class{lavaan}} model (e.g., as returned by
-##'           \code{\link[lavaan]{cfa}}) estimating the configural model
+##'     \item a fitted [lavaan-class] model (e.g., as returned by
+##'           [lavaan::cfa()]) estimating the configural model
 ##'   }
 ##'   Note that the specified or fitted model must not contain any latent
 ##'   structural parameters (i.e., it must be a CFA model), unless they are
 ##'   higher-order constructs with latent indicators (i.e., a second-order CFA).
 ##'
 ##' @param ... Additional arguments (e.g., `data`, `ordered`, or
-##'   `parameterization`) passed to the \code{\link[lavaan]{lavaan}}
-##'   function. See also \code{\link[lavaan]{lavOptions}}.
+##'   `parameterization`) passed to the [lavaan::lavaan()]
+##'   function. See also [lavaan::lavOptions()].
 ##'
 ##' @param ID.fac `character`. The method for identifying common-factor
 ##'   variances and (if `meanstructure = TRUE`) means. Three methods are
@@ -910,15 +909,15 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'   binary).
 ##'
 ##' @param group optional `character` indicating the name of a grouping
-##'   variable. See \code{\link[lavaan]{cfa}}.
+##'   variable. See [lavaan::cfa()].
 ##'
 ##' @param group.equal optional `character` vector indicating type(s) of
 ##'   parameter to equate across groups. Ignored if `is.null(group)`.
-##'   See \code{\link[lavaan]{lavOptions}}.
+##'   See [lavaan::lavOptions()].
 ##'
 ##' @param group.partial optional `character` vector or a parameter table
 ##'   indicating exceptions to `group.equal` (see
-##'   \code{\link[lavaan]{lavOptions}}). Any variables not appearing in the
+##'   [lavaan::lavOptions()]). Any variables not appearing in the
 ##'   `configural.model` will be ignored, and any parameter constraints
 ##'   needed for identification (e.g., two thresholds per indicator when
 ##'   `ID.cat = "Millsap"`) will be removed.
@@ -950,29 +949,29 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'   will specify residual covariances among all possible lags per repeatedly
 ##'   measured indicator in `longIndNames`.
 ##'
-##' @param warn,debug `logical`. Passed to \code{\link[lavaan]{lavaan}}
-##'   and \code{\link[lavaan]{lavParseModelString}}.
-##'   See \code{\link[lavaan]{lavOptions}}.
+##' @param warn,debug `logical`. Passed to [lavaan::lavaan()]
+##'   and [lavaan::lavParseModelString()].
+##'   See [lavaan::lavOptions()].
 ##'
 ##' @param return.fit `logical` indicating whether the generated syntax
 ##'   should be fitted to the provided `data` (or summary statistics, if
 ##'   provided via `sample.cov`). If `configural.model` is a fitted
 ##'   lavaan model, the generated syntax will be fitted using the `update`
-##'   method (see \code{\linkS4class{lavaan}}), and \dots will be passed to
-##'   \code{\link[lavaan]{lavaan}}. If neither data nor a fitted lavaan model
+##'   method (see [lavaan-class]), and \dots will be passed to
+##'   [lavaan::lavaan()]. If neither data nor a fitted lavaan model
 ##'   were provided, this must be `FALSE`. If `TRUE`, the generated
 ##'   `measEq.syntax` object will be included in the `lavaan` object's
 ##'   `@@external` slot, accessible by `fit@@external$measEq.syntax`.
 ##'
-##' @return By default, an object of class \code{\linkS4class{measEq.syntax}}.
-##'   If `return.fit = TRUE`, a fitted \code{\link[lavaan]{lavaan}}
+##' @return By default, an object of class [measEq.syntax-class].
+##'   If `return.fit = TRUE`, a fitted [lavaan::lavaan()]
 ##'   model, with the `measEq.syntax` object stored in the
 ##'   `@@external` slot, accessible by `fit@@external$measEq.syntax`.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso  \code{\link{compareFit}}
+##' @seealso  [compareFit()]
 ##'
 ##' @references
 ##'   Kloessner, S., & Klopp, E. (2019). Explaining constraint interaction: How

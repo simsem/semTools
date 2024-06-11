@@ -50,7 +50,7 @@ nonormal distributions. \emph{Psychometrika, 48}(3), 465--471.
 \doi{10.1007/BF02293687}
 }
 \author{
-The original function is the \code{\link[lavaan]{simulateData}}
+The original function is the \code{\link[lavaan:simulateData]{lavaan::simulateData()}}
 function written by Yves Rosseel in the \code{lavaan} package. The function
 is adjusted for a convenient usage by Sunthud Pornprasertmanit
 (\email{psunthud@gmail.com}). Terrence D. Jorgensen added the feature to

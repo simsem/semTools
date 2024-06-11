@@ -6,7 +6,7 @@
 ##' Copy or save the result of `lavaan` or `FitDiff` objects into a
 ##' clipboard or a file
 ##'
-##' Copy or save the result of `lavaan` or \code{\linkS4class{FitDiff}}
+##' Copy or save the result of `lavaan` or [FitDiff-class]
 ##' object into a clipboard or a file. From the clipboard, users may paste the
 ##' result into the Microsoft Excel or spreadsheet application to create a table
 ##' of the output.
@@ -14,26 +14,26 @@
 ##'
 ##' @aliases clipboard saveFile
 ##'
-##' @param object An object of class \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{FitDiff}}.
+##' @param object An object of class [lavaan-class] or
+##'   [FitDiff-class].
 ##' @param what The attributes of the `lavaan` object to be copied in the
 ##'   clipboard. `"summary"` is to copy the screen provided from the
 ##'   `summary` function. `"mifit"` is to copy the result from the
-##'   \code{\link{miPowerFit}} function. Other attributes listed in the
-##'   `inspect` method in the \code{\linkS4class{lavaan}} could also be
+##'   [miPowerFit()] function. Other attributes listed in the
+##'   `inspect` method in the [lavaan-class] could also be
 ##'   used, such as `"coef"`, `"se"`, `"fit"`, `"samp"`, and
-##'   so on.  Ignored for \code{\linkS4class{FitDiff}}-class objects.
+##'   so on.  Ignored for [FitDiff-class]-class objects.
 ##' @param file A file name used for saving the result.
 ##' @param tableFormat If `TRUE`, save the result in the table format using
 ##'   tabs for separation. Otherwise, save the result as the output screen
 ##'   printed in the R console.
 ##' @param fit.measures `character` vector specifying names of fit measures
-##'   returned by \code{\link[lavaan]{fitMeasures}} to be copied/saved.  Only
-##'   relevant if `object` is class \code{\linkS4class{FitDiff}}.
+##'   returned by [lavaan::fitMeasures()] to be copied/saved.  Only
+##'   relevant if `object` is class [FitDiff-class].
 ##' @param writeArgs `list` of additional arguments to be passed to
-##'   \code{\link[utils]{write.table}}
+##'   [utils::write.table()]
 ##' @param \dots Additional arguments when passing a `lavaan` object to the
-##'   `summary` or \code{\link{miPowerFit}} function.
+##'   `summary` or [miPowerFit()] function.
 ##'
 ##' @return The resulting output will be saved into a clipboard or a file. If
 ##'   using the `clipboard` function, users may paste it in the other

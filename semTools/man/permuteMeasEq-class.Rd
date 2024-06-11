@@ -30,7 +30,7 @@ should return permutation-based \emph{p} values for each statistic returned
 by the \code{extra} function.  If \code{FALSE} (default), \code{summary}
 will return permutation-based \emph{p} values for each modification index.}
 
-\item{...}{Additional arguments to pass to \code{\link[graphics]{hist}}}
+\item{...}{Additional arguments to pass to \code{\link[graphics:hist]{graphics::hist()}}}
 
 \item{AFI}{\code{character} indicating the fit measure whose permutation
 distribution should be plotted}
@@ -39,7 +39,7 @@ distribution should be plotted}
 be printed with the histogram}
 
 \item{legendArgs}{\code{list} of arguments passed to the
-\code{\link[graphics]{legend}} function.  The default argument is a list
+\code{\link[graphics:legend]{graphics::legend()}} function.  The default argument is a list
 placing the legend at the top-left of the figure.}
 }
 \value{
@@ -61,7 +61,7 @@ similar to Tukey's studentized range test. If any indices are flagged as
 significant using the \code{tukey.p.value}, then a message is displayed for
 each flagged index. The invisibly returned \code{data.frame} is the
 displayed table of modification indices, unless
-\code{\link[semTools]{permuteMeasEq}} was called with \code{param = NULL},
+\code{\link[=permuteMeasEq]{permuteMeasEq()}} was called with \code{param = NULL},
 in which case the invisibly returned object is \code{object}. If
 \code{extra = TRUE}, the permutation-based \emph{p} values for each
 statistic returned by the \code{extra} function are displayed and returned
@@ -82,7 +82,7 @@ Differential Item Functioning (DIF).
 
 \describe{
 \item{\code{PT}}{A \code{data.frame} returned by a call to
-\code{\link[lavaan]{parTable}} on the constrained model}
+\code{\link[lavaan:parTable]{lavaan::parTable()}} on the constrained model}
 
 \item{\code{modelType}}{A character indicating the specified \code{modelType} in the
 call to \code{permuteMeasEq}}
@@ -105,7 +105,7 @@ if the null hypothesis were true}
 \item{\code{MI.obs}}{A \code{data.frame} of observed Lagrange Multipliers
 (modification indices) associated with the equality constraints or fixed
 parameters specified in the \code{param} argument. This is a subset of the
-output returned by a call to \code{\link[lavaan]{lavTestScore}} on the
+output returned by a call to \code{\link[lavaan:lavTestScore]{lavaan::lavTestScore()}} on the
 constrained model.}
 
 \item{\code{MI.dist}}{The permutation distribution of the maximum modification index
@@ -146,7 +146,7 @@ previous \code{.Random.seed} state, if desired, by running:
 
 \section{Objects from the Class}{
  Objects can be created via the
-\code{\link[semTools]{permuteMeasEq}} function.
+\code{\link[=permuteMeasEq]{permuteMeasEq()}} function.
 }
 
 \examples{
@@ -155,7 +155,7 @@ previous \code{.Random.seed} state, if desired, by running:
 
 }
 \seealso{
-\code{\link[semTools]{permuteMeasEq}}
+\code{\link[=permuteMeasEq]{permuteMeasEq()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

@@ -23,7 +23,7 @@
 ##' @param kurtosis A vector of excessive kurtosis of the variables
 ##' @param empirical deprecated, ignored.
 ##' @return A data matrix
-##' @author The original function is the \code{\link[lavaan]{simulateData}}
+##' @author The original function is the [lavaan::simulateData()]
 ##' function written by Yves Rosseel in the `lavaan` package. The function
 ##' is adjusted for a convenient usage by Sunthud Pornprasertmanit
 ##' (\email{psunthud@@gmail.com}). Terrence D. Jorgensen added the feature to

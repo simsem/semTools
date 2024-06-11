@@ -30,7 +30,7 @@ and test of not-close fit (MacCallum, Browne, & Suguwara, 1996)
 \details{
 This function find the minimum sample size for a specified power based on an
 iterative routine. The sample size keep increasing until the calculated
-power from \code{\link{findRMSEApower}} function is just over the specified
+power from \code{\link[=findRMSEApower]{findRMSEApower()}} function is just over the specified
 power. If \code{group} is greater than 1, the resulting sample size is the
 sample size per group.
 }
@@ -51,10 +51,10 @@ A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
 }
 \seealso{
 \itemize{
-\item \code{\link{plotRMSEApower}} to plot the statistical power based on
+\item \code{\link[=plotRMSEApower]{plotRMSEApower()}} to plot the statistical power based on
 population RMSEA given the sample size
-\item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
-\item \code{\link{findRMSEApower}} to find the statistical power based on
+\item \code{\link[=plotRMSEAdist]{plotRMSEAdist()}} to visualize the RMSEA distributions
+\item \code{\link[=findRMSEApower]{findRMSEApower()}} to find the statistical power based on
 population RMSEA given a sample size
 }
 }

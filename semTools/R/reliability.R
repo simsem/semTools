@@ -27,8 +27,8 @@
 ##' @importFrom lavaan lavInspect
 ##' @importFrom methods getMethod
 ##'
-##' @param object A \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
+##' @param object A [lavaan-class] or
+##'   [lavaan.mi-class] object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model). Cross-loadings are not
 ##'   allowed and will result in `NA` for any factor with indicator(s)
 ##'   that cross-load.
@@ -74,7 +74,7 @@
 ##' with unobservable variables and measurement errors. *Journal of
 ##' Marketing Research, 18*(1), 39--50. \doi{10.2307/3151312}
 ##'
-##' @seealso \code{\link{compRelSEM}} for composite reliability estimates
+##' @seealso [compRelSEM()] for composite reliability estimates
 ##'
 ##' @examples
 ##' data(HolzingerSwineford1939)
@@ -336,8 +336,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' `obs.var` argument. A \eqn{k}-dimensional vector \eqn{\bold{1}} is used
 ##' to sum elements in the matrix. Note that if the model includes any directed
 ##' effects (latent regression slopes), all coefficients are calculated
-##' from **total** factor variances:
-##' \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
+##' from **total** factor variances: `lavInspect(object, "cov.lv")`.
 ##'
 ##' Assuming (essential) tau-equivalence (`tau.eq=TRUE`) makes \eqn{\omega}
 ##' equivalent to coefficient \eqn{\alpha} from classical test theory
@@ -472,8 +471,8 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' @importFrom lavaan lavInspect lavNames parTable
 ##' @importFrom methods getMethod
 ##'
-##' @param object A \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
+##' @param object A [lavaan-class] or
+##'   [lavaan.mi-class] object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
 ##' @param obs.var `logical` indicating whether to compute reliability
 ##'   using observed variances in the denominator. Setting `FALSE` triggers
@@ -535,7 +534,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' @param omit.factors `character` vector naming any common factors
 ##'   modeled in `object` whose composite reliability is not of
 ##'   interest. For example, higher-order or method factors. Note that
-##'   \code{\link{reliabilityL2}()} should be used to calculate composite
+##'   [reliabilityL2()] should be used to calculate composite
 ##'   reliability of a higher-order factor.
 ##' @param omit.indicators `character` vector naming any observed variables
 ##'   that should be omitted from the composite whose reliability is calculated.
@@ -576,7 +575,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   (\email{psunthud@@gmail.com}) for the old `reliability()` function.
 ##'
 ##' @seealso
-##' \code{\link{maximalRelia}} for the maximal reliability of weighted composite
+##' [maximalRelia()] for the maximal reliability of weighted composite
 ##'
 ##' @references
 ##' Bentler, P. M. (1968). Alpha-maximized factor analysis (alphamax): Its
@@ -1533,8 +1532,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##'
 ##' where \eqn{\Sigma} is the observed covariance matrix. If the model fits the
 ##' data well, \eqn{\omega_3} will be similar to \eqn{\omega_2}. Note that if
-##' there is a directional effect in the model, all coefficients are calcualted
-##' from total factor variances: \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
+##' there is a directional effect in the model, all coefficients are calculated
+##' from total factor variances: `lavInspect(object, "cov.lv")`.
 ##'
 ##' In conclusion, \eqn{\omega_1}, \eqn{\omega_2}, and \eqn{\omega_3} are
 ##' different in the denominator. The denominator of the first formula assumes
@@ -1584,8 +1583,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' @importFrom lavaan lavInspect lavNames
 ##' @importFrom methods getMethod
 ##'
-##' @param object A \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
+##' @param object A [lavaan-class] or
+##'   [lavaan.mi-class] object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
 ##' @param what `character` vector naming any reliability indices to
 ##'   calculate. All are returned by default. When indicators are ordinal,
@@ -1605,7 +1604,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' @param omit.factors `character` vector naming any common factors
 ##'   modeled in `object` whose composite reliability is not of
 ##'   interest. For example, higher-order or method factors. Note that
-##'   \code{\link{reliabilityL2}()} should be used to calculate composite
+##'   [reliabilityL2()] should be used to calculate composite
 ##'   reliability of a higher-order factor.
 ##' @param omit.indicators `character` vector naming any observed variables
 ##'   that should be ignored when calculating composite reliability. This can
@@ -1737,7 +1736,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' reliability(object, what = c("alpha", "omega", "omega2", "omega3", "ave"),
 ##'             return.total = FALSE, dropSingle = TRUE, omit.factors = character(0),
 ##'             omit.indicators = character(0), omit.imps = c("no.conv", "no.se"))
-##' @seealso \code{\link{semTools-deprecated}}
+##' @seealso [semTools-deprecated()]
 ##' @keywords internal
 NULL
 
@@ -1754,10 +1753,10 @@ NULL
 ##' omega-type indices.  The omegas differed in terms of whether the observed or
 ##' model-implied covariance matrix was used in the denominator, but alpha was
 ##' only computed using the observed matrix.  These inconsistencies have been
-##' resolved in the new \code{\link{compRelSEM}} function, which returns only
+##' resolved in the new [compRelSEM()] function, which returns only
 ##' one reliability index (per factor, optionally total score) according to the
 ##' user's requested features, for which there is much more flexibility.
-##' Average variance extracted is now available in a dedicated \code{\link{AVE}}
+##' Average variance extracted is now available in a dedicated [AVE()]
 ##' function.
 ##'
 ##' @export
@@ -2140,7 +2139,7 @@ reliability <- function(object,
 ##' factor
 ##'
 ##' The first formula of the coefficient omega (in the
-##' \code{\link{reliability}}) will be mainly used in the calculation. The
+##' [reliability()]) will be mainly used in the calculation. The
 ##' model-implied covariance matrix of a second-order factor model can be
 ##' separated into three sources: the second-order common-factor variance,
 ##' the residual variance of the first-order common factors (i.e., not
@@ -2209,8 +2208,8 @@ reliability <- function(object,
 ##'
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param object A \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object, expected to contain a least one
+##' @param object A [lavaan-class] or
+##'   [lavaan.mi-class] object, expected to contain a least one
 ##'   exogenous higher-order common factor.
 ##' @param secondFactor The name of a single second-order factor in the
 ##'   model fitted in `object`. The function must be called multiple
@@ -2249,7 +2248,7 @@ reliability <- function(object,
 ##' @name reliabilityL2-deprecated
 ##' @usage
 ##' reliabilityL2(object, secondFactor, omit.imps = c("no.conv", "no.se"))
-##' @seealso \code{\link{semTools-deprecated}}
+##' @seealso [semTools-deprecated()]
 ##' @keywords internal
 NULL
 
@@ -2259,7 +2258,7 @@ NULL
 ##' Originally, composite reliability of a single higher-order factor was
 ##' estimated in a separate function: `reliabilityL2`.  It is now available
 ##' for multiple higher-order factors in the same model, and from the same
-##' \code{\link{compRelSEM}} function that estimates reliability for first-order
+##' [compRelSEM()] function that estimates reliability for first-order
 ##' factors, using the `higher=` argument to name higher-order factors in
 ##' the fitted model.
 ##'
@@ -2462,8 +2461,8 @@ reliabilityL2 <- function(object, secondFactor,
 ##'
 ##' @importFrom lavaan lavInspect lavNames
 ##'
-##' @param object A \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
+##' @param object A [lavaan-class] or
+##'   [lavaan.mi-class] object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results.  Can include any of
@@ -2486,7 +2485,7 @@ reliabilityL2 <- function(object, secondFactor,
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
-##' @seealso \code{\link{reliability}} for reliability of an unweighted
+##' @seealso [reliability()] for reliability of an unweighted
 ##'   composite score
 ##'
 ##' @references

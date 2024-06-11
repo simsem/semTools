@@ -15,19 +15,19 @@ variables to be factor-analyzed.}
 \code{data}, to estimate the eigenvalues.}
 
 \item{sample.nobs}{Number of observations (i.e. sample size) if
-\code{is.null(data)} and \code{sample.cov} is used.}
+\code{is.null(data)} and \verb{sample.cov=} is used.}
 
-\item{missing}{If "listwise", cases with missing values are removed listwise
-from the data frame. If "direct" or "ml" or "fiml" and the estimator is
-maximum likelihood, an EM algorithm is used to estimate the unrestricted
-covariance matrix (and mean vector). If "pairwise", pairwise deletion is
-used. If "default", the value is set depending on the estimator and the
-mimic option (see details in \link[lavaan]{lavCor}).}
+\item{missing}{If \code{"listwise"}, incomplete cases are removed listwise from
+the \code{data.frame}. If \code{"direct"} or \code{"ml"} or \code{"fiml"} and the \verb{estimator=}
+is maximum likelihood, an EM algorithm is used to estimate an unrestricted
+covariance matrix (and mean vector). If \code{"pairwise"}, pairwise deletion is
+used. If `"default"``, the value is set depending on the estimator and the
+mimic option (see \code{\link[lavaan:lavCor]{lavaan::lavCor()}} for details).}
 
-\item{ordered}{Character vector. Only used if object is a \code{data.frame}.
-Treat these variables as ordered (ordinal) variables. Importantly, all other
-variables will be treated as numeric (unless \code{is.ordered == TRUE} in
-\code{data}). (see also \link[lavaan]{lavCor})}
+\item{ordered}{\code{character} vector. Only used if object is a \code{data.frame}.
+Treat these variables as \verb{ordered=} (ordinal) variables. Importantly, all
+other variables will be treated as numeric (unless \code{is.ordered == TRUE} in
+\code{data}). (see also \link[lavaan:lavCor]{lavCor})}
 
 \item{plot}{logical. Whether to print a scree plot comparing the sample
 eigenvalues with the reference eigenvalues.}
@@ -37,7 +37,7 @@ A \code{data.frame} showing the sample and reference eigenvalues.
 
 The number of factors suggested by the Empirical Kaiser Criterion (i.e. the
 sample eigenvalues greater than the reference eigenvalues) is returned as an
-attribute (see Examples).
+attribute (see \strong{Examples}).
 
 The number of factors suggested by the original Kaiser Criterion (i.e.
 sample eigenvalues > 1) is also printed as a header to the \code{data.frame}

@@ -33,15 +33,15 @@
 ##' @return The original data attached with the products.
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com}) Alexander
 ##' Schoemann (East Carolina University; \email{schoemanna@@ecu.edu})
-##' @seealso \itemize{ \item \code{\link{probe2WayMC}} For probing the two-way
+##' @seealso \itemize{ \item [probe2WayMC()] For probing the two-way
 ##' latent interaction when the results are obtained from mean-centering, or
-##' double-mean centering.  \item \code{\link{probe3WayMC}} For probing the
+##' double-mean centering.  \item [probe3WayMC()] For probing the
 ##' three-way latent interaction when the results are obtained from
-##' mean-centering, or double-mean centering.  \item \code{\link{probe2WayRC}}
+##' mean-centering, or double-mean centering.  \item [probe2WayRC()]
 ##' For probing the two-way latent interaction when the results are obtained
-##' from residual-centering approach.  \item \code{\link{probe3WayRC}} For
+##' from residual-centering approach.  \item [probe3WayRC()] For
 ##' probing the two-way latent interaction when the results are obtained from
-##' residual-centering approach.  \item \code{\link{plotProbe}} Plot the simple
+##' residual-centering approach.  \item [plotProbe()] Plot the simple
 ##' intercepts and slopes of the latent interaction.  }
 ##' @references Marsh, H. W., Wen, Z. & Hau, K. T. (2004). Structural equation
 ##' models of latent interactions: Evaluation of alternative estimation

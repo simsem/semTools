@@ -19,13 +19,13 @@ normality), as described in Shi et al. (2018):
 \code{c("swain","yuan.2015","yuan.2005","bartlett")}. Users may also
 simply select \code{"all"}.}
 
-\item{\dots}{Additional arguments to the \code{\link[lavaan]{lavTestLRT}} or
-\code{\link{lavTestLRT.mi}} functions. Ignored when \code{is.null(fit1)}.}
+\item{\dots}{Additional arguments to the \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} or
+\code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} functions. Ignored when \code{is.null(fit1)}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results. Ignored unless \code{fit0} (and
 optionally \code{fit1}) is a \linkS4class{lavaan.mi} object. See
-\code{\link{lavTestLRT.mi}} for a description of options and defaults.}
+\code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} for a description of options and defaults.}
 }
 \value{
 A \code{list} of \code{numeric} vectors: one for the originally

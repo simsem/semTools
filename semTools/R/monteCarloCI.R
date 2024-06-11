@@ -38,10 +38,10 @@
 ##' sampling distriution of estimated model parameters, as described by
 ##' MacKinnon et al. (2004) for testing indirect effects in mediation models.
 ##' The easiest way to use the function is to fit a SEM to data with
-##' \code{\link[lavaan]{lavaan}}, using the `:=` operator in the
-##' \code{\link[lavaan]{model.syntax}} to specify user-defined parameters.
+##' [lavaan::lavaan()], using the `:=` operator in the
+##' [lavaan::model.syntax()] to specify user-defined parameters.
 ##' All information is then available in the resulting
-##' \code{\linkS4class{lavaan}} object.  Alternatively (especially when using
+##' [lavaan-class] object.  Alternatively (especially when using
 ##' external SEM software to fit the model), the expression(s) can be explicitly
 ##' passed to the function, along with the vector of estimated model parameters
 ##' and their associated asymptotic sampling covariance matrix (ACOV).
@@ -57,7 +57,7 @@
 ##'  \item Mplus Include the command TECH3; in the OUTPUT section. The ACM will
 ##'    be printed in the output.
 ##'  \item `lavaan`: Use the `vcov` method on the fitted
-##'    \code{\linkS4class{lavaan}} object to return the ACM.
+##'    [lavaan-class] object to return the ACM.
 ##' }
 ##'
 ##'
@@ -65,9 +65,9 @@
 ##' @importFrom methods getMethod
 ##' @importFrom lavaan parTable lavInspect
 ##'
-##' @param object A object of class \code{\linkS4class{lavaan}} in which
+##' @param object A object of class [lavaan-class] in which
 ##'   functions of parameters have already been defined using the `:=`
-##'   operator in `lavaan`'s \code{\link[lavaan]{model.syntax}}. When
+##'   operator in `lavaan`'s [lavaan::model.syntax()]. When
 ##'   `NULL`, users must specify `expr`, `coefs`, and `ACM`.
 ##' @param expr Optional `character` vector specifying functions of model
 ##'   parameters (e.g., an indirect effect). Ideally, the vector should have
@@ -90,15 +90,15 @@
 ##' @param standardized `logical` indicating whether to obtain CIs for the
 ##'   fully standardized (`"std.all"`) estimates, using their asymptotic
 ##'   sampling covariance matrix.  Only valid when `object` is of class
-##'   \code{\linkS4class{lavaan}}, not \code{\linkS4class{lavaan.mi}}.
+##'   [lavaan-class], not [lavaan.mi-class].
 ##' @param fast `logical` indicating whether to use a fast algorithm that
 ##'   assumes all functions of parameters (in `object` or `expr`) use
-##'   standard operations. Set to `FALSE` if using (e.g.) \code{\link{c}()}
+##'   standard operations. Set to `FALSE` if using (e.g.) [c()]
 ##'   to concatenate parameters in the definition, which would have unintended
 ##'   consequences when vectorizing functions in `expr` across sampled
 ##'   parameters.
 ##' @param level `numeric` confidence level, between 0--1
-##' @param na.rm `logical` passed to \code{\link[stats]{quantile}}
+##' @param na.rm `logical` passed to [stats::quantile()]
 ##' @param append.samples `logical` indicating whether to return the
 ##'   simulated empirical sampling distribution of parameters (in `coefs`)
 ##'   and functions (in `expr`) in a `list` with the results. This
@@ -107,7 +107,7 @@
 ##' @param plot `logical` indicating whether to plot the empirical sampling
 ##'   distribution of each function in `expr`
 ##' @param ask whether to prompt user before printing each plot
-##' @param \dots arguments passed to \code{\link[graphics]{hist}} when
+##' @param \dots arguments passed to [graphics::hist()] when
 ##'   `plot = TRUE`.
 ##'
 ##' @return A `lavaan.data.frame` (to use lavaan's `print` method)

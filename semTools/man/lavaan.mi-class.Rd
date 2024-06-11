@@ -58,8 +58,8 @@
 \item{object}{An object of class \code{lavaan.mi}}
 
 \item{se, ci, level, standardized, rsquare, header, output}{See
-\code{\link[lavaan]{parameterEstimates}}. \code{output}
-can also be passed to \code{\link[lavaan]{fitMeasures}}.}
+\code{\link[lavaan:parameterEstimates]{lavaan::parameterEstimates()}}. The \verb{output=} argument
+can also be passed to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.}
 
 \item{fmi}{\code{logical} indicating whether to include the Fraction Missing
 Information (FMI) for parameter estimates in the \code{summary}
@@ -71,9 +71,8 @@ within-imputation component by the ARIV (see Enders, 2010, p. 235,
 for definition and formula). Otherwise, the pooled matrix is
 calculated as the weighted sum of the within-imputation and
 between-imputation components (see Enders, 2010, ch. 8, for details).
-This in turn affects how the \code{summary} method calcualtes its
-pooled standard errors, as well as the Wald test
-(\code{\link{lavTestWald.mi}}).}
+This in turn affects how the \code{summary()} method calculates its
+pooled standard errors, as well as \code{\link[=lavTestWald.mi]{lavTestWald.mi()}}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results.  Can include any of
@@ -104,12 +103,12 @@ distribution, so it is printed as a \emph{z} statisic; likewise,
 \emph{F} times its numerator \emph{df} is printed, assumed to follow
 a \eqn{\chi^2} distribution.}
 
-\item{fit.measures, baseline.model}{See \code{\link[lavaan]{fitMeasures}}.
+\item{fit.measures, baseline.model}{See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.
 \code{summary(object, fit.measures = TRUE)} will print (but not
 return) a table of fit measures to the console.}
 
-\item{...}{Additional arguments passed to \code{\link{lavTestLRT.mi}}, or
-subsequently to \code{\link[lavaan]{lavTestLRT}}.}
+\item{...}{Additional arguments passed to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, or
+subsequently to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}.}
 
 \item{total}{\code{logical} (default: \code{TRUE}) indicating whether the
 \code{nobs} method should return the total sample size or (if
@@ -124,7 +123,7 @@ should include parameter labels. Default is \code{TRUE}.}
 }
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE, omit.imps = c("no.conv","no.se"))}:
-See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
+See \linkS4class{lavaan}. Returns the pooled point estimates (i.e.,
 averaged across imputed data sets; see Rubin, 1987).}
 
 \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE, omit.imps = c("no.conv","no.se"), type = c("pooled","between","within","ariv"))}:  By default, returns the
@@ -134,12 +133,12 @@ between-imputations covariance matrix (\code{type = "between"}), or the
 average relative increase in variance (\code{type = "ariv"}) due to
 missing data.}
 
-\item{fitted.values}{\code{signature(object = "lavaan.mi", omit.imps = c("no.conv","no.se"))}: See \code{\linkS4class{lavaan}}.
+\item{fitted.values}{\code{signature(object = "lavaan.mi", omit.imps = c("no.conv","no.se"))}: See \linkS4class{lavaan}.
 Returns model-implied moments, evaluated at the pooled point estimates.}
 \item{fitted}{alias for \code{fitted.values}}
 
 \item{residuals}{\code{signature(object = "lavaan.mi", type = c("raw","cor"), omit.imps = c("no.conv","no.se"))}:
-See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
+See \linkS4class{lavaan}. By default (\code{type = "raw"}), returns
 the difference between the model-implied moments from \code{fitted.values}
 and the pooled observed moments (i.e., averaged across imputed data sets).
 Standardized residuals are also available, using Bollen's
@@ -154,11 +153,11 @@ the total (default) sample size or a vector of group sample sizes
 \item{anova}{\code{signature(object = "lavaan.mi", ...)}:
 Returns a test of model fit for a single model (\code{object}) or test(s)
 of the difference(s) in fit between nested models passed via \code{...}.
-See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
+See \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} and \code{\link[=compareFit]{compareFit()}} for details.}
 
 \item{fitMeasures}{\code{signature(object = "lavaan.mi", fit.measures = "all", baseline.model = NULL, output = "vector", omit.imps = c("no.conv","no.se"), ...)}: See lavaan's
-\code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
-to \code{\link{lavTestLRT.mi}} via \code{...}.}
+\code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for details. Pass additional arguments
+to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} via \code{...}.}
 \item{fitmeasures}{alias for \code{fitMeasures}.}
 
 \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
@@ -166,7 +165,7 @@ convergence rates and estimation problems (if applicable) across imputed
 data sets.}
 
 \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE, level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE, scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE, ...)}:
-see \code{\link[lavaan]{parameterEstimates}} for details.
+see \code{\link[lavaan:parameterEstimates]{lavaan::parameterEstimates()}} for details.
 By default, \code{summary} returns pooled point and \emph{SE}
 estimates, along with \emph{t} test statistics and their associated
 \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
@@ -182,11 +181,11 @@ the \code{parameterEstimates} output. The \code{scale.W} argument is
 passed to \code{vcov} (see description above).
 Setting \code{fit.measures=TRUE} will additionally print fit measures to
 the console, but they will not be returned; additional arguments may be
-passed via \code{...} to \code{\link[lavaan]{fitMeasures}} and
-subsequently to \code{\link{lavTestLRT.mi}}.}
+passed via \code{...} to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} and
+subsequently to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}.}
 }
 \description{
-This class extends the \code{\linkS4class{lavaanList}} class, created by
+This class extends the \linkS4class{lavaanList} class, created by
 fitting a lavaan model to a list of data sets. In this case, the list of
 data sets are multiple imputations of missing data.
 }
@@ -194,18 +193,18 @@ data sets are multiple imputations of missing data.
 
 \describe{
 \item{\code{coefList}}{\code{list} of estimated coefficients in matrix format (one
-per imputation) as output by \code{\link[lavaan]{lavInspect}(fit, "est")}}
+per imputation) as output by \code{lavInspect(fit, "est")}}
 
 \item{\code{phiList}}{\code{list} of model-implied latent-variable covariance
 matrices (one per imputation) as output by
-\code{\link[lavaan]{lavInspect}(fit, "cov.lv")}}
+\code{lavInspect(fit, "cov.lv")}}
 
 \item{\code{miList}}{\code{list} of modification indices output by
-\code{\link[lavaan]{modindices}}}
+\code{\link[lavaan:modificationIndices]{lavaan::modindices()}}}
 
 \item{\code{seed}}{\code{integer} seed set before running imputations}
 
-\item{\code{lavListCall}}{call to \code{\link[lavaan]{lavaanList}} used to fit the
+\item{\code{lavListCall}}{call to \code{\link[lavaan:lavaanList]{lavaan::lavaanList()}} used to fit the
 model to the list of imputed data sets in \verb{@DataList}, stored as a
 \code{list} of arguments}
 
@@ -220,32 +219,32 @@ residual covariance matrix of observed variables (\eqn{\Theta}) is
 non-positive-definite.}
 
 \item{\code{lavaanList_slots}}{All remaining slots are from
-\code{\linkS4class{lavaanList}}, but \code{\link{runMI}} only populates a
+\linkS4class{lavaanList}, but \code{\link[=runMI]{runMI()}} only populates a
 subset of the \code{list} slots, two of them with custom information:}
 
 \item{\code{DataList}}{The \code{list} of imputed data sets}
 
 \item{\code{SampleStatsList}}{List of output from
-\code{\link[lavaan]{lavInspect}(fit, "sampstat")} applied to each fitted
+\code{lavInspect(fit, "sampstat")} applied to each fitted
 model}
 
-\item{\code{ParTableList}}{See \code{\linkS4class{lavaanList}}}
+\item{\code{ParTableList}}{See \linkS4class{lavaanList}}
 
-\item{\code{vcovList}}{See \code{\linkS4class{lavaanList}}}
+\item{\code{vcovList}}{See \linkS4class{lavaanList}}
 
-\item{\code{testList}}{See \code{\linkS4class{lavaanList}}}
+\item{\code{testList}}{See \linkS4class{lavaanList}}
 
-\item{\code{h1List}}{See \code{\linkS4class{lavaanList}}. An additional element is
+\item{\code{h1List}}{See \linkS4class{lavaanList}. An additional element is
 added to the \code{list}: \verb{$PT} is the "saturated" model's parameter
-table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
+table, returned by \code{\link[lavaan:lav_partable]{lavaan::lav_partable_unrestricted()}}.}
 
-\item{\code{baselineList}}{See \code{\linkS4class{lavaanList}}}
+\item{\code{baselineList}}{See \linkS4class{lavaanList}}
 }}
 
 \section{Objects from the Class}{
- See the \code{\link{runMI}} function for
-details. Wrapper functions include \code{\link{lavaan.mi}},
-\code{\link{cfa.mi}}, \code{\link{sem.mi}}, and \code{\link{growth.mi}}.
+ See the \code{\link[=runMI]{runMI()}} function for
+details. Wrapper functions include \code{\link[=lavaan.mi]{lavaan.mi()}},
+\code{\link[=cfa.mi]{cfa.mi()}}, \code{\link[=sem.mi]{sem.mi()}}, and \code{\link[=growth.mi]{growth.mi()}}.
 }
 
 \examples{

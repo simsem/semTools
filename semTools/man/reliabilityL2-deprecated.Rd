@@ -7,8 +7,8 @@
 reliabilityL2(object, secondFactor, omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{object}{A \code{\linkS4class{lavaan}} or
-\code{\linkS4class{lavaan.mi}} object, expected to contain a least one
+\item{object}{A \linkS4class{lavaan} or
+\linkS4class{lavaan.mi} object, expected to contain a least one
 exogenous higher-order common factor.}
 
 \item{secondFactor}{The name of a single second-order factor in the
@@ -40,7 +40,7 @@ factor
 }
 \details{
 The first formula of the coefficient omega (in the
-\code{\link{reliability}}) will be mainly used in the calculation. The
+\code{\link[=reliability]{reliability()}}) will be mainly used in the calculation. The
 model-implied covariance matrix of a second-order factor model can be
 separated into three sources: the second-order common-factor variance,
 the residual variance of the first-order common factors (i.e., not
@@ -119,7 +119,7 @@ reliabilityL2(fit6, "higher")
 
 }
 \seealso{
-\code{\link{semTools-deprecated}}
+\code{\link[=semTools-deprecated]{semTools-deprecated()}}
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})

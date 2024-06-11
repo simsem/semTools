@@ -41,7 +41,7 @@
 ##' by this function.
 ##' @param return.fit Return the submodels fitted by this function
 ##' @param method The method used to calculate likelihood ratio test. See
-##' \code{\link[lavaan]{lavTestLRT}} for available options
+##' [lavaan::lavTestLRT()] for available options
 ##' @return If `return.fit = FALSE`, the result tables are provided.
 ##' \eqn{\chi^2} and *p* value are provided for all methods. Note that the
 ##' \eqn{\chi^2} is all based on 1 *df*. Expected parameter changes

@@ -13,27 +13,27 @@
 ##' The resulting HTMT(2) values are interpreted as estimates of inter-construct
 ##' correlations. Absolute values of the correlations are recommended to
 ##' calculate the HTMT matrix, and are required to calculate HTMT2. Correlations
-##' are estimated using the \code{\link[lavaan]{lavCor}} function.
+##' are estimated using the [lavaan::lavCor()] function.
 ##'
 ##'
 ##' @importFrom stats cov2cor
 ##'
-##' @param model lavaan \link[lavaan]{model.syntax} of a confirmatory factor
+##' @param model lavaan [lavaan::model.syntax()] of a confirmatory factor
 ##'   analysis model where at least two factors are required for indicators
 ##'   measuring the same construct.
 ##' @param data A `data.frame` or data `matrix`
 ##' @param sample.cov A covariance or correlation matrix can be used, instead of
-##'   `data`, to estimate the HTMT values.
-##' @param missing If "listwise", cases with missing values are removed listwise
-##'   from the data frame. If "direct" or "ml" or "fiml" and the estimator is
+##'   `data=`, to estimate the HTMT values.
+##' @param missing If `"listwise"`, cases with missing values are removed listwise
+##'   from the data frame. If `"direct"` or `"ml"` or `"fiml"` and the estimator is
 ##'   maximum likelihood, an EM algorithm is used to estimate the unrestricted
-##'   covariance matrix (and mean vector). If "pairwise", pairwise deletion is
-##'   used. If "default", the value is set depending on the estimator and the
-##'   mimic option (see details in \link[lavaan]{lavCor}).
+##'   covariance matrix (and mean vector). If `"pairwise"`, pairwise deletion is
+##'   used. If `"default"`, the value is set depending on the estimator and the
+##'   mimic option (see details in [lavaan::lavCor()]).
 ##' @param ordered Character vector. Only used if object is a `data.frame`.
 ##'   Treat these variables as ordered (ordinal) variables. Importantly, all
 ##'   other variables will be treated as numeric (unless `is.ordered` in
-##'   `data`). (see also \link[lavaan]{lavCor})
+##'   `data=`). See also [lavaan::lavCor()].
 ##' @param absolute `logical` indicating whether HTMT values should be
 ##'   estimated based on absolute correlations (default is `TRUE`). This
 ##'   is recommended for HTMT but required for HTMT2 (so silently ignored).

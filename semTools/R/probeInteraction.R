@@ -17,7 +17,7 @@
 ##' indicators between the first-order factors using mean centering (Marsh, Wen,
 ##' & Hau, 2004). Note that the double-mean centering may not be appropriate for
 ##' probing interaction if researchers are interested in simple intercepts. The
-##' mean or double-mean centering can be done by the \code{\link{indProd}}
+##' mean or double-mean centering can be done by the [indProd()]
 ##' function. The indicator products can be made for all possible combination or
 ##' matched-pair approach (Marsh et al., 2004). Next, the hypothesized model
 ##' with the regression with latent interaction will be used to fit all original
@@ -55,15 +55,15 @@
 ##'        Cov\left(b_1, b_3\right) + Z^2 \times Var\left(b_3\right) }
 ##'
 ##' Wald *z* statistic is used for test statistic (even for objects of
-##' class \code{\linkS4class{lavaan.mi}}).
+##' class [lavaan.mi-class]).
 ##'
 ##'
 ##' @importFrom lavaan lavInspect parTable
 ##' @importFrom stats pnorm
 ##' @importFrom methods getMethod
 ##'
-##' @param fit A fitted \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
+##' @param fit A fitted [lavaan-class] or
+##'   [lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 3 factor names used as the
 ##'   predictors. The lower-order factors must be listed first, and the final
 ##'   name must be the latent interaction factor.
@@ -75,11 +75,11 @@
 ##'   effect of the focal predictor.
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
-##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}, or an integer
+##'   `lavInspect(fit, "group.label")`, or an integer
 ##'   corresponding to which of those group labels.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results. Ignored unless `fit` is of
-##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
+##'        class [lavaan.mi-class]. Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
@@ -112,15 +112,15 @@
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##' @seealso \itemize{
-##'  \item \code{\link{indProd}} For creating the indicator products with no
+##'  \item [indProd()] For creating the indicator products with no
 ##'   centering, mean centering, double-mean centering, or residual centering.
-##'  \item \code{\link{probe3WayMC}} For probing the three-way latent interaction
+##'  \item [probe3WayMC()] For probing the three-way latent interaction
 ##'   when the results are obtained from mean-centering, or double-mean centering
-##'  \item \code{\link{probe2WayRC}} For probing the two-way latent interaction
+##'  \item [probe2WayRC()] For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
-##'  \item \code{\link{probe3WayRC}} For probing the two-way latent interaction
+##'  \item [probe3WayRC()] For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
-##'  \item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
+##'  \item [plotProbe()] Plot the simple intercepts and slopes of the
 ##'   latent interaction.
 ##' }
 ##'
@@ -377,7 +377,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' Before using this function, researchers need to make the products of the
 ##' indicators between the first-order factors and residualize the products by
 ##' the original indicators (Lance, 1988; Little, Bovaird, & Widaman, 2006). The
-##' process can be automated by the \code{\link{indProd}} function. Note that
+##' process can be automated by the [indProd()] function. Note that
 ##' the indicator products can be made for all possible combination or
 ##' matched-pair approach (Marsh et al., 2004). Next, the hypothesized model
 ##' with the regression with latent interaction will be used to fit all original
@@ -392,15 +392,15 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' on a strong assumption that the first-order latent variables are normally
 ##' distributed. The probing process is applied after the no-centered result
 ##' (parameter estimates and their covariance matrix among parameter estimates)
-##' has been computed. See the \code{\link{probe2WayMC}} for further details.
+##' has been computed. See the [probe2WayMC()] for further details.
 ##'
 ##'
 ##' @importFrom lavaan lavInspect parTable
 ##' @importFrom stats pnorm
 ##' @importFrom methods getMethod
 ##'
-##' @param fit A fitted \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
+##' @param fit A fitted [lavaan-class] or
+##'   [lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 3 factor names used as the
 ##'   predictors. The lower-order factors must be listed first, and the final
 ##'   name must be the latent interaction factor.
@@ -412,11 +412,11 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'   effect of the focal predictor.
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
-##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}, or an integer
+##'   `lavInspect(fit, "group.label")`, or an integer
 ##'   corresponding to which of those group labels.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results. Ignored unless `fit` is of
-##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
+##'        class [lavaan.mi-class]. Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
@@ -449,15 +449,15 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##' @seealso \itemize{
-##'  \item \code{\link{indProd}} For creating the indicator products with no
+##'  \item [indProd()] For creating the indicator products with no
 ##'   centering, mean centering, double-mean centering, or residual centering.
-##'  \item \code{\link{probe2WayMC}} For probing the two-way latent interaction
+##'  \item [probe2WayMC()] For probing the two-way latent interaction
 ##'   when the results are obtained from mean-centering, or double-mean centering
-##'  \item \code{\link{probe3WayMC}} For probing the three-way latent interaction
+##'  \item [probe3WayMC()] For probing the three-way latent interaction
 ##'   when the results are obtained from mean-centering, or double-mean centering
-##'  \item \code{\link{probe3WayRC}} For probing the two-way latent interaction
+##'  \item [probe3WayRC()] For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
-##'  \item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
+##'  \item [plotProbe()] Plot the simple intercepts and slopes of the
 ##'   latent interaction.
 ##' }
 ##' @references
@@ -757,7 +757,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' indicators between the first-order factors using mean centering (Marsh, Wen,
 ##' & Hau, 2004). Note that the double-mean centering may not be appropriate for
 ##' probing interaction if researchers are interested in simple intercepts. The
-##' mean or double-mean centering can be done by the \code{\link{indProd}}
+##' mean or double-mean centering can be done by the [indProd()]
 ##' function. The indicator products can be made for all possible combination or
 ##' matched-pair approach (Marsh et al., 2004). Next, the hypothesized model
 ##' with the regression with latent interaction will be used to fit all original
@@ -805,7 +805,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'         2Z^2WCov\left(b_4, b_7\right) + 2ZW^2Cov\left(b_5, b_7\right). }
 ##'
 ##' Wald *z* statistics are calculated (even for objects of class
-##' \code{\linkS4class{lavaan.mi}}) to test null hypotheses that simple
+##' [lavaan.mi-class]) to test null hypotheses that simple
 ##' intercepts or slopes are 0.
 ##'
 ##'
@@ -813,8 +813,8 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' @importFrom stats pnorm
 ##' @importFrom methods getMethod
 ##'
-##' @param fit A fitted \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
+##' @param fit A fitted [lavaan-class] or
+##'   [lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 7 factor names used as the
 ##'   predictors. The 3 lower-order factors must be listed first, followed by
 ##'   the 3 second-order factors (specifically, the 4th element must be the
@@ -833,10 +833,10 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'   probe the effect of the independent factor.
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
-##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}.
+##'   `lavInspect(fit, "group.label")`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results. Ignored unless `fit` is of
-##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
+##'        class [lavaan.mi-class]. Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
@@ -872,15 +872,15 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##' @seealso \itemize{
-##'  \item \code{\link{indProd}} For creating the indicator products with no
+##'  \item [indProd()] For creating the indicator products with no
 ##'   centering, mean centering, double-mean centering, or residual centering.
-##'  \item \code{\link{probe2WayMC}} For probing the two-way latent interaction
+##'  \item [probe2WayMC()] For probing the two-way latent interaction
 ##'   when the results are obtained from mean-centering, or double-mean centering
-##'  \item \code{\link{probe2WayRC}} For probing the two-way latent interaction
+##'  \item [probe2WayRC()] For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
-##'  \item \code{\link{probe3WayRC}} For probing the two-way latent interaction
+##'  \item [probe3WayRC()] For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
-##'  \item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
+##'  \item [plotProbe()] Plot the simple intercepts and slopes of the
 ##'   latent interaction.
 ##' }
 ##'
@@ -1134,7 +1134,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' Before using this function, researchers need to make the products of the
 ##' indicators between the first-order factors and residualize the products by
 ##' the original indicators (Lance, 1988; Little, Bovaird, & Widaman, 2006). The
-##' process can be automated by the \code{\link{indProd}} function. Note that
+##' process can be automated by the [indProd()] function. Note that
 ##' the indicator products can be made for all possible combination or
 ##' matched-pair approach (Marsh et al., 2004). Next, the hypothesized model
 ##' with the regression with latent interaction will be used to fit all original
@@ -1149,15 +1149,15 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' a strong assumption that the first-order latent variables are normally
 ##' distributed. The probing process is applied after the no-centered result
 ##' (parameter estimates and their covariance matrix among parameter estimates)
-##' has been computed. See the \code{\link{probe3WayMC}} for further details.
+##' has been computed. See the [probe3WayMC()] for further details.
 ##'
 ##'
 ##' @importFrom lavaan lavInspect parTable
 ##' @importFrom stats pnorm
 ##' @importFrom methods getMethod
 ##'
-##' @param fit A fitted \code{\linkS4class{lavaan}} or
-##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
+##' @param fit A fitted [lavaan-class] or
+##'   [lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 7 factor names used as the
 ##'   predictors. The 3 lower-order factors must be listed first, followed by
 ##'   the 3 second-order factors (specifically, the 4th element must be the
@@ -1176,10 +1176,10 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##'   probe the effect of the independent factor.
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
-##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}.
+##'   `lavInspect(fit, "group.label")`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results. Ignored unless `fit` is of
-##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
+##'        class [lavaan.mi-class]. Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
@@ -1215,15 +1215,15 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##' @seealso \itemize{
-##'  \item \code{\link{indProd}} For creating the indicator products with no
+##'  \item [indProd()] For creating the indicator products with no
 ##'   centering, mean centering, double-mean centering, or residual centering.
-##'  \item \code{\link{probe2WayMC}} For probing the two-way latent interaction
+##'  \item [probe2WayMC()] For probing the two-way latent interaction
 ##'   when the results are obtained from mean-centering, or double-mean centering
-##'  \item \code{\link{probe3WayMC}} For probing the three-way latent interaction
+##'  \item [probe3WayMC()] For probing the three-way latent interaction
 ##'   when the results are obtained from mean-centering, or double-mean centering
-##'  \item \code{\link{probe2WayRC}} For probing the two-way latent interaction
+##'  \item [probe2WayRC()] For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
-##'  \item \code{\link{plotProbe}} Plot the simple intercepts and slopes of the
+##'  \item [plotProbe()] Plot the simple intercepts and slopes of the
 ##'   latent interaction.
 ##' }
 ##'
@@ -1579,17 +1579,17 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' *x*-axis should not be interpreted.
 ##'
 ##' @param object A `list`, typically the result of probing a latent 2-way
-##'   or 3-way interaction obtained from the \code{\link{probe2WayMC}},
-##'   \code{\link{probe2WayRC}}, \code{\link{probe3WayMC}}, or
-##'   \code{\link{probe3WayRC}} functions.
+##'   or 3-way interaction obtained from the [probe2WayMC()],
+##'   [probe2WayRC()], [probe3WayMC()], or
+##'   [probe3WayRC()] functions.
 ##' @param xlim The vector of two numbers: the minimum and maximum values of the
 ##'   independent variable
 ##' @param xlab The label of the x-axis
 ##' @param ylab The label of the y-axis
 ##' @param legend `logical`. If `TRUE` (default), a legend is printed.
-##' @param legendArgs `list` of arguments passed to \code{\link{legend}}
+##' @param legendArgs `list` of arguments passed to [legend()]
 ##'   function if `legend=TRUE`.
-##' @param \dots Any additional argument for the \code{\link{plot}} function
+##' @param \dots Any additional argument for the [plot()] function
 ##'
 ##' @return None. This function will plot the simple main effect only.
 ##'
@@ -1599,15 +1599,15 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##' @seealso \itemize{
-##'  \item \code{\link{indProd}} For creating the indicator products with no
+##'  \item [indProd()] For creating the indicator products with no
 ##'   centering, mean centering, double-mean centering, or residual centering.
-##'  \item \code{\link{probe2WayMC}} For probing the two-way latent interaction
+##'  \item [probe2WayMC()] For probing the two-way latent interaction
 ##'   when the results are obtained from mean-centering, or double-mean centering
-##'  \item \code{\link{probe3WayMC}} For probing the three-way latent interaction
+##'  \item [probe3WayMC()] For probing the three-way latent interaction
 ##'   when the results are obtained from mean-centering, or double-mean centering
-##'  \item \code{\link{probe2WayRC}} For probing the two-way latent interaction
+##'  \item [probe2WayRC()] For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
-##'  \item \code{\link{probe3WayRC}} For probing the two-way latent interaction
+##'  \item [probe3WayRC()] For probing the two-way latent interaction
 ##'   when the results are obtained from residual-centering approach.
 ##' }
 ##'

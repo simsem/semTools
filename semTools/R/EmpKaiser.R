@@ -18,28 +18,28 @@
 ##' @importFrom stats cov cov2cor
 ##'
 ##' @param data A `data.frame` or data `matrix` containing columns of
-##' variables to be factor-analyzed.
+##'   variables to be factor-analyzed.
 ##' @param sample.cov A covariance or correlation matrix can be used, instead of
-##' `data`, to estimate the eigenvalues.
+##'   `data`, to estimate the eigenvalues.
 ##' @param sample.nobs Number of observations (i.e. sample size) if
-##' `is.null(data)` and `sample.cov` is used.
-##' @param missing If "listwise", cases with missing values are removed listwise
-##' from the data frame. If "direct" or "ml" or "fiml" and the estimator is
-##' maximum likelihood, an EM algorithm is used to estimate the unrestricted
-##' covariance matrix (and mean vector). If "pairwise", pairwise deletion is
-##' used. If "default", the value is set depending on the estimator and the
-##' mimic option (see details in \link[lavaan]{lavCor}).
-##' @param ordered Character vector. Only used if object is a `data.frame`.
-##' Treat these variables as ordered (ordinal) variables. Importantly, all other
-##' variables will be treated as numeric (unless `is.ordered == TRUE` in
-##' `data`). (see also \link[lavaan]{lavCor})
+##'   `is.null(data)` and `sample.cov=` is used.
+##' @param missing If `"listwise"`, incomplete cases are removed listwise from
+##'   the `data.frame`. If `"direct"` or `"ml"` or `"fiml"` and the `estimator=`
+##'   is maximum likelihood, an EM algorithm is used to estimate an unrestricted
+##'   covariance matrix (and mean vector). If `"pairwise"`, pairwise deletion is
+##'   used. If `"default"``, the value is set depending on the estimator and the
+##'   mimic option (see [lavaan::lavCor()] for details).
+##' @param ordered `character` vector. Only used if object is a `data.frame`.
+##'   Treat these variables as `ordered=` (ordinal) variables. Importantly, all
+##'   other variables will be treated as numeric (unless `is.ordered == TRUE` in
+##'   `data`). (see also [lavCor][lavaan::lavCor])
 ##' @param plot logical. Whether to print a scree plot comparing the sample
-##' eigenvalues with the reference eigenvalues.
+##'   eigenvalues with the reference eigenvalues.
 ##' @return A `data.frame` showing the sample and reference eigenvalues.
 ##'
 ##' The number of factors suggested by the Empirical Kaiser Criterion (i.e. the
 ##' sample eigenvalues greater than the reference eigenvalues) is returned as an
-##' attribute (see Examples).
+##' attribute (see **Examples**).
 ##'
 ##' The number of factors suggested by the original Kaiser Criterion (i.e.
 ##' sample eigenvalues > 1) is also printed as a header to the `data.frame`

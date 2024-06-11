@@ -24,16 +24,16 @@
 ##' `test = "Mplus"` implies `"D3"` and `asymptotic = TRUE`
 ##' (see Asparouhov & Muthen, 2010).
 ##'
-##' Note that unlike \code{\link[lavaan]{lavTestLRT}}, `lavTestLRT` can
+##' Note that unlike [lavaan::lavTestLRT()], `lavTestLRT` can
 ##' only be used to compare a single pair of models, not a longer list of
 ##' models.  To compare several nested models fitted to multiple imputations,
-##' see examples on the \code{\link{compareFit}} help page.
+##' see examples on the [compareFit()] help page.
 ##'
 ##' @aliases lavTestLRT.mi
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
 ##' @importFrom stats cov pchisq pf
 ##'
-##' @param object,h1 An object of class \code{\linkS4class{lavaan.mi}}.
+##' @param object,h1 An object of class [lavaan.mi-class].
 ##'   `object` should be nested within (more constrained than) `h1`.
 ##' @param test `character` indicating which pooling method to use.
 ##'   `"D3"`, `"mr"`, or `"meng.rubin"` (default) requests the
@@ -67,7 +67,7 @@
 ##'   the naive test statistic (or difference statistic) and apply the average
 ##'   scale/shift parameter to it (unavailable for mean- and variance-adjusted
 ##'   difference statistics, so `pool.robust` will be set `TRUE`).
-##' @param ... Additional arguments passed to \code{\link[lavaan]{lavTestLRT}},
+##' @param ... Additional arguments passed to [lavaan::lavTestLRT()],
 ##'   only if `test = "D2"` and `pool.robust = TRUE`
 ##'
 ##' @return
@@ -100,7 +100,7 @@
 ##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
-##' @seealso \code{\link[lavaan]{lavTestLRT}}, \code{\link{compareFit}}
+##' @seealso [lavaan::lavTestLRT()], [compareFit()]
 ##'
 ##' @examples
 ##'  \dontrun{

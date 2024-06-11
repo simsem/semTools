@@ -8,8 +8,8 @@ AVE(object, obs.var = TRUE, omit.imps = c("no.conv", "no.se"),
   omit.factors = character(0), dropSingle = TRUE, return.df = TRUE)
 }
 \arguments{
-\item{object}{A \code{\linkS4class{lavaan}} or
-\code{\linkS4class{lavaan.mi}} object, expected to contain only
+\item{object}{A \linkS4class{lavaan} or
+\linkS4class{lavaan.mi} object, expected to contain only
 exogenous common factors (i.e., a CFA model). Cross-loadings are not
 allowed and will result in \code{NA} for any factor with indicator(s)
 that cross-load.}
@@ -114,7 +114,7 @@ with unobservable variables and measurement errors. \emph{Journal of
 Marketing Research, 18}(1), 39--50. \doi{10.2307/3151312}
 }
 \seealso{
-\code{\link{compRelSEM}} for composite reliability estimates
+\code{\link[=compRelSEM]{compRelSEM()}} for composite reliability estimates
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

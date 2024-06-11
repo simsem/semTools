@@ -34,18 +34,18 @@ and \code{"lv.covariances"} will be silently ignored. Instead, requesting
 with variances. By default (\code{NULL}), all types are printed.}
 
 \item{single}{\code{logical} indicating whether to concatenate lavaan
-\code{\link[lavaan]{model.syntax}} into a single \code{character} string.
+\code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} into a single \code{character} string.
 Setting \code{FALSE} will return a vector of strings, which may be
 convenient (or even necessary to prevent an error) in
 models with long variable names, many variables, or many groups.}
 
 \item{groups.as.blocks}{\code{logical} indicating whether to write lavaan
-\code{\link[lavaan]{model.syntax}} using vectors of labels and values
+\code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} using vectors of labels and values
 for multiple groups (the default: \code{FALSE}), or whether to write
 a separate "block" of syntax per group. The block structure could allow
 users to apply the generated multigroup syntax (after some editing) to
 test invariance across levels in a multilevel SEM (see final example on
-\code{\link{measEq.syntax}} help page).}
+\code{\link[=measEq.syntax]{measEq.syntax()}} help page).}
 
 \item{verbose}{\code{logical} indicating whether to print a summary to the
 screen (default). If \code{FALSE}, only a pattern matrix is returned.}
@@ -56,7 +56,7 @@ changed values.}
 \item{evaluate}{If \code{TRUE}, evaluate the new \code{call}; otherwise,
 return the new \code{call}.}
 
-\item{change.syntax}{\code{lavaan \link[lavaan]{model.syntax}} specifying
+\item{change.syntax}{\code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} specifying
 labels or fixed/free values of parameters in \code{object}.
 These provide some flexibility to customize
 existing parameters without having to copy/paste the output of
@@ -81,7 +81,7 @@ parameter labels or fixed/free specifications in \code{object}.}
 \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
 Converts the \code{measEq.syntax} object to model syntax that can be
 copy/pasted or written to a syntax file to be edited before analysis,
-or simply passed to \code{\link[lavaan]{lavaan}} to fit the model to
+or simply passed to \code{\link[lavaan:lavaan]{lavaan::lavaan()}} to fit the model to
 data. Generated M\emph{plus} syntax could also be utilized using the
 \pkg{MplusAuthomation} package.}
 }
@@ -89,14 +89,14 @@ data. Generated M\emph{plus} syntax could also be utilized using the
 This class of object stores information used to automatically generate
 lavaan model syntax to represent user-specified levels of measurement
 equivalence/invariance across groups and/or repeated measures. See
-\code{\link{measEq.syntax}} for details.
+\code{\link[=measEq.syntax]{measEq.syntax()}} for details.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{package}}{\code{character} indicating the software package used to
 represent the model. Currently, only \code{"lavaan"} is available, which
-uses the LISREL representation (see \code{\link[lavaan]{lavOptions}}).
+uses the LISREL representation (see \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}).
 In the future, \code{"OpenMx"} may become available, using RAM
 representation.}
 
@@ -116,20 +116,20 @@ included in the model.}
 
 \item{\code{ordered}}{\code{character} vector naming \code{ordered} indicators.}
 
-\item{\code{parameterization}}{\code{character}. See \code{\link[lavaan]{lavOptions}}.}
+\item{\code{parameterization}}{\code{character}. See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
 \item{\code{specify}}{\code{list} of parameter matrices, similar in form to the
-output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
+output of \code{lavInspect(fit, "free")}. These matrices
 are \code{logical}, indicating whether each parameter should be specified
 in the model syntax.}
 
 \item{\code{values}}{\code{list} of parameter matrices, similar in form to the
-output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
+output of \code{lavInspect(fit, "free")}. These matrices
 are \code{numeric}, indicating whether each parameter should be freely
 estimated (indicated by \code{NA}) or fixed to a particular value.}
 
 \item{\code{labels}}{\code{list} of parameter matrices, similar in form to the
-output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
+output of \code{lavInspect(fit, "free")}. These matrices
 contain \code{character} labels used to constrain parameters to equality.}
 
 \item{\code{constraints}}{\code{character} vector containing additional equality

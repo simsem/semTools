@@ -40,10 +40,10 @@ available at \code{help("semTools-deprecated")}.
 
 The \code{measurementInvariance}, \code{measurementInvarianceCat}, and
 \code{longInvariance} functions will no longer be supported. Instead, use
-the \code{\link{measEq.syntax}} function, which is much more flexible and
+the \code{\link[=measEq.syntax]{measEq.syntax()}} function, which is much more flexible and
 supports a wider range of data (e.g., any mixture of \code{numeric} and
 \code{ordered} indicators, any combination of multiple groups and repeated
-measures, models fit to multiple imputations with \code{\link{runMI}}).
+measures, models fit to multiple imputations with \code{\link[=lavaan.mi]{lavaan.mi()}}).
 }
 
 \section{Reliability}{
@@ -58,10 +58,10 @@ the observed and latent-response scales, but this was not an option for any
 omega-type indices.  The omegas differed in terms of whether the observed or
 model-implied covariance matrix was used in the denominator, but alpha was
 only computed using the observed matrix.  These inconsistencies have been
-resolved in the new \code{\link{compRelSEM}} function, which returns only
+resolved in the new \code{\link[=compRelSEM]{compRelSEM()}} function, which returns only
 one reliability index (per factor, optionally total score) according to the
 user's requested features, for which there is much more flexibility.
-Average variance extracted is now available in a dedicated \code{\link{AVE}}
+Average variance extracted is now available in a dedicated \code{\link[=AVE]{AVE()}}
 function.
 }
 
@@ -70,7 +70,7 @@ function.
 Originally, composite reliability of a single higher-order factor was
 estimated in a separate function: \code{reliabilityL2}.  It is now available
 for multiple higher-order factors in the same model, and from the same
-\code{\link{compRelSEM}} function that estimates reliability for first-order
+\code{\link[=compRelSEM]{compRelSEM()}} function that estimates reliability for first-order
 factors, using the \verb{higher=} argument to name higher-order factors in
 the fitted model.
 }

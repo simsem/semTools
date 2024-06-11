@@ -22,9 +22,9 @@ growth.auxiliary(model, data, aux, ..., envir = getNamespace("lavaan"))
 \arguments{
 \item{model}{The analysis model can be specified with 1 of 2 objects:
 \enumerate{
-\item  lavaan \code{\link[lavaan]{model.syntax}} specifying a hypothesized
+\item  lavaan \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} specifying a hypothesized
 model \emph{without} mention of auxiliary variables in \code{aux}
-\item  a parameter table, as returned by \code{\link[lavaan]{parTable}},
+\item  a parameter table, as returned by \code{\link[lavaan:parTable]{lavaan::parTable()}},
 specifying the target model \emph{without} auxiliary variables.
 This option requires these columns (and silently ignores all others):
 \code{c("lhs","op","rhs","user","group","free","label","plabel","start")}
@@ -41,24 +41,24 @@ any observed variables in the \code{model}}
 
 \item{...}{Additional arguments to pass to \verb{fun=}.}
 
-\item{envir}{Passed to \code{\link{do.call}}.}
+\item{envir}{Passed to \code{\link[=do.call]{do.call()}}.}
 
 \item{return.syntax}{\code{logical} indicating whether to return a
-\code{character} string of \code{\link[lavaan]{model.syntax}} that can be
+\code{character} string of \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} that can be
 added to a target \verb{model=} that is also a \code{character} string.
 This can be advantageous, for example, to use add saturated correlates to
 a \pkg{blavaan} model.}
 }
 \value{
-a fitted \code{\linkS4class{lavaan}} object.  Additional
+a fitted \linkS4class{lavaan} object.  Additional
 information is stored as a \code{list} in the \verb{@external} slot:
 \itemize{
-\item \code{baseline.model}. a fitted \code{\linkS4class{lavaan}}
+\item \code{baseline.model}. a fitted \linkS4class{lavaan}
 object. Results of fitting an appropriate independence model for
 the calculation of incremental fit indices (e.g., CFI, TLI) in
 which the auxiliary variables remain saturated, so only the target
 variables are constrained to be orthogonal. See Examples for how
-to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
+to send this baseline model to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.
 \item \code{aux}. The character vector of auxiliary variable names.
 \item \code{baseline.syntax}. A character vector generated within the
 \code{auxiliary} function, specifying the \code{baseline.model}
@@ -71,7 +71,7 @@ information maximum likelihood (FIML) to handle missing data
 }
 \details{
 These functions are wrappers around the corresponding lavaan functions.
-You can use them the same way you use \code{\link[lavaan]{lavaan}}, but you
+You can use them the same way you use \code{\link[lavaan:lavaan]{lavaan::lavaan()}}, but you
 \emph{must} pass your full \code{data.frame} to the \code{data} argument.
 Because the saturated-correlates approaches (Enders, 2008) treats exogenous
 variables as random, \code{fixed.x} must be set to \code{FALSE}. Because FIML

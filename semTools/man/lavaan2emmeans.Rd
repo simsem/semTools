@@ -11,7 +11,7 @@ recover_data.lavaan(object, lavaan.DV, ...)
 emm_basis.lavaan(object, trms, xlev, grid, lavaan.DV, ...)
 }
 \arguments{
-\item{object}{An object of class \code{\link[lavaan]{lavaan}}.
+\item{object}{An object of class \code{\link[lavaan:lavaan]{lavaan::lavaan()}}.
 See \strong{Details}.}
 
 \item{lavaan.DV}{\code{character} string maming the variable(s) for which

@@ -41,7 +41,7 @@ independence) model using scaled \eqn{\chi^2}
 Calculate more fit indices that are not already provided in lavaan.
 }
 \details{
-See \code{\link{nullRMSEA}} for the further details of the computation of
+See \code{\link[=nullRMSEA]{nullRMSEA()}} for the further details of the computation of
 RMSEA of the null model.
 
 Gamma-Hat (\code{gammaHat}; West, Taylor, & Wu, 2012) is a global
@@ -188,9 +188,9 @@ structural equation modeling} (pp. 209--231). New York, NY: Guilford.
 }
 \seealso{
 \itemize{
-\item \code{\link{miPowerFit}} For the modification indices and their
+\item \code{\link[=miPowerFit]{miPowerFit()}} For the modification indices and their
 power approach for model fit evaluation
-\item \code{\link{nullRMSEA}} For RMSEA of the default independence model
+\item \code{\link[=nullRMSEA]{nullRMSEA()}} For RMSEA of the default independence model
 }
 }
 \author{

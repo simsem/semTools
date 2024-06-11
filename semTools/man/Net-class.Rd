@@ -34,7 +34,7 @@ multiple models
 
 \section{Objects from the Class}{
  Objects can be created via the
-\code{\link{net}} function.
+\code{\link[=net]{net()}} function.
 }
 
 \examples{
@@ -43,7 +43,7 @@ multiple models
 
 }
 \seealso{
-\code{\link{net}}
+\code{\link[=net]{net()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

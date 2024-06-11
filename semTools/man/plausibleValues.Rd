@@ -8,26 +8,26 @@ plausibleValues(object, nDraws = 20L, seed = 12345,
   omit.imps = c("no.conv", "no.se"), ...)
 }
 \arguments{
-\item{object}{A fitted model of class \code{\linkS4class{lavaan}},
-\code{\link[blavaan]{blavaan}}, or \code{\linkS4class{lavaan.mi}}}
+\item{object}{A fitted model of class \linkS4class{lavaan},
+\code{\link[blavaan:blavaan]{blavaan::blavaan()}}, or \linkS4class{lavaan.mi}}
 
 \item{nDraws}{\code{integer} specifying the number of draws, analogous to
 the number of imputed data sets. If \code{object} is of class
-\code{\linkS4class{lavaan.mi}}, this will be the number of draws taken
+\linkS4class{lavaan.mi}, this will be the number of draws taken
 \emph{per imputation}.  If \code{object} is of class
-\code{\link[blavaan]{blavaan}}, \code{nDraws} cannot exceed
+\code{\link[blavaan:blavaan]{blavaan::blavaan()}}, \code{nDraws} cannot exceed
 \code{blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")}
 (number of MCMC samples from the posterior). The drawn samples will be
 evenly spaced (after permutation for \code{target="stan"}), using
-\code{\link{ceiling}} to resolve decimals.}
+\code{\link[=ceiling]{ceiling()}} to resolve decimals.}
 
-\item{seed}{\code{integer} passed to \code{\link{set.seed}()}.}
+\item{seed}{\code{integer} passed to \code{\link[=set.seed]{set.seed()}}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
-imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.
+imputations when \code{object} is of class \linkS4class{lavaan.mi}.
 Can include any of \code{c("no.conv", "no.se", "no.npd")}.}
 
-\item{...}{Optional arguments to pass to \code{\link[lavaan]{lavPredict}}.
+\item{...}{Optional arguments to pass to \code{\link[lavaan:lavPredict]{lavaan::lavPredict()}}.
 \code{assemble} will be ignored because multiple groups are always
 assembled into a single \code{data.frame} per draw. \code{type} will be
 ignored because it is set internally to \code{type="lv"}.}
@@ -35,32 +35,32 @@ ignored because it is set internally to \code{type="lv"}.}
 \value{
 A \code{list} of length \code{nDraws}, each of which is a
 \code{data.frame} containing plausible values, which can be treated as
-a \code{list} of imputed data sets to be passed to \code{\link{runMI}}
+a \code{list} of imputed data sets to be passed to \code{\link[=runMI]{runMI()}}
 (see \strong{Examples}). If \code{object} is of class
-\code{\linkS4class{lavaan.mi}}, the \code{list} will be of length
+\linkS4class{lavaan.mi}, the \code{list} will be of length
 \code{nDraws*m}, where \code{m} is the number of imputations.
 }
 \description{
 Draw plausible values of factor scores estimated from a fitted
-\code{\link[lavaan]{lavaan}} model, then treat them as multiple imputations
-of missing data using \code{\link{runMI}}.
+\code{\link[lavaan:lavaan]{lavaan::lavaan()}} model, then treat them as multiple imputations
+of missing data using \code{\link[=lavaan.mi]{lavaan.mi()}}.
 }
 \details{
 Because latent variables are unobserved, they can be considered as missing
 data, which can be imputed using Monte Carlo methods.  This may be of
 interest to researchers with sample sizes too small to fit their complex
 structural models.  Fitting a factor model as a first step,
-\code{\link[lavaan]{lavPredict}} provides factor-score estimates, which can
+\code{\link[lavaan:lavPredict]{lavaan::lavPredict()}} provides factor-score estimates, which can
 be treated as observed values in a path analysis (Step 2).  However, the
 resulting standard errors and test statistics could not be trusted because
 the Step-2 analysis would not take into account the uncertainty about the
 estimated factor scores.  Using the asymptotic sampling covariance matrix
-of the factor scores provided by \code{\link[lavaan]{lavPredict}},
+of the factor scores provided by \code{\link[lavaan:lavPredict]{lavaan::lavPredict()}},
 \code{plausibleValues} draws a set of \code{nDraws} imputations from the
 sampling distribution of each factor score, returning a list of data sets
 that can be treated like multiple imputations of incomplete data.  If the
 data were already imputed to handle missing data, \code{plausibleValues}
-also accepts an object of class \code{\linkS4class{lavaan.mi}}, and will
+also accepts an object of class \linkS4class{lavaan.mi}, and will
 draw \code{nDraws} plausible values from each imputation.  Step 2 would
 then take into account uncertainty about both missing values and factor
 scores.  Bayesian methods can also be used to generate factor scores, as
@@ -79,7 +79,7 @@ scores were estimated.
 
 If \code{object} is a multilevel \code{lavaan} model, users can request
 plausible values for latent variables at particular levels of analysis by
-setting the \code{\link[lavaan]{lavPredict}} argument \code{level=1} or
+setting the \code{\link[lavaan:lavPredict]{lavaan::lavPredict()}} argument \code{level=1} or
 \code{level=2}.  If the \code{level} argument is not passed via \dots,
 then both levels are returned in a single merged data set per draw.  For
 multilevel models, each returned \code{data.frame} also includes a column
@@ -194,7 +194,7 @@ variables using M}plus. Technical Report. Retrieved from
 www.statmodel.com/download/Plausible.pdf
 }
 \seealso{
-\code{\link{runMI}}, \code{\linkS4class{lavaan.mi}}
+\code{\link[=lavaan.mi]{lavaan.mi()}}, \linkS4class{lavaan.mi}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

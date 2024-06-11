@@ -9,7 +9,7 @@ mardiaKurtosis(dat, use = "everything")
 \arguments{
 \item{dat}{The target matrix or data frame with multiple variables}
 
-\item{use}{Missing data handling method from the \code{\link[stats]{cov}}
+\item{use}{Missing data handling method from the \code{\link[stats:cor]{stats::cov()}}
 function.}
 }
 \value{
@@ -44,10 +44,10 @@ kurtosis with applications. \emph{Biometrika, 57}(3), 519--530.
 }
 \seealso{
 \itemize{
-\item \code{\link{skew}} Find the univariate skewness of a variable
-\item \code{\link{kurtosis}} Find the univariate excessive kurtosis
+\item \code{\link[=skew]{skew()}} Find the univariate skewness of a variable
+\item \code{\link[=kurtosis]{kurtosis()}} Find the univariate excessive kurtosis
 of a variable
-\item \code{\link{mardiaSkew}} Find the Mardia's multivariate skewness
+\item \code{\link[=mardiaSkew]{mardiaSkew()}} Find the Mardia's multivariate skewness
 of a set of variables
 }
 }

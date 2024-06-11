@@ -74,7 +74,7 @@
 ##' \item `wald`: This method is similar to the `fix` method. However,
 ##' instead of building a new model and compare them with likelihood-ratio test,
 ##' multivariate wald test is used to compare equality between parameter
-##' estimates. See \code{\link[lavaan]{lavTestWald}} for further details. Note
+##' estimates. See [lavaan::lavTestWald()] for further details. Note
 ##' that if any rows of the contrast cannot be summed to 0, the Wald test is not
 ##' provided, such as comparing two means where one of the means is fixed as 0.
 ##' This test statistic is not as accurate as likelihood-ratio test provided in
@@ -95,8 +95,8 @@
 ##'
 ##' @param fit A list of models for invariance testing. Each model should be
 ##'   assigned by appropriate names (see details). The result from
-##'   \code{\link{measurementInvariance}} or
-##'   \code{\link{measurementInvarianceCat}} could be used in this argument
+##'   [measurementInvariance()] or
+##'   [measurementInvarianceCat()] could be used in this argument
 ##'   directly.
 ##' @param type The types of invariance testing: "metric", "scalar", "strict",
 ##'   or "means"
@@ -112,14 +112,14 @@
 ##'   standardization. Otherwise, the variances of the reference group are used
 ##'   for standardization.
 ##' @param p.adjust The method used to adjust p values. See
-##'   \code{\link[stats]{p.adjust}} for the options for adjusting p values. The
+##'   [stats::p.adjust()] for the options for adjusting p values. The
 ##'   default is to not use any corrections.
 ##' @param fbound The z-scores of factor that is used to calculate the effect
 ##'   size of the loading difference proposed by Millsap and Olivera-Aguilar
 ##'   (2012).
 ##' @param return.fit Return the submodels fitted by this function
 ##' @param method The method used to calculate likelihood ratio test. See
-##'   \code{\link[lavaan]{lavTestLRT}} for available options
+##'   [lavaan::lavTestLRT()] for available options
 ##'
 ##' @return A list of results are provided. The list will consists of at least
 ##' two elements:
@@ -158,9 +158,9 @@
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
-##' @seealso \code{\link{measurementInvariance}} for measurement invariance for
-##' continuous variables; \code{\link{measurementInvarianceCat}} for measurement
-##' invariance for categorical variables; \code{\link[lavaan]{lavTestWald}} for
+##' @seealso [measurementInvariance()] for measurement invariance for
+##' continuous variables; [measurementInvarianceCat()] for measurement
+##' invariance for categorical variables; [lavaan::lavTestWald()] for
 ##' multivariate Wald test
 ##'
 ##' @references Millsap, R. E., & Olivera-Aguilar, M. (2012). Investigating

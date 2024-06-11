@@ -28,7 +28,7 @@
 ##'
 ##' @importFrom stats qchisq pchisq
 ##'
-##' @param powerModel lavaan \code{\link[lavaan]{model.syntax}} for the model to
+##' @param powerModel lavaan [lavaan::model.syntax()] for the model to
 ##'   be analyzed. This syntax should constrain at least one nonzero parameter
 ##'   to 0 (or another number).
 ##' @param n `integer`. Sample size used in power calculation, or a vector
@@ -38,11 +38,11 @@
 ##'   must specify a sample size for each group, because that is used to infer
 ##'   the number of groups.
 ##' @param nparam `integer`. Number of invalid constraints in `powerModel`.
-##' @param popModel lavaan \code{\link[lavaan]{model.syntax}} specifying the
+##' @param popModel lavaan [lavaan::model.syntax()] specifying the
 ##'   data-generating model. This syntax should specify values for all nonzero
 ##'   parameters in the model. If `length(n) > 1`, the same population
 ##'   values will be used for each group, unless different population values are
-##'   specified per group, either in the lavaan \code{\link[lavaan]{model.syntax}}
+##'   specified per group, either in the lavaan [lavaan::model.syntax()]
 ##'   or by utilizing a list of `Sigma` (and optionally `mu`).
 ##' @param mu `numeric` or `list`. For a single-group model, a vector
 ##'   of population means. For a multigroup model, a list of vectors (one per
@@ -56,8 +56,8 @@
 ##'   `powerModel` (i.e., `"cfa"`, `"sem"`, `"growth"`, or
 ##'   `"lavaan"`).
 ##' @param alpha Type I error rate used to set a criterion for rejecting H0.
-##' @param ... additional arguments to pass to \code{\link[lavaan]{lavaan}}.
-##'    See also \code{\link[lavaan]{lavOptions}}.
+##' @param ... additional arguments to pass to [lavaan::lavaan()].
+##'    See also [lavaan::lavOptions()].
 ##'
 ##' @author
 ##' Alexander M. Schoemann (East Carolina University; \email{schoemanna@@ecu.edu})

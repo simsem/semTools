@@ -16,7 +16,7 @@
 \item{object}{object of class \code{FitDiff}}
 
 \item{fit.measures}{\code{character} vector naming fit indices the user can
-request from \code{\link[lavaan]{fitMeasures}}. If \code{"default"}, the
+request from \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}. If \code{"default"}, the
 fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli", "rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit
 measures will be returned.}
 
@@ -48,7 +48,7 @@ the \code{fit} slot}
 
 \section{Objects from the Class}{
  Objects can be created via the
-\code{\link{compareFit}} function.
+\code{\link[=compareFit]{compareFit()}} function.
 }
 
 \examples{
@@ -79,7 +79,7 @@ clipboard(measEqOut)
 
 }
 \seealso{
-\code{\link{compareFit}}; \code{\link{clipboard}}
+\code{\link[=compareFit]{compareFit()}}; \code{\link[=clipboard]{clipboard()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

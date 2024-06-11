@@ -18,8 +18,8 @@
 ##' @importFrom lavaan lavInspect
 ##' @importFrom pbivnorm pbivnorm
 ##'
-##' @param Sigma Population covariance \code{\link{matrix}}, with variable names
-##'   saved in the \code{\link{dimnames}} attribute.
+##' @param Sigma Population covariance [matrix()], with variable names
+##'   saved in the [dimnames()] attribute.
 ##' @param Mu Optional `numeric` vector of population means. If missing,
 ##'   all means will be set to zero.
 ##' @param thresholds Either a single `numeric` vector of population

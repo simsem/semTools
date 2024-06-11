@@ -18,7 +18,7 @@ by this function.}
 \item{return.fit}{Return the submodels fitted by this function}
 
 \item{method}{The method used to calculate likelihood ratio test. See
-\code{\link[lavaan]{lavTestLRT}} for available options}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} for available options}
 }
 \value{
 If \code{return.fit = FALSE}, the result tables are provided.

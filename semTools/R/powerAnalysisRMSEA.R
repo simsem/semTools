@@ -41,10 +41,10 @@
 ##' Donna L. Coffman (Pennsylvania State University; \email{dlc30@@psu.edu})
 ##'
 ##' @seealso \itemize{
-##' \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
-##' \item \code{\link{findRMSEApower}} to find the statistical power based on
+##' \item [plotRMSEAdist()] to visualize the RMSEA distributions
+##' \item [findRMSEApower()] to find the statistical power based on
 ##'   population RMSEA given a sample size
-##' \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
+##' \item [findRMSEAsamplesize()] to find the minium sample size for
 ##'   a given statistical power based on population RMSEA
 ##' }
 ##'
@@ -147,11 +147,11 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
 ##' @seealso \itemize{
-##'  \item \code{\link{plotRMSEApower}} to plot the statistical power
+##'  \item [plotRMSEApower()] to plot the statistical power
 ##'    based on population RMSEA given the sample size
-##'  \item \code{\link{findRMSEApower}} to find the statistical power based on
+##'  \item [findRMSEApower()] to find the statistical power based on
 ##'    population RMSEA given a sample size
-##'  \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
+##'  \item [findRMSEAsamplesize()] to find the minium sample size for
 ##'   a given statistical power based on population RMSEA
 ##' }
 ##'
@@ -236,10 +236,10 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
 ##' @seealso \itemize{
-##'  \item \code{\link{plotRMSEApower}} to plot the statistical power based on
+##'  \item [plotRMSEApower()] to plot the statistical power based on
 ##'   population RMSEA given the sample size
-##'  \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
-##'  \item \code{\link{findRMSEAsamplesize}} to find the minium sample size for
+##'  \item [plotRMSEAdist()] to visualize the RMSEA distributions
+##'  \item [findRMSEAsamplesize()] to find the minium sample size for
 ##'   a given statistical power based on population RMSEA
 ##' }
 ##'
@@ -282,7 +282,7 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 ##'
 ##' This function find the minimum sample size for a specified power based on an
 ##' iterative routine. The sample size keep increasing until the calculated
-##' power from \code{\link{findRMSEApower}} function is just over the specified
+##' power from [findRMSEApower()] function is just over the specified
 ##' power. If `group` is greater than 1, the resulting sample size is the
 ##' sample size per group.
 ##'
@@ -297,10 +297,10 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
 ##' @seealso \itemize{
-##'  \item \code{\link{plotRMSEApower}} to plot the statistical power based on
+##'  \item [plotRMSEApower()] to plot the statistical power based on
 ##'   population RMSEA given the sample size
-##'  \item \code{\link{plotRMSEAdist}} to visualize the RMSEA distributions
-##'  \item \code{\link{findRMSEApower}} to find the statistical power based on
+##'  \item [plotRMSEAdist()] to visualize the RMSEA distributions
+##'  \item [findRMSEApower()] to find the statistical power based on
 ##'   population RMSEA given a sample size
 ##' }
 ##'

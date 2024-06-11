@@ -24,22 +24,21 @@ growth.mi(model, data, ..., m, miArgs = list(), miPackage = "Amelia",
   seed = 12345)
 }
 \arguments{
-\item{model}{The analysis model can be specified using lavaan
-\code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
-\code{\link[lavaan]{parTable}}).}
+\item{model}{The analysis model can be specified using
+\code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} or a \code{\link[lavaan:parTable]{lavaan::parTable()}}}
 
 \item{data}{A \code{data.frame} with missing observations, or a \code{list}
-of imputed data sets (if data are imputed already). If \code{runMI} has
+of imputed data sets (if data are imputed already). If \code{runMI()} has
 already been called, then imputed data sets are stored in the
 \verb{@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
 from which the same imputed data will be used for additional analyses.}
 
 \item{fun}{\code{character}. Name of a specific lavaan function used to fit
 \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
-\code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.}
+\code{"sem"}, or \code{"growth"}). Only required for \code{runMI()}.}
 
-\item{\dots}{additional arguments to pass to \code{\link[lavaan]{lavaan}} or
-\code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
+\item{\dots}{additional arguments to pass to \code{\link[lavaan:lavaan]{lavaan::lavaan()}} or
+\code{\link[lavaan:lavaanList]{lavaan::lavaanList()}}. See also \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.
 Note that \code{lavaanList} provides parallel computing options, as well as
 a \code{FUN} argument so the user can extract custom output after the model
 is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
@@ -66,7 +65,7 @@ data. Ignored if \code{data} is already a \code{list} of imputed data sets
 or a \code{lavaan.mi} object.}
 }
 \value{
-A \code{\linkS4class{lavaan.mi}} object
+A \linkS4class{lavaan.mi} object
 }
 \description{
 This function fits a lavaan model to a list of imputed data sets, and can

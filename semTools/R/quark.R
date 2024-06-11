@@ -22,7 +22,7 @@
 ##' contains the means of the polynomial effects (squares and cubes), and the
 ##' final third contains the means of the non-overlapping interaction effects. A
 ##' full principal componenent analysis is conducted and the individual
-##' components are retained. The subsequent \code{\link{combinequark}} function
+##' components are retained. The subsequent [combinequark()] function
 ##' provides researchers the control in determining how many components to
 ##' extract and retain. The function returns the dataset as submitted (with
 ##' missing values) and the component scores as requested for a more accurate
@@ -48,7 +48,7 @@
 ##' imputation method procedure.  Otherwise, use the default `order = 1`.
 ##' @param silent If `FALSE`, the details of the `quark` process are
 ##' printed.
-##' @param \dots additional arguments to pass to \code{\link[mice]{mice}}.
+##' @param \dots additional arguments to pass to [mice::mice()].
 ##'
 ##' @return The output value from using the quark function is a list. It will
 ##' return a list with 7 components.
@@ -77,7 +77,7 @@
 ##'
 ##' The PCA code is copied and modified from the `FactoMineR` package.
 ##'
-##' @seealso \code{\link{combinequark}}
+##' @seealso [combinequark()]
 ##'
 ##' @references Howard, W. J., Rhemtulla, M., & Little, T. D. (2015). Using
 ##' Principal Components as Auxiliary Variables in Missing Data Estimation.
@@ -143,13 +143,13 @@ quark <- function(data, id, order = 1, silent = FALSE, ...){
 
 ##' Combine the results from the quark function
 ##'
-##' This function builds upon the \code{\link{quark}} function to provide a
+##' This function builds upon the [quark()] function to provide a
 ##' final dataset comprised of the original dataset provided to
-##' \code{\link{quark}} and enough principal components to be able to account
+##' [quark()] and enough principal components to be able to account
 ##' for a certain level of variance in the data.
 ##'
 ##'
-##' @param quark Provide the \code{\link{quark}} object that was returned.  It
+##' @param quark Provide the [quark()] object that was returned.  It
 ##' should be a list of objects.  Make sure to include it in its entirety.
 ##' @param percent Provide a percentage of variance that you would like to have
 ##' explained.  That many components (columns) will be extracted and kept with
@@ -163,7 +163,7 @@ quark <- function(data, id, order = 1, silent = FALSE, ...){
 ##' @author Steven R. Chesnut (University of Southern Mississippi
 ##' \email{Steven.Chesnut@@usm.edu})
 ##'
-##' @seealso \code{\link{quark}}
+##' @seealso [quark()]
 ##'
 ##' @examples
 ##'

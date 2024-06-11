@@ -15,7 +15,7 @@
 ##' more information). Pooled point and standard-error estimates from this SEM
 ##' can be outputted at this final selected number of allocations (however, it
 ##' is more efficient to save the allocations and treat them as multiple
-##' imputations using \code{\link{runMI}}; see **See Also** for links with
+##' imputations using [lavaan.mi()]; see **See Also** for links with
 ##' examples). Additionally, new indices (see Sterba & Rights, 2016) are
 ##' outputted for assessing the relative contributions of parcel-allocation
 ##' variability vs. sampling variability in each estimate. At each iteration,
@@ -35,9 +35,9 @@
 ##' variability vs. sampling variability in each estimate.
 ##'
 ##' To obtain pooled test statistics for model fit or model comparison, the
-##' `list` or parcel allocations can be passed to \code{\link{runMI}}
-##' (find **Examples** on the help pages for \code{\link{parcelAllocation}}
-##' and \code{\link{PAVranking}}).
+##' `list` or parcel allocations can be passed to [lavaan.mi()]
+##' (find **Examples** on the help pages for [parcelAllocation()]
+##' and [PAVranking()]).
 ##'
 ##' This function randomly generates a given number (`nAllocStart`) of
 ##' item-to-parcel allocations, fits a SEM to each allocation, and then
@@ -83,7 +83,7 @@
 ##' *M* (the final selected number of allocations) parceled data sets will
 ##' be outputted from the iteration where the algorithm met stopping criteria.
 ##' Note for Windows users: file path must be specified using forward slashes
-##' (`/`), not backslashes (`\\`). See \code{\link[base]{path.expand}}
+##' (`/`), not backslashes (`\\`). See [base::path.expand()]
 ##' for details.  If `NULL` (default), nothing is saved to disk.
 ##' @param stopProp Value used in defining stopping criteria of the algorithm
 ##' (\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of
@@ -114,12 +114,12 @@
 ##' parameters except item intercepts and in another example `selectParam`
 ##' included only structural parameters.
 ##' @param indices Optional `character` vector indicating the names of
-##' available \code{\link[lavaan]{fitMeasures}} to be included in the output.
+##' available [lavaan::fitMeasures()] to be included in the output.
 ##' The first and second elements should be a chi-squared test statistic and its
 ##' associated degrees of freedom, both of which will be added if missing. If
 ##' `"default"`, the indices will be `c("chisq", "df", "cfi", "tli",
 ##' "rmsea","srmr")`. If a robust test statistic is requested (see
-##' \code{\link[lavaan]{lavOptions}}), `c("chisq","df")` will be replaced
+##' [lavaan::lavOptions()]), `c("chisq","df")` will be replaced
 ##' by `c("chisq.scaled","df.scaled")`. For the output to include both the
 ##' naive and robust test statistics, `indices` should include both, but
 ##' put the scaled test statistics first, as in `indices =
@@ -141,7 +141,7 @@
 ##' @param checkConv (Optional) If set to TRUE, function will output pooled
 ##' estimates and standard errors from 10 iterations post-convergence.
 ##' @param \dots Additional arguments to be passed to
-##' \code{\link[lavaan]{lavaan}}. See also \code{\link[lavaan]{lavOptions}}
+##' [lavaan::lavaan()]. See also [lavaan::lavOptions()]
 ##'
 ##' @return
 ##' \item{Estimates}{A table containing pooled results across *M*
@@ -178,7 +178,7 @@
 ##' \item{Total runtime (minutes)}{The total runtime of the function, in minutes.
 ##' Note that the total runtime will be greater when the specified model
 ##' encounters convergence problems for some allocations, as is the case with the
-##' \code{\link{simParcel}} dataset used below.}
+##' [simParcel()] dataset used below.}
 ##'
 ##' @author
 ##' Jason D. Rights (Vanderbilt University; \email{jason.d.rights@@vanderbilt.edu})
@@ -188,11 +188,11 @@
 ##' is based.
 ##'
 ##' @seealso
-##'   \code{\link{runMI}} for treating allocations as multiple imputations to
+##'   [lavaan.mi()] for treating allocations as multiple imputations to
 ##'   pool results across allocations. See **Examples** on help pages for:
 ##'   \itemize{
-##'     \item{\code{\link{parcelAllocation}} for fitting a single model}
-##'     \item{\code{\link{PAVranking}} for comparing 2 models}
+##'     \item{[parcelAllocation()] for fitting a single model}
+##'     \item{[PAVranking()] for comparing 2 models}
 ##'   }
 ##'
 ##' @references

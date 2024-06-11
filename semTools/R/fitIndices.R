@@ -10,7 +10,7 @@
 ##'
 ##' Calculate more fit indices that are not already provided in lavaan.
 ##'
-##' See \code{\link{nullRMSEA}} for the further details of the computation of
+##' See [nullRMSEA()] for the further details of the computation of
 ##' RMSEA of the null model.
 ##'
 ##' Gamma-Hat (`gammaHat`; West, Taylor, & Wu, 2012) is a global
@@ -152,9 +152,9 @@
 ##'
 ##' @seealso
 ##' \itemize{
-##' \item \code{\link{miPowerFit}} For the modification indices and their
+##' \item [miPowerFit()] For the modification indices and their
 ##'        power approach for model fit evaluation
-##' \item \code{\link{nullRMSEA}} For RMSEA of the default independence model
+##' \item [nullRMSEA()] For RMSEA of the default independence model
 ##' }
 ##'
 ##' @references
@@ -368,9 +368,9 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 ##'
 ##' @seealso
 ##' \itemize{
-##'   \item \code{\link{miPowerFit}} For the modification indices and their
+##'   \item [miPowerFit()] For the modification indices and their
 ##'      power approach for model fit evaluation
-##'   \item \code{\link{moreFitIndices}} For other fit indices
+##'   \item [moreFitIndices()] For other fit indices
 ##' }
 ##'
 ##' @references Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The
@@ -457,20 +457,20 @@ sic <- function(f, lresults = NULL) {
 ##' @importFrom stats pchisq
 ##' @importFrom methods getMethod
 ##'
-##' @param fit0,fit1 \linkS4class{lavaan} object(s) provided after running the
+##' @param fit0,fit1 [lavaan-class] object(s) provided after running the
 ##'   `cfa`, `sem`, `growth`, or `lavaan` functions.
-##'   \linkS4class{lavaan.mi} object(s) also accepted.
+##'   [lavaan.mi-class] object(s) also accepted.
 ##' @param smallN.method `character` indicating the small-*N*
 ##'   correction method to use. Multiple may be chosen (all of which assume
 ##'   normality), as described in Shi et al. (2018):
 ##'   `c("swain","yuan.2015","yuan.2005","bartlett")`. Users may also
 ##'   simply select `"all"`.
-##' @param \dots Additional arguments to the \code{\link[lavaan]{lavTestLRT}} or
-##'   \code{\link{lavTestLRT.mi}} functions. Ignored when `is.null(fit1)`.
+##' @param \dots Additional arguments to the [lavaan::lavTestLRT()] or
+##'   [lavTestLRT.mi()] functions. Ignored when `is.null(fit1)`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results. Ignored unless `fit0` (and
-##'   optionally `fit1`) is a \linkS4class{lavaan.mi} object. See
-##'   \code{\link{lavTestLRT.mi}} for a description of options and defaults.
+##'   optionally `fit1`) is a [lavaan.mi-class] object. See
+##'   [lavTestLRT.mi()] for a description of options and defaults.
 ##'
 ##' @return A `list` of `numeric` vectors: one for the originally
 ##'   requested statistic(s), along with one per requested `smallN.method`.

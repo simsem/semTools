@@ -7,7 +7,7 @@
 ##' information maximum likelihood (FIML) to handle missing data
 ##'
 ##' These functions are wrappers around the corresponding lavaan functions.
-##' You can use them the same way you use \code{\link[lavaan]{lavaan}}, but you
+##' You can use them the same way you use [lavaan::lavaan()], but you
 ##' *must* pass your full `data.frame` to the `data` argument.
 ##' Because the saturated-correlates approaches (Enders, 2008) treats exogenous
 ##' variables as random, `fixed.x` must be set to `FALSE`. Because FIML
@@ -21,9 +21,9 @@
 ##'
 ##' @param model The analysis model can be specified with 1 of 2 objects:
 ##'   \enumerate{
-##'     \item  lavaan \code{\link[lavaan]{model.syntax}} specifying a hypothesized
+##'     \item  lavaan [lavaan::model.syntax()] specifying a hypothesized
 ##'            model *without* mention of auxiliary variables in `aux`
-##'     \item  a parameter table, as returned by \code{\link[lavaan]{parTable}},
+##'     \item  a parameter table, as returned by [lavaan::parTable()],
 ##'            specifying the target model *without* auxiliary variables.
 ##'            This option requires these columns (and silently ignores all others):
 ##'            `c("lhs","op","rhs","user","group","free","label","plabel","start")`
@@ -35,9 +35,9 @@
 ##'   `model` to `data` (i.e., `"lavaan"`, `"cfa"`,
 ##'   `"sem"`, or `"growth"`). Only required for `auxiliary`.
 ##' @param ... Additional arguments to pass to `fun=`.
-##' @param envir Passed to \code{\link{do.call}}.
+##' @param envir Passed to [do.call()].
 ##' @param return.syntax `logical` indicating whether to return a
-##'   `character` string of \code{\link[lavaan]{model.syntax}} that can be
+##'   `character` string of [lavaan::model.syntax()] that can be
 ##'   added to a target `model=` that is also a `character` string.
 ##'   This can be advantageous, for example, to use add saturated correlates to
 ##'   a \pkg{blavaan} model.
@@ -51,15 +51,15 @@
 ##'   *Structural Equation Modeling, 15*(3), 434--448.
 ##'   \doi{10.1080/10705510802154307}
 ##'
-##' @return a fitted \code{\linkS4class{lavaan}} object.  Additional
+##' @return a fitted [lavaan-class] object.  Additional
 ##'   information is stored as a `list` in the `@@external` slot:
 ##'   \itemize{
-##'     \item `baseline.model`. a fitted \code{\linkS4class{lavaan}}
+##'     \item `baseline.model`. a fitted [lavaan-class]
 ##'           object. Results of fitting an appropriate independence model for
 ##'           the calculation of incremental fit indices (e.g., CFI, TLI) in
 ##'           which the auxiliary variables remain saturated, so only the target
 ##'           variables are constrained to be orthogonal. See Examples for how
-##'           to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
+##'           to send this baseline model to [lavaan::fitMeasures()].
 ##'     \item `aux`. The character vector of auxiliary variable names.
 ##'     \item `baseline.syntax`. A character vector generated within the
 ##'           `auxiliary` function, specifying the `baseline.model`

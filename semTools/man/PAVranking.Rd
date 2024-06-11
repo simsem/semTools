@@ -29,7 +29,7 @@ parcels created using the same allocation scheme.}
 \item{parcel.names}{\code{character} vector containing names of all parcels
 appearing as indicators in \verb{model0=} or \verb{model1=}.}
 
-\item{item.syntax}{\link[lavaan]{lavaan} model syntax specifying the model
+\item{item.syntax}{\code{\link[=lavaan]{lavaan()}} model syntax specifying the model
 that would be fit to all of the unparceled items, including items that
 should be randomly allocated to parcels appearing in \verb{model0=} and \verb{model1=}.}
 
@@ -50,9 +50,9 @@ to request from each fitted \linkS4class{lavaan} model.  See the
 output of \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for a list of available measures.}
 
 \item{\dots}{Additional arguments to be passed to
-\code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}}
+\code{\link[lavaan:lavaanList]{lavaan::lavaanList()}}. See also \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}}
 
-\item{show.progress}{If \code{TRUE}, show a \code{\link[utils]{txtProgressBar}}
+\item{show.progress}{If \code{TRUE}, show a \code{\link[utils:txtProgressBar]{utils::txtProgressBar()}}
 indicating how fast each model-fitting iterates over allocations.}
 
 \item{iseed}{(Optional) Random seed used for parceling items. When the same
@@ -69,7 +69,7 @@ Console, so that the seed will be controlled across cores.}
 }
 \value{
 A \code{list} with 3 elements.  The first two (\code{model0.results} and
-\code{model1.results}) are results returned by \code{\link{parcelAllocation}}
+\code{model1.results}) are results returned by \code{\link[=parcelAllocation]{parcelAllocation()}}
 for \code{model0} and \code{model1}, respectively.
 The third element (\code{model0.v.model1}) is a \code{list} of
 model-comparison results, including the following:
@@ -205,8 +205,8 @@ selection: Parcel-allocation variability in model ranking.
 \emph{Psychological Methods, 22}(1), 47--68. \doi{10.1037/met0000067}
 }
 \seealso{
-\code{\link{parcelAllocation}} for fitting a single model,
-\code{\link{poolMAlloc}} for choosing the number of allocations
+\code{\link[=parcelAllocation]{parcelAllocation()}} for fitting a single model,
+\code{\link[=poolMAlloc]{poolMAlloc()}} for choosing the number of allocations
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

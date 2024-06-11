@@ -18,7 +18,7 @@
 \arguments{
 \item{object, x}{object of class \code{BootMiss}}
 
-\item{...}{Additional arguments to pass to \code{\link[graphics]{hist}}}
+\item{...}{Additional arguments to pass to \code{\link[graphics:hist]{graphics::hist()}}}
 
 \item{alpha}{alpha level used to draw confidence limits}
 
@@ -28,7 +28,7 @@
 be printed with the histogram}
 
 \item{legendArgs}{\code{list} of arguments passed to the
-\code{\link[graphics]{legend}} function.  The default argument is a list
+\code{\link[graphics:legend]{graphics::legend()}} function.  The default argument is a list
 placing the legend at the top-left of the figure.}
 }
 \value{
@@ -61,7 +61,7 @@ bootstrap distribution}
 
 \section{Objects from the Class}{
  Objects can be created via the
-\code{\link{bsBootMiss}} function.
+\code{\link[=bsBootMiss]{bsBootMiss()}} function.
 }
 
 \examples{
@@ -70,7 +70,7 @@ bootstrap distribution}
 
 }
 \seealso{
-\code{\link{bsBootMiss}}
+\code{\link[=bsBootMiss]{bsBootMiss()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

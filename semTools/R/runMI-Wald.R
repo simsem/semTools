@@ -25,7 +25,7 @@
 ##' @importFrom stats pchisq pf
 ##' @importFrom methods getMethod
 ##'
-##' @param object An object of class \code{\linkS4class{lavaan.mi}}.
+##' @param object An object of class [lavaan.mi-class].
 ##' @param constraints A `character` string (typically between single
 ##'   quotes) containing one or more equality constraints.
 ##'   See examples for more details
@@ -98,7 +98,7 @@
 ##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
-##' @seealso \code{\link[lavaan]{lavTestWald}}
+##' @seealso [lavaan::lavTestWald()]
 ##'
 ##' @examples
 ##'  \dontrun{

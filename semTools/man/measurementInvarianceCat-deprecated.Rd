@@ -10,7 +10,7 @@ measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE,
 }
 \arguments{
 \item{...}{The same arguments as for any lavaan model.  See
-\code{\link{cfa}} for more information.}
+\code{\link[=cfa]{cfa()}} for more information.}
 
 \item{std.lv}{If \code{TRUE}, the fixed-factor method of scale
 identification is used. If \code{FALSE}, the first variable for each
@@ -27,10 +27,10 @@ model comparison tests. If \code{TRUE}, no summary is printed.}
 nested models.}
 
 \item{baseline.model}{custom baseline model passed to
-\code{\link[lavaan]{fitMeasures}}}
+\code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}}
 
 \item{method}{The method used to calculate likelihood ratio test. See
-\code{\link[lavaan]{lavTestLRT}} for available options}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} for available options}
 }
 \value{
 Invisibly, all model fits in the sequence are returned as a list.
@@ -82,7 +82,7 @@ invariance in ordered-categorical measures. \emph{Multivariate Behavioral
 Research, 39}(3), 479--515. \doi{10.1207/S15327906MBR3903_4}
 }
 \seealso{
-\code{\link{semTools-deprecated}}
+\code{\link[=semTools-deprecated]{semTools-deprecated()}}
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})

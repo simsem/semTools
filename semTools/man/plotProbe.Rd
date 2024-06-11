@@ -9,9 +9,9 @@ plotProbe(object, xlim, xlab = "Indepedent Variable",
 }
 \arguments{
 \item{object}{A \code{list}, typically the result of probing a latent 2-way
-or 3-way interaction obtained from the \code{\link{probe2WayMC}},
-\code{\link{probe2WayRC}}, \code{\link{probe3WayMC}}, or
-\code{\link{probe3WayRC}} functions.}
+or 3-way interaction obtained from the \code{\link[=probe2WayMC]{probe2WayMC()}},
+\code{\link[=probe2WayRC]{probe2WayRC()}}, \code{\link[=probe3WayMC]{probe3WayMC()}}, or
+\code{\link[=probe3WayRC]{probe3WayRC()}} functions.}
 
 \item{xlim}{The vector of two numbers: the minimum and maximum values of the
 independent variable}
@@ -22,10 +22,10 @@ independent variable}
 
 \item{legend}{\code{logical}. If \code{TRUE} (default), a legend is printed.}
 
-\item{legendArgs}{\code{list} of arguments passed to \code{\link{legend}}
+\item{legendArgs}{\code{list} of arguments passed to \code{\link[=legend]{legend()}}
 function if \code{legend=TRUE}.}
 
-\item{\dots}{Any additional argument for the \code{\link{plot}} function}
+\item{\dots}{Any additional argument for the \code{\link[=plot]{plot()}} function}
 }
 \value{
 None. This function will plot the simple main effect only.
@@ -134,15 +134,15 @@ latent variable interactions using the \code{semTools} package.
 }
 \seealso{
 \itemize{
-\item \code{\link{indProd}} For creating the indicator products with no
+\item \code{\link[=indProd]{indProd()}} For creating the indicator products with no
 centering, mean centering, double-mean centering, or residual centering.
-\item \code{\link{probe2WayMC}} For probing the two-way latent interaction
+\item \code{\link[=probe2WayMC]{probe2WayMC()}} For probing the two-way latent interaction
 when the results are obtained from mean-centering, or double-mean centering
-\item \code{\link{probe3WayMC}} For probing the three-way latent interaction
+\item \code{\link[=probe3WayMC]{probe3WayMC()}} For probing the three-way latent interaction
 when the results are obtained from mean-centering, or double-mean centering
-\item \code{\link{probe2WayRC}} For probing the two-way latent interaction
+\item \code{\link[=probe2WayRC]{probe2WayRC()}} For probing the two-way latent interaction
 when the results are obtained from residual-centering approach.
-\item \code{\link{probe3WayRC}} For probing the two-way latent interaction
+\item \code{\link[=probe3WayRC]{probe3WayRC()}} For probing the two-way latent interaction
 when the results are obtained from residual-centering approach.
 }
 }

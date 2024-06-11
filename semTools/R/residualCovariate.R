@@ -20,7 +20,7 @@
 ##'
 ##' @return The data that the target variables replaced by the residuals
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
-##' @seealso \code{\link{indProd}} For creating the indicator products with no
+##' @seealso [indProd()] For creating the indicator products with no
 ##' centering, mean centering, double-mean centering, or residual centering.
 ##'
 ##' @references Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., &

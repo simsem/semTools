@@ -7,7 +7,7 @@
 ##'
 ##' @description Provide emmeans support for lavaan objects
 ##'
-##' @param object An object of class \code{\link[lavaan]{lavaan}}.
+##' @param object An object of class [lavaan::lavaan()].
 ##'   See **Details**.
 ##' @param lavaan.DV `character` string maming the variable(s) for which
 ##'   expected marginal means / trends should be produced.

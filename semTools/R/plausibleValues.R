@@ -19,25 +19,25 @@
 ##' Plausible-Values Imputation of Factor Scores Estimated from a lavaan Model
 ##'
 ##' Draw plausible values of factor scores estimated from a fitted
-##' \code{\link[lavaan]{lavaan}} model, then treat them as multiple imputations
-##' of missing data using \code{\link{runMI}}.
+##' [lavaan::lavaan()] model, then treat them as multiple imputations
+##' of missing data using [lavaan.mi()].
 ##'
 ##'
 ##' Because latent variables are unobserved, they can be considered as missing
 ##' data, which can be imputed using Monte Carlo methods.  This may be of
 ##' interest to researchers with sample sizes too small to fit their complex
 ##' structural models.  Fitting a factor model as a first step,
-##' \code{\link[lavaan]{lavPredict}} provides factor-score estimates, which can
+##' [lavaan::lavPredict()] provides factor-score estimates, which can
 ##' be treated as observed values in a path analysis (Step 2).  However, the
 ##' resulting standard errors and test statistics could not be trusted because
 ##' the Step-2 analysis would not take into account the uncertainty about the
 ##' estimated factor scores.  Using the asymptotic sampling covariance matrix
-##' of the factor scores provided by \code{\link[lavaan]{lavPredict}},
+##' of the factor scores provided by [lavaan::lavPredict()],
 ##' `plausibleValues` draws a set of `nDraws` imputations from the
 ##' sampling distribution of each factor score, returning a list of data sets
 ##' that can be treated like multiple imputations of incomplete data.  If the
 ##' data were already imputed to handle missing data, `plausibleValues`
-##' also accepts an object of class \code{\linkS4class{lavaan.mi}}, and will
+##' also accepts an object of class [lavaan.mi-class], and will
 ##' draw `nDraws` plausible values from each imputation.  Step 2 would
 ##' then take into account uncertainty about both missing values and factor
 ##' scores.  Bayesian methods can also be used to generate factor scores, as
@@ -56,7 +56,7 @@
 ##'
 ##' If `object` is a multilevel `lavaan` model, users can request
 ##' plausible values for latent variables at particular levels of analysis by
-##' setting the \code{\link[lavaan]{lavPredict}} argument `level=1` or
+##' setting the [lavaan::lavPredict()] argument `level=1` or
 ##' `level=2`.  If the `level` argument is not passed via \dots,
 ##' then both levels are returned in a single merged data set per draw.  For
 ##' multilevel models, each returned `data.frame` also includes a column
@@ -66,31 +66,31 @@
 ##'
 ##' @importFrom lavaan lavInspect lavPredict
 ##'
-##' @param object A fitted model of class \code{\linkS4class{lavaan}},
-##'   \code{\link[blavaan]{blavaan}}, or \code{\linkS4class{lavaan.mi}}
+##' @param object A fitted model of class [lavaan-class],
+##'   [blavaan::blavaan()], or [lavaan.mi-class]
 ##' @param nDraws `integer` specifying the number of draws, analogous to
 ##'   the number of imputed data sets. If `object` is of class
-##'   \code{\linkS4class{lavaan.mi}}, this will be the number of draws taken
+##'   [lavaan.mi-class], this will be the number of draws taken
 ##'   *per imputation*.  If `object` is of class
-##'   \code{\link[blavaan]{blavaan}}, `nDraws` cannot exceed
+##'   [blavaan::blavaan()], `nDraws` cannot exceed
 ##'   `blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")`
 ##'   (number of MCMC samples from the posterior). The drawn samples will be
 ##'   evenly spaced (after permutation for `target="stan"`), using
-##'   \code{\link{ceiling}} to resolve decimals.
-##' @param seed `integer` passed to \code{\link{set.seed}()}.
+##'   [ceiling()] to resolve decimals.
+##' @param seed `integer` passed to [set.seed()].
 ##' @param omit.imps `character` vector specifying criteria for omitting
-##'   imputations when `object` is of class \code{\linkS4class{lavaan.mi}}.
+##'   imputations when `object` is of class [lavaan.mi-class].
 ##'   Can include any of `c("no.conv", "no.se", "no.npd")`.
-##' @param ... Optional arguments to pass to \code{\link[lavaan]{lavPredict}}.
+##' @param ... Optional arguments to pass to [lavaan::lavPredict()].
 ##'   `assemble` will be ignored because multiple groups are always
 ##'   assembled into a single `data.frame` per draw. `type` will be
 ##'   ignored because it is set internally to `type="lv"`.
 ##'
 ##' @return A `list` of length `nDraws`, each of which is a
 ##'   `data.frame` containing plausible values, which can be treated as
-##'   a `list` of imputed data sets to be passed to \code{\link{runMI}}
+##'   a `list` of imputed data sets to be passed to [runMI()]
 ##'   (see **Examples**). If `object` is of class
-##'   \code{\linkS4class{lavaan.mi}}, the `list` will be of length
+##'   [lavaan.mi-class], the `list` will be of length
 ##'   `nDraws*m`, where `m` is the number of imputations.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
@@ -101,7 +101,7 @@
 ##'   variables using M*plus. Technical Report. Retrieved from
 ##'   www.statmodel.com/download/Plausible.pdf
 ##'
-##' @seealso \code{\link{runMI}}, \code{\linkS4class{lavaan.mi}}
+##' @seealso [lavaan.mi()], [lavaan.mi-class]
 ##'
 ##' @examples
 ##'

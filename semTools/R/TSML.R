@@ -14,7 +14,7 @@
 ##' This class contains the results of 2-Stage Maximum Likelihood (TSML)
 ##' estimation for missing data.  The `summary`, `anova`, `vcov`
 ##' methods return corrected *SE*s and test statistics.  Other methods are
-##' simply wrappers around the corresponding \code{\linkS4class{lavaan}}
+##' simply wrappers around the corresponding [lavaan-class]
 ##' methods.
 ##'
 ##'
@@ -25,17 +25,17 @@
 ##' residuals,twostage-method resid,twostage-method nobs,twostage-method
 ##' @docType class
 ##'
-##' @slot saturated A fitted \code{\linkS4class{lavaan}} object containing the
+##' @slot saturated A fitted [lavaan-class] object containing the
 ##'  saturated model results
-##' @slot target A fitted \code{\linkS4class{lavaan}} object containing the
+##' @slot target A fitted [lavaan-class] object containing the
 ##'  target/hypothesized model results
-##' @slot baseline A fitted \code{\linkS4class{lavaan}} object containing the
+##' @slot baseline A fitted [lavaan-class] object containing the
 ##'  baseline/null model results
 ##' @slot auxNames A character string (potentially of `length == 0`) of any
 ##'  auxiliary variable names, if used
 ##'
 ##' @param object An object of class `twostage`.
-##' @param ... arguments passed to \code{\link[lavaan]{parameterEstimates}}.
+##' @param ... arguments passed to [lavaan::parameterEstimates()].
 ##' @param h1 An object of class `twostage` in which `object` is
 ##'        nested, so that their difference in fit can be tested using
 ##'        `anova` (see **Value** section for details).
@@ -56,9 +56,9 @@
 ##'  \item{summary}{`signature(object = "twostage", ...):` The summary
 ##'   function prints the same information from the `show` method, but also
 ##'   provides (and returns) the output of
-##'   \code{\link[lavaan]{parameterEstimates}(object@target, ...)} with corrected
+##'   `parameterEstimates(object@target, ...)` with corrected
 ##'   *SE*s, test statistics, and confidence intervals.  Additional
-##'   arguments can be passed to \code{\link[lavaan]{parameterEstimates}},
+##'   arguments can be passed to [lavaan::parameterEstimates()],
 ##'   including `fmi = TRUE` to provide an estimate of the fraction of
 ##'   missing information.}
 ##'  \item{anova}{`signature(object = "twostage", h1 = NULL, baseline = FALSE):`
@@ -82,7 +82,7 @@
 ##'   variables).}
 ##'  \item{coef}{`signature(object = "twostage", type = c("free", "user")):`
 ##'   This is simply a wrapper around the corresponding
-##'   \code{\linkS4class{lavaan}} method, providing point estimates from the
+##'   [lavaan-class] method, providing point estimates from the
 ##'   `target` slot.}
 ##'  \item{vcov}{`signature(object = "twostage", baseline = FALSE):` Returns
 ##'   the asymptotic covariance matrix of the estimated parameters (corrected for
@@ -91,21 +91,21 @@
 ##'   `baseline = TRUE`.}
 ##'  \item{fitted.values, fitted}{`signature(object = "twostage",
 ##'   model = c("target", "saturated", "baseline")):` This is simply a wrapper
-##'   around the corresponding \code{\linkS4class{lavaan}} method, providing
+##'   around the corresponding [lavaan-class] method, providing
 ##'   model-implied sample moments from the slot specified in the `model`
 ##'   argument.}
 ##'  \item{residuals, resid}{`signature(object = "twostage", type = c("raw",
 ##'   "cor", "normalized", "standardized")):` This is simply a wrapper around the
-##'   corresponding \code{\linkS4class{lavaan}} method, providing residuals of
+##'   corresponding [lavaan-class] method, providing residuals of
 ##'   the specified `type` from the `target` slot.}
 ##'
 ##' @section Objects from the Class: Objects can be created via the
-##' \code{\link{twostage}} function.
+##' [twostage()] function.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##' \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso \code{\link{twostage}}
+##' @seealso [twostage()]
 ##'
 ##' @examples
 ##'
@@ -465,10 +465,10 @@ setMethod("resid", "twostage",
 ##' endogenous variables in the Step-2 hypothesized model are not allowed).  To
 ##' avoid assuming multivariate normality, request `se =
 ##' "robust.huber.white"`.  CAUTION: In addition to setting `fixed.x =
-##' FALSE` and `conditional.x = FALSE` in \code{\link[lavaan]{lavaan}},
+##' FALSE` and `conditional.x = FALSE` in [lavaan::lavaan()],
 ##' this function will automatically set `meanstructure = TRUE`,
 ##' `estimator = "ML"`, `missing = "fiml"`, and `test =
-##' "standard"`.  \code{\link[lavaan]{lavaan}}'s `se` option can only be
+##' "standard"`.  [lavaan::lavaan()]'s `se` option can only be
 ##' set to `"standard"` to assume multivariate normality or to
 ##' `"robust.huber.white"` to relax that assumption.
 ##'
@@ -476,10 +476,10 @@ setMethod("resid", "twostage",
 ##' @aliases twostage cfa.2stage sem.2stage growth.2stage lavaan.2stage
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param \dots Arguments passed to the \code{\link[lavaan]{lavaan}} function
+##' @param \dots Arguments passed to the [lavaan()] function
 ##'   specified in the `fun` argument.  See also
-##'   \code{\link[lavaan]{lavOptions}}.  At a minimum, the user must supply the
-##'   first two named arguments to \code{\link[lavaan]{lavaan}} (i.e.,
+##'   [lavOptions()].  At a minimum, the user must supply the
+##'   first two named arguments to [lavaan()] (i.e.,
 ##'   `model` and `data`).
 ##' @param aux An optional character vector naming auxiliary variable(s) in
 ##'   `data`
@@ -487,25 +487,25 @@ setMethod("resid", "twostage",
 ##'   Step-2 hypothesized model (`"cfa"`, `"sem"`, `"growth"`, or
 ##'   `"lavaan"`).
 ##' @param baseline.model An optional character string, specifying the lavaan
-##'   \code{\link[lavaan]{model.syntax}} for a user-specified baseline model.
+##'   [model.syntax()] for a user-specified baseline model.
 ##'   Interested users can use the fitted baseline model to calculate incremental
 ##'   fit indices (e.g., CFI and TLI) using the corrected chi-squared values (see
-##'   the `anova` method in \code{\linkS4class{twostage}}).  If `NULL`,
+##'   the `anova` method in [twostage-class]).  If `NULL`,
 ##'   the default "independence model" (i.e., freely estimated means and
 ##'   variances, but all covariances constrained to zero) will be specified
 ##'   internally.
 ##'
-##' @return The \code{\linkS4class{twostage}} object contains 3 fitted lavaan
+##' @return The [twostage-class] object contains 3 fitted lavaan
 ##' models (saturated, target/hypothesized, and baseline) as well as the names
 ##' of auxiliary variables.  None of the individual models provide the correct
 ##' model results (except the point estimates in the target model are unbiased).
-##' Use the methods in \code{\linkS4class{twostage}} to extract corrected
+##' Use the methods in [twostage-class] to extract corrected
 ##' *SE*s and test statistics.
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso \code{\linkS4class{twostage}}
+##' @seealso [twostage-class]
 ##'
 ##' @references
 ##' Savalei, V., & Bentler, P. M. (2009). A two-stage approach to missing data:

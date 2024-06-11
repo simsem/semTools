@@ -11,8 +11,8 @@ compRelSEM(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
   return.df = TRUE)
 }
 \arguments{
-\item{object}{A \code{\linkS4class{lavaan}} or
-\code{\linkS4class{lavaan.mi}} object, expected to contain only
+\item{object}{A \linkS4class{lavaan} or
+\linkS4class{lavaan.mi} object, expected to contain only
 exogenous common factors (i.e., a CFA model).}
 
 \item{obs.var}{\code{logical} indicating whether to compute reliability
@@ -83,7 +83,7 @@ column when \code{return.total = TRUE}.}
 \item{omit.factors}{\code{character} vector naming any common factors
 modeled in \code{object} whose composite reliability is not of
 interest. For example, higher-order or method factors. Note that
-\code{\link{reliabilityL2}()} should be used to calculate composite
+\code{\link[=reliabilityL2]{reliabilityL2()}} should be used to calculate composite
 reliability of a higher-order factor.}
 
 \item{omit.indicators}{\code{character} vector naming any observed variables
@@ -155,8 +155,7 @@ default) or from the hypothesized CFA model, controlled by the
 \code{obs.var} argument. A \eqn{k}-dimensional vector \eqn{\bold{1}} is used
 to sum elements in the matrix. Note that if the model includes any directed
 effects (latent regression slopes), all coefficients are calculated
-from \strong{total} factor variances:
-\code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
+from \strong{total} factor variances: \code{lavInspect(object, "cov.lv")}.
 
 Assuming (essential) tau-equivalence (\code{tau.eq=TRUE}) makes \eqn{\omega}
 equivalent to coefficient \eqn{\alpha} from classical test theory
@@ -452,7 +451,7 @@ scales of measurement do not help make it: A response to Chalmers.
 \doi{10.1177/0013164419844305}
 }
 \seealso{
-\code{\link{maximalRelia}} for the maximal reliability of weighted composite
+\code{\link[=maximalRelia]{maximalRelia()}} for the maximal reliability of weighted composite
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
