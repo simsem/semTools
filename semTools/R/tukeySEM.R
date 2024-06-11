@@ -28,15 +28,15 @@
 #' compared in the omnibus test).
 #' @return A vector with three elements:
 #' \enumerate{
-#'  \item \code{q}: The \emph{q} statistic
-#'  \item \code{df}: The degrees of freedom for the \emph{q} statistic
-#'  \item \code{p}: A \emph{p} value based on the \emph{q} statistic, \emph{df},
+#'  \item `q`: The *q* statistic
+#'  \item `df`: The degrees of freedom for the *q* statistic
+#'  \item `p`: A *p* value based on the *q* statistic, *df*,
 #'   and the total number of groups to be compared
 #' }
 #' @author Alexander M. Schoemann (East Carolina University;
 #' \email{schoemanna@@ecu.edu})
-#' @references Maxwell, S. E., & Delaney, H. D. (2004). \emph{Designing
-#' experiments and analyzing data: A model comparison perspective} (2nd ed.).
+#' @references Maxwell, S. E., & Delaney, H. D. (2004). *Designing
+#' experiments and analyzing data: A model comparison perspective* (2nd ed.).
 #' Mahwah, NJ: Lawrence Erlbaum Associates.
 #' @examples
 #'

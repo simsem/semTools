@@ -5,7 +5,7 @@
 
 ##' Modification Indices for Multiple Imputations
 ##'
-##' Modification indices (1-\emph{df} Lagrange multiplier tests) from a
+##' Modification indices (1-*df* Lagrange multiplier tests) from a
 ##' latent variable model fitted to multiple imputed data sets. Statistics
 ##' for releasing one or more fixed or constrained parameters in model can
 ##' be calculated by pooling the gradient and information matrices
@@ -21,75 +21,75 @@
 ##' @importFrom stats cov pchisq qchisq
 ##'
 ##' @param object An object of class \code{\linkS4class{lavaan.mi}}
-##' @param test \code{character} indicating which pooling method to use.
-##'  \code{"D1"} requests Mansolf, Jorgensen, & Enders' (2020) proposed
+##' @param test `character` indicating which pooling method to use.
+##'  `"D1"` requests Mansolf, Jorgensen, & Enders' (2020) proposed
 ##'  Wald-like test for pooling the gradient and information, which are then
-##'  used to calculate score-test statistics in the usual manner. \code{"D2"}
+##'  used to calculate score-test statistics in the usual manner. `"D2"`
 ##'  (default because it is less computationall intensive) requests to pool the
 ##'  complete-data score-test statistics from each imputed data set, then pool
 ##'  them across imputations, described by Li et al. (1991) and Enders (2010).
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
-##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'   default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
-##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
 ##'   as Heywood cases. Specific imputation numbers can also be included in this
 ##'   argument, in case users want to  apply their own custom omission criteria
 ##'   (or simulations can use different numbers of imputations without
 ##'   redundantly refitting the model).
-##' @param standardized \code{logical}. If \code{TRUE}, two extra columns
-##'   (\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values
-##'   for the EPCs. In the first column (\code{$sepc.lv}), standardizization is
+##' @param standardized `logical`. If `TRUE`, two extra columns
+##'   (`$sepc.lv` and `$sepc.all`) will contain standardized values
+##'   for the EPCs. In the first column (`$sepc.lv`), standardizization is
 ##'   based on the variances of the (continuous) latent variables. In the second
-##'   column (\code{$sepc.all}), standardization is based on both the variances
+##'   column (`$sepc.all`), standardization is based on both the variances
 ##'   of both (continuous) observed and latent variables. (Residual) covariances
 ##'   are standardized using (residual) variances.
-##' @param cov.std \code{logical}. \code{TRUE} if \code{test == "D2"}.
-##'   If \code{TRUE} (default), the (residual)
+##' @param cov.std `logical`. `TRUE` if `test == "D2"`.
+##'   If `TRUE` (default), the (residual)
 ##'   observed covariances are scaled by the square-root of the diagonal elements
 ##'   of the \eqn{\Theta} matrix, and the (residual) latent covariances are
 ##'   scaled by the square-root of the diagonal elements of the \eqn{\Psi}
-##'   matrix. If \code{FALSE}, the (residual) observed covariances are scaled by
+##'   matrix. If `FALSE`, the (residual) observed covariances are scaled by
 ##'   the square-root of the diagonal elements of the model-implied covariance
 ##'   matrix of observed variables (\eqn{\Sigma}), and the (residual) latent
 ##'   covariances are scaled by the square-root of the diagonal elements of the
 ##'   model-implied covariance matrix of the latent variables.
-##' @param information \code{character} indicating the type of information
+##' @param information `character` indicating the type of information
 ##'   matrix to use (check \code{\link{lavInspect}} for available options).
-##'   \code{"expected"} information is the default, which provides better
+##'   `"expected"` information is the default, which provides better
 ##'   control of Type I errors.
-##' @param power \code{logical}. If \code{TRUE}, the (post-hoc) power is
-##'   computed for each modification index, using the values of \code{delta}
-##'   and \code{alpha}.
+##' @param power `logical`. If `TRUE`, the (post-hoc) power is
+##'   computed for each modification index, using the values of `delta`
+##'   and `alpha`.
 ##' @param delta The value of the effect size, as used in the post-hoc power
-##'   computation, currently using the unstandardized metric of the \code{$epc}
+##'   computation, currently using the unstandardized metric of the `$epc`
 ##'   column.
 ##' @param alpha The significance level used for deciding if the modification
 ##'   index is statistically significant or not.
 ##' @param high.power If the computed power is higher than this cutoff value,
 ##'   the power is considered 'high'. If not, the power is considered 'low'.
-##'   This affects the values in the \code{$decision} column in the output.
-##' @param sort. \code{logical}. If \code{TRUE}, sort the output using the
+##'   This affects the values in the `$decision` column in the output.
+##' @param sort. `logical`. If `TRUE`, sort the output using the
 ##'   values of the modification index values. Higher values appear first.
-##' @param minimum.value \code{numeric}. Filter output and only show rows with a
+##' @param minimum.value `numeric`. Filter output and only show rows with a
 ##'   modification index value equal or higher than this minimum value.
-##' @param maximum.number \code{integer}. Filter output and only show the first
-##'   maximum number rows. Most useful when combined with the \code{sort.} option.
-##' @param na.remove \code{logical}. If \code{TRUE} (default), filter output by
-##'   removing all rows with \code{NA} values for the modification indices.
-##' @param op \code{character} string. Filter the output by selecting only those
-##'   rows with operator \code{op}.
+##' @param maximum.number `integer`. Filter output and only show the first
+##'   maximum number rows. Most useful when combined with the `sort.` option.
+##' @param na.remove `logical`. If `TRUE` (default), filter output by
+##'   removing all rows with `NA` values for the modification indices.
+##' @param op `character` string. Filter the output by selecting only those
+##'   rows with operator `op`.
 ##'
-##' @note When \code{test = "D2"}, each (S)EPC will be pooled by taking its
-##'   average across imputations. When \code{test = "D1"}, EPCs will be
+##' @note When `test = "D2"`, each (S)EPC will be pooled by taking its
+##'   average across imputations. When `test = "D1"`, EPCs will be
 ##'   calculated in the standard way using the pooled gradient and information,
 ##'   and SEPCs will be calculated by standardizing the EPCs using model-implied
 ##'   (residual) variances.
 ##'
-##' @return A \code{data.frame} containing modification indices and (S)EPCs.
+##' @return A `data.frame` containing modification indices and (S)EPCs.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -97,22 +97,22 @@
 ##'   Adapted from \pkg{lavaan} source code, written by
 ##'   Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
 ##'
-##' \code{test = "D1"} method proposed by
+##' `test = "D1"` method proposed by
 ##'   Maxwell Mansolf (University of California, Los Angeles;
 ##'   \email{mamansolf@@gmail.com})
 ##'
 ##' @references
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}.
+##'   Enders, C. K. (2010). *Applied missing data analysis*.
 ##'   New York, NY: Guilford.
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-##'   Significance levels from repeated \emph{p}-values with multiply-imputed
-##'   data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   \url{https://www.jstor.org/stable/24303994}
+##'   Significance levels from repeated *p*-values with multiply-imputed
+##'   data.*Statistica Sinica, 1*(1), 65--92. Retrieved from
+##'   <https://www.jstor.org/stable/24303994>
 ##'
 ##'   Mansolf, M., Jorgensen, T. D., & Enders, C. K. (2020). A multiple
 ##'   imputation score test for model modification in structural equation
-##'   models. \emph{Psychological Methods, 25}(4), 393--411.
+##'   models. *Psychological Methods, 25*(4), 393--411.
 ##'   \doi{10.1037/met0000243}
 ##'
 ##' @examples

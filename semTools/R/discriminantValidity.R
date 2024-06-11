@@ -11,18 +11,18 @@
 ##' below one (in absolute value) that the latent variables can be thought of
 ##' representing two distinct constructs.
 ##'
-##' \code{discriminantValidity} function calculates two sets of statistics that
+##' `discriminantValidity` function calculates two sets of statistics that
 ##' are commonly used in discriminant validity evaluation. The first set are
 ##' factor correlation estimates and their confidence intervals. The second set
 ##' is a series of nested model tests, where the baseline model is compared
 ##' against a set of constrained models that are constructed by constraining
 ##' each factor correlation to the specified cutoff one at a time.
 ##'
-##' The function assume that the \code{object} is set of confirmatory
+##' The function assume that the `object` is set of confirmatory
 ##' factor analysis results where the latent variables are scaled by fixing their
 ##' variances to 1s. If the model is not a CFA model, the function will calculate
 ##' the statistics for the correlations among exogenous latent variables, but
-##' for the \emph{residual} variances with endogenous variables. If the
+##' for the *residual* variances with endogenous variables. If the
 ##' latent variables are scaled in some other way (e.g. fixing the first loadings),
 ##' the function issues a warning and re-estimates the model by fixing latent
 ##' variances to 1 (and estimating all loadings) so that factor covariances are
@@ -41,8 +41,8 @@
 ##' is used in the constrained model.
 ##'
 ##' Another alternative is to do a nested model comparison against a model where
-##' two factors are merged as one by setting the \code{merge} argument to
-##' \code{TRUE}. In this comparison, the constrained model is constructed by
+##' two factors are merged as one by setting the `merge` argument to
+##' `TRUE`. In this comparison, the constrained model is constructed by
 ##' removing one of the correlated factors from the model and assigning its
 ##' indicators to the factor that remains in the model.
 ##'
@@ -54,16 +54,16 @@
 ##' @param cutoff A cutoff to be used in the constrained models in likelihood
 ##'   ratio tests.
 ##' @param merge Whether the constrained models should be constructed by merging
-##'   two factors as one. Implies \code{cutoff} = 1.
+##'   two factors as one. Implies `cutoff` = 1.
 ##'
 ##' @inheritParams lavaan::parameterEstimates
 ##'
-##' @return A \code{data.frame} of latent variable correlation estimates, their
+##' @return A `data.frame` of latent variable correlation estimates, their
 ##' confidence intervals, and a likelihood ratio tests against constrained models.
 ##' with the following attributes:
 ##' \describe{
 ##'  \item{baseline}{The baseline model after possible rescaling.}
-##'  \item{constrained}{A \code{list} of the fitted constrained models
+##'  \item{constrained}{A `list` of the fitted constrained models
 ##'  used in the likelihood ratio test.}
 ##' }
 ##'
@@ -72,7 +72,7 @@
 ##' @references
 ##'
 ##' Rönkkö, M., & Cho, E. (2022). An updated guideline for assessing
-##' discriminant validity. \emph{Organizational Research Methods}, 25(1), 6–14.
+##' discriminant validity. *Organizational Research Methods*, 25(1), 6–14.
 ##' \doi{10.1177/1094428120968614}
 ##'
 ##' @examples

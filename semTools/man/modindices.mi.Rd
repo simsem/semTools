@@ -43,10 +43,10 @@ argument, in case users want to  apply their own custom omission criteria
 redundantly refitting the model).}
 
 \item{standardized}{\code{logical}. If \code{TRUE}, two extra columns
-(\code{$sepc.lv} and \code{$sepc.all}) will contain standardized values
-for the EPCs. In the first column (\code{$sepc.lv}), standardizization is
+(\verb{$sepc.lv} and \verb{$sepc.all}) will contain standardized values
+for the EPCs. In the first column (\verb{$sepc.lv}), standardizization is
 based on the variances of the (continuous) latent variables. In the second
-column (\code{$sepc.all}), standardization is based on both the variances
+column (\verb{$sepc.all}), standardization is based on both the variances
 of both (continuous) observed and latent variables. (Residual) covariances
 are standardized using (residual) variances.}
 
@@ -71,7 +71,7 @@ computed for each modification index, using the values of \code{delta}
 and \code{alpha}.}
 
 \item{delta}{The value of the effect size, as used in the post-hoc power
-computation, currently using the unstandardized metric of the \code{$epc}
+computation, currently using the unstandardized metric of the \verb{$epc}
 column.}
 
 \item{alpha}{The significance level used for deciding if the modification
@@ -79,7 +79,7 @@ index is statistically significant or not.}
 
 \item{high.power}{If the computed power is higher than this cutoff value,
 the power is considered 'high'. If not, the power is considered 'low'.
-This affects the values in the \code{$decision} column in the output.}
+This affects the values in the \verb{$decision} column in the output.}
 
 \item{sort.}{\code{logical}. If \code{TRUE}, sort the output using the
 values of the modification index values. Higher values appear first.}

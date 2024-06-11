@@ -21,23 +21,23 @@
 ##' @param model lavaan \link[lavaan]{model.syntax} of a confirmatory factor
 ##'   analysis model where at least two factors are required for indicators
 ##'   measuring the same construct.
-##' @param data A \code{data.frame} or data \code{matrix}
+##' @param data A `data.frame` or data `matrix`
 ##' @param sample.cov A covariance or correlation matrix can be used, instead of
-##'   \code{data}, to estimate the HTMT values.
+##'   `data`, to estimate the HTMT values.
 ##' @param missing If "listwise", cases with missing values are removed listwise
 ##'   from the data frame. If "direct" or "ml" or "fiml" and the estimator is
 ##'   maximum likelihood, an EM algorithm is used to estimate the unrestricted
 ##'   covariance matrix (and mean vector). If "pairwise", pairwise deletion is
 ##'   used. If "default", the value is set depending on the estimator and the
 ##'   mimic option (see details in \link[lavaan]{lavCor}).
-##' @param ordered Character vector. Only used if object is a \code{data.frame}.
+##' @param ordered Character vector. Only used if object is a `data.frame`.
 ##'   Treat these variables as ordered (ordinal) variables. Importantly, all
-##'   other variables will be treated as numeric (unless \code{is.ordered} in
-##'   \code{data}). (see also \link[lavaan]{lavCor})
-##' @param absolute \code{logical} indicating whether HTMT values should be
-##'   estimated based on absolute correlations (default is \code{TRUE}). This
+##'   other variables will be treated as numeric (unless `is.ordered` in
+##'   `data`). (see also \link[lavaan]{lavCor})
+##' @param absolute `logical` indicating whether HTMT values should be
+##'   estimated based on absolute correlations (default is `TRUE`). This
 ##'   is recommended for HTMT but required for HTMT2 (so silently ignored).
-##' @param htmt2 \code{logical} indicating whether to use the geometric mean
+##' @param htmt2 `logical` indicating whether to use the geometric mean
 ##'   (default, appropriate for congeneric indicators) or arithmetic mean
 ##'   (which assumes tau-equivalence).
 ##'
@@ -52,18 +52,18 @@
 ##' @references
 ##'   Henseler, J., Ringle, C. M., & Sarstedt, M. (2015). A new criterion for
 ##'   assessing discriminant validity in variance-based structural equation
-##'   modeling. \emph{Journal of the Academy of Marketing Science, 43}(1),
+##'   modeling. *Journal of the Academy of Marketing Science, 43*(1),
 ##'   115--135. \doi{10.1007/s11747-014-0403-8}
 ##'
 ##'   Roemer, E., Schuberth, F., & Henseler, J. (2021). HTMT2---An improved
 ##'   criterion for assessing discriminant validity in structural equation
-##'   modeling. \emph{Industrial Management & Data Systems, 121}(21), 2637--2650.
+##'   modeling. *Industrial Management & Data Systems, 121*(21), 2637--2650.
 ##'   \doi{10.1108/IMDS-02-2021-0082}
 ##'
 ##'   Voorhees, C. M., Brady, M. K., Calantone, R., & Ramirez, E. (2016).
 ##'   Discriminant validity testing in marketing: An analysis, causes for
 ##'   concern, and proposed remedies.
-##'   \emph{Journal of the Academy of Marketing Science, 44}(1), 119--134.
+##'   *Journal of the Academy of Marketing Science, 44*(1), 119--134.
 ##'   \doi{10.1007/s11747-015-0455-4}
 ##'
 ##' @examples

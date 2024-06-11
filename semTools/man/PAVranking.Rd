@@ -10,34 +10,34 @@ PAVranking(model0, model1, data, parcel.names, item.syntax, nAlloc = 100,
   show.progress = FALSE, iseed = 12345, warn = FALSE)
 }
 \arguments{
-\item{model0, model1}{\code{\link[lavaan]{lavaan}} model syntax specifying
+\item{model0, model1}{\code{\link[=lavaan]{lavaan()}} model syntax specifying
 nested models (\code{model0} within \code{model1}) to be fitted
 to the same parceled data.  Note that there can be a mixture of
 items and parcels (even within the same factor), in case certain items
 should never be parceled. Can be a character string or parameter table.
-Also see \code{\link[lavaan]{lavaanify}} for more details.}
+Also see \code{\link[=lavaanify]{lavaanify()}} for more details.}
 
 \item{data}{A \code{data.frame} containing all observed variables appearing
-in the \code{model}, as well as those in the \code{item.syntax} used to
+in \verb{model0=} and \verb{model1=}, as well as those in the \verb{item.syntax=} used to
 create parcels. If the data have missing values, multiple imputation
 before parceling is recommended: submit a stacked data set (with a variable
-for the imputation number, so they can be separateed later) and set
-\code{do.fit = FALSE} to return the list of \code{data.frame}s (one per
-allocation), each of which is a stacked, imputed data set with parcels.}
+for the imputation number, so they can be separated later) and set
+\code{do.fit=FALSE} to return the list of \code{data.frame}s (one per
+allocation), each of which is a stacked, multiply imputed data set with
+parcels created using the same allocation scheme.}
 
 \item{parcel.names}{\code{character} vector containing names of all parcels
-appearing as indicators in \code{model}.}
+appearing as indicators in \verb{model0=} or \verb{model1=}.}
 
 \item{item.syntax}{\link[lavaan]{lavaan} model syntax specifying the model
 that would be fit to all of the unparceled items, including items that
-should be randomly allocated to parcels appearing in \code{model}.}
+should be randomly allocated to parcels appearing in \verb{model0=} and \verb{model1=}.}
 
 \item{nAlloc}{The number of random items-to-parcels allocations to generate.}
 
 \item{fun}{\code{character} string indicating the name of the
-\code{\link[lavaan]{lavaan}} function used to fit \code{model} to
-\code{data}. Can only take the values \code{"lavaan"}, \code{"sem"},
-\code{"cfa"}, or \code{"growth"}.}
+\code{\link[=lavaan]{lavaan()}} function used to fit  \verb{model0=} and \verb{model1=} to \verb{data=}.
+Can only take the values \code{"lavaan"}, \code{"sem"}, \code{"cfa"}, or \code{"growth"}.}
 
 \item{alpha}{Alpha level used as criterion for significance.}
 
@@ -46,8 +46,8 @@ over another.  See Rafferty (1995) for guidelines (default is "very
 strong evidence" in favor of the model with lower BIC).}
 
 \item{fit.measures}{\code{character} vector containing names of fit measures
-to request from each fitted \code{\link[lavaan]{lavaan}} model.  See the
-output of \code{\link[lavaan]{fitMeasures}} for a list of available measures.}
+to request from each fitted \linkS4class{lavaan} model.  See the
+output of \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for a list of available measures.}
 
 \item{\dots}{Additional arguments to be passed to
 \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}}
@@ -73,16 +73,16 @@ A \code{list} with 3 elements.  The first two (\code{model0.results} and
 for \code{model0} and \code{model1}, respectively.
 The third element (\code{model0.v.model1}) is a \code{list} of
 model-comparison results, including the following:
-\item{\code{LRT_Summary:}}{ The average likelihood ratio test across
+\item{\verb{LRT_Summary:}}{ The average likelihood ratio test across
 allocations, as well as the \emph{SD}, minimum, maximum, range, and the
 proportion of allocations for which the test was significant.}
-\item{\code{Fit_Index_Differences:}}{ Differences in fit indices, organized
+\item{\verb{Fit_Index_Differences:}}{ Differences in fit indices, organized
 by what proportion favored each model and among those, what the average
 difference was.}
-\item{\code{Favored_by_BIC:}}{ The proportion of allocations in which each
+\item{\verb{Favored_by_BIC:}}{ The proportion of allocations in which each
 model met the criterion (\code{bic.crit}) for a substantial difference
 in fit.}
-\item{\code{Convergence_Summary:}}{ The proportion of allocations in which
+\item{\verb{Convergence_Summary:}}{ The proportion of allocations in which
 each model (and both models) converged on a solution.}
 
 Histograms are also printed to the current plot-output device.
@@ -92,28 +92,28 @@ This function quantifies and assesses the consequences of parcel-allocation
 variability for model ranking of structural equation models (SEMs) that
 differ in their structural specification but share the same parcel-level
 measurement specification (see Sterba & Rights, 2016). This function calls
-\code{\link{parcelAllocation}}---which can be used with only one SEM in
+\code{\link[=parcelAllocation]{parcelAllocation()}}---which can be used with only one SEM in
 isolation---to fit two (assumed) nested models to each of a specified number
 of random item-to-parcel allocations.  Output includes summary information
 about the distribution of model selection results (including plots) and the
 distribution of results for each model individually, across allocations
 within-sample. Note that this function can be used when selecting among more
 than two competing structural models as well (see instructions below
-involving the \code{seed} argument).
+involving the \verb{seed=} argument).
 }
 \details{
 This is based on a SAS macro \code{ParcelAlloc} (Sterba & MacCallum, 2010).
-The \code{PAVranking} function produces results discussed in Sterba and
+The \code{PAVranking()} function produces results discussed in Sterba and
 Rights (2016) relevant to the assessment of parcel-allocation variability in
-model selection and model ranking. Specifically, the \code{PAVranking}
-function first calls \code{\link{parcelAllocation}} to generate a given
-number (\code{nAlloc}) of item-to-parcel allocations, fitting both specified
+model selection and model ranking. Specifically, the \code{PAVranking()}
+function first calls \code{\link[=parcelAllocation]{parcelAllocation()}} to generate a given
+number (\verb{nAlloc=}) of item-to-parcel allocations, fitting both specified
 models to each allocation, and providing summaryies of PAV for each model.
-Additionally, \code{PAVranking} provides the following new summaries:
+Additionally, \code{PAVranking()} provides the following new summaries:
 
 \itemize{
 \item{PAV in model selection index values and model ranking between
-Models \code{model0} and \code{model1}.}
+Models \verb{model0=} and \verb{model1=}.}
 \item{The proportion of allocations that converged and the proportion of
 proper solutions (results are summarized for allocations with both
 converged and proper  allocations only).}
@@ -124,11 +124,10 @@ parcels, see Sterba (2011) and Sterba and MacCallum (2010).
 
 To test whether nested models have equivalent fit, results can be pooled
 across allocations using the same methods available for pooling results
-across multiple imputations of missing data (see \bold{Examples}).
+across multiple imputations of missing data (see \strong{Examples}).
 
 \emph{Note}: This function requires the \code{lavaan} package. Missing data
-must be coded as \code{NA}. If the function returns \code{"Error in
- plot.new() : figure margins too large"}, the user may need to increase
+must be coded as \code{NA}. If the function returns \code{"Error in plot.new() : figure margins too large"}, the user may need to increase
 size of the plot window (e.g., in RStudio) and rerun the function.
 }
 \examples{

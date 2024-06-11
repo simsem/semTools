@@ -78,94 +78,94 @@ measEq <- function(configural.model,
 ##'   update,measEq.syntax-method
 ##' @docType class
 ##'
-##' @slot package \code{character} indicating the software package used to
-##'   represent the model. Currently, only \code{"lavaan"} is available, which
+##' @slot package `character` indicating the software package used to
+##'   represent the model. Currently, only `"lavaan"` is available, which
 ##'   uses the LISREL representation (see \code{\link[lavaan]{lavOptions}}).
-##'   In the future, \code{"OpenMx"} may become available, using RAM
+##'   In the future, `"OpenMx"` may become available, using RAM
 ##'   representation.
-##' @slot model.type \code{character}. Currently, only "cfa" is available.
+##' @slot model.type `character`. Currently, only "cfa" is available.
 ##'   Future versions may allow for MIMIC / RFA models, where invariance can be
 ##'   tested across levels of exogenous variables explicitly included as
 ##'   predictors of indicators, controlling for their effects on (or correlation
 ##'   with) the common factors.
-##' @slot call The function call as returned by \code{match.call()}, with
+##' @slot call The function call as returned by `match.call()`, with
 ##'   some arguments updated if necessary for logical consistency.
-##' @slot meanstructure \code{logical} indicating whether a mean structure is
+##' @slot meanstructure `logical` indicating whether a mean structure is
 ##'   included in the model.
-##' @slot numeric \code{character} vector naming \code{numeric} manifest indicators.
-##' @slot ordered \code{character} vector naming \code{ordered} indicators.
-##' @slot parameterization \code{character}. See \code{\link[lavaan]{lavOptions}}.
-##' @slot specify \code{list} of parameter matrices, similar in form to the
+##' @slot numeric `character` vector naming `numeric` manifest indicators.
+##' @slot ordered `character` vector naming `ordered` indicators.
+##' @slot parameterization `character`. See \code{\link[lavaan]{lavOptions}}.
+##' @slot specify `list` of parameter matrices, similar in form to the
 ##'   output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
-##'   are \code{logical}, indicating whether each parameter should be specified
+##'   are `logical`, indicating whether each parameter should be specified
 ##'   in the model syntax.
-##' @slot values \code{list} of parameter matrices, similar in form to the
+##' @slot values `list` of parameter matrices, similar in form to the
 ##'   output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
-##'   are \code{numeric}, indicating whether each parameter should be freely
-##'   estimated (indicated by \code{NA}) or fixed to a particular value.
-##' @slot labels \code{list} of parameter matrices, similar in form to the
+##'   are `numeric`, indicating whether each parameter should be freely
+##'   estimated (indicated by `NA`) or fixed to a particular value.
+##' @slot labels `list` of parameter matrices, similar in form to the
 ##'   output of \code{\link[lavaan]{lavInspect}(fit, "free")}. These matrices
-##'   contain \code{character} labels used to constrain parameters to equality.
-##' @slot constraints \code{character} vector containing additional equality
-##'   constraints used to identify the model when \code{ID.fac = "fx"}.
-##' @slot ngroups \code{integer} indicating the number of groups.
+##'   contain `character` labels used to constrain parameters to equality.
+##' @slot constraints `character` vector containing additional equality
+##'   constraints used to identify the model when `ID.fac = "fx"`.
+##' @slot ngroups `integer` indicating the number of groups.
 ##'
-##' @param x,object an object of class \code{measEq.syntax}
-##' @param package \code{character} indicating the package for which the model
-##'   syntax should be generated.  Currently, only \code{"lavaan"} and
-##'   \code{"mplus"} are supported.
-##' @param params \code{character} vector indicating which type(s) of parameter
+##' @param x,object an object of class `measEq.syntax`
+##' @param package `character` indicating the package for which the model
+##'   syntax should be generated.  Currently, only `"lavaan"` and
+##'   `"mplus"` are supported.
+##' @param params `character` vector indicating which type(s) of parameter
 ##'   to print syntax for. Must match a type that can be passed to
-##'   \code{group.equal} or \code{long.equal}, but \code{"residual.covariances"}
-##'   and \code{"lv.covariances"} will be silently ignored. Instead, requesting
-##'   \code{"residuals"} or \code{"lv.variances"} will return covariances along
-##'   with variances. By default (\code{NULL}), all types are printed.
-##' @param single \code{logical} indicating whether to concatenate lavaan
-##'   \code{\link[lavaan]{model.syntax}} into a single \code{character} string.
-##'   Setting \code{FALSE} will return a vector of strings, which may be
+##'   `group.equal` or `long.equal`, but `"residual.covariances"`
+##'   and `"lv.covariances"` will be silently ignored. Instead, requesting
+##'   `"residuals"` or `"lv.variances"` will return covariances along
+##'   with variances. By default (`NULL`), all types are printed.
+##' @param single `logical` indicating whether to concatenate lavaan
+##'   \code{\link[lavaan]{model.syntax}} into a single `character` string.
+##'   Setting `FALSE` will return a vector of strings, which may be
 ##'   convenient (or even necessary to prevent an error) in
 ##'   models with long variable names, many variables, or many groups.
-##' @param groups.as.blocks \code{logical} indicating whether to write lavaan
+##' @param groups.as.blocks `logical` indicating whether to write lavaan
 ##'   \code{\link[lavaan]{model.syntax}} using vectors of labels and values
-##'   for multiple groups (the default: \code{FALSE}), or whether to write
+##'   for multiple groups (the default: `FALSE`), or whether to write
 ##'   a separate "block" of syntax per group. The block structure could allow
 ##'   users to apply the generated multigroup syntax (after some editing) to
 ##'   test invariance across levels in a multilevel SEM (see final example on
 ##'   \code{\link{measEq.syntax}} help page).
-##' @param verbose \code{logical} indicating whether to print a summary to the
-##'   screen (default). If \code{FALSE}, only a pattern matrix is returned.
-##' @param ... Additional arguments to the \code{call}, or arguments with
+##' @param verbose `logical` indicating whether to print a summary to the
+##'   screen (default). If `FALSE`, only a pattern matrix is returned.
+##' @param ... Additional arguments to the `call`, or arguments with
 ##'   changed values.
-##' @param evaluate If \code{TRUE}, evaluate the new \code{call}; otherwise,
-##'   return the new \code{call}.
+##' @param evaluate If `TRUE`, evaluate the new `call`; otherwise,
+##'   return the new `call`.
 ##' @param change.syntax \code{lavaan \link[lavaan]{model.syntax}} specifying
-##'   labels or fixed/free values of parameters in \code{object}.
+##'   labels or fixed/free values of parameters in `object`.
 ##'   These provide some flexibility to customize
 ##'   existing parameters without having to copy/paste the output of
-##'   \code{as.character(object)} into an R script. For example,
-##'   \code{group.partial} will free a parameter across all groups, but
-##'   \code{update} allows users to free the parameter in just one group
+##'   `as.character(object)` into an R script. For example,
+##'   `group.partial` will free a parameter across all groups, but
+##'   `update` allows users to free the parameter in just one group
 ##'   while maintaining equality constraints among other groups.
 ##'
 ##' @return
-##'   \item{summary}{\code{signature(object = "measEq.syntax", verbose = TRUE)}:
-##'     A \code{character} matrix indicating the pattern of \code{numeric},
-##'     \code{ordered}, or latent indicators loading on common factors.
-##'     By default (\code{verbose = TRUE}), \code{summary} also prints descriptive
+##'   \item{summary}{`signature(object = "measEq.syntax", verbose = TRUE)`:
+##'     A `character` matrix indicating the pattern of `numeric`,
+##'     `ordered`, or latent indicators loading on common factors.
+##'     By default (`verbose = TRUE`), `summary` also prints descriptive
 ##'     details about the model, including the numbers of indicators and factors,
 ##'     and which parameters are constrained to equality.}
-##'   \item{show}{\code{signature(object = "measEq.syntax")}: Prints a message
-##'     about how to use the \code{object} for model fitting. Invisibly
-##'     returns the \code{object}.}
-##'   \item{update}{\code{signature(object = "measEq.syntax", ...,
-##'     evaluate = TRUE, change.syntax = NULL)}: Creates a new
-##'     \code{object} with updated arguments in \code{...}, or updated
-##'     parameter labels or fixed/free specifications in \code{object}.}
-##'   \item{as.character}{\code{signature(x = "measEq.syntax", package = "lavaan")}:
-##'     Converts the \code{measEq.syntax} object to model syntax that can be
+##'   \item{show}{`signature(object = "measEq.syntax")`: Prints a message
+##'     about how to use the `object` for model fitting. Invisibly
+##'     returns the `object`.}
+##'   \item{update}{`signature(object = "measEq.syntax", ...,
+##'     evaluate = TRUE, change.syntax = NULL)`: Creates a new
+##'     `object` with updated arguments in `...`, or updated
+##'     parameter labels or fixed/free specifications in `object`.}
+##'   \item{as.character}{`signature(x = "measEq.syntax", package = "lavaan")`:
+##'     Converts the `measEq.syntax` object to model syntax that can be
 ##'     copy/pasted or written to a syntax file to be edited before analysis,
 ##'     or simply passed to \code{\link[lavaan]{lavaan}} to fit the model to
-##'     data. Generated M\emph{plus} syntax could also be utilized using the
+##'     data. Generated M*plus* syntax could also be utilized using the
 ##'     \pkg{MplusAuthomation} package.}
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
@@ -717,7 +717,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 
 ##' Syntax for measurement equivalence
 ##'
-##' Automatically generates \code{lavaan} model syntax to specify a confirmatory
+##' Automatically generates `lavaan` model syntax to specify a confirmatory
 ##' factor analysis (CFA) model with equality constraints imposed on
 ##' user-specified measurement (or structural) parameters. Optionally returns
 ##' the fitted model (if data are provided) representing some chosen level of
@@ -734,44 +734,44 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'
 ##' Limited support is provided for bifactor models and higher-order constructs.
 ##' Because bifactor models have cross-loadings by definition, the option
-##' \code{ID.fac = "effects.code"} is unavailable. \code{ID.fac = "UV"} is
-##' recommended for bifactor models, but \code{ID.fac = "UL"} is available on
+##' `ID.fac = "effects.code"` is unavailable. `ID.fac = "UV"` is
+##' recommended for bifactor models, but `ID.fac = "UL"` is available on
 ##' the condition that each factor has a unique first indicator in the
-##' \code{configural.model}. In order to maintain generality, higher-order
+##' `configural.model`. In order to maintain generality, higher-order
 ##' factors may include a mix of manifest and latent indicators, but they must
-##' therefore require \code{ID.fac = "UL"} to avoid complications with
+##' therefore require `ID.fac = "UL"` to avoid complications with
 ##' differentiating lower-order vs. higher-order (or mixed-level) factors.
-##' The keyword \code{"loadings"} in \code{group.equal} or \code{long.equal}
+##' The keyword `"loadings"` in `group.equal` or `long.equal`
 ##' constrains factor loadings of all manifest indicators (including loadings on
 ##' higher-order factors that also have latent indicators), whereas the keyword
-##' \code{"regressions"} constrains factor loadings of latent indicators. Users
+##' `"regressions"` constrains factor loadings of latent indicators. Users
 ##' can edit the model syntax manually to adjust constraints as necessary, or
-##' clever use of the \code{group.partial} or \code{long.partial} arguments
+##' clever use of the `group.partial` or `long.partial` arguments
 ##' could make it possible for users to still automated their model syntax.
-##' The keyword \code{"intercepts"} constrains the intercepts of all manifest
-##' indicators, and the keyword \code{"means"} constrains intercepts and means
+##' The keyword `"intercepts"` constrains the intercepts of all manifest
+##' indicators, and the keyword `"means"` constrains intercepts and means
 ##' of all latent common factors, regardless of whether they are latent
 ##' indicators of higher-order factors.  To test equivalence of lower-order and
 ##' higher-order intercepts/means in separate steps, the user can either
 ##' manually edit their generated syntax or conscientiously exploit the
-##' \code{group.partial} or \code{long.partial} arguments as necessary.
+##' `group.partial` or `long.partial` arguments as necessary.
 ##'
-##' \strong{\code{ID.fac}:} If the \code{configural.model} fixes any (e.g.,
+##' **`ID.fac`:** If the `configural.model` fixes any (e.g.,
 ##' the first) factor loadings, the generated syntax object will retain those
 ##' fixed values. This allows the user to retain additional constraints that
 ##' might be necessary (e.g., if there are only 1 or 2 indicators). Some methods
 ##' must be used in conjunction with other settings:
 ##' \itemize{
-##'   \item \code{ID.cat = "Millsap"} requires \code{ID.fac = "UL"} and
-##'         \code{parameterization = "theta"}.
-##'   \item \code{ID.cat = "LISREL"} requires \code{parameterization = "theta"}.
-##'   \item \code{ID.fac = "effects.code"} is unavailable when there are any
+##'   \item `ID.cat = "Millsap"` requires `ID.fac = "UL"` and
+##'         `parameterization = "theta"`.
+##'   \item `ID.cat = "LISREL"` requires `parameterization = "theta"`.
+##'   \item `ID.fac = "effects.code"` is unavailable when there are any
 ##'         cross-loadings.
 ##' }
 ##'
-##' \strong{\code{ID.cat}:} Wu & Estabrook (2016) recommended constraining
+##' **`ID.cat`:** Wu & Estabrook (2016) recommended constraining
 ##' thresholds to equality first, and doing so should allow releasing any
-##' identification constraints no longer needed. For each \code{ordered}
+##' identification constraints no longer needed. For each `ordered`
 ##' indicator, constraining one threshold to equality will allow the item's
 ##' intercepts to be estimated in all but the first group or repeated measure.
 ##' Constraining a second threshold (if applicable) will allow the item's
@@ -781,74 +781,74 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' also be assumed for three-category indicators. These guidelines provide the
 ##' least restrictive assumptions and tests, and are therefore the default.
 ##'
-##' The default setting in M\emph{plus} is similar to Wu & Estabrook (2016),
+##' The default setting in M*plus* is similar to Wu & Estabrook (2016),
 ##' except that intercepts are always constrained to zero (so they are assumed
 ##' to be invariant without testing them). Millsap & Tein (2004) recommended
-##' \code{parameterization = "theta"} and identified an item's residual variance
+##' `parameterization = "theta"` and identified an item's residual variance
 ##' in all but the first group (or occasion; Liu et al., 2017) by constraining
 ##' its intercept to zero and one of its thresholds to equality. A second
-##' threshold for the reference indicator (so \code{ID.fac = "UL"}) is used to
+##' threshold for the reference indicator (so `ID.fac = "UL"`) is used to
 ##' identify the common-factor means in all but the first group/occasion. The
 ##' LISREL software fixes the first threshold to zero and (if applicable) the
 ##' second threshold to 1, and assumes any remaining thresholds to be equal
 ##' across groups / repeated measures; thus, the intercepts are always
-##' identified, and residual variances (\code{parameterization = "theta"}) are
+##' identified, and residual variances (`parameterization = "theta"`) are
 ##' identified except for binary data, when they are all fixed to one.
 ##'
-##' \strong{Repeated Measures:} If each repeatedly measured factor is measured
+##' **Repeated Measures:** If each repeatedly measured factor is measured
 ##' by the same indicators (specified in the same order in the
-##' \code{configural.model}) on each occasion, without any cross-loadings, the
-##' user can let \code{longIndNames} be automatically generated. Generic names
+##' `configural.model`) on each occasion, without any cross-loadings, the
+##' user can let `longIndNames` be automatically generated. Generic names
 ##' for the repeatedly measured indicators are created using the name of the
-##' repeatedly measured factors (i.e., \code{names(longFacNames)}) and the
+##' repeatedly measured factors (i.e., `names(longFacNames)`) and the
 ##' number of indicators. So the repeatedly measured first indicator
-##' (\code{"ind"}) of a longitudinal construct called "factor" would be
-##' generated as \code{"._factor_ind.1"}.
+##' (`"ind"`) of a longitudinal construct called "factor" would be
+##' generated as `"._factor_ind.1"`.
 ##'
-##' The same types of parameter can be specified for \code{long.equal} as for
-##' \code{group.equal} (see \code{\link[lavaan]{lavOptions}} for a list), except
-##' for \code{"residual.covariances"} or \code{"lv.covariances"}. Instead, users
-##' can constrain \emph{auto}covariances using keywords \code{"resid.autocov"}
-##' or \code{"lv.autocov"}. Note that \code{group.equal = "lv.covariances"} or
-##' \code{group.equal = "residual.covariances"} will constrain any
+##' The same types of parameter can be specified for `long.equal` as for
+##' `group.equal` (see \code{\link[lavaan]{lavOptions}} for a list), except
+##' for `"residual.covariances"` or `"lv.covariances"`. Instead, users
+##' can constrain *auto*covariances using keywords `"resid.autocov"`
+##' or `"lv.autocov"`. Note that `group.equal = "lv.covariances"` or
+##' `group.equal = "residual.covariances"` will constrain any
 ##' autocovariances across groups, along with any other covariances the user
-##' specified in the \code{configural.model}. Note also that autocovariances
-##' cannot be specified as exceptions in \code{long.partial}, so anything more
-##' complex than the \code{auto} argument automatically provides should instead
-##' be manually specified in the \code{configural.model}.
+##' specified in the `configural.model`. Note also that autocovariances
+##' cannot be specified as exceptions in `long.partial`, so anything more
+##' complex than the `auto` argument automatically provides should instead
+##' be manually specified in the `configural.model`.
 ##'
-##' When users set \code{orthogonal=TRUE} in the \code{configural.model} (e.g.,
+##' When users set `orthogonal=TRUE` in the `configural.model` (e.g.,
 ##' in bifactor models of repeatedly measured constructs), autocovariances of
 ##' each repeatedly measured factor will still be freely estimated in the
 ##' generated syntax.
 ##'
-##' \strong{Missing Data:} If users wish to utilize the \code{\link{auxiliary}}
+##' **Missing Data:** If users wish to utilize the \code{\link{auxiliary}}
 ##' function to automatically include auxiliary variables in conjunction with
-##' \code{missing = "FIML"}, they should first generate the hypothesized-model
-##' syntax, then submit that syntax as the model to \code{auxiliary()}.
-##' If users utilized \code{\link{runMI}} to fit their \code{configural.model}
+##' `missing = "FIML"`, they should first generate the hypothesized-model
+##' syntax, then submit that syntax as the model to `auxiliary()`.
+##' If users utilized \code{\link{runMI}} to fit their `configural.model`
 ##' to multiply imputed data, that model can also be passed to the
-##' \code{configural.model} argument, and if \code{return.fit = TRUE}, the
+##' `configural.model` argument, and if `return.fit = TRUE`, the
 ##' generated model will be fitted to the multiple imputations.
 ##'
 ##' @importFrom lavaan lavInspect lavNames parTable cfa
 ##'
 ##' @param configural.model A model with no measurement-invariance constraints
 ##'   (i.e., representing only configural invariance), unless required for model
-##'   identification. \code{configural.model} can be either:
+##'   identification. `configural.model` can be either:
 ##'   \itemize{
 ##'     \item lavaan \code{\link[lavaan]{model.syntax}} or a parameter table
 ##'           (as returned by \code{\link[lavaan]{parTable}}) specifying the
 ##'           configural model. Using this option, the user can also provide
-##'           either raw \code{data} or summary statistics via \code{sample.cov}
-##'           and (optionally) \code{sample.mean}. See argument descriptions in
+##'           either raw `data` or summary statistics via `sample.cov`
+##'           and (optionally) `sample.mean`. See argument descriptions in
 ##'           \code{\link[lavaan]{lavaan}}. In order to include thresholds in
-##'           the generated syntax, either users must provide raw \code{data},
-##'           or the \code{configural.model} syntax must specify all thresholds
-##'           (see first example). If raw \code{data} are not provided, the
+##'           the generated syntax, either users must provide raw `data`,
+##'           or the `configural.model` syntax must specify all thresholds
+##'           (see first example). If raw `data` are not provided, the
 ##'           number of blocks (groups, levels, or combination) must be
-##'           indicated using an arbitrary \code{sample.nobs} argument (e.g.,
-##'           3 groups could be specified using \code{sample.nobs=rep(1, 3)}).
+##'           indicated using an arbitrary `sample.nobs` argument (e.g.,
+##'           3 groups could be specified using `sample.nobs=rep(1, 3)`).
 ##'     \item a fitted \code{\linkS4class{lavaan}} model (e.g., as returned by
 ##'           \code{\link[lavaan]{cfa}}) estimating the configural model
 ##'   }
@@ -856,118 +856,118 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'   structural parameters (i.e., it must be a CFA model), unless they are
 ##'   higher-order constructs with latent indicators (i.e., a second-order CFA).
 ##'
-##' @param ... Additional arguments (e.g., \code{data}, \code{ordered}, or
-##'   \code{parameterization}) passed to the \code{\link[lavaan]{lavaan}}
+##' @param ... Additional arguments (e.g., `data`, `ordered`, or
+##'   `parameterization`) passed to the \code{\link[lavaan]{lavaan}}
 ##'   function. See also \code{\link[lavaan]{lavOptions}}.
 ##'
-##' @param ID.fac \code{character}. The method for identifying common-factor
-##'   variances and (if \code{meanstructure = TRUE}) means. Three methods are
+##' @param ID.fac `character`. The method for identifying common-factor
+##'   variances and (if `meanstructure = TRUE`) means. Three methods are
 ##'   available, which go by different names in the literature:
 ##'   \itemize{
-##'     \item Standardize the common factor (mean = 0, \emph{SD} = 1) by
-##'           specifying any of: \code{"std.lv"}, \code{"unit.variance"},
-##'           \code{"UV"}, \code{"fixed.factor"},
-##'           \code{"fixed-factor"}
+##'     \item Standardize the common factor (mean = 0, *SD* = 1) by
+##'           specifying any of: `"std.lv"`, `"unit.variance"`,
+##'           `"UV"`, `"fixed.factor"`,
+##'           `"fixed-factor"`
 ##'     \item Choose a reference indicator by specifying any of:
-##'           \code{"auto.fix.first"}, \code{"unit.loading"}, \code{"UL"},
-##'           \code{"marker"}, \code{"ref"},  \code{"ref.indicator"},
-##'           \code{"reference.indicator"}, \code{"reference-indicator"},
-##'           \code{"marker.variable"}, \code{"marker-variable"}
+##'           `"auto.fix.first"`, `"unit.loading"`, `"UL"`,
+##'           `"marker"`, `"ref"`,  `"ref.indicator"`,
+##'           `"reference.indicator"`, `"reference-indicator"`,
+##'           `"marker.variable"`, `"marker-variable"`
 ##'     \item Apply effects-code constraints to loadings and intercepts by
-##'           specifying any of: \code{"FX"}, \code{"EC"}, \code{"effects"},
-##'           \code{"effects.coding"}, \code{"effects-coding"},
-##'           \code{"effects.code"}, \code{"effects-code"}
+##'           specifying any of: `"FX"`, `"EC"`, `"effects"`,
+##'           `"effects.coding"`, `"effects-coding"`,
+##'           `"effects.code"`, `"effects-code"`
 ##'   }
 ##'   See Kloessner & Klopp (2019) for details about all three methods.
 ##'
-##' @param ID.cat \code{character}. The method for identifying (residual)
+##' @param ID.cat `character`. The method for identifying (residual)
 ##'   variances and intercepts of latent item-responses underlying any
-##'   \code{ordered} indicators. Four methods are available:
+##'   `ordered` indicators. Four methods are available:
 ##'   \itemize{
 ##'     \item To follow Wu & Estabrook's (2016) guidelines (default), specify
-##'           any of: \code{"Wu.Estabrook.2016"}, \code{"Wu.2016"},
-##'           \code{"Wu.Estabrook"}, \code{"Wu"}, \code{"Wu2016"}. For
-##'           consistency, specify \code{ID.fac = "std.lv"}.
-##'     \item To use the default settings of M\emph{plus} and \code{lavaan},
-##'           specify any of: \code{"default"}, \code{"Mplus"}, \code{"Muthen"}.
+##'           any of: `"Wu.Estabrook.2016"`, `"Wu.2016"`,
+##'           `"Wu.Estabrook"`, `"Wu"`, `"Wu2016"`. For
+##'           consistency, specify `ID.fac = "std.lv"`.
+##'     \item To use the default settings of M*plus* and `lavaan`,
+##'           specify any of: `"default"`, `"Mplus"`, `"Muthen"`.
 ##'           Details provided in Millsap & Tein (2004).
 ##'     \item To use the constraints recommended by Millsap & Tein (2004; see
 ##'           also Liu et al., 2017, for the longitudinal case)
-##'           specify any of: \code{"millsap"}, \code{"millsap.2004"},
-##'           \code{"millsap.tein.2004"}. For consistency, specify
-##'           \code{ID.fac = "marker"} and \code{parameterization = "theta"}.
-##'     \item To use the default settings of LISREL, specify \code{"LISREL"}
-##'           or \code{"Joreskog"}. Details provided in Millsap & Tein (2004).
-##'           For consistency, specify \code{parameterization = "theta"}.
+##'           specify any of: `"millsap"`, `"millsap.2004"`,
+##'           `"millsap.tein.2004"`. For consistency, specify
+##'           `ID.fac = "marker"` and `parameterization = "theta"`.
+##'     \item To use the default settings of LISREL, specify `"LISREL"`
+##'           or `"Joreskog"`. Details provided in Millsap & Tein (2004).
+##'           For consistency, specify `parameterization = "theta"`.
 ##'   }
-##'   See \strong{Details} and \strong{References} for more information.
+##'   See **Details** and **References** for more information.
 ##'
-##' @param ID.thr \code{integer}. Only relevant when
-##'   \code{ID.cat = "Millsap.Tein.2004"}. Used to indicate which thresholds
+##' @param ID.thr `integer`. Only relevant when
+##'   `ID.cat = "Millsap.Tein.2004"`. Used to indicate which thresholds
 ##'   should be constrained for identification. The first integer indicates the
 ##'   threshold used for all indicators, the second integer indicates the
 ##'   additional threshold constrained for a reference indicator (ignored if
 ##'   binary).
 ##'
-##' @param group optional \code{character} indicating the name of a grouping
+##' @param group optional `character` indicating the name of a grouping
 ##'   variable. See \code{\link[lavaan]{cfa}}.
 ##'
-##' @param group.equal optional \code{character} vector indicating type(s) of
-##'   parameter to equate across groups. Ignored if \code{is.null(group)}.
+##' @param group.equal optional `character` vector indicating type(s) of
+##'   parameter to equate across groups. Ignored if `is.null(group)`.
 ##'   See \code{\link[lavaan]{lavOptions}}.
 ##'
-##' @param group.partial optional \code{character} vector or a parameter table
-##'   indicating exceptions to \code{group.equal} (see
+##' @param group.partial optional `character` vector or a parameter table
+##'   indicating exceptions to `group.equal` (see
 ##'   \code{\link[lavaan]{lavOptions}}). Any variables not appearing in the
-##'   \code{configural.model} will be ignored, and any parameter constraints
+##'   `configural.model` will be ignored, and any parameter constraints
 ##'   needed for identification (e.g., two thresholds per indicator when
-##'   \code{ID.cat = "Millsap"}) will be removed.
+##'   `ID.cat = "Millsap"`) will be removed.
 ##'
-##' @param longFacNames optional named \code{list} of \code{character} vectors,
+##' @param longFacNames optional named `list` of `character` vectors,
 ##'   each indicating multiple factors in the model that are actually the same
-##'   construct measured repeatedly. See \strong{Details} and \strong{Examples}.
+##'   construct measured repeatedly. See **Details** and **Examples**.
 ##'
-##' @param longIndNames optional named \code{list} of \code{character} vectors,
+##' @param longIndNames optional named `list` of `character` vectors,
 ##'   each indicating multiple indicators in the model that are actually the
-##'   same indicator measured repeatedly. See \strong{Details} and
-##'   \strong{Examples}.
+##'   same indicator measured repeatedly. See **Details** and
+##'   **Examples**.
 ##'
-##' @param long.equal optional \code{character} vector indicating type(s) of
+##' @param long.equal optional `character` vector indicating type(s) of
 ##'   parameter to equate across repeated measures. Ignored if no factors are
-##'   indicated as repeatedly measured in \code{longFacNames}.
+##'   indicated as repeatedly measured in `longFacNames`.
 ##'
-##' @param long.partial optional \code{character} vector or a parameter table
-##'   indicating exceptions to \code{long.equal}. Any longitudinal variable
-##'   names not  appearing in \code{names(longFacNames)} or
-##'   \code{names(longIndNames)} will be ignored, and any parameter constraints
+##' @param long.partial optional `character` vector or a parameter table
+##'   indicating exceptions to `long.equal`. Any longitudinal variable
+##'   names not  appearing in `names(longFacNames)` or
+##'   `names(longIndNames)` will be ignored, and any parameter constraints
 ##'   needed for identification will be removed.
 ##'
 ##' @param auto Used to automatically included autocorrelated measurement errors
-##'   among repeatedly measured indicators in \code{longIndNames}. Specify a
-##'   single \code{integer} to set the maximum order (e.g., \code{auto = 1L}
+##'   among repeatedly measured indicators in `longIndNames`. Specify a
+##'   single `integer` to set the maximum order (e.g., `auto = 1L`
 ##'   indicates that an indicator's unique factors should only be correlated
-##'   between adjacently measured occasions). \code{auto = TRUE} or \code{"all"}
+##'   between adjacently measured occasions). `auto = TRUE` or `"all"`
 ##'   will specify residual covariances among all possible lags per repeatedly
-##'   measured indicator in \code{longIndNames}.
+##'   measured indicator in `longIndNames`.
 ##'
-##' @param warn,debug \code{logical}. Passed to \code{\link[lavaan]{lavaan}}
+##' @param warn,debug `logical`. Passed to \code{\link[lavaan]{lavaan}}
 ##'   and \code{\link[lavaan]{lavParseModelString}}.
 ##'   See \code{\link[lavaan]{lavOptions}}.
 ##'
-##' @param return.fit \code{logical} indicating whether the generated syntax
-##'   should be fitted to the provided \code{data} (or summary statistics, if
-##'   provided via \code{sample.cov}). If \code{configural.model} is a fitted
-##'   lavaan model, the generated syntax will be fitted using the \code{update}
+##' @param return.fit `logical` indicating whether the generated syntax
+##'   should be fitted to the provided `data` (or summary statistics, if
+##'   provided via `sample.cov`). If `configural.model` is a fitted
+##'   lavaan model, the generated syntax will be fitted using the `update`
 ##'   method (see \code{\linkS4class{lavaan}}), and \dots will be passed to
 ##'   \code{\link[lavaan]{lavaan}}. If neither data nor a fitted lavaan model
-##'   were provided, this must be \code{FALSE}. If \code{TRUE}, the generated
-##'   \code{measEq.syntax} object will be included in the \code{lavaan} object's
-##'   \code{@@external} slot, accessible by \code{fit@@external$measEq.syntax}.
+##'   were provided, this must be `FALSE`. If `TRUE`, the generated
+##'   `measEq.syntax` object will be included in the `lavaan` object's
+##'   `@@external` slot, accessible by `fit@@external$measEq.syntax`.
 ##'
 ##' @return By default, an object of class \code{\linkS4class{measEq.syntax}}.
-##'   If \code{return.fit = TRUE}, a fitted \code{\link[lavaan]{lavaan}}
-##'   model, with the \code{measEq.syntax} object stored in the
-##'   \code{@@external} slot, accessible by \code{fit@@external$measEq.syntax}.
+##'   If `return.fit = TRUE`, a fitted \code{\link[lavaan]{lavaan}}
+##'   model, with the `measEq.syntax` object stored in the
+##'   `@@external` slot, accessible by `fit@@external$measEq.syntax`.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
@@ -977,21 +977,21 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' @references
 ##'   Kloessner, S., & Klopp, E. (2019). Explaining constraint interaction: How
 ##'   to interpret estimated model parameters under alternative scaling methods.
-##'   \emph{Structural Equation Modeling, 26}(1), 143--155.
+##'   *Structural Equation Modeling, 26*(1), 143--155.
 ##'   \doi{10.1080/10705511.2018.1517356}
 ##'
 ##'   Liu, Y., Millsap, R. E., West, S. G., Tein, J.-Y., Tanaka, R., & Grimm,
 ##'   K. J. (2017). Testing measurement invariance in longitudinal data with
-##'   ordered-categorical measures. \emph{Psychological Methods, 22}(3),
+##'   ordered-categorical measures. *Psychological Methods, 22*(3),
 ##'   486--506. \doi{10.1037/met0000075}
 ##'
 ##'   Millsap, R. E., & Tein, J.-Y. (2004). Assessing factorial invariance in
-##'   ordered-categorical measures. \emph{Multivariate Behavioral Research, 39}(3),
+##'   ordered-categorical measures. *Multivariate Behavioral Research, 39*(3),
 ##'   479--515. \doi{10.1207/S15327906MBR3903_4}
 ##'
 ##'   Wu, H., & Estabrook, R. (2016). Identification of confirmatory factor
 ##'   analysis models of different levels of invariance for ordered categorical
-##'   outcomes. \emph{Psychometrika, 81}(4), 1014--1045.
+##'   outcomes. *Psychometrika, 81*(4), 1014--1045.
 ##'   \doi{10.1007/s11336-016-9506-0}
 ##'
 ##' @examples

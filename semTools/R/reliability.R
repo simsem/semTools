@@ -30,17 +30,17 @@
 ##' @param object A \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model). Cross-loadings are not
-##'   allowed and will result in \code{NA} for any factor with indicator(s)
+##'   allowed and will result in `NA` for any factor with indicator(s)
 ##'   that cross-load.
-##' @param obs.var \code{logical} indicating whether to compute AVE using
-##'   observed variances in the denominator. Setting \code{FALSE} triggers
+##' @param obs.var `logical` indicating whether to compute AVE using
+##'   observed variances in the denominator. Setting `FALSE` triggers
 ##'   using model-implied variances in the denominator.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
-##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'   default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
-##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
 ##'   as Heywood cases.  NPD solutions are not excluded by default because
@@ -49,21 +49,21 @@
 ##'   NPD solutions, users can compare pooled results with and without
 ##'   this setting as a sensitivity analysis to see whether some
 ##'   imputations warrant further investigation.
-##' @param omit.factors \code{character} vector naming any common factors
-##'   modeled in \code{object} whose indicators' AVE is not of interest.
-##' @param dropSingle \code{logical} indicating whether to exclude factors
-##'   defined by a single indicator from the returned results. If \code{TRUE}
-##'   (default), single indicators will still be included in the \code{total}
-##'   column when \code{return.total = TRUE}.
-##' @param return.df \code{logical} indicating whether to return reliability
-##'   coefficients in a \code{data.frame} (one row per group/level), which is
+##' @param omit.factors `character` vector naming any common factors
+##'   modeled in `object` whose indicators' AVE is not of interest.
+##' @param dropSingle `logical` indicating whether to exclude factors
+##'   defined by a single indicator from the returned results. If `TRUE`
+##'   (default), single indicators will still be included in the `total`
+##'   column when `return.total = TRUE`.
+##' @param return.df `logical` indicating whether to return reliability
+##'   coefficients in a `data.frame` (one row per group/level), which is
 ##'   possible when every model block includes the same factors (after excluding
-##'   those in \code{omit.factors} and applying \code{dropSingle}).
+##'   those in `omit.factors` and applying `dropSingle`).
 ##'
-##' @return \code{numeric} vector of average variance extracted from indicators
+##' @return `numeric` vector of average variance extracted from indicators
 ##'   per factor.  For models with multiple "blocks" (any combination of groups
-##'   and levels), vectors may be returned as columns in a \code{data.frame}
-##'   with additional columns indicating the group/level (see \code{return.df=}
+##'   and levels), vectors may be returned as columns in a `data.frame`
+##'   with additional columns indicating the group/level (see `return.df=`
 ##'   argument description for caveat).
 ##'
 ##' @author
@@ -71,8 +71,8 @@
 ##'
 ##' @references
 ##' Fornell, C., & Larcker, D. F. (1981). Evaluating structural equation models
-##' with unobservable variables and measurement errors. \emph{Journal of
-##' Marketing Research, 18}(1), 39--50. \doi{10.2307/3151312}
+##' with unobservable variables and measurement errors. *Journal of
+##' Marketing Research, 18*(1), 39--50. \doi{10.2307/3151312}
 ##'
 ##' @seealso \code{\link{compRelSEM}} for composite reliability estimates
 ##'
@@ -320,7 +320,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' Bentler (1968) first introduced factor-analysis reliability for a
 ##' unidimensional factor model with congeneric indicators, labeling the
 ##' coeficients \eqn{\alpha}.  McDonald (1999) later referred to this
-##' \emph{and other reliability coefficients}, first as \eqn{\theta} (in 1970),
+##' *and other reliability coefficients*, first as \eqn{\theta} (in 1970),
 ##' then as \eqn{\omega}, which is a source of confusion when reporting
 ##' coefficients (Cho, 2021).  Coefficients based on factor models were later
 ##' generalized to account for multidimenisionality (possibly with
@@ -333,13 +333,13 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' where \eqn{\hat{\Sigma}} can be the model-implied covariance matrix from
 ##' either the saturated model (i.e., the "observed" covariance matrix, used by
 ##' default) or from the hypothesized CFA model, controlled by the
-##' \code{obs.var} argument. A \eqn{k}-dimensional vector \eqn{\bold{1}} is used
+##' `obs.var` argument. A \eqn{k}-dimensional vector \eqn{\bold{1}} is used
 ##' to sum elements in the matrix. Note that if the model includes any directed
 ##' effects (latent regression slopes), all coefficients are calculated
-##' from \bold{total} factor variances:
+##' from **total** factor variances:
 ##' \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
 ##'
-##' Assuming (essential) tau-equivalence (\code{tau.eq=TRUE}) makes \eqn{\omega}
+##' Assuming (essential) tau-equivalence (`tau.eq=TRUE`) makes \eqn{\omega}
 ##' equivalent to coefficient \eqn{\alpha} from classical test theory
 ##' (Cronbach, 1951):
 ##'
@@ -348,17 +348,17 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' \right],}
 ##'
 ##' where \eqn{k} is the number of items in a factor's composite,
-##' \eqn{\sigma_{ii}} signifies item \emph{i}'s variance, and \eqn{\sigma_{ij}}
-##' signifies the covariance between items \emph{i} and \emph{j}. Again, the
-##' \code{obs.var} argument controls whether \eqn{\alpha} is calculated using
+##' \eqn{\sigma_{ii}} signifies item *i*'s variance, and \eqn{\sigma_{ij}}
+##' signifies the covariance between items *i* and *j*. Again, the
+##' `obs.var` argument controls whether \eqn{\alpha} is calculated using
 ##' the observed or model-implied covariance matrix.
 ##'
-##' By setting \code{return.total=TRUE}, one can estimate reliability for a
+##' By setting `return.total=TRUE`, one can estimate reliability for a
 ##' single composite calculated using all indicators in a multidimensional
-##' CFA (Bentler, 1972, 2009). Setting \code{return.total = -1} will return
-##' \bold{only} the total-composite reliability (not per factor).
+##' CFA (Bentler, 1972, 2009). Setting `return.total = -1` will return
+##' **only** the total-composite reliability (not per factor).
 ##'
-##' \bold{Higher-Order Factors}:
+##' **Higher-Order Factors**:
 ##' The reliability of a composite that represents a higher-order construct
 ##' requires partitioning the model-implied factor covariance matrix \eqn{\Phi}
 ##' in order to isolate the common-factor variance associated only with the
@@ -388,42 +388,42 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' \deqn{\omega=\frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi \bold{B}^{\prime}
 ##'   \Lambda^{\prime} \bold{1} }{ \bold{1}^{\prime} \hat{\Sigma} \bold{1}}, }
 ##'
-##' where \eqn{\bold{1}} is the \emph{k}-dimensional vector of 1s and \emph{k}
+##' where \eqn{\bold{1}} is the *k*-dimensional vector of 1s and *k*
 ##' is the number of observed indicators in the composite. Note that if a
 ##' higher-order factor also has observed indicators, it is necessary to model
 ##' the observed indicators as single-indicator constructs, so that all of the
 ##' higher-order factor indicators are latent (with loadings in the Beta matrix,
 ##' not Lambda).
 ##'
-##' \bold{Categorical Indicators}:
-##' When all indicators (per composite) are ordinal, the \code{ord.scale}
+##' **Categorical Indicators**:
+##' When all indicators (per composite) are ordinal, the `ord.scale`
 ##' argument controls whether the coefficient is calculated on the
-##' latent-response scale (\code{FALSE}) or on the observed ordinal scale
-##' (\code{TRUE}, the default).  For \eqn{\omega}-type coefficients
-##' (\code{tau.eq=FALSE}), Green and Yang's (2009, formula 21) approach is used
+##' latent-response scale (`FALSE`) or on the observed ordinal scale
+##' (`TRUE`, the default).  For \eqn{\omega}-type coefficients
+##' (`tau.eq=FALSE`), Green and Yang's (2009, formula 21) approach is used
 ##' to transform factor-model results back to the ordinal response scale. When
-##' \code{ord.scale=TRUE} and \code{tau.eq=TRUE}, coefficient \eqn{\alpha} is
+##' `ord.scale=TRUE` and `tau.eq=TRUE`, coefficient \eqn{\alpha} is
 ##' calculated using the covariance matrix calculated from the integer-valued
 ##' numeric weights for ordinal categories, consistent with its definition
-##' (Chalmers, 2018) and the \code{alpha} function in the \code{psych} package;
-##' this implies \code{obs.var=TRUE}, so \code{obs.var=FALSE} will be ignored
-##' When \code{ord.scale=FALSE}, the standard \eqn{\alpha} formula is applied to
+##' (Chalmers, 2018) and the `alpha` function in the `psych` package;
+##' this implies `obs.var=TRUE`, so `obs.var=FALSE` will be ignored
+##' When `ord.scale=FALSE`, the standard \eqn{\alpha} formula is applied to
 ##' the polychoric correlation matrix ("ordinal \eqn{\alpha}"; Zumbo et al., 2007),
-##' estimated from the saturated or hypothesized model (see \code{obs.var}),
+##' estimated from the saturated or hypothesized model (see `obs.var`),
 ##' and \eqn{\omega} is calculated from CFA results without applying Green and
 ##' Yang's (2009) correction (see Zumbo & Kroc, 2019, for a rationalization).
 ##' No method analogous to Green and Yang (2009) has been proposed for
 ##' calculating reliability with a mixture of categorical and continuous
-##' indicators, so an error is returned if \code{object} includes factors with a
-##' mixture of indicator types (unless omitted using \code{omit.factors}). If
+##' indicators, so an error is returned if `object` includes factors with a
+##' mixture of indicator types (unless omitted using `omit.factors`). If
 ##' categorical indicators load on a different factor(s) than continuous
 ##' indicators, then reliability will still be calculated separately for those
-##' factors, but \code{return.total} must be \code{FALSE} (unless
-##' \code{omit.factors} is used to isolate factors with indicators of the same
+##' factors, but `return.total` must be `FALSE` (unless
+##' `omit.factors` is used to isolate factors with indicators of the same
 ##' type).
 ##'
-##' \bold{Multilevel Measurement Models}:
-##' Under the default settings, \code{compRelSEM()} will apply the same formula
+##' **Multilevel Measurement Models**:
+##' Under the default settings, `compRelSEM()` will apply the same formula
 ##' in each "block" (group and/or level of analysis). In the case of multilevel
 ##' (ML-)SEMs, this yields "reliability" for latent within- and between-level
 ##' components, as proposed by Geldhof et al. (2014).  Although this works fine
@@ -433,19 +433,19 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' reliability of actual composites, depending on the type of construct, which
 ##' requires specifying the names of constructs for which reliability is desired
 ##' (or multiple constructs whose indicators would compose a multidimensional
-##' composite). Configural (\code{config=}) and/or \code{shared=} constructs
+##' composite). Configural (`config=`) and/or `shared=` constructs
 ##' can be specified; the same construct can be specified in both arguments, so
 ##' that overall scale-reliability can be estimated for a shared construct by
-##' including it in \code{config}.  Instead of organizing the output by block
-##' (the default), specifying \code{config=} and/or \code{shared=} will prompt
-##' organizing the list of output by \code{$config} and/or \code{$shared}.
+##' including it in `config`.  Instead of organizing the output by block
+##' (the default), specifying `config=` and/or `shared=` will prompt
+##' organizing the list of output by `$config` and/or `$shared`.
 ##'
 ##' \itemize{
-##'   \item The overall (\code{_2L}) scale reliability for \code{config}ural
+##'   \item The overall (`_2L`) scale reliability for `config`ural
 ##'   constructs is returned, along with the reliability of a purely
-##'   individual-level composite (\code{_W}, calculated by cluster-mean
+##'   individual-level composite (`_W`, calculated by cluster-mean
 ##'   centering).
-##'   \item The reliability for a \code{shared} construct quantifies
+##'   \item The reliability for a `shared` construct quantifies
 ##'   generalizability across both indicators and raters (i.e., subjects rating
 ##'   their cluster's construct).  Lüdtke et al. (2011) refer to these as
 ##'   measurement error and sampling error, respectively.  An interrater
@@ -453,20 +453,20 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   generalizability across rater/sampling-error only. To obtain a
 ##'   scale-reliability coefficient (quantifying a shared construct's
 ##'   generalizability across indicator/measurement-error only), include the
-##'   same factor name in \code{config=}.  Jak et al. (2021) recommended
+##'   same factor name in `config=`.  Jak et al. (2021) recommended
 ##'   modeling components of the same construct at both levels, but users may
 ##'   also saturate the within-level model (Lai, 2021).
 ##' }
 ##'
 ##' Be careful about including Level-2 variables in the model, especially
 ##' whether it makes sense to include them in a total composite for a Level-2
-##' construct.  \code{dropSingle=TRUE} only prevents estimating reliability for
+##' construct.  `dropSingle=TRUE` only prevents estimating reliability for
 ##' a single-indicator construct, not from including such an indicator in a
-##' total composite.  It is permissible for \code{shared=} constructs to have
+##' total composite.  It is permissible for `shared=` constructs to have
 ##' additional indicators at Level-2 only.  If it is necessary to model other
 ##' Level-2 variables (e.g., to justify the missing-at-random assumption when
-##' using \code{missing="FIML" estimation}), they should be placed in the
-##' \code{omit.indicators=} argument to exclude them from total composites.
+##' using `missing="FIML" estimation`), they should be placed in the
+##' `omit.indicators=` argument to exclude them from total composites.
 ##'
 ##'
 ##' @importFrom lavaan lavInspect lavNames parTable
@@ -475,27 +475,27 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' @param object A \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
-##' @param obs.var \code{logical} indicating whether to compute reliability
-##'   using observed variances in the denominator. Setting \code{FALSE} triggers
+##' @param obs.var `logical` indicating whether to compute reliability
+##'   using observed variances in the denominator. Setting `FALSE` triggers
 ##'   using model-implied variances in the denominator.
-##' @param tau.eq \code{logical} indicating whether to assume (essential)
+##' @param tau.eq `logical` indicating whether to assume (essential)
 ##'   tau-equivalence, yielding a coefficient analogous to \eqn{\alpha}.
-##'   Setting \code{FALSE} yields an \eqn{\omega}-type coefficient.
-##' @param ord.scale \code{logical} indicating whether to apply Green and Yang's
+##'   Setting `FALSE` yields an \eqn{\omega}-type coefficient.
+##' @param ord.scale `logical` indicating whether to apply Green and Yang's
 ##'   (2009, formula 21) correction, so that reliability is calculated for the
 ##'   actual ordinal response scale (ignored for factors with continuous
-##'   indicators).  Setting \code{FALSE} yields coefficients that are
+##'   indicators).  Setting `FALSE` yields coefficients that are
 ##'   only applicable to the continuous latent-response scale.
-##' @param config \code{character} vector naming any configural constructs in
+##' @param config `character` vector naming any configural constructs in
 ##'   a multilevel CFA. For these constructs (and optional total composite),
 ##'   Lai's (2021) coefficients \eqn{\omega^\textrm{W}} and \eqn{\omega^\textrm{2L}}
 ##'   are returned (or corresponding \eqn{\alpha} coefficients when
-##'   \code{tau.eq=TRUE}), rather than Geldhof et al.'s (2014) coefficients for
+##'   `tau.eq=TRUE`), rather than Geldhof et al.'s (2014) coefficients for
 ##'   hypothetical composites of latent components (although the same formula
 ##'   is used for \eqn{\omega^\textrm{W}} in either case). Note that the same name
 ##'   must be used for the factor component represented at each level of the
 ##'   model.
-##' @param shared \code{character} vector naming any shared constructs in
+##' @param shared `character` vector naming any shared constructs in
 ##'   a multilevel CFA. For these constructs (and optional total composite),
 ##'   Lai's (2021) coefficient \eqn{\omega^\textrm{B}} or \eqn{\alpha^\textrm{B}} is
 ##'   returned, rather than Geldhof et al.'s (2014) between-level coefficient
@@ -507,44 +507,44 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   (IRR) coefficient is also returned, quantifying reliability relative to
 ##'   rater/sampling error alone.  To quantify reliability relative to
 ##'   indicator/measurement error alone (i.e., \eqn{\omega^\textrm{2L}}), the
-##'   \code{shared=} construct name(s) can additionally be included in
-##'   \code{config=} argument.
-##' @param higher \code{character} vector naming any higher-order constructs in
-##'   \code{object} for which composite reliability should be calculated.
-##'   Ignored when \code{tau.eq=TRUE} because alpha is not based on a CFA model;
+##'   `shared=` construct name(s) can additionally be included in
+##'   `config=` argument.
+##' @param higher `character` vector naming any higher-order constructs in
+##'   `object` for which composite reliability should be calculated.
+##'   Ignored when `tau.eq=TRUE` because alpha is not based on a CFA model;
 ##'   instead, users must fit a CFA with tau-equivalence constraints.
 ##'   To obtain Lai's (2021) multilevel composite-reliability indices for a
 ##'   higher-order factor, do not use this argument; instead, specify the
-##'   higher-order factor(s) using the \code{shared=} or \code{config=} argument
-##'   (\code{compRelSEM} will automatically check whether it includes latent
+##'   higher-order factor(s) using the `shared=` or `config=` argument
+##'   (`compRelSEM` will automatically check whether it includes latent
 ##'   indicators and apply the appropriate formula).
-##' @param return.total \code{logical} indicating whether to return a final
+##' @param return.total `logical` indicating whether to return a final
 ##'   column containing the reliability of a composite of all indicators (not
-##'   listed in \code{omit.indicators}) of first-order factors not listed in
-##'   \code{omit.factors}.  Ignored in 1-factor models, and should only be set
-##'   \code{TRUE} if all factors represent scale dimensions that could be
+##'   listed in `omit.indicators`) of first-order factors not listed in
+##'   `omit.factors`.  Ignored in 1-factor models, and should only be set
+##'   `TRUE` if all factors represent scale dimensions that could be
 ##'   meaningfully collapsed to a single composite (scale sum or scale mean).
-##'   Setting a negative value (e.g., \code{-1} returns \bold{only} the
+##'   Setting a negative value (e.g., `-1` returns **only** the
 ##'   total-composite reliability (excluding coefficients per factor), except
-##'   when requesting Lai's (2021) coefficients for multilevel \code{config}ural
-##'   or \code{shared=} constructs.
-##' @param dropSingle \code{logical} indicating whether to exclude factors
-##'   defined by a single indicator from the returned results. If \code{TRUE}
-##'   (default), single indicators will still be included in the \code{total}
-##'   column when \code{return.total = TRUE}.
-##' @param omit.factors \code{character} vector naming any common factors
-##'   modeled in \code{object} whose composite reliability is not of
+##'   when requesting Lai's (2021) coefficients for multilevel `config`ural
+##'   or `shared=` constructs.
+##' @param dropSingle `logical` indicating whether to exclude factors
+##'   defined by a single indicator from the returned results. If `TRUE`
+##'   (default), single indicators will still be included in the `total`
+##'   column when `return.total = TRUE`.
+##' @param omit.factors `character` vector naming any common factors
+##'   modeled in `object` whose composite reliability is not of
 ##'   interest. For example, higher-order or method factors. Note that
 ##'   \code{\link{reliabilityL2}()} should be used to calculate composite
 ##'   reliability of a higher-order factor.
-##' @param omit.indicators \code{character} vector naming any observed variables
+##' @param omit.indicators `character` vector naming any observed variables
 ##'   that should be omitted from the composite whose reliability is calculated.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
-##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'   default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
-##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
 ##'   as Heywood cases.  NPD solutions are not excluded by default because
@@ -553,87 +553,87 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   NPD solutions, users can compare pooled results with and without
 ##'   this setting as a sensitivity analysis to see whether some
 ##'   imputations warrant further investigation.
-##' @param return.df \code{logical} indicating whether to return reliability
-##'   coefficients in a \code{data.frame} (one row per group/level), which is
+##' @param return.df `logical` indicating whether to return reliability
+##'   coefficients in a `data.frame` (one row per group/level), which is
 ##'   possible when every model block includes the same factors (after excluding
-##'   those in \code{omit.factors} and applying \code{dropSingle}).
+##'   those in `omit.factors` and applying `dropSingle`).
 ##'
-##' @return A \code{numeric} vector of composite reliability coefficients per
-##'   factor, or a \code{list} of vectors per "block" (group and/or level of
-##'   analysis), optionally returned as a \code{data.frame} when possible (see
-##'   \code{return.df=} argument description for caveat). If there are multiple
+##' @return A `numeric` vector of composite reliability coefficients per
+##'   factor, or a `list` of vectors per "block" (group and/or level of
+##'   analysis), optionally returned as a `data.frame` when possible (see
+##'   `return.df=` argument description for caveat). If there are multiple
 ##'   factors, whose multidimensional indicators combine into a single
-##'   composite, users can request \code{return.total=TRUE} to add a column
+##'   composite, users can request `return.total=TRUE` to add a column
 ##'   including a reliability coefficient for the total composite, or
-##'   \code{return.total = -1} to return \bold{only} the total-composite
-##'   reliability (ignored when \code{config=} or \code{shared=} is specified
+##'   `return.total = -1` to return **only** the total-composite
+##'   reliability (ignored when `config=` or `shared=` is specified
 ##'   because each factor's specification must be checked across levels).
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##'   Uses hidden functions written by Sunthud Pornprasertmanit
-##'   (\email{psunthud@@gmail.com}) for the old \code{reliability()} function.
+##'   (\email{psunthud@@gmail.com}) for the old `reliability()` function.
 ##'
 ##' @seealso
 ##' \code{\link{maximalRelia}} for the maximal reliability of weighted composite
 ##'
 ##' @references
 ##' Bentler, P. M. (1968). Alpha-maximized factor analysis (alphamax): Its
-##' relation to alpha and canonical factor analysis. \emph{Psychometrika, 33}(3),
+##' relation to alpha and canonical factor analysis. *Psychometrika, 33*(3),
 ##' 335--345. \doi{10.1007/BF02289328}
 ##'
 ##' Bentler, P. M. (1972). A lower-bound method for the dimension-free
-##' measurement of internal consistency. \emph{Social Science Research, 1}(4),
+##' measurement of internal consistency. *Social Science Research, 1*(4),
 ##' 343--357. \doi{10.1016/0049-089X(72)90082-8}
 ##'
 ##' Bentler, P. M. (2009). Alpha, dimension-free, and model-based internal
-##' consistency reliability. \emph{Psychometrika, 74}(1), 137--143.
+##' consistency reliability. *Psychometrika, 74*(1), 137--143.
 ##' \doi{10.1007/s11336-008-9100-1}
 ##'
 ##' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of
-##' ordinal alpha. \emph{Educational and Psychological Measurement, 78}(6),
+##' ordinal alpha. *Educational and Psychological Measurement, 78*(6),
 ##' 1056--1071. \doi{10.1177/0013164417727036}
 ##'
 ##' Cho, E. (2021) Neither Cronbach’s alpha nor McDonald’s omega: A commentary
-##' on Sijtsma and Pfadt. \emph{Psychometrika, 86}(4), 877--886.
+##' on Sijtsma and Pfadt. *Psychometrika, 86*(4), 877--886.
 ##' \doi{10.1007/s11336-021-09801-1}
 ##'
 ##' Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
-##' tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
+##' tests. *Psychometrika, 16*(3), 297--334. \doi{10.1007/BF02310555}
 ##'
 ##' Geldhof, G. J., Preacher, K. J., & Zyphur, M. J. (2014). Reliability
 ##' estimation in a multilevel confirmatory factor analysis framework.
-##' \emph{Psychological Methods, 19}(1), 72--91. \doi{10.1037/a0032138}
+##' *Psychological Methods, 19*(1), 72--91. \doi{10.1037/a0032138}
 ##'
 ##' Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using
 ##' structural equation modeling: An alternative to coefficient alpha.
-##' \emph{Psychometrika, 74}(1), 155--167. \doi{10.1007/s11336-008-9099-3}
+##' *Psychometrika, 74*(1), 155--167. \doi{10.1007/s11336-008-9099-3}
 ##'
 ##' Jak, S., Jorgensen, T. D., & Rosseel, Y. (2021). Evaluating cluster-level
-##' factor models with \code{lavaan} and M\emph{plus}. \emph{Psych, 3}(2),
+##' factor models with `lavaan` and M*plus*. *Psych, 3*(2),
 ##' 134--152. \doi{10.3390/psych3020012}
 ##'
 ##' Lai, M. H. C. (2021). Composite reliability of multilevel data: It’s about
-##' observed scores and construct meanings. \emph{Psychological Methods, 26}(1),
+##' observed scores and construct meanings. *Psychological Methods, 26*(1),
 ##' 90--102. \doi{10.1037/met0000287}
 ##'
 ##' Lüdtke, O., Marsh, H. W., Robitzsch, A., & Trautwein, U. (2011).
 ##' A 2 \eqn{\times} 2 taxonomy of multilevel latent contextual models:
 ##' Accuracy--bias trade-offs in full and partial error correction models.
-##' \emph{Psychological Methods, 16}(4), 444--467. \doi{10.1037/a0024376}
+##' *Psychological Methods, 16*(4), 444--467. \doi{10.1037/a0024376}
 ##'
-##' McDonald, R. P. (1999). \emph{Test theory: A unified treatment}. Mahwah, NJ:
+##' McDonald, R. P. (1999). *Test theory: A unified treatment*. Mahwah, NJ:
 ##' Erlbaum.
 ##'
 ##' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of
 ##' coefficients alpha and theta for Likert rating scales.
-##' \emph{Journal of Modern Applied Statistical Methods, 6}(1), 21--29.
+##' *Journal of Modern Applied Statistical Methods, 6*(1), 21--29.
 ##' \doi{10.22237/jmasm/1177992180}
 ##'
 ##' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens’
 ##' scales of measurement do not help make it: A response to Chalmers.
-##' \emph{Educational and Psychological Measurement, 79}(6), 1184--1197.
+##' *Educational and Psychological Measurement, 79*(6), 1184--1197.
 ##' \doi{10.1177/0013164419844305}
 ##'
 ##'
@@ -1483,8 +1483,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' \right],}
 ##'
 ##' where \eqn{k} is the number of items in a factor, \eqn{\sigma_{ii}} is the
-##' item \emph{i} observed variances, \eqn{\sigma_{ij}} is the observed
-##' covariance of items \emph{i} and \emph{j}.
+##' item *i* observed variances, \eqn{\sigma_{ij}} is the observed
+##' covariance of items *i* and *j*.
 ##'
 ##' Several coefficients for factor-analysis reliability have been termed
 ##' "omega", which Cho (2021) argues is a misleading misnomer and argues for
@@ -1500,18 +1500,18 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' Var\left( \psi \right) + \sum^{k}_{i = 1} \theta_{ii} + 2\sum_{i < j}
 ##' \theta_{ij} }, }
 ##'
-##' where \eqn{\lambda_i} is the factor loading of item \emph{i}, \eqn{\psi} is
+##' where \eqn{\lambda_i} is the factor loading of item *i*, \eqn{\psi} is
 ##' the factor variance, \eqn{\theta_{ii}} is the variance of measurement errors
-##' of item \emph{i}, and \eqn{\theta_{ij}} is the covariance of measurement
-##' errors from item \emph{i} and \emph{j}. McDonald (1999) later referred to
-##' this \emph{and other reliability coefficients} as "omega", which is a source
+##' of item *i*, and \eqn{\theta_{ij}} is the covariance of measurement
+##' errors from item *i* and *j*. McDonald (1999) later referred to
+##' this *and other reliability coefficients* as "omega", which is a source
 ##' of confusion when reporting coefficients (Cho, 2021).
 ##'
 ##' The additional coefficients generalize the first formula by accounting for
 ##' multidimenisionality (possibly with cross-loadings) and correlated errors.
-##' By setting \code{return.total=TRUE}, one can estimate reliability for a
+##' By setting `return.total=TRUE`, one can estimate reliability for a
 ##' single composite calculated using all indicators in the multidimensional
-##' CFA (Bentler, 1972, 2009).  \code{"omega2"} is calculated by
+##' CFA (Bentler, 1972, 2009).  `"omega2"` is calculated by
 ##'
 ##' \deqn{ \omega_2 = \frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
 ##' Var\left( \psi \right)}{\bold{1}^\prime \hat{\Sigma} \bold{1}}, }
@@ -1525,7 +1525,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' ANOVA). The second coefficient omega can be viewed as the unconditional
 ##' reliability (like \eqn{\eta^2} in ANOVA).
 ##'
-##' The \code{"omega3"} coefficient (McDonald, 1999), sometimes referred to as
+##' The `"omega3"` coefficient (McDonald, 1999), sometimes referred to as
 ##' hierarchical omega, can be calculated by
 ##'
 ##' \deqn{ \omega_3 =\frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
@@ -1561,8 +1561,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' polychoric correlations when ordinal indicators are used.
 ##'
 ##' Coefficient alpha is by definition applied by treating indicators as numeric
-##' (see Chalmers, 2018), which is consistent with the \code{alpha} function in
-##' the \code{psych} package. When indicators are ordinal, \code{reliability}
+##' (see Chalmers, 2018), which is consistent with the `alpha` function in
+##' the `psych` package. When indicators are ordinal, `reliability`
 ##' additionally applies the standard alpha calculation to the polychoric
 ##' correlation matrix to return Zumbo et al.'s (2007) "ordinal alpha".
 ##'
@@ -1573,11 +1573,11 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' Green and Yang did not propose a method for
 ##' calculating reliability with a mixture of categorical and continuous
 ##' indicators, and we are currently unaware of an appropriate method.
-##' Therefore, when \code{reliability} detects both categorical and continuous
+##' Therefore, when `reliability` detects both categorical and continuous
 ##' indicators of a factor, an error is returned. If the categorical indicators
 ##' load on a different factor(s) than continuous indicators, then reliability
 ##' will still be calculated separately for those factors, but
-##' \code{return.total} must be \code{FALSE} (unless \code{omit.factors} is used
+##' `return.total` must be `FALSE` (unless `omit.factors` is used
 ##' to isolate factors with indicators of the same type).
 ##'
 ##'
@@ -1587,36 +1587,36 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' @param object A \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
-##' @param what \code{character} vector naming any reliability indices to
+##' @param what `character` vector naming any reliability indices to
 ##'   calculate. All are returned by default. When indicators are ordinal,
-##'   both traditional \code{"alpha"} and Zumbo et al.'s (2007) so-called
-##'   "ordinal alpha" (\code{"alpha.ord"}) are returned, though the latter is
+##'   both traditional `"alpha"` and Zumbo et al.'s (2007) so-called
+##'   "ordinal alpha" (`"alpha.ord"`) are returned, though the latter is
 ##'   arguably of dubious value (Chalmers, 2018).
-##' @param return.total \code{logical} indicating whether to return a final
+##' @param return.total `logical` indicating whether to return a final
 ##'   column containing the reliability of a composite of all indicators (not
-##'   listed in \code{omit.indicators}) of factors not listed in
-##'   \code{omit.factors}.  Ignored in 1-factor models, and should only be set
-##'   \code{TRUE} if all factors represent scale dimensions that could be
+##'   listed in `omit.indicators`) of factors not listed in
+##'   `omit.factors`.  Ignored in 1-factor models, and should only be set
+##'   `TRUE` if all factors represent scale dimensions that could be
 ##'   meaningfully collapsed to a single composite (scale sum or scale mean).
-##' @param dropSingle \code{logical} indicating whether to exclude factors
-##'   defined by a single indicator from the returned results. If \code{TRUE}
-##'   (default), single indicators will still be included in the \code{total}
-##'   column when \code{return.total = TRUE}.
-##' @param omit.factors \code{character} vector naming any common factors
-##'   modeled in \code{object} whose composite reliability is not of
+##' @param dropSingle `logical` indicating whether to exclude factors
+##'   defined by a single indicator from the returned results. If `TRUE`
+##'   (default), single indicators will still be included in the `total`
+##'   column when `return.total = TRUE`.
+##' @param omit.factors `character` vector naming any common factors
+##'   modeled in `object` whose composite reliability is not of
 ##'   interest. For example, higher-order or method factors. Note that
 ##'   \code{\link{reliabilityL2}()} should be used to calculate composite
 ##'   reliability of a higher-order factor.
-##' @param omit.indicators \code{character} vector naming any observed variables
+##' @param omit.indicators `character` vector naming any observed variables
 ##'   that should be ignored when calculating composite reliability. This can
 ##'   be useful, for example, to estimate reliability when an indicator is
 ##'   removed.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
-##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'   default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
-##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
 ##'   as Heywood cases.  NPD solutions are not excluded by default because
@@ -1628,7 +1628,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##'
 ##' @return Reliability values (coefficient alpha, coefficients omega, average
 ##'   variance extracted) of each factor in each group. If there are multiple
-##'   factors, a \code{total} column can optionally be included.
+##'   factors, a `total` column can optionally be included.
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
@@ -1638,15 +1638,15 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##'
 ##' @references
 ##' Bentler, P. M. (1972). A lower-bound method for the dimension-free
-##' measurement of internal consistency. \emph{Social Science Research, 1}(4),
+##' measurement of internal consistency. *Social Science Research, 1*(4),
 ##' 343--357. \doi{10.1016/0049-089X(72)90082-8}
 ##'
 ##' Bentler, P. M. (2009). Alpha, dimension-free, and model-based internal
-##' consistency reliability. \emph{Psychometrika, 74}(1), 137--143.
+##' consistency reliability. *Psychometrika, 74*(1), 137--143.
 ##' \doi{10.1007/s11336-008-9100-1}
 ##'
 ##' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of
-##' ordinal alpha. \emph{Educational and Psychological Measurement, 78}(6),
+##' ordinal alpha. *Educational and Psychological Measurement, 78*(6),
 ##' 1056--1071. \doi{10.1177/0013164417727036}
 ##'
 ##' Cho, E. (2021) Neither Cronbach’s alpha nor McDonald’s omega: A commentary
@@ -1654,32 +1654,32 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' \doi{10.1007/s11336-021-09801-1}
 ##'
 ##' Cronbach, L. J. (1951). Coefficient alpha and the internal structure of
-##' tests. \emph{Psychometrika, 16}(3), 297--334. \doi{10.1007/BF02310555}
+##' tests. *Psychometrika, 16*(3), 297--334. \doi{10.1007/BF02310555}
 ##'
 ##' Fornell, C., & Larcker, D. F. (1981). Evaluating structural equation models
-##' with unobservable variables and measurement errors. \emph{Journal of
-##' Marketing Research, 18}(1), 39--50. \doi{10.2307/3151312}
+##' with unobservable variables and measurement errors. *Journal of
+##' Marketing Research, 18*(1), 39--50. \doi{10.2307/3151312}
 ##'
 ##' Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using
 ##' structural equation modeling: An alternative to coefficient alpha.
-##' \emph{Psychometrika, 74}(1), 155--167. \doi{10.1007/s11336-008-9099-3}
+##' *Psychometrika, 74*(1), 155--167. \doi{10.1007/s11336-008-9099-3}
 ##'
-##' McDonald, R. P. (1999). \emph{Test theory: A unified treatment}. Mahwah, NJ:
+##' McDonald, R. P. (1999). *Test theory: A unified treatment*. Mahwah, NJ:
 ##' Erlbaum.
 ##'
 ##' Raykov, T. (2001). Estimation of congeneric scale reliability using
-##' covariance structure analysis with nonlinear constraints \emph{British
-##' Journal of Mathematical and Statistical Psychology, 54}(2), 315--323.
+##' covariance structure analysis with nonlinear constraints *British
+##' Journal of Mathematical and Statistical Psychology, 54*(2), 315--323.
 ##' \doi{10.1348/000711001159582}
 ##'
 ##' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of
 ##' coefficients alpha and theta for Likert rating scales.
-##' \emph{Journal of Modern Applied Statistical Methods, 6}(1), 21--29.
+##' *Journal of Modern Applied Statistical Methods, 6*(1), 21--29.
 ##' \doi{10.22237/jmasm/1177992180}
 ##'
 ##' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens’
 ##' scales of measurement do not help make it: A response to Chalmers.
-##' \emph{Educational and Psychological Measurement, 79}(6), 1184--1197.
+##' *Educational and Psychological Measurement, 79*(6), 1184--1197.
 ##' \doi{10.1177/0013164419844305}
 ##'
 ##'
@@ -1744,7 +1744,7 @@ NULL
 
 ##' @rdname semTools-deprecated
 ##' @section Reliability:
-##' The original \code{reliability} function was suboptimally designed.
+##' The original `reliability` function was suboptimally designed.
 ##' For example, AVE was returned, which is not a reliability index. Also,
 ##' alpha and several omega-type coefficients were returned, including the
 ##' original formula that was in appropriate for models with complex structure.
@@ -2166,7 +2166,7 @@ reliability <- function(object,
 ##' \bold{1}^{\prime} \Lambda \Psi_{u} \Lambda^{\prime} \bold{1} +
 ##' \bold{1}^{\prime} \Theta \bold{1}}, }
 ##'
-##' where \eqn{\bold{1}} is the \emph{k}-dimensional vector of 1 and \emph{k} is
+##' where \eqn{\bold{1}} is the *k*-dimensional vector of 1 and *k* is
 ##' the number of observed variables.
 ##'
 ##' The model-implied covariance matrix among first-order factors (\eqn{\Phi_1})
@@ -2178,11 +2178,11 @@ reliability <- function(object,
 ##' attributable to the second-order factor (i.e., coefficient omega at Level 2)
 ##' can be calculated as:
 ##'
-##' \deqn{ \omega_{L2} = \frac{\bold{1_F}^{\prime} \bold{B} \Phi_2
-##' \bold{B}^{\prime} \bold{1_F}}{\bold{1_F}^{\prime} \bold{B} \Phi_2
-##' \bold{B}^{\prime} \bold{1_F} + \bold{1_F}^{\prime} \Psi_{u} \bold{1_F}}, }
+##' \deqn{ \omega_{L2} = \frac{\bold{1}_F^{\prime} \bold{B} \Phi_2
+##' \bold{B}^{\prime} \bold{1}_F}{\bold{1}_F^{\prime} \bold{B} \Phi_2
+##' \bold{B}^{\prime} \bold{1}_F + \bold{1}_F^{\prime} \Psi_{u} \bold{1}_F}, }
 ##'
-##' where \eqn{\bold{1_F}} is the \emph{F}-dimensional vector of 1 and \emph{F}
+##' where \eqn{\bold{1}_F} is the *F*-dimensional vector of 1 and *F*
 ##' is the number of first-order factors. This Level-2 omega can be interpreted
 ##' as an estimate of the reliability of a hypothetical composite calculated
 ##' from error-free observable variables representing the first-order common
@@ -2213,14 +2213,14 @@ reliability <- function(object,
 ##'   \code{\linkS4class{lavaan.mi}} object, expected to contain a least one
 ##'   exogenous higher-order common factor.
 ##' @param secondFactor The name of a single second-order factor in the
-##'   model fitted in \code{object}. The function must be called multiple
+##'   model fitted in `object`. The function must be called multiple
 ##'   times to estimate reliability for each higher-order factor.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results.  Can include any of
-##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
-##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        last option (`"no.npd"`) would exclude any imputations which
 ##'        yielded a nonpositive definite covariance matrix for observed or
 ##'        latent variables, which would include any "improper solutions" such
 ##'        as Heywood cases.  NPD solutions are not excluded by default because
@@ -2257,10 +2257,10 @@ NULL
 ##' @rdname semTools-deprecated
 ##' @section Higher-Order Reliability:
 ##' Originally, composite reliability of a single higher-order factor was
-##' estimated in a separate function: \code{reliabilityL2}.  It is now available
+##' estimated in a separate function: `reliabilityL2`.  It is now available
 ##' for multiple higher-order factors in the same model, and from the same
 ##' \code{\link{compRelSEM}} function that estimates reliability for first-order
-##' factors, using the \code{higher=} argument to name higher-order factors in
+##' factors, using the `higher=` argument to name higher-order factors in
 ##' the fitted model.
 ##'
 ##' @export
@@ -2465,12 +2465,12 @@ reliabilityL2 <- function(object, secondFactor,
 ##' @param object A \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object, expected to contain only
 ##'   exogenous common factors (i.e., a CFA model).
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results.  Can include any of
-##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
-##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        last option (`"no.npd"`) would exclude any imputations which
 ##'        yielded a nonpositive definite covariance matrix for observed or
 ##'        latent variables, which would include any "improper solutions" such
 ##'        as Heywood cases.  NPD solutions are not excluded by default because
@@ -2482,7 +2482,7 @@ reliabilityL2 <- function(object, secondFactor,
 ##'
 ##' @return Maximal reliability values of each group. The maximal-reliability
 ##'   weights are also provided. Users may extracted the weighted by the
-##'   \code{attr} function (see example below).
+##'   `attr` function (see example below).
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
@@ -2491,11 +2491,11 @@ reliabilityL2 <- function(object, secondFactor,
 ##'
 ##' @references
 ##' Li, H. (1997). A unifying expression for the maximal reliability of a linear
-##' composite. \emph{Psychometrika, 62}(2), 245--249. \doi{10.1007/BF02295278}
+##' composite. *Psychometrika, 62*(2), 245--249. \doi{10.1007/BF02295278}
 ##'
 ##' Raykov, T. (2012). Scale construction and development using structural
-##' equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of structural
-##' equation modeling} (pp. 472--494). New York, NY: Guilford.
+##' equation modeling. In R. H. Hoyle (Ed.), *Handbook of structural
+##' equation modeling* (pp. 472--494). New York, NY: Guilford.
 ##'
 ##' @examples
 ##'

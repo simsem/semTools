@@ -12,8 +12,8 @@
 ##' Missing Data
 ##'
 ##' This class contains the results of 2-Stage Maximum Likelihood (TSML)
-##' estimation for missing data.  The \code{summary}, \code{anova}, \code{vcov}
-##' methods return corrected \emph{SE}s and test statistics.  Other methods are
+##' estimation for missing data.  The `summary`, `anova`, `vcov`
+##' methods return corrected *SE*s and test statistics.  Other methods are
 ##' simply wrappers around the corresponding \code{\linkS4class{lavaan}}
 ##' methods.
 ##'
@@ -31,73 +31,73 @@
 ##'  target/hypothesized model results
 ##' @slot baseline A fitted \code{\linkS4class{lavaan}} object containing the
 ##'  baseline/null model results
-##' @slot auxNames A character string (potentially of \code{length == 0}) of any
+##' @slot auxNames A character string (potentially of `length == 0`) of any
 ##'  auxiliary variable names, if used
 ##'
-##' @param object An object of class \code{twostage}.
+##' @param object An object of class `twostage`.
 ##' @param ... arguments passed to \code{\link[lavaan]{parameterEstimates}}.
-##' @param h1 An object of class \code{twostage} in which \code{object} is
+##' @param h1 An object of class `twostage` in which `object` is
 ##'        nested, so that their difference in fit can be tested using
-##'        \code{anova} (see \bold{Value} section for details).
-##' @param baseline \code{logical} indicating whether to return results for the
+##'        `anova` (see **Value** section for details).
+##' @param baseline `logical` indicating whether to return results for the
 ##'        baseline model, rather than the default target (hypothesized) model.
 ##' @param type The meaning of this argument varies depending on which method it
-##'        it used for. Find detailed descriptions in the \bold{Value} section
-##'        under \code{coef}, \code{nobs}, and \code{residuals}.
-##' @param model \code{character} naming the slot for which to return the
-##'        model-implied sample moments (see \code{fitted.values} description.)
-##' @param labels \code{logical} indicating whether the model-implied sample
+##'        it used for. Find detailed descriptions in the **Value** section
+##'        under `coef`, `nobs`, and `residuals`.
+##' @param model `character` naming the slot for which to return the
+##'        model-implied sample moments (see `fitted.values` description.)
+##' @param labels `logical` indicating whether the model-implied sample
 ##'        moments should have (row/column) labels.
 ##'
 ##' @return
-##'  \item{show}{\code{signature(object = "twostage"):} The \code{show} function
-##'   is used to display the results of the \code{anova} method, as well as the
+##'  \item{show}{`signature(object = "twostage"):` The `show` function
+##'   is used to display the results of the `anova` method, as well as the
 ##'   header of the (uncorrected) target model results.}
-##'  \item{summary}{\code{signature(object = "twostage", ...):} The summary
-##'   function prints the same information from the \code{show} method, but also
+##'  \item{summary}{`signature(object = "twostage", ...):` The summary
+##'   function prints the same information from the `show` method, but also
 ##'   provides (and returns) the output of
 ##'   \code{\link[lavaan]{parameterEstimates}(object@target, ...)} with corrected
-##'   \emph{SE}s, test statistics, and confidence intervals.  Additional
+##'   *SE*s, test statistics, and confidence intervals.  Additional
 ##'   arguments can be passed to \code{\link[lavaan]{parameterEstimates}},
-##'   including \code{fmi = TRUE} to provide an estimate of the fraction of
+##'   including `fmi = TRUE` to provide an estimate of the fraction of
 ##'   missing information.}
-##'  \item{anova}{\code{signature(object = "twostage", h1 = NULL, baseline = FALSE):}
-##'   The \code{anova} function returns the residual-based \eqn{\chi^2} test
+##'  \item{anova}{`signature(object = "twostage", h1 = NULL, baseline = FALSE):`
+##'   The `anova` function returns the residual-based \eqn{\chi^2} test
 ##'   statistic result, as well as the scaled \eqn{\chi^2} test statistic result,
-##'   for the model in the \code{target} slot, or for the model in the
-##'   \code{baseline} slot if \code{baseline = TRUE}.  The user can also provide
-##'   a single additional \code{twostage} object to the \code{h1} argument, in
-##'   which case \code{anova} returns residual-based and scaled
+##'   for the model in the `target` slot, or for the model in the
+##'   `baseline` slot if `baseline = TRUE`.  The user can also provide
+##'   a single additional `twostage` object to the `h1` argument, in
+##'   which case `anova` returns residual-based and scaled
 ##'   (\eqn{\Delta})\eqn{\chi^2} test results, under the assumption that the
 ##'   models are nested.  The models will be automatically sorted according their
 ##'   degrees of freedom.}
-##'  \item{nobs}{\code{signature(object = "twostage",
-##'   type = c("ntotal", "ngroups", "n.per.group", "norig", "patterns", "coverage")):}
-##'   The \code{nobs} function will return the total sample sized used in the
+##'  \item{nobs}{`signature(object = "twostage",
+##'   type = c("ntotal", "ngroups", "n.per.group", "norig", "patterns", "coverage")):`
+##'   The `nobs` function will return the total sample sized used in the
 ##'   analysis by default.  Also available are the number of groups or the sample
 ##'   size per group, the original sample size (if any rows were deleted because
 ##'   all variables were missing), the missing data patterns, and the matrix of
 ##'   coverage (diagonal is the proportion of sample observed on each variable,
 ##'   and off-diagonal is the proportion observed for both of each pair of
 ##'   variables).}
-##'  \item{coef}{\code{signature(object = "twostage", type = c("free", "user")):}
+##'  \item{coef}{`signature(object = "twostage", type = c("free", "user")):`
 ##'   This is simply a wrapper around the corresponding
 ##'   \code{\linkS4class{lavaan}} method, providing point estimates from the
-##'   \code{target} slot.}
-##'  \item{vcov}{\code{signature(object = "twostage", baseline = FALSE):} Returns
+##'   `target` slot.}
+##'  \item{vcov}{`signature(object = "twostage", baseline = FALSE):` Returns
 ##'   the asymptotic covariance matrix of the estimated parameters (corrected for
 ##'   additional uncertainty due to missing data) for the model in the
-##'   \code{target} slot, or for the model in the \code{baseline} slot if
-##'   \code{baseline = TRUE}.}
-##'  \item{fitted.values, fitted}{\code{signature(object = "twostage",
-##'   model = c("target", "saturated", "baseline")):} This is simply a wrapper
+##'   `target` slot, or for the model in the `baseline` slot if
+##'   `baseline = TRUE`.}
+##'  \item{fitted.values, fitted}{`signature(object = "twostage",
+##'   model = c("target", "saturated", "baseline")):` This is simply a wrapper
 ##'   around the corresponding \code{\linkS4class{lavaan}} method, providing
-##'   model-implied sample moments from the slot specified in the \code{model}
+##'   model-implied sample moments from the slot specified in the `model`
 ##'   argument.}
-##'  \item{residuals, resid}{\code{signature(object = "twostage", type = c("raw",
-##'   "cor", "normalized", "standardized")):} This is simply a wrapper around the
+##'  \item{residuals, resid}{`signature(object = "twostage", type = c("raw",
+##'   "cor", "normalized", "standardized")):` This is simply a wrapper around the
 ##'   corresponding \code{\linkS4class{lavaan}} method, providing residuals of
-##'   the specified \code{type} from the \code{target} slot.}
+##'   the specified `type` from the `target` slot.}
 ##'
 ##' @section Objects from the Class: Objects can be created via the
 ##' \code{\link{twostage}} function.
@@ -454,43 +454,43 @@ setMethod("resid", "twostage",
 ##' involves fitting the hypothesized model to the model-implied means and
 ##' covariance matrix (also called the "EM" means and covariance matrix) as if
 ##' they were complete data.  Step 3 involves correcting the Step-2 standard
-##' errors (\emph{SE}s) and chi-squared statistic to account for additional
+##' errors (*SE*s) and chi-squared statistic to account for additional
 ##' uncertainty due to missing data (using information from Step 1; see
 ##' References section for sources with formulas).
 ##'
 ##' All variables (including auxiliary variables) are treated as endogenous
-##' varaibles in the Step-1 saturated model (\code{fixed.x = FALSE}), so data
+##' varaibles in the Step-1 saturated model (`fixed.x = FALSE`), so data
 ##' are assumed continuous, although not necessarily multivariate normal
 ##' (dummy-coded auxiliary variables may be included in Step 1, but categorical
 ##' endogenous variables in the Step-2 hypothesized model are not allowed).  To
-##' avoid assuming multivariate normality, request \code{se =
-##' "robust.huber.white"}.  CAUTION: In addition to setting \code{fixed.x =
-##' FALSE} and \code{conditional.x = FALSE} in \code{\link[lavaan]{lavaan}},
-##' this function will automatically set \code{meanstructure = TRUE},
-##' \code{estimator = "ML"}, \code{missing = "fiml"}, and \code{test =
-##' "standard"}.  \code{\link[lavaan]{lavaan}}'s \code{se} option can only be
-##' set to \code{"standard"} to assume multivariate normality or to
-##' \code{"robust.huber.white"} to relax that assumption.
+##' avoid assuming multivariate normality, request `se =
+##' "robust.huber.white"`.  CAUTION: In addition to setting `fixed.x =
+##' FALSE` and `conditional.x = FALSE` in \code{\link[lavaan]{lavaan}},
+##' this function will automatically set `meanstructure = TRUE`,
+##' `estimator = "ML"`, `missing = "fiml"`, and `test =
+##' "standard"`.  \code{\link[lavaan]{lavaan}}'s `se` option can only be
+##' set to `"standard"` to assume multivariate normality or to
+##' `"robust.huber.white"` to relax that assumption.
 ##'
 ##'
 ##' @aliases twostage cfa.2stage sem.2stage growth.2stage lavaan.2stage
 ##' @importFrom lavaan lavInspect
 ##'
 ##' @param \dots Arguments passed to the \code{\link[lavaan]{lavaan}} function
-##'   specified in the \code{fun} argument.  See also
+##'   specified in the `fun` argument.  See also
 ##'   \code{\link[lavaan]{lavOptions}}.  At a minimum, the user must supply the
 ##'   first two named arguments to \code{\link[lavaan]{lavaan}} (i.e.,
-##'   \code{model} and \code{data}).
+##'   `model` and `data`).
 ##' @param aux An optional character vector naming auxiliary variable(s) in
-##'   \code{data}
+##'   `data`
 ##' @param fun The character string naming the lavaan function used to fit the
-##'   Step-2 hypothesized model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, or
-##'   \code{"lavaan"}).
+##'   Step-2 hypothesized model (`"cfa"`, `"sem"`, `"growth"`, or
+##'   `"lavaan"`).
 ##' @param baseline.model An optional character string, specifying the lavaan
 ##'   \code{\link[lavaan]{model.syntax}} for a user-specified baseline model.
 ##'   Interested users can use the fitted baseline model to calculate incremental
 ##'   fit indices (e.g., CFI and TLI) using the corrected chi-squared values (see
-##'   the \code{anova} method in \code{\linkS4class{twostage}}).  If \code{NULL},
+##'   the `anova` method in \code{\linkS4class{twostage}}).  If `NULL`,
 ##'   the default "independence model" (i.e., freely estimated means and
 ##'   variances, but all covariances constrained to zero) will be specified
 ##'   internally.
@@ -500,7 +500,7 @@ setMethod("resid", "twostage",
 ##' of auxiliary variables.  None of the individual models provide the correct
 ##' model results (except the point estimates in the target model are unbiased).
 ##' Use the methods in \code{\linkS4class{twostage}} to extract corrected
-##' \emph{SE}s and test statistics.
+##' *SE*s and test statistics.
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -510,12 +510,12 @@ setMethod("resid", "twostage",
 ##' @references
 ##' Savalei, V., & Bentler, P. M. (2009). A two-stage approach to missing data:
 ##' Theory and application to auxiliary variables.
-##' \emph{Structural Equation Modeling, 16}(3), 477--497.
+##' *Structural Equation Modeling, 16*(3), 477--497.
 ##' \doi{10.1080/10705510903008238}
 ##'
 ##' Savalei, V., & Falk, C. F. (2014). Robust two-stage approach outperforms
 ##' robust full information maximum likelihood with incomplete nonnormal data.
-##' \emph{Structural Equation Modeling, 21}(2), 280--302.
+##' *Structural Equation Modeling, 21*(2), 280--302.
 ##' \doi{10.1080/10705511.2014.882692}
 ##'
 ##' @examples

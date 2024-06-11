@@ -48,13 +48,13 @@ Missing Data}
 
 \item{h1}{An object of class \code{twostage} in which \code{object} is
 nested, so that their difference in fit can be tested using
-\code{anova} (see \bold{Value} section for details).}
+\code{anova} (see \strong{Value} section for details).}
 
 \item{baseline}{\code{logical} indicating whether to return results for the
 baseline model, rather than the default target (hypothesized) model.}
 
 \item{type}{The meaning of this argument varies depending on which method it
-it used for. Find detailed descriptions in the \bold{Value} section
+it used for. Find detailed descriptions in the \strong{Value} section
 under \code{coef}, \code{nobs}, and \code{residuals}.}
 
 \item{model}{\code{character} naming the slot for which to return the
@@ -64,10 +64,10 @@ model-implied sample moments (see \code{fitted.values} description.)}
 moments should have (row/column) labels.}
 }
 \value{
-\item{show}{\code{signature(object = "twostage"):} The \code{show} function
+\item{show}{\verb{signature(object = "twostage"):} The \code{show} function
 is used to display the results of the \code{anova} method, as well as the
 header of the (uncorrected) target model results.}
-\item{summary}{\code{signature(object = "twostage", ...):} The summary
+\item{summary}{\verb{signature(object = "twostage", ...):} The summary
 function prints the same information from the \code{show} method, but also
 provides (and returns) the output of
 \code{\link[lavaan]{parameterEstimates}(object@target, ...)} with corrected
@@ -75,7 +75,7 @@ provides (and returns) the output of
 arguments can be passed to \code{\link[lavaan]{parameterEstimates}},
 including \code{fmi = TRUE} to provide an estimate of the fraction of
 missing information.}
-\item{anova}{\code{signature(object = "twostage", h1 = NULL, baseline = FALSE):}
+\item{anova}{\verb{signature(object = "twostage", h1 = NULL, baseline = FALSE):}
 The \code{anova} function returns the residual-based \eqn{\chi^2} test
 statistic result, as well as the scaled \eqn{\chi^2} test statistic result,
 for the model in the \code{target} slot, or for the model in the
@@ -85,8 +85,7 @@ which case \code{anova} returns residual-based and scaled
 (\eqn{\Delta})\eqn{\chi^2} test results, under the assumption that the
 models are nested.  The models will be automatically sorted according their
 degrees of freedom.}
-\item{nobs}{\code{signature(object = "twostage",
-  type = c("ntotal", "ngroups", "n.per.group", "norig", "patterns", "coverage")):}
+\item{nobs}{\verb{signature(object = "twostage", type = c("ntotal", "ngroups", "n.per.group", "norig", "patterns", "coverage")):}
 The \code{nobs} function will return the total sample sized used in the
 analysis by default.  Also available are the number of groups or the sample
 size per group, the original sample size (if any rows were deleted because
@@ -94,22 +93,20 @@ all variables were missing), the missing data patterns, and the matrix of
 coverage (diagonal is the proportion of sample observed on each variable,
 and off-diagonal is the proportion observed for both of each pair of
 variables).}
-\item{coef}{\code{signature(object = "twostage", type = c("free", "user")):}
+\item{coef}{\verb{signature(object = "twostage", type = c("free", "user")):}
 This is simply a wrapper around the corresponding
 \code{\linkS4class{lavaan}} method, providing point estimates from the
 \code{target} slot.}
-\item{vcov}{\code{signature(object = "twostage", baseline = FALSE):} Returns
+\item{vcov}{\verb{signature(object = "twostage", baseline = FALSE):} Returns
 the asymptotic covariance matrix of the estimated parameters (corrected for
 additional uncertainty due to missing data) for the model in the
 \code{target} slot, or for the model in the \code{baseline} slot if
 \code{baseline = TRUE}.}
-\item{fitted.values, fitted}{\code{signature(object = "twostage",
-  model = c("target", "saturated", "baseline")):} This is simply a wrapper
+\item{fitted.values, fitted}{\verb{signature(object = "twostage", model = c("target", "saturated", "baseline")):} This is simply a wrapper
 around the corresponding \code{\linkS4class{lavaan}} method, providing
 model-implied sample moments from the slot specified in the \code{model}
 argument.}
-\item{residuals, resid}{\code{signature(object = "twostage", type = c("raw",
-  "cor", "normalized", "standardized")):} This is simply a wrapper around the
+\item{residuals, resid}{\verb{signature(object = "twostage", type = c("raw", "cor", "normalized", "standardized")):} This is simply a wrapper around the
 corresponding \code{\linkS4class{lavaan}} method, providing residuals of
 the specified \code{type} from the \code{target} slot.}
 }

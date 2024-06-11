@@ -19,86 +19,86 @@
 ##' summary,permuteMeasEq-method hist,permuteMeasEq-method
 ##' @docType class
 ##'
-##' @slot PT A \code{data.frame} returned by a call to
+##' @slot PT A `data.frame` returned by a call to
 ##'   \code{\link[lavaan]{parTable}} on the constrained model
-##' @slot modelType A character indicating the specified \code{modelType} in the
-##'   call to \code{permuteMeasEq}
-##' @slot ANOVA A \code{numeric} vector indicating the results of the observed
+##' @slot modelType A character indicating the specified `modelType` in the
+##'   call to `permuteMeasEq`
+##' @slot ANOVA A `numeric` vector indicating the results of the observed
 ##'   (\eqn{\Delta})\eqn{\chi^2} test, based on the central \eqn{\chi^2}
 ##'   distribution
 ##' @slot AFI.obs A vector of observed (changes in) user-selected fit measures
 ##' @slot AFI.dist The permutation distribution(s) of user-selected fit measures.
-##'   A \code{data.frame} with \code{n.Permutations} rows and one column for each
-##'   \code{AFI.obs}.
-##' @slot AFI.pval A vector of \emph{p} values (one for each element in slot
-##'   \code{AFI.obs}) calculated using slot \code{AFI.dist}, indicating the
-##'   probability of observing a change at least as extreme as \code{AFI.obs}
+##'   A `data.frame` with `n.Permutations` rows and one column for each
+##'   `AFI.obs`.
+##' @slot AFI.pval A vector of *p* values (one for each element in slot
+##'   `AFI.obs`) calculated using slot `AFI.dist`, indicating the
+##'   probability of observing a change at least as extreme as `AFI.obs`
 ##'   if the null hypothesis were true
-##' @slot MI.obs A \code{data.frame} of observed Lagrange Multipliers
+##' @slot MI.obs A `data.frame` of observed Lagrange Multipliers
 ##'   (modification indices) associated with the equality constraints or fixed
-##'   parameters specified in the \code{param} argument. This is a subset of the
+##'   parameters specified in the `param` argument. This is a subset of the
 ##'   output returned by a call to \code{\link[lavaan]{lavTestScore}} on the
 ##'   constrained model.
 ##' @slot MI.dist The permutation distribution of the maximum modification index
-##'   (among those seen in slot \code{MI.obs$X2}) at each permutation of group
-##'   assignment or of \code{covariates}
-##' @slot extra.obs If \code{permuteMeasEq} was called with an \code{extra}
+##'   (among those seen in slot `MI.obs$X2`) at each permutation of group
+##'   assignment or of `covariates`
+##' @slot extra.obs If `permuteMeasEq` was called with an `extra`
 ##'   function, the output when applied to the original data is concatenated
 ##'   into this vector
-##' @slot extra.dist A \code{data.frame}, each column of which contains the
+##' @slot extra.dist A `data.frame`, each column of which contains the
 ##'   permutation distribution of the corresponding statistic in slot
-##'   \code{extra.obs}
-##' @slot n.Permutations An \code{integer} indicating the number of permutations
+##'   `extra.obs`
+##' @slot n.Permutations An `integer` indicating the number of permutations
 ##'   requested by the user
-##' @slot n.Converged An \code{integer} indicating the number of permuation
+##' @slot n.Converged An `integer` indicating the number of permuation
 ##'   iterations which yielded a converged solution
-##' @slot n.nonConverged An \code{integer} vector of length
-##'   \code{n.Permutations} indicating how many times group assignment was
+##' @slot n.nonConverged An `integer` vector of length
+##'   `n.Permutations` indicating how many times group assignment was
 ##'   randomly permuted (at each iteration) before converging on a solution
-##' @slot n.Sparse Only relevant with \code{ordered} indicators when
-##'   \code{modelType == "mgcfa"}. An \code{integer} vector of length
-##'   \code{n.Permutations} indicating how many times group assignment was
+##' @slot n.Sparse Only relevant with `ordered` indicators when
+##'   `modelType == "mgcfa"`. An `integer` vector of length
+##'   `n.Permutations` indicating how many times group assignment was
 ##'   randomly permuted (at each iteration) before obtaining a sample with all
 ##'   categories observed in all groups.
-##' @slot oldSeed An \code{integer} vector storing the value of
-##'   \code{.Random.seed} before running \code{permuteMeasEq}. Only relevant
+##' @slot oldSeed An `integer` vector storing the value of
+##'   `.Random.seed` before running `permuteMeasEq`. Only relevant
 ##'   when using a parallel/multicore option and the original
-##'   \code{RNGkind() != "L'Ecuyer-CMRG"}. This enables users to restore their
-##'   previous \code{.Random.seed} state, if desired, by running:
-##'   \code{.Random.seed[-1] <- permutedResults@oldSeed[-1]}
+##'   `RNGkind() != "L'Ecuyer-CMRG"`. This enables users to restore their
+##'   previous `.Random.seed` state, if desired, by running:
+##'   `.Random.seed[-1] <- permutedResults@oldSeed[-1]`
 ##' @section Objects from the Class: Objects can be created via the
 ##'   \code{\link[semTools]{permuteMeasEq}} function.
 ##'
 ##' @return
 ##' \itemize{
-##' \item The \code{show} method prints a summary of the multiparameter
+##' \item The `show` method prints a summary of the multiparameter
 ##'   omnibus test results, using the user-specified AFIs. The parametric
 ##'  (\eqn{\Delta})\eqn{\chi^2} test is also displayed.
-##' \item The \code{summary} method prints the same information from the
-##'   \code{show} method, but when \code{extra = FALSE} (the default) it also
+##' \item The `summary` method prints the same information from the
+##'   `show` method, but when `extra = FALSE` (the default) it also
 ##'   provides a table summarizing any requested follow-up tests of DIF using
-##'   modification indices in slot \code{MI.obs}. The user can also specify an
-##'   \code{alpha} level for flagging modification indices as significant, as
-##'   well as \code{nd} (the number of digits displayed). For each modification
-##'   index, the \emph{p} value is displayed using a central \eqn{\chi^2}
-##'   distribution with the \emph{df} shown in that column. Additionally, a
-##'   \emph{p} value is displayed using the permutation distribution of the
+##'   modification indices in slot `MI.obs`. The user can also specify an
+##'   `alpha` level for flagging modification indices as significant, as
+##'   well as `nd` (the number of digits displayed). For each modification
+##'   index, the *p* value is displayed using a central \eqn{\chi^2}
+##'   distribution with the *df* shown in that column. Additionally, a
+##'   *p* value is displayed using the permutation distribution of the
 ##'   maximum index, which controls the familywise Type I error rate in a manner
 ##'   similar to Tukey's studentized range test. If any indices are flagged as
-##'   significant using the \code{tukey.p.value}, then a message is displayed for
-##'   each flagged index. The invisibly returned \code{data.frame} is the
+##'   significant using the `tukey.p.value`, then a message is displayed for
+##'   each flagged index. The invisibly returned `data.frame` is the
 ##'   displayed table of modification indices, unless
-##'   \code{\link[semTools]{permuteMeasEq}} was called with \code{param = NULL},
-##'   in which case the invisibly returned object is \code{object}. If
-##'   \code{extra = TRUE}, the permutation-based \emph{p} values for each
-##'   statistic returned by the \code{extra} function are displayed and returned
-##'   in a \code{data.frame} instead of the modification indices requested in the
-##'   \code{param} argument.
-##' \item The \code{hist} method returns a list of \code{length == 2},
-##'    containing the arguments for the call to \code{hist} and the arguments
-##'    to the call for \code{legend}, respectively. This list may facilitate
-##'    creating a customized histogram of \code{AFI.dist}, \code{MI.dist}, or
-##'    \code{extra.dist}
+##'   \code{\link[semTools]{permuteMeasEq}} was called with `param = NULL`,
+##'   in which case the invisibly returned object is `object`. If
+##'   `extra = TRUE`, the permutation-based *p* values for each
+##'   statistic returned by the `extra` function are displayed and returned
+##'   in a `data.frame` instead of the modification indices requested in the
+##'   `param` argument.
+##' \item The `hist` method returns a list of `length == 2`,
+##'    containing the arguments for the call to `hist` and the arguments
+##'    to the call for `legend`, respectively. This list may facilitate
+##'    creating a customized histogram of `AFI.dist`, `MI.dist`, or
+##'    `extra.dist`
 ##' }
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
@@ -248,20 +248,20 @@ summ.mimic <- function(object, alpha) {
 ##' @rdname permuteMeasEq-class
 ##' @aliases hist,permuteMeasEq-method
 ##' @importFrom stats qchisq dchisq quantile
-##' @param object,x object of class \code{permuteMeasEq}
+##' @param object,x object of class `permuteMeasEq`
 ##' @param ... Additional arguments to pass to \code{\link[graphics]{hist}}
-##' @param AFI \code{character} indicating the fit measure whose permutation
+##' @param AFI `character` indicating the fit measure whose permutation
 ##'  distribution should be plotted
-##' @param alpha alpha level used to draw confidence limits in \code{hist} and
-##'   flag significant statistics in \code{summary} output
+##' @param alpha alpha level used to draw confidence limits in `hist` and
+##'   flag significant statistics in `summary` output
 ##' @param nd number of digits to display
-##' @param extra \code{logical} indicating whether the \code{summary} output
-##'   should return permutation-based \emph{p} values for each statistic returned
-##'   by the \code{extra} function.  If \code{FALSE} (default), \code{summary}
-##'   will return permutation-based \emph{p} values for each modification index.
-##' @param printLegend \code{logical}. If \code{TRUE} (default), a legend will
+##' @param extra `logical` indicating whether the `summary` output
+##'   should return permutation-based *p* values for each statistic returned
+##'   by the `extra` function.  If `FALSE` (default), `summary`
+##'   will return permutation-based *p* values for each modification index.
+##' @param printLegend `logical`. If `TRUE` (default), a legend will
 ##'  be printed with the histogram
-##' @param legendArgs \code{list} of arguments passed to the
+##' @param legendArgs `list` of arguments passed to the
 ##'  \code{\link[graphics]{legend}} function.  The default argument is a list
 ##'  placing the legend at the top-left of the figure.
 ##' @export
@@ -389,48 +389,48 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' Permutation Randomization Tests of Measurement Equivalence and Differential
 ##' Item Functioning (DIF)
 ##'
-##' The function \code{permuteMeasEq} provides tests of hypotheses involving
+##' The function `permuteMeasEq` provides tests of hypotheses involving
 ##' measurement equivalence, in one of two frameworks: multigroup CFA or MIMIC
 ##' models.
 ##'
 ##'
-##' The function \code{permuteMeasEq} provides tests of hypotheses involving
+##' The function `permuteMeasEq` provides tests of hypotheses involving
 ##' measurement equivalence, in one of two frameworks:
 ##' \enumerate{
 ##'   \item{1} For multiple-group CFA models, provide a pair of nested lavaan objects,
-##'   the less constrained of which (\code{uncon}) freely estimates a set of
+##'   the less constrained of which (`uncon`) freely estimates a set of
 ##'   measurement parameters (e.g., factor loadings, intercepts, or thresholds;
-##'   specified in \code{param}) in all groups, and the more constrained of which
-##'   (\code{con}) constrains those measurement parameters to equality across
+##'   specified in `param`) in all groups, and the more constrained of which
+##'   (`con`) constrains those measurement parameters to equality across
 ##'   groups. Group assignment is repeatedly permuted and the models are fit to
 ##'   each permutation, in order to produce an empirical distribution under the
 ##'   null hypothesis of no group differences, both for (a) changes in
-##'   user-specified fit measures (see \code{AFIs} and \code{moreAFIs}) and for
+##'   user-specified fit measures (see `AFIs` and `moreAFIs`) and for
 ##'   (b) the maximum modification index among the user-specified equality
 ##'   constraints. Configural invariance can also be tested by providing that
-##'   fitted lavaan object to \code{con} and leaving \code{uncon = NULL}, in which
-##'   case \code{param} must be \code{NULL} as well.
+##'   fitted lavaan object to `con` and leaving `uncon = NULL`, in which
+##'   case `param` must be `NULL` as well.
 ##'
 ##'   \item{2} In MIMIC models, one or a set of continuous and/or discrete
-##'   \code{covariates} can be permuted, and a constrained model is fit to each
+##'   `covariates` can be permuted, and a constrained model is fit to each
 ##'   permutation in order to provide a distribution of any fit measures (namely,
-##'   the maximum modification index among fixed parameters in \code{param}) under
+##'   the maximum modification index among fixed parameters in `param`) under
 ##'   the null hypothesis of measurement equivalence across levels of those
 ##'   covariates.
 ##' }
 ##'
 ##' In either framework, modification indices for equality constraints or fixed
-##' parameters specified in \code{param} are calculated from the constrained
-##' model (\code{con}) using the function \code{\link[lavaan]{lavTestScore}}.
+##' parameters specified in `param` are calculated from the constrained
+##' model (`con`) using the function \code{\link[lavaan]{lavTestScore}}.
 ##'
 ##' For multiple-group CFA models, the multiparameter omnibus null hypothesis of
 ##' measurement equivalence/invariance is that there are no group differences in
 ##' any measurement parameters (of a particular type). This can be tested using
-##' the \code{anova} method on nested \code{lavaan} objects, as seen in the
+##' the `anova` method on nested `lavaan` objects, as seen in the
 ##' output of \code{\link[semTools]{measurementInvariance}}, or by inspecting
 ##' the change in alternative fit indices (AFIs) such as the CFI. The
-##' permutation randomization method employed by \code{permuteMeasEq} generates
-##' an empirical distribution of any \code{AFIs} under the null hypothesis, so
+##' permutation randomization method employed by `permuteMeasEq` generates
+##' an empirical distribution of any `AFIs` under the null hypothesis, so
 ##' the user is not restricted to using fixed cutoffs proposed by Cheung &
 ##' Rensvold (2002), Chen (2007), or Meade, Johnson, & Braddy (2008).
 ##'
@@ -438,11 +438,11 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' invariance can still be established by freeing invalid equality constraints,
 ##' as long as equality constraints are valid for at least two indicators per
 ##' factor. Modification indices can be calculated from the constrained model
-##' (\code{con}), but multiple testing leads to inflation of Type I error rates.
-##' The permutation randomization method employed by \code{permuteMeasEq}
+##' (`con`), but multiple testing leads to inflation of Type I error rates.
+##' The permutation randomization method employed by `permuteMeasEq`
 ##' creates a distribution of the maximum modification index if the null
 ##' hypothesis is true, which allows the user to control the familywise Type I
-##' error rate in a manner similar to Tukey's \emph{q} (studentized range)
+##' error rate in a manner similar to Tukey's *q* (studentized range)
 ##' distribution for the Honestly Significant Difference (HSD) post hoc test.
 ##'
 ##' For MIMIC models, DIF can be tested by comparing modification indices of
@@ -453,10 +453,10 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' within each group to preserve between-group differences. So whether
 ##' parameters are constrained or unconstrained across groups, the MIMIC
 ##' approach is only for testing null hypotheses about the effects of
-##' \code{covariates} on indicators, controlling for common factors.
+##' `covariates` on indicators, controlling for common factors.
 ##'
-##' In either framework, \code{\link[lavaan]{lavaan}}'s \code{group.label}
-##' argument is used to preserve the order of groups seen in \code{con} when
+##' In either framework, \code{\link[lavaan]{lavaan}}'s `group.label`
+##' argument is used to preserve the order of groups seen in `con` when
 ##' permuting the data.
 ##'
 ##'
@@ -465,175 +465,175 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' @param nPermute An integer indicating the number of random permutations used
 ##'   to form empirical distributions under the null hypothesis.
 ##' @param modelType A character string indicating type of model employed:
-##'   multiple-group CFA (\code{"mgcfa"}) or MIMIC (\code{"mimic"}).
-##' @param con The constrained \code{lavaan} object, in which the parameters
-##'   specified in \code{param} are constrained to equality across all groups when
-##'   \code{modelType = "mgcfa"}, or which regression paths are fixed to zero when
-##'   \code{modelType = "mimic"}. In the case of testing \emph{configural}
-##'   invariance when \code{modelType = "mgcfa"}, \code{con} is the configural
+##'   multiple-group CFA (`"mgcfa"`) or MIMIC (`"mimic"`).
+##' @param con The constrained `lavaan` object, in which the parameters
+##'   specified in `param` are constrained to equality across all groups when
+##'   `modelType = "mgcfa"`, or which regression paths are fixed to zero when
+##'   `modelType = "mimic"`. In the case of testing *configural*
+##'   invariance when `modelType = "mgcfa"`, `con` is the configural
 ##'   model (implicitly, the unconstrained model is the saturated model, so use
-##'   the defaults \code{uncon = NULL} and \code{param = NULL}). When
-##'   \code{modelType = "mimic"}, \code{con} is the MIMIC model in which the
+##'   the defaults `uncon = NULL` and `param = NULL`). When
+##'   `modelType = "mimic"`, `con` is the MIMIC model in which the
 ##'   covariate predicts the latent construct(s) but no indicators (unless they
 ##'   have already been identified as DIF items).
-##' @param uncon Optional.  The unconstrained \code{lavaan} object, in which the
-##'   parameters specified in \code{param} are freely estimated in all groups.
-##'   When \code{modelType = "mgcfa"}, only in the case of testing
-##'   \emph{configural} invariance should \code{uncon = NULL}. When
-##'   \code{modelType = "mimic"}, any non-\code{NULL uncon} is silently set to
-##'   \code{NULL}.
-##' @param null Optional.  A \code{lavaan} object, in which an alternative null
+##' @param uncon Optional.  The unconstrained `lavaan` object, in which the
+##'   parameters specified in `param` are freely estimated in all groups.
+##'   When `modelType = "mgcfa"`, only in the case of testing
+##'   *configural* invariance should `uncon = NULL`. When
+##'   `modelType = "mimic"`, any non-`NULL uncon` is silently set to
+##'   `NULL`.
+##' @param null Optional.  A `lavaan` object, in which an alternative null
 ##'   model is fit (besides the default independence model specified by
-##'   \code{lavaan}) for the calculation of incremental fit indices. See Widamin &
-##'   Thompson (2003) for details. If \code{NULL}, \code{lavaan}'s default
+##'   `lavaan`) for the calculation of incremental fit indices. See Widamin &
+##'   Thompson (2003) for details. If `NULL`, `lavaan`'s default
 ##'   independence model is used.
 ##' @param param An optional character vector or list of character vectors
 ##'   indicating which parameters the user would test for DIF following a
 ##'   rejection of the omnibus null hypothesis tested using
-##'   (\code{more})\code{AFIs}. Note that \code{param} does not guarantee certain
-##'   parameters \emph{are} constrained in \code{con}; that is for the user to
+##'   (`more`)`AFIs`. Note that `param` does not guarantee certain
+##'   parameters *are* constrained in `con`; that is for the user to
 ##'   specify when fitting the model. If users have any "anchor items" that they
 ##'   would never intend to free across groups (or levels of a covariate), these
-##'   should be excluded from \code{param}; exceptions to a type of parameter can
-##'   be specified in \code{freeParam}. When \code{modelType = "mgcfa"},
-##'   \code{param} indicates which parameters of interest are constrained across
-##'   groups in \code{con} and are unconstrained in \code{uncon}. Parameter names
-##'   must match those returned by \code{names(coef(con))}, but omitting any
-##'   group-specific suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"})
+##'   should be excluded from `param`; exceptions to a type of parameter can
+##'   be specified in `freeParam`. When `modelType = "mgcfa"`,
+##'   `param` indicates which parameters of interest are constrained across
+##'   groups in `con` and are unconstrained in `uncon`. Parameter names
+##'   must match those returned by `names(coef(con))`, but omitting any
+##'   group-specific suffixes (e.g., `"f1~1"` rather than `"f1~1.g2"`)
 ##'   or user-specified labels (that is, the parameter names must follow the rules
 ##'   of lavaan's \code{\link[lavaan]{model.syntax}}). Alternatively (or
 ##'   additionally), to test all constraints of a certain type (or multiple types)
-##'   of parameter in \code{con}, \code{param} may take any combination of the
-##'   following values: \code{"loadings"}, \code{"intercepts"},
-##'   \code{"thresholds"}, \code{"residuals"}, \code{"residual.covariances"},
-##'   \code{"means"}, \code{"lv.variances"}, and/or \code{"lv.covariances"}. When
-##'   \code{modelType = "mimic"}, \code{param} must be a vector of individual
+##'   of parameter in `con`, `param` may take any combination of the
+##'   following values: `"loadings"`, `"intercepts"`,
+##'   `"thresholds"`, `"residuals"`, `"residual.covariances"`,
+##'   `"means"`, `"lv.variances"`, and/or `"lv.covariances"`. When
+##'   `modelType = "mimic"`, `param` must be a vector of individual
 ##'   parameters or a list of character strings to be passed one-at-a-time to
-##'   \code{\link[lavaan]{lavTestScore}}\code{(object = con, add = param[i])},
-##'   indicating which (sets of) regression paths fixed to zero in \code{con} that
+##'   \code{\link[lavaan]{lavTestScore}}`(object = con, add = param[i])`,
+##'   indicating which (sets of) regression paths fixed to zero in `con` that
 ##'   the user would consider freeing (i.e., exclude anchor items). If
-##'   \code{modelType = "mimic"} and \code{param} is a list of character strings,
+##'   `modelType = "mimic"` and `param` is a list of character strings,
 ##'   the multivariate test statistic will be saved for each list element instead
-##'   of 1-\emph{df} modification indices for each individual parameter, and
-##'   \code{names(param)} will name the rows of the \code{MI.obs} slot (see
-##'   \linkS4class{permuteMeasEq}). Set \code{param = NULL} (default) to avoid
+##'   of 1-*df* modification indices for each individual parameter, and
+##'   `names(param)` will name the rows of the `MI.obs` slot (see
+##'   \linkS4class{permuteMeasEq}). Set `param = NULL` (default) to avoid
 ##'   collecting modification indices for any follow-up tests.
 ##' @param freeParam An optional character vector, silently ignored when
-##'   \code{modelType = "mimic"}. If \code{param} includes a type of parameter
-##'   (e.g., \code{"loadings"}), \code{freeParam} indicates exceptions (i.e.,
-##'   anchor items) that the user would \emph{not} intend to free across groups
-##'   and should therefore be ignored when calculating \emph{p} values adjusted
+##'   `modelType = "mimic"`. If `param` includes a type of parameter
+##'   (e.g., `"loadings"`), `freeParam` indicates exceptions (i.e.,
+##'   anchor items) that the user would *not* intend to free across groups
+##'   and should therefore be ignored when calculating *p* values adjusted
 ##'   for the number of follow-up tests. Parameter types that are already
-##'   unconstrained across groups in the fitted \code{con} model (i.e., a
-##'   \emph{partial} invariance model) will automatically be ignored, so they do
-##'   not need to be specified in \code{freeParam}. Parameter names must match
-##'   those returned by \code{names(coef(con))}, but omitting any group-specific
-##'   suffixes (e.g., \code{"f1~1"} rather than \code{"f1~1.g2"}) or
+##'   unconstrained across groups in the fitted `con` model (i.e., a
+##'   *partial* invariance model) will automatically be ignored, so they do
+##'   not need to be specified in `freeParam`. Parameter names must match
+##'   those returned by `names(coef(con))`, but omitting any group-specific
+##'   suffixes (e.g., `"f1~1"` rather than `"f1~1.g2"`) or
 ##'   user-specified labels (that is, the parameter names must follow the rules of
 ##'   lavaan \code{\link[lavaan]{model.syntax}}).
 ##' @param covariates An optional character vector, only applicable when
-##'   \code{modelType = "mimic"}. The observed data are partitioned into columns
-##'   indicated by \code{covariates}, and the rows are permuted simultaneously for
+##'   `modelType = "mimic"`. The observed data are partitioned into columns
+##'   indicated by `covariates`, and the rows are permuted simultaneously for
 ##'   the entire set before being merged with the remaining data.  Thus, the
 ##'   covariance structure is preserved among the covariates, which is necessary
 ##'   when (e.g.) multiple dummy codes are used to represent a discrete covariate
-##'   or when covariates interact. If \code{covariates = NULL} when
-##'   \code{modelType = "mimic"}, the value of \code{covariates} is inferred by
-##'   searching \code{param} for predictors (i.e., variables appearing after the
-##'   "\code{~}" operator).
+##'   or when covariates interact. If `covariates = NULL` when
+##'   `modelType = "mimic"`, the value of `covariates` is inferred by
+##'   searching `param` for predictors (i.e., variables appearing after the
+##'   "`~`" operator).
 ##' @param AFIs A character vector indicating which alternative fit indices (or
 ##'   chi-squared itself) are to be used to test the multiparameter omnibus null
-##'   hypothesis that the constraints specified in \code{con} hold in the
+##'   hypothesis that the constraints specified in `con` hold in the
 ##'   population. Any fit measures returned by \code{\link[lavaan]{fitMeasures}}
-##'   may be specified (including constants like \code{"df"}, which would be
-##'   nonsensical). If both \code{AFIs} and \code{moreAFIs} are \code{NULL}, only
-##'   \code{"chisq"} will be returned.
+##'   may be specified (including constants like `"df"`, which would be
+##'   nonsensical). If both `AFIs` and `moreAFIs` are `NULL`, only
+##'   `"chisq"` will be returned.
 ##' @param moreAFIs Optional. A character vector indicating which (if any)
 ##'   alternative fit indices returned by \code{\link[semTools]{moreFitIndices}}
 ##'   are to be used to test the multiparameter omnibus null hypothesis that the
-##'   constraints specified in \code{con} hold in the population.
-##' @param maxSparse Only applicable when \code{modelType = "mgcfa"} and at
-##'   least one indicator is \code{ordered}. An integer indicating the maximum
+##'   constraints specified in `con` hold in the population.
+##' @param maxSparse Only applicable when `modelType = "mgcfa"` and at
+##'   least one indicator is `ordered`. An integer indicating the maximum
 ##'   number of consecutive times that randomly permuted group assignment can
-##'   yield a sample in which at least one category (of an \code{ordered}
+##'   yield a sample in which at least one category (of an `ordered`
 ##'   indicator) is unobserved in at least one group, such that the same set of
 ##'   parameters cannot be estimated in each group. If such a sample occurs, group
 ##'   assignment is randomly permuted again, repeatedly until a sample is obtained
-##'   with all categories observed in all groups. If \code{maxSparse} is exceeded,
-##'   \code{NA} will be returned for that iteration of the permutation
+##'   with all categories observed in all groups. If `maxSparse` is exceeded,
+##'   `NA` will be returned for that iteration of the permutation
 ##'   distribution.
 ##' @param maxNonconv An integer indicating the maximum number of consecutive
 ##'   times that a random permutation can yield a sample for which the model does
 ##'   not converge on a solution. If such a sample occurs, permutation is
 ##'   attempted repeatedly until a sample is obtained for which the model does
-##'   converge. If \code{maxNonconv} is exceeded, \code{NA} will be returned for
+##'   converge. If `maxNonconv` is exceeded, `NA` will be returned for
 ##'   that iteration of the permutation distribution, and a warning will be
-##'   printed when using \code{show} or \code{summary}.
+##'   printed when using `show` or `summary`.
 ##' @param showProgress Logical. Indicating whether to display a progress bar
-##'   while permuting. Silently set to \code{FALSE} when using parallel options.
+##'   while permuting. Silently set to `FALSE` when using parallel options.
 ##' @param warn Sets the handling of warning messages when fitting model(s) to
 ##'   permuted data sets. See \code{\link[base]{options}}.
 ##' @param datafun An optional function that can be applied to the data
-##'   (extracted from \code{con}) after each permutation, but before fitting the
-##'   model(s) to each permutation. The \code{datafun} function must have an
-##'   argument named \code{data} that accepts a \code{data.frame}, and it must
-##'   return a \code{data.frame} containing the same column names. The column
+##'   (extracted from `con`) after each permutation, but before fitting the
+##'   model(s) to each permutation. The `datafun` function must have an
+##'   argument named `data` that accepts a `data.frame`, and it must
+##'   return a `data.frame` containing the same column names. The column
 ##'   order may differ, the values of those columns may differ (so be careful!),
 ##'   and any additional columns will be ignored when fitting the model, but an
 ##'   error will result if any column names required by the model syntax do not
 ##'   appear in the transformed data set. Although available for any
-##'   \code{modelType}, \code{datafun} may be useful when using the MIMIC method
+##'   `modelType`, `datafun` may be useful when using the MIMIC method
 ##'   to test for nonuniform DIF (metric/weak invariance) by using product
 ##'   indicators for a latent factor representing the interaction between a factor
-##'   and one of the \code{covariates}, in which case the product indicators would
-##'   need to be recalculated after each permutation of the \code{covariates}. To
-##'   access other R objects used within \code{permuteMeasEq}, the arguments to
-##'   \code{datafun} may also contain any subset of the following: \code{"con"},
-##'   \code{"uncon"}, \code{"null"}, \code{"param"}, \code{"freeParam"},
-##'   \code{"covariates"}, \code{"AFIs"}, \code{"moreAFIs"}, \code{"maxSparse"},
-##'   \code{"maxNonconv"}, and/or \code{"iseed"}. The values for those arguments
-##'   will be the same as the values supplied to \code{permuteMeasEq}.
+##'   and one of the `covariates`, in which case the product indicators would
+##'   need to be recalculated after each permutation of the `covariates`. To
+##'   access other R objects used within `permuteMeasEq`, the arguments to
+##'   `datafun` may also contain any subset of the following: `"con"`,
+##'   `"uncon"`, `"null"`, `"param"`, `"freeParam"`,
+##'   `"covariates"`, `"AFIs"`, `"moreAFIs"`, `"maxSparse"`,
+##'   `"maxNonconv"`, and/or `"iseed"`. The values for those arguments
+##'   will be the same as the values supplied to `permuteMeasEq`.
 ##' @param extra An optional function that can be applied to any (or all) of the
-##'   fitted lavaan objects (\code{con}, \code{uncon}, and/or \code{null}). This
+##'   fitted lavaan objects (`con`, `uncon`, and/or `null`). This
 ##'   function will also be applied after fitting the model(s) to each permuted
-##'   data set. To access the R objects used within \code{permuteMeasEq}, the
-##'   arguments to \code{extra} must be any subset of the following: \code{"con"},
-##'   \code{"uncon"}, \code{"null"}, \code{"param"}, \code{"freeParam"},
-##'   \code{"covariates"}, \code{"AFIs"}, \code{"moreAFIs"}, \code{"maxSparse"},
-##'   \code{"maxNonconv"}, and/or \code{"iseed"}. The values for those arguments
-##'   will be the same as the values supplied to \code{permuteMeasEq}. The
-##'   \code{extra} function must return a named \code{numeric} vector or a named
-##'   \code{list} of scalars (i.e., a \code{list} of \code{numeric} vectors of
-##'   \code{length == 1}). Any unnamed elements (e.g., \code{""} or \code{NULL})
+##'   data set. To access the R objects used within `permuteMeasEq`, the
+##'   arguments to `extra` must be any subset of the following: `"con"`,
+##'   `"uncon"`, `"null"`, `"param"`, `"freeParam"`,
+##'   `"covariates"`, `"AFIs"`, `"moreAFIs"`, `"maxSparse"`,
+##'   `"maxNonconv"`, and/or `"iseed"`. The values for those arguments
+##'   will be the same as the values supplied to `permuteMeasEq`. The
+##'   `extra` function must return a named `numeric` vector or a named
+##'   `list` of scalars (i.e., a `list` of `numeric` vectors of
+##'   `length == 1`). Any unnamed elements (e.g., `""` or `NULL`)
 ##'   of the returned object will result in an error.
 ##' @param parallelType The type of parallel operation to be used (if any). The
-##'   default is \code{"none"}. Forking is not possible on Windows, so if
-##'   \code{"multicore"} is requested on a Windows machine, the request will be
-##'   changed to \code{"snow"} with a message.
+##'   default is `"none"`. Forking is not possible on Windows, so if
+##'   `"multicore"` is requested on a Windows machine, the request will be
+##'   changed to `"snow"` with a message.
 ##' @param ncpus Integer: number of processes to be used in parallel operation.
-##'   If \code{NULL} (the default) and \code{parallelType %in%
-##'   c("multicore","snow")}, the default is one less than the maximum number of
+##'   If `NULL` (the default) and `parallelType %in%
+##'   c("multicore","snow")`, the default is one less than the maximum number of
 ##'   processors detected by \code{\link[parallel]{detectCores}}. This default is
 ##'   also silently set if the user specifies more than the number of processors
 ##'   detected.
 ##' @param cl An optional \pkg{parallel} or \pkg{snow} cluster for use when
-##'   \code{parallelType = "snow"}.  If \code{NULL}, a \code{"PSOCK"} cluster on
-##'   the local machine is created for the duration of the \code{permuteMeasEq}
+##'   `parallelType = "snow"`.  If `NULL`, a `"PSOCK"` cluster on
+##'   the local machine is created for the duration of the `permuteMeasEq`
 ##'   call. If a valid \code{\link[parallel]{makeCluster}} object is supplied,
-##'   \code{parallelType} is silently set to \code{"snow"}, and \code{ncpus} is
-##'   silently set to \code{length(cl)}.
+##'   `parallelType` is silently set to `"snow"`, and `ncpus` is
+##'   silently set to `length(cl)`.
 ##' @param iseed Integer: Only used to set the states of the RNG when using
 ##'   parallel options, in which case \code{\link[base]{RNGkind}} is set to
-##'   \code{"L'Ecuyer-CMRG"} with a message. See
+##'   `"L'Ecuyer-CMRG"` with a message. See
 ##'   \code{\link[parallel]{clusterSetRNGStream}} and Section 6 of
-##'   \code{vignette("parallel", "parallel")} for more details. If user supplies
-##'   an invalid value, \code{iseed} is silently set to the default (12345). To
+##'   `vignette("parallel", "parallel")` for more details. If user supplies
+##'   an invalid value, `iseed` is silently set to the default (12345). To
 ##'   set the state of the RNG when not using parallel options, call
-##'   \code{\link[base]{set.seed}} before calling \code{permuteMeasEq}.
+##'   \code{\link[base]{set.seed}} before calling `permuteMeasEq`.
 ##'
 ##' @return The \linkS4class{permuteMeasEq} object representing the results of
 ##'   testing measurement equivalence (the multiparameter omnibus test) and DIF
-##'   (modification indices), as well as diagnostics and any \code{extra} output.
+##'   (modification indices), as well as diagnostics and any `extra` output.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##' \email{TJorgensen314@@gmail.com})
@@ -644,41 +644,41 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##'
 ##' @references
 ##'
-##' \bold{Papers about permutation tests of measurement equivalence:}
+##' **Papers about permutation tests of measurement equivalence:**
 ##'
 ##' Jorgensen, T. D., Kite, B. A., Chen, P.-Y., & Short, S. D. (2018).
 ##' Permutation randomization methods for testing measurement equivalence and
 ##' detecting differential item functioning in multiple-group confirmatory
-##' factor analysis. \emph{Psychological Methods, 23}(4), 708--728.
+##' factor analysis. *Psychological Methods, 23*(4), 708--728.
 ##' \doi{10.1037/met0000152}
 ##'
 ##' Kite, B. A., Jorgensen, T. D., & Chen, P.-Y. (2018). Random permutation
 ##' testing applied to measurement invariance testing with ordered-categorical
-##' indicators. \emph{Structural Equation Modeling 25}(4), 573--587.
+##' indicators. *Structural Equation Modeling 25*(4), 573--587.
 ##' \doi{10.1080/10705511.2017.1421467}
 ##'
 ##' Jorgensen, T. D. (2017). Applying permutation tests and multivariate
 ##' modification indices to configurally invariant models that need
-##' respecification. \emph{Frontiers in Psychology, 8}(1455).
+##' respecification. *Frontiers in Psychology, 8*(1455).
 ##' \doi{10.3389/fpsyg.2017.01455}
 ##'
-##' \bold{Additional reading:}
+##' **Additional reading:**
 ##'
 ##' Chen, F. F. (2007). Sensitivity of goodness of fit indexes to
-##' lack of measurement invariance.  \emph{Structural Equation Modeling, 14}(3),
+##' lack of measurement invariance.  *Structural Equation Modeling, 14*(3),
 ##' 464--504. \doi{10.1080/10705510701301834}
 ##'
 ##' Cheung, G. W., & Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes
-##' for testing measurement invariance. \emph{Structural Equation Modeling,
-##' 9}(2), 233--255. \doi{10.1207/S15328007SEM0902_5}
+##' for testing measurement invariance. *Structural Equation Modeling,
+##' 9*(2), 233--255. \doi{10.1207/S15328007SEM0902_5}
 ##'
 ##' Meade, A. W., Johnson, E. C., & Braddy, P. W. (2008). Power and sensitivity
-##' of alternative fit indices in tests of measurement invariance. \emph{Journal
-##' of Applied Psychology, 93}(3), 568--592. \doi{10.1037/0021-9010.93.3.568}
+##' of alternative fit indices in tests of measurement invariance. *Journal
+##' of Applied Psychology, 93*(3), 568--592. \doi{10.1037/0021-9010.93.3.568}
 ##'
 ##' Widamin, K. F., & Thompson, J. S. (2003). On specifying the null model for
-##' incremental fit indices in structural equation modeling. \emph{Psychological
-##' Methods, 8}(1), 16--37. \doi{10.1037/1082-989X.8.1.16}
+##' incremental fit indices in structural equation modeling. *Psychological
+##' Methods, 8*(1), 16--37. \doi{10.1037/1082-989X.8.1.16}
 ##'
 ##' @examples
 ##'

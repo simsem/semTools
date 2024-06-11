@@ -36,7 +36,7 @@ or an intercept operator (\code{"~1"}), or both.
 \code{lavaan.DV} can also be a vector of endogenous variable, in which
 case they will be treated by \code{emmeans} as a multivariate outcome
 (often, this indicates repeated measures) represented by an additional
-factor named \code{rep.meas} by default.  The \code{rep.meas=} argument
+factor named \code{rep.meas} by default.  The \verb{rep.meas=} argument
 can be used to overwrite this default name.
 }
 

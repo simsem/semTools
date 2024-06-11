@@ -12,7 +12,7 @@ monteCarloCI(object = NULL, expr, coefs, ACM, nRep = 20000,
 }
 \arguments{
 \item{object}{A object of class \code{\linkS4class{lavaan}} in which
-functions of parameters have already been defined using the \code{:=}
+functions of parameters have already been defined using the \verb{:=}
 operator in \code{lavaan}'s \code{\link[lavaan]{model.syntax}}. When
 \code{NULL}, users must specify \code{expr}, \code{coefs}, and \code{ACM}.}
 
@@ -72,8 +72,8 @@ distribution of each function in \code{expr}}
 A \code{lavaan.data.frame} (to use lavaan's \code{print} method)
 with point estimates and confidence limits of each requested function of
 parameters in \code{expr} is returned. If \code{append.samples = TRUE},
-output will be a \code{list} with the same \code{$Results} along with a
-second \code{data.frame} with the \code{$Samples} (in rows) of each
+output will be a \code{list} with the same \verb{$Results} along with a
+second \code{data.frame} with the \verb{$Samples} (in rows) of each
 parameter (in columns), and an additional column for each requested
 function of those parameters.
 }
@@ -86,7 +86,7 @@ This function implements the Monte Carlo method of obtaining an empirical
 sampling distriution of estimated model parameters, as described by
 MacKinnon et al. (2004) for testing indirect effects in mediation models.
 The easiest way to use the function is to fit a SEM to data with
-\code{\link[lavaan]{lavaan}}, using the \code{:=} operator in the
+\code{\link[lavaan]{lavaan}}, using the \verb{:=} operator in the
 \code{\link[lavaan]{model.syntax}} to specify user-defined parameters.
 All information is then available in the resulting
 \code{\linkS4class{lavaan}} object.  Alternatively (especially when using

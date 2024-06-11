@@ -17,8 +17,7 @@
 
 \item{fit.measures}{\code{character} vector naming fit indices the user can
 request from \code{\link[lavaan]{fitMeasures}}. If \code{"default"}, the
-fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli",
-  "rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit
+fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli", "rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit
 measures will be returned.}
 
 \item{nd}{number of digits printed}

@@ -19,29 +19,29 @@
 ##'   residuals,lavaan.mi-method resid,lavaan.mi-method
 ##' @docType class
 ##'
-##' @slot coefList \code{list} of estimated coefficients in matrix format (one
+##' @slot coefList `list` of estimated coefficients in matrix format (one
 ##'   per imputation) as output by \code{\link[lavaan]{lavInspect}(fit, "est")}
-##' @slot phiList \code{list} of model-implied latent-variable covariance
+##' @slot phiList `list` of model-implied latent-variable covariance
 ##'   matrices (one per imputation) as output by
 ##'   \code{\link[lavaan]{lavInspect}(fit, "cov.lv")}
-##' @slot miList \code{list} of modification indices output by
+##' @slot miList `list` of modification indices output by
 ##'   \code{\link[lavaan]{modindices}}
-##' @slot seed \code{integer} seed set before running imputations
+##' @slot seed `integer` seed set before running imputations
 ##' @slot lavListCall call to \code{\link[lavaan]{lavaanList}} used to fit the
-##'   model to the list of imputed data sets in \code{@@DataList}, stored as a
-##'   \code{list} of arguments
+##'   model to the list of imputed data sets in `@@DataList`, stored as a
+##'   `list` of arguments
 ##' @slot imputeCall call to imputation function (if used), stored as a
-##'   \code{list} of arguments
-##' @slot convergence \code{list} of \code{logical} vectors indicating whether,
+##'   `list` of arguments
+##' @slot convergence `list` of `logical` vectors indicating whether,
 ##'   for each imputed data set, (1) the model converged on a solution, (2)
-##'   \emph{SE}s could be calculated, (3) the (residual) covariance matrix of
+##'   *SE*s could be calculated, (3) the (residual) covariance matrix of
 ##'   latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the
 ##'   residual covariance matrix of observed variables (\eqn{\Theta}) is
 ##'   non-positive-definite.
 ##' @slot lavaanList_slots All remaining slots are from
 ##'   \code{\linkS4class{lavaanList}}, but \code{\link{runMI}} only populates a
-##'   subset of the \code{list} slots, two of them with custom information:
-##' @slot DataList The \code{list} of imputed data sets
+##'   subset of the `list` slots, two of them with custom information:
+##' @slot DataList The `list` of imputed data sets
 ##' @slot SampleStatsList List of output from
 ##'   \code{\link[lavaan]{lavInspect}(fit, "sampstat")} applied to each fitted
 ##'   model
@@ -49,41 +49,41 @@
 ##' @slot vcovList See \code{\linkS4class{lavaanList}}
 ##' @slot testList See \code{\linkS4class{lavaanList}}
 ##' @slot h1List See \code{\linkS4class{lavaanList}}. An additional element is
-##'   added to the \code{list}: \code{$PT} is the "saturated" model's parameter
+##'   added to the `list`: `$PT` is the "saturated" model's parameter
 ##'   table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.
 ##' @slot baselineList See \code{\linkS4class{lavaanList}}
 ##'
-##' @param object An object of class \code{lavaan.mi}
+##' @param object An object of class `lavaan.mi`
 ##' @param se,ci,level,standardized,rsquare,header,output See
-##'        \code{\link[lavaan]{parameterEstimates}}. \code{output}
+##'        \code{\link[lavaan]{parameterEstimates}}. `output`
 ##'        can also be passed to \code{\link[lavaan]{fitMeasures}}.
-##' @param fmi \code{logical} indicating whether to include the Fraction Missing
-##'        Information (FMI) for parameter estimates in the \code{summary}
-##'        output (see \bold{Value} section).
-##' @param asymptotic \code{logical}. If \code{FALSE} (typically a default, but
-##'        see \bold{Value} section for details using various methods), pooled
-##'        tests (of fit or pooled estimates) will be \emph{F} or \emph{t}
-##'        statistics with associated degrees of freedom (\emph{df}). If
-##'        \code{TRUE}, the (denominator) \emph{df} are assumed to be
-##'        sufficiently large for a \emph{t} statistic to follow a normal
-##'        distribution, so it is printed as a \emph{z} statisic; likewise,
-##'        \emph{F} times its numerator \emph{df} is printed, assumed to follow
+##' @param fmi `logical` indicating whether to include the Fraction Missing
+##'        Information (FMI) for parameter estimates in the `summary`
+##'        output (see **Value** section).
+##' @param asymptotic `logical`. If `FALSE` (typically a default, but
+##'        see **Value** section for details using various methods), pooled
+##'        tests (of fit or pooled estimates) will be *F* or *t*
+##'        statistics with associated degrees of freedom (*df*). If
+##'        `TRUE`, the (denominator) *df* are assumed to be
+##'        sufficiently large for a *t* statistic to follow a normal
+##'        distribution, so it is printed as a *z* statisic; likewise,
+##'        *F* times its numerator *df* is printed, assumed to follow
 ##'        a \eqn{\chi^2} distribution.
-##' @param scale.W \code{logical}. If \code{TRUE} (default), the \code{vcov}
+##' @param scale.W `logical`. If `TRUE` (default), the `vcov`
 ##'        method will calculate the pooled covariance matrix by scaling the
 ##'        within-imputation component by the ARIV (see Enders, 2010, p. 235,
 ##'        for definition and formula). Otherwise, the pooled matrix is
 ##'        calculated as the weighted sum of the within-imputation and
 ##'        between-imputation components (see Enders, 2010, ch. 8, for details).
-##'        This in turn affects how the \code{summary} method calcualtes its
+##'        This in turn affects how the `summary` method calcualtes its
 ##'        pooled standard errors, as well as the Wald test
 ##'        (\code{\link{lavTestWald.mi}}).
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results.  Can include any of
-##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
-##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        last option (`"no.npd"`) would exclude any imputations which
 ##'        yielded a nonpositive definite covariance matrix for observed or
 ##'        latent variables, which would include any "improper solutions" such
 ##'        as Heywood cases.  NPD solutions are not excluded by default because
@@ -96,92 +96,92 @@
 ##'        apply their own custom omission criteria (or simulations can use
 ##'        different numbers of imputations without redundantly refitting the
 ##'        model).
-##' @param labels \code{logical} indicating whether the \code{coef} output
-##'        should include parameter labels. Default is \code{TRUE}.
-##' @param total \code{logical} (default: \code{TRUE}) indicating whether the
-##'        \code{nobs} method should return the total sample size or (if
-##'        \code{FALSE}) a vector of group sample sizes.
+##' @param labels `logical` indicating whether the `coef` output
+##'        should include parameter labels. Default is `TRUE`.
+##' @param total `logical` (default: `TRUE`) indicating whether the
+##'        `nobs` method should return the total sample size or (if
+##'        `FALSE`) a vector of group sample sizes.
 ##' @param type The meaning of this argument varies depending on which method it
-##'        it used for. Find detailed descriptions in the \bold{Value} section
-##'        under \code{coef}, \code{vcov}, and \code{residuals}.
+##'        it used for. Find detailed descriptions in the **Value** section
+##'        under `coef`, `vcov`, and `residuals`.
 ##' @param fit.measures,baseline.model See \code{\link[lavaan]{fitMeasures}}.
-##'        \code{summary(object, fit.measures = TRUE)} will print (but not
+##'        `summary(object, fit.measures = TRUE)` will print (but not
 ##'        return) a table of fit measures to the console.
 ##' @param ... Additional arguments passed to \code{\link{lavTestLRT.mi}}, or
 ##'        subsequently to \code{\link[lavaan]{lavTestLRT}}.
 ##'
 ##' @return
 ##'
-##' \item{coef}{\code{signature(object = "lavaan.mi", type = "free",
-##'   labels = TRUE, omit.imps = c("no.conv","no.se"))}:
+##' \item{coef}{`signature(object = "lavaan.mi", type = "free",
+##'   labels = TRUE, omit.imps = c("no.conv","no.se"))`:
 ##'   See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
 ##'   averaged across imputed data sets; see Rubin, 1987).}
 ##'
-##' \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
+##' \item{vcov}{`signature(object = "lavaan.mi", scale.W = TRUE,
 ##'   omit.imps = c("no.conv","no.se"),
-##'   type = c("pooled","between","within","ariv"))}:  By default, returns the
-##'   pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
-##'   the within-imputations covariance matrix (\code{type = "within"}), the
-##'   between-imputations covariance matrix (\code{type = "between"}), or the
-##'   average relative increase in variance (\code{type = "ariv"}) due to
+##'   type = c("pooled","between","within","ariv"))`:  By default, returns the
+##'   pooled covariance matrix of parameter estimates (`type = "pooled"`),
+##'   the within-imputations covariance matrix (`type = "within"`), the
+##'   between-imputations covariance matrix (`type = "between"`), or the
+##'   average relative increase in variance (`type = "ariv"`) due to
 ##'   missing data.}
 ##'
-##' \item{fitted.values}{\code{signature(object = "lavaan.mi",
-##'   omit.imps = c("no.conv","no.se"))}: See \code{\linkS4class{lavaan}}.
+##' \item{fitted.values}{`signature(object = "lavaan.mi",
+##'   omit.imps = c("no.conv","no.se"))`: See \code{\linkS4class{lavaan}}.
 ##'   Returns model-implied moments, evaluated at the pooled point estimates.}
-##' \item{fitted}{alias for \code{fitted.values}}
+##' \item{fitted}{alias for `fitted.values`}
 ##'
-##' \item{residuals}{\code{signature(object = "lavaan.mi",
-##'   type = c("raw","cor"), omit.imps = c("no.conv","no.se"))}:
-##'   See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
-##'   the difference between the model-implied moments from \code{fitted.values}
+##' \item{residuals}{`signature(object = "lavaan.mi",
+##'   type = c("raw","cor"), omit.imps = c("no.conv","no.se"))`:
+##'   See \code{\linkS4class{lavaan}}. By default (`type = "raw"`), returns
+##'   the difference between the model-implied moments from `fitted.values`
 ##'   and the pooled observed moments (i.e., averaged across imputed data sets).
 ##'   Standardized residuals are also available, using Bollen's
-##'   (\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's
-##'   (\code{type = "cor.bentler"}) formulas.}
-##' \item{resid}{alias for \code{residuals}}
+##'   (`type = "cor"` or `"cor.bollen"`) or Bentler's
+##'   (`type = "cor.bentler"`) formulas.}
+##' \item{resid}{alias for `residuals`}
 ##'
-##' \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
+##' \item{nobs}{`signature(object = "lavaan.mi", total = TRUE)`: either
 ##'   the total (default) sample size or a vector of group sample sizes
-##'   (\code{total = FALSE}).}
+##'   (`total = FALSE`).}
 ##'
-##' \item{anova}{\code{signature(object = "lavaan.mi", ...)}:
-##'   Returns a test of model fit for a single model (\code{object}) or test(s)
-##'   of the difference(s) in fit between nested models passed via \code{...}.
+##' \item{anova}{`signature(object = "lavaan.mi", ...)`:
+##'   Returns a test of model fit for a single model (`object`) or test(s)
+##'   of the difference(s) in fit between nested models passed via `...`.
 ##'   See \code{\link{lavTestLRT.mi}} and \code{\link{compareFit}} for details.}
 ##'
-##' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
+##' \item{fitMeasures}{`signature(object = "lavaan.mi",
 ##'   fit.measures = "all", baseline.model = NULL, output = "vector",
-##'   omit.imps = c("no.conv","no.se"), ...)}: See lavaan's
+##'   omit.imps = c("no.conv","no.se"), ...)`: See lavaan's
 ##'   \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
-##'   to \code{\link{lavTestLRT.mi}} via \code{...}.}
-##' \item{fitmeasures}{alias for \code{fitMeasures}.}
+##'   to \code{\link{lavTestLRT.mi}} via `...`.}
+##' \item{fitmeasures}{alias for `fitMeasures`.}
 ##'
-##' \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
+##' \item{show}{`signature(object = "lavaan.mi")`: returns a message about
 ##'  convergence rates and estimation problems (if applicable) across imputed
 ##'  data sets.}
 ##'
-##' \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
+##' \item{summary}{`signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
 ##'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
 ##'  scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
-##'   header = TRUE, output = "text", fit.measures = FALSE, ...)}:
+##'   header = TRUE, output = "text", fit.measures = FALSE, ...)`:
 ##'  see \code{\link[lavaan]{parameterEstimates}} for details.
-##'  By default, \code{summary} returns pooled point and \emph{SE}
-##'  estimates, along with \emph{t} test statistics and their associated
-##'  \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervales
-##'  are returned with the specified confidence \code{level} (default 95\% CI).
-##'  If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
-##'  returned. \code{standardized} solution(s) can also be requested by name
-##'  (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
-##'  \emph{R}-squared for endogenous variables can be requested, as well as the
+##'  By default, `summary` returns pooled point and *SE*
+##'  estimates, along with *t* test statistics and their associated
+##'  *df* and *p* values. If `ci = TRUE`, confidence intervales
+##'  are returned with the specified confidence `level` (default 95\% CI).
+##'  If `asymptotic = TRUE`, *z* instead of *t* tests are
+##'  returned. `standardized` solution(s) can also be requested by name
+##'  (`"std.lv"` or `"std.all"`) or both are returned with `TRUE`.
+##'  *R*-squared for endogenous variables can be requested, as well as the
 ##'  Fraction Missing Information (FMI) for parameter estimates. By default, the
-##'  output will appear like \code{lavaan}'s \code{summary} output, but if
-##'  \code{output == "data.frame"}, the returned \code{data.frame} will resemble
-##'  the \code{parameterEstimates} output. The \code{scale.W} argument is
-##'  passed to \code{vcov} (see description above).
-##'  Setting \code{fit.measures=TRUE} will additionally print fit measures to
+##'  output will appear like `lavaan`'s `summary` output, but if
+##'  `output == "data.frame"`, the returned `data.frame` will resemble
+##'  the `parameterEstimates` output. The `scale.W` argument is
+##'  passed to `vcov` (see description above).
+##'  Setting `fit.measures=TRUE` will additionally print fit measures to
 ##'  the console, but they will not be returned; additional arguments may be
-##'  passed via \code{...} to \code{\link[lavaan]{fitMeasures}} and
+##'  passed via `...` to \code{\link[lavaan]{fitMeasures}} and
 ##'  subsequently to \code{\link{lavTestLRT.mi}}.}
 ##'
 ##' @section Objects from the Class: See the \code{\link{runMI}} function for
@@ -192,23 +192,23 @@
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references
-##'   Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
-##'   with multiple imputation}. Technical Report. Retrieved from
-##'   \url{http://www.statmodel.com/}
+##'   Asparouhov, T., & Muthen, B. (2010). *Chi-square statistics
+##'   with multiple imputation*. Technical Report. Retrieved from
+##'   <http://www.statmodel.com/>
 ##'
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
+##'   Enders, C. K. (2010). *Applied missing data analysis*. New York, NY:
 ##'   Guilford.
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-##'   Significance levels from repeated \emph{p}-values with multiply-imputed
-##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   \url{https://www.jstor.org/stable/24303994}
+##'   Significance levels from repeated *p*-values with multiply-imputed
+##'   data. *Statistica Sinica, 1*(1), 65--92. Retrieved from
+##'   <https://www.jstor.org/stable/24303994>
 ##'
 ##'   Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-##'   multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
+##'   multiply-imputed data sets. *Biometrika, 79*(1), 103--111.
 ##'   \doi{10.2307/2337151}
 ##'
-##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
 ##' @examples

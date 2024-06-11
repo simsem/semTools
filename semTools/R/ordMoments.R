@@ -20,27 +20,27 @@
 ##'
 ##' @param Sigma Population covariance \code{\link{matrix}}, with variable names
 ##'   saved in the \code{\link{dimnames}} attribute.
-##' @param Mu Optional \code{numeric} vector of population means. If missing,
+##' @param Mu Optional `numeric` vector of population means. If missing,
 ##'   all means will be set to zero.
-##' @param thresholds Either a single \code{numeric} vector of population
+##' @param thresholds Either a single `numeric` vector of population
 ##'   thresholds used to discretize each normally distributed variable, or a
-##'   named \code{list} of each discretized variable's vector of thresholds.
-##'   The discretized variables may be a subset of all variables in \code{Sigma}
+##'   named `list` of each discretized variable's vector of thresholds.
+##'   The discretized variables may be a subset of all variables in `Sigma`
 ##'   if the remaining variables are intended to be observed rather than latent
 ##'   normally distributed variables.
 ##' @param cWts Optional (default when missing is to use 0 for the lowest
 ##'   category, followed by successive integers for each higher category).
-##'   Either a single \code{numeric} vector of category weights (if they are
-##'   identical across all variables) or a named \code{list} of each
+##'   Either a single `numeric` vector of category weights (if they are
+##'   identical across all variables) or a named `list` of each
 ##'   discretized variable's vector of category weights.
 ##'
-##' @return A \code{list} including the LRV-scale population moments (means,
+##' @return A `list` including the LRV-scale population moments (means,
 ##'   covariance matrix, correlation matrix, and thresholds), the category
-##'   weights, a \code{data.frame} of implied univariate moments (means,
-##'   \emph{SD}s, skewness, and excess kurtosis (i.e., in excess of 3, which is
+##'   weights, a `data.frame` of implied univariate moments (means,
+##'   *SD*s, skewness, and excess kurtosis (i.e., in excess of 3, which is
 ##'   the kurtosis of the normal distribution) for discretized data treated as
-##'   \code{numeric}, and the implied covariance and correlation matrix of
-##'   discretized data treated as \code{numeric}.
+##'   `numeric`, and the implied covariance and correlation matrix of
+##'   discretized data treated as `numeric`.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -51,16 +51,16 @@
 ##'
 ##' Jorgensen, T. D., & Johnson, A. R. (2022). How to derive expected values of
 ##'   structural equation model parameters when treating discrete data as
-##'   continuous. \emph{Structural Equation Modeling, 29}(4), 639--650.
+##'   continuous. *Structural Equation Modeling, 29*(4), 639--650.
 ##'   \doi{10.1080/10705511.2021.1988609}
 ##'
 ##' Kamata, A., & Bauer, D. J. (2008). A note on the relation between factor
 ##'   analytic and item response theory models.
-##'   \emph{Structural Equation Modeling, 15}(1), 136--153.
+##'   *Structural Equation Modeling, 15*(1), 136--153.
 ##'   \doi{10.1080/10705510701758406}
 ##'
 ##' Wirth, R. J., & Edwards, M. C. (2007). Item factor analysis: Current
-##'   approaches and future directions. \emph{Psychological Methods, 12}(1),
+##'   approaches and future directions. *Psychological Methods, 12*(1),
 ##'   58--79. \doi{10.1037/1082-989X.12.1.58}
 ##'
 ##' @examples

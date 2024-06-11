@@ -8,8 +8,8 @@
 ##' one-by-one from nested model and compare with the original nested model or
 ##' (b) fixing (or constraining) a parameter one-by-one from the parent model
 ##' and compare with the original parent model. This function only works with
-##' congeneric models. The \code{partialInvariance} is used for continuous
-##' variable. The \code{partialInvarianceCat} is used for categorical variables.
+##' congeneric models. The `partialInvariance` is used for continuous
+##' variable. The `partialInvarianceCat` is used for categorical variables.
 ##'
 ##' There are four types of partial invariance testing:
 ##'
@@ -20,7 +20,7 @@
 ##' invariance models respectively. The modified models are compared with the
 ##' original model. Note that the objects in the list of models must have the
 ##' names of "fit.configural" and "fit.loadings". Users may use "metric",
-##' "weak", "loading", or "loadings" in the \code{type} argument. Note that, for
+##' "weak", "loading", or "loadings" in the `type` argument. Note that, for
 ##' testing invariance on marker variables, other variables will be assigned as
 ##' marker variables automatically.
 ##'
@@ -32,7 +32,7 @@
 ##' objects in the list of models must have the names of "fit.loadings" and
 ##' either "fit.intercepts" or "fit.thresholds". Users may use "scalar",
 ##' "strong", "intercept", "intercepts", "threshold", or "thresholds" in the
-##' \code{type} argument. Note that, for testing invariance on marker variables,
+##' `type` argument. Note that, for testing invariance on marker variables,
 ##' other variables will be assigned as marker variables automatically. Note
 ##' that if all variables are dichotomous, scalar invariance testing is not
 ##' available.
@@ -45,7 +45,7 @@
 ##' original model. Note that the objects in the list of models must have the
 ##' names of "fit.residuals" and either "fit.intercepts", "fit.thresholds", or
 ##' "fit.loadings". Users may use "strict", "residual", "residuals", "error", or
-##' "errors" in the \code{type} argument.
+##' "errors" in the `type` argument.
 ##'
 ##'  \item Partial mean invariance. The
 ##' model named either 'fit.intercepts' or 'fit.thresholds' (or 'fit.residuals'
@@ -55,30 +55,30 @@
 ##' models are compared with the original model. Note that the objects in the
 ##' list of models must have the names of "fit.means" and either
 ##' "fit.residuals", "fit.intercepts", "fit.thresholds", or "fit.loadings".
-##' Users may use "means" or "mean" in the \code{type} argument. }
+##' Users may use "means" or "mean" in the `type` argument. }
 ##'
 ##' Two types of comparisons are used in this function:
 ##' \enumerate{
-##' \item \code{free}: The nested model is used as a template. Then, one
+##' \item `free`: The nested model is used as a template. Then, one
 ##' parameter indicating the differences between two models is free. The new
 ##' model is compared with the nested model. This process is repeated for all
 ##' differences between two models. The likelihood-ratio test and the difference
 ##' in CFI are provided.
 ##'
-##' \item \code{fix}: The parent model is used as a template. Then, one parameter
+##' \item `fix`: The parent model is used as a template. Then, one parameter
 ##' indicating the differences between two models is fixed or constrained to be
 ##' equal to other parameters. The new model is then compared with the parent
 ##' model. This process is repeated for all differences between two models. The
 ##' likelihood-ratio test and the difference in CFI are provided.
 ##'
-##' \item \code{wald}: This method is similar to the \code{fix} method. However,
+##' \item `wald`: This method is similar to the `fix` method. However,
 ##' instead of building a new model and compare them with likelihood-ratio test,
 ##' multivariate wald test is used to compare equality between parameter
 ##' estimates. See \code{\link[lavaan]{lavTestWald}} for further details. Note
 ##' that if any rows of the contrast cannot be summed to 0, the Wald test is not
 ##' provided, such as comparing two means where one of the means is fixed as 0.
 ##' This test statistic is not as accurate as likelihood-ratio test provided in
-##' \code{fix}. I provide it here in case that likelihood-ratio test fails to
+##' `fix`. I provide it here in case that likelihood-ratio test fails to
 ##' converge.
 ##' }
 ##'
@@ -88,7 +88,7 @@
 ##'
 ##' The details of standardized estimates and the effect size used for each
 ##' parameters are provided in the vignettes by running
-##' \code{vignette("partialInvariance")}.
+##' `vignette("partialInvariance")`.
 ##'
 ##' @importFrom lavaan lavInspect parTable
 ##' @aliases partialInvariance partialInvarianceCat
@@ -108,7 +108,7 @@
 ##'   argument represents a vector of factor names that are fixed across groups.
 ##' @param refgroup The reference group used to make the effect size comparison
 ##'   with the other groups.
-##' @param poolvar If \code{TRUE}, the variances are pooled across group for
+##' @param poolvar If `TRUE`, the variances are pooled across group for
 ##'   standardization. Otherwise, the variances of the reference group are used
 ##'   for standardization.
 ##' @param p.adjust The method used to adjust p values. See
@@ -124,36 +124,36 @@
 ##' @return A list of results are provided. The list will consists of at least
 ##' two elements:
 ##' \enumerate{
-##'  \item \code{estimates}: The results of parameter estimates including pooled
-##'   estimates (\code{poolest}), the estimates for each group, standardized
-##'   estimates for each group (\code{std}), the difference in standardized
-##'   values, and the effect size statistic (\emph{q} for factor loading
-##'   difference and \emph{h} for error variance difference). See the details of
-##'   this effect size statistic by running \code{vignette("partialInvariance")}.
-##'   In the \code{partialInvariance} function, the additional effect statistics
+##'  \item `estimates`: The results of parameter estimates including pooled
+##'   estimates (`poolest`), the estimates for each group, standardized
+##'   estimates for each group (`std`), the difference in standardized
+##'   values, and the effect size statistic (*q* for factor loading
+##'   difference and *h* for error variance difference). See the details of
+##'   this effect size statistic by running `vignette("partialInvariance")`.
+##'   In the `partialInvariance` function, the additional effect statistics
 ##'   proposed by Millsap and Olivera-Aguilar (2012) are provided. For factor
 ##'   loading, the additional outputs are the observed mean difference
-##'   (\code{diff_mean}), the mean difference if factor scores are low
-##'   (\code{low_fscore}), and the mean difference if factor scores are high
-##'   (\code{high_fscore}). The low factor score is calculated by (a) finding the
-##'   factor scores that its \emph{z} score equals -\code{bound} (the default is
+##'   (`diff_mean`), the mean difference if factor scores are low
+##'   (`low_fscore`), and the mean difference if factor scores are high
+##'   (`high_fscore`). The low factor score is calculated by (a) finding the
+##'   factor scores that its *z* score equals -`bound` (the default is
 ##'   \eqn{-2}) from all groups and (b) picking the minimum value among the
 ##'   factor scores. The high factor score is calculated by (a) finding the
-##'   factor scores that its \emph{z} score equals \code{bound} (default = 2)
+##'   factor scores that its *z* score equals `bound` (default = 2)
 ##'   from all groups and (b) picking the maximum value among the factor scores.
 ##'   For measurement intercepts, the additional outputs are the observed means
-##'   difference (\code{diff_mean}) and the proportion of the differences in the
-##'   intercepts over the observed means differences (\code{propdiff}). For error
+##'   difference (`diff_mean`) and the proportion of the differences in the
+##'   intercepts over the observed means differences (`propdiff`). For error
 ##'   variances, the additional outputs are the proportion of the difference in
-##'   error variances over the difference in observed variances (\code{propdiff}).
+##'   error variances over the difference in observed variances (`propdiff`).
 ##'
-##'  \item \code{results}: Statistical tests as well as the change in CFI are
-##'   provided. \eqn{\chi^2} and \emph{p} value are provided for all methods.
+##'  \item `results`: Statistical tests as well as the change in CFI are
+##'   provided. \eqn{\chi^2} and *p* value are provided for all methods.
 ##'
-##'  \item \code{models}: The submodels used in the \code{free} and \code{fix}
+##'  \item `models`: The submodels used in the `free` and `fix`
 ##'   methods, as well as the nested and parent models. The nested and parent
-##'   models will be changed from the original models if \code{free} or
-##'   \code{fit} arguments are specified.
+##'   models will be changed from the original models if `free` or
+##'   `fit` arguments are specified.
 ##' }
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -165,7 +165,7 @@
 ##'
 ##' @references Millsap, R. E., & Olivera-Aguilar, M. (2012). Investigating
 ##' measurement invariance using confirmatory factor analysis. In R. H. Hoyle
-##' (Ed.), \emph{Handbook of structural equation modeling} (pp. 380--392). New
+##' (Ed.), *Handbook of structural equation modeling* (pp. 380--392). New
 ##' York, NY: Guilford.
 ##'
 ##' @examples

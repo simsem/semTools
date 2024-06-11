@@ -13,7 +13,7 @@
 ##' See \code{\link{nullRMSEA}} for the further details of the computation of
 ##' RMSEA of the null model.
 ##'
-##' Gamma-Hat (\code{gammaHat}; West, Taylor, & Wu, 2012) is a global
+##' Gamma-Hat (`gammaHat`; West, Taylor, & Wu, 2012) is a global
 ##' goodness-of-fit index which can be computed (assuming equal number of
 ##' indicators across groups) by
 ##'
@@ -22,25 +22,25 @@
 ##' where \eqn{p} is the number of variables in the model, \eqn{\chi^{2}_{k}} is
 ##' the \eqn{\chi^2} test statistic value of the target model, \eqn{df_{k}} is
 ##' the degree of freedom when fitting the target model, and \eqn{N} is the
-##' sample size (or sample size minus the number of groups if \code{mimic} is
-##' set to \code{"EQS"}).
+##' sample size (or sample size minus the number of groups if `mimic` is
+##' set to `"EQS"`).
 ##'
-##' Adjusted Gamma-Hat (\code{adjGammaHat}; West, Taylor, & Wu, 2012) is a
+##' Adjusted Gamma-Hat (`adjGammaHat`; West, Taylor, & Wu, 2012) is a
 ##' global fit index which can be computed by
 ##'
 ##'   \deqn{ \hat{\Gamma}_\textrm{adj} = \left(1 - \frac{K \times p \times
 ##'   (p + 1)}{2 \times df_{k}} \right) \times \left( 1 - \hat{\Gamma} \right),}
 ##'
 ##' where \eqn{K} is the number of groups (please refer to Dudgeon, 2004, for
-##' the multiple-group adjustment for \code{adjGammaHat}).
+##' the multiple-group adjustment for `adjGammaHat`).
 ##'
 ##' Note that if Satorra--Bentler's or Yuan--Bentler's method is used, the fit
 ##' indices using the scaled \eqn{\chi^2} values are also provided.
 ##'
 ##' The remaining indices are information criteria calculated using the
-##' \code{object}'s \eqn{-2 \times} log-likelihood, abbreviated \eqn{-2LL}.
+##' `object`'s \eqn{-2 \times} log-likelihood, abbreviated \eqn{-2LL}.
 ##'
-##' Corrected Akaike Information Criterion (\code{aic.smallN}; Burnham &
+##' Corrected Akaike Information Criterion (`aic.smallN`; Burnham &
 ##' Anderson, 2003) is a corrected version of AIC for small sample size, often
 ##' abbreviated AICc:
 ##'
@@ -49,11 +49,11 @@
 ##' where \eqn{AIC} is the original AIC: \eqn{-2LL + 2q} (where \eqn{q}
 ##' = the number of estimated parameters in the target model). Note that AICc is
 ##' a small-sample correction derived for univariate regression models, so it is
-##' probably \emph{not} appropriate for comparing SEMs.
+##' probably *not* appropriate for comparing SEMs.
 ##'
-##' Corrected Bayesian Information Criterion (\code{bic.priorN}; Kuha, 2004) is
+##' Corrected Bayesian Information Criterion (`bic.priorN`; Kuha, 2004) is
 ##' similar to BIC but explicitly specifying the sample size on which the prior
-##' is based (\eqn{N_{prior}}) using the \code{nPrior} argument.
+##' is based (\eqn{N_{prior}}) using the `nPrior` argument.
 ##'
 ##'   \deqn{ \textrm{BIC}_{\textrm{prior}-N} = -2LL + q\log{( 1 + \frac{N}{N_{prior}} )}.}
 ##'
@@ -108,31 +108,31 @@
 ##'
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param object The lavaan model object provided after running the \code{cfa},
-##'   \code{sem}, \code{growth}, or \code{lavaan} functions.
+##' @param object The lavaan model object provided after running the `cfa`,
+##'   `sem`, `growth`, or `lavaan` functions.
 ##' @param fit.measures Additional fit measures to be calculated. All additional
 ##'   fit measures are calculated by default
 ##' @param nPrior The sample size on which prior is based. This argument is used
-##'   to compute \code{bic.priorN}.
+##'   to compute `bic.priorN`.
 ##'
-##' @return A \code{numeric} \code{lavaan.vector} including any of the
-##'   following requested via \code{fit.measures=}
+##' @return A `numeric` `lavaan.vector` including any of the
+##'   following requested via `fit.measures=`
 ##' \enumerate{
-##'  \item \code{gammaHat}: Gamma-Hat
-##'  \item \code{adjGammaHat}: Adjusted Gamma-Hat
-##'  \item \code{baseline.rmsea}: RMSEA of the default baseline (i.e., independence) model
-##'  \item \code{gammaHat.scaled}: Gamma-Hat using scaled \eqn{\chi^2}
-##'  \item \code{adjGammaHat.scaled}: Adjusted Gamma-Hat using scaled \eqn{\chi^2}
-##'  \item \code{baseline.rmsea.scaled}: RMSEA of the default baseline (i.e.,
+##'  \item `gammaHat`: Gamma-Hat
+##'  \item `adjGammaHat`: Adjusted Gamma-Hat
+##'  \item `baseline.rmsea`: RMSEA of the default baseline (i.e., independence) model
+##'  \item `gammaHat.scaled`: Gamma-Hat using scaled \eqn{\chi^2}
+##'  \item `adjGammaHat.scaled`: Adjusted Gamma-Hat using scaled \eqn{\chi^2}
+##'  \item `baseline.rmsea.scaled`: RMSEA of the default baseline (i.e.,
 ##'        independence) model using scaled \eqn{\chi^2}
-##'  \item \code{aic.smallN}: Corrected (for small sample size) AIC
-##'  \item \code{bic.priorN}: BIC with specified prior sample size
-##'  \item \code{spbic}: Scaled Unit-Information Prior BIC (SPBIC)
-##'  \item \code{hbic}: Haughton's BIC (HBIC)
-##'  \item \code{ibic}: Information-matrix-based BIC (IBIC)
-##'  \item \code{sic}: Stochastic Information Criterion (SIC)
-##'  \item \code{hqc}: Hannan-Quinn Information Criterion (HQC)
-##'  \item \code{icomp}: Bozdogan Information Complexity (ICOMP) Criteria
+##'  \item `aic.smallN`: Corrected (for small sample size) AIC
+##'  \item `bic.priorN`: BIC with specified prior sample size
+##'  \item `spbic`: Scaled Unit-Information Prior BIC (SPBIC)
+##'  \item `hbic`: Haughton's BIC (HBIC)
+##'  \item `ibic`: Information-matrix-based BIC (IBIC)
+##'  \item `sic`: Stochastic Information Criterion (SIC)
+##'  \item `hqc`: Hannan-Quinn Information Criterion (HQC)
+##'  \item `icomp`: Bozdogan Information Complexity (ICOMP) Criteria
 ##' }
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -161,39 +161,39 @@
 ##'
 ##' Bollen, K. A., Ray, S., Zavisca, J., & Harden, J. J. (2012). A comparison of
 ##' Bayes factor approximation methods including two new methods.
-##' \emph{Sociological Methods & Research, 41}(2), 294--324.
+##' *Sociological Methods & Research, 41*(2), 294--324.
 ##' \doi{10.1177/0049124112452393}
 ##'
 ##' Bollen, K. A., Harden, J. J., Ray, S., & Zavisca, J. (2014). BIC and
 ##' alternative Bayesian information criteria in the selection of structural
-##' equation models. \emph{Structural Equation Modeling, 21}(1), 1--19.
+##' equation models. *Structural Equation Modeling, 21*(1), 1--19.
 ##' \doi{10.1080/10705511.2014.856691}
 ##'
-##' Burnham, K., & Anderson, D. (2003). \emph{Model selection and
-##' multimodel inference: A practical--theoretic approach}. New York, NY:
+##' Burnham, K., & Anderson, D. (2003). *Model selection and
+##' multimodel inference: A practical--theoretic approach*. New York, NY:
 ##' Springer--Verlag.
 ##'
 ##' Dudgeon, P. (2004). A note on extending Steiger's (1998) multiple sample
 ##' RMSEA adjustment to other noncentrality parameter-based statistic.
-##' \emph{Structural Equation Modeling, 11}(3), 305--319.
+##' *Structural Equation Modeling, 11*(3), 305--319.
 ##' \doi{10.1207/s15328007sem1103_1}
 ##'
 ##' Howe, E. D., Bozdogan, H., & Katragadda, S. (2011). Structural equation
 ##' modeling (SEM) of categorical and mixed-data using the novel Gifi
 ##' transformations and information complexity (ICOMP) criterion.
-##' \emph{Istanbul University Journal of the School of Business Administration, 40}(1), 86--123.
+##' *Istanbul University Journal of the School of Business Administration, 40*(1), 86--123.
 ##'
 ##' Kuha, J. (2004). AIC and BIC: Comparisons of assumptions and performance.
-##' \emph{Sociological Methods Research, 33}(2), 188--229.
+##' *Sociological Methods Research, 33*(2), 188--229.
 ##' \doi{10.1177/0049124103262065}
 ##'
 ##' Preacher, K. J. (2006). Quantifying parsimony in structural equation
-##' modeling. \emph{Multivariate Behavioral Research, 43}(3), 227--259.
+##' modeling. *Multivariate Behavioral Research, 43*(3), 227--259.
 ##' \doi{10.1207/s15327906mbr4103_1}
 ##'
 ##' West, S. G., Taylor, A. B., & Wu, W. (2012). Model fit and model selection
-##' in structural equation modeling. In R. H. Hoyle (Ed.), \emph{Handbook of
-##' structural equation modeling} (pp. 209--231). New York, NY: Guilford.
+##' in structural equation modeling. In R. H. Hoyle (Ed.), *Handbook of
+##' structural equation modeling* (pp. 209--231). New York, NY: Guilford.
 ##'
 ##'
 ##' @examples
@@ -331,7 +331,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 ##' Calculate the RMSEA of the null (baseline) model
 ##'
 ##' RMSEA of the null model is calculated similar to the formula provided in the
-##' \code{lavaan} package. The standard formula of RMSEA is
+##' `lavaan` package. The standard formula of RMSEA is
 ##'
 ##' \deqn{ RMSEA =\sqrt{\frac{\chi^2}{N \times df} - \frac{1}{N}} \times
 ##' \sqrt{G} }
@@ -347,18 +347,18 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 ##' RMSEA for the null model is less than 0.158, an incremental measure of fit
 ##' may not be that informative."
 ##'
-##' See also \url{http://davidakenny.net/cm/fit.htm}
+##' See also <http://davidakenny.net/cm/fit.htm>
 ##'
 ##'
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param object The lavaan model object provided after running the \code{cfa},
-##' \code{sem}, \code{growth}, or \code{lavaan} functions.
-##' @param scaled If \code{TRUE}, the scaled (or robust, if available) RMSEA
+##' @param object The lavaan model object provided after running the `cfa`,
+##' `sem`, `growth`, or `lavaan` functions.
+##' @param scaled If `TRUE`, the scaled (or robust, if available) RMSEA
 ##'   is returned. Ignored if a robust test statistic was not requested.
-##' @param silent If \code{TRUE}, do not print anything on the screen.
+##' @param silent If `TRUE`, do not print anything on the screen.
 ##'
-##' @return A value of RMSEA of the null model (a \code{numeric} vector)
+##' @return A value of RMSEA of the null model (a `numeric` vector)
 ##'   returned invisibly.
 ##'
 ##' @author
@@ -375,7 +375,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 ##'
 ##' @references Kenny, D. A., Kaniskan, B., & McCoach, D. B. (2015). The
 ##' performance of RMSEA in models with small degrees of freedom.
-##' \emph{Sociological Methods Research, 44}(3), 486--507.
+##' *Sociological Methods Research, 44*(3), 486--507.
 ##' \doi{10.1177/0049124114543236}
 ##'
 ##' @examples
@@ -439,18 +439,18 @@ sic <- function(f, lresults = NULL) {
 
 
 
-##' Small-\emph{N} correction for \eqn{chi^2} test statistic
+##' Small-*N* correction for \eqn{chi^2} test statistic
 ##'
-##' Calculate small-\emph{N} corrections for \eqn{chi^2} model-fit test
+##' Calculate small-*N* corrections for \eqn{chi^2} model-fit test
 ##' statistic to adjust for small sample size (relative to model size).
 ##'
 ##' Four finite-sample adjustments to the chi-squared statistic are currently
 ##' available, all of which are described in Shi et al. (2018). These all
 ##' assume normally distributed data, and may not work well with severely
-##' nonnormal data. Deng et al. (2018, section 4) review proposed small-\emph{N}
+##' nonnormal data. Deng et al. (2018, section 4) review proposed small-*N*
 ##' adjustments that do not assume normality, which rarely show promise, so
 ##' they are not implemented here. This function currently will apply
-##' small-\emph{N} adjustments to scaled test statistics with a warning that
+##' small-*N* adjustments to scaled test statistics with a warning that
 ##' they do not perform well (Deng et al., 2018).
 ##'
 ##' @importFrom lavaan lavInspect lavNames
@@ -458,27 +458,27 @@ sic <- function(f, lresults = NULL) {
 ##' @importFrom methods getMethod
 ##'
 ##' @param fit0,fit1 \linkS4class{lavaan} object(s) provided after running the
-##'   \code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
+##'   `cfa`, `sem`, `growth`, or `lavaan` functions.
 ##'   \linkS4class{lavaan.mi} object(s) also accepted.
-##' @param smallN.method \code{character} indicating the small-\emph{N}
+##' @param smallN.method `character` indicating the small-*N*
 ##'   correction method to use. Multiple may be chosen (all of which assume
 ##'   normality), as described in Shi et al. (2018):
-##'   \code{c("swain","yuan.2015","yuan.2005","bartlett")}. Users may also
-##'   simply select \code{"all"}.
+##'   `c("swain","yuan.2015","yuan.2005","bartlett")`. Users may also
+##'   simply select `"all"`.
 ##' @param \dots Additional arguments to the \code{\link[lavaan]{lavTestLRT}} or
-##'   \code{\link{lavTestLRT.mi}} functions. Ignored when \code{is.null(fit1)}.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'   imputations from pooled results. Ignored unless \code{fit0} (and
-##'   optionally \code{fit1}) is a \linkS4class{lavaan.mi} object. See
+##'   \code{\link{lavTestLRT.mi}} functions. Ignored when `is.null(fit1)`.
+##' @param omit.imps `character` vector specifying criteria for omitting
+##'   imputations from pooled results. Ignored unless `fit0` (and
+##'   optionally `fit1`) is a \linkS4class{lavaan.mi} object. See
 ##'   \code{\link{lavTestLRT.mi}} for a description of options and defaults.
 ##'
-##' @return A \code{list} of \code{numeric} vectors: one for the originally
-##'   requested statistic(s), along with one per requested \code{smallN.method}.
-##'   All include the the (un)adjusted test statistic, its \emph{df}, and the
-##'   \emph{p} value for the test under the null hypothesis that the model fits
+##' @return A `list` of `numeric` vectors: one for the originally
+##'   requested statistic(s), along with one per requested `smallN.method`.
+##'   All include the the (un)adjusted test statistic, its *df*, and the
+##'   *p* value for the test under the null hypothesis that the model fits
 ##'   perfectly (or that the 2 models have equivalent fit).
 ##'   The adjusted chi-squared statistic(s) also include(s) the scaling factor
-##'   for the small-\emph{N} adjustment.
+##'   for the small-*N* adjustment.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -486,12 +486,12 @@ sic <- function(f, lresults = NULL) {
 ##' @references
 ##'   Deng, L., Yang, M., & Marcoulides, K. M. (2018). Structural equation
 ##'   modeling with many variables: A systematic review of issues and
-##'   developments. \emph{Frontiers in Psychology, 9}, 580.
+##'   developments. *Frontiers in Psychology, 9*, 580.
 ##'   \doi{10.3389/fpsyg.2018.00580}
 ##'
 ##'   Shi, D., Lee, T., & Terry, R. A. (2018). Revisiting the model
 ##'   size effect in structural equation modeling.
-##'   \emph{Structural Equation Modeling, 25}(1), 21--40.
+##'   *Structural Equation Modeling, 25*(1), 21--40.
 ##'   \doi{10.1080/10705511.2017.1369088}
 ##'
 ##' @examples

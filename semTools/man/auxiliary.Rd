@@ -39,19 +39,19 @@ any observed variables in the \code{model}}
 \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
 \code{"sem"}, or \code{"growth"}). Only required for \code{auxiliary}.}
 
-\item{...}{Additional arguments to pass to \code{fun=}.}
+\item{...}{Additional arguments to pass to \verb{fun=}.}
 
 \item{envir}{Passed to \code{\link{do.call}}.}
 
 \item{return.syntax}{\code{logical} indicating whether to return a
 \code{character} string of \code{\link[lavaan]{model.syntax}} that can be
-added to a target \code{model=} that is also a \code{character} string.
+added to a target \verb{model=} that is also a \code{character} string.
 This can be advantageous, for example, to use add saturated correlates to
 a \pkg{blavaan} model.}
 }
 \value{
 a fitted \code{\linkS4class{lavaan}} object.  Additional
-information is stored as a \code{list} in the \code{@external} slot:
+information is stored as a \code{list} in the \verb{@external} slot:
 \itemize{
 \item \code{baseline.model}. a fitted \code{\linkS4class{lavaan}}
 object. Results of fitting an appropriate independence model for

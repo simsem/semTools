@@ -3,31 +3,31 @@
 ### emmeans support for lavaan objects
 
 
-##' \code{emmeans} Support Functions for \code{lavaan} Models
+##' `emmeans` Support Functions for `lavaan` Models
 ##'
 ##' @description Provide emmeans support for lavaan objects
 ##'
 ##' @param object An object of class \code{\link[lavaan]{lavaan}}.
-##'   See \strong{Details}.
-##' @param lavaan.DV \code{character} string maming the variable(s) for which
+##'   See **Details**.
+##' @param lavaan.DV `character` string maming the variable(s) for which
 ##'   expected marginal means / trends should be produced.
 ##'   A vector of names indicates a multivariate outcome, treated by default
 ##'   as repeated measures.
-##' @param trms,xlev,grid See \code{emmeans::emm_basis}
-##' @param ... Further arguments passed to \code{emmeans::recover_data.lm} or
-##'   \code{emmeans::emm_basis.lm}
+##' @param trms,xlev,grid See `emmeans::emm_basis`
+##' @param ... Further arguments passed to `emmeans::recover_data.lm` or
+##'   `emmeans::emm_basis.lm`
 ##'
 ##' @details
 ##'
 ##' \subsection{Supported DVs}{
-##'   \code{lavaan.DV} must be an \emph{endogenous variable}, by appearing on
-##'   the left-hand side of either a regression operator (\code{"~"})
-##'   or an intercept operator (\code{"~1"}), or both.
+##'   `lavaan.DV` must be an *endogenous variable*, by appearing on
+##'   the left-hand side of either a regression operator (`"~"`)
+##'   or an intercept operator (`"~1"`), or both.
 ##'   \cr\cr
-##'   \code{lavaan.DV} can also be a vector of endogenous variable, in which
-##'   case they will be treated by \code{emmeans} as a multivariate outcome
+##'   `lavaan.DV` can also be a vector of endogenous variable, in which
+##'   case they will be treated by `emmeans` as a multivariate outcome
 ##'   (often, this indicates repeated measures) represented by an additional
-##'   factor named \code{rep.meas} by default.  The \code{rep.meas=} argument
+##'   factor named `rep.meas` by default.  The `rep.meas=` argument
 ##'   can be used to overwrite this default name.
 ##' }
 ##'
@@ -35,21 +35,21 @@
 ##'   This functionality does not support the following models:
 ##'   \itemize{
 ##'     \item Multi-level models are not supported.
-##'     \item Models not fit to a \code{data.frame} (i.e., models fit to a
+##'     \item Models not fit to a `data.frame` (i.e., models fit to a
 ##'           covariance matrix).
 ##'   }
 ##' }
 ##'
 ##' \subsection{Dealing with Fixed Parameters}{
-##' Fixed parameters (set with \code{lavaan}'s modifiers) are treated as-is:
-##' their values are set by the users, and they have a \emph{SE} of 0 (as such,
+##' Fixed parameters (set with `lavaan`'s modifiers) are treated as-is:
+##' their values are set by the users, and they have a *SE* of 0 (as such,
 ##' they do not co-vary with any other parameter).
 ##' }
 ##'
 ##' \subsection{Dealing with Multigroup Models}{
 ##' If a multigroup model is supplied, a factor is added to the reference grid,
-##' the name matching the \code{group} argument supplied when fitting the model.
-##' \emph{Note that you must set} \code{nesting = NULL}.
+##' the name matching the `group` argument supplied when fitting the model.
+##' *Note that you must set* `nesting = NULL`.
 ##' }
 ##'
 ##' \subsection{Dealing with Missing Data}{
@@ -58,7 +58,7 @@
 ##' }
 ##'
 ##' \subsection{Dealing with Factors}{
-##' By default \code{emmeans} recognizes binary variables (0,1) as a "factor"
+##' By default `emmeans` recognizes binary variables (0,1) as a "factor"
 ##' with two levels (and not a continuous variable). With some clever contrast
 ##' defenitions it should be possible to get the desired emmeans / contasts.
 ##' See example below.

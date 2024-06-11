@@ -33,8 +33,8 @@
 ##'
 ##' Method 2:  The confidence interval (CI) of an EPC is calculated.
 ##' These CIs are compared with the range of trivial
-##' misspecification, which could be (-\code{delta}, \code{delta}) or (0,
-##' \code{delta}) for nonnegative parameters.
+##' misspecification, which could be (-`delta`, `delta`) or (0,
+##' `delta`) for nonnegative parameters.
 ##'
 ##' \itemize{
 ##'   \item If a CI overlaps with the range of trivial misspecification,
@@ -61,72 +61,72 @@
 ##'   would like to be detected (rejected). The default value is 0.1, which is
 ##'   suggested by Saris and colleagues (2009, p. 571).
 ##' @param intcept The amount of standardized intercept (similar to Cohen's
-##'   \emph{d} that one would like to be detected (rejected). The default value
+##'   *d* that one would like to be detected (rejected). The default value
 ##'   is 0.2, which is equivalent to a low effect size proposed by Cohen (1988,
 ##'   1992).
 ##' @param stdDelta The vector of the standardized parameters that one would
 ##'   like to be detected (rejected). If this argument is specified, the value
 ##'   here will overwrite the other arguments above. The order of the vector
 ##'   must be the same as the row order from modification indices from the
-##'   \code{lavaan} object. If a single value is specified, the value will be
+##'   `lavaan` object. If a single value is specified, the value will be
 ##'   applied to all parameters.
 ##' @param delta The vector of the unstandardized parameters that one would like
 ##'   to be detected (rejected). If this argument is specified, the value here
 ##'   will overwrite the other arguments above. The order of the vector must be
-##'   the same as the row order from modification indices from the \code{lavaan}
+##'   the same as the row order from modification indices from the `lavaan`
 ##'   object. If a single value is specified, the value will be applied to all
 ##'   parameters.
 ##' @param cilevel The confidence level of the confidence interval of expected
 ##'   parameter changes. The confidence intervals are used in the equivalence
 ##'   testing.
 ##' @param \dots arguments passed to \code{\link[lavaan]{modificationIndices}},
-##'   except for \code{delta}, which is already an argument (which can be
-##'   substituted for \code{stdDelta} or specific sets of parameters using
-##'   \code{stdLoad}, \code{cor}, \code{stdBeta}, and \code{intcept}).
+##'   except for `delta`, which is already an argument (which can be
+##'   substituted for `stdDelta` or specific sets of parameters using
+##'   `stdLoad`, `cor`, `stdBeta`, and `intcept`).
 ##'
 ##' @return A data frame with these variables:
 ##'  \enumerate{
-##'   \item \code{lhs}: The left-hand side variable, with respect to the operator in
+##'   \item `lhs`: The left-hand side variable, with respect to the operator in
 ##'    in the lavaan \code{\link[lavaan]{model.syntax}}
-##'   \item \code{op}: The lavaan syntax operator: "~~" represents covariance,
+##'   \item `op`: The lavaan syntax operator: "~~" represents covariance,
 ##'     "=~" represents factor loading, "~" represents regression, and
 ##'     "~1" represents intercept.
-##'   \item \code{rhs}: The right-hand side variable
-##'   \item \code{group}: The level of the group variable for the parameter in question
-##'   \item \code{mi}: The modification index of the fixed parameter
-##'   \item \code{epc}: The EPC if the parameter is freely estimated
-##'   \item \code{target.epc}: The target EPC that represents the minimum size
+##'   \item `rhs`: The right-hand side variable
+##'   \item `group`: The level of the group variable for the parameter in question
+##'   \item `mi`: The modification index of the fixed parameter
+##'   \item `epc`: The EPC if the parameter is freely estimated
+##'   \item `target.epc`: The target EPC that represents the minimum size
 ##'    of misspecification that one would like to be detected
 ##'    by the test with a high power
-##'   \item \code{std.epc}: The standardized EPC if the parameter is freely estimated
-##'   \item \code{std.target.epc}: The standardized target expected parameter change
-##'   \item \code{significant.mi}: Represents whether the modification index value is
+##'   \item `std.epc`: The standardized EPC if the parameter is freely estimated
+##'   \item `std.target.epc`: The standardized target expected parameter change
+##'   \item `significant.mi`: Represents whether the modification index value is
 ##'     significant
-##'   \item \code{high.power}: Represents whether the power is enough to detect the
+##'   \item `high.power`: Represents whether the power is enough to detect the
 ##'    target expected parameter change
-##'   \item \code{decision.pow}: The decision whether the parameter is misspecified
-##'    or not based on Saris et al's method: \code{"M"} represents the parameter
-##'    is misspecified, \code{"NM"} represents the parameter is not misspecified,
-##'    \code{"EPC:M"} represents the parameter is misspecified decided by
-##'    checking the expected parameter change value, \code{"EPC:NM"} represents
+##'   \item `decision.pow`: The decision whether the parameter is misspecified
+##'    or not based on Saris et al's method: `"M"` represents the parameter
+##'    is misspecified, `"NM"` represents the parameter is not misspecified,
+##'    `"EPC:M"` represents the parameter is misspecified decided by
+##'    checking the expected parameter change value, `"EPC:NM"` represents
 ##'    the parameter is not misspecified decided by checking the expected
-##'    parameter change value, and \code{"I"} represents the decision is
+##'    parameter change value, and `"I"` represents the decision is
 ##'    inconclusive.
-##'   \item \code{se.epc}: The standard errors of the expected parameter changes.
-##'   \item \code{lower.epc}: The lower bound of the confidence interval of expected
+##'   \item `se.epc`: The standard errors of the expected parameter changes.
+##'   \item `lower.epc`: The lower bound of the confidence interval of expected
 ##'    parameter changes.
-##'   \item \code{upper.epc}: The upper bound of the confidence interval of expected
+##'   \item `upper.epc`: The upper bound of the confidence interval of expected
 ##'    parameter changes.
-##'   \item \code{lower.std.epc}: Lower confidence limit of standardized EPCs
-##'   \item \code{upper.std.epc}: Upper confidence limit of standardized EPCs
-##'   \item \code{decision.ci}: Decision whether the parameter is misspecified
-##'    based on the CI method: \code{"M"} represents the
-##'    parameter is misspecified, \code{"NM"} represents the parameter is not
-##'    misspecified, and \code{"I"} represents the decision is inconclusive.
+##'   \item `lower.std.epc`: Lower confidence limit of standardized EPCs
+##'   \item `upper.std.epc`: Upper confidence limit of standardized EPCs
+##'   \item `decision.ci`: Decision whether the parameter is misspecified
+##'    based on the CI method: `"M"` represents the
+##'    parameter is misspecified, `"NM"` represents the parameter is not
+##'    misspecified, and `"I"` represents the decision is inconclusive.
 ##' }
 ##'
 ##'  The row numbers matches with the results obtained from the
-##'  \code{inspect(object, "mi")} function.
+##'  `inspect(object, "mi")` function.
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
@@ -134,18 +134,18 @@
 ##' information
 ##'
 ##' @references
-##' Cohen, J. (1988). \emph{Statistical power analysis for the
-##' behavioral sciences} (2nd ed.). Hillsdale, NJ: Erlbaum.
+##' Cohen, J. (1988). *Statistical power analysis for the
+##' behavioral sciences* (2nd ed.). Hillsdale, NJ: Erlbaum.
 ##'
-##' Cohen, J. (1992). A power primer. \emph{Psychological Bulletin, 112}(1),
+##' Cohen, J. (1992). A power primer. *Psychological Bulletin, 112*(1),
 ##' 155--159. \doi{10.1037/0033-2909.112.1.155}
 ##'
 ##' Saris, W. E., Satorra, A., & van der Veld, W. M. (2009). Testing structural
-##' equation models or detection of misspecifications? \emph{Structural Equation
-##' Modeling, 16}(4), 561--582. \doi{10.1080/10705510903203433}
+##' equation models or detection of misspecifications? *Structural Equation
+##' Modeling, 16*(4), 561--582. \doi{10.1080/10705510903203433}
 ##'
 ##' van der Veld, W. M., Saris, W. E., & Satorra, A. (2008).
-##' \emph{JRule 3.0 Users Guide}. \doi{10.13140/RG.2.2.13609.90729}
+##' *JRule 3.0 Users Guide*. \doi{10.13140/RG.2.2.13609.90729}
 ##'
 ##' @examples
 ##'

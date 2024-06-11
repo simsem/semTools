@@ -13,7 +13,7 @@
 ##' using Rubin's (1987) rules, or by pooling the Wald  test statistics
 ##' across imputed data sets (Li, Meng, Raghunathan, & Rubin, 1991).
 ##'
-##' The constraints are specified using the \code{"=="} operator.
+##' The constraints are specified using the `"=="` operator.
 ##' Both the left-hand side and the right-hand side of the equality can contain
 ##' a linear combination of model parameters, or a constant (like zero).
 ##' The model parameters must be specified by their user-specified labels from
@@ -26,57 +26,57 @@
 ##' @importFrom methods getMethod
 ##'
 ##' @param object An object of class \code{\linkS4class{lavaan.mi}}.
-##' @param constraints A \code{character} string (typically between single
+##' @param constraints A `character` string (typically between single
 ##'   quotes) containing one or more equality constraints.
 ##'   See examples for more details
-##' @param test \code{character} indicating which pooling method to use.
-##'   \code{"D1"} or \code{"Rubin"} (default) indicates Rubin's (1987) rules
+##' @param test `character` indicating which pooling method to use.
+##'   `"D1"` or `"Rubin"` (default) indicates Rubin's (1987) rules
 ##'   will be applied to the point estimates and the asymptotic covariance
 ##'   matrix of model parameters, and those pooled values will be used to
-##'   calculate the Wald test in the usual manner. \code{"D2"}, \code{"LMRR"},
-##'   or \code{"Li.et.al"} indicate that the complete-data Wald test statistic
+##'   calculate the Wald test in the usual manner. `"D2"`, `"LMRR"`,
+##'   or `"Li.et.al"` indicate that the complete-data Wald test statistic
 ##'   should be calculated using each imputed data set, which will then be
 ##'   pooled across imputations, as described in Li, Meng, Raghunathan, & Rubin
 ##'   (1991) and Enders (2010, chapter 8).
-##' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
-##'   will be returned as an \emph{F}-distributed statistic with numerator
-##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
-##'   If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
-##'   \code{df1} on the assumption that its \code{df2} is sufficiently large
+##' @param asymptotic `logical`. If `FALSE` (default), the pooled test
+##'   will be returned as an *F*-distributed statistic with numerator
+##'   (`df1`) and denominator (`df2`) degrees of freedom.
+##'   If `TRUE`, the pooled *F* statistic will be multiplied by its
+##'   `df1` on the assumption that its `df2` is sufficiently large
 ##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-##'   with \code{df1}.
-##' @param scale.W \code{logical}. If \code{FALSE}, the pooled
+##'   with `df1`.
+##' @param scale.W `logical`. If `FALSE`, the pooled
 ##'   asymptotic covariance matrix of model parameters is calculated as the
 ##'   weighted sum of the within-imputation and between-imputation components.
 ##'   Otherwise, the pooled asymptotic covariance matrix of model parameters is
 ##'   calculated by scaling the within-imputation component by the
 ##'   average relative increase in variance (ARIV; see Enders, 2010, p. 235),
-##'   which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
-##'   \code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'   which is *only* consistent when requesting the *F* test (i.e.,
+##'   `asymptotic = FALSE`.  Ignored (irrelevant) if `test = "D2"`.
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
-##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'   default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
-##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
 ##'   as Heywood cases. Specific imputation numbers can also be included in this
 ##'   argument, in case users want to  apply their own custom omission criteria
 ##'   (or simulations can use different numbers of imputations without
 ##'   redundantly refitting the model).
-##' @param verbose \code{logical}. If \code{TRUE}, print the restriction
+##' @param verbose `logical`. If `TRUE`, print the restriction
 ##'   matrix and the estimated restricted values.
-##' @param warn \code{logical}. If \code{TRUE}, print warnings if they occur.
+##' @param warn `logical`. If `TRUE`, print warnings if they occur.
 ##'
 ##' @return
-##'   A vector containing the Wald test statistic (either an \code{F} or
-##'   \eqn{\chi^2} statistic, depending on the \code{asymptotic} argument),
+##'   A vector containing the Wald test statistic (either an `F` or
+##'   \eqn{\chi^2} statistic, depending on the `asymptotic` argument),
 ##'   the degrees of freedom (numerator and denominator, if
-##'   \code{asymptotic = FALSE}), and a \emph{p} value. If
-##'   \code{asymptotic = FALSE}, the relative invrease in variance (RIV, or
+##'   `asymptotic = FALSE`), and a *p* value. If
+##'   `asymptotic = FALSE`, the relative invrease in variance (RIV, or
 ##'   average for multiparameter tests: ARIV) used to calculate the denominator
-##'   \emph{df} is also returned as a missing-data diagnostic, along with the
+##'   *df* is also returned as a missing-data diagnostic, along with the
 ##'   fraction missing information (FMI = ARIV / (1 + ARIV)).
 ##'
 ##' @author
@@ -87,15 +87,15 @@
 ##'   Yves Rosseel (Ghent University; \email{Yves.Rosseel@@UGent.be})
 ##'
 ##' @references
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}.
+##'   Enders, C. K. (2010). *Applied missing data analysis*.
 ##'   New York, NY: Guilford.
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-##'   Significance levels from repeated \emph{p}-values with multiply-imputed
-##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   \url{https://www.jstor.org/stable/24303994}
+##'   Significance levels from repeated *p*-values with multiply-imputed
+##'   data. *Statistica Sinica, 1*(1), 65--92. Retrieved from
+##'   <https://www.jstor.org/stable/24303994>
 ##'
-##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
 ##' @seealso \code{\link[lavaan]{lavTestWald}}

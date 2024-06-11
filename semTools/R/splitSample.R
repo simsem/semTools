@@ -22,7 +22,7 @@
 #' @param dataset The original data set to be divided. Can be a file path to a
 #' *.csv or *.dat file (headers will automatically be detected) or an R object
 #' (matrix or dataframe). (Windows users: file path must be specified using
-#' FORWARD SLASHES (\code{/}) ONLY.)
+#' FORWARD SLASHES (`/`) ONLY.)
 #' @param path File path to folder for output data sets. NOT REQUIRED if
 #' dataset is a filename. Specify ONLY if dataset is an R object, or desired
 #' output folder is not that of original data set. If path is specified as
@@ -35,7 +35,7 @@
 #' @param name Output file name. NOT REQUIRED unless desired output name
 #' differs from that of input, or input dataset is an R object. (If input is an
 #' R object and name is not specified, name will be "splitSample".)
-#' @return If \code{path = "object"}, \code{list} of output data sets. 
+#' @return If `path = "object"`, `list` of output data sets. 
 #'   Otherwise, output will saved to hard drive in the same format as input.
 #' @author Corbin Quick (University of Michigan; \email{corbinq@@umich.edu})
 #' @examples

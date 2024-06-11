@@ -9,7 +9,7 @@
 ##' uses a typical sequence of model comparison tests. This function currently
 ##' works with only one scale, and only with continuous indicators.
 ##'
-##' If \code{strict = FALSE}, the following four models are tested in order:
+##' If `strict = FALSE`, the following four models are tested in order:
 ##' \enumerate{
 ##' \item Model 1: configural invariance. The same factor structure is
 ##'   imposed on all units.
@@ -26,7 +26,7 @@
 ##' the current model to the baseline model (Model 1). In addition, the
 ##' difference in CFA is also reported (\eqn{\Delta}CFI).
 ##'
-##' If \code{strict = TRUE}, the following five models are tested in order:
+##' If `strict = TRUE`, the following five models are tested in order:
 ##'
 ##' \enumerate{
 ##' \item Model 1: configural invariance. The same factor structure is imposed
@@ -43,7 +43,7 @@
 ##'
 ##' Note that if the \eqn{\chi^2} test statistic is scaled (eg. a Satorra-Bentler
 ##' or Yuan-Bentler test statistic), a special version of the \eqn{\Delta\chi^2}
-##' test is used as described in \url{http://www.statmodel.com/chidiff.shtml}
+##' test is used as described in <http://www.statmodel.com/chidiff.shtml>
 ##'
 ##'
 ##' @param model lavaan syntax or parameter table
@@ -57,11 +57,11 @@
 ##'   similar items across factor (e.g., Item 1 in Time 1 and Time 2). If 0 is
 ##'   specified, the autocorrelation will be not imposed. If 1 is specified,
 ##'   the autocorrelation will imposed for the adjacent factor listed in
-##'   \code{varList}. The maximum number can be specified is the number of
-##'   factors specified minus 1. If \code{"all"} is specified, the maximum
+##'   `varList`. The maximum number can be specified is the number of
+##'   factors specified minus 1. If `"all"` is specified, the maximum
 ##'   number of order will be used.
-##' @param constrainAuto If \code{TRUE}, the function will equate the
-##'   auto-\emph{covariance} to be equal within the same item across factors.
+##' @param constrainAuto If `TRUE`, the function will equate the
+##'   auto-*covariance* to be equal within the same item across factors.
 ##'   For example, the covariance of item 1 in time 1 and time 2 is equal to
 ##'   the covariance of item 1 in time 2 and time 3.
 ##' @param fixed.x See \code{\link[lavaan]{lavaan}.}
@@ -69,12 +69,12 @@
 ##' @param group See \code{\link[lavaan]{lavaan}.}
 ##' @param group.equal See \code{\link[lavaan]{lavaan}.}
 ##' @param group.partial See \code{\link[lavaan]{lavaan}.}
-##' @param strict If \code{TRUE}, the sequence requires strict invariance. See
+##' @param strict If `TRUE`, the sequence requires strict invariance. See
 ##' @param warn See \code{\link[lavaan]{lavaan}.}
 ##' @param debug See \code{\link[lavaan]{lavaan}.} details for more information.
-##' @param quiet If \code{FALSE} (default), a summary is printed out containing
+##' @param quiet If `FALSE` (default), a summary is printed out containing
 ##'   an overview of the different models that are fitted, together with some
-##'   model comparison tests. If \code{TRUE}, no summary is printed.
+##'   model comparison tests. If `TRUE`, no summary is printed.
 ##' @param fit.measures Fit measures used to calculate the differences between
 ##'   nested models.
 ##' @param baseline.model custom baseline model passed to
@@ -95,7 +95,7 @@
 ##' @references Vandenberg, R. J., and Lance, C. E. (2000). A review and
 ##'   synthesis of the measurement invariance literature: Suggestions,
 ##'   practices, and recommendations for organizational research.
-##'   \emph{Organizational Research Methods, 3}(1), 4--70.
+##'   *Organizational Research Methods, 3*(1), 4--70.
 ##'   \doi{10.1177/109442810031002}
 ##'
 ##' @examples

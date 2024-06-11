@@ -51,8 +51,8 @@ raters of their cluster's shared construct, an interrater reliability
 (IRR) coefficient is also returned, quantifying reliability relative to
 rater/sampling error alone.  To quantify reliability relative to
 indicator/measurement error alone (i.e., \eqn{\omega^\textrm{2L}}), the
-\code{shared=} construct name(s) can additionally be included in
-\code{config=} argument.}
+\verb{shared=} construct name(s) can additionally be included in
+\verb{config=} argument.}
 
 \item{higher}{\code{character} vector naming any higher-order constructs in
 \code{object} for which composite reliability should be calculated.
@@ -60,7 +60,7 @@ Ignored when \code{tau.eq=TRUE} because alpha is not based on a CFA model;
 instead, users must fit a CFA with tau-equivalence constraints.
 To obtain Lai's (2021) multilevel composite-reliability indices for a
 higher-order factor, do not use this argument; instead, specify the
-higher-order factor(s) using the \code{shared=} or \code{config=} argument
+higher-order factor(s) using the \verb{shared=} or \verb{config=} argument
 (\code{compRelSEM} will automatically check whether it includes latent
 indicators and apply the appropriate formula).}
 
@@ -70,10 +70,10 @@ listed in \code{omit.indicators}) of first-order factors not listed in
 \code{omit.factors}.  Ignored in 1-factor models, and should only be set
 \code{TRUE} if all factors represent scale dimensions that could be
 meaningfully collapsed to a single composite (scale sum or scale mean).
-Setting a negative value (e.g., \code{-1} returns \bold{only} the
+Setting a negative value (e.g., \code{-1} returns \strong{only} the
 total-composite reliability (excluding coefficients per factor), except
 when requesting Lai's (2021) coefficients for multilevel \code{config}ural
-or \code{shared=} constructs.}
+or \verb{shared=} constructs.}
 
 \item{dropSingle}{\code{logical} indicating whether to exclude factors
 defined by a single indicator from the returned results. If \code{TRUE}
@@ -113,12 +113,12 @@ those in \code{omit.factors} and applying \code{dropSingle}).}
 A \code{numeric} vector of composite reliability coefficients per
 factor, or a \code{list} of vectors per "block" (group and/or level of
 analysis), optionally returned as a \code{data.frame} when possible (see
-\code{return.df=} argument description for caveat). If there are multiple
+\verb{return.df=} argument description for caveat). If there are multiple
 factors, whose multidimensional indicators combine into a single
 composite, users can request \code{return.total=TRUE} to add a column
 including a reliability coefficient for the total composite, or
-\code{return.total = -1} to return \bold{only} the total-composite
-reliability (ignored when \code{config=} or \code{shared=} is specified
+\code{return.total = -1} to return \strong{only} the total-composite
+reliability (ignored when \verb{config=} or \verb{shared=} is specified
 because each factor's specification must be checked across levels).
 }
 \description{
@@ -155,7 +155,7 @@ default) or from the hypothesized CFA model, controlled by the
 \code{obs.var} argument. A \eqn{k}-dimensional vector \eqn{\bold{1}} is used
 to sum elements in the matrix. Note that if the model includes any directed
 effects (latent regression slopes), all coefficients are calculated
-from \bold{total} factor variances:
+from \strong{total} factor variances:
 \code{\link[lavaan]{lavInspect}(object, "cov.lv")}.
 
 Assuming (essential) tau-equivalence (\code{tau.eq=TRUE}) makes \eqn{\omega}
@@ -175,9 +175,9 @@ the observed or model-implied covariance matrix.
 By setting \code{return.total=TRUE}, one can estimate reliability for a
 single composite calculated using all indicators in a multidimensional
 CFA (Bentler, 1972, 2009). Setting \code{return.total = -1} will return
-\bold{only} the total-composite reliability (not per factor).
+\strong{only} the total-composite reliability (not per factor).
 
-\bold{Higher-Order Factors}:
+\strong{Higher-Order Factors}:
 The reliability of a composite that represents a higher-order construct
 requires partitioning the model-implied factor covariance matrix \eqn{\Phi}
 in order to isolate the common-factor variance associated only with the
@@ -214,7 +214,7 @@ the observed indicators as single-indicator constructs, so that all of the
 higher-order factor indicators are latent (with loadings in the Beta matrix,
 not Lambda).
 
-\bold{Categorical Indicators}:
+\strong{Categorical Indicators}:
 When all indicators (per composite) are ordinal, the \code{ord.scale}
 argument controls whether the coefficient is calculated on the
 latent-response scale (\code{FALSE}) or on the observed ordinal scale
@@ -241,7 +241,7 @@ factors, but \code{return.total} must be \code{FALSE} (unless
 \code{omit.factors} is used to isolate factors with indicators of the same
 type).
 
-\bold{Multilevel Measurement Models}:
+\strong{Multilevel Measurement Models}:
 Under the default settings, \code{compRelSEM()} will apply the same formula
 in each "block" (group and/or level of analysis). In the case of multilevel
 (ML-)SEMs, this yields "reliability" for latent within- and between-level
@@ -252,17 +252,17 @@ be calculated from the observed data.  Lai (2021) proposed coefficients for
 reliability of actual composites, depending on the type of construct, which
 requires specifying the names of constructs for which reliability is desired
 (or multiple constructs whose indicators would compose a multidimensional
-composite). Configural (\code{config=}) and/or \code{shared=} constructs
+composite). Configural (\verb{config=}) and/or \verb{shared=} constructs
 can be specified; the same construct can be specified in both arguments, so
 that overall scale-reliability can be estimated for a shared construct by
 including it in \code{config}.  Instead of organizing the output by block
-(the default), specifying \code{config=} and/or \code{shared=} will prompt
-organizing the list of output by \code{$config} and/or \code{$shared}.
+(the default), specifying \verb{config=} and/or \verb{shared=} will prompt
+organizing the list of output by \verb{$config} and/or \verb{$shared}.
 
 \itemize{
-\item The overall (\code{_2L}) scale reliability for \code{config}ural
+\item The overall (\verb{_2L}) scale reliability for \code{config}ural
 constructs is returned, along with the reliability of a purely
-individual-level composite (\code{_W}, calculated by cluster-mean
+individual-level composite (\verb{_W}, calculated by cluster-mean
 centering).
 \item The reliability for a \code{shared} construct quantifies
 generalizability across both indicators and raters (i.e., subjects rating
@@ -272,7 +272,7 @@ reliability (IRR) coefficient is also returned, quantifying
 generalizability across rater/sampling-error only. To obtain a
 scale-reliability coefficient (quantifying a shared construct's
 generalizability across indicator/measurement-error only), include the
-same factor name in \code{config=}.  Jak et al. (2021) recommended
+same factor name in \verb{config=}.  Jak et al. (2021) recommended
 modeling components of the same construct at both levels, but users may
 also saturate the within-level model (Lai, 2021).
 }
@@ -281,11 +281,11 @@ Be careful about including Level-2 variables in the model, especially
 whether it makes sense to include them in a total composite for a Level-2
 construct.  \code{dropSingle=TRUE} only prevents estimating reliability for
 a single-indicator construct, not from including such an indicator in a
-total composite.  It is permissible for \code{shared=} constructs to have
+total composite.  It is permissible for \verb{shared=} constructs to have
 additional indicators at Level-2 only.  If it is necessary to model other
 Level-2 variables (e.g., to justify the missing-at-random assumption when
-using \code{missing="FIML" estimation}), they should be placed in the
-\code{omit.indicators=} argument to exclude them from total composites.
+using \verb{missing="FIML" estimation}), they should be placed in the
+\verb{omit.indicators=} argument to exclude them from total composites.
 }
 \examples{
 

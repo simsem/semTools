@@ -25,64 +25,64 @@
 ##'   items and parcels (even within the same factor), in case certain items
 ##'   should never be parceled. Can be a character string or parameter table.
 ##'   Also see \code{\link[lavaan]{lavaanify}} for more details.
-##' @param data A \code{data.frame} containing all observed variables appearing
-##'   in the \code{model}, as well as those in the \code{item.syntax} used to
+##' @param data A `data.frame` containing all observed variables appearing
+##'   in the `model`, as well as those in the `item.syntax` used to
 ##'   create parcels. If the data have missing values, multiple imputation
 ##'   before parceling is recommended: submit a stacked data set (with a variable
 ##'   for the imputation number, so they can be separateed later) and set
-##'   \code{do.fit = FALSE} to return the list of \code{data.frame}s (one per
+##'   `do.fit = FALSE` to return the list of `data.frame`s (one per
 ##'   allocation), each of which is a stacked, imputed data set with parcels.
-##' @param parcel.names \code{character} vector containing names of all parcels
-##' appearing as indicators in \code{model}.
+##' @param parcel.names `character` vector containing names of all parcels
+##' appearing as indicators in `model`.
 ##' @param item.syntax \link[lavaan]{lavaan} model syntax specifying the model
 ##'   that would be fit to all of the unparceled items, including items that
-##'   should be randomly allocated to parcels appearing in \code{model}.
+##'   should be randomly allocated to parcels appearing in `model`.
 ##' @param nAlloc The number of random items-to-parcels allocations to generate.
-##' @param fun \code{character} string indicating the name of the
-##'   \code{\link[lavaan]{lavaan}} function used to fit \code{model} to
-##'   \code{data}. Can only take the values \code{"lavaan"}, \code{"sem"},
-##'   \code{"cfa"}, or \code{"growth"}.
+##' @param fun `character` string indicating the name of the
+##'   \code{\link[lavaan]{lavaan}} function used to fit `model` to
+##'   `data`. Can only take the values `"lavaan"`, `"sem"`,
+##'   `"cfa"`, or `"growth"`.
 ##' @param alpha Alpha level used as criterion for significance.
-##' @param fit.measures \code{character} vector containing names of fit measures
+##' @param fit.measures `character` vector containing names of fit measures
 ##'   to request from each fitted \code{\link[lavaan]{lavaan}} model.  See the
 ##'   output of \code{\link[lavaan]{fitMeasures}} for a list of available measures.
 ##' @param \dots Additional arguments to be passed to
 ##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}
-##' @param show.progress If \code{TRUE}, show a \code{\link[utils]{txtProgressBar}}
+##' @param show.progress If `TRUE`, show a \code{\link[utils]{txtProgressBar}}
 ##'   indicating how fast the model-fitting iterates over allocations.
 ##' @param iseed (Optional) Random seed used for parceling items. When the same
 ##'   random seed is specified and the program is re-run, the same allocations
-##'   will be generated. Using the same \code{iseed} argument will ensure the
-##'   any model is fit to the same parcel allocations. \emph{Note}: When using
-##'   \pkg{parallel} options, you must first type \code{RNGkind("L'Ecuyer-CMRG")}
+##'   will be generated. Using the same `iseed` argument will ensure the
+##'   any model is fit to the same parcel allocations. *Note*: When using
+##'   \pkg{parallel} options, you must first type `RNGkind("L'Ecuyer-CMRG")`
 ##'   into the R Console, so that the seed will be controlled across cores.
-##' @param do.fit If \code{TRUE} (default), the \code{model} is fitted to each
+##' @param do.fit If `TRUE` (default), the `model` is fitted to each
 ##'   parceled data set, and the summary of results is returned (see the Value
-##'   section below). If \code{FALSE}, the items are randomly parceled, but the
-##'   model is not fit; instead, the \code{list} of \code{data.frame}s is
+##'   section below). If `FALSE`, the items are randomly parceled, but the
+##'   model is not fit; instead, the `list` of `data.frame`s is
 ##'   returned (so assign it to an object).
-##' @param return.fit If \code{TRUE}, a \code{\link[lavaan]{lavaanList}} object
-##'   is returned with the \code{list} of results across allocations
-##' @param warn Whether to print warnings when fitting \code{model} to each allocation
+##' @param return.fit If `TRUE`, a \code{\link[lavaan]{lavaanList}} object
+##'   is returned with the `list` of results across allocations
+##' @param warn Whether to print warnings when fitting `model` to each allocation
 ##'
 ##' @return
-##'   \item{Estimates}{A \code{data.frame} containing results related to
+##'   \item{Estimates}{A `data.frame` containing results related to
 ##'     parameter estimates with columns corresponding to their names; average
 ##'     and standard deviation across allocations; minimum, maximum, and range
 ##'     across allocations; and the proportion of allocations in which each
 ##'     parameter estimate was significant.}
-##'   \item{SE}{A \code{data.frame} containing results similar to
-##'     \code{Estimates}, but related to the standard errors of parameter
+##'   \item{SE}{A `data.frame` containing results similar to
+##'     `Estimates`, but related to the standard errors of parameter
 ##'     estimates.}
-##'   \item{Fit}{A \code{data.frame} containing results related to model fit,
+##'   \item{Fit}{A `data.frame` containing results related to model fit,
 ##'     with columns corresponding to fit index names; their average and
 ##'     standard deviation across allocations; the minimum, maximum, and range
 ##'     across allocations; and (if the test statistic or RMSEA is included in
-##'     \code{fit.measures}) the proportion of allocations in which each
+##'     `fit.measures`) the proportion of allocations in which each
 ##'     test of (exact or close) fit was significant.}
 ##'   \item{Model}{A \code{\link[lavaan]{lavaanList}} object containing results
-##'     of the \code{model} fitted to each parcel allocation. Only returned if
-##'     \code{return.fit = TRUE}.}
+##'     of the `model` fitted to each parcel allocation. Only returned if
+##'     `return.fit = TRUE`.}
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -94,22 +94,22 @@
 ##'
 ##' Sterba, S. K. (2011). Implications of parcel-allocation
 ##' variability for comparing fit of item-solutions and parcel-solutions.
-##' \emph{Structural Equation Modeling, 18}(4), 554--577.
+##' *Structural Equation Modeling, 18*(4), 554--577.
 ##' \doi{10.1080/10705511.2011.607073}
 ##'
 ##' Sterba, S. K. & MacCallum, R. C. (2010). Variability in parameter estimates
 ##' and model fit across random allocations of items to parcels.
-##' \emph{Multivariate Behavioral Research, 45}(2), 322--358.
+##' *Multivariate Behavioral Research, 45*(2), 322--358.
 ##' \doi{10.1080/00273171003680302}
 ##'
 ##' Sterba, S. K., & Rights, J. D. (2016). Accounting for parcel-allocation
 ##' variability in practice: Combining sources of uncertainty and choosing the
-##' number of allocations. \emph{Multivariate Behavioral Research, 51}(2--3),
+##' number of allocations. *Multivariate Behavioral Research, 51*(2--3),
 ##' 296--313. \doi{10.1080/00273171.2016.1144502}
 ##'
 ##' Sterba, S. K., & Rights, J. D. (2017). Effects of parceling on model
 ##' selection: Parcel-allocation variability in model ranking.
-##' \emph{Psychological Methods, 22}(1), 47--68. \doi{10.1037/met0000067}
+##' *Psychological Methods, 22*(1), 47--68. \doi{10.1037/met0000067}
 ##'
 ##' @examples
 ##'

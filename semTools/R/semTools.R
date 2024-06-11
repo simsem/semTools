@@ -9,7 +9,7 @@
 ##' useful for statistical analysis involving SEM in R.  Many functions extend
 ##' the funtionality of the \pkg{lavaan} package.  Some sets of functions in
 ##' \pkg{semTools} correspond to the same theme. We call such a collection of
-##' functions a \emph{suite}. Our suites include:
+##' functions a *suite*. Our suites include:
 ##' \itemize{
 ##' \item{Model Fit Evaluation:
 ##'   \code{\link{moreFitIndices}},
@@ -67,10 +67,10 @@
 ##' All users of R (or SEM) are invited to submit functions or ideas for
 ##' functions by contacting the maintainer, Terrence Jorgensen
 ##' (\email{TJorgensen314@gmail.com}). Contributors are encouraged to use
-##' \code{Roxygen} comments to document their contributed code, which is
+##' `Roxygen` comments to document their contributed code, which is
 ##' consistent with the rest of \pkg{semTools}.  Read the vignette from the
 ##' \pkg{roxygen2} package for details:
-##' \code{vignette("rd", package = "roxygen2")}
+##' `vignette("rd", package = "roxygen2")`
 ##'
 ##' @name semTools
 ##' @aliases semTools-package

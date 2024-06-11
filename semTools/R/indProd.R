@@ -6,9 +6,9 @@
 ##' Make products of indicators using no centering, mean centering, double-mean
 ##' centering, or residual centering
 ##'
-##' The \code{indProd} function will make products of indicators using no
+##' The `indProd` function will make products of indicators using no
 ##' centering, mean centering, double-mean centering, or residual centering. The
-##' \code{orthogonalize} function is the shortcut of the \code{indProd} function
+##' `orthogonalize` function is the shortcut of the `indProd` function
 ##' to make the residual-centered indicators products.
 ##'
 ##'
@@ -20,14 +20,14 @@
 ##' @param var2 Names or indices of the variables loaded on the second factor
 ##' @param var3 Names or indices of the variables loaded on the third factor
 ##' (for three-way interaction)
-##' @param match Specify \code{TRUE} to use match-paired approach (Marsh, Wen, &
-##' Hau, 2004). If \code{FALSE}, the resulting products are all possible
+##' @param match Specify `TRUE` to use match-paired approach (Marsh, Wen, &
+##' Hau, 2004). If `FALSE`, the resulting products are all possible
 ##' products.
-##' @param meanC Specify \code{TRUE} for mean centering the main effect
+##' @param meanC Specify `TRUE` for mean centering the main effect
 ##' indicator before making the products
-##' @param residualC Specify \code{TRUE} for residual centering the products by
+##' @param residualC Specify `TRUE` for residual centering the products by
 ##' the main effect indicators (Little, Bovaird, & Widaman, 2006).
-##' @param doubleMC Specify \code{TRUE} for centering the resulting products
+##' @param doubleMC Specify `TRUE` for centering the resulting products
 ##' (Lin et. al., 2010)
 ##' @param namesProd The names of resulting products
 ##' @return The original data attached with the products.
@@ -45,18 +45,18 @@
 ##' intercepts and slopes of the latent interaction.  }
 ##' @references Marsh, H. W., Wen, Z. & Hau, K. T. (2004). Structural equation
 ##' models of latent interactions: Evaluation of alternative estimation
-##' strategies and indicator construction. \emph{Psychological Methods, 9}(3),
+##' strategies and indicator construction. *Psychological Methods, 9*(3),
 ##' 275--300. \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' Lin, G. C., Wen, Z., Marsh, H. W., & Lin, H. S. (2010). Structural equation
 ##' models of latent interactions: Clarification of orthogonalizing and
-##' double-mean-centering strategies. \emph{Structural Equation Modeling, 17}(3),
+##' double-mean-centering strategies. *Structural Equation Modeling, 17*(3),
 ##' 374--391. \doi{10.1080/10705511.2010.488999}
 ##'
 ##' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 ##' orthogonalizing powered and product terms: Implications for modeling
-##' interactions among latent variables. \emph{Structural Equation Modeling,
-##' 13}(4), 497--519. \doi{10.1207/s15328007sem1304_1}
+##' interactions among latent variables. *Structural Equation Modeling,
+##' 13*(4), 497--519. \doi{10.1207/s15328007sem1304_1}
 ##' @examples
 ##'
 ##' ## Mean centering / two-way interaction / match-paired

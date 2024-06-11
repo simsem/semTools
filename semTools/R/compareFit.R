@@ -17,14 +17,14 @@
 ##' @aliases FitDiff-class show,FitDiff-method summary,FitDiff-method
 ##' @docType class
 ##'
-##' @slot name \code{character}. The name of each model
-##' @slot model.class \code{character}. One class to which each model belongs
-##' @slot nested \code{data.frame}. Model fit comparisons between adjacently
-##'   nested models that are ordered by their degrees of freedom (\emph{df})
-##' @slot fit \code{data.frame}. Fit measures of all models specified in the
-##'   \code{name} slot, ordered by their \emph{df}
-##' @slot fit.diff \code{data.frame}. Sequential differences in fit measures in
-##'   the \code{fit} slot
+##' @slot name `character`. The name of each model
+##' @slot model.class `character`. One class to which each model belongs
+##' @slot nested `data.frame`. Model fit comparisons between adjacently
+##'   nested models that are ordered by their degrees of freedom (*df*)
+##' @slot fit `data.frame`. Fit measures of all models specified in the
+##'   `name` slot, ordered by their *df*
+##' @slot fit.diff `data.frame`. Sequential differences in fit measures in
+##'   the `fit` slot
 ##'
 ##' @section Objects from the Class: Objects can be created via the
 ##'  \code{\link{compareFit}} function.
@@ -87,15 +87,15 @@ setMethod("show", signature(object = "FitDiff"), function(object) {
 ##' @rdname FitDiff-class
 ##' @aliases summary,FitDiff-method
 ##'
-##' @param object object of class \code{FitDiff}
-##' @param fit.measures \code{character} vector naming fit indices the user can
-##'   request from \code{\link[lavaan]{fitMeasures}}. If \code{"default"}, the
-##'   fit measures will be \code{c("chisq", "df", "pvalue", "cfi", "tli",
-##'   "rmsea", "srmr", "aic", "bic")}. If \code{"all"}, all available fit
+##' @param object object of class `FitDiff`
+##' @param fit.measures `character` vector naming fit indices the user can
+##'   request from \code{\link[lavaan]{fitMeasures}}. If `"default"`, the
+##'   fit measures will be `c("chisq", "df", "pvalue", "cfi", "tli",
+##'   "rmsea", "srmr", "aic", "bic")`. If `"all"`, all available fit
 ##'   measures will be returned.
 ##' @param nd number of digits printed
-##' @param tag single \code{character} used to flag the model preferred by each
-##'   fit index. To omit tags, set to \code{NULL} or \code{NA}.
+##' @param tag single `character` used to flag the model preferred by each
+##'   fit index. To omit tags, set to `NULL` or `NA`.
 ##'
 ##' @export
 setMethod("summary", signature(object = "FitDiff"),
@@ -224,22 +224,22 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##' @importFrom lavaan lavTestLRT
 ##' @importMethodsFrom lavaan fitMeasures
 ##'
-##' @param ...  fitted \code{lavaan} models or list(s) of \code{lavaan} objects.
+##' @param ...  fitted `lavaan` models or list(s) of `lavaan` objects.
 ##'   \code{\linkS4class{lavaan.mi}} objects are also accepted, but all models
 ##'   must belong to the same class.
-##' @param nested \code{logical} indicating whether the models in \code{...} are
+##' @param nested `logical` indicating whether the models in `...` are
 ##'   nested. See \code{\link{net}} for an empirical test of nesting.
-##' @param argsLRT \code{list} of arguments to pass to
+##' @param argsLRT `list` of arguments to pass to
 ##'   \code{\link[lavaan]{lavTestLRT}}, as well as to
 ##'   \code{\link{lavTestLRT.mi}} and \code{\link{fitMeasures}} when
 ##'   comparing \code{\linkS4class{lavaan.mi}} models.
-##' @param indices \code{logical} indicating whether to return fit indices from
+##' @param indices `logical` indicating whether to return fit indices from
 ##'   the \code{\link[lavaan]{fitMeasures}} function. Selecting particular
-##'   indices is controlled in the \code{summary} method; see
+##'   indices is controlled in the `summary` method; see
 ##'   \code{\linkS4class{FitDiff}}.
-##' @param moreIndices \code{logical} indicating whether to return fit indices
+##' @param moreIndices `logical` indicating whether to return fit indices
 ##'   from the \code{\link{moreFitIndices}} function. Selecting particular
-##'   indices is controlled in the \code{summary} method; see
+##'   indices is controlled in the `summary` method; see
 ##'   \code{\linkS4class{FitDiff}}.
 ##' @param baseline.model optional fitted \code{\linkS4class{lavaan}} model
 ##'   passed to \code{\link[lavaan]{fitMeasures}} to calculate incremental fit

@@ -8,12 +8,12 @@
 ##'
 ##' These functions are wrappers around the corresponding lavaan functions.
 ##' You can use them the same way you use \code{\link[lavaan]{lavaan}}, but you
-##' \emph{must} pass your full \code{data.frame} to the \code{data} argument.
+##' *must* pass your full `data.frame` to the `data` argument.
 ##' Because the saturated-correlates approaches (Enders, 2008) treats exogenous
-##' variables as random, \code{fixed.x} must be set to \code{FALSE}. Because FIML
+##' variables as random, `fixed.x` must be set to `FALSE`. Because FIML
 ##' requires continuous data (although nonnormality corrections can still be
 ##' requested), no variables in the model nor auxiliary variables specified in
-##' \code{aux} can be declared as \code{ordered}.
+##' `aux` can be declared as `ordered`.
 ##'
 ##' @aliases auxiliary lavaan.auxiliary cfa.auxiliary sem.auxiliary growth.auxiliary
 ##' @importFrom lavaan lavInspect parTable lavNames
@@ -22,23 +22,23 @@
 ##' @param model The analysis model can be specified with 1 of 2 objects:
 ##'   \enumerate{
 ##'     \item  lavaan \code{\link[lavaan]{model.syntax}} specifying a hypothesized
-##'            model \emph{without} mention of auxiliary variables in \code{aux}
+##'            model *without* mention of auxiliary variables in `aux`
 ##'     \item  a parameter table, as returned by \code{\link[lavaan]{parTable}},
-##'            specifying the target model \emph{without} auxiliary variables.
+##'            specifying the target model *without* auxiliary variables.
 ##'            This option requires these columns (and silently ignores all others):
-##'            \code{c("lhs","op","rhs","user","group","free","label","plabel","start")}
+##'            `c("lhs","op","rhs","user","group","free","label","plabel","start")`
 ##'   }
-##' @param data \code{data.frame} that includes auxiliary variables as well as
-##'   any observed variables in the \code{model}
-##' @param aux \code{character}. Names of auxiliary variables to add to \code{model}
-##' @param fun \code{character}. Name of a specific lavaan function used to fit
-##'   \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
-##'   \code{"sem"}, or \code{"growth"}). Only required for \code{auxiliary}.
-##' @param ... Additional arguments to pass to \code{fun=}.
+##' @param data `data.frame` that includes auxiliary variables as well as
+##'   any observed variables in the `model`
+##' @param aux `character`. Names of auxiliary variables to add to `model`
+##' @param fun `character`. Name of a specific lavaan function used to fit
+##'   `model` to `data` (i.e., `"lavaan"`, `"cfa"`,
+##'   `"sem"`, or `"growth"`). Only required for `auxiliary`.
+##' @param ... Additional arguments to pass to `fun=`.
 ##' @param envir Passed to \code{\link{do.call}}.
-##' @param return.syntax \code{logical} indicating whether to return a
-##'   \code{character} string of \code{\link[lavaan]{model.syntax}} that can be
-##'   added to a target \code{model=} that is also a \code{character} string.
+##' @param return.syntax `logical` indicating whether to return a
+##'   `character` string of \code{\link[lavaan]{model.syntax}} that can be
+##'   added to a target `model=` that is also a `character` string.
 ##'   This can be advantageous, for example, to use add saturated correlates to
 ##'   a \pkg{blavaan} model.
 ##'
@@ -48,21 +48,21 @@
 ##' @references
 ##'   Enders, C. K. (2008). A note on the use of missing auxiliary variables in
 ##'   full information maximum likelihood-based structural equation models.
-##'   \emph{Structural Equation Modeling, 15}(3), 434--448.
+##'   *Structural Equation Modeling, 15*(3), 434--448.
 ##'   \doi{10.1080/10705510802154307}
 ##'
 ##' @return a fitted \code{\linkS4class{lavaan}} object.  Additional
-##'   information is stored as a \code{list} in the \code{@@external} slot:
+##'   information is stored as a `list` in the `@@external` slot:
 ##'   \itemize{
-##'     \item \code{baseline.model}. a fitted \code{\linkS4class{lavaan}}
+##'     \item `baseline.model`. a fitted \code{\linkS4class{lavaan}}
 ##'           object. Results of fitting an appropriate independence model for
 ##'           the calculation of incremental fit indices (e.g., CFI, TLI) in
 ##'           which the auxiliary variables remain saturated, so only the target
 ##'           variables are constrained to be orthogonal. See Examples for how
 ##'           to send this baseline model to \code{\link[lavaan]{fitMeasures}}.
-##'     \item \code{aux}. The character vector of auxiliary variable names.
-##'     \item \code{baseline.syntax}. A character vector generated within the
-##'           \code{auxiliary} function, specifying the \code{baseline.model}
+##'     \item `aux`. The character vector of auxiliary variable names.
+##'     \item `baseline.syntax`. A character vector generated within the
+##'           `auxiliary` function, specifying the `baseline.model`
 ##'           syntax.
 ##'   }
 ##'

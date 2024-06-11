@@ -71,7 +71,7 @@ Originally, composite reliability of a single higher-order factor was
 estimated in a separate function: \code{reliabilityL2}.  It is now available
 for multiple higher-order factors in the same model, and from the same
 \code{\link{compRelSEM}} function that estimates reliability for first-order
-factors, using the \code{higher=} argument to name higher-order factors in
+factors, using the \verb{higher=} argument to name higher-order factors in
 the fitted model.
 }
 

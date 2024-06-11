@@ -34,7 +34,7 @@ allocations only.}
 \emph{M} (the final selected number of allocations) parceled data sets will
 be outputted from the iteration where the algorithm met stopping criteria.
 Note for Windows users: file path must be specified using forward slashes
-(\code{/}), not backslashes (\code{\\}). See \code{\link[base]{path.expand}}
+(\code{/}), not backslashes (\verb{\\\\}). See \code{\link[base]{path.expand}}
 for details.  If \code{NULL} (default), nothing is saved to disk.}
 
 \item{syntax}{lavaan syntax that defines the model.}
@@ -76,13 +76,11 @@ included only structural parameters.}
 available \code{\link[lavaan]{fitMeasures}} to be included in the output.
 The first and second elements should be a chi-squared test statistic and its
 associated degrees of freedom, both of which will be added if missing. If
-\code{"default"}, the indices will be \code{c("chisq", "df", "cfi", "tli",
-"rmsea","srmr")}. If a robust test statistic is requested (see
+\code{"default"}, the indices will be \code{c("chisq", "df", "cfi", "tli", "rmsea","srmr")}. If a robust test statistic is requested (see
 \code{\link[lavaan]{lavOptions}}), \code{c("chisq","df")} will be replaced
 by \code{c("chisq.scaled","df.scaled")}. For the output to include both the
 naive and robust test statistics, \code{indices} should include both, but
-put the scaled test statistics first, as in \code{indices =
-c("chisq.scaled", "df.scaled", "chisq", "df")}}
+put the scaled test statistics first, as in \code{indices = c("chisq.scaled", "df.scaled", "chisq", "df")}}
 
 \item{double}{(Optional) If set to \code{TRUE}, requires stopping criteria
 (\code{stopProp} and \code{stopValue}) to be met for all parameters (in
@@ -148,11 +146,11 @@ encounters convergence problems for some allocations, as is the case with the
 \description{
 This function employs an iterative algorithm to pick the number of random
 item-to-parcel allocations needed to meet user-defined stability criteria
-for a fitted structural equation model (SEM) (see \bold{Details} below for
+for a fitted structural equation model (SEM) (see \strong{Details} below for
 more information). Pooled point and standard-error estimates from this SEM
 can be outputted at this final selected number of allocations (however, it
 is more efficient to save the allocations and treat them as multiple
-imputations using \code{\link{runMI}}; see \bold{See Also} for links with
+imputations using \code{\link{runMI}}; see \strong{See Also} for links with
 examples). Additionally, new indices (see Sterba & Rights, 2016) are
 outputted for assessing the relative contributions of parcel-allocation
 variability vs. sampling variability in each estimate. At each iteration,
@@ -174,7 +172,7 @@ variability vs. sampling variability in each estimate.
 
 To obtain pooled test statistics for model fit or model comparison, the
 \code{list} or parcel allocations can be passed to \code{\link{runMI}}
-(find \bold{Examples} on the help pages for \code{\link{parcelAllocation}}
+(find \strong{Examples} on the help pages for \code{\link{parcelAllocation}}
 and \code{\link{PAVranking}}).
 
 This function randomly generates a given number (\code{nAllocStart}) of
@@ -264,7 +262,7 @@ selection: Parcel-allocation variability in model ranking.
 }
 \seealso{
 \code{\link{runMI}} for treating allocations as multiple imputations to
-pool results across allocations. See \bold{Examples} on help pages for:
+pool results across allocations. See \strong{Examples} on help pages for:
 \itemize{
 \item{\code{\link{parcelAllocation}} for fitting a single model}
 \item{\code{\link{PAVranking}} for comparing 2 models}

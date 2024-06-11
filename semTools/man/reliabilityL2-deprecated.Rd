@@ -78,11 +78,11 @@ Thus, the proportion of variance among first-order common factors that is
 attributable to the second-order factor (i.e., coefficient omega at Level 2)
 can be calculated as:
 
-\deqn{ \omega_{L2} = \frac{\bold{1_F}^{\prime} \bold{B} \Phi_2
-\bold{B}^{\prime} \bold{1_F}}{\bold{1_F}^{\prime} \bold{B} \Phi_2
-\bold{B}^{\prime} \bold{1_F} + \bold{1_F}^{\prime} \Psi_{u} \bold{1_F}}, }
+\deqn{ \omega_{L2} = \frac{\bold{1}_F^{\prime} \bold{B} \Phi_2
+\bold{B}^{\prime} \bold{1}_F}{\bold{1}_F^{\prime} \bold{B} \Phi_2
+\bold{B}^{\prime} \bold{1}_F + \bold{1}_F^{\prime} \Psi_{u} \bold{1}_F}, }
 
-where \eqn{\bold{1_F}} is the \emph{F}-dimensional vector of 1 and \emph{F}
+where \eqn{\bold{1}_F} is the \emph{F}-dimensional vector of 1 and \emph{F}
 is the number of first-order factors. This Level-2 omega can be interpreted
 as an estimate of the reliability of a hypothetical composite calculated
 from error-free observable variables representing the first-order common

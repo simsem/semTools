@@ -12,7 +12,7 @@
 #' multitrait-multimethod model or complex longitudinal invariance model).
 #'
 #'
-#' @param out The \code{lavaan} output that users wish to use the parameter
+#' @param out The `lavaan` output that users wish to use the parameter
 #' estimates as staring values for an analysis model
 #' @param expr The original code that users use to run a lavaan model
 #' @param silent Logical to print the parameter table with new starting values

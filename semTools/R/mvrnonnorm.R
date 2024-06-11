@@ -5,9 +5,9 @@
 ##' Generate Non-normal Data using Vale and Maurelli (1983) method
 ##'
 ##' Generate Non-normal Data using Vale and Maurelli (1983) method. The function
-##' is designed to be as similar as the popular \code{mvrnorm} function in the
-##' \code{MASS} package. The codes are copied from \code{mvrnorm} function in
-##' the \code{MASS} package for argument checking and \code{lavaan} package for
+##' is designed to be as similar as the popular `mvrnorm` function in the
+##' `MASS` package. The codes are copied from `mvrnorm` function in
+##' the `MASS` package for argument checking and `lavaan` package for
 ##' data generation using Vale and Maurelli (1983) method.
 ##'
 ##'
@@ -17,20 +17,20 @@
 ##' @param mu A mean vector. If elements are named, those will be used as
 ##' variable names in the returned data matrix.
 ##' @param Sigma A positive-definite symmetric matrix specifying the covariance
-##' matrix of the variables. If rows or columns are named (and \code{mu} is
+##' matrix of the variables. If rows or columns are named (and `mu` is
 ##' unnamed), those will be used as variable names in the returned data matrix.
 ##' @param skewness A vector of skewness of the variables
 ##' @param kurtosis A vector of excessive kurtosis of the variables
 ##' @param empirical deprecated, ignored.
 ##' @return A data matrix
 ##' @author The original function is the \code{\link[lavaan]{simulateData}}
-##' function written by Yves Rosseel in the \code{lavaan} package. The function
+##' function written by Yves Rosseel in the `lavaan` package. The function
 ##' is adjusted for a convenient usage by Sunthud Pornprasertmanit
 ##' (\email{psunthud@@gmail.com}). Terrence D. Jorgensen added the feature to
-##' retain variable names from \code{mu} or \code{Sigma}.
+##' retain variable names from `mu` or `Sigma`.
 ##'
 ##' @references Vale, C. D. & Maurelli, V. A. (1983). Simulating multivariate
-##' nonormal distributions. \emph{Psychometrika, 48}(3), 465--471.
+##' nonormal distributions. *Psychometrika, 48*(3), 465--471.
 ##' \doi{10.1007/BF02293687}
 ##'
 ##' @examples

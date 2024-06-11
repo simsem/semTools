@@ -68,12 +68,9 @@ varaibles in the Step-1 saturated model (\code{fixed.x = FALSE}), so data
 are assumed continuous, although not necessarily multivariate normal
 (dummy-coded auxiliary variables may be included in Step 1, but categorical
 endogenous variables in the Step-2 hypothesized model are not allowed).  To
-avoid assuming multivariate normality, request \code{se =
-"robust.huber.white"}.  CAUTION: In addition to setting \code{fixed.x =
-FALSE} and \code{conditional.x = FALSE} in \code{\link[lavaan]{lavaan}},
+avoid assuming multivariate normality, request \code{se = "robust.huber.white"}.  CAUTION: In addition to setting \code{fixed.x = FALSE} and \code{conditional.x = FALSE} in \code{\link[lavaan]{lavaan}},
 this function will automatically set \code{meanstructure = TRUE},
-\code{estimator = "ML"}, \code{missing = "fiml"}, and \code{test =
-"standard"}.  \code{\link[lavaan]{lavaan}}'s \code{se} option can only be
+\code{estimator = "ML"}, \code{missing = "fiml"}, and \code{test = "standard"}.  \code{\link[lavaan]{lavaan}}'s \code{se} option can only be
 set to \code{"standard"} to assume multivariate normality or to
 \code{"robust.huber.white"} to relax that assumption.
 }

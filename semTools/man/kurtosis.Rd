@@ -46,7 +46,7 @@ kurtosis(1:5)
 
 }
 \references{
-Weisstein, Eric W. (n.d.). \emph{Kurtosis.} Retrived from
+Weisstein, Eric W. (n.d.). \emph{Kurtosis.} Retrieved from
 \emph{MathWorld}--A Wolfram Web Resource:
 \url{http://mathworld.wolfram.com/Kurtosis.html}
 }

@@ -17,19 +17,19 @@
 ##' @aliases Net-class show,Net-method summary,Net-method
 ##' @docType class
 ##'
-##' @slot test Logical \code{matrix} indicating nesting/equivalence among models
+##' @slot test Logical `matrix` indicating nesting/equivalence among models
 ##' @slot df The degrees of freedom of tested models
 ##'
 ##' @section Objects from the Class: Objects can be created via the
 ##' \code{\link{net}} function.
 ##'
-##' @param object An object of class \code{Net}.
+##' @param object An object of class `Net`.
 ##'
 ##' @return
-##' \item{show}{\code{signature(object = "Net")}: prints the logical matrix of
-##'   test results. \code{NA} indicates a model did not converge.}
-##' \item{summary}{\code{signature(object = "Net")}: prints a narrative
-##'   description of results. The original \code{object} is invisibly returned.}
+##' \item{show}{`signature(object = "Net")`: prints the logical matrix of
+##'   test results. `NA` indicates a model did not converge.}
+##' \item{summary}{`signature(object = "Net")`: prints a narrative
+##'   description of results. The original `object` is invisibly returned.}
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -119,7 +119,7 @@ function(object) {
 ##' The concept of nesting/equivalence should be the same regardless of
 ##' estimation method. However, the particular method of testing
 ##' nesting/equivalence (as described in Bentler & Satorra, 2010) employed by
-##' the \code{net} function analyzes summary statistics (model-implied means and
+##' the `net` function analyzes summary statistics (model-implied means and
 ##' covariance matrices, not raw data). In the case of robust methods like MLR,
 ##' the raw data is only utilized for the robust adjustment to SE and chi-sq,
 ##' and the net function only checks the unadjusted chi-sq for the purposes of
@@ -130,7 +130,7 @@ function(object) {
 ##'
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param \dots The \code{lavaan} objects used for test of nesting and
+##' @param \dots The `lavaan` objects used for test of nesting and
 ##'   equivalence
 ##' @param crit The upper-bound criterion for testing the equivalence of models.
 ##'   Models are considered nested (or equivalent) if the difference between
@@ -146,10 +146,10 @@ function(object) {
 ##' @references
 ##'
 ##' Bentler, P. M., & Satorra, A. (2010). Testing model nesting and equivalence.
-##' \emph{Psychological Methods, 15}(2), 111--123. \doi{10.1037/a0019625}
+##' *Psychological Methods, 15*(2), 111--123. \doi{10.1037/a0019625}
 ##'
 ##' Asparouhov, T., & Muthen, B. (2019). Nesting and equivalence testing for
-##' structural equation models. \emph{Structural Equation Modeling, 26}(2),
+##' structural equation models. *Structural Equation Modeling, 26*(2),
 ##' 302--309. \doi{10.1080/10705511.2018.1513795}
 ##'
 ##' @examples

@@ -50,7 +50,7 @@ those in \code{omit.factors} and applying \code{dropSingle}).}
 \code{numeric} vector of average variance extracted from indicators
 per factor.  For models with multiple "blocks" (any combination of groups
 and levels), vectors may be returned as columns in a \code{data.frame}
-with additional columns indicating the group/level (see \code{return.df=}
+with additional columns indicating the group/level (see \verb{return.df=}
 argument description for caveat).
 }
 \description{

@@ -11,7 +11,7 @@
 ##' Fit a lavaan Model to Multiple Imputed Data Sets
 ##'
 ##' This function fits a lavaan model to a list of imputed data sets, and can
-##' also implement multiple imputation for a single \code{data.frame} with
+##' also implement multiple imputation for a single `data.frame` with
 ##' missing observations, using either the Amelia package or the mice package.
 ##'
 ##'
@@ -22,36 +22,36 @@
 ##' @param model The analysis model can be specified using lavaan
 ##'   \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
 ##'   \code{\link[lavaan]{parTable}}).
-##' @param data A \code{data.frame} with missing observations, or a \code{list}
-##'   of imputed data sets (if data are imputed already). If \code{runMI} has
+##' @param data A `data.frame` with missing observations, or a `list`
+##'   of imputed data sets (if data are imputed already). If `runMI` has
 ##'   already been called, then imputed data sets are stored in the
-##'   \code{@@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
+##'   `@@DataList` slot, so `data` can also be a `lavaan.mi` object
 ##'   from which the same imputed data will be used for additional analyses.
-##' @param fun \code{character}. Name of a specific lavaan function used to fit
-##'   \code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
-##'   \code{"sem"}, or \code{"growth"}). Only required for \code{runMI}.
+##' @param fun `character`. Name of a specific lavaan function used to fit
+##'   `model` to `data` (i.e., `"lavaan"`, `"cfa"`,
+##'   `"sem"`, or `"growth"`). Only required for `runMI`.
 ##' @param \dots additional arguments to pass to \code{\link[lavaan]{lavaan}} or
 ##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
-##'   Note that \code{lavaanList} provides parallel computing options, as well as
-##'   a \code{FUN} argument so the user can extract custom output after the model
-##'   is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
-##'   custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
-##'   the user-supplied function should explicitly call \code{library} or use
+##'   Note that `lavaanList` provides parallel computing options, as well as
+##'   a `FUN` argument so the user can extract custom output after the model
+##'   is fitted to each imputed data set (see **Examples**).  TIP: If a
+##'   custom `FUN` is used *and* `parallel = "snow"` is requested,
+##'   the user-supplied function should explicitly call `library` or use
 ##'   \code{\link[base]{::}} for any functions not part of the base distribution.
-##' @param m \code{integer}. Request the number of imputations. Ignored if
-##'   \code{data} is already a \code{list} of imputed data sets or a
-##'   \code{lavaan.mi} object.
+##' @param m `integer`. Request the number of imputations. Ignored if
+##'   `data` is already a `list` of imputed data sets or a
+##'   `lavaan.mi` object.
 ##' @param miArgs Addition arguments for the multiple-imputation function
-##'   (\code{miPackage}). The arguments should be put in a list (see example
-##'   below). Ignored if \code{data} is already a \code{list} of imputed data
-##'   sets or a \code{lavaan.mi} object.
+##'   (`miPackage`). The arguments should be put in a list (see example
+##'   below). Ignored if `data` is already a `list` of imputed data
+##'   sets or a `lavaan.mi` object.
 ##' @param miPackage Package to be used for imputation. Currently these
-##'   functions only support \code{"Amelia"} or \code{"mice"} for imputation.
-##'   Ignored if \code{data} is already a \code{list} of imputed data sets or a
-##'   \code{lavaan.mi} object.
-##' @param seed \code{integer}. Random number seed to be set before imputing the
-##'   data. Ignored if \code{data} is already a \code{list} of imputed data sets
-##'   or a \code{lavaan.mi} object.
+##'   functions only support `"Amelia"` or `"mice"` for imputation.
+##'   Ignored if `data` is already a `list` of imputed data sets or a
+##'   `lavaan.mi` object.
+##' @param seed `integer`. Random number seed to be set before imputing the
+##'   data. Ignored if `data` is already a `list` of imputed data sets
+##'   or a `lavaan.mi` object.
 ##'
 ##' @return A \code{\linkS4class{lavaan.mi}} object
 ##'
@@ -59,10 +59,10 @@
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}. New
+##'   Enders, C. K. (2010). *Applied missing data analysis*. New
 ##'   York, NY: Guilford.
 ##'
-##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
 ##' @examples
@@ -420,22 +420,22 @@ growth.mi <- function(model, data, ...,
 ##'
 ##' @importFrom stats var pf pchisq
 ##'
-##' @param w \code{numeric} vector of Wald \eqn{\chi^2} statistics. Can also
-##'   be Wald \emph{z} statistics, which will be internally squared to make
-##'   \eqn{\chi^2} statistics with one \emph{df} (must set \code{DF = 0L}).
-##' @param DF degrees of freedom (\emph{df}) of the \eqn{\chi^2} statistics.
-##'   If \code{DF = 0L} (default), \code{w} is assumed to contain \emph{z}
+##' @param w `numeric` vector of Wald \eqn{\chi^2} statistics. Can also
+##'   be Wald *z* statistics, which will be internally squared to make
+##'   \eqn{\chi^2} statistics with one *df* (must set `DF = 0L`).
+##' @param DF degrees of freedom (*df*) of the \eqn{\chi^2} statistics.
+##'   If `DF = 0L` (default), `w` is assumed to contain *z*
 ##'   statistics, which will be internally squared.
-##' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
-##'   will be returned as an \emph{F}-distributed statistic with numerator
-##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
-##'   If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
-##'   \code{df1} on the assumption that its \code{df2} is sufficiently large
+##' @param asymptotic `logical`. If `FALSE` (default), the pooled test
+##'   will be returned as an *F*-distributed statistic with numerator
+##'   (`df1`) and denominator (`df2`) degrees of freedom.
+##'   If `TRUE`, the pooled *F* statistic will be multiplied by its
+##'   `df1` on the assumption that its `df2` is sufficiently large
 ##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-##'   with \code{df1}.
+##'   with `df1`.
 ##'
-##' @return A \code{numeric} vector containing the test statistic, \emph{df},
-##'   its \emph{p} value, and 2 missing-data diagnostics: the relative invrease
+##' @return A `numeric` vector containing the test statistic, *df*,
+##'   its *p* value, and 2 missing-data diagnostics: the relative invrease
 ##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
 ##'   fraction missing information (FMI = ARIV / (1 + ARIV)).
 ##'
@@ -446,13 +446,13 @@ growth.mi <- function(model, data, ...,
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}. New
+##'   Enders, C. K. (2010). *Applied missing data analysis*. New
 ##'   York, NY: Guilford.
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-##'   Significance levels from repeated \emph{p}-values with multiply-imputed
-##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   \url{https://www.jstor.org/stable/24303994}
+##'   Significance levels from repeated *p*-values with multiply-imputed
+##'   data. *Statistica Sinica, 1*(1), 65--92. Retrieved from
+##'   <https://www.jstor.org/stable/24303994>
 ##'
 ##' @examples
 ##' ## generate a vector of chi-squared values, just for example

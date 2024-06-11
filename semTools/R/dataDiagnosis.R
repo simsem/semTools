@@ -9,7 +9,7 @@
 ##' Finding skewness (\eqn{g_{1}}) of an object
 ##'
 ##' The skewness computed by default is \eqn{g_{1}}, the third standardized
-##' moment of the empirical distribution of \code{object}.
+##' moment of the empirical distribution of `object`.
 ##' The population parameter skewness \eqn{\gamma_{1}} formula is
 ##'
 ##' \deqn{\gamma_{1} = \frac{\mu_{3}}{\mu^{3/2}_{2}},}
@@ -20,7 +20,7 @@
 ##'
 ##' \deqn{g_{1} = \frac{k_{3}}{k^{2}_{2}},}
 ##'
-##' where \eqn{k_{i}} are the \eqn{i} order \emph{k}-statistic.
+##' where \eqn{k_{i}} are the \eqn{i} order *k*-statistic.
 ##'
 ##' The standard error of the skewness is
 ##'
@@ -32,10 +32,10 @@
 ##' @importFrom stats pnorm
 ##'
 ##' @param object A vector used to find a skewness
-##' @param population \code{TRUE} to compute the parameter formula. \code{FALSE}
+##' @param population `TRUE` to compute the parameter formula. `FALSE`
 ##' to compute the sample statistic formula.
 ##' @return A value of a skewness with a test statistic if the population is
-##' specified as \code{FALSE}
+##' specified as `FALSE`
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##' @seealso \itemize{
 ##'   \item \code{\link{kurtosis}} Find the univariate excessive kurtosis
@@ -45,9 +45,9 @@
 ##'   \item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate
 ##'    kurtosis of a set of variables
 ##'  }
-##' @references Weisstein, Eric W. (n.d.). \emph{Skewness}. Retrived from
-##'  \emph{MathWorld}--A Wolfram Web Resource:
-##'  \url{http://mathworld.wolfram.com/Skewness.html}
+##' @references Weisstein, Eric W. (n.d.). *Skewness*. Retrived from
+##'  *MathWorld*--A Wolfram Web Resource:
+##'  <http://mathworld.wolfram.com/Skewness.html>
 ##' @examples
 ##'
 ##' skew(1:5)
@@ -76,7 +76,7 @@ skew <- function(object, population = FALSE) {
 ##' Finding excessive kurtosis (\eqn{g_{2}}) of an object
 ##'
 ##' The excessive kurtosis computed by default is \eqn{g_{2}}, the fourth
-##' standardized moment of the empirical distribution of \code{object}.
+##' standardized moment of the empirical distribution of `object`.
 ##' The population parameter excessive kurtosis \eqn{\gamma_{2}} formula is
 ##'
 ##' \deqn{\gamma_{2} = \frac{\mu_{4}}{\mu^{2}_{2}} - 3,}
@@ -87,7 +87,7 @@ skew <- function(object, population = FALSE) {
 ##'
 ##' \deqn{g_{2} = \frac{k_{4}}{k^{2}_{2}} - 3,}
 ##'
-##' where \eqn{k_{i}} are the \eqn{i} order \emph{k}-statistic.
+##' where \eqn{k_{i}} are the \eqn{i} order *k*-statistic.
 ##'
 ##' The standard error of the excessive kurtosis is
 ##'
@@ -99,10 +99,10 @@ skew <- function(object, population = FALSE) {
 ##' @importFrom stats pnorm
 ##'
 ##' @param object A vector used to find a excessive kurtosis
-##' @param population \code{TRUE} to compute the parameter formula. \code{FALSE}
+##' @param population `TRUE` to compute the parameter formula. `FALSE`
 ##' to compute the sample statistic formula.
 ##' @return A value of an excessive kurtosis with a test statistic if the
-##' population is specified as \code{FALSE}
+##' population is specified as `FALSE`
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##' @seealso \itemize{
 ##'   \item \code{\link{skew}} Find the univariate skewness of a variable
@@ -111,9 +111,10 @@ skew <- function(object, population = FALSE) {
 ##'   \item \code{\link{mardiaKurtosis}} Find the Mardia's multivariate kurtosis
 ##'    of a set of variables
 ##' }
-##' @references Weisstein, Eric W. (n.d.). \emph{Kurtosis.} Retrived from
-##' \emph{MathWorld}--A Wolfram Web Resource:
-##' \url{http://mathworld.wolfram.com/Kurtosis.html}
+##' @references Weisstein, Eric W. (n.d.). *Kurtosis.* Retrieved from
+##' *MathWorld*--A Wolfram Web Resource:
+##' <http://mathworld.wolfram.com/Kurtosis.html>
+##'
 ##' @examples
 ##'
 ##' kurtosis(1:5)
@@ -169,7 +170,7 @@ kurtosis <- function(object, population = FALSE) {
 ##'     kurtosis of a set of variables
 ##' }
 ##' @references Mardia, K. V. (1970). Measures of multivariate skewness and
-##'   kurtosis with applications. \emph{Biometrika, 57}(3), 519--530.
+##'   kurtosis with applications. *Biometrika, 57*(3), 519--530.
 ##'   \doi{10.2307/2334770}
 ##' @examples
 ##'
@@ -229,7 +230,7 @@ mardiaSkew <- function(dat, use = "everything") {
 ##'   of a set of variables
 ##' }
 ##' @references Mardia, K. V. (1970). Measures of multivariate skewness and
-##'  kurtosis with applications. \emph{Biometrika, 57}(3), 519--530.
+##'  kurtosis with applications. *Biometrika, 57*(3), 519--530.
 ##'  \doi{10.2307/2334770}
 ##' @examples
 ##'

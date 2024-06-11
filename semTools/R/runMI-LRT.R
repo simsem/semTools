@@ -16,15 +16,15 @@
 ##' Meng & Rubin (1992), or by pooling the LRT statistics from each imputation,
 ##' as described by Li, Meng, Raghunathan, & Rubin (1991).
 ##'
-##' The Meng & Rubin (1992) method, also referred to as the \code{"D3"}
+##' The Meng & Rubin (1992) method, also referred to as the `"D3"`
 ##' statistic, is only applicable when using a likelihood-based estimator.
 ##' Otherwise (e.g., DWLS for categorical outcomes), users are notified that
-##' \code{test} was set to \code{"D2"}.
+##' `test` was set to `"D2"`.
 ##'
-##' \code{test = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
+##' `test = "Mplus"` implies `"D3"` and `asymptotic = TRUE`
 ##' (see Asparouhov & Muthen, 2010).
 ##'
-##' Note that unlike \code{\link[lavaan]{lavTestLRT}}, \code{lavTestLRT} can
+##' Note that unlike \code{\link[lavaan]{lavTestLRT}}, `lavTestLRT` can
 ##' only be used to compare a single pair of models, not a longer list of
 ##' models.  To compare several nested models fitted to multiple imputations,
 ##' see examples on the \code{\link{compareFit}} help page.
@@ -34,70 +34,70 @@
 ##' @importFrom stats cov pchisq pf
 ##'
 ##' @param object,h1 An object of class \code{\linkS4class{lavaan.mi}}.
-##'   \code{object} should be nested within (more constrained than) \code{h1}.
-##' @param test \code{character} indicating which pooling method to use.
-##'   \code{"D3"}, \code{"mr"}, or \code{"meng.rubin"} (default) requests the
-##'   method described by Meng & Rubin (1992). \code{"D2"}, \code{"LMRR"},
-##'   or \code{"Li.et.al"} requests the complete-data LRT statistic should be
+##'   `object` should be nested within (more constrained than) `h1`.
+##' @param test `character` indicating which pooling method to use.
+##'   `"D3"`, `"mr"`, or `"meng.rubin"` (default) requests the
+##'   method described by Meng & Rubin (1992). `"D2"`, `"LMRR"`,
+##'   or `"Li.et.al"` requests the complete-data LRT statistic should be
 ##'   calculated using each imputed data set, which will then be pooled across
 ##'   imputations, as described in Li, Meng, Raghunathan, & Rubin (1991).
 ##'   Find additional details in Enders (2010, chapter 8).
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
-##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'   default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
-##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
 ##'   as Heywood cases. Specific imputation numbers can also be included in this
 ##'   argument, in case users want to  apply their own custom omission criteria
 ##'   (or simulations can use different numbers of imputations without
 ##'   redundantly refitting the model).
-##' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
-##'   will be returned as an \emph{F}-distributed statistic with numerator
-##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
-##'   If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
-##'   \code{df1} on the assumption that its \code{df2} is sufficiently large
+##' @param asymptotic `logical`. If `FALSE` (default), the pooled test
+##'   will be returned as an *F*-distributed statistic with numerator
+##'   (`df1`) and denominator (`df2`) degrees of freedom.
+##'   If `TRUE`, the pooled *F* statistic will be multiplied by its
+##'   `df1` on the assumption that its `df2` is sufficiently large
 ##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-##'   with \code{df1}.
-##' @param pool.robust \code{logical}. Ignored unless \code{test = "D2"} and a
-##'   robust test was requested. If \code{pool.robust = TRUE}, the robust test
-##'   statistic is pooled, whereas \code{pool.robust = FALSE} will pool
+##'   with `df1`.
+##' @param pool.robust `logical`. Ignored unless `test = "D2"` and a
+##'   robust test was requested. If `pool.robust = TRUE`, the robust test
+##'   statistic is pooled, whereas `pool.robust = FALSE` will pool
 ##'   the naive test statistic (or difference statistic) and apply the average
 ##'   scale/shift parameter to it (unavailable for mean- and variance-adjusted
-##'   difference statistics, so \code{pool.robust} will be set \code{TRUE}).
+##'   difference statistics, so `pool.robust` will be set `TRUE`).
 ##' @param ... Additional arguments passed to \code{\link[lavaan]{lavTestLRT}},
-##'   only if \code{test = "D2"} and \code{pool.robust = TRUE}
+##'   only if `test = "D2"` and `pool.robust = TRUE`
 ##'
 ##' @return
-##'   A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
-##'   statistic, depending on the \code{asymptotic} argument), its degrees of
-##'   freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
-##'   \emph{p} value, and 2 missing-data diagnostics: the relative invrease
+##'   A vector containing the LRT statistic (either an `F` or \eqn{\chi^2}
+##'   statistic, depending on the `asymptotic` argument), its degrees of
+##'   freedom (numerator and denominator, if `asymptotic = FALSE`), its
+##'   *p* value, and 2 missing-data diagnostics: the relative invrease
 ##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
 ##'   fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
 ##'   will also include the average (across imputations) scaling factor and
-##'   (if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
+##'   (if relevant) shift parameter(s), unless `pool.robust = TRUE`.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}.
+##'   Enders, C. K. (2010). *Applied missing data analysis*.
 ##'   New York, NY: Guilford.
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-##'   Significance levels from repeated \emph{p}-values with multiply-imputed
-##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   \url{https://www.jstor.org/stable/24303994}
+##'   Significance levels from repeated *p*-values with multiply-imputed
+##'   data. *Statistica Sinica, 1*(1), 65--92. Retrieved from
+##'   <https://www.jstor.org/stable/24303994>
 ##'
 ##'   Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-##'   multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
+##'   multiply-imputed data sets. *Biometrika, 79*(1), 103--111.
 ##'   \doi{10.2307/2337151}
 ##'
-##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
 ##' @seealso \code{\link[lavaan]{lavTestLRT}}, \code{\link{compareFit}}

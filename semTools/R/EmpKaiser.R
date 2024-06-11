@@ -4,10 +4,10 @@
 ##' Empirical Kaiser criterion
 ##'
 ##' Identify the number of factors to extract based on the Empirical Kaiser
-##' Criterion (EKC). The analysis can be run on a \code{data.frame} or data
-##' \code{matrix} (\code{data}), or on a correlation or covariance matrix
-##' (\code{sample.cov}) and the sample size (\code{sample.nobs}). A
-##' \code{data.frame} is returned with two columns: the eigenvalues from your
+##' Criterion (EKC). The analysis can be run on a `data.frame` or data
+##' `matrix` (`data`), or on a correlation or covariance matrix
+##' (`sample.cov`) and the sample size (`sample.nobs`). A
+##' `data.frame` is returned with two columns: the eigenvalues from your
 ##' data or covariance matrix and the reference eigenvalues. The number of
 ##' factors suggested by the Empirical Kaiser Criterion (i.e. the sample
 ##' eigenvalues greater than the reference eigenvalues), and the number of
@@ -17,32 +17,32 @@
 ##'
 ##' @importFrom stats cov cov2cor
 ##'
-##' @param data A \code{data.frame} or data \code{matrix} containing columns of
+##' @param data A `data.frame` or data `matrix` containing columns of
 ##' variables to be factor-analyzed.
 ##' @param sample.cov A covariance or correlation matrix can be used, instead of
-##' \code{data}, to estimate the eigenvalues.
+##' `data`, to estimate the eigenvalues.
 ##' @param sample.nobs Number of observations (i.e. sample size) if
-##' \code{is.null(data)} and \code{sample.cov} is used.
+##' `is.null(data)` and `sample.cov` is used.
 ##' @param missing If "listwise", cases with missing values are removed listwise
 ##' from the data frame. If "direct" or "ml" or "fiml" and the estimator is
 ##' maximum likelihood, an EM algorithm is used to estimate the unrestricted
 ##' covariance matrix (and mean vector). If "pairwise", pairwise deletion is
 ##' used. If "default", the value is set depending on the estimator and the
 ##' mimic option (see details in \link[lavaan]{lavCor}).
-##' @param ordered Character vector. Only used if object is a \code{data.frame}.
+##' @param ordered Character vector. Only used if object is a `data.frame`.
 ##' Treat these variables as ordered (ordinal) variables. Importantly, all other
-##' variables will be treated as numeric (unless \code{is.ordered == TRUE} in
-##' \code{data}). (see also \link[lavaan]{lavCor})
+##' variables will be treated as numeric (unless `is.ordered == TRUE` in
+##' `data`). (see also \link[lavaan]{lavCor})
 ##' @param plot logical. Whether to print a scree plot comparing the sample
 ##' eigenvalues with the reference eigenvalues.
-##' @return A \code{data.frame} showing the sample and reference eigenvalues.
+##' @return A `data.frame` showing the sample and reference eigenvalues.
 ##'
 ##' The number of factors suggested by the Empirical Kaiser Criterion (i.e. the
 ##' sample eigenvalues greater than the reference eigenvalues) is returned as an
 ##' attribute (see Examples).
 ##'
 ##' The number of factors suggested by the original Kaiser Criterion (i.e.
-##' sample eigenvalues > 1) is also printed as a header to the \code{data.frame}
+##' sample eigenvalues > 1) is also printed as a header to the `data.frame`
 ##'
 ##' @author Ylenio Longo (University of Nottingham;
 ##' \email{yleniolongo@@gmail.com})
@@ -51,7 +51,7 @@
 ##' \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references Braeken, J., & van Assen, M. A. L. M. (2017). An empirical
-##' Kaiser criterion. \emph{Psychological Methods, 22}(3), 450--466.
+##' Kaiser criterion. *Psychological Methods, 22*(3), 450--466.
 ##' \doi{10.1037/met0000074}
 ##'
 ##' @examples

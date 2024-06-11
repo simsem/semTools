@@ -5,12 +5,12 @@
 
 ##' Quark
 ##'
-##' The \code{quark} function provides researchers with the ability to calculate
+##' The `quark` function provides researchers with the ability to calculate
 ##' and include component scores calculated by taking into account the variance
 ##' in the original dataset and all of the interaction and polynomial effects of
 ##' the data in the dataset.
 ##'
-##' The \code{quark} function calculates these component scores by first filling
+##' The `quark` function calculates these component scores by first filling
 ##' in the data via means of multiple imputation methods and then expanding the
 ##' dataset by aggregating the non-overlapping interaction effects between
 ##' variables by calculating the mean of the interactions and polynomial
@@ -28,15 +28,15 @@
 ##' missing values) and the component scores as requested for a more accurate
 ##' multiple imputation in subsequent steps.
 ##'
-##' @param data The data frame is a required component for \code{quark}.  In
-##' order for \code{quark} to process a data frame, it must not contain any
+##' @param data The data frame is a required component for `quark`.  In
+##' order for `quark` to process a data frame, it must not contain any
 ##' factors or text-based variables.  All variables must be in numeric format.
 ##' Identifiers and dates can be left in the data; however, they will need to be
-##' identified under the \code{id} argument.
+##' identified under the `id` argument.
 ##' @param id Identifiers and dates within the dataset will need to be
-##' acknowledged as \code{quark} cannot process these.  By acknowledging the
+##' acknowledged as `quark` cannot process these.  By acknowledging the
 ##' identifiers and dates as a vector of column numbers or variable names,
-##' \code{quark} will remove them from the data temporarily to complete its main
+##' `quark` will remove them from the data temporarily to complete its main
 ##' processes.  Among many potential issues of not acknowledging identifiers and
 ##' dates are issues involved with imputation, product and polynomial effects,
 ##' and principal component analysis.
@@ -44,9 +44,9 @@
 ##' used when the imputation procedures in mice fail.  Under some circumstances,
 ##' mice cannot calculate missing values due to issues with extreme missingness.
 ##' Should an error present itself stating a failure due to not having any
-##' columns selected, set the argument \code{order = 2} in order to reorder the
-##' imputation method procedure.  Otherwise, use the default \code{order = 1}.
-##' @param silent If \code{FALSE}, the details of the \code{quark} process are
+##' columns selected, set the argument `order = 2` in order to reorder the
+##' imputation method procedure.  Otherwise, use the default `order = 1`.
+##' @param silent If `FALSE`, the details of the `quark` process are
 ##' printed.
 ##' @param \dots additional arguments to pass to \code{\link[mice]{mice}}.
 ##'
@@ -75,13 +75,13 @@
 ##'
 ##' Terrence D. Jorgensen (University of Amsterdam)
 ##'
-##' The PCA code is copied and modified from the \code{FactoMineR} package.
+##' The PCA code is copied and modified from the `FactoMineR` package.
 ##'
 ##' @seealso \code{\link{combinequark}}
 ##'
 ##' @references Howard, W. J., Rhemtulla, M., & Little, T. D. (2015). Using
 ##' Principal Components as Auxiliary Variables in Missing Data Estimation.
-##' \emph{Multivariate Behavioral Research, 50}(3), 285--299.
+##' *Multivariate Behavioral Research, 50*(3), 285--299.
 ##' \doi{10.1080/00273171.2014.999267}
 ##'
 ##' @examples

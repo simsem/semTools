@@ -38,7 +38,7 @@
 ##' sampling distriution of estimated model parameters, as described by
 ##' MacKinnon et al. (2004) for testing indirect effects in mediation models.
 ##' The easiest way to use the function is to fit a SEM to data with
-##' \code{\link[lavaan]{lavaan}}, using the \code{:=} operator in the
+##' \code{\link[lavaan]{lavaan}}, using the `:=` operator in the
 ##' \code{\link[lavaan]{model.syntax}} to specify user-defined parameters.
 ##' All information is then available in the resulting
 ##' \code{\linkS4class{lavaan}} object.  Alternatively (especially when using
@@ -56,7 +56,7 @@
 ##'    the ACM in free format and scientific notation
 ##'  \item Mplus Include the command TECH3; in the OUTPUT section. The ACM will
 ##'    be printed in the output.
-##'  \item \code{lavaan}: Use the \code{vcov} method on the fitted
+##'  \item `lavaan`: Use the `vcov` method on the fitted
 ##'    \code{\linkS4class{lavaan}} object to return the ACM.
 ##' }
 ##'
@@ -66,55 +66,55 @@
 ##' @importFrom lavaan parTable lavInspect
 ##'
 ##' @param object A object of class \code{\linkS4class{lavaan}} in which
-##'   functions of parameters have already been defined using the \code{:=}
-##'   operator in \code{lavaan}'s \code{\link[lavaan]{model.syntax}}. When
-##'   \code{NULL}, users must specify \code{expr}, \code{coefs}, and \code{ACM}.
-##' @param expr Optional \code{character} vector specifying functions of model
+##'   functions of parameters have already been defined using the `:=`
+##'   operator in `lavaan`'s \code{\link[lavaan]{model.syntax}}. When
+##'   `NULL`, users must specify `expr`, `coefs`, and `ACM`.
+##' @param expr Optional `character` vector specifying functions of model
 ##'   parameters (e.g., an indirect effect). Ideally, the vector should have
 ##'   names, which is necessary if any user-defined parameters refer to other
 ##'   user-defined parameters defined earlier in the vector (order matters!).
-##'   All parameters appearing in the vector must be provided in \code{coefs},
-##'   or defined (as functions of \code{coefs}) earlier in \code{expr}. If
-##'   \code{length(expr) > 1L}, \code{nRep} samples will be drawn
+##'   All parameters appearing in the vector must be provided in `coefs`,
+##'   or defined (as functions of `coefs`) earlier in `expr`. If
+##'   `length(expr) > 1L`, `nRep` samples will be drawn
 ##'   simultaneously from a single multivariate distribution; thus,
-##'   \code{ACM} must include all parameters in \code{coefs}.
-##' @param coefs \code{numeric} vector of parameter estimates used in
-##'   \code{expr}. Ignored when \code{object} is used.
-##' @param ACM Symmetric \code{matrix} representing the asymptotic sampling
-##'   covariance matrix (ACOV) of the parameter estimates in \code{coefs}.
-##'   Ignored when \code{object} is used. Information on how to obtain the ACOV
-##'   in popular SEM software is described in \strong{Details}.
-##' @param nRep \code{integer}. The number of samples to draw, to obtain an
+##'   `ACM` must include all parameters in `coefs`.
+##' @param coefs `numeric` vector of parameter estimates used in
+##'   `expr`. Ignored when `object` is used.
+##' @param ACM Symmetric `matrix` representing the asymptotic sampling
+##'   covariance matrix (ACOV) of the parameter estimates in `coefs`.
+##'   Ignored when `object` is used. Information on how to obtain the ACOV
+##'   in popular SEM software is described in **Details**.
+##' @param nRep `integer`. The number of samples to draw, to obtain an
 ##'   empirical sampling distribution of model parameters. Many thousand are
 ##'   recommended to minimize Monte Carlo error of the estimated CIs.
-##' @param standardized \code{logical} indicating whether to obtain CIs for the
-##'   fully standardized (\code{"std.all"}) estimates, using their asymptotic
-##'   sampling covariance matrix.  Only valid when \code{object} is of class
+##' @param standardized `logical` indicating whether to obtain CIs for the
+##'   fully standardized (`"std.all"`) estimates, using their asymptotic
+##'   sampling covariance matrix.  Only valid when `object` is of class
 ##'   \code{\linkS4class{lavaan}}, not \code{\linkS4class{lavaan.mi}}.
-##' @param fast \code{logical} indicating whether to use a fast algorithm that
-##'   assumes all functions of parameters (in \code{object} or \code{expr}) use
-##'   standard operations. Set to \code{FALSE} if using (e.g.) \code{\link{c}()}
+##' @param fast `logical` indicating whether to use a fast algorithm that
+##'   assumes all functions of parameters (in `object` or `expr`) use
+##'   standard operations. Set to `FALSE` if using (e.g.) \code{\link{c}()}
 ##'   to concatenate parameters in the definition, which would have unintended
-##'   consequences when vectorizing functions in \code{expr} across sampled
+##'   consequences when vectorizing functions in `expr` across sampled
 ##'   parameters.
-##' @param level \code{numeric} confidence level, between 0--1
-##' @param na.rm \code{logical} passed to \code{\link[stats]{quantile}}
-##' @param append.samples \code{logical} indicating whether to return the
-##'   simulated empirical sampling distribution of parameters (in \code{coefs})
-##'   and functions (in \code{expr}) in a \code{list} with the results. This
+##' @param level `numeric` confidence level, between 0--1
+##' @param na.rm `logical` passed to \code{\link[stats]{quantile}}
+##' @param append.samples `logical` indicating whether to return the
+##'   simulated empirical sampling distribution of parameters (in `coefs`)
+##'   and functions (in `expr`) in a `list` with the results. This
 ##'   could be useful to calculate more precise highest-density intervals (see
 ##'   examples).
-##' @param plot \code{logical} indicating whether to plot the empirical sampling
-##'   distribution of each function in \code{expr}
+##' @param plot `logical` indicating whether to plot the empirical sampling
+##'   distribution of each function in `expr`
 ##' @param ask whether to prompt user before printing each plot
 ##' @param \dots arguments passed to \code{\link[graphics]{hist}} when
-##'   \code{plot = TRUE}.
+##'   `plot = TRUE`.
 ##'
-##' @return A \code{lavaan.data.frame} (to use lavaan's \code{print} method)
+##' @return A `lavaan.data.frame` (to use lavaan's `print` method)
 ##'   with point estimates and confidence limits of each requested function of
-##'   parameters in \code{expr} is returned. If \code{append.samples = TRUE},
-##'   output will be a \code{list} with the same \code{$Results} along with a
-##'   second \code{data.frame} with the \code{$Samples} (in rows) of each
+##'   parameters in `expr` is returned. If `append.samples = TRUE`,
+##'   output will be a `list` with the same `$Results` along with a
+##'   second `data.frame` with the `$Samples` (in rows) of each
 ##'   parameter (in columns), and an additional column for each requested
 ##'   function of those parameters.
 ##'
@@ -123,22 +123,22 @@
 ##' @references
 ##' MacKinnon, D. P., Lockwood, C. M., & Williams, J. (2004). Confidence limits
 ##' for the indirect effect: Distribution of the product and resampling methods.
-##' \emph{Multivariate Behavioral Research, 39}(1) 99--128.
+##' *Multivariate Behavioral Research, 39*(1) 99--128.
 ##' \doi{10.1207/s15327906mbr3901_4}
 ##'
 ##' Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method
 ##' for assessing multilevel mediation: An interactive tool for creating
 ##' confidence intervals for indirect effects in 1-1-1 multilevel models.
-##' Computer software available from \url{http://quantpsy.org/}.
+##' Computer software available from <http://quantpsy.org/>.
 ##'
 ##' Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
-##' intervals for indirect effects. \emph{Communication Methods and Measures,
-##' 6}(2), 77--98. \doi{10.1080/19312458.2012.679848}
+##' intervals for indirect effects. *Communication Methods and Measures,
+##' 6*(2), 77--98. \doi{10.1080/19312458.2012.679848}
 ##'
 ##' Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 ##' assessing mediation: An interactive tool for creating confidence intervals
 ##' for indirect effects. Computer software available from
-##' \url{http://quantpsy.org/}.
+##' <http://quantpsy.org/>.
 ##'
 ##' @aliases monteCarloCI monteCarloMed
 ##'

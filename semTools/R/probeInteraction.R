@@ -54,7 +54,7 @@
 ##' \deqn{ Var\left(b_{X|Z}\right) = Var\left(b_1\right) + 2Z \times
 ##'        Cov\left(b_1, b_3\right) + Z^2 \times Var\left(b_3\right) }
 ##'
-##' Wald \emph{z} statistic is used for test statistic (even for objects of
+##' Wald *z* statistic is used for test statistic (even for objects of
 ##' class \code{\linkS4class{lavaan.mi}}).
 ##'
 ##'
@@ -64,26 +64,26 @@
 ##'
 ##' @param fit A fitted \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
-##' @param nameX \code{character} vector of all 3 factor names used as the
+##' @param nameX `character` vector of all 3 factor names used as the
 ##'   predictors. The lower-order factors must be listed first, and the final
 ##'   name must be the latent interaction factor.
 ##' @param nameY The name of factor that is used as the dependent variable.
 ##' @param modVar The name of factor that is used as a moderator. The effect of
 ##'   the other independent factor will be probed at each value of the
-##'   moderator variable listed in \code{valProbe}.
+##'   moderator variable listed in `valProbe`.
 ##' @param valProbe The values of the moderator that will be used to probe the
 ##'   effect of the focal predictor.
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
 ##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}, or an integer
 ##'   corresponding to which of those group labels.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'        imputations from pooled results. Ignored unless \code{fit} is of
+##' @param omit.imps `character` vector specifying criteria for omitting
+##'        imputations from pooled results. Ignored unless `fit` is of
 ##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
-##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
-##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        last option (`"no.npd"`) would exclude any imputations which
 ##'        yielded a nonpositive definite covariance matrix for observed or
 ##'        latent variables, which would include any "improper solutions" such
 ##'        as Heywood cases.  NPD solutions are not excluded by default because
@@ -95,15 +95,15 @@
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The simple intercepts given each value of the
+##'  \item `SimpleIntercept`: The simple intercepts given each value of the
 ##'   moderator.
-##'  \item \code{SimpleSlope}: The simple slopes given each value of the moderator.
+##'  \item `SimpleSlope`: The simple slopes given each value of the moderator.
 ##' }
 ##' In each element, the first column represents the values of the moderator
-##' specified in the \code{valProbe} argument. The second column is the simple
-##' intercept or simple slope. The third column is the \emph{SE} of the simple
-##' intercept or simple slope. The fourth column is the Wald (\emph{z})
-##' statistic, and the fifth column is the associated \emph{p} value testing
+##' specified in the `valProbe` argument. The second column is the simple
+##' intercept or simple slope. The third column is the *SE* of the simple
+##' intercept or simple slope. The fourth column is the Wald (*z*)
+##' statistic, and the fifth column is the associated *p* value testing
 ##' the null hypothesis that each simple intercept or slope is 0.
 ##'
 ##' @author
@@ -129,27 +129,27 @@
 ##' Tutorial:
 ##'
 ##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
-##' latent variable interactions using the \code{semTools} package.
-##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##' latent variable interactions using the `semTools` package.
+##' *Psych, 3*(3), 322--335. \doi{10.3390/psych3030024}
 ##'
 ##' Background literature:
 ##'
-##' Aiken, L. S., & West, S. G. (1991). \emph{Multiple regression: Testing
-##' and interpreting interactions}. Newbury Park, CA: Sage.
+##' Aiken, L. S., & West, S. G. (1991). *Multiple regression: Testing
+##' and interpreting interactions*. Newbury Park, CA: Sage.
 ##'
-##' Cohen, J., Cohen, P., West, S. G., & Aiken, L. S. (2003). \emph{Applied
-##' multiple regression/correlation analysis for the behavioral sciences}
+##' Cohen, J., Cohen, P., West, S. G., & Aiken, L. S. (2003). *Applied
+##' multiple regression/correlation analysis for the behavioral sciences*
 ##' (3rd ed.). New York, NY: Routledge.
 ##'
 ##' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 ##' latent interactions: Evaluation of alternative estimation strategies and
-##' indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
+##' indicator construction. *Psychological Methods, 9*(3), 275--300.
 ##' \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' Preacher, K. J., Curran, P. J., & Bauer, D. J. (2006). Computational tools
 ##' for probing interactions in multiple linear regression, multilevel modeling,
-##' and latent curve analysis. \emph{Journal of Educational and Behavioral
-##' Statistics, 31}(4), 437--448. \doi{10.3102/10769986031004437}
+##' and latent curve analysis. *Journal of Educational and Behavioral
+##' Statistics, 31*(4), 437--448. \doi{10.3102/10769986031004437}
 ##'
 ##' @examples
 ##'
@@ -401,26 +401,26 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'
 ##' @param fit A fitted \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
-##' @param nameX \code{character} vector of all 3 factor names used as the
+##' @param nameX `character` vector of all 3 factor names used as the
 ##'   predictors. The lower-order factors must be listed first, and the final
 ##'   name must be the latent interaction factor.
 ##' @param nameY The name of factor that is used as the dependent variable.
 ##' @param modVar The name of factor that is used as a moderator. The effect of
 ##'   the other independent factor will be probed at each value of the
-##'   moderator variable listed in \code{valProbe}.
+##'   moderator variable listed in `valProbe`.
 ##' @param valProbe The values of the moderator that will be used to probe the
 ##'   effect of the focal predictor.
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
 ##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}, or an integer
 ##'   corresponding to which of those group labels.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'        imputations from pooled results. Ignored unless \code{fit} is of
+##' @param omit.imps `character` vector specifying criteria for omitting
+##'        imputations from pooled results. Ignored unless `fit` is of
 ##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
-##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
-##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        last option (`"no.npd"`) would exclude any imputations which
 ##'        yielded a nonpositive definite covariance matrix for observed or
 ##'        latent variables, which would include any "improper solutions" such
 ##'        as Heywood cases.  NPD solutions are not excluded by default because
@@ -432,15 +432,15 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The simple intercepts given each value of the
+##'  \item `SimpleIntercept`: The simple intercepts given each value of the
 ##'   moderator.
-##'  \item \code{SimpleSlope}: The simple slopes given each value of the moderator.
+##'  \item `SimpleSlope`: The simple slopes given each value of the moderator.
 ##' }
 ##' In each element, the first column represents the values of the moderators
-##' specified in the \code{valProbe} argument. The second column is the simple
+##' specified in the `valProbe` argument. The second column is the simple
 ##' intercept or simple slope. The third column is the standard error of the
-##' simple intercept or slope. The fourth column is the Wald (\emph{z})
-##' statistic, and the fifth column is the associated \emph{p} value testing
+##' simple intercept or slope. The fourth column is the Wald (*z*)
+##' statistic, and the fifth column is the associated *p* value testing
 ##' the null hypothesis that each simple intercept or slope is 0.
 ##'
 ##' @author
@@ -465,29 +465,29 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' Tutorial:
 ##'
 ##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
-##' latent variable interactions using the \code{semTools} package.
-##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##' latent variable interactions using the `semTools` package.
+##' *Psych, 3*(3), 322--335. \doi{10.3390/psych3030024}
 ##'
 ##' Background literature:
 ##'
 ##' Lance, C. E. (1988). Residual centering, exploratory and confirmatory
 ##' moderator analysis, and decomposition of effects in path models containing
-##' interactions. \emph{Applied Psychological Measurement, 12}(2), 163--175.
+##' interactions. *Applied Psychological Measurement, 12*(2), 163--175.
 ##' \doi{10.1177/014662168801200205}
 ##'
 ##' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 ##' orthogonalizing powered and product terms: Implications for modeling
-##' interactions. \emph{Structural Equation Modeling, 13}(4), 497--519.
+##' interactions. *Structural Equation Modeling, 13*(4), 497--519.
 ##' \doi{10.1207/s15328007sem1304_1}
 ##'
 ##' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 ##' latent interactions: Evaluation of alternative estimation strategies and
-##' indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
+##' indicator construction. *Psychological Methods, 9*(3), 275--300.
 ##' \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' Geldhof, G. J., Pornprasertmanit, S., Schoemann, A. M., & Little, T. D.
 ##' (2013). Orthogonalizing through residual centering: Extended applications
-##' and caveats. \emph{Educational and Psychological Measurement, 73}(1), 27--46.
+##' and caveats. *Educational and Psychological Measurement, 73*(1), 27--46.
 ##' \doi{10.1177/0013164412445473}
 ##'
 ##' @examples
@@ -804,7 +804,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'         2ZWCov\left(b_1, b_7\right)   + 2ZWCov\left(b_4, b_5\right) +
 ##'         2Z^2WCov\left(b_4, b_7\right) + 2ZW^2Cov\left(b_5, b_7\right). }
 ##'
-##' Wald \emph{z} statistics are calculated (even for objects of class
+##' Wald *z* statistics are calculated (even for objects of class
 ##' \code{\linkS4class{lavaan.mi}}) to test null hypotheses that simple
 ##' intercepts or slopes are 0.
 ##'
@@ -815,7 +815,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'
 ##' @param fit A fitted \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
-##' @param nameX \code{character} vector of all 7 factor names used as the
+##' @param nameX `character` vector of all 7 factor names used as the
 ##'   predictors. The 3 lower-order factors must be listed first, followed by
 ##'   the 3 second-order factors (specifically, the 4th element must be the
 ##'   interaction between the factors listed first and second, the 5th element
@@ -834,13 +834,13 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
 ##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'        imputations from pooled results. Ignored unless \code{fit} is of
+##' @param omit.imps `character` vector specifying criteria for omitting
+##'        imputations from pooled results. Ignored unless `fit` is of
 ##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
-##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
-##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        last option (`"no.npd"`) would exclude any imputations which
 ##'        yielded a nonpositive definite covariance matrix for observed or
 ##'        latent variables, which would include any "improper solutions" such
 ##'        as Heywood cases.  NPD solutions are not excluded by default because
@@ -852,18 +852,18 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The model-implied intercepts given each
+##'  \item `SimpleIntercept`: The model-implied intercepts given each
 ##'        combination of moderator values.
-##'  \item \code{SimpleSlope}: The model-implied slopes given each combination
+##'  \item `SimpleSlope`: The model-implied slopes given each combination
 ##'        of moderator values.
 ##' }
 ##' In each element, the first column represents values of the first moderator
-##' specified in the \code{valProbe1} argument. The second column represents
-##' values of the second moderator specified in the \code{valProbe2} argument.
+##' specified in the `valProbe1` argument. The second column represents
+##' values of the second moderator specified in the `valProbe2` argument.
 ##' The third column is the simple intercept or simple slope. The fourth column
 ##' is the standard error of the simple intercept or simple slope. The fifth
-##' column is the Wald (\emph{z}) statistic, and the sixth column is its
-##' associated \emph{p} value to test the null hypothesis that each simple
+##' column is the Wald (*z*) statistic, and the sixth column is its
+##' associated *p* value to test the null hypothesis that each simple
 ##' intercept or simple slope equals 0.
 ##'
 ##' @author
@@ -888,17 +888,17 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' Tutorial:
 ##'
 ##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
-##' latent variable interactions using the \code{semTools} package.
-##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##' latent variable interactions using the `semTools` package.
+##' *Psych, 3*(3), 322--335. \doi{10.3390/psych3030024}
 ##'
 ##' Background literature:
 ##'
-##' Aiken, L. S., & West, S. G. (1991). \emph{Multiple regression: Testing
-##' and interpreting interactions}. Newbury Park, CA: Sage.
+##' Aiken, L. S., & West, S. G. (1991). *Multiple regression: Testing
+##' and interpreting interactions*. Newbury Park, CA: Sage.
 ##'
 ##' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 ##' latent interactions: Evaluation of alternative estimation strategies and
-##' indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
+##' indicator construction. *Psychological Methods, 9*(3), 275--300.
 ##' \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' @examples
@@ -1158,7 +1158,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##'
 ##' @param fit A fitted \code{\linkS4class{lavaan}} or
 ##'   \code{\linkS4class{lavaan.mi}} object with a latent 2-way interaction.
-##' @param nameX \code{character} vector of all 7 factor names used as the
+##' @param nameX `character` vector of all 7 factor names used as the
 ##'   predictors. The 3 lower-order factors must be listed first, followed by
 ##'   the 3 second-order factors (specifically, the 4th element must be the
 ##'   interaction between the factors listed first and second, the 5th element
@@ -1177,13 +1177,13 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' @param group In multigroup models, the label of the group for which the
 ##'   results will be returned. Must correspond to one of
 ##'   \code{\link[lavaan]{lavInspect}(fit, "group.label")}.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'        imputations from pooled results. Ignored unless \code{fit} is of
+##' @param omit.imps `character` vector specifying criteria for omitting
+##'        imputations from pooled results. Ignored unless `fit` is of
 ##'        class \code{\linkS4class{lavaan.mi}}. Can include any of
-##'        \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
-##'        last option (\code{"no.npd"}) would exclude any imputations which
+##'        last option (`"no.npd"`) would exclude any imputations which
 ##'        yielded a nonpositive definite covariance matrix for observed or
 ##'        latent variables, which would include any "improper solutions" such
 ##'        as Heywood cases.  NPD solutions are not excluded by default because
@@ -1195,18 +1195,18 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##'
 ##' @return A list with two elements:
 ##' \enumerate{
-##'  \item \code{SimpleIntercept}: The model-implied intercepts given each
+##'  \item `SimpleIntercept`: The model-implied intercepts given each
 ##'        combination of moderator values.
-##'  \item \code{SimpleSlope}: The model-implied slopes given each combination
+##'  \item `SimpleSlope`: The model-implied slopes given each combination
 ##'        of moderator values.
 ##' }
 ##' In each element, the first column represents values of the first moderator
-##' specified in the \code{valProbe1} argument. The second column represents
-##' values of the second moderator specified in the \code{valProbe2} argument.
+##' specified in the `valProbe1` argument. The second column represents
+##' values of the second moderator specified in the `valProbe2` argument.
 ##' The third column is the simple intercept or simple slope. The fourth column
-##' is the \emph{SE} of the simple intercept or simple slope. The fifth column
-##' is the Wald (\emph{z}) statistic, and the sixth column is its associated
-##' \emph{p} value to test the null hypothesis that each simple intercept or
+##' is the *SE* of the simple intercept or simple slope. The fifth column
+##' is the Wald (*z*) statistic, and the sixth column is its associated
+##' *p* value to test the null hypothesis that each simple intercept or
 ##' simple slope equals 0.
 ##'
 ##' @author
@@ -1231,34 +1231,34 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' Tutorial:
 ##'
 ##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
-##' latent variable interactions using the \code{semTools} package.
-##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##' latent variable interactions using the `semTools` package.
+##' *Psych, 3*(3), 322--335. \doi{10.3390/psych3030024}
 ##'
 ##' Background literature:
 ##'
 ##' Geldhof, G. J., Pornprasertmanit, S., Schoemann, A., & Little,
 ##' T. D. (2013). Orthogonalizing through residual centering: Extended
-##' applications and caveats. \emph{Educational and Psychological Measurement,
-##' 73}(1), 27--46. \doi{10.1177/0013164412445473}
+##' applications and caveats. *Educational and Psychological Measurement,
+##' 73*(1), 27--46. \doi{10.1177/0013164412445473}
 ##'
 ##' Lance, C. E. (1988). Residual centering, exploratory and confirmatory
 ##' moderator analysis, and decomposition of effects in path models containing
-##' interactions. \emph{Applied Psychological Measurement, 12}(2), 163--175.
+##' interactions. *Applied Psychological Measurement, 12*(2), 163--175.
 ##' \doi{10.1177/014662168801200205}
 ##'
 ##' Little, T. D., Bovaird, J. A., & Widaman, K. F. (2006). On the merits of
 ##' orthogonalizing powered and product terms: Implications for modeling
-##' interactions. \emph{Structural Equation Modeling, 13}(4), 497--519.
+##' interactions. *Structural Equation Modeling, 13*(4), 497--519.
 ##' \doi{10.1207/s15328007sem1304_1}
 ##'
 ##' Marsh, H. W., Wen, Z., & Hau, K. T. (2004). Structural equation models of
 ##' latent interactions: Evaluation of alternative estimation strategies and
-##' indicator construction. \emph{Psychological Methods, 9}(3), 275--300.
+##' indicator construction. *Psychological Methods, 9*(3), 275--300.
 ##' \doi{10.1037/1082-989X.9.3.275}
 ##'
 ##' Pornprasertmanit, S., Schoemann, A. M., Geldhof, G. J., & Little, T. D.
-##' (submitted). \emph{Probing latent interaction estimated with a residual
-##' centering approach.}
+##' (submitted). *Probing latent interaction estimated with a residual
+##' centering approach.*
 ##'
 ##' @examples
 ##'
@@ -1569,16 +1569,16 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' function used to obtain the first argument.
 ##'
 ##' @note
-##' If the \code{object} does not contain simple intercepts (i.e., if the
-##' \code{object$SimpleIntcept} element is \code{NULL}), then all simple
+##' If the `object` does not contain simple intercepts (i.e., if the
+##' `object$SimpleIntcept` element is `NULL`), then all simple
 ##' intercepts are arbitrarily set to zero in order to plot the simple slopes.
 ##' This may not be consistent with the fitted model, but was (up until version
 ##' 0.5-7) the default behavior when the y-intercept was fixed to 0. In this case,
 ##' although the relative steepness of simple slopes can still meaningfully be
 ##' compared, the relative vertical positions of lines at any point along the
-##' \emph{x}-axis should not be interpreted.
+##' *x*-axis should not be interpreted.
 ##'
-##' @param object A \code{list}, typically the result of probing a latent 2-way
+##' @param object A `list`, typically the result of probing a latent 2-way
 ##'   or 3-way interaction obtained from the \code{\link{probe2WayMC}},
 ##'   \code{\link{probe2WayRC}}, \code{\link{probe3WayMC}}, or
 ##'   \code{\link{probe3WayRC}} functions.
@@ -1586,9 +1586,9 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##'   independent variable
 ##' @param xlab The label of the x-axis
 ##' @param ylab The label of the y-axis
-##' @param legend \code{logical}. If \code{TRUE} (default), a legend is printed.
-##' @param legendArgs \code{list} of arguments passed to \code{\link{legend}}
-##'   function if \code{legend=TRUE}.
+##' @param legend `logical`. If `TRUE` (default), a legend is printed.
+##' @param legendArgs `list` of arguments passed to \code{\link{legend}}
+##'   function if `legend=TRUE`.
 ##' @param \dots Any additional argument for the \code{\link{plot}} function
 ##'
 ##' @return None. This function will plot the simple main effect only.
@@ -1614,8 +1614,8 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' @references
 ##'
 ##' Schoemann, A. M., & Jorgensen, T. D. (2021). Testing and interpreting
-##' latent variable interactions using the \code{semTools} package.
-##' \emph{Psych, 3}(3), 322--335. \doi{10.3390/psych3030024}
+##' latent variable interactions using the `semTools` package.
+##' *Psych, 3*(3), 322--335. \doi{10.3390/psych3030024}
 ##'
 ##' @examples
 ##'

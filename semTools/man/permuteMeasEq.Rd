@@ -34,7 +34,7 @@ have already been identified as DIF items).}
 parameters specified in \code{param} are freely estimated in all groups.
 When \code{modelType = "mgcfa"}, only in the case of testing
 \emph{configural} invariance should \code{uncon = NULL}. When
-\code{modelType = "mimic"}, any non-\code{NULL uncon} is silently set to
+\code{modelType = "mimic"}, any non-\verb{NULL uncon} is silently set to
 \code{NULL}.}
 
 \item{null}{Optional.  A \code{lavaan} object, in which an alternative null
@@ -65,7 +65,7 @@ following values: \code{"loadings"}, \code{"intercepts"},
 \code{"means"}, \code{"lv.variances"}, and/or \code{"lv.covariances"}. When
 \code{modelType = "mimic"}, \code{param} must be a vector of individual
 parameters or a list of character strings to be passed one-at-a-time to
-\code{\link[lavaan]{lavTestScore}}\code{(object = con, add = param[i])},
+\code{\link[lavaan]{lavTestScore}}\verb{(object = con, add = param[i])},
 indicating which (sets of) regression paths fixed to zero in \code{con} that
 the user would consider freeing (i.e., exclude anchor items). If
 \code{modelType = "mimic"} and \code{param} is a list of character strings,
@@ -179,8 +179,7 @@ default is \code{"none"}. Forking is not possible on Windows, so if
 changed to \code{"snow"} with a message.}
 
 \item{ncpus}{Integer: number of processes to be used in parallel operation.
-If \code{NULL} (the default) and \code{parallelType %in%
-  c("multicore","snow")}, the default is one less than the maximum number of
+If \code{NULL} (the default) and \code{parallelType \%in\% c("multicore","snow")}, the default is one less than the maximum number of
 processors detected by \code{\link[parallel]{detectCores}}. This default is
 also silently set if the user specifies more than the number of processors
 detected.}
@@ -463,7 +462,7 @@ summary(perm.mimic)
 
 }
 \references{
-\bold{Papers about permutation tests of measurement equivalence:}
+\strong{Papers about permutation tests of measurement equivalence:}
 
 Jorgensen, T. D., Kite, B. A., Chen, P.-Y., & Short, S. D. (2018).
 Permutation randomization methods for testing measurement equivalence and
@@ -481,7 +480,7 @@ modification indices to configurally invariant models that need
 respecification. \emph{Frontiers in Psychology, 8}(1455).
 \doi{10.3389/fpsyg.2017.01455}
 
-\bold{Additional reading:}
+\strong{Additional reading:}
 
 Chen, F. F. (2007). Sensitivity of goodness of fit indexes to
 lack of measurement invariance.  \emph{Structural Equation Modeling, 14}(3),

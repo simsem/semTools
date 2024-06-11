@@ -33,19 +33,19 @@
 ##' the Step-2 analysis would not take into account the uncertainty about the
 ##' estimated factor scores.  Using the asymptotic sampling covariance matrix
 ##' of the factor scores provided by \code{\link[lavaan]{lavPredict}},
-##' \code{plausibleValues} draws a set of \code{nDraws} imputations from the
+##' `plausibleValues` draws a set of `nDraws` imputations from the
 ##' sampling distribution of each factor score, returning a list of data sets
 ##' that can be treated like multiple imputations of incomplete data.  If the
-##' data were already imputed to handle missing data, \code{plausibleValues}
+##' data were already imputed to handle missing data, `plausibleValues`
 ##' also accepts an object of class \code{\linkS4class{lavaan.mi}}, and will
-##' draw \code{nDraws} plausible values from each imputation.  Step 2 would
+##' draw `nDraws` plausible values from each imputation.  Step 2 would
 ##' then take into account uncertainty about both missing values and factor
 ##' scores.  Bayesian methods can also be used to generate factor scores, as
 ##' available with the \pkg{blavaan} package, in which case plausible
 ##' values are simply saved parameters from the posterior distribution. See
 ##' Asparouhov and Muthen (2010) for further technical details and references.
 ##'
-##' Each returned \code{data.frame} includes a \code{case.idx} column that
+##' Each returned `data.frame` includes a `case.idx` column that
 ##' indicates the corresponding rows in the data set to which the model was
 ##' originally fitted (unless the user requests only Level-2 variables).  This
 ##' can be used to merge the plausible values with the original observed data,
@@ -54,12 +54,12 @@
 ##' because they were not accounted for in the Step-1 model from which factor
 ##' scores were estimated.
 ##'
-##' If \code{object} is a multilevel \code{lavaan} model, users can request
+##' If `object` is a multilevel `lavaan` model, users can request
 ##' plausible values for latent variables at particular levels of analysis by
-##' setting the \code{\link[lavaan]{lavPredict}} argument \code{level=1} or
-##' \code{level=2}.  If the \code{level} argument is not passed via \dots,
+##' setting the \code{\link[lavaan]{lavPredict}} argument `level=1` or
+##' `level=2`.  If the `level` argument is not passed via \dots,
 ##' then both levels are returned in a single merged data set per draw.  For
-##' multilevel models, each returned \code{data.frame} also includes a column
+##' multilevel models, each returned `data.frame` also includes a column
 ##' indicating to which cluster each row belongs (unless the user requests only
 ##' Level-2 variables).
 ##'
@@ -68,37 +68,37 @@
 ##'
 ##' @param object A fitted model of class \code{\linkS4class{lavaan}},
 ##'   \code{\link[blavaan]{blavaan}}, or \code{\linkS4class{lavaan.mi}}
-##' @param nDraws \code{integer} specifying the number of draws, analogous to
-##'   the number of imputed data sets. If \code{object} is of class
+##' @param nDraws `integer` specifying the number of draws, analogous to
+##'   the number of imputed data sets. If `object` is of class
 ##'   \code{\linkS4class{lavaan.mi}}, this will be the number of draws taken
-##'   \emph{per imputation}.  If \code{object} is of class
-##'   \code{\link[blavaan]{blavaan}}, \code{nDraws} cannot exceed
-##'   \code{blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")}
+##'   *per imputation*.  If `object` is of class
+##'   \code{\link[blavaan]{blavaan}}, `nDraws` cannot exceed
+##'   `blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")`
 ##'   (number of MCMC samples from the posterior). The drawn samples will be
-##'   evenly spaced (after permutation for \code{target="stan"}), using
+##'   evenly spaced (after permutation for `target="stan"`), using
 ##'   \code{\link{ceiling}} to resolve decimals.
-##' @param seed \code{integer} passed to \code{\link{set.seed}()}.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
-##'   imputations when \code{object} is of class \code{\linkS4class{lavaan.mi}}.
-##'   Can include any of \code{c("no.conv", "no.se", "no.npd")}.
+##' @param seed `integer` passed to \code{\link{set.seed}()}.
+##' @param omit.imps `character` vector specifying criteria for omitting
+##'   imputations when `object` is of class \code{\linkS4class{lavaan.mi}}.
+##'   Can include any of `c("no.conv", "no.se", "no.npd")`.
 ##' @param ... Optional arguments to pass to \code{\link[lavaan]{lavPredict}}.
-##'   \code{assemble} will be ignored because multiple groups are always
-##'   assembled into a single \code{data.frame} per draw. \code{type} will be
-##'   ignored because it is set internally to \code{type="lv"}.
+##'   `assemble` will be ignored because multiple groups are always
+##'   assembled into a single `data.frame` per draw. `type` will be
+##'   ignored because it is set internally to `type="lv"`.
 ##'
-##' @return A \code{list} of length \code{nDraws}, each of which is a
-##'   \code{data.frame} containing plausible values, which can be treated as
-##'   a \code{list} of imputed data sets to be passed to \code{\link{runMI}}
-##'   (see \bold{Examples}). If \code{object} is of class
-##'   \code{\linkS4class{lavaan.mi}}, the \code{list} will be of length
-##'   \code{nDraws*m}, where \code{m} is the number of imputations.
+##' @return A `list` of length `nDraws`, each of which is a
+##'   `data.frame` containing plausible values, which can be treated as
+##'   a `list` of imputed data sets to be passed to \code{\link{runMI}}
+##'   (see **Examples**). If `object` is of class
+##'   \code{\linkS4class{lavaan.mi}}, the `list` will be of length
+##'   `nDraws*m`, where `m` is the number of imputations.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references
-##'   Asparouhov, T. & Muthen, B. O. (2010). \emph{Plausible values for latent
-##'   variables using M}plus. Technical Report. Retrieved from
+##'   Asparouhov, T. & Muthen, B. O. (2010). *Plausible values for latent
+##'   variables using M*plus. Technical Report. Retrieved from
 ##'   www.statmodel.com/download/Plausible.pdf
 ##'
 ##' @seealso \code{\link{runMI}}, \code{\linkS4class{lavaan.mi}}

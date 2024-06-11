@@ -12,9 +12,9 @@
 ##' sample size and the sample size between each estimate ("step size") We
 ##' strongly urge the user to read the sources below (see References) before
 ##' proceeding.  A web version of this function is available at:
-##' \url{http://quantpsy.org/rmsea/rmseaplot.htm}. This function is also
+##' <http://quantpsy.org/rmsea/rmseaplot.htm>. This function is also
 ##' implemented in the web application "power4SEM":
-##' \url{https://sjak.shinyapps.io/power4SEM/}
+##' <https://sjak.shinyapps.io/power4SEM/>
 ##'
 ##'
 ##' @importFrom stats qchisq pchisq
@@ -51,34 +51,34 @@
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 ##' differences between nested covariance structure models: Power analysis and
-##' null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
+##' null hypotheses. *Psychological Methods, 11*(1), 19--35.
 ##' \doi{10.1037/1082-989X.11.1.19}
 ##'
 ##' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 ##' and determination of sample size for covariance structure modeling.
-##' \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
+##' *Psychological Methods, 1*(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
 ##'
 ##' MacCallum, R. C., Lee, T., & Browne, M. W. (2010). The issue of isopower in
-##' power analysis for tests of structural equation models. \emph{Structural
-##' Equation Modeling, 17}(1), 23--41. \doi{10.1080/10705510903438906}
+##' power analysis for tests of structural equation models. *Structural
+##' Equation Modeling, 17*(1), 23--41. \doi{10.1080/10705510903438906}
 ##'
 ##' Preacher, K. J., Cai, L., & MacCallum, R. C. (2007). Alternatives to
 ##' traditional model comparison strategies for covariance structure models. In
-##' T. D. Little, J. A. Bovaird, & N. A. Card (Eds.), \emph{Modeling contextual
-##' effects in longitudinal studies} (pp. 33--62). Mahwah, NJ: Lawrence Erlbaum
+##' T. D. Little, J. A. Bovaird, & N. A. Card (Eds.), *Modeling contextual
+##' effects in longitudinal studies* (pp. 33--62). Mahwah, NJ: Lawrence Erlbaum
 ##' Associates.
 ##'
 ##' Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit
-##' index. \emph{Structural Equation Modeling, 5}(4), 411--419.
+##' index. *Structural Equation Modeling, 5*(4), 411--419.
 ##' \doi{10.1080/10705519809540115}
 ##'
-##' Steiger, J. H., & Lind, J. C. (1980, June). \emph{Statistically based tests
-##' for the number of factors.} Paper presented at the annual meeting of the
+##' Steiger, J. H., & Lind, J. C. (1980, June). *Statistically based tests
+##' for the number of factors.* Paper presented at the annual meeting of the
 ##' Psychometric Society, Iowa City, IA.
 ##'
 ##' Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
 ##' (2021). Analytical power calculations for structural equation modeling:
-##' A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+##' A tutorial and Shiny app. *Behavior Research Methods, 53*, 1385--1406.
 ##' \doi{10.3758/s13428-020-01479-0}
 ##'
 ##' @examples
@@ -124,7 +124,7 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 ##' 1)d\varepsilon^2 / K,} where \eqn{N} is sample size, \eqn{d} is the model
 ##' degree of freedom, \eqn{K} is the number of group, and \eqn{\varepsilon} is
 ##' the population RMSEA. Next, the noncentral \eqn{\chi^2} distribution with a
-##' specified \emph{df} and noncentrality parameter is plotted. Thus,
+##' specified *df* and noncentrality parameter is plotted. Thus,
 ##' the x-axis represents the sample \eqn{\chi^2} value. The sample \eqn{\chi^2}
 ##' value can be transformed to the sample RMSEA scale (\eqn{\hat{\varepsilon}})
 ##' by \deqn{\hat{\varepsilon} = \sqrt{K}\sqrt{\frac{\chi^2 - d}{(N - 1)d}},}
@@ -139,9 +139,9 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 ##' @param df Model degrees of freedom
 ##' @param ptile The percentile rank of the distribution of the first RMSEA that
 ##' users wish to plot a vertical line in the resulting graph
-##' @param caption The name vector of each element of \code{rmsea}
-##' @param rmseaScale If \code{TRUE}, the RMSEA scale is used in the x-axis. If
-##' \code{FALSE}, the chi-square scale is used in the x-axis.
+##' @param caption The name vector of each element of `rmsea`
+##' @param rmseaScale If `TRUE`, the RMSEA scale is used in the x-axis. If
+##' `FALSE`, the chi-square scale is used in the x-axis.
 ##' @param group The number of group that is used to calculate RMSEA.
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
@@ -158,15 +158,15 @@ plotRMSEApower <- function(rmsea0, rmseaA, df, nlow, nhigh, steps = 1,
 ##' @references
 ##' Dudgeon, P. (2004). A note on extending Steiger's (1998)
 ##' multiple sample RMSEA adjustment to other noncentrality parameter-based
-##' statistic. \emph{Structural Equation Modeling, 11}(3), 305--319.
+##' statistic. *Structural Equation Modeling, 11*(3), 305--319.
 ##' \doi{10.1207/s15328007sem1103_1}
 ##'
 ##' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 ##' and determination of sample size for covariance structure modeling.
-##' \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
+##' *Psychological Methods, 1*(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
 ##'
 ##' Steiger, J. H. (1998). A note on multiple sample extensions of the RMSEA fit
-##' index. \emph{Structural Equation Modeling, 5}(4), 411--419.
+##' index. *Structural Equation Modeling, 5*(4), 411--419.
 ##' \doi{10.1080/10705519809540115}
 ##'
 ##' @examples
@@ -212,16 +212,16 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 ##'
 ##' This function find the proportion of sampling distribution derived from the
 ##' alternative RMSEA that is in the critical region derived from the sampling
-##' distribution of the null RMSEA. If \code{rmseaA} is greater than
-##' \code{rmsea0}, the test of close fit is used and the critical region is in
+##' distribution of the null RMSEA. If `rmseaA` is greater than
+##' `rmsea0`, the test of close fit is used and the critical region is in
 ##' the right hand side of the null sampling distribution. On the other hand, if
-##' \code{rmseaA} is less than \code{rmsea0}, the test of not-close fit is used
+##' `rmseaA` is less than `rmsea0`, the test of not-close fit is used
 ##' and the critical region is in the left hand side of the null sampling
 ##' distribution (MacCallum, Browne, & Suguwara, 1996).
 ##'
 ##' There is also a Shiny app called "power4SEM" that provides a graphical user
 ##' interface for this functionality (Jak et al., in press).  It can be accessed
-##' at \url{https://sjak.shinyapps.io/power4SEM/}.
+##' at <https://sjak.shinyapps.io/power4SEM/>.
 ##'
 ##'
 ##' @importFrom stats qchisq pchisq
@@ -246,11 +246,11 @@ plotRMSEAdist <- function(rmsea, n, df, ptile = NULL, caption = NULL,
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 ##' and determination of sample size for covariance structure modeling.
-##' \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
+##' *Psychological Methods, 1*(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
 ##'
 ##'  Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
 ##'  (2021). Analytical power calculations for structural equation modeling:
-##'  A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+##'  A tutorial and Shiny app. *Behavior Research Methods, 53*, 1385--1406.
 ##'  \doi{10.3758/s13428-020-01479-0}
 ##'
 ##' @examples
@@ -283,7 +283,7 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 ##' This function find the minimum sample size for a specified power based on an
 ##' iterative routine. The sample size keep increasing until the calculated
 ##' power from \code{\link{findRMSEApower}} function is just over the specified
-##' power. If \code{group} is greater than 1, the resulting sample size is the
+##' power. If `group` is greater than 1, the resulting sample size is the
 ##' sample size per group.
 ##'
 ##' @param rmsea0 Null RMSEA
@@ -307,11 +307,11 @@ findRMSEApower <- function(rmsea0, rmseaA, df, n, alpha = .05, group = 1) {
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis
 ##' and determination of sample size for covariance structure modeling.
-##' \emph{Psychological Methods, 1}(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
+##' *Psychological Methods, 1*(2), 130--149. \doi{10.1037/1082-989X.1.2.130}
 ##'
 ##'  Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
 ##'  (2021). Analytical power calculations for structural equation modeling:
-##'  A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+##'  A tutorial and Shiny app. *Behavior Research Methods, 53*, 1385--1406.
 ##'  \doi{10.3758/s13428-020-01479-0}
 ##'
 ##' @examples

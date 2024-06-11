@@ -7,7 +7,7 @@
 ##' Testing measurement invariance across groups using a typical sequence of
 ##' model comparison tests.
 ##'
-##' If \code{strict = FALSE}, the following four models are tested in order:
+##' If `strict = FALSE`, the following four models are tested in order:
 ##' \enumerate{
 ##'  \item Model 1: configural invariance. The same factor structure
 ##' is imposed on all groups.
@@ -24,7 +24,7 @@
 ##' the current model to the baseline model (Model 1). In addition, the
 ##' difference in CFI is also reported (\eqn{\Delta}CFI).
 ##'
-##' If \code{strict = TRUE}, the following five models are tested in order:
+##' If `strict = TRUE`, the following five models are tested in order:
 ##' \enumerate{
 ##'  \item Model 1: configural invariance. The same factor structure
 ##'    is imposed on all groups.
@@ -40,20 +40,20 @@
 ##'
 ##' Note that if the \eqn{\chi^2} test statistic is scaled (e.g., a Satorra-Bentler
 ##' or Yuan-Bentler test statistic), a special version of the \eqn{\Delta\chi^2}
-##' test is used as described in \url{http://www.statmodel.com/chidiff.shtml}
+##' test is used as described in <http://www.statmodel.com/chidiff.shtml>
 ##'
 ##' @importFrom lavaan parTable
 ##'
 ##' @param ... The same arguments as for any lavaan model.  See
 ##'   \code{\link{cfa}} for more information.
-##' @param std.lv If \code{TRUE}, the fixed-factor method of scale
-##'   identification is used. If \code{FALSE}, the first variable for each factor
+##' @param std.lv If `TRUE`, the fixed-factor method of scale
+##'   identification is used. If `FALSE`, the first variable for each factor
 ##'   is used as marker variable.
-##' @param strict If \code{TRUE}, the sequence requires `strict' invariance.
+##' @param strict If `TRUE`, the sequence requires `strict' invariance.
 ##'   See details for more information.
-##' @param quiet If \code{FALSE} (default), a summary is printed out containing
+##' @param quiet If `FALSE` (default), a summary is printed out containing
 ##'   an overview of the different models that are fitted, together with some
-##'   model comparison tests. If \code{TRUE}, no summary is printed.
+##'   model comparison tests. If `TRUE`, no summary is printed.
 ##' @param fit.measures Fit measures used to calculate the differences between
 ##'   nested models.
 ##' @param baseline.model custom baseline model passed to
@@ -72,8 +72,8 @@
 ##' @references
 ##'   Vandenberg, R. J., and Lance, C. E. (2000). A review and synthesis of the
 ##'   measurement invariance literature: Suggestions, practices, and
-##'   recommendations for organizational research. \emph{Organizational
-##'   Research Methods, 3,} 4--70.
+##'   recommendations for organizational research. *Organizational
+##'   Research Methods, 3,* 4--70.
 ##'
 ##' @examples
 ##'
@@ -96,11 +96,11 @@ NULL
 
 ##' @rdname semTools-deprecated
 ##' @section Previous measurement-invariance functions:
-##' The \code{measurementInvariance}, \code{measurementInvarianceCat}, and
-##' \code{longInvariance} functions will no longer be supported. Instead, use
+##' The `measurementInvariance`, `measurementInvarianceCat`, and
+##' `longInvariance` functions will no longer be supported. Instead, use
 ##' the \code{\link{measEq.syntax}} function, which is much more flexible and
-##' supports a wider range of data (e.g., any mixture of \code{numeric} and
-##' \code{ordered} indicators, any combination of multiple groups and repeated
+##' supports a wider range of data (e.g., any mixture of `numeric` and
+##' `ordered` indicators, any combination of multiple groups and repeated
 ##' measures, models fit to multiple imputations with \code{\link{runMI}}).
 ##'
 ##' @export

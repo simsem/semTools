@@ -18,7 +18,7 @@ to compute \code{bic.priorN}.}
 }
 \value{
 A \code{numeric} \code{lavaan.vector} including any of the
-following requested via \code{fit.measures=}
+following requested via \verb{fit.measures=}
 \enumerate{
 \item \code{gammaHat}: Gamma-Hat
 \item \code{adjGammaHat}: Adjusted Gamma-Hat

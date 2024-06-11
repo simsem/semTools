@@ -31,7 +31,7 @@ growth.mi(model, data, ..., m, miArgs = list(), miPackage = "Amelia",
 \item{data}{A \code{data.frame} with missing observations, or a \code{list}
 of imputed data sets (if data are imputed already). If \code{runMI} has
 already been called, then imputed data sets are stored in the
-\code{@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
+\verb{@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
 from which the same imputed data will be used for additional analyses.}
 
 \item{fun}{\code{character}. Name of a specific lavaan function used to fit

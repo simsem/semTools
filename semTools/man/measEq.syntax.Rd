@@ -140,13 +140,13 @@ method (see \code{\linkS4class{lavaan}}), and \dots will be passed to
 \code{\link[lavaan]{lavaan}}. If neither data nor a fitted lavaan model
 were provided, this must be \code{FALSE}. If \code{TRUE}, the generated
 \code{measEq.syntax} object will be included in the \code{lavaan} object's
-\code{@external} slot, accessible by \code{fit@external$measEq.syntax}.}
+\verb{@external} slot, accessible by \code{fit@external$measEq.syntax}.}
 }
 \value{
 By default, an object of class \code{\linkS4class{measEq.syntax}}.
 If \code{return.fit = TRUE}, a fitted \code{\link[lavaan]{lavaan}}
 model, with the \code{measEq.syntax} object stored in the
-\code{@external} slot, accessible by \code{fit@external$measEq.syntax}.
+\verb{@external} slot, accessible by \code{fit@external$measEq.syntax}.
 }
 \description{
 Automatically generates \code{lavaan} model syntax to specify a confirmatory

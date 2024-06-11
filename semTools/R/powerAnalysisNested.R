@@ -37,7 +37,7 @@
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 ##' differences between nested covariance structure models: Power analysis and
-##' null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
+##' null hypotheses. *Psychological Methods, 11*(1), 19--35.
 ##' \doi{10.1037/1082-989X.11.1.19}
 ##'
 ##' @examples
@@ -100,7 +100,7 @@ findRMSEApowernested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A, rmsea1
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 ##' differences between nested covariance structure models: Power analysis and
-##' null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
+##' null hypotheses. *Psychological Methods, 11*(1), 19--35.
 ##' \doi{10.1037/1082-989X.11.1.19}
 ##'
 ##' @examples
@@ -175,7 +175,7 @@ findRMSEAsamplesizenested <- function(rmsea0A = NULL, rmsea0B = NULL, rmsea1A,
 ##' @references
 ##' MacCallum, R. C., Browne, M. W., & Cai, L. (2006). Testing
 ##' differences between nested covariance structure models: Power analysis and
-##' null hypotheses. \emph{Psychological Methods, 11}(1), 19--35.
+##' null hypotheses. *Psychological Methods, 11*(1), 19--35.
 ##' \doi{10.1037/1082-989X.11.1.19}
 ##'
 ##' @examples

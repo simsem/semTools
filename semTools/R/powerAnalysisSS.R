@@ -16,14 +16,14 @@
 ##' Apply Satorra & Saris (1985) method for chi-squared power analysis.
 ##'
 ##' Specify all non-zero parameters in a population model, either by using
-##' lavaan syntax (\code{popModel}) or by submitting a population covariance
-##' matrix (\code{Sigma}) and optional mean vector (\code{mu}) implied by the
+##' lavaan syntax (`popModel`) or by submitting a population covariance
+##' matrix (`Sigma`) and optional mean vector (`mu`) implied by the
 ##' population model. Then specify an analysis model that places at least
-##' one invalid constraint (note the number in the \code{nparam} argument).
+##' one invalid constraint (note the number in the `nparam` argument).
 ##'
 ##' There is also a Shiny app called "power4SEM" that provides a graphical user
 ##' interface for this functionality (Jak et al., in press).  It can be accessed
-##' at \url{https://sjak.shinyapps.io/power4SEM/}.
+##' at <https://sjak.shinyapps.io/power4SEM/>.
 ##'
 ##'
 ##' @importFrom stats qchisq pchisq
@@ -31,30 +31,30 @@
 ##' @param powerModel lavaan \code{\link[lavaan]{model.syntax}} for the model to
 ##'   be analyzed. This syntax should constrain at least one nonzero parameter
 ##'   to 0 (or another number).
-##' @param n \code{integer}. Sample size used in power calculation, or a vector
+##' @param n `integer`. Sample size used in power calculation, or a vector
 ##'   of sample sizes if analyzing a multigroup model. If
-##'   \code{length(n) < length(Sigma)} when \code{Sigma} is a list, \code{n} will
-##'   be recycled. If \code{popModel} is used instead of \code{Sigma}, \code{n}
+##'   `length(n) < length(Sigma)` when `Sigma` is a list, `n` will
+##'   be recycled. If `popModel` is used instead of `Sigma`, `n`
 ##'   must specify a sample size for each group, because that is used to infer
 ##'   the number of groups.
-##' @param nparam \code{integer}. Number of invalid constraints in \code{powerModel}.
+##' @param nparam `integer`. Number of invalid constraints in `powerModel`.
 ##' @param popModel lavaan \code{\link[lavaan]{model.syntax}} specifying the
 ##'   data-generating model. This syntax should specify values for all nonzero
-##'   parameters in the model. If \code{length(n) > 1}, the same population
+##'   parameters in the model. If `length(n) > 1`, the same population
 ##'   values will be used for each group, unless different population values are
 ##'   specified per group, either in the lavaan \code{\link[lavaan]{model.syntax}}
-##'   or by utilizing a list of \code{Sigma} (and optionally \code{mu}).
-##' @param mu \code{numeric} or \code{list}. For a single-group model, a vector
+##'   or by utilizing a list of `Sigma` (and optionally `mu`).
+##' @param mu `numeric` or `list`. For a single-group model, a vector
 ##'   of population means. For a multigroup model, a list of vectors (one per
-##'   group). If \code{mu} and \code{popModel} are missing, mean structure will
+##'   group). If `mu` and `popModel` are missing, mean structure will
 ##'   be excluded from the analysis.
-##' @param Sigma \code{matrix} or \code{list}. For a single-group model,
+##' @param Sigma `matrix` or `list`. For a single-group model,
 ##'   a population covariance matrix. For a multigroup model, a list of matrices
-##'   (one per group). If missing, \code{popModel} will be used to generate a
+##'   (one per group). If missing, `popModel` will be used to generate a
 ##'   model-implied Sigma.
-##' @param fun character. Name of \code{lavaan} function used to fit
-##'   \code{powerModel} (i.e., \code{"cfa"}, \code{"sem"}, \code{"growth"}, or
-##'   \code{"lavaan"}).
+##' @param fun character. Name of `lavaan` function used to fit
+##'   `powerModel` (i.e., `"cfa"`, `"sem"`, `"growth"`, or
+##'   `"lavaan"`).
 ##' @param alpha Type I error rate used to set a criterion for rejecting H0.
 ##' @param ... additional arguments to pass to \code{\link[lavaan]{lavaan}}.
 ##'    See also \code{\link[lavaan]{lavOptions}}.
@@ -66,12 +66,12 @@
 ##'
 ##' @references
 ##'  Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio
-##'  test in covariance structure analysis. \emph{Psychometrika, 50}(1), 83--90.
+##'  test in covariance structure analysis. *Psychometrika, 50*(1), 83--90.
 ##'  \doi{10.1007/BF02294150}
 ##'
 ##'  Jak, S., Jorgensen, T. D., Verdam, M. G., Oort, F. J., & Elffers, L.
 ##'  (2021). Analytical power calculations for structural equation modeling:
-##'  A tutorial and Shiny app. \emph{Behavior Research Methods, 53}, 1385--1406.
+##'  A tutorial and Shiny app. *Behavior Research Methods, 53*, 1385--1406.
 ##'  \doi{10.3758/s13428-020-01479-0}
 ##'
 ##' @examples

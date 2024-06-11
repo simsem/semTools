@@ -36,7 +36,7 @@ ignored because it is set internally to \code{type="lv"}.}
 A \code{list} of length \code{nDraws}, each of which is a
 \code{data.frame} containing plausible values, which can be treated as
 a \code{list} of imputed data sets to be passed to \code{\link{runMI}}
-(see \bold{Examples}). If \code{object} is of class
+(see \strong{Examples}). If \code{object} is of class
 \code{\linkS4class{lavaan.mi}}, the \code{list} will be of length
 \code{nDraws*m}, where \code{m} is the number of imputations.
 }
