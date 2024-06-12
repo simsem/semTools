@@ -2,8 +2,8 @@
 % Please edit documentation in R/poolMAlloc.R
 \name{poolMAlloc}
 \alias{poolMAlloc}
-\title{Pooled estimates and standard errors across M parcel-allocations: Combining
-sampling variability and parcel-allocation variability.}
+\title{Combine sampling variability with parcel-allocation variability by
+pooling results across M parcel-allocations}
 \usage{
 poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
   parceloutput = NULL, syntax, dataset, stopProp, stopValue,
@@ -14,8 +14,8 @@ poolMAlloc(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
 \arguments{
 \item{nPerPar}{A list in which each element is a vector, corresponding to
 each factor, indicating sizes of parcels. If variables are left out of
-parceling, they should not be accounted for here (i.e., there should not be
-parcels of size "1").}
+parceling, they should not be accounted for here (i.e., there should not
+be parcels of size "1").}
 
 \item{facPlc}{A list of vectors, each corresponding to a factor, specifying
 the item indicators of that factor (whether included in parceling or not).
@@ -42,15 +42,16 @@ for details.  If \code{NULL} (default), nothing is saved to disk.}
 \item{dataset}{Item-level dataset}
 
 \item{stopProp}{Value used in defining stopping criteria of the algorithm
-(\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of
-change (in any pooled parameter or pooled standard error estimate listed in
-\code{selectParam}) that is allowable from one iteration of the algorithm to
-the next. That is, change in pooled estimates and pooled standard errors
-from one iteration to the next must all be less than (\code{stopProp}) x
-(value from former iteration). Note that \code{stopValue} can override this
-criterion (see below). Also note that values less than .01 are unlikely to
-lead to more substantively meaningful precision. Also note that if only
-\code{stopValue} is a desired criterion, \code{stopProp} can be set to 0.}
+(\eqn{\delta_a} in Sterba & Rights, 2016).  This is the minimum proportion
+of change (in any pooled parameter or pooled standard error estimate
+listed in \code{selectParam}) that is allowable from one iteration of the
+algorithm to the next.  That is, change in pooled estimates and pooled
+standard errors from one iteration to the next must all be less than
+(\code{stopProp}) \eqn{\times} (value from former iteration). Note that
+\code{stopValue} can override this criterion (see below). Also note that values
+less than .01 are unlikely to lead to more substantively meaningful
+precision. Also note that if only \code{stopValue} is a desired criterion,
+\code{stopProp} can be set to 0.}
 
 \item{stopValue}{Value used in defining stopping criteria of the algorithm
 (\eqn{\delta_b} in Sterba & Rights, 2016). \code{stopValue} is a minimum
@@ -74,9 +75,9 @@ included only structural parameters.}
 
 \item{indices}{Optional \code{character} vector indicating the names of
 available \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to be included in the output.
-The first and second elements should be a chi-squared test statistic and its
-associated degrees of freedom, both of which will be added if missing. If
-\code{"default"}, the indices will be \code{c("chisq", "df", "cfi", "tli", "rmsea","srmr")}. If a robust test statistic is requested (see
+The first and second elements should be a chi-squared test statistic and
+its associated degrees of freedom, both of which will be added if missing.
+If \code{"default"}, the indices will be \code{c("chisq", "df", "cfi", "tli", "rmsea","srmr")}. If a robust test statistic is requested (see
 \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}), \code{c("chisq","df")} will be replaced
 by \code{c("chisq.scaled","df.scaled")}. For the output to include both the
 naive and robust test statistics, \code{indices} should include both, but
@@ -110,37 +111,32 @@ Rights (2016).}
 \item{Estimates}{A table containing pooled results across \emph{M}
 allocations at the iteration where stopping criteria were met. Columns
 correspond to individual parameter name, pooled estimate, pooled standard
-error, \emph{p}-value for a \emph{z}-test of the parameter, \emph{z}-based
-95\\% confidence interval, \emph{p}-value for a \emph{t}-test of the
-parameter (using degrees of freedom described in Sterba & Rights, 2016), and
-\emph{t}-based 95\\% confidence interval for the parameter.}
+error, \emph{p} value for a \emph{z} test of the parameter, normal-theory \eqn{95\%}
+CI, \emph{p} value for a \emph{t} test of the parameter (using \eqn{df} described in
+Sterba & Rights, 2016), and \emph{t}-based \eqn{95\%} CI for the parameter.}
 \item{Fit}{A table containing results related to model fit from the \emph{M}
 allocations at the iteration where stopping criteria were met. Columns
-correspond to fit index names, the average of each index across allocations,
-the standard deviation of each fit index across allocations, the maximum of
-each fit index across allocations, the minimum of each fit index across
-allocations, the range of each fit index across allocations, and the percent
-of the \emph{M} allocations where the chi-square test of absolute fit was
-significant.}
-\item{Proportion of converged and proper allocations}{A table
-containing the proportion of the final \emph{M} allocations that converged
-(using a maximum likelihood estimator) and the proportion of allocations
-that converged to proper solutions. Note that pooled estimates, pooled
+correspond to fit index names, the mean of each index across allocations,
+the \emph{SD} of each fit index across allocations, the minimum, maximum and
+range of each fit index across allocations, and the percent of the \emph{M}
+allocations where the chi-square test of absolute fit was significant.}
+\item{Proportions}{A table containing the proportion of the final \emph{M}
+allocations that (a) met the optimizer convergence criteria) and
+(b) converged to proper solutions. Note that pooled estimates, pooled
 standard errors, and other results are computed using only the converged,
 proper allocations.}
-\item{Allocations needed for stability (M)}{The number of allocations
-(\emph{M}) at which the algorithm's stopping criteria (defined above) were
-met.}
-\item{Indices used to quantify uncertainty in estimates due to sample vs.
-allocation variability}{A table containing individual parameter names, an
-estimate of the proportion of total variance of a pooled parameter estimate
-that is attributable to parcel-allocation variability (PPAV), and an estimate
-of the ratio of the between-allocation variance of a pooled parameter
-estimate to the within-allocation variance (RPAV). See Sterba & Rights (2016)
-for more detail.}
-\item{Total runtime (minutes)}{The total runtime of the function, in minutes.
-Note that the total runtime will be greater when the specified model
-encounters convergence problems for some allocations, as is the case with the
+\item{Stability}{The number of allocations (\emph{M}) needed for stability, at
+which point the algorithm's stopping criteria (defined above) were met.}
+\item{Uncertainty}{Indices used to quantify uncertainty in estimates due to
+sample vs. allocation variability. A table containing individual parameter
+names, an estimate of the proportion of total variance of a pooled
+parameter estimate that is attributable to parcel-allocation variability
+(PPAV), and an estimate of the ratio of the between-allocation variance of
+a pooled parameter estimate to the within-allocation variance (RPAV).
+See Sterba & Rights (2016) for more detail.}
+\item{Time}{The total runtime of the function, in minutes. Note that the
+total runtime will be greater when the specified model encounters
+convergence problems for some allocations, as is the case with the
 \code{\link[=simParcel]{simParcel()}} dataset used below.}
 }
 \description{
@@ -161,9 +157,6 @@ criteria are not met, the algorithm increments the number of allocations
 used (generating all new allocations).
 }
 \details{
-For further details on the benefits of the random allocation of items to
-parcels, see Sterba (2011) and Sterba & MacCallum (2010).
-
 This function implements an algorithm for choosing the number of allocations
 (\emph{M}; described in Sterba & Rights, 2016), pools point and
 standard-error estimates across these \emph{M} allocations, and produces
@@ -195,6 +188,9 @@ stopping criteria at the previous iteration, the proportion of pooled
 standard errors meeting stopping criteria at the previous iteration, and the
 runtime of that iteration are outputted. When stopping criteria are
 satisfied, the full set of results are outputted.
+
+For further details on the benefits of the random allocation of items to
+parcels, see Sterba (2011) and Sterba & MacCallum (2010).
 }
 \examples{
 
@@ -262,16 +258,14 @@ selection: Parcel-allocation variability in model ranking.
 }
 \seealso{
 \code{\link[=lavaan.mi]{lavaan.mi()}} for treating allocations as multiple imputations to
-pool results across allocations. See \strong{Examples} on help pages for:
-\itemize{
-\item{\code{\link[=parcelAllocation]{parcelAllocation()}} for fitting a single model}
-\item{\code{\link[=PAVranking]{PAVranking()}} for comparing 2 models}
-}
+pool results across allocations. See \strong{Examples} on help pages for
+\code{\link[=parcelAllocation]{parcelAllocation()}} (when fitting a single model) and \code{\link[=PAVranking]{PAVranking()}}
+(when comparing 2 models).
 }
 \author{
 Jason D. Rights (Vanderbilt University; \email{jason.d.rights@vanderbilt.edu})
 
 The author would also like to credit Corbin Quick and Alexander Schoemann
-for providing the original parcelAllocation function on which this function
-is based.
+for providing the original \code{\link[=parcelAllocation]{parcelAllocation()}} function (prior to its
+revision by Terrence D. Jorgensen) on which this function is based.
 }

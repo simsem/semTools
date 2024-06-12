@@ -3,12 +3,13 @@
 ### - based on research from/with Sonya Sterba
 ### - adapted from OLD parcelAllocation() by Corbin Quick and Alexander Schoemann
 ### - additional "indices" argument added by Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 12 June 2024
 
 
-##' Pooled estimates and standard errors across M parcel-allocations: Combining
-##' sampling variability and parcel-allocation variability.
+##' Combine sampling variability with parcel-allocation variability by
+##' pooling results across M parcel-allocations
 ##'
+##' @description
 ##' This function employs an iterative algorithm to pick the number of random
 ##' item-to-parcel allocations needed to meet user-defined stability criteria
 ##' for a fitted structural equation model (SEM) (see **Details** below for
@@ -25,8 +26,7 @@
 ##' criteria are not met, the algorithm increments the number of allocations
 ##' used (generating all new allocations).
 ##'
-##' For further details on the benefits of the random allocation of items to
-##' parcels, see Sterba (2011) and Sterba & MacCallum (2010).
+##' @details
 ##'
 ##' This function implements an algorithm for choosing the number of allocations
 ##' (*M*; described in Sterba & Rights, 2016), pools point and
@@ -60,140 +60,139 @@
 ##' runtime of that iteration are outputted. When stopping criteria are
 ##' satisfied, the full set of results are outputted.
 ##'
+##' For further details on the benefits of the random allocation of items to
+##' parcels, see Sterba (2011) and Sterba & MacCallum (2010).
+##'
 ##' @importFrom stats sd pnorm pt qt runif pchisq
 ##' @importFrom lavaan lavInspect
 ##'
 ##' @param nPerPar A list in which each element is a vector, corresponding to
-##' each factor, indicating sizes of parcels. If variables are left out of
-##' parceling, they should not be accounted for here (i.e., there should not be
-##' parcels of size "1").
+##'   each factor, indicating sizes of parcels. If variables are left out of
+##'   parceling, they should not be accounted for here (i.e., there should not
+##'   be parcels of size "1").
 ##' @param facPlc A list of vectors, each corresponding to a factor, specifying
-##' the item indicators of that factor (whether included in parceling or not).
-##' Either variable names or column numbers. Variables not listed will not be
-##' modeled or included in output datasets.
+##'   the item indicators of that factor (whether included in parceling or not).
+##'   Either variable names or column numbers. Variables not listed will not be
+##'   modeled or included in output datasets.
 ##' @param nAllocStart The number of random allocations of items to parcels to
-##' generate in the first iteration of the algorithm.
+##'   generate in the first iteration of the algorithm.
 ##' @param nAllocAdd The number of allocations to add with each iteration of the
-##' algorithm. Note that if only one iteration is desired, `nAllocAdd` can
-##' be set to \eqn{0} and results will be output for `nAllocStart`
-##'  allocations only.
+##'   algorithm. Note that if only one iteration is desired, `nAllocAdd` can
+##'   be set to \eqn{0} and results will be output for `nAllocStart`
+##'    allocations only.
 ##' @param syntax lavaan syntax that defines the model.
 ##' @param dataset Item-level dataset
 ##' @param parceloutput Optional `character`. Path (folder/directory) where
-##' *M* (the final selected number of allocations) parceled data sets will
-##' be outputted from the iteration where the algorithm met stopping criteria.
-##' Note for Windows users: file path must be specified using forward slashes
-##' (`/`), not backslashes (`\\`). See [base::path.expand()]
-##' for details.  If `NULL` (default), nothing is saved to disk.
+##'   *M* (the final selected number of allocations) parceled data sets will
+##'   be outputted from the iteration where the algorithm met stopping criteria.
+##'   Note for Windows users: file path must be specified using forward slashes
+##'   (`/`), not backslashes (`\\`). See [base::path.expand()]
+##'   for details.  If `NULL` (default), nothing is saved to disk.
 ##' @param stopProp Value used in defining stopping criteria of the algorithm
-##' (\eqn{\delta_a} in Sterba & Rights, 2016). This is the minimum proportion of
-##' change (in any pooled parameter or pooled standard error estimate listed in
-##' `selectParam`) that is allowable from one iteration of the algorithm to
-##' the next. That is, change in pooled estimates and pooled standard errors
-##' from one iteration to the next must all be less than (`stopProp`) x
-##' (value from former iteration). Note that `stopValue` can override this
-##' criterion (see below). Also note that values less than .01 are unlikely to
-##' lead to more substantively meaningful precision. Also note that if only
-##' `stopValue` is a desired criterion, `stopProp` can be set to 0.
+##'   (\eqn{\delta_a} in Sterba & Rights, 2016).  This is the minimum proportion
+##'   of change (in any pooled parameter or pooled standard error estimate
+##'   listed in `selectParam`) that is allowable from one iteration of the
+##'   algorithm to the next.  That is, change in pooled estimates and pooled
+##'   standard errors from one iteration to the next must all be less than
+##'   (`stopProp`) \eqn{\times} (value from former iteration). Note that
+##'   `stopValue` can override this criterion (see below). Also note that values
+##'   less than .01 are unlikely to lead to more substantively meaningful
+##'   precision. Also note that if only `stopValue` is a desired criterion,
+##'   `stopProp` can be set to 0.
 ##' @param stopValue Value used in defining stopping criteria of the algorithm
-##' (\eqn{\delta_b} in Sterba & Rights, 2016). `stopValue` is a minimum
-##' allowable amount of absolute change (in any pooled parameter or pooled
-##' standard error estimate listed in `selectParam`) from one iteration of
-##' the algorithm to the next. For a given pooled estimate or pooled standard
-##' error, `stopValue` is only invoked as a stopping criteria when the
-##' minimum change required by `stopProp` is less than `stopValue`.
-##' Note that values less than .01 are unlikely to lead to more substantively
-##' meaningful precision. Also note that if only `stopProp` is a desired
-##' criterion, `stopValue` can be set to 0.
+##'   (\eqn{\delta_b} in Sterba & Rights, 2016). `stopValue` is a minimum
+##'   allowable amount of absolute change (in any pooled parameter or pooled
+##'   standard error estimate listed in `selectParam`) from one iteration of
+##'   the algorithm to the next. For a given pooled estimate or pooled standard
+##'   error, `stopValue` is only invoked as a stopping criteria when the
+##'   minimum change required by `stopProp` is less than `stopValue`.
+##'   Note that values less than .01 are unlikely to lead to more substantively
+##'   meaningful precision. Also note that if only `stopProp` is a desired
+##'   criterion, `stopValue` can be set to 0.
 ##' @param selectParam (Optional) A list of the pooled parameters to be used in
-##' defining stopping criteria (i.e., `stopProp` and `stopValue`).
-##' These parameters should appear in the order they are listed in the lavaan
-##' syntax. By default, all pooled parameters are used. Note that
-##' `selectParam` should only contain freely-estimated parameters. In one
-##' example from Sterba & Rights (2016) `selectParam` included all free
-##' parameters except item intercepts and in another example `selectParam`
-##' included only structural parameters.
+##'   defining stopping criteria (i.e., `stopProp` and `stopValue`).
+##'   These parameters should appear in the order they are listed in the lavaan
+##'   syntax. By default, all pooled parameters are used. Note that
+##'   `selectParam` should only contain freely-estimated parameters. In one
+##'   example from Sterba & Rights (2016) `selectParam` included all free
+##'   parameters except item intercepts and in another example `selectParam`
+##'   included only structural parameters.
 ##' @param indices Optional `character` vector indicating the names of
-##' available [lavaan::fitMeasures()] to be included in the output.
-##' The first and second elements should be a chi-squared test statistic and its
-##' associated degrees of freedom, both of which will be added if missing. If
-##' `"default"`, the indices will be `c("chisq", "df", "cfi", "tli",
-##' "rmsea","srmr")`. If a robust test statistic is requested (see
-##' [lavaan::lavOptions()]), `c("chisq","df")` will be replaced
-##' by `c("chisq.scaled","df.scaled")`. For the output to include both the
-##' naive and robust test statistics, `indices` should include both, but
-##' put the scaled test statistics first, as in `indices =
-##' c("chisq.scaled", "df.scaled", "chisq", "df")`
+##'   available [lavaan::fitMeasures()] to be included in the output.
+##'   The first and second elements should be a chi-squared test statistic and
+##'   its associated degrees of freedom, both of which will be added if missing.
+##'   If `"default"`, the indices will be `c("chisq", "df", "cfi", "tli",
+##'   "rmsea","srmr")`. If a robust test statistic is requested (see
+##'   [lavaan::lavOptions()]), `c("chisq","df")` will be replaced
+##'   by `c("chisq.scaled","df.scaled")`. For the output to include both the
+##'   naive and robust test statistics, `indices` should include both, but
+##'   put the scaled test statistics first, as in `indices =
+##'   c("chisq.scaled", "df.scaled", "chisq", "df")`
 ##' @param double (Optional) If set to `TRUE`, requires stopping criteria
-##' (`stopProp` and `stopValue`) to be met for all parameters (in
-##' `selectParam`) for two consecutive iterations of the algorithm. By
-##' default, this is set to `FALSE`, meaning stopping criteria need only be
-##' met at one iteration of the algorithm.
+##'   (`stopProp` and `stopValue`) to be met for all parameters (in
+##'   `selectParam`) for two consecutive iterations of the algorithm. By
+##'   default, this is set to `FALSE`, meaning stopping criteria need only be
+##'   met at one iteration of the algorithm.
 ##' @param names (Optional) A character vector containing the names of parceled
-##' variables.
+##'   variables.
 ##' @param leaveout (Optional) A vector of variables to be left out of
-##' randomized parceling. Either variable names or column numbers are allowed.
+##'   randomized parceling. Either variable names or column numbers are allowed.
 ##' @param useTotalAlloc (Optional) If set to `TRUE`, function will output
-##' a separate set of results that uses all allocations created by the
-##' algorithm, rather than *M* allocations (see "Allocations needed for
-##' stability" below). This distinction is further discussed in Sterba and
-##' Rights (2016).
+##'   a separate set of results that uses all allocations created by the
+##'   algorithm, rather than *M* allocations (see "Allocations needed for
+##'   stability" below). This distinction is further discussed in Sterba and
+##'   Rights (2016).
 ##' @param checkConv (Optional) If set to TRUE, function will output pooled
-##' estimates and standard errors from 10 iterations post-convergence.
+##'   estimates and standard errors from 10 iterations post-convergence.
 ##' @param \dots Additional arguments to be passed to
-##' [lavaan::lavaan()]. See also [lavaan::lavOptions()]
+##'   [lavaan::lavaan()]. See also [lavaan::lavOptions()]
 ##'
 ##' @return
+##'
 ##' \item{Estimates}{A table containing pooled results across *M*
-##' allocations at the iteration where stopping criteria were met. Columns
-##' correspond to individual parameter name, pooled estimate, pooled standard
-##' error, *p*-value for a *z*-test of the parameter, *z*-based
-##' 95\% confidence interval, *p*-value for a *t*-test of the
-##' parameter (using degrees of freedom described in Sterba & Rights, 2016), and
-##' *t*-based 95\% confidence interval for the parameter.}
+##'   allocations at the iteration where stopping criteria were met. Columns
+##'   correspond to individual parameter name, pooled estimate, pooled standard
+##'   error, *p* value for a *z* test of the parameter, normal-theory \eqn{95\%}
+##'   CI, *p* value for a *t* test of the parameter (using \eqn{df} described in
+##'   Sterba & Rights, 2016), and *t*-based \eqn{95\%} CI for the parameter.}
 ##' \item{Fit}{A table containing results related to model fit from the *M*
-##' allocations at the iteration where stopping criteria were met. Columns
-##' correspond to fit index names, the average of each index across allocations,
-##' the standard deviation of each fit index across allocations, the maximum of
-##' each fit index across allocations, the minimum of each fit index across
-##' allocations, the range of each fit index across allocations, and the percent
-##' of the *M* allocations where the chi-square test of absolute fit was
-##' significant.}
-##' \item{Proportion of converged and proper allocations}{A table
-##' containing the proportion of the final *M* allocations that converged
-##' (using a maximum likelihood estimator) and the proportion of allocations
-##' that converged to proper solutions. Note that pooled estimates, pooled
-##' standard errors, and other results are computed using only the converged,
-##' proper allocations.}
-##' \item{Allocations needed for stability (M)}{The number of allocations
-##' (*M*) at which the algorithm's stopping criteria (defined above) were
-##' met.}
-##' \item{Indices used to quantify uncertainty in estimates due to sample vs.
-##' allocation variability}{A table containing individual parameter names, an
-##' estimate of the proportion of total variance of a pooled parameter estimate
-##' that is attributable to parcel-allocation variability (PPAV), and an estimate
-##' of the ratio of the between-allocation variance of a pooled parameter
-##' estimate to the within-allocation variance (RPAV). See Sterba & Rights (2016)
-##' for more detail.}
-##' \item{Total runtime (minutes)}{The total runtime of the function, in minutes.
-##' Note that the total runtime will be greater when the specified model
-##' encounters convergence problems for some allocations, as is the case with the
-##' [simParcel()] dataset used below.}
+##'   allocations at the iteration where stopping criteria were met. Columns
+##'   correspond to fit index names, the mean of each index across allocations,
+##'   the *SD* of each fit index across allocations, the minimum, maximum and
+##'   range of each fit index across allocations, and the percent of the *M*
+##'   allocations where the chi-square test of absolute fit was significant.}
+##' \item{Proportions}{A table containing the proportion of the final *M*
+##'   allocations that (a) met the optimizer convergence criteria) and
+##'   (b) converged to proper solutions. Note that pooled estimates, pooled
+##'   standard errors, and other results are computed using only the converged,
+##'   proper allocations.}
+##' \item{Stability}{The number of allocations (*M*) needed for stability, at
+##'   which point the algorithm's stopping criteria (defined above) were met.}
+##' \item{Uncertainty}{Indices used to quantify uncertainty in estimates due to
+##'   sample vs. allocation variability. A table containing individual parameter
+##'   names, an estimate of the proportion of total variance of a pooled
+##'   parameter estimate that is attributable to parcel-allocation variability
+##'   (PPAV), and an estimate of the ratio of the between-allocation variance of
+##'   a pooled parameter estimate to the within-allocation variance (RPAV).
+##'   See Sterba & Rights (2016) for more detail.}
+##' \item{Time}{The total runtime of the function, in minutes. Note that the
+##'   total runtime will be greater when the specified model encounters
+##'   convergence problems for some allocations, as is the case with the
+##'   [simParcel()] dataset used below.}
+##'
 ##'
 ##' @author
 ##' Jason D. Rights (Vanderbilt University; \email{jason.d.rights@@vanderbilt.edu})
 ##'
 ##' The author would also like to credit Corbin Quick and Alexander Schoemann
-##' for providing the original parcelAllocation function on which this function
-##' is based.
+##' for providing the original [parcelAllocation()] function (prior to its
+##' revision by Terrence D. Jorgensen) on which this function is based.
 ##'
 ##' @seealso
 ##'   [lavaan.mi()] for treating allocations as multiple imputations to
-##'   pool results across allocations. See **Examples** on help pages for:
-##'   \itemize{
-##'     \item{[parcelAllocation()] for fitting a single model}
-##'     \item{[PAVranking()] for comparing 2 models}
-##'   }
+##'   pool results across allocations. See **Examples** on help pages for
+##'   [parcelAllocation()] (when fitting a single model) and [PAVranking()]
+##'   (when comparing 2 models).
 ##'
 ##' @references
 ##'
@@ -266,7 +265,7 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
                        checkConv = FALSE, names = "default", leaveout = 0,
                        useTotalAlloc = FALSE, ...) {
   message('Note that more options for pooled results are available using the ',
-          'runMI() function (see Examples on ?parcelAllocation and ?PAVranking)')
+          'lavaan.mi package (see Examples on ?parcelAllocation and ?PAVranking)')
   if (!is.null(parceloutput)) {
     if (!dir.exists(parceloutput)) stop('invalid directory:\n',
                                         paste(parceloutput), "\n\n")
@@ -589,11 +588,9 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
     PerSigChisq <- round(PerSigChisq, 4)
     PerSigChisqCol <- c(PerSigChisq, # however many indices != chisq(.scaled)
                         rep("n/a", sum(!grepl(pattern = "chisq", x = indices))))
-    options(stringsAsFactors = FALSE)
-    Fitsum <- data.frame(Fitsum, PerSigChisqCol)
+    Fitsum <- data.frame(Fitsum, PerSigChisqCol, stringsAsFactors = FALSE)
     colnames(Fitsum) <- c("Avg Ind", "S.D.", "MAX", "MIN",
                           "Range", "% Sig")
-    options(stringsAsFactors = TRUE)
     PooledSEwithinvar <- Reduce("+", ParamSEsquared)/nConvergedProper
     PooledSEbetweenvar <- Parmn[, 5]^2
     PooledSE <- sqrt(PooledSEwithinvar + PooledSEbetweenvar + PooledSEbetweenvar/nConvergedProper)
@@ -801,10 +798,8 @@ poolMAlloc <- function(nPerPar, facPlc, nAllocStart, nAllocAdd = 0,
     PerSigChisqTotal <- (Reduce("+", sigChisqTotal))/nConvergedProperTotal * 100
     PerSigChisqTotal <- round(PerSigChisqTotal, 4)
     PerSigChisqColTotal <- c(PerSigChisqTotal, "n/a", "n/a", "n/a", "n/a")
-    options(stringsAsFactors = FALSE)
-    FitsumTotal <- data.frame(FitsumTotal, PerSigChisqColTotal)
+    FitsumTotal <- data.frame(FitsumTotal, PerSigChisqColTotal, stringsAsFactors = FALSE)
     colnames(FitsumTotal) <- c("Avg Ind", "S.D.", "MAX", "MIN", "Range", "% Sig")
-    options(stringsAsFactors = TRUE)
     PooledSEwithinvarTotal <- Reduce("+", ParamSEsquaredTotal)/nConvergedProperTotal
     PooledSEbetweenvarTotal <- ParmnTotal[, 5]^2
     PooledSETotal <- sqrt(PooledSEwithinvarTotal + PooledSEbetweenvarTotal +

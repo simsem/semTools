@@ -4,10 +4,12 @@
 
 ##' Random Allocation of Items to Parcels in a Structural Equation Model
 ##'
+##' @description
 ##' This function generates a given number of randomly generated item-to-parcel
 ##' allocations, fits a model to each allocation, and provides averaged results
 ##' over all allocations.
 ##'
+##' @details
 ##' This function implements the random item-to-parcel allocation procedure
 ##' described in Sterba (2011) and Sterba and MacCallum (2010). The function
 ##' takes a single data set with item-level data, randomly assigns items to
