@@ -83,8 +83,13 @@ based on empirical sampling distributions of estimated model parameters.
 }
 \details{
 This function implements the Monte Carlo method of obtaining an empirical
-sampling distriution of estimated model parameters, as described by
+sampling distribution of estimated model parameters, as described by
 MacKinnon et al. (2004) for testing indirect effects in mediation models.
+This is essentially a parametric bootstrap method, which (re)samples
+parameters (rather than raw data) from a multivariate-normal distribution
+with mean vector equal to estimates in \code{coef()} and covariance matrix
+equal to the asymptotic covariance matrix \code{vcov()} of estimated parameters.
+
 The easiest way to use the function is to fit a SEM to data with
 \code{\link[lavaan:lavaan]{lavaan::lavaan()}}, using the \verb{:=} operator in the
 \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} to specify user-defined parameters.
@@ -99,13 +104,13 @@ For further information on the Monte Carlo method, see MacKinnon et al.
 The asymptotic covariance matrix can be obtained easily from many popular
 SEM software packages.
 \itemize{
-\item LISREL: Including the EC option on the OU line will print the ACM
+\item{LISREL: }{Including the EC option on the OU line will print the ACM
 to a seperate file. The file contains the lower triangular elements of
-the ACM in free format and scientific notation
-\item Mplus Include the command TECH3; in the OUTPUT section. The ACM will
-be printed in the output.
-\item \code{lavaan}: Use the \code{vcov} method on the fitted
-\linkS4class{lavaan} object to return the ACM.
+the ACM in free format and scientific notation.}
+\item{M\emph{plus}: }{Include the command TECH3; in the OUTPUT section.
+The ACM will be printed in the output.}
+\item{\code{lavaan}: }{Use the \code{\link[=vcov]{vcov()}} method on the fitted \linkS4class{lavaan}
+object to return the ACM.}
 }
 }
 \examples{
@@ -118,15 +123,16 @@ X <- rnorm(100)
 M <- 0.5*X + rnorm(100)
 Y <- 0.7*M + rnorm(100)
 dat <- data.frame(X = X, Y = Y, M = M)
+
 mod <- ' # direct effect
-Y ~ c*X
-# mediator
-M ~ a*X
-Y ~ b*M
-# indirect effect (a*b)
-ind := a*b
-# total effect
-total := ind + c
+  Y ~ c*X
+  # mediator
+  M ~ a*X
+  Y ~ b*M
+  # indirect effect (a*b)
+  ind := a*b
+  # total effect
+  total := ind + c
 '
 fit <- sem(mod, data = dat)
 summary(fit, ci = TRUE) # print delta-method CIs
@@ -134,6 +140,12 @@ summary(fit, ci = TRUE) # print delta-method CIs
 ## Automatically extract information from lavaan object
 set.seed(1234)
 monteCarloCI(fit) # CIs more robust than delta method in smaller samples
+
+## delta method for standardized solution
+standardizedSolution(fit)
+## compare to Monte Carlo CIs:
+set.seed(1234)
+monteCarloCI(fit, standardized = TRUE)
 
 ## save samples to calculate more precise intervals:
 \dontrun{
@@ -169,8 +181,8 @@ confidence intervals for indirect effects in 1-1-1 multilevel models.
 Computer software available from \url{http://quantpsy.org/}.
 
 Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
-intervals for indirect effects. \emph{Communication Methods and Measures,
-6}(2), 77--98. \doi{10.1080/19312458.2012.679848}
+intervals for indirect effects. \emph{Communication Methods and Measures, 6}(2),
+77--98. \doi{10.1080/19312458.2012.679848}
 
 Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 assessing mediation: An interactive tool for creating confidence intervals

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 June 2024
+### Last updated: 12 June 2024
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -35,8 +35,13 @@
 ##' based on empirical sampling distributions of estimated model parameters.
 ##'
 ##' This function implements the Monte Carlo method of obtaining an empirical
-##' sampling distriution of estimated model parameters, as described by
+##' sampling distribution of estimated model parameters, as described by
 ##' MacKinnon et al. (2004) for testing indirect effects in mediation models.
+##' This is essentially a parametric bootstrap method, which (re)samples
+##' parameters (rather than raw data) from a multivariate-normal distribution
+##' with mean vector equal to estimates in `coef()` and covariance matrix
+##' equal to the asymptotic covariance matrix `vcov()` of estimated parameters.
+##'
 ##' The easiest way to use the function is to fit a SEM to data with
 ##' [lavaan::lavaan()], using the `:=` operator in the
 ##' [lavaan::model.syntax()] to specify user-defined parameters.
@@ -51,13 +56,13 @@
 ##' The asymptotic covariance matrix can be obtained easily from many popular
 ##' SEM software packages.
 ##' \itemize{
-##'  \item LISREL: Including the EC option on the OU line will print the ACM
+##'  \item{LISREL: }{Including the EC option on the OU line will print the ACM
 ##'    to a seperate file. The file contains the lower triangular elements of
-##'    the ACM in free format and scientific notation
-##'  \item Mplus Include the command TECH3; in the OUTPUT section. The ACM will
-##'    be printed in the output.
-##'  \item `lavaan`: Use the `vcov` method on the fitted
-##'    [lavaan-class] object to return the ACM.
+##'    the ACM in free format and scientific notation.}
+##'  \item{M*plus*: }{Include the command TECH3; in the OUTPUT section.
+##'    The ACM will be printed in the output.}
+##'  \item{`lavaan`: }{Use the [vcov()] method on the fitted [lavaan-class]
+##'    object to return the ACM.}
 ##' }
 ##'
 ##'
@@ -132,8 +137,8 @@
 ##' Computer software available from <http://quantpsy.org/>.
 ##'
 ##' Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
-##' intervals for indirect effects. *Communication Methods and Measures,
-##' 6*(2), 77--98. \doi{10.1080/19312458.2012.679848}
+##' intervals for indirect effects. *Communication Methods and Measures, 6*(2),
+##' 77--98. \doi{10.1080/19312458.2012.679848}
 ##'
 ##' Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 ##' assessing mediation: An interactive tool for creating confidence intervals
@@ -152,15 +157,16 @@
 ##' M <- 0.5*X + rnorm(100)
 ##' Y <- 0.7*M + rnorm(100)
 ##' dat <- data.frame(X = X, Y = Y, M = M)
+##'
 ##' mod <- ' # direct effect
-##' Y ~ c*X
-##' # mediator
-##' M ~ a*X
-##' Y ~ b*M
-##' # indirect effect (a*b)
-##' ind := a*b
-##' # total effect
-##' total := ind + c
+##'   Y ~ c*X
+##'   # mediator
+##'   M ~ a*X
+##'   Y ~ b*M
+##'   # indirect effect (a*b)
+##'   ind := a*b
+##'   # total effect
+##'   total := ind + c
 ##' '
 ##' fit <- sem(mod, data = dat)
 ##' summary(fit, ci = TRUE) # print delta-method CIs
@@ -168,6 +174,12 @@
 ##' ## Automatically extract information from lavaan object
 ##' set.seed(1234)
 ##' monteCarloCI(fit) # CIs more robust than delta method in smaller samples
+##'
+##' ## delta method for standardized solution
+##' standardizedSolution(fit)
+##' ## compare to Monte Carlo CIs:
+##' set.seed(1234)
+##' monteCarloCI(fit, standardized = TRUE)
 ##'
 ##' ## save samples to calculate more precise intervals:
 ##' \dontrun{
@@ -220,12 +232,22 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
       coefs <- STD$est.std[coefRows]
       names(coefs) <- lavaan::lav_partable_labels(STD[coefRows, ])
     } else coefs <- lavaan::coef(object)
+
   } else if (inherits(object, "lavaan.mi")) {
-    coefs <- getMethod("coef", "lavaan.mi")(object)
+    requireNamespace("lavaan.mi")
+    # if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
+    if (standardized) {
+      STD <- lavaan.mi::standardizedSolution.mi(object)
+      coefRows <- !(STD$op %in% c(":=","==","<",">","<=",">="))
+      coefs <- STD$est.std[coefRows]
+      names(coefs) <- lavaan::lav_partable_labels(STD[coefRows, ])
+    } else coefs <- getMethod(f = "coef", signature = "lavaan.mi",
+                              where = getNamespace("lavaan.mi"))(object)
   }
   sampVars <- intersect(names(coefs), funcVars)
 
-  ## If a lavaan object is provided, extract coefs and ACM
+  ## If a lavaan(.mi) object is provided, extract coefs and ACM
   if (inherits(object, "lavaan")) {
     coefs <- coefs[sampVars]
     if (standardized) {
@@ -233,9 +255,16 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
     } else {
       ACM <- lavaan::vcov(object)[sampVars, sampVars]
     }
+
   } else if (inherits(object, "lavaan.mi")) {
     coefs <- coefs[sampVars]
-    ACM <- getMethod("vcov", "lavaan.mi")(object)[sampVars, sampVars]
+    if (standardized) {
+      ACM <- lavaan.mi::standardizedSolution.mi(object, return.vcov = TRUE,
+                                                type = "std.all")[sampVars, sampVars]
+    } else {
+      ACM <- getMethod(f = "vcov", signature = "lavaan.mi",
+                       where = getNamespace("lavaan.mi"))(object)[sampVars, sampVars]
+    }
   }
 
   ## Apply the expression(s) to POINT ESTIMATES
