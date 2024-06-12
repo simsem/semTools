@@ -1,11 +1,13 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 7 December 2023
+### Last updated: 12 June 2024
 
 
 
-## -----
+## -----------------------------
 ## AVE()
-## -----
+##   average variance extracted
+##   (not a reliability index)
+## -----------------------------
 
 ##' Calculate average variance extracted
 ##'
@@ -165,6 +167,9 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
     }
 
   } else if (inherits(object, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(object@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -821,6 +826,9 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     }
 
   } else if (inherits(object, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(object@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -1808,6 +1816,9 @@ reliability <- function(object,
     }
 
   } else if (inherits(object, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(object@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -2290,6 +2301,9 @@ reliabilityL2 <- function(object, secondFactor,
     }
 
   } else if (inherits(object, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(object@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -2531,6 +2545,9 @@ maximalRelia <- function(object, omit.imps = c("no.conv","no.se")) {
     }
 
   } else if (inherits(object, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(object@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")

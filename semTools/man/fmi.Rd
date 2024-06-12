@@ -5,7 +5,7 @@
 \title{Fraction of Missing Information.}
 \usage{
 fmi(data, method = "saturated", group = NULL, ords = NULL,
-  varnames = NULL, exclude = NULL, fewImps = FALSE, return.fit = FALSE)
+  varnames = NULL, exclude = NULL, return.fit = FALSE)
 }
 \arguments{
 \item{data}{Either a single \code{data.frame} with incomplete observations,
@@ -17,36 +17,30 @@ mean vector for numeric variables, and/or polychoric correlations and
 thresholds for ordered categorical variables, for each group (if
 applicable). If \code{"null"}, only means and variances are estimated for
 numeric variables, and/or thresholds for ordered categorical variables
-(i.e., covariances and/or polychoric correlations are constrained to zero).
-See Details for more information.}
+(i.e., covariances and/or polychoric/polyserial correlations are
+constrained to zero). See \strong{Details} for more information.}
 
-\item{group}{character. The optional name of a grouping variable, to request
-FMI in each group.}
+\item{group}{\code{character}. The optional name of a grouping variable, to
+request FMI in each group.}
 
-\item{ords}{character. Optional vector of names of ordered-categorical
-variables, which are not already stored as class \code{ordered} in
-\code{data}.}
+\item{ords}{Optional \code{character} vector naming ordered-categorical
+variables, if they are not already stored as class \code{ordered} in \code{data}.}
 
-\item{varnames}{character. Optional vector of variable names, to calculate
+\item{varnames}{Optional \code{character} vector of variable names, to calculate
 FMI for a subset of variables in \code{data}. By default, all numeric and
-ordered variables will be included, unless \code{data} is a single
+\verb{ordered=} variables will be included, unless \verb{data=} is a single
 incomplete \code{data.frame}, in which case only numeric variables can be
 used with FIML estimation. Other variable types will be removed.}
 
-\item{exclude}{character. Optional vector of variable names to exclude from
+\item{exclude}{Optional \code{character} vector naming variables to exclude from
 the analysis.}
 
-\item{fewImps}{logical. If \code{TRUE}, use the estimate of FMI that applies
-a correction to the estimated between-imputation variance. Recommended when
-there are few imputations; makes little difference when there are many
-imputations. Ignored when \code{data} is not a list of imputed data sets.}
-
-\item{return.fit}{logical. If \code{TRUE}, the fitted
-\linkS4class{lavaan} or \linkS4class{lavaan.mi}
-model is returned, so FMI can be found from \code{summary(..., fmi=TRUE)}.}
+\item{return.fit}{logical. If \code{TRUE}, the fitted \linkS4class{lavaan} or
+\linkS4class{lavaan.mi} model is returned, so FMI can be found from
+\code{summary(..., fmi=TRUE)}.}
 }
 \value{
-\code{fmi} returns a list with at least 2 of the following:
+\code{fmi()} returns a list with at least 2 of the following:
 
 \item{Covariances}{A list of symmetric matrices: (1) the estimated/pooled
 covariance matrix, or a list of group-specific matrices (if applicable)

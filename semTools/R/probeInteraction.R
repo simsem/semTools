@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 10 June 2024
+### Last updated: 12 June 2024
 
 
 
@@ -286,7 +286,9 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	if (inherits(fit, "lavaan")) {
 	  varEst <- lavaan::vcov(fit)
 	} else if (inherits(fit, "lavaan.mi")) {
-	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	  requireNamespace("lavaan.mi")
+	  varEst <- getMethod(f = "vcov", signature = "lavaan.mi",
+	                      where = getNamespace("lavaan.mi"))(fit, omit.imps = omit.imps)
 	}
 	## for indexing the sampling (co)variances
 	PT <- parTable(fit)
@@ -674,7 +676,9 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	if (inherits(fit, "lavaan")) {
 	  varEst <- lavaan::vcov(fit)
 	} else if (inherits(fit, "lavaan.mi")) {
-	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	  requireNamespace("lavaan.mi")
+	  varEst <- getMethod(f = "vcov", signature = "lavaan.mi",
+	                      where = getNamespace("lavaan.mi"))(fit, omit.imps = omit.imps)
 	}
 
 	## for indexing sampling (co)variances
@@ -1035,7 +1039,9 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	if (inherits(fit, "lavaan")) {
 	  varEst <- lavaan::vcov(fit)
 	} else if (inherits(fit, "lavaan.mi")) {
-	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	  requireNamespace("lavaan.mi")
+	  varEst <- getMethod(f = "vcov", signature = "lavaan.mi",
+	                      where = getNamespace("lavaan.mi"))(fit, omit.imps = omit.imps)
 	}
 	## for indexing the sampling (co)variances
 	PT <- parTable(fit)
@@ -1482,7 +1488,9 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	if (inherits(fit, "lavaan")) {
 	  varEst <- lavaan::vcov(fit)
 	} else if (inherits(fit, "lavaan.mi")) {
-	  varEst <- getMethod("vcov", "lavaan.mi")(fit, omit.imps = omit.imps)
+	  requireNamespace("lavaan.mi")
+	  varEst <- getMethod(f = "vcov", signature = "lavaan.mi",
+	                      where = getNamespace("lavaan.mi"))(fit, omit.imps = omit.imps)
 	}
 
 	## for indexing sampling (co)variances

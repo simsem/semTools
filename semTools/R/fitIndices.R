@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
 ###          Aaron Boulton, Ruben Arslan, Mauricio Garnier-Villarreal
-### Last updated: 19 January 2024
+### Last updated: 12 June 2024
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -523,15 +523,21 @@ chisqSmallN <- function(fit0, fit1 = NULL,
     stop('No recognized options for "smallN.method" argument')
 
   ## check class
-  if (!inherits(fit0, what = c("lavaan","lavaanList")))
-    stop("this function is only applicable to fitted lavaan models")
+  if (!inherits(fit0, what = c("lavaan","lavaan.mi")))
+    stop("this function is only applicable to fitted lavaan(.mi) models")
+
+  ## necessary to load lavaan.mi?
+  if (inherits(fit0, what = c("lavaan.mi"))) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+  }
 
   ## if there are 2 models...
   if (!is.null(fit1)) {
 
     ## check classes
-    if (!inherits(fit1, what = c("lavaan","lavaanList")))
-      stop("this function is only applicable to fitted lavaan models")
+    if (!inherits(fit1, what = c("lavaan","lavaan.mi")))
+      stop("this function is only applicable to fitted lavaan(.mi) models")
     modClass <- unique(sapply(list(fit0, fit1), class))
     if (length(modClass) > 1L) stop('All models must be of the same class (e.g.,',
                                     ' cannot compare lavaan objects to lavaan.mi)')
@@ -564,7 +570,7 @@ chisqSmallN <- function(fit0, fit1 = NULL,
   if (!is.null(fit1)) {
 
     if (any(smallN.method %in% c("yuan.2015","swain"))) {
-      message('Swain(1975) and Yuan (2015) corrections depend on the number ',
+      message('Swain (1975) and Yuan (2015) corrections depend on the number ',
               'of free parameters, so it is unavailable for model comparison.')
       smallN.method <- smallN.method[-which(smallN.method %in% c("yuan.2015","swain"))]
     }

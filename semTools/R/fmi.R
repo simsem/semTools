@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 26 May 2023
+### Last updated: 12 June 2024
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -30,29 +30,24 @@
 ##'   thresholds for ordered categorical variables, for each group (if
 ##'   applicable). If `"null"`, only means and variances are estimated for
 ##'   numeric variables, and/or thresholds for ordered categorical variables
-##'   (i.e., covariances and/or polychoric correlations are constrained to zero).
-##'   See Details for more information.
-##' @param group character. The optional name of a grouping variable, to request
-##'   FMI in each group.
-##' @param ords character. Optional vector of names of ordered-categorical
-##'   variables, which are not already stored as class `ordered` in
-##'   `data`.
-##' @param varnames character. Optional vector of variable names, to calculate
+##'   (i.e., covariances and/or polychoric/polyserial correlations are
+##'   constrained to zero). See **Details** for more information.
+##' @param group `character`. The optional name of a grouping variable, to
+##'   request FMI in each group.
+##' @param ords Optional `character` vector naming ordered-categorical
+##'   variables, if they are not already stored as class `ordered` in `data`.
+##' @param varnames Optional `character` vector of variable names, to calculate
 ##'   FMI for a subset of variables in `data`. By default, all numeric and
-##'   ordered variables will be included, unless `data` is a single
+##'   `ordered=` variables will be included, unless `data=` is a single
 ##'   incomplete `data.frame`, in which case only numeric variables can be
 ##'   used with FIML estimation. Other variable types will be removed.
-##' @param exclude character. Optional vector of variable names to exclude from
+##' @param exclude Optional `character` vector naming variables to exclude from
 ##'   the analysis.
-##' @param fewImps logical. If `TRUE`, use the estimate of FMI that applies
-##'   a correction to the estimated between-imputation variance. Recommended when
-##'   there are few imputations; makes little difference when there are many
-##'   imputations. Ignored when `data` is not a list of imputed data sets.
-##' @param return.fit logical. If `TRUE`, the fitted
-##'   [lavaan-class] or [lavaan.mi-class]
-##'   model is returned, so FMI can be found from `summary(..., fmi=TRUE)`.
+##' @param return.fit logical. If `TRUE`, the fitted [lavaan-class] or
+##'   [lavaan.mi-class] model is returned, so FMI can be found from
+##'   `summary(..., fmi=TRUE)`.
 ##'
-##' @return `fmi` returns a list with at least 2 of the following:
+##' @return `fmi()` returns a list with at least 2 of the following:
 ##'
 ##' \item{Covariances}{A list of symmetric matrices: (1) the estimated/pooled
 ##'   covariance matrix, or a list of group-specific matrices (if applicable)
@@ -120,8 +115,7 @@
 ##'
 ##' @export
 fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
-                varnames = NULL, exclude = NULL, fewImps = FALSE,
-                return.fit = FALSE) {
+                varnames = NULL, exclude = NULL, return.fit = FALSE) {
   fiml <- is.data.frame(data)
   ## check for single data set or list of imputed data sets
   data1 <- if (fiml) data else data[[1]]
@@ -185,6 +179,10 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
 
 
   } else {
+    ## list of imputations
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     if (method == "cor") {
       fit <- cfa.mi(model, data = data, group = group,
                     ordered = ordvars, std.lv = TRUE)
@@ -194,19 +192,14 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     }
     if (return.fit) return(fit)
 
-    comb.results <- getMethod("summary","lavaan.mi")(fit, fmi = TRUE, ci = FALSE,
-                                                     output = "data.frame")
+    comb.results <- lavaan.mi::parameterEstimates.mi(fit, fmi = TRUE,
+                                                     zstat = FALSE,
+                                                     pvalue = FALSE, ci = FALSE)
     nG <- lavListInspect(fit, "ngroups")
     if (nG == 1L) comb.results$group <- 1L
     group.label <- lavListInspect(fit, "group.label")
-    if (fewImps) {
-      comb.results["fmi1"] <- NULL
-      names(comb.results)[names(comb.results) == "fmi2"] <- "fmi"
-    } else {
-      comb.results["fmi2"] <- NULL
-      names(comb.results)[names(comb.results) == "fmi1"] <- "fmi"
-    }
-    for (i in c("t","df","pvalue","riv")) comb.results[i] <- NULL
+    #FIXME: also return RIV?  Or make it an argument (FMI or RIV)
+    comb.results$riv <- NULL
   }
 
   ## Variances from null model, if applicable
