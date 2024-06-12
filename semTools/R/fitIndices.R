@@ -457,20 +457,18 @@ sic <- function(f, lresults = NULL) {
 ##' @importFrom stats pchisq
 ##' @importFrom methods getMethod
 ##'
-##' @param fit0,fit1 [lavaan-class] object(s) provided after running the
-##'   `cfa`, `sem`, `growth`, or `lavaan` functions.
-##'   [lavaan.mi-class] object(s) also accepted.
+##' @param fit0,fit1 [lavaan-class] or [lavaan.mi-class] object(s)
 ##' @param smallN.method `character` indicating the small-*N*
 ##'   correction method to use. Multiple may be chosen (all of which assume
 ##'   normality), as described in Shi et al. (2018):
 ##'   `c("swain","yuan.2015","yuan.2005","bartlett")`. Users may also
 ##'   simply select `"all"`.
 ##' @param \dots Additional arguments to the [lavaan::lavTestLRT()] or
-##'   [lavTestLRT.mi()] functions. Ignored when `is.null(fit1)`.
+##'   [lavaan.mi::lavTestLRT.mi()] functions. Ignored when `is.null(fit1)`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results. Ignored unless `fit0` (and
 ##'   optionally `fit1`) is a [lavaan.mi-class] object. See
-##'   [lavTestLRT.mi()] for a description of options and defaults.
+##'   [lavaan.mi::lavTestLRT.mi()] for a description of options and defaults.
 ##'
 ##' @return A `list` of `numeric` vectors: one for the originally
 ##'   requested statistic(s), along with one per requested `smallN.method`.

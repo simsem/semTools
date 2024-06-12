@@ -1,5 +1,6 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, and Terrence D. Jorgensen
-### Last updated: 9 May 2022
+### Last updated: 12 June 2024
+### DEPRECATED:    9 May  2022
 
 
 ##' Measurement Invariance Tests
@@ -101,7 +102,7 @@ NULL
 ##' the [measEq.syntax()] function, which is much more flexible and
 ##' supports a wider range of data (e.g., any mixture of `numeric` and
 ##' `ordered` indicators, any combination of multiple groups and repeated
-##' measures, models fit to multiple imputations with [lavaan.mi()]).
+##' measures, models fit to multiple imputations with [lavaan.mi::lavaan.mi()]).
 ##'
 ##' @export
 measurementInvariance <- function(..., std.lv = FALSE, strict = FALSE,

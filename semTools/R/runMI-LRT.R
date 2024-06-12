@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 10 January 2021
+### Last updated: 12 June 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -33,7 +33,7 @@
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
 ##' @importFrom stats cov pchisq pf
 ##'
-##' @param object,h1 An object of class [lavaan.mi-class].
+##' @param object,h1 An object of class [OLDlavaan.mi-class].
 ##'   `object` should be nested within (more constrained than) `h1`.
 ##' @param test `character` indicating which pooling method to use.
 ##'   `"D3"`, `"mr"`, or `"meng.rubin"` (default) requests the
@@ -104,19 +104,8 @@
 ##'
 ##' @examples
 ##'  \dontrun{
-##' ## impose missing data for example
-##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(12345)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-##'
-##' ## impute missing data
-##' library(Amelia)
-##' set.seed(12345)
-##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
+##' library(lavaan.mi)
+##' data(HS20imps, package = "lavaan.mi")
 ##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
@@ -125,8 +114,8 @@
 ##'   speed   =~ x7 + b3*x8 + x9
 ##' '
 ##'
-##' fit1 <- cfa.mi(HS.model, data = imps, estimator = "mlm")
-##' fit0 <- cfa.mi(HS.model, data = imps, estimator = "mlm", orthogonal = TRUE)
+##' fit1 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm")
+##' fit0 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm", orthogonal = TRUE)
 ##'
 ##' ## By default, use D3.
 ##' ## Must request a chi-squared statistic to be robustified.
@@ -144,7 +133,7 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
                           omit.imps = c("no.conv","no.se"),
                           asymptotic = FALSE, pool.robust = FALSE, ...) {
   ## check class
-  if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
+  if (!inherits(object, "OLDlavaan.mi")) stop("object is not class 'OLDlavaan.mi'")
 
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -166,7 +155,7 @@ lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
 
   ## model comparison?
   if (!is.null(h1)) {
-    if (!inherits(h1, "lavaan.mi")) stop("h1 is not class 'lavaan.mi'")
+    if (!inherits(h1, "OLDlavaan.mi")) stop("h1 is not class 'OLDlavaan.mi'")
     if (!all(lavListInspect(object, "options")$test == lavListInspect(h1, "options")$test)) {
       stop('Different (sets of) test statistics were requested for the 2 models.')
     }
@@ -484,8 +473,8 @@ getLLs <- function(object, useImps, saturated = FALSE,
     PT$free <- 0L
     PT$user <- 1L
     ## fix them to pooled estimates
-    fixedValues <- getMethod("coef","lavaan.mi")(object, type = "user",
-                                                 omit.imps = omit.imps)
+    fixedValues <- getMethod("coef","OLDlavaan.mi")(object, type = "user",
+                                                    omit.imps = omit.imps)
     PT$ustart <- fixedValues
     PT$start <- NULL
     PT$est <- NULL

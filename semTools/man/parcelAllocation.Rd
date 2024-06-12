@@ -142,10 +142,11 @@ dataList <- parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
                              item.syntax = item.syntax,
                              do.fit = FALSE)
 ## now fit the model to each data set
+library(lavaan.mi)
 fit.parcels <- cfa.mi(mod.parcels, data = dataList, std.lv = TRUE)
-summary(fit.parcels) # uses Rubin's rules
-anova(fit.parcels)   # pooled test statistic
-class?lavaan.mi      # find more methods for pooling results
+summary(fit.parcels)        # pooled using Rubin's rules
+anova(fit.parcels)          # pooled test statistic
+help(package = "lavaan.mi") # find more methods for pooling results
 }
 
 

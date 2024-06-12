@@ -55,7 +55,7 @@
 ##'        Cov\left(b_1, b_3\right) + Z^2 \times Var\left(b_3\right) }
 ##'
 ##' Wald *z* statistic is used for test statistic (even for objects of
-##' class [lavaan.mi-class]).
+##' class [lavaan.mi::lavaan.mi-class]).
 ##'
 ##'
 ##' @importFrom lavaan lavInspect parTable
@@ -63,7 +63,7 @@
 ##' @importFrom methods getMethod
 ##'
 ##' @param fit A fitted [lavaan-class] or
-##'   [lavaan.mi-class] object with a latent 2-way interaction.
+##'   [lavaan.mi::lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 3 factor names used as the
 ##'   predictors. The lower-order factors must be listed first, and the final
 ##'   name must be the latent interaction factor.
@@ -79,7 +79,7 @@
 ##'   corresponding to which of those group labels.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results. Ignored unless `fit` is of
-##'        class [lavaan.mi-class]. Can include any of
+##'        class [lavaan.mi::lavaan.mi-class]. Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
@@ -193,6 +193,9 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
                         omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
   if (inherits(fit, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(fit@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
@@ -286,7 +289,6 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	if (inherits(fit, "lavaan")) {
 	  varEst <- lavaan::vcov(fit)
 	} else if (inherits(fit, "lavaan.mi")) {
-	  requireNamespace("lavaan.mi")
 	  varEst <- getMethod(f = "vcov", signature = "lavaan.mi",
 	                      where = getNamespace("lavaan.mi"))(fit, omit.imps = omit.imps)
 	}
@@ -402,7 +404,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' @importFrom methods getMethod
 ##'
 ##' @param fit A fitted [lavaan-class] or
-##'   [lavaan.mi-class] object with a latent 2-way interaction.
+##'   [lavaan.mi::lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 3 factor names used as the
 ##'   predictors. The lower-order factors must be listed first, and the final
 ##'   name must be the latent interaction factor.
@@ -418,7 +420,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'   corresponding to which of those group labels.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results. Ignored unless `fit` is of
-##'        class [lavaan.mi-class]. Can include any of
+##'        class [lavaan.mi::lavaan.mi-class]. Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
@@ -539,6 +541,9 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
                         omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
   if (inherits(fit, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(fit@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
@@ -676,7 +681,6 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 	if (inherits(fit, "lavaan")) {
 	  varEst <- lavaan::vcov(fit)
 	} else if (inherits(fit, "lavaan.mi")) {
-	  requireNamespace("lavaan.mi")
 	  varEst <- getMethod(f = "vcov", signature = "lavaan.mi",
 	                      where = getNamespace("lavaan.mi"))(fit, omit.imps = omit.imps)
 	}
@@ -809,7 +813,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'         2Z^2WCov\left(b_4, b_7\right) + 2ZW^2Cov\left(b_5, b_7\right). }
 ##'
 ##' Wald *z* statistics are calculated (even for objects of class
-##' [lavaan.mi-class]) to test null hypotheses that simple
+##' [lavaan.mi::lavaan.mi-class]) to test null hypotheses that simple
 ##' intercepts or slopes are 0.
 ##'
 ##'
@@ -818,7 +822,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' @importFrom methods getMethod
 ##'
 ##' @param fit A fitted [lavaan-class] or
-##'   [lavaan.mi-class] object with a latent 2-way interaction.
+##'   [lavaan.mi::lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 7 factor names used as the
 ##'   predictors. The 3 lower-order factors must be listed first, followed by
 ##'   the 3 second-order factors (specifically, the 4th element must be the
@@ -840,7 +844,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##'   `lavInspect(fit, "group.label")`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results. Ignored unless `fit` is of
-##'        class [lavaan.mi-class]. Can include any of
+##'        class [lavaan.mi::lavaan.mi-class]. Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
@@ -947,6 +951,9 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
                         group = 1L, omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
   if (inherits(fit, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(fit@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
@@ -1039,7 +1046,6 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	if (inherits(fit, "lavaan")) {
 	  varEst <- lavaan::vcov(fit)
 	} else if (inherits(fit, "lavaan.mi")) {
-	  requireNamespace("lavaan.mi")
 	  varEst <- getMethod(f = "vcov", signature = "lavaan.mi",
 	                      where = getNamespace("lavaan.mi"))(fit, omit.imps = omit.imps)
 	}
@@ -1163,7 +1169,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' @importFrom methods getMethod
 ##'
 ##' @param fit A fitted [lavaan-class] or
-##'   [lavaan.mi-class] object with a latent 2-way interaction.
+##'   [lavaan.mi::lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 7 factor names used as the
 ##'   predictors. The 3 lower-order factors must be listed first, followed by
 ##'   the 3 second-order factors (specifically, the 4th element must be the
@@ -1185,7 +1191,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##'   `lavInspect(fit, "group.label")`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results. Ignored unless `fit` is of
-##'        class [lavaan.mi-class]. Can include any of
+##'        class [lavaan.mi::lavaan.mi-class]. Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'        default setting, which excludes any imputations that did not
 ##'        converge or for which standard errors could not be computed.  The
@@ -1311,6 +1317,9 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
                         group = 1L, omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
   if (inherits(fit, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(fit@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(fit@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(fit@convergence, "[[", i = "SE")
@@ -1488,7 +1497,6 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 	if (inherits(fit, "lavaan")) {
 	  varEst <- lavaan::vcov(fit)
 	} else if (inherits(fit, "lavaan.mi")) {
-	  requireNamespace("lavaan.mi")
 	  varEst <- getMethod(f = "vcov", signature = "lavaan.mi",
 	                      where = getNamespace("lavaan.mi"))(fit, omit.imps = omit.imps)
 	}

@@ -175,10 +175,11 @@ dataList <- parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
                              item.syntax = item.syntax,
                              do.fit = FALSE)
 ## now fit each model to each data set
+library(lavaan.mi)
 fit0 <- cfa.mi(mod0, data = dataList, std.lv = TRUE)
 fit1 <- cfa.mi(mod1, data = dataList, std.lv = TRUE)
-anova(fit0, fit1)   # pooled test statistic comparing models
-class?lavaan.mi     # find more methods for pooling results
+anova(fit0, fit1)           # Pooled test statistic comparing models.
+help(package = "lavaan.mi") # Find more methods for pooling results.
 }
 
 }

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 9 May 2022
+### Last updated: 12 June 2024
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -28,7 +28,7 @@
 ##' @importFrom stats cov pchisq pf
 ##' @importFrom methods getMethod
 ##'
-##' @param object An object of class [lavaan.mi-class].
+##' @param object An object of class [OLDlavaan.mi-class].
 ##' @param add Either a `character` string (typically between single
 ##'   quotes) or a parameter table containing additional (currently
 ##'   fixed-to-zero) parameters for which the score test must be computed.
@@ -147,26 +147,15 @@
 ##'
 ##' @examples
 ##'  \dontrun{
-##' ## impose missing data for example
-##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(12345)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
+##' library(lavaan.mi)
+##' data(HS20imps, package = "lavaan.mi")
 ##'
-##' ## impute missing data
-##' library(Amelia)
-##' set.seed(12345)
-##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
-##'
-##' ## specify CFA model from lavaan's ?cfa help page
+##' ## specify CFA model for lavaan's ?cfa help-page data
 ##' HS.model <- '
 ##'   speed =~ c(L1, L1)*x7 + c(L1, L1)*x8 + c(L1, L1)*x9
 ##' '
 ##'
-##' out <- cfa.mi(HS.model, data = imps, group = "school", std.lv = TRUE)
+##' out <- cfa.mi(HS.model, data = HS20imps, group = "school", std.lv = TRUE)
 ##'
 ##' ## Mode 1: Score test for releasing equality constraints
 ##'
@@ -188,7 +177,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                             univariate = TRUE, cumulative = FALSE,
                             epc = FALSE, standardized = epc, cov.std = epc,
                             verbose = FALSE, warn = TRUE, information = "expected") {
-  stopifnot(inherits(object, "lavaan.mi"))
+  stopifnot(inherits(object, "OLDlavaan.mi"))
   lavoptions <- object@Options
 
   useImps <- rep(TRUE, length(object@DataList))
@@ -754,7 +743,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     EPC.all <- 1 * as.numeric(score %*%  Z1.plus1)
 
     # create epc table for the 'free' parameters
-    myCoefs <- getMethod("coef","lavaan.mi")(object, omit.imps = omit.imps)
+    myCoefs <- getMethod("coef","OLDlavaan.mi")(object, omit.imps = omit.imps)
     myCols <- c("lhs","op","rhs","user")
     if (ngroups > 1L) myCols <- c(myCols, "block","group")
     if (nlevels > 1L) myCols <- c(myCols, "block","level")
@@ -795,7 +784,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       EPC.sign <- sign(LIST$epc)
 
       ## pooled estimates for standardizedSolution()
-      pooledest <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+      pooledest <- getMethod("coef", "OLDlavaan.mi")(object,
+                                                     omit.imps = omit.imps)
       ## update @Model@GLIST for standardizedSolution(..., GLIST=)
       object@Model <- lavaan::lav_model_set_parameters(object@Model, x = pooledest)
 

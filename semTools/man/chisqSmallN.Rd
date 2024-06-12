@@ -9,9 +9,7 @@ chisqSmallN(fit0, fit1 = NULL, smallN.method = if (is.null(fit1))
   "no.se"))
 }
 \arguments{
-\item{fit0, fit1}{\linkS4class{lavaan} object(s) provided after running the
-\code{cfa}, \code{sem}, \code{growth}, or \code{lavaan} functions.
-\linkS4class{lavaan.mi} object(s) also accepted.}
+\item{fit0, fit1}{\linkS4class{lavaan} or \linkS4class{lavaan.mi} object(s)}
 
 \item{smallN.method}{\code{character} indicating the small-\emph{N}
 correction method to use. Multiple may be chosen (all of which assume
@@ -20,12 +18,12 @@ normality), as described in Shi et al. (2018):
 simply select \code{"all"}.}
 
 \item{\dots}{Additional arguments to the \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} or
-\code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} functions. Ignored when \code{is.null(fit1)}.}
+\code{\link[lavaan.mi:lavTestLRT.mi]{lavaan.mi::lavTestLRT.mi()}} functions. Ignored when \code{is.null(fit1)}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results. Ignored unless \code{fit0} (and
 optionally \code{fit1}) is a \linkS4class{lavaan.mi} object. See
-\code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} for a description of options and defaults.}
+\code{\link[lavaan.mi:lavTestLRT.mi]{lavaan.mi::lavTestLRT.mi()}} for a description of options and defaults.}
 }
 \value{
 A \code{list} of \code{numeric} vectors: one for the originally

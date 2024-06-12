@@ -94,8 +94,7 @@
 ##'   recommended to minimize Monte Carlo error of the estimated CIs.
 ##' @param standardized `logical` indicating whether to obtain CIs for the
 ##'   fully standardized (`"std.all"`) estimates, using their asymptotic
-##'   sampling covariance matrix.  Only valid when `object` is of class
-##'   [lavaan-class], not [lavaan.mi-class].
+##'   sampling covariance matrix.
 ##' @param fast `logical` indicating whether to use a fast algorithm that
 ##'   assumes all functions of parameters (in `object` or `expr`) use
 ##'   standard operations. Set to `FALSE` if using (e.g.) [c()]

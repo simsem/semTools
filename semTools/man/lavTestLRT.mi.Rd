@@ -9,7 +9,7 @@ lavTestLRT.mi(object, h1 = NULL, test = c("D3", "D2"),
   pool.robust = FALSE, ...)
 }
 \arguments{
-\item{object, h1}{An object of class \linkS4class{lavaan.mi}.
+\item{object, h1}{An object of class \linkS4class{OLDlavaan.mi}.
 \code{object} should be nested within (more constrained than) \code{h1}.}
 
 \item{test}{\code{character} indicating which pooling method to use.
@@ -84,19 +84,8 @@ see examples on the \code{\link[=compareFit]{compareFit()}} help page.
 }
 \examples{
  \dontrun{
-## impose missing data for example
-HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-                                      "ageyr","agemo","school")]
-set.seed(12345)
-HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-age <- HSMiss$ageyr + HSMiss$agemo/12
-HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-
-## impute missing data
-library(Amelia)
-set.seed(12345)
-HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-imps <- HS.amelia$imputations
+library(lavaan.mi)
+data(HS20imps, package = "lavaan.mi")
 
 ## specify CFA model from lavaan's ?cfa help page
 HS.model <- '
@@ -105,8 +94,8 @@ HS.model <- '
   speed   =~ x7 + b3*x8 + x9
 '
 
-fit1 <- cfa.mi(HS.model, data = imps, estimator = "mlm")
-fit0 <- cfa.mi(HS.model, data = imps, estimator = "mlm", orthogonal = TRUE)
+fit1 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm")
+fit0 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm", orthogonal = TRUE)
 
 ## By default, use D3.
 ## Must request a chi-squared statistic to be robustified.

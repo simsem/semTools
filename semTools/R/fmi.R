@@ -10,8 +10,8 @@
 ##' summary statistics of each variable, using either an incomplete data set or
 ##' a list of imputed data sets.
 ##'
-##' The function estimates a saturated model with [lavaan::lavaan()]
-##' for a single incomplete data set using FIML, or with [lavaan.mi()]
+##' The function estimates a saturated model with [lavaan::lavaan()] for a
+##' single incomplete data set using FIML, or with [lavaan.mi::lavaan.mi()]
 ##' for a list of imputed data sets. If method = `"saturated"`, FMI will be
 ##' estiamted for all summary statistics, which could take a lot of time with
 ##' big data sets. If method = `"null"`, FMI will only be estimated for

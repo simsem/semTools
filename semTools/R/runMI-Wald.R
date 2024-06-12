@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 10 January 2021
+### Last updated: 12 June 2024
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -25,7 +25,7 @@
 ##' @importFrom stats pchisq pf
 ##' @importFrom methods getMethod
 ##'
-##' @param object An object of class [lavaan.mi-class].
+##' @param object An object of class [OLDlavaan.mi-class].
 ##' @param constraints A `character` string (typically between single
 ##'   quotes) containing one or more equality constraints.
 ##'   See examples for more details
@@ -102,19 +102,8 @@
 ##'
 ##' @examples
 ##'  \dontrun{
-##' ## impose missing data for example
-##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(12345)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-##'
-##' ## impute missing data
-##' library(Amelia)
-##' set.seed(12345)
-##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
+##' library(lavaan.mi)
+##' data(HS20imps, package = "lavaan.mi")
 ##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
@@ -123,7 +112,7 @@
 ##'   speed   =~ x7 + b3*x8 + x9
 ##' '
 ##'
-##' fit <- cfa.mi(HS.model, data = imps)
+##' fit <- cfa.mi(HS.model, data = HS20imps)
 ##'
 ##' ## Testing whether a single parameter equals zero yields the 'chi-square'
 ##' ## version of the Wald z statistic from the summary() output, or the
@@ -148,7 +137,7 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
                            asymptotic = FALSE, scale.W = !asymptotic,
                            omit.imps = c("no.conv","no.se"),
                            verbose = FALSE, warn = TRUE) {
-  stopifnot(inherits(object, "lavaan.mi"))
+  stopifnot(inherits(object, "OLDlavaan.mi"))
 
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -233,7 +222,7 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
   } else stop("no equality constraints found in constraints argument")
 
   # theta = free parameters only (equality-constrained allowed)
-  theta <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps) #object@optim$x
+  theta <- getMethod("coef", "OLDlavaan.mi")(object, omit.imps = omit.imps) #object@optim$x
 
   # build constraint function
   ceq.function <- lavaan::lav_partable_constraints_ceq(partable = partable,
@@ -251,8 +240,8 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
   if (verbose) {cat("Restricted theta values:\n"); print(theta.r); cat("\n")}
 
   # get VCOV
-  VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W,
-                                        omit.imps = omit.imps)
+  VCOV <- getMethod("vcov","OLDlavaan.mi")(object, scale.W = scale.W,
+                                           omit.imps = omit.imps)
   # restricted vcov
   info.r  <- JAC %*% VCOV %*% t(JAC)
 
@@ -266,10 +255,10 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
     out <- c("chisq" = test.stat, df = DF,
              pvalue = pchisq(test.stat, df = DF, lower.tail = FALSE))
   } else {
-    W <- getMethod("vcov", "lavaan.mi")(object, type = "within",
-                                        omit.imps = omit.imps)
-    B <- getMethod("vcov", "lavaan.mi")(object, type = "between",
-                                        omit.imps = omit.imps)
+    W <- getMethod("vcov", "OLDlavaan.mi")(object, type = "within",
+                                           omit.imps = omit.imps)
+    B <- getMethod("vcov", "OLDlavaan.mi")(object, type = "between",
+                                           omit.imps = omit.imps)
     #FIXME: only valid for linear constraints?
     ## restricted B & W components of VCOV
     W.r  <- JAC %*% W %*% t(JAC)

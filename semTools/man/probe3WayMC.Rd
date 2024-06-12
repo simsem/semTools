@@ -10,7 +10,7 @@ probe3WayMC(fit, nameX, nameY, modVar, valProbe1, valProbe2, group = 1L,
 }
 \arguments{
 \item{fit}{A fitted \linkS4class{lavaan} or
-\linkS4class{lavaan.mi} object with a latent 2-way interaction.}
+\link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object with a latent 2-way interaction.}
 
 \item{nameX}{\code{character} vector of all 7 factor names used as the
 predictors. The 3 lower-order factors must be listed first, followed by
@@ -39,7 +39,7 @@ results will be returned. Must correspond to one of
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results. Ignored unless \code{fit} is of
-class \linkS4class{lavaan.mi}. Can include any of
+class \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}. Can include any of
 \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
 default setting, which excludes any imputations that did not
 converge or for which standard errors could not be computed.  The
@@ -127,7 +127,7 @@ The variance of the simple slope formula is
         2Z^2WCov\left(b_4, b_7\right) + 2ZW^2Cov\left(b_5, b_7\right). }
 
 Wald \emph{z} statistics are calculated (even for objects of class
-\linkS4class{lavaan.mi}) to test null hypotheses that simple
+\link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}) to test null hypotheses that simple
 intercepts or slopes are 0.
 }
 \examples{

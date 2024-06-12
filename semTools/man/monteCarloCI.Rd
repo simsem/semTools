@@ -40,8 +40,7 @@ recommended to minimize Monte Carlo error of the estimated CIs.}
 
 \item{standardized}{\code{logical} indicating whether to obtain CIs for the
 fully standardized (\code{"std.all"}) estimates, using their asymptotic
-sampling covariance matrix.  Only valid when \code{object} is of class
-\linkS4class{lavaan}, not \linkS4class{lavaan.mi}.}
+sampling covariance matrix.}
 
 \item{fast}{\code{logical} indicating whether to use a fast algorithm that
 assumes all functions of parameters (in \code{object} or \code{expr}) use

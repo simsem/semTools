@@ -8,14 +8,14 @@ plausibleValues(object, nDraws = 20L, seed = 12345,
   omit.imps = c("no.conv", "no.se"), ...)
 }
 \arguments{
-\item{object}{A fitted model of class \linkS4class{lavaan},
-\code{\link[blavaan:blavaan]{blavaan::blavaan()}}, or \linkS4class{lavaan.mi}}
+\item{object}{A fitted model of class \link[lavaan:lavaan-class]{lavaan::lavaan},
+\link[blavaan:blavaan-class]{blavaan::blavaan}, or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}}
 
 \item{nDraws}{\code{integer} specifying the number of draws, analogous to
 the number of imputed data sets. If \code{object} is of class
-\linkS4class{lavaan.mi}, this will be the number of draws taken
+\link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}, this will be the number of draws taken
 \emph{per imputation}.  If \code{object} is of class
-\code{\link[blavaan:blavaan]{blavaan::blavaan()}}, \code{nDraws} cannot exceed
+\link[blavaan:blavaan-class]{blavaan::blavaan}, \code{nDraws} cannot exceed
 \code{blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")}
 (number of MCMC samples from the posterior). The drawn samples will be
 evenly spaced (after permutation for \code{target="stan"}), using
@@ -24,7 +24,7 @@ evenly spaced (after permutation for \code{target="stan"}), using
 \item{seed}{\code{integer} passed to \code{\link[=set.seed]{set.seed()}}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
-imputations when \code{object} is of class \linkS4class{lavaan.mi}.
+imputations when \code{object} is of class \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}.
 Can include any of \code{c("no.conv", "no.se", "no.npd")}.}
 
 \item{...}{Optional arguments to pass to \code{\link[lavaan:lavPredict]{lavaan::lavPredict()}}.
@@ -37,13 +37,13 @@ A \code{list} of length \code{nDraws}, each of which is a
 \code{data.frame} containing plausible values, which can be treated as
 a \code{list} of imputed data sets to be passed to \code{\link[=runMI]{runMI()}}
 (see \strong{Examples}). If \code{object} is of class
-\linkS4class{lavaan.mi}, the \code{list} will be of length
+\link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}, the \code{list} will be of length
 \code{nDraws*m}, where \code{m} is the number of imputations.
 }
 \description{
 Draw plausible values of factor scores estimated from a fitted
 \code{\link[lavaan:lavaan]{lavaan::lavaan()}} model, then treat them as multiple imputations
-of missing data using \code{\link[=lavaan.mi]{lavaan.mi()}}.
+of missing data using \code{\link[lavaan.mi:lavaan.mi]{lavaan.mi::lavaan.mi()}}.
 }
 \details{
 Because latent variables are unobserved, they can be considered as missing
@@ -120,6 +120,7 @@ PV.list <- plausibleValues(step1)
 ## subsequent path analysis
 path.model <- ' visual ~ c(t1, t2)*textual + c(s1, s2)*speed '
 \dontrun{
+library(lavaan.mi)
 step2 <- sem.mi(path.model, data = PV.list, group = "school")
 ## test equivalence of both slopes across groups
 lavTestWald.mi(step2, constraints = 't1 == t2 ; s1 == s2')
@@ -150,24 +151,16 @@ lapply(mlPV2, head)
 ## example with 10 multiple imputations of missing data:
 
 \dontrun{
-HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-                                      "ageyr","agemo","school")]
-set.seed(12345)
-HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-age <- HSMiss$ageyr + HSMiss$agemo/12
-HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-## impute data
-library(Amelia)
-set.seed(12345)
-HS.amelia <- amelia(HSMiss, m = 10, noms = "school", p2s = FALSE)
-imps <- HS.amelia$imputations
+library(lavaan.mi)
+data(HS20imps, package = "lavaan.mi")
+
 ## specify CFA model from lavaan's ?cfa help page
 HS.model <- '
   visual  =~ x1 + x2 + x3
   textual =~ x4 + x5 + x6
   speed   =~ x7 + x8 + x9
 '
-out2 <- cfa.mi(HS.model, data = imps)
+out2 <- cfa.mi(HS.model, data = HS20imps)
 PVs <- plausibleValues(out2, nDraws = nPVs)
 
 idx <- out2@Data@case.idx # can't use lavInspect() on lavaan.mi
@@ -176,9 +169,9 @@ impPVs <- list()
 nPVs <- 5
 nImps <- 10
 for (m in 1:nImps) {
-  imps[[m]]["case.idx"] <- idx
+  HS20imps[[m]]["case.idx"] <- idx
   for (i in 1:nPVs) {
-    impPVs[[ nPVs*(m - 1) + i ]] <- merge(imps[[m]],
+    impPVs[[ nPVs*(m - 1) + i ]] <- merge(HS20imps[[m]],
                                           PVs[[ nPVs*(m - 1) + i ]],
                                           by = "case.idx")
   }
@@ -194,7 +187,7 @@ variables using M}plus. Technical Report. Retrieved from
 www.statmodel.com/download/Plausible.pdf
 }
 \seealso{
-\code{\link[=lavaan.mi]{lavaan.mi()}}, \linkS4class{lavaan.mi}
+\code{\link[lavaan.mi:lavaan.mi]{lavaan.mi::lavaan.mi()}}, \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

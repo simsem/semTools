@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 15 September 2023
+### Last updated: 12 June 2024
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -826,7 +826,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' function to automatically include auxiliary variables in conjunction with
 ##' `missing = "FIML"`, they should first generate the hypothesized-model
 ##' syntax, then submit that syntax as the model to `auxiliary()`.
-##' If users utilized [lavaan.mi()] to fit their `configural.model`
+##' If users utilized [lavaan.mi::lavaan.mi()] to fit their `configural.model`
 ##' to multiply imputed data, that model can also be passed to the
 ##' `configural.model` argument, and if `return.fit = TRUE`, the
 ##' generated model will be fitted to the multiple imputations.

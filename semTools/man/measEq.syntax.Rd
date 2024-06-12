@@ -258,7 +258,7 @@ generated syntax.
 function to automatically include auxiliary variables in conjunction with
 \code{missing = "FIML"}, they should first generate the hypothesized-model
 syntax, then submit that syntax as the model to \code{auxiliary()}.
-If users utilized \code{\link[=lavaan.mi]{lavaan.mi()}} to fit their \code{configural.model}
+If users utilized \code{\link[lavaan.mi:lavaan.mi]{lavaan.mi::lavaan.mi()}} to fit their \code{configural.model}
 to multiply imputed data, that model can also be passed to the
 \code{configural.model} argument, and if \code{return.fit = TRUE}, the
 generated model will be fitted to the multiple imputations.

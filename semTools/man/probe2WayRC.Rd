@@ -9,7 +9,7 @@ probe2WayRC(fit, nameX, nameY, modVar, valProbe, group = 1L,
 }
 \arguments{
 \item{fit}{A fitted \linkS4class{lavaan} or
-\linkS4class{lavaan.mi} object with a latent 2-way interaction.}
+\link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object with a latent 2-way interaction.}
 
 \item{nameX}{\code{character} vector of all 3 factor names used as the
 predictors. The lower-order factors must be listed first, and the final
@@ -31,7 +31,7 @@ corresponding to which of those group labels.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results. Ignored unless \code{fit} is of
-class \linkS4class{lavaan.mi}. Can include any of
+class \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}. Can include any of
 \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
 default setting, which excludes any imputations that did not
 converge or for which standard errors could not be computed.  The

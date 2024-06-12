@@ -1,7 +1,9 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 August 2023
-### runMI creates lavaan.mi object, inherits from lavaanList class
+### Last updated: 12 June 2024
+### runMI creates OLDlavaan.mi object, inherits from lavaanList class
 
+### DEPRECATED: 13 June 2024
+### supplanted by lavaan.mi package
 
 ## -------------
 ## Main function
@@ -24,11 +26,11 @@
 ##' @param data A `data.frame` with missing observations, or a `list`
 ##'   of imputed data sets (if data are imputed already). If `runMI()` has
 ##'   already been called, then imputed data sets are stored in the
-##'   `@@DataList` slot, so `data` can also be a `lavaan.mi` object
+##'   `@@DataList` slot, so `data=` can also be an `OLDlavaan.mi` object
 ##'   from which the same imputed data will be used for additional analyses.
 ##' @param fun `character`. Name of a specific lavaan function used to fit
-##'   `model` to `data` (i.e., `"lavaan"`, `"cfa"`,
-##'   `"sem"`, or `"growth"`). Only required for `runMI()`.
+##'   `model=` to `data=` (i.e., `"lavaan"`, `"cfa"`, `"sem"`, or `"growth"`).
+##'   Only required for `runMI()`.
 ##' @param \dots additional arguments to pass to [lavaan::lavaan()] or
 ##'   [lavaan::lavaanList()]. See also [lavaan::lavOptions()].
 ##'   Note that `lavaanList` provides parallel computing options, as well as
@@ -37,22 +39,21 @@
 ##'   custom `FUN` is used *and* `parallel = "snow"` is requested,
 ##'   the user-supplied function should explicitly call `library` or use
 ##'   \code{\link[base]{::}} for any functions not part of the base distribution.
-##' @param m `integer`. Request the number of imputations. Ignored if
-##'   `data` is already a `list` of imputed data sets or a
-##'   `lavaan.mi` object.
+##' @param m `integer`. Request the number of imputations. Ignored if `data=` is
+##'   already a `list` of imputed data sets or an `OLDlavaan.mi` object.
 ##' @param miArgs Addition arguments for the multiple-imputation function
 ##'   (`miPackage`). The arguments should be put in a list (see example
-##'   below). Ignored if `data` is already a `list` of imputed data
-##'   sets or a `lavaan.mi` object.
+##'   below). Ignored if `data=` is already a `list` of imputed data
+##'   sets or an `OLDlavaan.mi` object.
 ##' @param miPackage Package to be used for imputation. Currently these
 ##'   functions only support `"Amelia"` or `"mice"` for imputation.
-##'   Ignored if `data` is already a `list` of imputed data sets or a
-##'   `lavaan.mi` object.
+##'   Ignored if `data` is already a `list` of imputed data sets or an
+##'   `OLDlavaan.mi` object.
 ##' @param seed `integer`. Random number seed to be set before imputing the
 ##'   data. Ignored if `data` is already a `list` of imputed data sets
-##'   or a `lavaan.mi` object.
+##'   or an `OLDlavaan.mi` object.
 ##'
-##' @return A [semTools::lavaan.mi-class] object
+##' @return A [semTools::OLDlavaan.mi-class] object
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
@@ -249,15 +250,15 @@ runMI <- function(model, data, fun = "lavaan", ...,
       m <- length(data)
       class(imputedData) <- "list" # override inheritance (e.g., "mi" if Amelia)
     }
-  } else if (is(data, "lavaan.mi")) {
+  } else if (is(data, "OLDlavaan.mi")) {
     seed <- data@seed
     imputeCall <- data@imputeCall
     imputedData <- data@DataList
     m <- length(imputedData)
   } else stop("data is not a valid input type: a partially observed data.frame,",
-              " a list of imputed data.frames, or previous lavaan.mi object")
+              " a list of imputed data.frames, or previous OLDlavaan.mi object")
 
-  ## Function to get custom output for lavaan.mi object
+  ## Function to get custom output for OLDlavaan.mi object
   ## NOTE: Need "lavaan::" to allow for parallel computations
   .getOutput. <- function(obj) {
     converged <- lavaan::lavInspect(obj, "converged")
@@ -310,7 +311,7 @@ runMI <- function(model, data, fun = "lavaan", ...,
   for (i in 1:m) fit@h1List[[i]] <- c(fit@h1List[[i]],
                                       list(PT = fit@funList[[i]]$satPT))
   ## assign class and add new slots
-  fit <- as(fit, "lavaan.mi")
+  fit <- as(fit, "OLDlavaan.mi")
   fit@coefList <- lapply(fit@funList, "[[", i = "coefMats")
   fit@miList <- lapply(fit@funList, "[[", i = "modindices")
   fit@phiList <- lapply(fit@funList, "[[", i = "cov.lv")
@@ -344,9 +345,9 @@ runMI <- function(model, data, fun = "lavaan", ...,
     }
   } else fit@funList <- list()
 
-  NewStartVals <- try(getMethod("coef", "lavaan.mi")(fit, type = "user",
-                                                          labels = FALSE),
-                           silent = TRUE)
+  NewStartVals <- try(getMethod("coef", "OLDlavaan.mi")(fit, type = "user",
+                                                        labels = FALSE),
+                      silent = TRUE)
   if (!inherits(NewStartVals, "try-error")) fit@ParTable$start <- NewStartVals
   fit
 }
@@ -409,7 +410,7 @@ growth.mi <- function(model, data, ...,
 ##'
 ##' This is a utility function used to calculate the "D2" statistic for pooling
 ##' test statistics across multiple imputations. This function is called by
-##' several functions used for [semTools::lavaan.mi-class] objects, such as
+##' several functions used for [OLDlavaan.mi-class] objects, such as
 ##' [lavTestLRT.mi()], [lavTestWald.mi()], and
 ##' [lavTestScore.mi()]. But this function can be used for any general
 ##' scenario because it only requires a vector of \eqn{\chi^2} statistics (one
@@ -438,8 +439,7 @@ growth.mi <- function(model, data, ...,
 ##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
 ##'   fraction missing information (FMI = ARIV / (1 + ARIV)).
 ##'
-##' @seealso [lavTestLRT.mi()], [lavTestWald.mi()],
-##'   [lavTestScore.mi()]
+##' @seealso [lavTestLRT.mi()], [lavTestWald.mi()], [lavTestScore.mi()]
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})

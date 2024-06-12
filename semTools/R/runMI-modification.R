@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 9 May 2022
-### adaptation of lavaan::modindices() for lavaan.mi-class objects
+### Last updated: 12 June 2024
+### adaptation of lavaan::modindices() for OLDlavaan.mi-class objects
 
 
 ##' Modification Indices for Multiple Imputations
@@ -20,7 +20,7 @@
 ##' @importFrom methods getMethod
 ##' @importFrom stats cov pchisq qchisq
 ##'
-##' @param object An object of class [lavaan.mi-class]
+##' @param object An object of class [OLDlavaan.mi-class]
 ##' @param test `character` indicating which pooling method to use.
 ##'  `"D1"` requests Mansolf, Jorgensen, & Enders' (2020) proposed
 ##'  Wald-like test for pooling the gradient and information, which are then
@@ -117,19 +117,8 @@
 ##'
 ##' @examples
 ##'  \dontrun{
-##' ## impose missing data for example
-##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(12345)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-##'
-##' ## impute missing data
-##' library(Amelia)
-##' set.seed(12345)
-##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
+##' library(lavaan.mi)
+##' data(HS20imps, package = "lavaan.mi")
 ##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
@@ -138,7 +127,7 @@
 ##'   speed   =~ x7 + x8 + x9
 ##' '
 ##'
-##' out <- cfa.mi(HS.model, data = imps)
+##' out <- cfa.mi(HS.model, data = HS20imps)
 ##'
 ##' modindices.mi(out) # default: Li et al.'s (1991) "D2" method
 ##' modindices.mi(out, test = "D1") # Li et al.'s (1991) "D1" method
@@ -166,7 +155,7 @@ modindices.mi <- function(object,
                           maximum.number = nrow(LIST),
                           na.remove = TRUE,
                           op = NULL) {
-  stopifnot(inherits(object, "lavaan.mi"))
+  stopifnot(inherits(object, "OLDlavaan.mi"))
 
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -258,9 +247,9 @@ modindices.mi <- function(object,
     if (standardized) {
       ## Need full parameter table for lavaan::standardizedSolution()
       ## Merge parameterEstimates() with modindices()
-      oldPE <- getMethod("summary","lavaan.mi")(object, se = FALSE,
-                                                output = "data.frame",
-                                                omit.imps = omit.imps)
+      oldPE <- getMethod("summary","OLDlavaan.mi")(object, se = FALSE,
+                                                   output = "data.frame",
+                                                   omit.imps = omit.imps)
       PE <- lavaan::lav_partable_merge(oldPE, cbind(LIST, est = 0),
                                        remove.duplicated = TRUE, warn = FALSE)
       ## merge EPCs, using parameter labels (unavailable for estimates)
@@ -297,7 +286,8 @@ modindices.mi <- function(object,
       EPC.sign <- sign(PE$epc)
 
       ## pooled estimates for standardizedSolution()
-      pooledest <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+      pooledest <- getMethod("coef", "OLDlavaan.mi")(object,
+                                                     omit.imps = omit.imps)
       ## update @Model@GLIST for standardizedSolution(..., GLIST=)
       object@Model <- lavaan::lav_model_set_parameters(object@Model, x = pooledest)
 

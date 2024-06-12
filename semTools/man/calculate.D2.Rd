@@ -32,7 +32,7 @@ fraction missing information (FMI = ARIV / (1 + ARIV)).
 \description{
 This is a utility function used to calculate the "D2" statistic for pooling
 test statistics across multiple imputations. This function is called by
-several functions used for \linkS4class{lavaan.mi} objects, such as
+several functions used for \linkS4class{OLDlavaan.mi} objects, such as
 \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, \code{\link[=lavTestWald.mi]{lavTestWald.mi()}}, and
 \code{\link[=lavTestScore.mi]{lavTestScore.mi()}}. But this function can be used for any general
 scenario because it only requires a vector of \eqn{\chi^2} statistics (one
@@ -67,8 +67,7 @@ data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
 \url{https://www.jstor.org/stable/24303994}
 }
 \seealso{
-\code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, \code{\link[=lavTestWald.mi]{lavTestWald.mi()}},
-\code{\link[=lavTestScore.mi]{lavTestScore.mi()}}
+\code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, \code{\link[=lavTestWald.mi]{lavTestWald.mi()}}, \code{\link[=lavTestScore.mi]{lavTestScore.mi()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

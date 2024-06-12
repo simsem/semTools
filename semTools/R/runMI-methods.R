@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
-### Last updated: 11 January 2024
-### Class and Methods for lavaan.mi object, returned by runMI()
+### Last updated: 12 June 2024
+### Class and Methods for OLDlavaan.mi object, returned by runMI()
 
 
 ##' Class for a lavaan Model Fitted to Multiple Imputations
@@ -10,13 +10,13 @@
 ##' data sets are multiple imputations of missing data.
 ##'
 ##'
-##' @name lavaan.mi-class
+##' @name OLDlavaan.mi-class
 ##' @importClassesFrom lavaan lavaanList
-##' @aliases lavaan.mi-class show,lavaan.mi-method summary,lavaan.mi-method
-##'   fitMeasures,lavaan.mi-method fitmeasures,lavaan.mi-method
-##'   anova,lavaan.mi-method nobs,lavaan.mi-method coef,lavaan.mi-method
-##'   vcov,lavaan.mi-method fitted,lavaan.mi-method fitted.values,lavaan.mi-method
-##'   residuals,lavaan.mi-method resid,lavaan.mi-method
+##' @aliases OLDlavaan.mi-class show,OLDlavaan.mi-method summary,OLDlavaan.mi-method
+##'   fitMeasures,OLDlavaan.mi-method fitmeasures,OLDlavaan.mi-method
+##'   anova,OLDlavaan.mi-method nobs,OLDlavaan.mi-method coef,OLDlavaan.mi-method
+##'   vcov,OLDlavaan.mi-method fitted,OLDlavaan.mi-method fitted.values,OLDlavaan.mi-method
+##'   residuals,OLDlavaan.mi-method resid,OLDlavaan.mi-method
 ##' @docType class
 ##'
 ##' @slot coefList `list` of estimated coefficients in matrix format (one
@@ -53,7 +53,7 @@
 ##'   table, returned by [lavaan::lav_partable_unrestricted()].
 ##' @slot baselineList See [lavaanList-class]
 ##'
-##' @param object An object of class `lavaan.mi`
+##' @param object An object of class `OLDlavaan.mi`
 ##' @param se,ci,level,standardized,rsquare,header,output See
 ##'        [lavaan::parameterEstimates()]. The `output=` argument
 ##'        can also be passed to [lavaan::fitMeasures()].
@@ -111,12 +111,12 @@
 ##'
 ##' @return
 ##'
-##' \item{coef}{`signature(object = "lavaan.mi", type = "free",
+##' \item{coef}{`signature(object = "OLDlavaan.mi", type = "free",
 ##'   labels = TRUE, omit.imps = c("no.conv","no.se"))`:
 ##'   See [lavaan-class]. Returns the pooled point estimates (i.e.,
 ##'   averaged across imputed data sets; see Rubin, 1987).}
 ##'
-##' \item{vcov}{`signature(object = "lavaan.mi", scale.W = TRUE,
+##' \item{vcov}{`signature(object = "OLDlavaan.mi", scale.W = TRUE,
 ##'   omit.imps = c("no.conv","no.se"),
 ##'   type = c("pooled","between","within","ariv"))`:  By default, returns the
 ##'   pooled covariance matrix of parameter estimates (`type = "pooled"`),
@@ -125,12 +125,12 @@
 ##'   average relative increase in variance (`type = "ariv"`) due to
 ##'   missing data.}
 ##'
-##' \item{fitted.values}{`signature(object = "lavaan.mi",
+##' \item{fitted.values}{`signature(object = "OLDlavaan.mi",
 ##'   omit.imps = c("no.conv","no.se"))`: See [lavaan-class].
 ##'   Returns model-implied moments, evaluated at the pooled point estimates.}
 ##' \item{fitted}{alias for `fitted.values`}
 ##'
-##' \item{residuals}{`signature(object = "lavaan.mi",
+##' \item{residuals}{`signature(object = "OLDlavaan.mi",
 ##'   type = c("raw","cor"), omit.imps = c("no.conv","no.se"))`:
 ##'   See [lavaan-class]. By default (`type = "raw"`), returns
 ##'   the difference between the model-implied moments from `fitted.values`
@@ -140,52 +140,50 @@
 ##'   (`type = "cor.bentler"`) formulas.}
 ##' \item{resid}{alias for `residuals`}
 ##'
-##' \item{nobs}{`signature(object = "lavaan.mi", total = TRUE)`: either
+##' \item{nobs}{`signature(object = "OLDlavaan.mi", total = TRUE)`: either
 ##'   the total (default) sample size or a vector of group sample sizes
 ##'   (`total = FALSE`).}
 ##'
-##' \item{anova}{`signature(object = "lavaan.mi", ...)`:
+##' \item{anova}{`signature(object = "OLDlavaan.mi", ...)`:
 ##'   Returns a test of model fit for a single model (`object`) or test(s)
 ##'   of the difference(s) in fit between nested models passed via `...`.
 ##'   See [lavTestLRT.mi()] and [compareFit()] for details.}
 ##'
-##' \item{fitMeasures}{`signature(object = "lavaan.mi",
+##' \item{fitMeasures}{`signature(object = "OLDlavaan.mi",
 ##'   fit.measures = "all", baseline.model = NULL, output = "vector",
 ##'   omit.imps = c("no.conv","no.se"), ...)`: See lavaan's
 ##'   [lavaan::fitMeasures()] for details. Pass additional arguments
 ##'   to [lavTestLRT.mi()] via `...`.}
 ##' \item{fitmeasures}{alias for `fitMeasures`.}
 ##'
-##' \item{show}{`signature(object = "lavaan.mi")`: returns a message about
+##' \item{show}{`signature(object = "OLDlavaan.mi")`: returns a message about
 ##'  convergence rates and estimation problems (if applicable) across imputed
 ##'  data sets.}
 ##'
-##' \item{summary}{`signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
+##' \item{summary}{`signature(object = "OLDlavaan.mi", se = TRUE, ci = FALSE,
 ##'  level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
 ##'  scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
 ##'   header = TRUE, output = "text", fit.measures = FALSE, ...)`:
-##'  see [lavaan::parameterEstimates()] for details.
-##'  By default, `summary` returns pooled point and *SE*
+##'  See [lavaan::parameterEstimates()] for details.
+##'  By default, `summary()` returns pooled point and *SE*
 ##'  estimates, along with *t* test statistics and their associated
-##'  *df* and *p* values. If `ci = TRUE`, confidence intervales
+##'  *df* and *p* values. If `ci = TRUE`, confidence intervals
 ##'  are returned with the specified confidence `level` (default 95\% CI).
 ##'  If `asymptotic = TRUE`, *z* instead of *t* tests are
 ##'  returned. `standardized` solution(s) can also be requested by name
 ##'  (`"std.lv"` or `"std.all"`) or both are returned with `TRUE`.
 ##'  *R*-squared for endogenous variables can be requested, as well as the
 ##'  Fraction Missing Information (FMI) for parameter estimates. By default, the
-##'  output will appear like `lavaan`'s `summary` output, but if
+##'  output will appear like `lavaan`'s `summary()` output, but if
 ##'  `output == "data.frame"`, the returned `data.frame` will resemble
-##'  the `parameterEstimates` output. The `scale.W` argument is
+##'  the `parameterEstimates()` output. The `scale.W` argument is
 ##'  passed to `vcov` (see description above).
 ##'  Setting `fit.measures=TRUE` will additionally print fit measures to
 ##'  the console, but they will not be returned; additional arguments may be
 ##'  passed via `...` to [lavaan::fitMeasures()] and
 ##'  subsequently to [lavTestLRT.mi()].}
 ##'
-##' @section Objects from the Class: See the [runMI()] function for
-##'   details. Wrapper functions include [lavaan.mi()],
-##'   [cfa.mi()], [sem.mi()], and [growth.mi()].
+##' @section Objects from the Class: See the [runMI()] function for details.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
@@ -214,7 +212,7 @@
 ##'
 ##' ## See ?runMI help page
 ##'
-setClass("lavaan.mi", contains = "lavaanList",
+setClass("OLDlavaan.mi", contains = "lavaanList",
          slots = c(coefList = "list",     # coefficients in matrix format
                    phiList = "list",      # list of model-implied latent covariance matrices
                    miList = "list",       # modification indices
@@ -225,10 +223,10 @@ setClass("lavaan.mi", contains = "lavaanList",
 
 
 
-##' @name lavaan.mi-class
-##' @aliases show,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases show,OLDlavaan.mi-method
 ##' @export
-setMethod("show", "lavaan.mi", function(object) {
+setMethod("show", "OLDlavaan.mi", function(object) {
   nData <- object@meta$ndat
 
   useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -243,8 +241,8 @@ setMethod("show", "lavaan.mi", function(object) {
   Heywood.lv <- sapply(object@convergence, "[[", "Heywood.lv")
   Heywood.lv[is.na(Heywood.lv)] <- FALSE
 
-  cat('lavaan.mi object based on ', nData, ' imputed data sets. \n',
-      'See class?lavaan.mi help page for available methods. \n\n',
+  cat('OLDlavaan.mi object based on ', nData, ' imputed data sets. \n',
+      'See class?OLDlavaan.mi help page for available methods. \n\n',
       'Convergence information:\n', 'The model converged on ',
       nConverged, ' imputed data sets \n\n', sep = "")
 
@@ -301,8 +299,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">")) # which rows can be standardized
 
-  PE$est <- getMethod("coef","lavaan.mi")(object, type = "all",
-                                          omit.imps = omit.imps)
+  PE$est <- getMethod("coef","OLDlavaan.mi")(object, type = "all",
+                                             omit.imps = omit.imps)
 
   if (lavoptions$se == "none") {
     warning('pooled variances and tests unavailable when se="none" is requested')
@@ -317,8 +315,8 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                      if (se & !asymptotic) " test and CI.",
                      "\n")
   if (se) {
-    VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W,
-                                          omit.imps = omit.imps)
+    VCOV <- getMethod("vcov","OLDlavaan.mi")(object, scale.W = scale.W,
+                                             omit.imps = omit.imps)
     PE$se <- lavaan::lav_model_vcov_se(object@Model, VCOV = VCOV,
                                        lavpartable = object@ParTable)
     W <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "se")^2)
@@ -358,7 +356,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
 
   if (length(standardized) || rsquare) {
     ## pooled estimates for standardizedSolution()
-    est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+    est <- getMethod("coef", "OLDlavaan.mi")(object, omit.imps = omit.imps)
     ## updates @Model@GLIST for standardizedSolution(..., GLIST=)
     object@Model <- lavaan::lav_model_set_parameters(object@Model, x = est)
   }
@@ -439,7 +437,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   rownames(PE) <- NULL
 
   if (output == "text") {
-    getMethod("show", "lavaan.mi")(object)
+    getMethod("show", "OLDlavaan.mi")(object)
     cat(messPool)
   }
   if (fit.measures) {
@@ -451,17 +449,17 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
 
   PE
 }
-##' @name lavaan.mi-class
-##' @aliases summary,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases summary,OLDlavaan.mi-method
 ##' @export
-setMethod("summary", "lavaan.mi", summary.lavaan.mi)
+setMethod("summary", "OLDlavaan.mi", summary.lavaan.mi)
 
 
-##' @name lavaan.mi-class
-##' @aliases nobs,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases nobs,OLDlavaan.mi-method
 ##' @importFrom lavaan lavListInspect
 ##' @export
-setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
+setMethod("nobs", "OLDlavaan.mi", function(object, total = TRUE) {
   if (total) return(lavListInspect(object, "ntotal"))
   #FIXME: cluster N for multilevel?
   N <- lavListInspect(object, "norig")
@@ -506,10 +504,10 @@ coef.lavaan.mi <- function(object, type = "free", labels = TRUE,
   class(out) <- c("lavaan.vector","numeric")
   out
 }
-##' @name lavaan.mi-class
-##' @aliases coef,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases coef,OLDlavaan.mi-method
 ##' @export
-setMethod("coef", "lavaan.mi", coef.lavaan.mi)
+setMethod("coef", "OLDlavaan.mi", coef.lavaan.mi)
 
 
 
@@ -579,10 +577,10 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
   ## return pooled variance
   Total
 }
-##' @name lavaan.mi-class
-##' @aliases vcov,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases vcov,OLDlavaan.mi-method
 ##' @export
-setMethod("vcov", "lavaan.mi", vcov.lavaan.mi)
+setMethod("vcov", "OLDlavaan.mi", vcov.lavaan.mi)
 
 
 ##' @importFrom lavaan lavListInspect lavTestLRT
@@ -592,12 +590,12 @@ anova.lavaan.mi <- function(object, ...) {
   dotnames <- as.character(sapply(substitute(list(...))[-1], deparse))
 
   ## check class
-  if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
+  if (!inherits(object, "OLDlavaan.mi")) stop("object is not class 'OLDlavaan.mi'")
   ## check for additional arguments
   dots <- list(...)
   if (length(dots)) {
-    ## separate lavaan.mi objects from other lavTestLRT.mi() arguments
-    idx.mi <- which(sapply(dots, inherits, what = "lavaan.mi"))
+    ## separate OLDlavaan.mi objects from other lavTestLRT.mi() arguments
+    idx.mi <- which(sapply(dots, inherits, what = "OLDlavaan.mi"))
     if (length(idx.mi)) {
       mods <- dots[idx.mi]
       dots <- dots[-idx.mi]
@@ -637,10 +635,10 @@ anova.lavaan.mi <- function(object, ...) {
 
   results
 }
-##' @name lavaan.mi-class
-##' @aliases anova,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases anova,OLDlavaan.mi-method
 ##' @export
-setMethod("anova", "lavaan.mi", anova.lavaan.mi)
+setMethod("anova", "OLDlavaan.mi", anova.lavaan.mi)
 
 
 ##' @importFrom lavaan lavListInspect lavNames
@@ -667,10 +665,11 @@ getSRMR <- function(object, type = "cor.bentler", level = "within",
   }
 
   ## grab residuals
-  R <- getMethod("resid", "lavaan.mi")(object, type = type,
-                                       omit.imps = omit.imps)
-  if (mplus) Rd <- getMethod("resid", "lavaan.mi")(object, type = "cor.bentler",
-                                                   omit.imps = omit.imps)
+  R <- getMethod("resid", "OLDlavaan.mi")(object, type = type,
+                                          omit.imps = omit.imps)
+  if (mplus) Rd <- getMethod("resid", "OLDlavaan.mi")(object,
+                                                      type = "cor.bentler",
+                                                      omit.imps = omit.imps)
   ## restructure, if necessary
   if (nG == 1L) {
     loopBlocks <- 1L
@@ -837,9 +836,9 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
 
     ## fit baseline model if necessary
     if (any(indices %in% incremental)) {
-      if (inherits(baseline.model, "lavaan.mi")) {
+      if (inherits(baseline.model, "OLDlavaan.mi")) {
         baseFit <- baseline.model
-      } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
+      } else if (inherits(object@external$baseline.model, "OLDlavaan.mi")) {
         baseFit <- object@external$baseline.model
 
         ## MUST fit PTb for "D3" likelihoods, but for "D2" use @baselineList
@@ -1263,17 +1262,17 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
   if (output == "text") class(fits) <- c("lavaan.fitMeasures", class(fits))
   fits
 }
-##' @name lavaan.mi-class
-##' @aliases fitMeasures,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases fitMeasures,OLDlavaan.mi-method
 ##' @importFrom lavaan fitMeasures
 ##' @export
-setMethod("fitMeasures", "lavaan.mi", fitMeasures.mi)
+setMethod("fitMeasures", "OLDlavaan.mi", fitMeasures.mi)
 ## lowercase 'm'
-##' @name lavaan.mi-class
-##' @aliases fitmeasures,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases fitmeasures,OLDlavaan.mi-method
 ##' @importFrom lavaan fitmeasures
 ##' @export
-setMethod("fitmeasures", "lavaan.mi", fitMeasures.mi)
+setMethod("fitmeasures", "OLDlavaan.mi", fitMeasures.mi)
 
 
 ##' @importFrom lavaan lavListInspect lavNames
@@ -1306,7 +1305,7 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
                          sep = if (nG > 1L && nlevels > 1L) "_" else "")
   }
 
-  est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+  est <- getMethod("coef", "OLDlavaan.mi")(object, omit.imps = omit.imps)
   setpar <- lavaan::lav_model_set_parameters(object@Model, x = est)
   impMats <- lavaan::lav_model_implied(setpar)
   # if (lavListInspect(object, "categorical")) {
@@ -1380,14 +1379,14 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
 
   Implied
 }
-##' @name lavaan.mi-class
-##' @aliases fitted,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases fitted,OLDlavaan.mi-method
 ##' @export
-setMethod("fitted", "lavaan.mi", fitted.lavaan.mi)
-##' @name lavaan.mi-class
-##' @aliases fitted.values,lavaan.mi-method
+setMethod("fitted", "OLDlavaan.mi", fitted.lavaan.mi)
+##' @name OLDlavaan.mi-class
+##' @aliases fitted.values,OLDlavaan.mi-method
 ##' @export
-setMethod("fitted.values", "lavaan.mi", fitted.lavaan.mi)
+setMethod("fitted.values", "OLDlavaan.mi", fitted.lavaan.mi)
 
 
 
@@ -1443,7 +1442,7 @@ resid.lavaan.mi <- function(object, type = c("raw","cor"),
 
   ## H0-model-implied moments, already pooled
   ## (moments-list nested in block-list)
-  Implied <- getMethod("fitted", "lavaan.mi")(object, omit.imps = omit.imps)
+  Implied <- getMethod("fitted", "OLDlavaan.mi")(object, omit.imps = omit.imps)
   if (nBlocks == 1L) Implied <- list(Implied) # store single block in a block-list
 
   ## template to store observed moments & residuals
@@ -1545,14 +1544,14 @@ resid.lavaan.mi <- function(object, type = c("raw","cor"),
 
   RES
 }
-##' @name lavaan.mi-class
-##' @aliases residuals,lavaan.mi-method
+##' @name OLDlavaan.mi-class
+##' @aliases residuals,OLDlavaan.mi-method
 ##' @export
-setMethod("residuals", "lavaan.mi", resid.lavaan.mi)
-##' @name lavaan.mi-class
-##' @aliases resid,lavaan.mi-method
+setMethod("residuals", "OLDlavaan.mi", resid.lavaan.mi)
+##' @name OLDlavaan.mi-class
+##' @aliases resid,OLDlavaan.mi-method
 ##' @export
-setMethod("resid", "lavaan.mi", resid.lavaan.mi)
+setMethod("resid", "OLDlavaan.mi", resid.lavaan.mi)
 
 
 

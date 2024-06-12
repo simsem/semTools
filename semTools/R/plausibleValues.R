@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 June 2024
+### Last updated: 12 June 2024
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -20,7 +20,7 @@
 ##'
 ##' Draw plausible values of factor scores estimated from a fitted
 ##' [lavaan::lavaan()] model, then treat them as multiple imputations
-##' of missing data using [lavaan.mi()].
+##' of missing data using [lavaan.mi::lavaan.mi()].
 ##'
 ##'
 ##' Because latent variables are unobserved, they can be considered as missing
@@ -66,20 +66,20 @@
 ##'
 ##' @importFrom lavaan lavInspect lavPredict
 ##'
-##' @param object A fitted model of class [lavaan-class],
-##'   [blavaan::blavaan()], or [lavaan.mi-class]
+##' @param object A fitted model of class [lavaan::lavaan-class],
+##'   [blavaan::blavaan-class], or [lavaan.mi::lavaan.mi-class]
 ##' @param nDraws `integer` specifying the number of draws, analogous to
 ##'   the number of imputed data sets. If `object` is of class
-##'   [lavaan.mi-class], this will be the number of draws taken
+##'   [lavaan.mi::lavaan.mi-class], this will be the number of draws taken
 ##'   *per imputation*.  If `object` is of class
-##'   [blavaan::blavaan()], `nDraws` cannot exceed
+##'   [blavaan::blavaan-class], `nDraws` cannot exceed
 ##'   `blavInspect(object, "niter") * blavInspect(bfitc, "n.chains")`
 ##'   (number of MCMC samples from the posterior). The drawn samples will be
 ##'   evenly spaced (after permutation for `target="stan"`), using
 ##'   [ceiling()] to resolve decimals.
 ##' @param seed `integer` passed to [set.seed()].
 ##' @param omit.imps `character` vector specifying criteria for omitting
-##'   imputations when `object` is of class [lavaan.mi-class].
+##'   imputations when `object` is of class [lavaan.mi::lavaan.mi-class].
 ##'   Can include any of `c("no.conv", "no.se", "no.npd")`.
 ##' @param ... Optional arguments to pass to [lavaan::lavPredict()].
 ##'   `assemble` will be ignored because multiple groups are always
@@ -90,7 +90,7 @@
 ##'   `data.frame` containing plausible values, which can be treated as
 ##'   a `list` of imputed data sets to be passed to [runMI()]
 ##'   (see **Examples**). If `object` is of class
-##'   [lavaan.mi-class], the `list` will be of length
+##'   [lavaan.mi::lavaan.mi-class], the `list` will be of length
 ##'   `nDraws*m`, where `m` is the number of imputations.
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
@@ -101,7 +101,7 @@
 ##'   variables using M*plus. Technical Report. Retrieved from
 ##'   www.statmodel.com/download/Plausible.pdf
 ##'
-##' @seealso [lavaan.mi()], [lavaan.mi-class]
+##' @seealso [lavaan.mi::lavaan.mi()], [lavaan.mi::lavaan.mi-class]
 ##'
 ##' @examples
 ##'
@@ -137,6 +137,7 @@
 ##' ## subsequent path analysis
 ##' path.model <- ' visual ~ c(t1, t2)*textual + c(s1, s2)*speed '
 ##' \dontrun{
+##' library(lavaan.mi)
 ##' step2 <- sem.mi(path.model, data = PV.list, group = "school")
 ##' ## test equivalence of both slopes across groups
 ##' lavTestWald.mi(step2, constraints = 't1 == t2 ; s1 == s2')
@@ -167,24 +168,16 @@
 ##' ## example with 10 multiple imputations of missing data:
 ##'
 ##' \dontrun{
-##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(12345)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-##' ## impute data
-##' library(Amelia)
-##' set.seed(12345)
-##' HS.amelia <- amelia(HSMiss, m = 10, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
+##' library(lavaan.mi)
+##' data(HS20imps, package = "lavaan.mi")
+##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
 ##'   visual  =~ x1 + x2 + x3
 ##'   textual =~ x4 + x5 + x6
 ##'   speed   =~ x7 + x8 + x9
 ##' '
-##' out2 <- cfa.mi(HS.model, data = imps)
+##' out2 <- cfa.mi(HS.model, data = HS20imps)
 ##' PVs <- plausibleValues(out2, nDraws = nPVs)
 ##'
 ##' idx <- out2@@Data@@case.idx # can't use lavInspect() on lavaan.mi
@@ -193,9 +186,9 @@
 ##' nPVs <- 5
 ##' nImps <- 10
 ##' for (m in 1:nImps) {
-##'   imps[[m]]["case.idx"] <- idx
+##'   HS20imps[[m]]["case.idx"] <- idx
 ##'   for (i in 1:nPVs) {
-##'     impPVs[[ nPVs*(m - 1) + i ]] <- merge(imps[[m]],
+##'     impPVs[[ nPVs*(m - 1) + i ]] <- merge(HS20imps[[m]],
 ##'                                           PVs[[ nPVs*(m - 1) + i ]],
 ##'                                           by = "case.idx")
 ##'   }
@@ -245,6 +238,7 @@ plaus.lavaan <- function(seed = 1, object, ...) {
     stop("Plausible values not available (yet) for categorical data")
   }
   if (lavInspect(object, "options")$missing %in% c("ml", "ml.x")) {
+    #TODO: verify this:
     stop("Plausible values not available (yet) for missing data + fiml.\n",
          "       Multiple imputations can be used via lavaan.mi()")
   }
@@ -449,6 +443,8 @@ plaus.lavaan <- function(seed = 1, object, ...) {
 ##' @importFrom lavaan lavInspect lavPredict
 plaus.mi <- function(object, seeds = 1:5, omit.imps = c("no.conv","no.se"), ...) {
   stopifnot(inherits(object, "lavaan.mi"))
+  requireNamespace("lavaan.mi")
+  if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")

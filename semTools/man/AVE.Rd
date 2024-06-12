@@ -8,11 +8,10 @@ AVE(object, obs.var = TRUE, omit.imps = c("no.conv", "no.se"),
   omit.factors = character(0), dropSingle = TRUE, return.df = TRUE)
 }
 \arguments{
-\item{object}{A \linkS4class{lavaan} or
-\linkS4class{lavaan.mi} object, expected to contain only
-exogenous common factors (i.e., a CFA model). Cross-loadings are not
-allowed and will result in \code{NA} for any factor with indicator(s)
-that cross-load.}
+\item{object}{A \linkS4class{lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object,
+expected to contain only exogenous common factors (i.e., a CFA model).
+Cross-loadings are not allowed and will result in \code{NA} for any factor with
+indicator(s) that cross-load.}
 
 \item{obs.var}{\code{logical} indicating whether to compute AVE using
 observed variances in the denominator. Setting \code{FALSE} triggers

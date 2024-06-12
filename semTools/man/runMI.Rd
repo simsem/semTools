@@ -30,12 +30,12 @@ growth.mi(model, data, ..., m, miArgs = list(), miPackage = "Amelia",
 \item{data}{A \code{data.frame} with missing observations, or a \code{list}
 of imputed data sets (if data are imputed already). If \code{runMI()} has
 already been called, then imputed data sets are stored in the
-\verb{@DataList} slot, so \code{data} can also be a \code{lavaan.mi} object
+\verb{@DataList} slot, so \verb{data=} can also be an \code{OLDlavaan.mi} object
 from which the same imputed data will be used for additional analyses.}
 
 \item{fun}{\code{character}. Name of a specific lavaan function used to fit
-\code{model} to \code{data} (i.e., \code{"lavaan"}, \code{"cfa"},
-\code{"sem"}, or \code{"growth"}). Only required for \code{runMI()}.}
+\verb{model=} to \verb{data=} (i.e., \code{"lavaan"}, \code{"cfa"}, \code{"sem"}, or \code{"growth"}).
+Only required for \code{runMI()}.}
 
 \item{\dots}{additional arguments to pass to \code{\link[lavaan:lavaan]{lavaan::lavaan()}} or
 \code{\link[lavaan:lavaanList]{lavaan::lavaanList()}}. See also \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.
@@ -46,26 +46,25 @@ custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
 the user-supplied function should explicitly call \code{library} or use
 \code{\link[base]{::}} for any functions not part of the base distribution.}
 
-\item{m}{\code{integer}. Request the number of imputations. Ignored if
-\code{data} is already a \code{list} of imputed data sets or a
-\code{lavaan.mi} object.}
+\item{m}{\code{integer}. Request the number of imputations. Ignored if \verb{data=} is
+already a \code{list} of imputed data sets or an \code{OLDlavaan.mi} object.}
 
 \item{miArgs}{Addition arguments for the multiple-imputation function
 (\code{miPackage}). The arguments should be put in a list (see example
-below). Ignored if \code{data} is already a \code{list} of imputed data
-sets or a \code{lavaan.mi} object.}
+below). Ignored if \verb{data=} is already a \code{list} of imputed data
+sets or an \code{OLDlavaan.mi} object.}
 
 \item{miPackage}{Package to be used for imputation. Currently these
 functions only support \code{"Amelia"} or \code{"mice"} for imputation.
-Ignored if \code{data} is already a \code{list} of imputed data sets or a
-\code{lavaan.mi} object.}
+Ignored if \code{data} is already a \code{list} of imputed data sets or an
+\code{OLDlavaan.mi} object.}
 
 \item{seed}{\code{integer}. Random number seed to be set before imputing the
 data. Ignored if \code{data} is already a \code{list} of imputed data sets
-or a \code{lavaan.mi} object.}
+or an \code{OLDlavaan.mi} object.}
 }
 \value{
-A \linkS4class{lavaan.mi} object
+A \linkS4class{OLDlavaan.mi} object
 }
 \description{
 This function fits a lavaan model to a list of imputed data sets, and can

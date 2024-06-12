@@ -9,7 +9,7 @@ compareFit(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 }
 \arguments{
 \item{...}{fitted \code{lavaan} models or list(s) of \code{lavaan} objects.
-\linkS4class{lavaan.mi} objects are also accepted, but all models
+\link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} objects are also accepted, but all models
 must belong to the same class.}
 
 \item{nested}{\code{logical} indicating whether the models in \code{...} are
@@ -17,8 +17,8 @@ nested. See \code{\link[=net]{net()}} for an empirical test of nesting.}
 
 \item{argsLRT}{\code{list} of arguments to pass to
 \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}, as well as to
-\code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} and \code{\link[=fitMeasures]{fitMeasures()}} when
-comparing \linkS4class{lavaan.mi} models.}
+\code{\link[lavaan.mi:lavTestLRT.mi]{lavaan.mi::lavTestLRT.mi()}} and \code{\link[=fitMeasures]{fitMeasures()}} when
+comparing \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} models.}
 
 \item{indices}{\code{logical} indicating whether to return fit indices from
 the \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} function. Selecting particular
@@ -30,9 +30,8 @@ from the \code{\link[=moreFitIndices]{moreFitIndices()}} function. Selecting par
 indices is controlled in the \code{summary} method; see
 \linkS4class{FitDiff}.}
 
-\item{baseline.model}{optional fitted \linkS4class{lavaan} model
-passed to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to calculate incremental fit
-indices.}
+\item{baseline.model}{optional fitted \linkS4class{lavaan} model passed to
+\code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to calculate incremental fit indices.}
 
 \item{nPrior}{passed to \code{\link[=moreFitIndices]{moreFitIndices()}}, if relevant}
 }
@@ -84,33 +83,25 @@ summary(measEqOut, fit.measures = c("aic", "bic", "sic", "ibic"))
 
 \dontrun{
 ## also applies to lavaan.mi objects (fit model to multiple imputations)
-set.seed(12345)
-HSMiss <- HolzingerSwineford1939[ , paste("x", 1:9, sep = "")]
-HSMiss$x5 <- ifelse(HSMiss$x1 <= quantile(HSMiss$x1, .3), NA, HSMiss$x5)
-HSMiss$x9 <- ifelse(is.na(HSMiss$x5), NA, HSMiss$x9)
-HSMiss$school <- HolzingerSwineford1939$school
-
-library(Amelia)
-HS.amelia <- amelia(HSMiss, m = 20, noms = "school")
-imps <- HS.amelia$imputations
+library(lavaan.mi)
+data("HS20imps", package = "lavaan.mi") # example data: 20 imputations
 
 ## request robust test statistics
-mgfit2 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm")
-mgfit1 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
+mgfit2 <- cfa.mi(HS.model, data = HS20imps, group = "school", estimator = "mlm")
+mgfit1 <- cfa.mi(HS.model, data = HS20imps, group = "school", estimator = "mlm",
                  group.equal = "loadings")
-mgfit0 <- cfa.mi(HS.model, data = imps, group = "school", estimator = "mlm",
+mgfit0 <- cfa.mi(HS.model, data = HS20imps, group = "school", estimator = "mlm",
                  group.equal = c("loadings","intercepts"))
 
 ## request the strictly-positive robust test statistics
 out2 <- compareFit(scalar = mgfit0, metric = mgfit1, config = mgfit2,
                    argsLRT = list(asymptotic = TRUE,
                                   method = "satorra.bentler.2010"))
-## note that moreFitIndices() does not work for lavaan.mi objects, but the
-## fitMeasures() method for lavaan.mi objects already returns gammaHat(s)
-summary(out2, fit.measures = c("ariv","fmi","df","crmr","srmr",
-                               "cfi.robust","tli.robust",
-                               "adjGammaHat.scaled","rmsea.ci.lower.robust",
-                               "rmsea.robust","rmsea.ci.upper.robust"))
+## note that moreFitIndices() does not work for lavaan.mi objects
+summary(out2, fit.measures = c("crmr","srmr",   "cfi.robust","tli.robust",
+                               "rmsea.robust",
+                               "rmsea.ci.lower.robust",
+                               "rmsea.ci.upper.robust"))
 }
 
 }

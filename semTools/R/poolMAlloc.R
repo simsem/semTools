@@ -16,7 +16,7 @@
 ##' more information). Pooled point and standard-error estimates from this SEM
 ##' can be outputted at this final selected number of allocations (however, it
 ##' is more efficient to save the allocations and treat them as multiple
-##' imputations using [lavaan.mi()]; see **See Also** for links with
+##' imputations using [lavaan.mi::lavaan.mi()]; see **See Also** for links with
 ##' examples). Additionally, new indices (see Sterba & Rights, 2016) are
 ##' outputted for assessing the relative contributions of parcel-allocation
 ##' variability vs. sampling variability in each estimate. At each iteration,
@@ -35,7 +35,7 @@
 ##' variability vs. sampling variability in each estimate.
 ##'
 ##' To obtain pooled test statistics for model fit or model comparison, the
-##' `list` or parcel allocations can be passed to [lavaan.mi()]
+##' `list` or parcel allocations can be passed to [lavaan.mi::lavaan.mi()]
 ##' (find **Examples** on the help pages for [parcelAllocation()]
 ##' and [PAVranking()]).
 ##'
@@ -189,8 +189,8 @@
 ##' revision by Terrence D. Jorgensen) on which this function is based.
 ##'
 ##' @seealso
-##'   [lavaan.mi()] for treating allocations as multiple imputations to
-##'   pool results across allocations. See **Examples** on help pages for
+##'   [lavaan.mi::lavaan.mi()] for treating allocations as multiple imputations
+##'   to pool results across allocations. See **Examples** on help pages for
 ##'   [parcelAllocation()] (when fitting a single model) and [PAVranking()]
 ##'   (when comparing 2 models).
 ##'

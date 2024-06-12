@@ -43,7 +43,7 @@ The \code{measurementInvariance}, \code{measurementInvarianceCat}, and
 the \code{\link[=measEq.syntax]{measEq.syntax()}} function, which is much more flexible and
 supports a wider range of data (e.g., any mixture of \code{numeric} and
 \code{ordered} indicators, any combination of multiple groups and repeated
-measures, models fit to multiple imputations with \code{\link[=lavaan.mi]{lavaan.mi()}}).
+measures, models fit to multiple imputations with \code{\link[lavaan.mi:lavaan.mi]{lavaan.mi::lavaan.mi()}}).
 }
 
 \section{Reliability}{

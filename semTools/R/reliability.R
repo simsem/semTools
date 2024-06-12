@@ -29,11 +29,10 @@
 ##' @importFrom lavaan lavInspect
 ##' @importFrom methods getMethod
 ##'
-##' @param object A [lavaan-class] or
-##'   [lavaan.mi-class] object, expected to contain only
-##'   exogenous common factors (i.e., a CFA model). Cross-loadings are not
-##'   allowed and will result in `NA` for any factor with indicator(s)
-##'   that cross-load.
+##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##'   expected to contain only exogenous common factors (i.e., a CFA model).
+##'   Cross-loadings are not allowed and will result in `NA` for any factor with
+##'   indicator(s) that cross-load.
 ##' @param obs.var `logical` indicating whether to compute AVE using
 ##'   observed variances in the denominator. Setting `FALSE` triggers
 ##'   using model-implied variances in the denominator.
@@ -476,9 +475,8 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' @importFrom lavaan lavInspect lavNames parTable
 ##' @importFrom methods getMethod
 ##'
-##' @param object A [lavaan-class] or
-##'   [lavaan.mi-class] object, expected to contain only
-##'   exogenous common factors (i.e., a CFA model).
+##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##'   expected to contain only exogenous common factors (i.e., a CFA model).
 ##' @param obs.var `logical` indicating whether to compute reliability
 ##'   using observed variances in the denominator. Setting `FALSE` triggers
 ##'   using model-implied variances in the denominator.
@@ -1591,9 +1589,8 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' @importFrom lavaan lavInspect lavNames
 ##' @importFrom methods getMethod
 ##'
-##' @param object A [lavaan-class] or
-##'   [lavaan.mi-class] object, expected to contain only
-##'   exogenous common factors (i.e., a CFA model).
+##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##'   expected to contain only exogenous common factors (i.e., a CFA model).
 ##' @param what `character` vector naming any reliability indices to
 ##'   calculate. All are returned by default. When indicators are ordinal,
 ##'   both traditional `"alpha"` and Zumbo et al.'s (2007) so-called
@@ -2219,9 +2216,8 @@ reliability <- function(object,
 ##'
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param object A [lavaan-class] or
-##'   [lavaan.mi-class] object, expected to contain a least one
-##'   exogenous higher-order common factor.
+##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##'   expected to contain a least one exogenous higher-order common factor.
 ##' @param secondFactor The name of a single second-order factor in the
 ##'   model fitted in `object`. The function must be called multiple
 ##'   times to estimate reliability for each higher-order factor.
@@ -2475,9 +2471,8 @@ reliabilityL2 <- function(object, secondFactor,
 ##'
 ##' @importFrom lavaan lavInspect lavNames
 ##'
-##' @param object A [lavaan-class] or
-##'   [lavaan.mi-class] object, expected to contain only
-##'   exogenous common factors (i.e., a CFA model).
+##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##'   expected to contain only exogenous common factors (i.e., a CFA model).
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results.  Can include any of
 ##'        `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
@@ -2719,6 +2714,9 @@ getThreshold <- function(object, omit.imps = c("no.conv","no.se")) {
 	  EST <- lavInspect(object, "est")
 
 	} else if (inherits(object, "lavaan.mi")) {
+	  requireNamespace("lavaan.mi")
+	  # if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
 	  useImps <- rep(TRUE, length(object@DataList))
 	  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
 	  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -2785,6 +2783,9 @@ getScales <- function(object, omit.imps = c("no.conv","no.se")) {
     EST <- lavInspect(object, "est")
 
   } else if (inherits(object, "lavaan.mi")) {
+    requireNamespace("lavaan.mi")
+    # if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+
     useImps <- rep(TRUE, length(object@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
     if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")

@@ -146,7 +146,7 @@ for a fitted structural equation model (SEM) (see \strong{Details} below for
 more information). Pooled point and standard-error estimates from this SEM
 can be outputted at this final selected number of allocations (however, it
 is more efficient to save the allocations and treat them as multiple
-imputations using \code{\link[=lavaan.mi]{lavaan.mi()}}; see \strong{See Also} for links with
+imputations using \code{\link[lavaan.mi:lavaan.mi]{lavaan.mi::lavaan.mi()}}; see \strong{See Also} for links with
 examples). Additionally, new indices (see Sterba & Rights, 2016) are
 outputted for assessing the relative contributions of parcel-allocation
 variability vs. sampling variability in each estimate. At each iteration,
@@ -164,7 +164,7 @@ indices for assessing the relative contributions of parcel-allocation
 variability vs. sampling variability in each estimate.
 
 To obtain pooled test statistics for model fit or model comparison, the
-\code{list} or parcel allocations can be passed to \code{\link[=lavaan.mi]{lavaan.mi()}}
+\code{list} or parcel allocations can be passed to \code{\link[lavaan.mi:lavaan.mi]{lavaan.mi::lavaan.mi()}}
 (find \strong{Examples} on the help pages for \code{\link[=parcelAllocation]{parcelAllocation()}}
 and \code{\link[=PAVranking]{PAVranking()}}).
 
@@ -257,8 +257,8 @@ selection: Parcel-allocation variability in model ranking.
 \emph{Psychological Methods, 22}(1), 47--68. \doi{10.1037/met0000067}
 }
 \seealso{
-\code{\link[=lavaan.mi]{lavaan.mi()}} for treating allocations as multiple imputations to
-pool results across allocations. See \strong{Examples} on help pages for
+\code{\link[lavaan.mi:lavaan.mi]{lavaan.mi::lavaan.mi()}} for treating allocations as multiple imputations
+to pool results across allocations. See \strong{Examples} on help pages for
 \code{\link[=parcelAllocation]{parcelAllocation()}} (when fitting a single model) and \code{\link[=PAVranking]{PAVranking()}}
 (when comparing 2 models).
 }
