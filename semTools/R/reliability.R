@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 12 June 2024
+### Last updated: 16 June 2024
 
 
 
@@ -1772,6 +1772,18 @@ reliability <- function(object,
                         omit.indicators = character(0),
                         omit.imps = c("no.conv","no.se")) {
 
+  .Deprecated(msg = c("\nThe reliability() function was deprecated in 2022 and ",
+                      "will cease to be included in future versions of semTools",
+                      ". See help('semTools-deprecated) for details.",
+                      "\n\nIt is replaced by the compRelSEM() function, which ",
+                      "can estimate alpha and model-based reliability in an ",
+                      "even wider variety of models and data types, with ",
+                      "greater control in specifying the desired type of ",
+                      "reliability coefficient (i.e., more explicitly choosing ",
+                      "assumptions). \n\nThe average variance extracted should ",
+                      "never have been included because it is not a reliability ",
+                      "coefficient. It is now available from the AVE() function."))
+
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
   nLevels <- lavInspect(object, "nlevels")
   nblocks <- ngroups*nLevels #FIXME: always true?
@@ -2272,6 +2284,17 @@ NULL
 ##' @export
 reliabilityL2 <- function(object, secondFactor,
                           omit.imps = c("no.conv","no.se")) {
+
+  .Deprecated(msg = c("\nThe reliabilityL2() function was deprecated in 2022 and ",
+                      "will cease to be included in future versions of semTools",
+                      ". See help('semTools-deprecated) for details.",
+                      "\n\nIt is replaced by the compRelSEM() function, which ",
+                      "can estimate alpha and model-based reliability in an ",
+                      "even wider variety of models and data types, with ",
+                      "greater control in specifying the desired type of ",
+                      "reliability coefficient (i.e., more explicitly choosing ",
+                      "assumptions)."))
+
   secondFactor <- as.character(secondFactor)[1] # only one at a time
 
   ngroups <- lavInspect(object, "ngroups") #TODO: adapt to multiple levels
