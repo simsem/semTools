@@ -1,7 +1,10 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 12 June 2024
+### Last updated: 16 June 2024
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
+
+### DEPRECATED: 16 June 2024
+### supplanted by lavaan.mi package
 
 
 ##' Wald Test for Multiple Imputations
@@ -132,11 +135,36 @@
 ##'
 ##' }
 ##'
+##' @name lavTestWald.mi-deprecated
+##' @usage
+##' lavTestWald.mi(object, constraints = NULL, test = c("D1","D2"),
+##'                asymptotic = FALSE, scale.W = !asymptotic,
+##'                omit.imps = c("no.conv","no.se"),
+##'                verbose = FALSE, warn = TRUE)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
 ##' @export
 lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
                            asymptotic = FALSE, scale.W = !asymptotic,
                            omit.imps = c("no.conv","no.se"),
                            verbose = FALSE, warn = TRUE) {
+
+  .Deprecated(msg = c("\nThe runMI() and related lavaan.mi functions have been",
+                      " deprecated and will cease to be included in future ",
+                      "versions of semTools.\n\nSupport is still provided for ",
+                      "analyzing lavaan.mi-class objects (e.g., compRelSEM() ",
+                      "can estimate reliability using pooled results), which ",
+                      "can now be created using the lavaan.mi package.\n\nThe ",
+                      "deprecated runMI() function now creates an object of ",
+                      "class OLDlavaan.mi, which can be analyzed using the ",
+                      "deprecated functions in semTools, like lavTestLRT.mi(),",
+                      " that have been updated and improved in the lavaan.mi ",
+                      "package.\n\nFind more details help('semTools-deprecated)"))
+
   stopifnot(inherits(object, "OLDlavaan.mi"))
 
   useImps <- rep(TRUE, length(object@DataList))

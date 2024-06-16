@@ -1,6 +1,9 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 12 June 2024
+### Last updated: 16 June 2024
 ### adaptation of lavaan::modindices() for OLDlavaan.mi-class objects
+
+### DEPRECATED: 16 June 2024
+### supplanted by lavaan.mi package
 
 
 ##' Modification Indices for Multiple Imputations
@@ -14,7 +17,6 @@
 ##' Raghunathan, & Rubin (1991)---or by pooling the complete-data score-test
 ##' statistics across imputed data sets (i.e., "D2"; Li et al., 1991).
 ##'
-##' @name modindices.mi
 ##' @aliases modificationIndices.mi modificationindices.mi modindices.mi
 ##' @importFrom lavaan lavInspect lavListInspect lavNames
 ##' @importFrom methods getMethod
@@ -134,6 +136,19 @@
 ##'
 ##' }
 ##'
+##' @name modindices.mi-deprecated
+##' @usage
+##' modindices.mi(object, test = c("D2","D1"), omit.imps = c("no.conv","no.se"),
+##'               standardized = TRUE, cov.std = TRUE, information = "expected",
+##'               power = FALSE, delta = 0.1, alpha = 0.05, high.power = 0.75,
+##'               sort. = FALSE, minimum.value = 0, maximum.number = nrow(LIST),
+##'               na.remove = TRUE, op = NULL)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
 ##' @export
 modindices.mi <- function(object,
                           test = c("D2","D1"),
@@ -155,6 +170,19 @@ modindices.mi <- function(object,
                           maximum.number = nrow(LIST),
                           na.remove = TRUE,
                           op = NULL) {
+
+  .Deprecated(msg = c("\nThe runMI() and related lavaan.mi functions have been",
+                      " deprecated and will cease to be included in future ",
+                      "versions of semTools.\n\nSupport is still provided for ",
+                      "analyzing lavaan.mi-class objects (e.g., compRelSEM() ",
+                      "can estimate reliability using pooled results), which ",
+                      "can now be created using the lavaan.mi package.\n\nThe ",
+                      "deprecated runMI() function now creates an object of ",
+                      "class OLDlavaan.mi, which can be analyzed using the ",
+                      "deprecated functions in semTools, like lavTestLRT.mi(),",
+                      " that have been updated and improved in the lavaan.mi ",
+                      "package.\n\nFind more details help('semTools-deprecated)"))
+
   stopifnot(inherits(object, "OLDlavaan.mi"))
 
   useImps <- rep(TRUE, length(object@DataList))
@@ -391,8 +419,37 @@ modindices.mi <- function(object,
   LIST
 }
 
-## alias
-##' @rdname modindices.mi
-##' @aliases modindices.mi modificationIndices.mi
+##' @name modindices.mi-deprecated
+##' @usage
+##' modificationIndices.mi(object, test = c("D2","D1"),
+##'                        omit.imps = c("no.conv","no.se"),
+##'                        standardized = TRUE, cov.std = TRUE,
+##'                        information = "expected", power = FALSE, delta = 0.1,
+##'                        alpha = 0.05, high.power = 0.75, sort. = FALSE,
+##'                        minimum.value = 0, maximum.number = nrow(LIST),
+##'                        na.remove = TRUE, op = NULL)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+##' @rdname semTools-deprecated
 ##' @export
 modificationIndices.mi <- modindices.mi
+
+
+##' @name modindices.mi-deprecated
+##' @usage
+##' modificationindices.mi(object, test = c("D2","D1"),
+##'                        omit.imps = c("no.conv","no.se"),
+##'                        standardized = TRUE, cov.std = TRUE,
+##'                        information = "expected", power = FALSE, delta = 0.1,
+##'                        alpha = 0.05, high.power = 0.75, sort. = FALSE,
+##'                        minimum.value = 0, maximum.number = nrow(LIST),
+##'                        na.remove = TRUE, op = NULL)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+##' @rdname semTools-deprecated
+##' @export
+modificationindices.mi <- modindices.mi

@@ -1,7 +1,10 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 12 June 2024
+### Last updated: 16 June 2024
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
+
+### DEPRECATED: 16 June 2024
+### supplanted by lavaan.mi package
 
 ## this function can run two modes:
 ## MODE 1: 'add'
@@ -169,6 +172,21 @@
 ##'
 ##' }
 ##'
+##' @name lavTestScore.mi-deprecated
+##' @usage
+##' lavTestScore.mi(object, add = NULL, release = NULL,
+##'                 test = c("D2","D1"), scale.W = !asymptotic,
+##'                 omit.imps = c("no.conv","no.se"),
+##'                 asymptotic = is.null(add),
+##'                 univariate = TRUE, cumulative = FALSE,
+##'                 epc = FALSE, standardized = epc, cov.std = epc,
+##'                 verbose = FALSE, warn = TRUE, information = "expected")
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
 ##' @export
 lavTestScore.mi <- function(object, add = NULL, release = NULL,
                             test = c("D2","D1"), scale.W = !asymptotic,
@@ -177,6 +195,19 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                             univariate = TRUE, cumulative = FALSE,
                             epc = FALSE, standardized = epc, cov.std = epc,
                             verbose = FALSE, warn = TRUE, information = "expected") {
+
+  .Deprecated(msg = c("\nThe runMI() and related lavaan.mi functions have been",
+                      " deprecated and will cease to be included in future ",
+                      "versions of semTools.\n\nSupport is still provided for ",
+                      "analyzing lavaan.mi-class objects (e.g., compRelSEM() ",
+                      "can estimate reliability using pooled results), which ",
+                      "can now be created using the lavaan.mi package.\n\nThe ",
+                      "deprecated runMI() function now creates an object of ",
+                      "class OLDlavaan.mi, which can be analyzed using the ",
+                      "deprecated functions in semTools, like lavTestLRT.mi(),",
+                      " that have been updated and improved in the lavaan.mi ",
+                      "package.\n\nFind more details help('semTools-deprecated)"))
+
   stopifnot(inherits(object, "OLDlavaan.mi"))
   lavoptions <- object@Options
 

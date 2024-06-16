@@ -2,6 +2,9 @@
 ### Last updated: 12 June 2024
 ### Class and Methods for OLDlavaan.mi object, returned by runMI()
 
+### DEPRECATED: 16 June 2024
+### supplanted by lavaan.mi package
+
 
 ##' Class for a lavaan Model Fitted to Multiple Imputations
 ##'

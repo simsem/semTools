@@ -32,7 +32,6 @@ functions a \emph{suite}. Our suites include:
 \code{\link[=plotRMSEApowernested]{plotRMSEApowernested()}}, and
 \code{\link[=findRMSEAsamplesizenested]{findRMSEAsamplesizenested()}}}
 \item{Missing Data Analysis:
-\code{\link[=runMI]{runMI()}},
 \code{\link[=auxiliary]{auxiliary()}},
 \code{\link[=twostage]{twostage()}},
 \code{\link[=fmi]{fmi()}},

@@ -32,7 +32,7 @@
 ##'   [plotRMSEApowernested()], and
 ##'   [findRMSEAsamplesizenested()]}
 ##' \item{Missing Data Analysis:
-##'   [runMI()],
+##                     [runMI()],   # DEPRECATE
 ##'   [auxiliary()],
 ##'   [twostage()],
 ##'   [fmi()],

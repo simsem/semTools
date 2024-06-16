@@ -1,8 +1,8 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 16 June 2024
 ### runMI creates OLDlavaan.mi object, inherits from lavaanList class
 
-### DEPRECATED: 13 June 2024
+### DEPRECATED: 16 June 2024
 ### supplanted by lavaan.mi package
 
 ## -------------
@@ -17,7 +17,7 @@
 ##' missing observations, using either the Amelia package or the mice package.
 ##'
 ##'
-##' @aliases runMI lavaan.mi cfa.mi sem.mi growth.mi
+##' @aliases runMI-deprecated lavaan.mi-deprecated cfa.mi-deprecated sem.mi-deprecated growth.mi-deprecated
 ##' @importFrom lavaan lavInspect parTable
 ##' @importFrom methods getMethod
 ##'
@@ -179,9 +179,47 @@
 ##'
 ##' }
 ##'
+##' @name runMI-deprecated
+##' @usage
+##' runMI(model, data, fun = "lavaan", ...,
+##'       m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
+##' @section `runMI()` and the `lavaan.mi` class functionality:
+##' The `runMI()` function and support for `lavaan.mi-class` objects became
+##' such a large part of semTools that it made sense to move that functionality
+##' to its own package.  The \pkg{lavaan.mi} package is now available for users
+##' to fit `lavaan` models to their multiply imputed data.  The new package
+##' already fixes many bugs and provides many new features that make the
+##' semTools `OLDlavaan.mi-class` obsolete.  Please immediately discontinue
+##' your dependence on `semTools::runMI()` amd transition to the new
+##' \pkg{lavaan.mi} package, which also provides a more similar user interface
+##' as the \pkg{lavaan} package provides for a single `data=` set. The README
+##' on <https://github.com/TDJorgensen/lavaan.mi> provides a list of analogous
+##' functionality in \pkg{lavaan} and \pkg{lavaan.mi}, and the NEWS file
+##' documents new features and other differences from the deprecated
+##' `semTools::runMI()` functionality.
+##'
 ##' @export
 runMI <- function(model, data, fun = "lavaan", ...,
                   m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
+
+  .Deprecated(msg = c("\nThe runMI() function and lavaan.mi-class have been ",
+                      "deprecated and will cease to be included in future ",
+                      "versions of semTools.\n\nSupport is still provided for ",
+                      "analyzing lavaan.mi-class objects (e.g., compRelSEM() ",
+                      "can estimate reliability using pooled results), which ",
+                      "can now be created using the lavaan.mi package.\n\nThe ",
+                      "deprecated runMI() function now creates an object of ",
+                      "class OLDlavaan.mi, which can be analyzed using the ",
+                      "deprecated functions in semTools, like lavTestLRT.mi(),",
+                      " that have been updated and improved in the lavaan.mi ",
+                      "package.\n\nFind more details help('semTools-deprecated)"))
+
   CALL <- match.call()
   dots <- list(...)
 
@@ -352,7 +390,18 @@ runMI <- function(model, data, fun = "lavaan", ...,
   fit
 }
 
-##' @rdname runMI
+
+
+
+##' @name runMI-deprecated
+##' @usage
+##' lavaan.mi(model, data, ...,
+##'           m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+##' @rdname semTools-deprecated
 ##' @export
 lavaan.mi <- function(model, data, ...,
                       m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
@@ -364,7 +413,15 @@ lavaan.mi <- function(model, data, ...,
   eval(mc, parent.frame())
 }
 
-##' @rdname runMI
+##' @name runMI-deprecated
+##' @usage
+##' cfa.mi(model, data, ...,
+##'        m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+##' @rdname semTools-deprecated
 ##' @export
 cfa.mi <- function(model, data, ...,
                    m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
@@ -376,7 +433,15 @@ cfa.mi <- function(model, data, ...,
   eval(mc, parent.frame())
 }
 
-##' @rdname runMI
+##' @name runMI-deprecated
+##' @usage
+##' sem.mi(model, data, ...,
+##'        m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+##' @rdname semTools-deprecated
 ##' @export
 sem.mi <- function(model, data, ...,
                    m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
@@ -388,7 +453,15 @@ sem.mi <- function(model, data, ...,
   eval(mc, parent.frame())
 }
 
-##' @rdname runMI
+##' @name runMI-deprecated
+##' @usage
+##' growth.mi(model, data, ...,
+##'           m, miArgs = list(), miPackage = "Amelia", seed = 12345)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+##' @rdname semTools-deprecated
 ##' @export
 growth.mi <- function(model, data, ...,
                       m, miArgs = list(), miPackage = "Amelia", seed = 12345) {
@@ -468,9 +541,23 @@ growth.mi <- function(model, data, ...,
 ##' calculate.D2(Z) # default DF = 0 will square Z to make chisq(DF = 1)
 ##' ## F test is equivalent to a t test with the denominator DF
 ##'
+##' @name calculate.D2-deprecated
+##' @usage calculate.D2(w, DF = 0L, asymptotic = FALSE)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
 ##'
 ##' @export
 calculate.D2 <- function(w, DF = 0L, asymptotic = FALSE) {
+
+  .Deprecated(msg = c("\nThe calculate.D2() function has been deprecated from ",
+                      "semTools and moved to the new lavaan.mi package, along ",
+                      "with other multiple-imputation functionality related to",
+                      " runMI().\nSee help('semTools-deprecated)"))
+
   if (length(w) == 0L) return(NA)
   w <- as.numeric(w)
   DF <- as.numeric(DF)

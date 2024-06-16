@@ -1,7 +1,10 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 12 June 2024
+### Last updated: 16 June 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
+
+### DEPRECATED: 16 June 2024
+### supplanted by lavaan.mi package
 
 
 ## -------------
@@ -29,7 +32,7 @@
 ##' models.  To compare several nested models fitted to multiple imputations,
 ##' see examples on the [compareFit()] help page.
 ##'
-##' @aliases lavTestLRT.mi
+## @aliases lavTestLRT.mi
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
 ##' @importFrom stats cov pchisq pf
 ##'
@@ -128,10 +131,35 @@
 ##'               pool.robust = TRUE)
 ##' }
 ##'
+##' @name lavTestLRT.mi-deprecated
+##' @usage
+##' lavTestLRT.mi(object, h1 = NULL, test = c("D3","D2"),
+##'               omit.imps = c("no.conv","no.se"),
+##'               asymptotic = FALSE, pool.robust = FALSE, ...)
+##' @seealso [semTools-deprecated()]
+##' @keywords internal
+NULL
+
+
+##' @rdname semTools-deprecated
+##'
 ##' @export
 lavTestLRT.mi <- function(object, h1 = NULL, test = c("D3","D2"),
                           omit.imps = c("no.conv","no.se"),
                           asymptotic = FALSE, pool.robust = FALSE, ...) {
+
+  .Deprecated(msg = c("\nThe runMI() and related lavaan.mi functions have been",
+                      " deprecated and will cease to be included in future ",
+                      "versions of semTools.\n\nSupport is still provided for ",
+                      "analyzing lavaan.mi-class objects (e.g., compRelSEM() ",
+                      "can estimate reliability using pooled results), which ",
+                      "can now be created using the lavaan.mi package.\n\nThe ",
+                      "deprecated runMI() function now creates an object of ",
+                      "class OLDlavaan.mi, which can be analyzed using the ",
+                      "deprecated functions in semTools, like lavTestLRT.mi(),",
+                      " that have been updated and improved in the lavaan.mi ",
+                      "package.\n\nFind more details help('semTools-deprecated)"))
+
   ## check class
   if (!inherits(object, "OLDlavaan.mi")) stop("object is not class 'OLDlavaan.mi'")
 
