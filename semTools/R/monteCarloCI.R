@@ -233,8 +233,7 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
     } else coefs <- lavaan::coef(object)
 
   } else if (inherits(object, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
-    # if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     if (standardized) {
       ## only available after this lavaan version:

@@ -1,5 +1,5 @@
 ### Steven R. Chesnut, Danny Squire, Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 17 June 2024
 
 
 
@@ -123,7 +123,7 @@ quark <- function(data, id, order = 1, silent = FALSE, ...){
   final.collect$Used_Data <- data[,-c(id)]
   ##FIXME 26-June-2018: Terrence had to add a logical check for whether mice
   ##                    is installed, otherwise won't pass CRAN checks.
-  checkMice <- requireNamespace("mice")
+  checkMice <- requireNamespace("mice", quietly = TRUE)
   if (!checkMice) {
     message('The quark function requires the "mice" package to be installed.')
     return(invisible(NULL))
@@ -293,7 +293,6 @@ aImp <- function(data, silent = FALSE, ...) {
   miceArgs$maxit <- 1
   miceArgs$m <- 1
   miceArgs$printFlag <- !silent
-  requireNamespace("mice")
   if (!("package:mice" %in% search())) attachNamespace("mice")
   if (!silent) cat("Starting Algorithm Imputation...\n")
   impData <- mice::complete(do.call("mice", miceArgs))

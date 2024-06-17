@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 17 June 2024
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -180,7 +180,6 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
 
   } else {
     ## list of imputations
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     if (method == "cor") {

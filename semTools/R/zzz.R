@@ -24,7 +24,8 @@
 
 .onLoad <- function(libname, pkgname) {
   ## "register" emmeans functionality
-  if (requireNamespace("emmeans", quietly = TRUE)){
+  emInstalled <- try(loadNamespace("emmeans"), silent = TRUE)
+  if (!inherits(emInstalled, "try-error")) {
       emmeans::.emm_register("lavaan", pkgname)
   }
 }

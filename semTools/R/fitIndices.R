@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
 ###          Aaron Boulton, Ruben Arslan, Mauricio Garnier-Villarreal
-### Last updated: 12 June 2024
+### Last updated: 17 June 2024
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -526,7 +526,6 @@ chisqSmallN <- function(fit0, fit1 = NULL,
 
   ## necessary to load lavaan.mi?
   if (inherits(fit0, what = c("lavaan.mi"))) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
   }
 

@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 16 June 2024
+### Last updated: 17 June 2024
 
 
 
@@ -166,7 +166,6 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
     }
 
   } else if (inherits(object, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(object@DataList))
@@ -824,7 +823,6 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     }
 
   } else if (inherits(object, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(object@DataList))
@@ -1825,7 +1823,6 @@ reliability <- function(object,
     }
 
   } else if (inherits(object, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(object@DataList))
@@ -2320,7 +2317,6 @@ reliabilityL2 <- function(object, secondFactor,
     }
 
   } else if (inherits(object, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(object@DataList))
@@ -2563,7 +2559,6 @@ maximalRelia <- function(object, omit.imps = c("no.conv","no.se")) {
     }
 
   } else if (inherits(object, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(object@DataList))
@@ -2737,8 +2732,7 @@ getThreshold <- function(object, omit.imps = c("no.conv","no.se")) {
 	  EST <- lavInspect(object, "est")
 
 	} else if (inherits(object, "lavaan.mi")) {
-	  requireNamespace("lavaan.mi")
-	  # if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+	  if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
 	  useImps <- rep(TRUE, length(object@DataList))
 	  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -2806,8 +2800,7 @@ getScales <- function(object, omit.imps = c("no.conv","no.se")) {
     EST <- lavInspect(object, "est")
 
   } else if (inherits(object, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
-    # if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
+    if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(object@DataList))
     if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")

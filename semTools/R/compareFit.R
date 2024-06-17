@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 12 June 2024
+### Last updated: 17 June 2024
 ### source code for compareFit() function and FitDiff class
 
 
@@ -368,7 +368,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	if (inherits(mods[[1]], "lavaan")) {
 	  nonConv <- !sapply(mods, lavInspect, what = "converged")
 	} else if (inherits(mods[[1]], "lavaan.mi")) {
-	  requireNamespace("lavaan.mi") # attach lavaan.mi to access LRT + fitMeasures
+	  ## attach lavaan.mi to access LRT + fitMeasures
 	  if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
 	  nonConv <- !sapply(mods, function(fit) {

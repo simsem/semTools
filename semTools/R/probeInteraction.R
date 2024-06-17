@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 17 June 2024
 
 
 
@@ -193,7 +193,6 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
                         omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
   if (inherits(fit, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(fit@DataList))
@@ -541,7 +540,6 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
                         omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
   if (inherits(fit, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(fit@DataList))
@@ -951,7 +949,6 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
                         group = 1L, omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
   if (inherits(fit, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(fit@DataList))
@@ -1317,7 +1314,6 @@ probe3WayRC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
                         group = 1L, omit.imps = c("no.conv","no.se")) {
   ## TDJ: verify class
   if (inherits(fit, "lavaan.mi")) {
-    requireNamespace("lavaan.mi")
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     useImps <- rep(TRUE, length(fit@DataList))

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 17 June 2024
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -443,7 +443,6 @@ plaus.lavaan <- function(seed = 1, object, ...) {
 ##' @importFrom lavaan lavInspect lavPredict
 plaus.mi <- function(object, seeds = 1:5, omit.imps = c("no.conv","no.se"), ...) {
   stopifnot(inherits(object, "lavaan.mi"))
-  requireNamespace("lavaan.mi")
   if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
   useImps <- rep(TRUE, length(object@DataList))
@@ -487,7 +486,6 @@ plaus.mi <- function(object, seeds = 1:5, omit.imps = c("no.conv","no.se"), ...)
 ##' @importFrom lavaan lavNames lavInspect
 plaus.blavaan <- function(object, nDraws = 20L, seed = 12345, ...) {
   stopifnot(inherits(object, "blavaan"))
-  requireNamespace("blavaan")
   if (!"package:blavaan" %in% search()) attachNamespace("blavaan")
 
   # cluster <- lavInspect(object, "cluster")
