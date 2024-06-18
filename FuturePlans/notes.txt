@@ -120,6 +120,12 @@ semTools::auxiliary()
   - create lavaan branch, change coef(), parameterEstimates(), etc.
 - add example of alternative null model to help page
 
+semTools::twostage() edits/additions:
+- now in lavaan (but without auxiliary variables)
+- adapt semTools::auxiliary() to return a lavMoments object
+  - let lavaan do all the work
+  - return lavaan object, no need for class/methods
+
 
 semTools::bsBootMiss() additions:
 - allow for nested models instead of relying on saturated parent model
@@ -129,29 +135,6 @@ semTools::bsBootMiss() additions:
 - add estimate of Monte Carlo SE as guideline for choosing nBoot
 - convince Yves to include in bootstrapLavaan rewrite
 
-
-semTools::twostage() edits/additions:
-- now in lavaan (but without auxiliary variables)
-- adapt to simply create a lavMoments list
-  - let lavaan do all the work
-  - return lavaan object, no need for class/methods
-
-
-semTools::runMI()
-- auto-fit baseline.model for multilevel models
-  - @baselineList slot?
-- lavTestScore.mi() and modindices.mi() "should" use mean-EPC even when test="D1"
-- Rubin's rules are applied to user-defined parameters (:=).  Should they be
-  re-defined from pooled estimates? (can delta method be applied to pooled SEs?)
-- when h1 fits worse than h0 (on average across imputations)
-  - set LRT to NA instead of 0?
-  - or is this just Monte Carlo error when h0 is true?
-- adapt lavResiduals() for imputations?  NEEDS RESEARCH
-  - potentially, treat residuals as estimates, pool SEs & tests as usual
-- standardizedSolution.mi() to provide SEs/CIs?
-  - ask Yves to pass standardized= argument from vcov(...) to lavaan's
-    internal hidden function that returns SEs in standardizedSolution()
-  - https://groups.google.com/d/msg/lavaan/OfaPfUYqVVI/MWvL4TZkDAAJ
 
 semTools::plausibleValues()
 - account for different factor-score matrices per missing-data pattern?
@@ -164,7 +147,10 @@ Interactions suite
 
 semTools::plotProbe
 - Rework code to create figures in ggplot for greater customizability
-- New function (or option in plotProbe) to create a J-N plot?
+
+new R package "modsem" automates fitting with product indicators
+- does not probe interactions
+- \dontrun{} example showing how its output works to probe using semTools?
 
 
 ======================
@@ -210,6 +196,7 @@ Changes to (b)lavaan
 ====================
 
 How can we pass auxiliaries to lavCor for lavaan's first step in DWLS?
+  - June 2024: new lavh1() function
 How does lavaan allow for non-normality of continuous variables when mixed
 with ordinal?  Necessary to use a robust ACOV as the weight matrix?
 
@@ -249,11 +236,6 @@ blavaan::blavInspect()
 - add options "perc.npd" for theta and psi
   - analogous to lavaan::lavInspect(fit, "post.check")
 - check det() for each iter when EAP/MAP is NPD
-
-Write tech doc for 2SML
-- full vignette in Rmd
-- also FIML and MI, auxiliary
-
 
 Add a tutorial page for common warnings that raise questions
 - NPD matrices / Heywood cases
