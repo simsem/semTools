@@ -78,7 +78,7 @@ NULL
 ##' The \code{efaUnrotate}, \code{orthRotate}, \code{oblqRotate}, and
 ##' \code{funRotate} functions will no longer be supported. These functions
 ##' allowed users to estimate EFA parameters with \code{lavaan}. Instead, users
-##' can now directly use \code{lavaan}'s \code{\link[lavaan]{efa}} function.
+##' can now directly use \code{lavaan}'s \code{\link[lavaan]{efa}()} function.
 ##' Exploratory SEM (ESEM) is also supported by lavaan using special operators
 ##' in \code{lavaan}'s \code{\link[lavaan]{model.syntax}}; see
 ##' \url{https://github.com/yrosseel/lavaan/issues/112} for details.
