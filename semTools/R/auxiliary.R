@@ -101,6 +101,7 @@ auxiliary <- function(model, data, aux, fun, ...,
   lavArgs$data <- substitute(data)
   lavArgs$fixed.x <- FALSE
   if (fun %in% c("lavaan","cfa","sem","growth")) {
+    #TODO: allow fun = "efa"?
     lavArgs$missing <- "fiml"
     lavArgs$meanstructure <- TRUE
   }

@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 2 July 2024
 ### semTools function to implement 2-stage ML
 
 
@@ -155,7 +155,7 @@ setMethod("summary", "twostage", function(object, ...) {
     PE$ci.upper[PT$free > 0] <- PE$est[PT$free > 0] + crit * PE$se[PT$free > 0]
   }
   if (dots$fmi) {
-    compVar <- diag(lavaan::vcov(object@target))[PT$free] ## FIXME: need to re-fit model to model-implied moments from Stage 2?
+    compVar <- diag(lavaan::vcov(object@target))[PT$free] # uncorrected Stage-2 SE estimates
     # compFit <- lavaan::update(object@target, sample.nobs = lavaan::nobs(object@target),
     #                           sample.cov = lavInspect(object@target, "cov.ov"),
     #                           sample.mean = lavInspect(object@target, "mean.ov"))
@@ -567,9 +567,9 @@ twostage <- function(..., aux, fun, baseline.model = NULL) {
   if (all(aux == "")) aux <- NULL
   dots <- list(...)
   if (is.null(dots$model)) stop("lavaan model syntax argument must be named 'model'.")
-  ####################### FIXME: also check intersect(names(dots), names(lavOptions()))
   lavaanifyArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaanify)))]
-  funArgs <- dots[intersect(names(dots), names(formals(lavaan::lavaan)))] #FIXME: lavOptions too
+  args4lavaan <- c(names(formals(lavaan::lavaan)), names(lavaan::lavOptions()))
+  funArgs <- dots[intersect(names(dots), args4lavaan)]
   ## set some non-optional lavaan arguments
   funArgs$meanstructure <- TRUE
   funArgs$conditional.x <- FALSE
