@@ -279,8 +279,8 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   ## scaled test statistic (Savalei & Bentler, 2009, eq. 9)
   meat <- MATS$H %*% MATS$delta
   bread <- MASS::ginv(t(MATS$delta) %*% meat) # FIXME: why not solve()?
-  cc <- DF / sum(diag(MATS$satACOV %*% (MATS$H - meat %*% bread %*% t(meat))))
-  chisq <- lavInspect(slot(object, SLOT), "fit")[["chisq"]]
+  cc <- DF / sum(diag(N*MATS$satACOV %*% (MATS$H - meat %*% bread %*% t(meat))))
+  chisq <- lavTest(slot(object, SLOT))$stat
   T.scaled <- cc * chisq
   pval.scaled <- pchisq(T.scaled, df = DF, lower.tail = FALSE)
   scaled <- c(chisq.naive = chisq, scaling.factor = 1 / cc,
