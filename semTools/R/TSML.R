@@ -220,13 +220,15 @@ twostageMatrices <- function(object, baseline) {
   H <- list()
   for (g in 1:nG) H[[g]] <- matrix(0, (pStar + p), (pStar + p))
 
-  if (lavInspect(slot(object, SLOT), "options")$estimator == "expected") {
+#  if (lavInspect(slot(object, SLOT), "options")$estimator == "expected") {
+  if (TRUE) {
+    ## complete-data expected information  (Savalei, 2010, Eq. 6; Savalei & Bentler, 2009, Eq. 7)
     for (g in 1:nG) {
       H[[g]][1:pStar, 1:pStar] <- .5*lavaan::lav_matrix_duplication_pre_post(shinv[[g]] %x% shinv[[g]])
       H[[g]][(pStar + 1):(pStar + p), (pStar + 1):(pStar + p)] <- shinv[[g]]
     }
   } else {
-    ## estimator == "observed"
+    ## information == "observed" (Savalei, 2010, Eq. 5)
     dMu <- list()
     for (g in 1:nG) {
       dMu[[g]] <- satMu[[g]] - muHat[[g]]
