@@ -1,5 +1,5 @@
-### Sunthud Pornprasertmanit
-### Last updated: 10 January 2021
+### Sunthud Pornprasertmanit & Terrence D. Jorgensen
+### Last updated: 2 October 2024
 ### Higher-order moments. Initial version from the simsem package.
 
 
@@ -59,14 +59,17 @@ skew <- function(object, population = FALSE) {
 		warning("Missing observations are removed from a vector.")
 	}
 	if(population) {
-		return(centralMoment(object, 3)/(centralMoment(object, 2)^(3/2)))
+	  out <- centralMoment(object, 3) / (centralMoment(object, 2)^(3/2))
 	} else {
-		est <- kStat(object, 3)/(kStat(object, 2)^(3/2))
+		est <- kStat(object, 3) / (kStat(object, 2)^(3/2))
 		se <- sqrt(6/length(object))
 		z <- est/se
 		p <- (1 - pnorm(abs(z)))*2
-		return(c("skew (g1)"=est, se=se, z=z, p=p))
+		out <- c("skew (g1)"=est, se=se, z=z, p=p)
 	}
+
+  class(out) <- c("lavaan.vector", "numeric")
+  out
 }
 
 
@@ -126,14 +129,17 @@ kurtosis <- function(object, population = FALSE) {
 		warning("Missing observations are removed from a vector.")
 	}
 	if(population) {
-		return((centralMoment(object, 4)/(centralMoment(object, 2)^2)) - 3)
+	  out <- (centralMoment(object, 4) / (centralMoment(object, 2)^2)) - 3
 	} else {
-		est <- kStat(object, 4)/(kStat(object, 2)^(2))
+		est <- kStat(object, 4) / (kStat(object, 2)^(2))
 		se <- sqrt(24/length(object))
 		z <- est/se
 		p <- (1 - pnorm(abs(z)))*2
-		return(c("Excess Kur (g2)"=est, se=se, z=z, p=p))
+		out <- c("Excess Kur (g2)"=est, se=se, z=z, p=p)
 	}
+
+  class(out) <- c("lavaan.vector", "numeric")
+  out
 }
 
 
@@ -187,13 +193,18 @@ mardiaSkew <- function(dat, use = "everything") {
 	FUN2 <- function(vec1, listVec2, invS) {
 		sapply(listVec2, FUN, vec1=vec1, invS=invS)
 	}
-	indivTerm <- sapply(as.list(data.frame(t(centeredDat))), FUN2, listVec2=as.list(data.frame(t(centeredDat))), invS=invS)
-	b1d <- sum(indivTerm^3)/(nrow(dat)^2)
+	indivTerm <- sapply(as.list(data.frame(t(centeredDat))), FUN2,
+	                    listVec2=as.list(data.frame(t(centeredDat))), invS=invS)
+
+	b1d <- sum(indivTerm^3, na.rm = TRUE) / (nrow(dat)^2)
 	d <- ncol(dat)
 	chi <- nrow(dat) * b1d / 6
 	df <- d * (d + 1) * (d + 2) / 6
 	p <- pchisq(chi, df = df, lower.tail = FALSE)
-	return(c(b1d = b1d, chi = chi, df=df, p=p))
+
+	out <- c(b1d = b1d, chi = chi, df=df, p=p)
+	class(out) <- c("lavaan.vector", "numeric")
+	return(out)
 }
 
 
@@ -245,13 +256,17 @@ mardiaKurtosis <- function(dat, use = "everything") {
 		as.numeric(t(as.matrix(vec)) %*% invS %*% as.matrix(vec))
 	}
 	indivTerm <- sapply(as.list(data.frame(t(centeredDat))), FUN, invS=invS)
-	b2d <- sum(indivTerm^2)/nrow(dat)
+
+	b2d <- sum(indivTerm^2, na.rm = TRUE) / nrow(dat)
 	d <- ncol(dat)
 	m <- d * (d + 2)
 	v <- 8 * d * (d + 2) / nrow(dat)
 	z <- (b2d - m)/sqrt(v)
 	p <- pnorm(-abs(z)) * 2
-	return(c(b2d = b2d, z = z, p=p))
+
+	out <- c(b2d = b2d, z = z, p=p)
+	class(out) <- c("lavaan.vector", "numeric")
+	return(out)
 }
 
 

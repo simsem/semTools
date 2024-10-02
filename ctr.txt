@@ -4,9 +4,10 @@
 export(
   ## Sunthud
   clipboard, saveFile, compareFit,  ## with additions from Terrence
-  efaUnrotate, orthRotate, oblqRotate, funRotate,
+  efaUnrotate, orthRotate, oblqRotate, funRotate, # deprecated
   imposeStart, loadingFromAlpha,
-  skew, kurtosis, mardiaSkew, mardiaKurtosis,
+  skew, kurtosis,
+  mardiaSkew, mardiaKurtosis, # NA issue fixed by Terrence
   residualCovariate,
   singleParamTest, ############################################################# wald,
   miPowerFit,
