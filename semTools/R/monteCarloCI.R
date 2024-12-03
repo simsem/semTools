@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 17 June 2024
+### Last updated: 3 December 2024
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -274,29 +274,47 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
   }
 
   ## Apply the expression(s) to POINT ESTIMATES
-  estList <- within(as.list(coefs), expr = {
-    for (i in seq_along(expr)) assign(names(expr[i]), eval(parse(text = expr[i])))
-  })[names(expr)]
-  EST <- data.frame(est = do.call("c", estList))
+  estList <- as.list(coefs)
+  for (i in seq_along(expr)) {
+    estList[names(expr[i])] <- eval(parse(text = expr[i]), envir = estList)
+  }
+  EST <- data.frame(est = do.call("c", estList[names(expr)]))
+  ## old, buggy code (see issue #142)
+  # estList <- within(as.list(coefs), expr = {
+  #   for (i in seq_along(expr)) assign(names(expr[i]), eval(parse(text = expr[i])))
+  # })[names(expr)]
+  # EST <- data.frame(est = do.call("c", estList))
   rownames(EST) <- names(expr)
   if (standardized && inherits(object, "lavaan")) colnames(EST) <- "est.std"
 
   ## Matrix of sampled values
-  dat <- data.frame(mnormt::rmnorm(n = nRep, mean = coefs, varcov = ACM))
+  # dat <-
+  samples <- data.frame(mnormt::rmnorm(n = nRep, mean = coefs, varcov = ACM))
   ## Apply the expression(s) to VECTORS of ESTIMATES
   if (fast) {
-    samples <- within(dat, expr = {
-      for (i in seq_along(expr)) assign(names(expr[i]), eval(parse(text = expr[i])))
-    })[c(sampVars, names(expr))]
+    for (i in seq_along(expr)) {
+      samples[names(expr[i])] <- eval(parse(text = expr[i]), envir = samples)
+    }
+    ## old, buggy code (see issue #142)
+    # samples <- within(dat, expr = {
+    #   for (i in seq_along(expr)) assign(names(expr[i]), eval(parse(text = expr[i])))
+    # })[c(sampVars, names(expr))]
   } else {
     ## SLOWER: only necessary if expr creates objects using (e.g.) c(), which
     ##         would concatenate parameters ACROSS samples as well as WITHIN
-    datList <- lapply(1:nRep, function(Rep) dat[Rep,])
+    datList <- lapply(1:nRep, function(Rep) {
+      samples[Rep,] # dat[Rep,]
+    })
     samples <- do.call(rbind, lapply(datList, function(Rep) {
-      within(Rep, expr = {
-        for (i in seq_along(expr)) assign(names(expr[i]), eval(parse(text = expr[i])))
-      })
-    }))[c(sampVars, names(expr))]
+      for (i in seq_along(expr)) {
+        Rep[names(expr[i])] <- eval(parse(text = expr[i]), envir = Rep)
+      }
+      ## old, buggy code (see issue #142)
+      #   within(Rep, expr = {
+      #     for (i in seq_along(expr)) assign(names(expr[i]), eval(parse(text = expr[i])))
+      #   })
+      Rep
+    })) # [c(sampVars, names(expr))]
   }
 
   ## Get the CI(s)

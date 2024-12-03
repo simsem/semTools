@@ -15,7 +15,7 @@
 - Fixed an old bug which prevented `clipboard()` from working, particularly on a Mac OS: https://github.com/simsem/semTools/issues/56
 - Fixed a bug in the `update()` method for a `measEq.syntax-class` object, preventing an error that occurred when changing values/labels for a parameter across multiple groups.
 - Simple intercepts are now always returned by `probe2WayMC()`, `probe2WayRC()`, `probe3WayMC()`, and `probe3WayRC()`, even when the y-intercept is fixed in the fitted model.  This is not actually a bug, but the old default behavior led to `plotProbe()` incorrectly plotting all regression lines through the origin (see https://github.com/simsem/semTools/issues/125 and https://github.com/simsem/semTools/issues/127).
-
+- Fixed a bug in `monteCarloCI()`. See issue [#142](https://github.com/simsem/semTools/issues/142)
 
 # semTools 0.5-6 (on CRAN 10 May 2022)
 
