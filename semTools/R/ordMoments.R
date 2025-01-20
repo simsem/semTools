@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Andrew R. Johnson
-### Last updated: 23 January 2024
+### Last updated: 20 January 2025
 ### function to derive ordinal-scale moments implied by LRV-scale moments
 
 
@@ -45,7 +45,7 @@
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
-##'   Andrew Johnson (Curtin University; \email{andrew.johnson@@curtin.edu.au})
+##'   Andrew R. Johnson (Curtin University; \email{andrew.johnson@@curtin.edu.au})
 ##'
 ##' @references
 ##'
@@ -170,6 +170,7 @@ lrv2ord <- function(Sigma, Mu, thresholds, cWts) {
     thresh <- thresholds
   }
   cn <- names(thresh)
+  stopifnot(length(cn))
 
   ## If no category weights are passed, default to 0:nCat
   if (missing(cWts)) {
@@ -206,10 +207,19 @@ lrv2ord <- function(Sigma, Mu, thresholds, cWts) {
 
   ## marginal variances (fill in covariances below)
   Sigma_ord <- Sigma
-  diag(Sigma_ord[cn,cn]) <- mapply(function(p, w, mu) {
-    stopifnot(length(p) == length(w))
-    sum(p * (w - mu)^2)
-  }, p = marginal_probs, w = cWts, mu = Mu_ord[cn])
+  if (length(cn) == 1) {
+    ## drop=FALSE is not a solution (yields different error)
+    Sigma_ord[cn,cn] <- mapply(function(p, w, mu) {
+      stopifnot(length(p) == length(w))
+      sum(p * (w - mu)^2)
+    }, p = marginal_probs, w = cWts, mu = Mu_ord[cn])
+
+  } else {
+    diag(Sigma_ord[cn,cn]) <- mapply(function(p, w, mu) {
+      stopifnot(length(p) == length(w))
+      sum(p * (w - mu)^2)
+    }, p = marginal_probs, w = cWts, mu = Mu_ord[cn])
+  }
 
   ## marginal (standardized) skew
   skew_ord <- setNames(rep(0, nrow(Sigma)), nm = vn)
