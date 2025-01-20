@@ -257,7 +257,8 @@ lrv2ord <- function(Sigma, Mu, thresholds, cWts) {
                                  c("lavaan.vector","numeric"))
   out$Category_weights <- lapply(out$Category_weights, "class<-",
                                  c("lavaan.vector","numeric"))
-
+  ## need bivariate moments?
+  if (length(vn) == 1L) return(out)
 
   ## function to apply to any pair of indicators (i and j) in Sigma
   getOrdCov <- function(i, j) {
@@ -272,8 +273,8 @@ lrv2ord <- function(Sigma, Mu, thresholds, cWts) {
     if (is.numeric(i)) i <- vn[i]
     if (is.numeric(j)) j <- vn[j]
     ## make sure thresholds are standardized
-    i.thr <-
-    j.thr <-
+    # i.thr <-
+    # j.thr <-
 
     ## template for matrices of joint probabilities and cross-products
     JointProbs <- CP <- matrix(0, nrow = length(cWts[[i]]),
