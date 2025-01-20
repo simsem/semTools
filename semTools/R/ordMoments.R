@@ -335,9 +335,11 @@ lrv2ord <- function(Sigma, Mu, thresholds, cWts) {
     }
   }
 
-  R_ord <- cov2cor(Sigma_ord)
   class(Sigma_ord) <- c("lavaan.matrix.symmetric","matrix")
-  class(R_ord)     <- c("lavaan.matrix.symmetric","matrix")
+  if (nrow(Sigma_ord) > 1L) {
+    R_ord <- cov2cor(Sigma_ord)
+    class(R_ord)     <- c("lavaan.matrix.symmetric","matrix")
+  } else R_ord <- NULL
 
   c(out, list(Sigma_ord = Sigma_ord, R_ord = R_ord))
 }
