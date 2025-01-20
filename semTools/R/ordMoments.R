@@ -170,7 +170,7 @@ lrv2ord <- function(Sigma, Mu, thresholds, cWts) {
     thresh <- thresholds
   }
   cn <- names(thresh)
-  stopifnot(length(cn))
+  stopifnot(length(cn) > 0L)
 
   ## If no category weights are passed, default to 0:nCat
   if (missing(cWts)) {
