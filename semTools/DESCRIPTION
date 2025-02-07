@@ -31,13 +31,13 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Andrew R.", family = "Johnson", role = "ctb", email = "andrew.johnson@curtin.edu.au", comment = c(ORCID = "0000-0001-7000-8065"))
 		)
 Depends: R(>= 4.0), lavaan(>= 0.6-12), methods
-Imports: graphics, stats, utils
-Suggests: Amelia, blavaan, emmeans, lavaan.mi, MASS, mice, mnormt, parallel, pbivnorm, testthat
+Imports: graphics, pbivnorm, stats, utils
+Suggests: Amelia, blavaan, emmeans, lavaan.mi, MASS, mice, mnormt, parallel, testthat
 License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date/Publication: 2025-01-20
+Date/Publication: 2025-02-07
 RoxygenNote: 7.3.2
 Roxygen: list(old_usage=TRUE, markdown=TRUE)
