@@ -9,7 +9,7 @@ chisqSmallN(fit0, fit1 = NULL, smallN.method = if (is.null(fit1))
   "no.se"))
 }
 \arguments{
-\item{fit0, fit1}{\linkS4class{lavaan} or \linkS4class{lavaan.mi} object(s)}
+\item{fit0, fit1}{\link[lavaan:lavaan-class]{lavaan::lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object(s)}
 
 \item{smallN.method}{\code{character} indicating the small-\emph{N}
 correction method to use. Multiple may be chosen (all of which assume
@@ -22,7 +22,7 @@ simply select \code{"all"}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results. Ignored unless \code{fit0} (and
-optionally \code{fit1}) is a \linkS4class{lavaan.mi} object. See
+optionally \code{fit1}) is a \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object. See
 \code{\link[lavaan.mi:lavTestLRT.mi]{lavaan.mi::lavTestLRT.mi()}} for a description of options and defaults.}
 }
 \value{

@@ -60,7 +60,7 @@ of the factor scores provided by \code{\link[lavaan:lavPredict]{lavaan::lavPredi
 sampling distribution of each factor score, returning a list of data sets
 that can be treated like multiple imputations of incomplete data.  If the
 data were already imputed to handle missing data, \code{plausibleValues}
-also accepts an object of class \linkS4class{lavaan.mi}, and will
+also accepts an object of class \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi}, and will
 draw \code{nDraws} plausible values from each imputation.  Step 2 would
 then take into account uncertainty about both missing values and factor
 scores.  Bayesian methods can also be used to generate factor scores, as

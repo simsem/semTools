@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
 ###          Aaron Boulton, Ruben Arslan, Mauricio Garnier-Villarreal
-### Last updated: 17 June 2024
+### Last updated: 7 February 2025
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -457,7 +457,7 @@ sic <- function(f, lresults = NULL) {
 ##' @importFrom stats pchisq
 ##' @importFrom methods getMethod
 ##'
-##' @param fit0,fit1 [lavaan-class] or [lavaan.mi-class] object(s)
+##' @param fit0,fit1 [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object(s)
 ##' @param smallN.method `character` indicating the small-*N*
 ##'   correction method to use. Multiple may be chosen (all of which assume
 ##'   normality), as described in Shi et al. (2018):
@@ -467,7 +467,7 @@ sic <- function(f, lresults = NULL) {
 ##'   [lavaan.mi::lavTestLRT.mi()] functions. Ignored when `is.null(fit1)`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results. Ignored unless `fit0` (and
-##'   optionally `fit1`) is a [lavaan.mi-class] object. See
+##'   optionally `fit1`) is a [lavaan.mi::lavaan.mi-class] object. See
 ##'   [lavaan.mi::lavTestLRT.mi()] for a description of options and defaults.
 ##'
 ##' @return A `list` of `numeric` vectors: one for the originally

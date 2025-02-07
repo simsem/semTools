@@ -36,7 +36,7 @@ used with FIML estimation. Other variable types will be removed.}
 the analysis.}
 
 \item{return.fit}{logical. If \code{TRUE}, the fitted \linkS4class{lavaan} or
-\linkS4class{lavaan.mi} model is returned, so FMI can be found from
+\link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} model is returned, so FMI can be found from
 \code{summary(..., fmi=TRUE)}.}
 }
 \value{

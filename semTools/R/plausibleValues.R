@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 17 June 2024
+### Last updated: 7 February 2025
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -37,7 +37,7 @@
 ##' sampling distribution of each factor score, returning a list of data sets
 ##' that can be treated like multiple imputations of incomplete data.  If the
 ##' data were already imputed to handle missing data, `plausibleValues`
-##' also accepts an object of class [lavaan.mi-class], and will
+##' also accepts an object of class [lavaan.mi::lavaan.mi-class], and will
 ##' draw `nDraws` plausible values from each imputation.  Step 2 would
 ##' then take into account uncertainty about both missing values and factor
 ##' scores.  Bayesian methods can also be used to generate factor scores, as
