@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 December 2024
+### Last updated: 7 February 2025
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -237,9 +237,9 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
 
     if (standardized) {
       ## only available after this lavaan version:
-      if ( packageDescription("lavaan", fields = "Version") < "0.6-19" ||
-           (packageDescription("lavaan", fields = "Version") > "0.6-19" &&
-            packageDescription("lavaan", fields = "Version") < "0.6-19.2148") ) {
+      if ( utils::packageDescription("lavaan", fields = "Version") < "0.6-19" ||
+          (utils::packageDescription("lavaan", fields = "Version") > "0.6-19" &&
+           utils::packageDescription("lavaan", fields = "Version") < "0.6-19.2148") ) {
         stop("standardized=TRUE for a lavaan.mi-class object requires lavaan ",
              "version >= 0.6-19 from CRAN, or development version >= ",
              "0.6-19.2148 from GitHub")
