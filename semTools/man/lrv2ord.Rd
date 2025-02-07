@@ -117,5 +117,5 @@ approaches and future directions. \emph{Psychological Methods, 12}(1),
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
-Andrew Johnson (Curtin University; \email{andrew.johnson@curtin.edu.au})
+Andrew R. Johnson (Curtin University; \email{andrew.johnson@curtin.edu.au})
 }

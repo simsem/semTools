@@ -396,8 +396,8 @@ anova(fit.metric, fit.scalar)
 
 ## For a single table with all results, you can pass the models to
 ## summarize to the compareFit() function
-compareFit(fit.config, fit.thresh, fit.metric, fit.scalar)
-
+Comparisons <- compareFit(fit.config, fit.thresh, fit.metric, fit.scalar)
+summary(Comparisons)
 
 
 ## ------------------------------------------------------
@@ -428,7 +428,8 @@ for (i in 0:length(test.seq)) {
                                          return.fit = TRUE)
 }
 
-compareFit(meq.list)
+evalMeasEq <- compareFit(meq.list)
+summary(evalMeasEq)
 
 
 ## -----------------
@@ -470,7 +471,9 @@ for (i in 0:length(test.seq)) {
                                          return.fit = TRUE)
 }
 
-compareFit(meq.list)
+evalMeasEq <- compareFit(meq.list)
+summary(evalMeasEq)
+
 
 
 ## ---------------------

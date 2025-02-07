@@ -133,9 +133,10 @@ lavTestLRT.mi(mgfit.metric, h1 = mgfit.config)
 anova(mgfit.config, mgfit.metric, mgfit.scalar)
 ## or compareFit(), which also includes fit indices for comparison
 ## (optional: name the models)
-compareFit(config = mgfit.config, metric = mgfit.metric,
-           scalar = mgfit.scalar,
-           argsLRT = list(test = "D2", method = "satorra.bentler.2010"))
+invariance <- compareFit(config = mgfit.config, metric = mgfit.metric,
+                         scalar = mgfit.scalar,
+                         argsLRT = list(test = "D2", method = "satorra.bentler.2010"))
+summary(invariance)
 
 ## correlation residuals to investigate local misfit
 resid(mgfit.scalar, type = "cor.bentler")

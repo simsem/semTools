@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 2 October 2024
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -1126,8 +1126,8 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'
 ##' ## For a single table with all results, you can pass the models to
 ##' ## summarize to the compareFit() function
-##' compareFit(fit.config, fit.thresh, fit.metric, fit.scalar)
-##'
+##' Comparisons <- compareFit(fit.config, fit.thresh, fit.metric, fit.scalar)
+##' summary(Comparisons)
 ##'
 ##'
 ##' ## ------------------------------------------------------
@@ -1158,7 +1158,8 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'                                          return.fit = TRUE)
 ##' }
 ##'
-##' compareFit(meq.list)
+##' evalMeasEq <- compareFit(meq.list)
+##' summary(evalMeasEq)
 ##'
 ##'
 ##' ## -----------------
@@ -1200,7 +1201,9 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'                                          return.fit = TRUE)
 ##' }
 ##'
-##' compareFit(meq.list)
+##' evalMeasEq <- compareFit(meq.list)
+##' summary(evalMeasEq)
+##'
 ##'
 #TODO: add ternary example? or note to start with EQ thresholds?
 ##'
