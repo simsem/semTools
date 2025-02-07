@@ -54,6 +54,8 @@
 ##'
 ##' @examples
 ##'
+##' \dontrun{
+##'
 ##' unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
 ##'                          varList = paste0("x", 1:9), estimator = "mlr")
 ##' summary(unrotated, std = TRUE)
@@ -62,6 +64,7 @@
 ##' dat <- data.frame(HolzingerSwineford1939,
 ##'                   z = rnorm(nrow(HolzingerSwineford1939), 0, 1))
 ##' unrotated2 <- efaUnrotate(dat, nf = 2, varList = paste0("x", 1:9), aux = "z")
+##' }
 ##'
 ##' @name efaUnrotate-deprecated
 ##' @usage
@@ -241,6 +244,8 @@ efaUnrotate <- function(data = NULL, nf, varList = NULL,
 ##' \code{\link{oblqRotate}}
 ##' @examples
 ##'
+##' \dontrun{
+##'
 ##' unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
 ##'                          varList = paste0("x", 1:9), estimator = "mlr")
 ##' summary(unrotated, std = TRUE)
@@ -249,6 +254,7 @@ efaUnrotate <- function(data = NULL, nf, varList = NULL,
 ##' # Rotated by Quartimin
 ##' rotated <- oblqRotate(unrotated, method = "quartimin")
 ##' summary(rotated)
+##' }
 ##'
 setClass("EFA", representation(loading = "matrix",
                                rotate = "matrix",
