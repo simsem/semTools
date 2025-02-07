@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 2 July 2024
+### Last updated: 7 February 2025
 ### semTools function to implement 2-stage ML
 
 
@@ -242,8 +242,8 @@ twostageMatrices <- function(object, baseline) {
   H <- do.call(lavaan::lav_matrix_bdiag, H)
 
   ## asymptotic information and covariance matrices of target model
-  satACOV <- lavaan::vcov(object@saturated)
-  satInfo <- solve(satACOV * lavaan::nobs(object@saturated))
+  satACOV <- lavaan::vcov(object@saturated) #FIXME: inverting this is NOT equivalent to
+  satInfo <- solve(satACOV * lavaan::nobs(object@saturated)) # weighing by first-order info
   ## all(round(acov*N, 8) == round(solve(info), 8))
   ## all(round(acov, 8) == round(solve(info)/N, 8))
   if (length(object@auxNames)) {
@@ -282,7 +282,7 @@ twostageLRT <- function(object, baseline, print = FALSE) {
   meat <- MATS$H %*% MATS$delta
   bread <- MASS::ginv(t(MATS$delta) %*% meat) # FIXME: why not solve()?
   cc <- DF / sum(diag(N*MATS$satACOV %*% (MATS$H - meat %*% bread %*% t(meat))))
-  chisq <- lavTest(slot(object, SLOT))$stat
+  chisq <- lavaan::lavTest(slot(object, SLOT))$stat
   T.scaled <- cc * chisq
   pval.scaled <- pchisq(T.scaled, df = DF, lower.tail = FALSE)
   scaled <- c(chisq.naive = chisq, scaling.factor = 1 / cc,
