@@ -2,7 +2,6 @@
 % Please edit documentation in R/runMI-score.R
 \name{lavTestScore.mi-deprecated}
 \alias{lavTestScore.mi-deprecated}
-\alias{lavTestScore.mi}
 \title{Score Test for Multiple Imputations}
 \usage{
 lavTestScore.mi(object, add = NULL, release = NULL,

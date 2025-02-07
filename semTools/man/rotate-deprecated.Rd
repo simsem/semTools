@@ -2,9 +2,6 @@
 % Please edit documentation in R/efa.R
 \name{rotate-deprecated}
 \alias{rotate-deprecated}
-\alias{orthRotate}
-\alias{oblqRotate}
-\alias{funRotate}
 \title{Implement orthogonal or oblique rotation}
 \usage{
 orthRotate(object, method = "varimax", ...)

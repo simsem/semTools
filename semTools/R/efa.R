@@ -312,7 +312,7 @@ setMethod("summary", signature(object = "EFA"),
 ##' delta method by numerically computing the Jacobian matrix by the
 ##' \code{\link[lavaan]{lav_func_jacobian_simple}} function.
 ##'
-##' @aliases orthRotate oblqRotate funRotate
+## @aliases orthRotate oblqRotate funRotate
 ## @rdname rotate
 ##' @param object A lavaan output
 ##' @param method The method of rotations, such as \code{"varimax"},

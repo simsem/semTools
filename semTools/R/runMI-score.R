@@ -26,7 +26,7 @@
 ##' by pooling the complete-data score-test statistics across imputed data sets
 ##' (i.e., "D2"; Li et al., 1991).
 ##'
-##' @aliases lavTestScore.mi
+## @aliases lavTestScore.mi
 ##' @importFrom lavaan lavListInspect parTable
 ##' @importFrom stats cov pchisq pf
 ##' @importFrom methods getMethod

@@ -2,9 +2,6 @@
 % Please edit documentation in R/runMI-modification.R
 \name{modindices.mi-deprecated}
 \alias{modindices.mi-deprecated}
-\alias{modificationIndices.mi}
-\alias{modificationindices.mi}
-\alias{modindices.mi}
 \title{Modification Indices for Multiple Imputations}
 \usage{
 modindices.mi(object, test = c("D2","D1"), omit.imps = c("no.conv","no.se"),

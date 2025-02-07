@@ -17,7 +17,7 @@
 ##' Raghunathan, & Rubin (1991)---or by pooling the complete-data score-test
 ##' statistics across imputed data sets (i.e., "D2"; Li et al., 1991).
 ##'
-##' @aliases modificationIndices.mi modificationindices.mi modindices.mi
+## @aliases modificationIndices.mi modificationindices.mi modindices.mi
 ##' @importFrom lavaan lavInspect lavListInspect lavNames
 ##' @importFrom methods getMethod
 ##' @importFrom stats cov pchisq qchisq
