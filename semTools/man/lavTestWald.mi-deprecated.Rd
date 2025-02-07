@@ -2,7 +2,6 @@
 % Please edit documentation in R/runMI-Wald.R
 \name{lavTestWald.mi-deprecated}
 \alias{lavTestWald.mi-deprecated}
-\alias{lavTestWald.mi}
 \title{Wald Test for Multiple Imputations}
 \usage{
 lavTestWald.mi(object, constraints = NULL, test = c("D1","D2"),

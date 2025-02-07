@@ -23,7 +23,7 @@
 ##' the \code{link[lavaan]{model.syntax}}. Names of defined parameters
 ##' (using the ":=" operator) can be included too.
 ##'
-##' @aliases lavTestWald.mi
+## @aliases lavTestWald.mi
 ##' @importFrom lavaan parTable lavListInspect
 ##' @importFrom stats pchisq pf
 ##' @importFrom methods getMethod
