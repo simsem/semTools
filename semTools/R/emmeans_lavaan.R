@@ -73,7 +73,7 @@
 NULL
 
 ##' @rdname lavaan2emmeans
-recover_data.lavaan <- function(object, lavaan.DV, ...){
+recover_data.lavaan <- function(object, lavaan.DV, data = NULL, ...){
   if (!requireNamespace("emmeans", quietly = TRUE)){
     stop("'emmeans' is not installed.")
   }
@@ -93,11 +93,11 @@ recover_data.lavaan <- function(object, lavaan.DV, ...){
 
 
   # Fake it
-  recovered <- emmeans::recover_data(.emlav_fake_fit(object, lavaan.DV),
-                                     ...)
+  lavaan_data <- .emlav_recover_data(object, data)
+  recovered <- emmeans::recover_data(.emlav_fake_fit(object, lavaan.DV, lavaan_data),
+                                     data = lavaan_data, ...)
 
   # Make it
-  lavaan_data <- .emlav_recover_data(object)
   lavaan_data <- lavaan_data[, colnames(recovered), drop = FALSE]
 
   # Fill attributes (but keep lavaan_data in case of missing data)
@@ -250,23 +250,28 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 ##' @keywords internal
 ##' @importFrom lavaan lavInspect
-.emlav_recover_data <- function(object){
+.emlav_recover_data <- function(object, data = NULL, silent = FALSE){
   ##This function  was contributed by TDJ
-  dat <- lavaan::lavPredict(object, type = "lv",
+  dat <- lavaan::lavPredict(object, newdata = data,
+                            type = "lv",
                             assemble = TRUE,
                             append.data = TRUE)
   ## convert to data.frame, if necessary (single group)
   dat <- as.data.frame(dat)
-  ## mean-impute any NAs
-  for (i in 1:ncol(dat)) {
-    ## ignore non-numeric variables
-    if (!is.numeric(dat[,i])) next
-    ## any NAs?
-    idx.na <- which(is.na(dat[,i]))
-    if (length(idx.na)) {
-      dat[idx.na, i] <- mean(dat[,i], na.rm = TRUE)
+  if (anyNA(dat)) {
+    ## mean-impute any NAs
+    if (!silent) {
+      warning("'data' contains missing value. Mean-imputing them.", call. = FALSE)
     }
+
+    dat[] <- lapply(dat, function(v) {
+      if (is.numeric(v) && (ix <- length(which(is.na(v))))) {
+        v[ix] <- mean(v, na.rm = TRUE)
+      }
+      v
+    })
   }
+
   dat
 }
 #TODO: delete old function after verifying the new one (above) works
@@ -294,8 +299,10 @@ emm_basis.lavaan <- function(object,trms, xlev, grid, lavaan.DV, ...){
 
 ##' @keywords internal
 ##' @importFrom lavaan lavInspect
-.emlav_fake_fit <- function(object, lavaan.DV){
-  lavaan_data <- .emlav_recover_data(object)
+.emlav_fake_fit <- function(object, lavaan.DV, lavaan_data = NULL){
+  if (is.null(lavaan_data)) {
+    lavaan_data <- .emlav_recover_data(object, silent = TRUE)
+  }
 
   # Fake it
   pars <- lavaan::parameterEstimates(object)
