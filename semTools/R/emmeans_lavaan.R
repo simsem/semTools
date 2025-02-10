@@ -551,17 +551,29 @@ grade ~ ageyr
   })
 
 
-  testthat::test_that("missing data - warn", {
-    utils::data("mtcars")
-    mtcars$hp[1] <- NA
+  testthat::test_that("missing data", {
+    data("mtcars")
+    raw_mtcars <- mtcars_na <- mtcars
+    mtcars_na$hp[1] <- NA
 
     model <- " mpg ~ hp + drat + hp:drat "
 
-    fit <- lavaan::sem(model, mtcars, missing = "fiml.x")
+    fit <- lavaan::sem(model, mtcars_na, missing = "fiml.x")
 
     testthat::expect_warning(
-      emmeans::ref_grid(fit, lavaan.DV = "mpg")
-    )
+      rg <- emmeans::ref_grid(fit, lavaan.DV = "mpg"),
+      regexp = "missing")
+
+    testthat::expect_false(anyNA(rg@grid))
+    testthat::expect_equal(rg@grid$hp, 147.871, tolerance = 0.01)
+
+
+    testthat::expect_warning(
+      rg2 <- emmeans::ref_grid(fit, lavaan.DV = "mpg",
+                               data = raw_mtcars),
+      regexp = NA)
+
+    testthat::expect_equal(rg2@grid$hp, mean(raw_mtcars$hp), tolerance = 0.01)
   })
 
 
