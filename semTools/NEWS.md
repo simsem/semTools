@@ -3,9 +3,17 @@
 ## New Features:
 
 - `auxiliary()` has 2 new arguments
-    - `envir=` is passed to `do.call()`, which prevents problems not finding the `lavaan` package when `semTools` is not loaded via `library()`
+    - `envir=` is passed to `do.call()`, which prevents problems not finding the `lavaan` package when `semTools` is not loaded via `library()`. Thanks to Brian Keller.
     - `return.syntax=TRUE` will return model syntax for the saturated-correlates parameters, which can be added to the target-model syntax.  This enables adding saturated correlates easily to a `blavaan` model.
+- New `fmi(method="cor")` option, to return the fraction missing information for correlation estimates.
+- Not necessarily a bug fix, but `MASS::mvrnorm()` has been replaced with `mnormt::rmnorm()` throughout the package.  The latter generates data such that a sample of (e.g.) $N=11$ will have the same first 10 observations as when sampling only $N=10$. 
+
+
+## Deprecated Features:
+
 - `efaUnrotate()` deprecated, along with rotation functions `orthRotate()`, `oblqRotate()`, and `funRotate()`.  Users can now directly use `lavaan::efa()` and its `rotation=` argument. Exploratory SEM (ESEM) is also supported by `lavaan` using special `model.syntax()` operators, as shown in its [Issue #112](https://github.com/yrosseel/lavaan/issues/112).
+- `runMI()` and all related functionality are deprecated, now returning `OLDlavaan.mi-class` objects.  All `lavaan.mi` functions, class, and methods are now available in the `lavaan.mi` package.  Any `semTools` functions that can operate on either a `lavaan-class` or `lavaan.mi-class` objects (e.g., the `compRelSEM()` function) will still work with the new package's output.
+
 
 ## Bug Fixes:
 
@@ -16,6 +24,9 @@
 - Fixed a bug in the `update()` method for a `measEq.syntax-class` object, preventing an error that occurred when changing values/labels for a parameter across multiple groups.
 - Simple intercepts are now always returned by `probe2WayMC()`, `probe2WayRC()`, `probe3WayMC()`, and `probe3WayRC()`, even when the y-intercept is fixed in the fitted model.  This is not actually a bug, but the old default behavior led to `plotProbe()` incorrectly plotting all regression lines through the origin (see https://github.com/simsem/semTools/issues/125 and https://github.com/simsem/semTools/issues/127).
 - Fixed a bug in `monteCarloCI()`. See issue [#142](https://github.com/simsem/semTools/issues/142)
+- Fixed a bug with `nullRMSEA()` requiring `data=` to be in the global environment; see issue [#133](https://github.com/simsem/semTools/issues/133). Thanks to Brian Keller.
+- `lrv2ord()` now works even with a single-variable model.
+
 
 # semTools 0.5-6 (on CRAN 10 May 2022)
 
@@ -158,7 +169,7 @@ customize composite-reliability estimates.
     - The `lavaanStar` class could inadvertently mislead users into thinking that certain results were available from multiple imputations that were not.  For example, the `modindices()` function would return modification indices for the first imputation, but those were not appropriately pooled statistics.
 - The new `runMI()` no longer includes the `chi=` argument, because those options have been moved to an `anova()` method written for `lavaan.mi` objects.  Additional methods have been written: see the `class?lavaan.mi` help page for a list of methods and details about their use.  Additionally, appropriately pooled modification indices and (S)EPCs are now available for multiple imputations (via `modindices.mi()`), as well as a general score test via `lavTestScore.mi()`.
 - The `parcelAllocation()` has also been redesigned with new arguments to improve its flexibility and ease of use.  Users are now required to provide lavaan syntax not only for the parcel-level model, but also for the item-level model.  This allows parcel allocation to be automatically detected, no longer requiring users to provide a list of item-to-parcel assignments (see new examples on the help page).
-- The OpenMx enhancements in previous versions of semTools are obsolete now that OpenMx provides fit indices and standardized paths, so they have been removed.  However, `standardizeMx()` is still available (temporarily deprecated) to provide standardized mean-structure parameters, until the OpenMx maintainers add that feature to `OpenMx::mxStandardizeRAMpaths()`.
+- The `OpenMx` enhancements in previous versions of `semTools` are obsolete now that `OpenMx` provides fit indices and standardized paths, so they have been removed.  However, `standardizeMx()` is still available (temporarily deprecated) to provide standardized mean-structure parameters, until the `OpenMx` maintainers add that feature to `OpenMx::mxStandardizeRAMpaths()`.
 - `measurementInvariance()` and `measurementInvarianceCat()` now require users to name all arguments passed to `cfa()`, including the first argument: `model=`.  This is to prevent errors that occurred when some previous users had passed arguments in a different order than expected, which should not be a limitation.
 
 
