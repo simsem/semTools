@@ -30,7 +30,7 @@
 ##'   `lavaan.DV` can also be a vector of endogenous variable, in which
 ##'   case they will be treated by `emmeans` as a multivariate outcome
 ##'   (often, this indicates repeated measures) represented by an additional
-##'   factor named `rep.meas` by default.  The `rep.meas=` argument
+##'   factor named `rep.meas` by default.  The `mult.name=` argument
 ##'   can be used to overwrite this default name.
 ##' }
 ##'
