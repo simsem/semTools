@@ -18,7 +18,9 @@
 ## Bug Fixes:
 
 - Formulas implementing Bollen et al.'s (2012, 2014) BIC extensions have been corrected in the documentation and source code.
-- `emmeans` functionality made more robust to different ordering of names in a specified interaction term.
+- `emmeans` functionality made more robust:
+    - to different ordering of names in a specified interaction term
+    - to accommodate models fitted to incomplete data using `missing="FIML"` estimation
 - `compRelSEM()` no longer gives an error for a `higher=` order factor when indicators are categorical.  A bug for single-group `lavaan.mi` objects was also fixed.
 - Fixed an old bug which prevented `clipboard()` from working, particularly on a Mac OS: https://github.com/simsem/semTools/issues/56
 - Fixed a bug in the `update()` method for a `measEq.syntax-class` object, preventing an error that occurred when changing values/labels for a parameter across multiple groups.

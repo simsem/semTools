@@ -1,5 +1,5 @@
 ### Mattan S. Ben-Shachar & Terrence D. Jorgensen
-### Last updated: 10 June 2024
+### Last updated: 11 February 2025
 ### emmeans support for lavaan objects
 
 
@@ -9,10 +9,13 @@
 ##'
 ##' @param object An object of class [lavaan::lavaan()].
 ##'   See **Details**.
-##' @param lavaan.DV `character` string maming the variable(s) for which
+##' @param lavaan.DV `character` string naming the variable(s) for which
 ##'   expected marginal means / trends should be produced.
 ##'   A vector of names indicates a multivariate outcome, treated by default
 ##'   as repeated measures.
+##' @param data An optional `data.frame` without missing values, to be passed
+##'   when `missing="FIML"` estimation was useed, thus avoiding a reference-grid
+##'   with missing values.
 ##' @param trms,xlev,grid See `emmeans::emm_basis`
 ##' @param ... Further arguments passed to `emmeans::recover_data.lm` or
 ##'   `emmeans::emm_basis.lm`

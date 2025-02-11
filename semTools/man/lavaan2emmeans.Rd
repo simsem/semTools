@@ -6,7 +6,7 @@
 \alias{emm_basis.lavaan}
 \title{\code{emmeans} Support Functions for \code{lavaan} Models}
 \usage{
-recover_data.lavaan(object, lavaan.DV, ...)
+recover_data.lavaan(object, lavaan.DV, data = NULL, ...)
 
 emm_basis.lavaan(object, trms, xlev, grid, lavaan.DV, ...)
 }
@@ -14,10 +14,14 @@ emm_basis.lavaan(object, trms, xlev, grid, lavaan.DV, ...)
 \item{object}{An object of class \code{\link[lavaan:lavaan]{lavaan::lavaan()}}.
 See \strong{Details}.}
 
-\item{lavaan.DV}{\code{character} string maming the variable(s) for which
+\item{lavaan.DV}{\code{character} string naming the variable(s) for which
 expected marginal means / trends should be produced.
 A vector of names indicates a multivariate outcome, treated by default
 as repeated measures.}
+
+\item{data}{An optional \code{data.frame} without missing values, to be passed
+when \code{missing="FIML"} estimation was useed, thus avoiding a reference-grid
+with missing values.}
 
 \item{...}{Further arguments passed to \code{emmeans::recover_data.lm} or
 \code{emmeans::emm_basis.lm}}
