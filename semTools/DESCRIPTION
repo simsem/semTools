@@ -33,7 +33,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		)
 Depends: R(>= 4.0), lavaan(>= 0.6-12), methods
 Imports: graphics, pbivnorm, stats, utils
-Suggests: Amelia, blavaan, emmeans, lavaan.mi, MASS, mice, mnormt, parallel, testthat,      GPArotation
+Suggests: Amelia, blavaan, emmeans, lavaan.mi, MASS, mice, mnormt, parallel, restriktor, testthat,      GPArotation
 License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
