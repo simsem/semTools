@@ -555,8 +555,7 @@ grade ~ ageyr
 
 
   testthat::test_that("missing data", {
-    data("mtcars")
-    raw_mtcars <- mtcars_na <- mtcars
+    raw_mtcars <- mtcars_na <- datasets::mtcars
     mtcars_na$hp[1] <- NA
 
     model <- " mpg ~ hp + drat + hp:drat "
