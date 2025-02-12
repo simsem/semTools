@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 7 February 2025
+### Last updated: 12 February 2025
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -43,7 +43,7 @@
 ##'   used with FIML estimation. Other variable types will be removed.
 ##' @param exclude Optional `character` vector naming variables to exclude from
 ##'   the analysis.
-##' @param return.fit logical. If `TRUE`, the fitted [lavaan-class] or
+##' @param return.fit logical. If `TRUE`, the fitted [lavaan::lavaan-class] or
 ##'   [lavaan.mi::lavaan.mi-class] model is returned, so FMI can be found from
 ##'   `summary(..., fmi=TRUE)`.
 ##'

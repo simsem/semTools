@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 23 May 2022
+### Last updated: 12 February 2025
 
 ##' Implement Saturated Correlates with FIML
 ##'
@@ -51,10 +51,10 @@
 ##'   *Structural Equation Modeling, 15*(3), 434--448.
 ##'   \doi{10.1080/10705510802154307}
 ##'
-##' @return a fitted [lavaan-class] object.  Additional
+##' @return a fitted [lavaan::lavaan-class] object.  Additional
 ##'   information is stored as a `list` in the `@@external` slot:
 ##'   \itemize{
-##'     \item `baseline.model`. a fitted [lavaan-class]
+##'     \item `baseline.model`. a fitted [lavaan::lavaan-class]
 ##'           object. Results of fitting an appropriate independence model for
 ##'           the calculation of incremental fit indices (e.g., CFI, TLI) in
 ##'           which the auxiliary variables remain saturated, so only the target

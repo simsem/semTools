@@ -50,10 +50,10 @@ This can be advantageous, for example, to use add saturated correlates to
 a \pkg{blavaan} model.}
 }
 \value{
-a fitted \linkS4class{lavaan} object.  Additional
+a fitted \link[lavaan:lavaan-class]{lavaan::lavaan} object.  Additional
 information is stored as a \code{list} in the \verb{@external} slot:
 \itemize{
-\item \code{baseline.model}. a fitted \linkS4class{lavaan}
+\item \code{baseline.model}. a fitted \link[lavaan:lavaan-class]{lavaan::lavaan}
 object. Results of fitting an appropriate independence model for
 the calculation of incremental fit indices (e.g., CFI, TLI) in
 which the auxiliary variables remain saturated, so only the target

@@ -9,7 +9,7 @@ reliability(object, what = c("alpha", "omega", "omega2", "omega3", "ave"),
             omit.indicators = character(0), omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{object}{A \linkS4class{lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object,
+\item{object}{A \link[lavaan:lavaan-class]{lavaan::lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object,
 expected to contain only exogenous common factors (i.e., a CFA model).}
 
 \item{what}{\code{character} vector naming any reliability indices to

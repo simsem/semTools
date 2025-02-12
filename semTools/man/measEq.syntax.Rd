@@ -26,7 +26,7 @@ or the \code{configural.model} syntax must specify all thresholds
 number of blocks (groups, levels, or combination) must be
 indicated using an arbitrary \code{sample.nobs} argument (e.g.,
 3 groups could be specified using \code{sample.nobs=rep(1, 3)}).
-\item a fitted \linkS4class{lavaan} model (e.g., as returned by
+\item a fitted \link[lavaan:lavaan-class]{lavaan::lavaan} model (e.g., as returned by
 \code{\link[lavaan:cfa]{lavaan::cfa()}}) estimating the configural model
 }
 Note that the specified or fitted model must not contain any latent
@@ -135,7 +135,7 @@ See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 should be fitted to the provided \code{data} (or summary statistics, if
 provided via \code{sample.cov}). If \code{configural.model} is a fitted
 lavaan model, the generated syntax will be fitted using the \code{update}
-method (see \linkS4class{lavaan}), and \dots will be passed to
+method (see \link[lavaan:lavaan-class]{lavaan::lavaan}), and \dots will be passed to
 \code{\link[lavaan:lavaan]{lavaan::lavaan()}}. If neither data nor a fitted lavaan model
 were provided, this must be \code{FALSE}. If \code{TRUE}, the generated
 \code{measEq.syntax} object will be included in the \code{lavaan} object's

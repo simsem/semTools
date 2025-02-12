@@ -95,7 +95,7 @@ and off-diagonal is the proportion observed for both of each pair of
 variables).}
 \item{coef}{\verb{signature(object = "twostage", type = c("free", "user")):}
 This is simply a wrapper around the corresponding
-\linkS4class{lavaan} method, providing point estimates from the
+\link[lavaan:lavaan-class]{lavaan::lavaan} method, providing point estimates from the
 \code{target} slot.}
 \item{vcov}{\verb{signature(object = "twostage", baseline = FALSE):} Returns
 the asymptotic covariance matrix of the estimated parameters (corrected for
@@ -103,30 +103,30 @@ additional uncertainty due to missing data) for the model in the
 \code{target} slot, or for the model in the \code{baseline} slot if
 \code{baseline = TRUE}.}
 \item{fitted.values, fitted}{\verb{signature(object = "twostage", model = c("target", "saturated", "baseline")):} This is simply a wrapper
-around the corresponding \linkS4class{lavaan} method, providing
+around the corresponding \link[lavaan:lavaan-class]{lavaan::lavaan} method, providing
 model-implied sample moments from the slot specified in the \code{model}
 argument.}
 \item{residuals, resid}{\verb{signature(object = "twostage", type = c("raw", "cor", "normalized", "standardized")):} This is simply a wrapper around the
-corresponding \linkS4class{lavaan} method, providing residuals of
+corresponding \link[lavaan:lavaan-class]{lavaan::lavaan} method, providing residuals of
 the specified \code{type} from the \code{target} slot.}
 }
 \description{
 This class contains the results of 2-Stage Maximum Likelihood (TSML)
 estimation for missing data.  The \code{summary}, \code{anova}, \code{vcov}
 methods return corrected \emph{SE}s and test statistics.  Other methods are
-simply wrappers around the corresponding \linkS4class{lavaan}
+simply wrappers around the corresponding \link[lavaan:lavaan-class]{lavaan::lavaan}
 methods.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{saturated}}{A fitted \linkS4class{lavaan} object containing the
+\item{\code{saturated}}{A fitted \link[lavaan:lavaan-class]{lavaan::lavaan} object containing the
 saturated model results}
 
-\item{\code{target}}{A fitted \linkS4class{lavaan} object containing the
+\item{\code{target}}{A fitted \link[lavaan:lavaan-class]{lavaan::lavaan} object containing the
 target/hypothesized model results}
 
-\item{\code{baseline}}{A fitted \linkS4class{lavaan} object containing the
+\item{\code{baseline}}{A fitted \link[lavaan:lavaan-class]{lavaan::lavaan} object containing the
 baseline/null model results}
 
 \item{\code{auxNames}}{A character string (potentially of \code{length == 0}) of any

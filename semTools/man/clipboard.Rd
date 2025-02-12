@@ -12,14 +12,14 @@ saveFile(object, file, what = "summary", tableFormat = FALSE,
   fit.measures = "default", writeArgs = list(), ...)
 }
 \arguments{
-\item{object}{An object of class \linkS4class{lavaan} or
+\item{object}{An object of class \link[lavaan:lavaan-class]{lavaan::lavaan} or
 \linkS4class{FitDiff}.}
 
 \item{what}{The attributes of the \code{lavaan} object to be copied in the
 clipboard. \code{"summary"} is to copy the screen provided from the
 \code{summary} function. \code{"mifit"} is to copy the result from the
 \code{\link[=miPowerFit]{miPowerFit()}} function. Other attributes listed in the
-\code{inspect} method in the \linkS4class{lavaan} could also be
+\code{inspect} method in the \link[lavaan:lavaan-class]{lavaan::lavaan} could also be
 used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and
 so on.  Ignored for \linkS4class{FitDiff}-class objects.}
 

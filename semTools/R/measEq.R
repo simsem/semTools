@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 October 2024
+### Last updated: 12 February 2025
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -848,7 +848,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'           number of blocks (groups, levels, or combination) must be
 ##'           indicated using an arbitrary `sample.nobs` argument (e.g.,
 ##'           3 groups could be specified using `sample.nobs=rep(1, 3)`).
-##'     \item a fitted [lavaan-class] model (e.g., as returned by
+##'     \item a fitted [lavaan::lavaan-class] model (e.g., as returned by
 ##'           [lavaan::cfa()]) estimating the configural model
 ##'   }
 ##'   Note that the specified or fitted model must not contain any latent
@@ -957,7 +957,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##'   should be fitted to the provided `data` (or summary statistics, if
 ##'   provided via `sample.cov`). If `configural.model` is a fitted
 ##'   lavaan model, the generated syntax will be fitted using the `update`
-##'   method (see [lavaan-class]), and \dots will be passed to
+##'   method (see [lavaan::lavaan-class]), and \dots will be passed to
 ##'   [lavaan::lavaan()]. If neither data nor a fitted lavaan model
 ##'   were provided, this must be `FALSE`. If `TRUE`, the generated
 ##'   `measEq.syntax` object will be included in the `lavaan` object's

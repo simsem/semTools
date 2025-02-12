@@ -8,7 +8,7 @@ probe3WayRC(fit, nameX, nameY, modVar, valProbe1, valProbe2, group = 1L,
   omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{fit}{A fitted \linkS4class{lavaan} or
+\item{fit}{A fitted \link[lavaan:lavaan-class]{lavaan::lavaan} or
 \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object with a latent 2-way interaction.}
 
 \item{nameX}{\code{character} vector of all 7 factor names used as the

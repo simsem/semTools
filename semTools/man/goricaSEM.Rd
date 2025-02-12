@@ -8,7 +8,7 @@ goricaSEM(object, ..., hypotheses = NULL, comparison = NULL,
   type = "gorica", standardized = FALSE, debug = FALSE)
 }
 \arguments{
-\item{object}{A \linkS4class{lavaan} object.}
+\item{object}{A \link[lavaan:lavaan-class]{lavaan::lavaan} object.}
 
 \item{...}{Additional arguments passed to \code{\link[restriktor:goric]{restriktor::goric.lavaan()}}.}
 

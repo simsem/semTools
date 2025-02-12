@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 17 June 2024
+### Last updated: 12 February 2025
 
 
 
@@ -29,7 +29,7 @@
 ##' @importFrom lavaan lavInspect
 ##' @importFrom methods getMethod
 ##'
-##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##' @param object A [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
 ##'   expected to contain only exogenous common factors (i.e., a CFA model).
 ##'   Cross-loadings are not allowed and will result in `NA` for any factor with
 ##'   indicator(s) that cross-load.
@@ -474,7 +474,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' @importFrom lavaan lavInspect lavNames parTable
 ##' @importFrom methods getMethod
 ##'
-##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##' @param object A [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
 ##'   expected to contain only exogenous common factors (i.e., a CFA model).
 ##' @param obs.var `logical` indicating whether to compute reliability
 ##'   using observed variances in the denominator. Setting `FALSE` triggers
@@ -1587,7 +1587,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 ##' @importFrom lavaan lavInspect lavNames
 ##' @importFrom methods getMethod
 ##'
-##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##' @param object A [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
 ##'   expected to contain only exogenous common factors (i.e., a CFA model).
 ##' @param what `character` vector naming any reliability indices to
 ##'   calculate. All are returned by default. When indicators are ordinal,
@@ -2225,7 +2225,7 @@ reliability <- function(object,
 ##'
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##' @param object A [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
 ##'   expected to contain a least one exogenous higher-order common factor.
 ##' @param secondFactor The name of a single second-order factor in the
 ##'   model fitted in `object`. The function must be called multiple
@@ -2490,7 +2490,7 @@ reliabilityL2 <- function(object, secondFactor,
 ##'
 ##' @importFrom lavaan lavInspect lavNames
 ##'
-##' @param object A [lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
+##' @param object A [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
 ##'   expected to contain only exogenous common factors (i.e., a CFA model).
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'        imputations from pooled results.  Can include any of

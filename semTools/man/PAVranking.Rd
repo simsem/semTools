@@ -46,7 +46,7 @@ over another.  See Rafferty (1995) for guidelines (default is "very
 strong evidence" in favor of the model with lower BIC).}
 
 \item{fit.measures}{\code{character} vector containing names of fit measures
-to request from each fitted \linkS4class{lavaan} model.  See the
+to request from each fitted \link[lavaan:lavaan-class]{lavaan::lavaan} model.  See the
 output of \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for a list of available measures.}
 
 \item{\dots}{Additional arguments to be passed to

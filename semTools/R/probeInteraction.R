@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 17 June 2024
+### Last updated: 12 February 2025
 
 
 
@@ -62,7 +62,7 @@
 ##' @importFrom stats pnorm
 ##' @importFrom methods getMethod
 ##'
-##' @param fit A fitted [lavaan-class] or
+##' @param fit A fitted [lavaan::lavaan-class] or
 ##'   [lavaan.mi::lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 3 factor names used as the
 ##'   predictors. The lower-order factors must be listed first, and the final
@@ -402,7 +402,7 @@ probe2WayMC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' @importFrom stats pnorm
 ##' @importFrom methods getMethod
 ##'
-##' @param fit A fitted [lavaan-class] or
+##' @param fit A fitted [lavaan::lavaan-class] or
 ##'   [lavaan.mi::lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 3 factor names used as the
 ##'   predictors. The lower-order factors must be listed first, and the final
@@ -819,7 +819,7 @@ probe2WayRC <- function(fit, nameX, nameY, modVar, valProbe, group = 1L,
 ##' @importFrom stats pnorm
 ##' @importFrom methods getMethod
 ##'
-##' @param fit A fitted [lavaan-class] or
+##' @param fit A fitted [lavaan::lavaan-class] or
 ##'   [lavaan.mi::lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 7 factor names used as the
 ##'   predictors. The 3 lower-order factors must be listed first, followed by
@@ -1165,7 +1165,7 @@ probe3WayMC <- function(fit, nameX, nameY, modVar, valProbe1, valProbe2,
 ##' @importFrom stats pnorm
 ##' @importFrom methods getMethod
 ##'
-##' @param fit A fitted [lavaan-class] or
+##' @param fit A fitted [lavaan::lavaan-class] or
 ##'   [lavaan.mi::lavaan.mi-class] object with a latent 2-way interaction.
 ##' @param nameX `character` vector of all 7 factor names used as the
 ##'   predictors. The 3 lower-order factors must be listed first, followed by

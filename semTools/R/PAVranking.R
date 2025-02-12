@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 12 February 2025
 
 
 ##' Parcel-Allocation Variability in Model Ranking
@@ -79,7 +79,7 @@
 ##'   over another.  See Rafferty (1995) for guidelines (default is "very
 ##'   strong evidence" in favor of the model with lower BIC).
 ##' @param fit.measures `character` vector containing names of fit measures
-##'   to request from each fitted [lavaan-class] model.  See the
+##'   to request from each fitted [lavaan::lavaan-class] model.  See the
 ##'   output of [lavaan::fitMeasures()] for a list of available measures.
 ##' @param \dots Additional arguments to be passed to
 ##'   [lavaan::lavaanList()]. See also [lavaan::lavOptions()]

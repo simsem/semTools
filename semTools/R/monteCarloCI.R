@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 February 2025
+### Last updated: 12 February 2025
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -46,7 +46,7 @@
 ##' [lavaan::lavaan()], using the `:=` operator in the
 ##' [lavaan::model.syntax()] to specify user-defined parameters.
 ##' All information is then available in the resulting
-##' [lavaan-class] object.  Alternatively (especially when using
+##' [lavaan::lavaan-class] object.  Alternatively (especially when using
 ##' external SEM software to fit the model), the expression(s) can be explicitly
 ##' passed to the function, along with the vector of estimated model parameters
 ##' and their associated asymptotic sampling covariance matrix (ACOV).
@@ -61,7 +61,7 @@
 ##'    the ACM in free format and scientific notation.}
 ##'  \item{M*plus*: }{Include the command TECH3; in the OUTPUT section.
 ##'    The ACM will be printed in the output.}
-##'  \item{`lavaan`: }{Use the [vcov()] method on the fitted [lavaan-class]
+##'  \item{`lavaan`: }{Use the [vcov()] method on the fitted [lavaan::lavaan-class]
 ##'    object to return the ACM.}
 ##' }
 ##'
@@ -70,7 +70,7 @@
 ##' @importFrom methods getMethod
 ##' @importFrom lavaan parTable lavInspect
 ##'
-##' @param object A object of class [lavaan-class] in which
+##' @param object A object of class [lavaan::lavaan-class] in which
 ##'   functions of parameters have already been defined using the `:=`
 ##'   operator in `lavaan`'s [lavaan::model.syntax()]. When
 ##'   `NULL`, users must specify `expr`, `coefs`, and `ACM`.

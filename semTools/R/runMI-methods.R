@@ -116,7 +116,7 @@
 ##'
 ##' \item{coef}{`signature(object = "OLDlavaan.mi", type = "free",
 ##'   labels = TRUE, omit.imps = c("no.conv","no.se"))`:
-##'   See [lavaan-class]. Returns the pooled point estimates (i.e.,
+##'   See [lavaan::lavaan-class]. Returns the pooled point estimates (i.e.,
 ##'   averaged across imputed data sets; see Rubin, 1987).}
 ##'
 ##' \item{vcov}{`signature(object = "OLDlavaan.mi", scale.W = TRUE,
@@ -129,13 +129,13 @@
 ##'   missing data.}
 ##'
 ##' \item{fitted.values}{`signature(object = "OLDlavaan.mi",
-##'   omit.imps = c("no.conv","no.se"))`: See [lavaan-class].
+##'   omit.imps = c("no.conv","no.se"))`: See [lavaan::lavaan-class].
 ##'   Returns model-implied moments, evaluated at the pooled point estimates.}
 ##' \item{fitted}{alias for `fitted.values`}
 ##'
 ##' \item{residuals}{`signature(object = "OLDlavaan.mi",
 ##'   type = c("raw","cor"), omit.imps = c("no.conv","no.se"))`:
-##'   See [lavaan-class]. By default (`type = "raw"`), returns
+##'   See [lavaan::lavaan-class]. By default (`type = "raw"`), returns
 ##'   the difference between the model-implied moments from `fitted.values`
 ##'   and the pooled observed moments (i.e., averaged across imputed data sets).
 ##'   Standardized residuals are also available, using Bollen's

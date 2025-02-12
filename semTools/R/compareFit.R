@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 17 June 2024
+### Last updated: 12 February 2025
 ### source code for compareFit() function and FitDiff class
 
 
@@ -241,7 +241,7 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##'   from the [moreFitIndices()] function. Selecting particular
 ##'   indices is controlled in the `summary` method; see
 ##'   [FitDiff-class].
-##' @param baseline.model optional fitted [lavaan-class] model passed to
+##' @param baseline.model optional fitted [lavaan::lavaan-class] model passed to
 ##'   [lavaan::fitMeasures()] to calculate incremental fit indices.
 ##' @param nPrior passed to [moreFitIndices()], if relevant
 ##'

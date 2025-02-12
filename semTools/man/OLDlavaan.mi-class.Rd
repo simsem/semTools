@@ -123,7 +123,7 @@ should include parameter labels. Default is \code{TRUE}.}
 }
 \value{
 \item{coef}{\code{signature(object = "OLDlavaan.mi", type = "free", labels = TRUE, omit.imps = c("no.conv","no.se"))}:
-See \linkS4class{lavaan}. Returns the pooled point estimates (i.e.,
+See \link[lavaan:lavaan-class]{lavaan::lavaan}. Returns the pooled point estimates (i.e.,
 averaged across imputed data sets; see Rubin, 1987).}
 
 \item{vcov}{\code{signature(object = "OLDlavaan.mi", scale.W = TRUE, omit.imps = c("no.conv","no.se"), type = c("pooled","between","within","ariv"))}:  By default, returns the
@@ -133,12 +133,12 @@ between-imputations covariance matrix (\code{type = "between"}), or the
 average relative increase in variance (\code{type = "ariv"}) due to
 missing data.}
 
-\item{fitted.values}{\code{signature(object = "OLDlavaan.mi", omit.imps = c("no.conv","no.se"))}: See \linkS4class{lavaan}.
+\item{fitted.values}{\code{signature(object = "OLDlavaan.mi", omit.imps = c("no.conv","no.se"))}: See \link[lavaan:lavaan-class]{lavaan::lavaan}.
 Returns model-implied moments, evaluated at the pooled point estimates.}
 \item{fitted}{alias for \code{fitted.values}}
 
 \item{residuals}{\code{signature(object = "OLDlavaan.mi", type = c("raw","cor"), omit.imps = c("no.conv","no.se"))}:
-See \linkS4class{lavaan}. By default (\code{type = "raw"}), returns
+See \link[lavaan:lavaan-class]{lavaan::lavaan}. By default (\code{type = "raw"}), returns
 the difference between the model-implied moments from \code{fitted.values}
 and the pooled observed moments (i.e., averaged across imputed data sets).
 Standardized residuals are also available, using Bollen's

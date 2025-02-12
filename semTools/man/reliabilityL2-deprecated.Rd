@@ -7,7 +7,7 @@
 reliabilityL2(object, secondFactor, omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{object}{A \linkS4class{lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object,
+\item{object}{A \link[lavaan:lavaan-class]{lavaan::lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object,
 expected to contain a least one exogenous higher-order common factor.}
 
 \item{secondFactor}{The name of a single second-order factor in the

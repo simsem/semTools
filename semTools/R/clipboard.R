@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 7 February 2023
+### Last updated: 12 February 2025
 ### Copy or save each aspect of the lavaan object into a clipboard or a file
 
 
@@ -14,13 +14,13 @@
 ##'
 ##' @aliases clipboard saveFile
 ##'
-##' @param object An object of class [lavaan-class] or
+##' @param object An object of class [lavaan::lavaan-class] or
 ##'   [FitDiff-class].
 ##' @param what The attributes of the `lavaan` object to be copied in the
 ##'   clipboard. `"summary"` is to copy the screen provided from the
 ##'   `summary` function. `"mifit"` is to copy the result from the
 ##'   [miPowerFit()] function. Other attributes listed in the
-##'   `inspect` method in the [lavaan-class] could also be
+##'   `inspect` method in the [lavaan::lavaan-class] could also be
 ##'   used, such as `"coef"`, `"se"`, `"fit"`, `"samp"`, and
 ##'   so on.  Ignored for [FitDiff-class]-class objects.
 ##' @param file A file name used for saving the result.

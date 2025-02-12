@@ -1,5 +1,5 @@
 ### Leonard Vanbrabant (Roxygen edits by Terrence D. Jorgensen)
-### Last updated: 11 February 2025
+### Last updated: 12 February 2025
 
 ##' Wrapper for `goric.lavaan()` from the `restriktor` package
 ##'
@@ -22,7 +22,7 @@
 ##' compared against its `"complement"`, the `"unconstrained"` model, or
 ##' neither (`"none"`).
 ##'
-##' @param object A [lavaan-class] object.
+##' @param object A [lavaan::lavaan-class] object.
 ##' @param hypotheses A named `list` of hypotheses to test. See **Details** for
 ##'   information on how to specify hypotheses.
 ##' @param comparison A `character` string specifying the type of comparison.

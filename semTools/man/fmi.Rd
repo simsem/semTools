@@ -35,7 +35,7 @@ used with FIML estimation. Other variable types will be removed.}
 \item{exclude}{Optional \code{character} vector naming variables to exclude from
 the analysis.}
 
-\item{return.fit}{logical. If \code{TRUE}, the fitted \linkS4class{lavaan} or
+\item{return.fit}{logical. If \code{TRUE}, the fitted \link[lavaan:lavaan-class]{lavaan::lavaan} or
 \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} model is returned, so FMI can be found from
 \code{summary(..., fmi=TRUE)}.}
 }

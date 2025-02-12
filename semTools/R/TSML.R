@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 7 February 2025
+### Last updated: 12 February 2025
 ### semTools function to implement 2-stage ML
 
 
@@ -14,7 +14,7 @@
 ##' This class contains the results of 2-Stage Maximum Likelihood (TSML)
 ##' estimation for missing data.  The `summary`, `anova`, `vcov`
 ##' methods return corrected *SE*s and test statistics.  Other methods are
-##' simply wrappers around the corresponding [lavaan-class]
+##' simply wrappers around the corresponding [lavaan::lavaan-class]
 ##' methods.
 ##'
 ##'
@@ -25,11 +25,11 @@
 ##' residuals,twostage-method resid,twostage-method nobs,twostage-method
 ##' @docType class
 ##'
-##' @slot saturated A fitted [lavaan-class] object containing the
+##' @slot saturated A fitted [lavaan::lavaan-class] object containing the
 ##'  saturated model results
-##' @slot target A fitted [lavaan-class] object containing the
+##' @slot target A fitted [lavaan::lavaan-class] object containing the
 ##'  target/hypothesized model results
-##' @slot baseline A fitted [lavaan-class] object containing the
+##' @slot baseline A fitted [lavaan::lavaan-class] object containing the
 ##'  baseline/null model results
 ##' @slot auxNames A character string (potentially of `length == 0`) of any
 ##'  auxiliary variable names, if used
@@ -82,7 +82,7 @@
 ##'   variables).}
 ##'  \item{coef}{`signature(object = "twostage", type = c("free", "user")):`
 ##'   This is simply a wrapper around the corresponding
-##'   [lavaan-class] method, providing point estimates from the
+##'   [lavaan::lavaan-class] method, providing point estimates from the
 ##'   `target` slot.}
 ##'  \item{vcov}{`signature(object = "twostage", baseline = FALSE):` Returns
 ##'   the asymptotic covariance matrix of the estimated parameters (corrected for
@@ -91,12 +91,12 @@
 ##'   `baseline = TRUE`.}
 ##'  \item{fitted.values, fitted}{`signature(object = "twostage",
 ##'   model = c("target", "saturated", "baseline")):` This is simply a wrapper
-##'   around the corresponding [lavaan-class] method, providing
+##'   around the corresponding [lavaan::lavaan-class] method, providing
 ##'   model-implied sample moments from the slot specified in the `model`
 ##'   argument.}
 ##'  \item{residuals, resid}{`signature(object = "twostage", type = c("raw",
 ##'   "cor", "normalized", "standardized")):` This is simply a wrapper around the
-##'   corresponding [lavaan-class] method, providing residuals of
+##'   corresponding [lavaan::lavaan-class] method, providing residuals of
 ##'   the specified `type` from the `target` slot.}
 ##'
 ##' @section Objects from the Class: Objects can be created via the

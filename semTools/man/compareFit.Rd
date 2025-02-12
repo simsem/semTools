@@ -30,7 +30,7 @@ from the \code{\link[=moreFitIndices]{moreFitIndices()}} function. Selecting par
 indices is controlled in the \code{summary} method; see
 \linkS4class{FitDiff}.}
 
-\item{baseline.model}{optional fitted \linkS4class{lavaan} model passed to
+\item{baseline.model}{optional fitted \link[lavaan:lavaan-class]{lavaan::lavaan} model passed to
 \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to calculate incremental fit indices.}
 
 \item{nPrior}{passed to \code{\link[=moreFitIndices]{moreFitIndices()}}, if relevant}

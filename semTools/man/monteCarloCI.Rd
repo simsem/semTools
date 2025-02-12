@@ -11,7 +11,7 @@ monteCarloCI(object = NULL, expr, coefs, ACM, nRep = 20000,
   ask = getOption("device.ask.default"), ...)
 }
 \arguments{
-\item{object}{A object of class \linkS4class{lavaan} in which
+\item{object}{A object of class \link[lavaan:lavaan-class]{lavaan::lavaan} in which
 functions of parameters have already been defined using the \verb{:=}
 operator in \code{lavaan}'s \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}}. When
 \code{NULL}, users must specify \code{expr}, \code{coefs}, and \code{ACM}.}
@@ -93,7 +93,7 @@ The easiest way to use the function is to fit a SEM to data with
 \code{\link[lavaan:lavaan]{lavaan::lavaan()}}, using the \verb{:=} operator in the
 \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} to specify user-defined parameters.
 All information is then available in the resulting
-\linkS4class{lavaan} object.  Alternatively (especially when using
+\link[lavaan:lavaan-class]{lavaan::lavaan} object.  Alternatively (especially when using
 external SEM software to fit the model), the expression(s) can be explicitly
 passed to the function, along with the vector of estimated model parameters
 and their associated asymptotic sampling covariance matrix (ACOV).
@@ -108,7 +108,7 @@ to a seperate file. The file contains the lower triangular elements of
 the ACM in free format and scientific notation.}
 \item{M\emph{plus}: }{Include the command TECH3; in the OUTPUT section.
 The ACM will be printed in the output.}
-\item{\code{lavaan}: }{Use the \code{\link[=vcov]{vcov()}} method on the fitted \linkS4class{lavaan}
+\item{\code{lavaan}: }{Use the \code{\link[=vcov]{vcov()}} method on the fitted \link[lavaan:lavaan-class]{lavaan::lavaan}
 object to return the ACM.}
 }
 }

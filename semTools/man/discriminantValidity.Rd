@@ -8,7 +8,7 @@ discriminantValidity(object, cutoff = 0.9, merge = FALSE, level = 0.95,
   boot.ci.type = "perc")
 }
 \arguments{
-\item{object}{The \linkS4class{lavaan} model object returned by
+\item{object}{The \link[lavaan:lavaan-class]{lavaan::lavaan} model object returned by
 the \code{\link[lavaan:cfa]{lavaan::cfa()}} function.}
 
 \item{cutoff}{A cutoff to be used in the constrained models in likelihood

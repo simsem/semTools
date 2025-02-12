@@ -1,5 +1,5 @@
-### Mikko Rönkkö
-### Last updated: 10 January 2020
+### Mikko Rönkkö   (Roxygen edits by TDJ)
+### Last updated: 12 February 2025
 
 
 ##' Calculate discriminant validity statistics
@@ -49,7 +49,7 @@
 ##'
 ##' @importFrom lavaan lavInspect lavNames parTable
 ##'
-##' @param object The [lavaan-class] model object returned by
+##' @param object The [lavaan::lavaan-class] model object returned by
 ##'   the [lavaan::cfa()] function.
 ##' @param cutoff A cutoff to be used in the constrained models in likelihood
 ##'   ratio tests.
