@@ -29,7 +29,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Mattan S.", family = "Ben-Shachar", role = "ctb", email="matanshm@post.bgu.ac.il", comment = c(ORCID = "0000-0002-4287-4801", func = "emmeans")),
 		person(given = "Mikko", family = "Rönkkö", role = "ctb", email = "mikko.ronkko@jyu.fi", comment = c(ORCID = "0000-0001-7988-7609", func = "discriminantValidity")),
 		person(given = "Andrew R.", family = "Johnson", role = "ctb", email = "andrew.johnson@curtin.edu.au", comment = c(ORCID = "0000-0001-7000-8065", func = "lrv2ord")),
-		person(given = "Leonard", family = "Vanbrabant", role = "ctb", email = "L.Vanbrabant@ggdwestbrabant.nl", comment = c(ORCID = "0000-0001-7000-8065", func = "goricaSEM"))
+		person(given = "Leonard", family = "Vanbrabant", role = "ctb", email = "L.Vanbrabant@ggdwestbrabant.nl", comment = c(func = "goricaSEM"))
 		)
 Depends: R(>= 4.0), lavaan(>= 0.6-12), methods
 Imports: graphics, pbivnorm, stats, utils
