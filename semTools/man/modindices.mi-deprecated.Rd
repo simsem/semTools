@@ -70,7 +70,7 @@ covariances are scaled by the square-root of the diagonal elements of the
 model-implied covariance matrix of the latent variables.}
 
 \item{information}{\code{character} indicating the type of information
-matrix to use (check \code{\link[=lavInspect]{lavInspect()}} for available options).
+matrix to use (check \code{\link[lavaan:lavInspect]{lavaan::lavInspect()}} for available options).
 \code{"expected"} information is the default, which provides better
 control of Type I errors.}
 

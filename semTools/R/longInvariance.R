@@ -64,14 +64,14 @@
 ##'   auto-*covariance* to be equal within the same item across factors.
 ##'   For example, the covariance of item 1 in time 1 and time 2 is equal to
 ##'   the covariance of item 1 in time 2 and time 3.
-##' @param fixed.x See [lavOptions()].
-##' @param std.lv See [lavOptions()].
-##' @param group See [lavaan()].
-##' @param group.equal See [lavOptions()].
-##' @param group.partial See [lavOptions()].
+##' @param fixed.x See [lavaan::lavOptions()].
+##' @param std.lv See [lavaan::lavOptions()].
+##' @param group See [lavaan::lavaan()].
+##' @param group.equal See [lavaan::lavOptions()].
+##' @param group.partial See [lavaan::lavOptions()].
 ##' @param strict If `TRUE`, the sequence requires strict invariance. See
-##' @param warn See See [lavOptions()].
-##' @param debug See See [lavOptions()]. details for more information.
+##' @param warn See See [lavaan::lavOptions()].
+##' @param debug See See [lavaan::lavOptions()]. details for more information.
 ##' @param quiet If `FALSE` (default), a summary is printed out containing
 ##'   an overview of the different models that are fitted, together with some
 ##'   model comparison tests. If `TRUE`, no summary is printed.
@@ -81,8 +81,8 @@
 ##'  [lavaan::fitMeasures()]
 ##' @param method The method used to calculate likelihood ratio test. See
 ##'   [lavaan::lavTestLRT()] for available options
-##' @param ... Additional arguments in the [lavaan()]
-##'   function. See also [lavOptions()]
+##' @param ... Additional arguments in the [lavaan::lavaan()]
+##'   function. See also [lavaan::lavOptions()]
 ##'
 ##' @return Invisibly, all model fits in the sequence are returned as a list.
 ##'

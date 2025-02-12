@@ -60,7 +60,7 @@
 ##'   covariances are scaled by the square-root of the diagonal elements of the
 ##'   model-implied covariance matrix of the latent variables.
 ##' @param information `character` indicating the type of information
-##'   matrix to use (check [lavInspect()] for available options).
+##'   matrix to use (check [lavaan::lavInspect()] for available options).
 ##'   `"expected"` information is the default, which provides better
 ##'   control of Type I errors.
 ##' @param power `logical`. If `TRUE`, the (post-hoc) power is

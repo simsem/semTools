@@ -20,10 +20,10 @@ sem.2stage(..., aux = NULL, baseline.model = NULL)
 growth.2stage(..., aux = NULL, baseline.model = NULL)
 }
 \arguments{
-\item{\dots}{Arguments passed to the \code{\link[=lavaan]{lavaan()}} function
+\item{\dots}{Arguments passed to the \code{\link[lavaan:lavaan]{lavaan::lavaan()}} function
 specified in the \code{fun} argument.  See also
-\code{\link[=lavOptions]{lavOptions()}}.  At a minimum, the user must supply the
-first two named arguments to \code{\link[=lavaan]{lavaan()}} (i.e.,
+\code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.  At a minimum, the user must supply the
+first two named arguments to \code{\link[lavaan:lavaan]{lavaan::lavaan()}} (i.e.,
 \code{model} and \code{data}).}
 
 \item{aux}{An optional character vector naming auxiliary variable(s) in
@@ -34,7 +34,7 @@ Step-2 hypothesized model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, or
 \code{"lavaan"}).}
 
 \item{baseline.model}{An optional character string, specifying the lavaan
-\code{\link[=model.syntax]{model.syntax()}} for a user-specified baseline model.
+\code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} for a user-specified baseline model.
 Interested users can use the fitted baseline model to calculate incremental
 fit indices (e.g., CFI and TLI) using the corrected chi-squared values (see
 the \code{anova} method in \linkS4class{twostage}).  If \code{NULL},

@@ -63,7 +63,7 @@
 ##'   section below). If `FALSE`, the items are randomly parceled, but the
 ##'   model is not fit; instead, the `list` of `data.frame`s is
 ##'   returned (so assign it to an object).
-##' @param return.fit If `TRUE`, a [lavaanList-class] object
+##' @param return.fit If `TRUE`, a [lavaan::lavaanList-class] object
 ##'   is returned with the `list` of results across allocations
 ##' @param warn Whether to print warnings when fitting `model` to each allocation
 ##'
@@ -82,7 +82,7 @@
 ##'     across allocations; and (if the test statistic or RMSEA is included in
 ##'     `fit.measures`) the proportion of allocations in which each
 ##'     test of (exact or close) fit was significant.}
-##'   \item{Model}{A [lavaanList-class] object containing results
+##'   \item{Model}{A [lavaan::lavaanList-class] object containing results
 ##'     of the `model` fitted to each parcel allocation. Only returned if
 ##'     `return.fit = TRUE`.}
 ##'

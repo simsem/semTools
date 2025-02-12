@@ -231,7 +231,7 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##'   nested. See [net()] for an empirical test of nesting.
 ##' @param argsLRT `list` of arguments to pass to
 ##'   [lavaan::lavTestLRT()], as well as to
-##'   [lavaan.mi::lavTestLRT.mi()] and [fitMeasures()] when
+##'   [lavaan.mi::lavTestLRT.mi()] and [lavaan::fitMeasures()] when
 ##'   comparing [lavaan.mi::lavaan.mi-class] models.
 ##' @param indices `logical` indicating whether to return fit indices from
 ##'   the [lavaan::fitMeasures()] function. Selecting particular

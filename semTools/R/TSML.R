@@ -478,10 +478,10 @@ setMethod("resid", "twostage",
 ##' @aliases twostage cfa.2stage sem.2stage growth.2stage lavaan.2stage
 ##' @importFrom lavaan lavInspect
 ##'
-##' @param \dots Arguments passed to the [lavaan()] function
+##' @param \dots Arguments passed to the [lavaan::lavaan()] function
 ##'   specified in the `fun` argument.  See also
-##'   [lavOptions()].  At a minimum, the user must supply the
-##'   first two named arguments to [lavaan()] (i.e.,
+##'   [lavaan::lavOptions()].  At a minimum, the user must supply the
+##'   first two named arguments to [lavaan::lavaan()] (i.e.,
 ##'   `model` and `data`).
 ##' @param aux An optional character vector naming auxiliary variable(s) in
 ##'   `data`
@@ -489,7 +489,7 @@ setMethod("resid", "twostage",
 ##'   Step-2 hypothesized model (`"cfa"`, `"sem"`, `"growth"`, or
 ##'   `"lavaan"`).
 ##' @param baseline.model An optional character string, specifying the lavaan
-##'   [model.syntax()] for a user-specified baseline model.
+##'   [lavaan::model.syntax()] for a user-specified baseline model.
 ##'   Interested users can use the fitted baseline model to calculate incremental
 ##'   fit indices (e.g., CFI and TLI) using the corrected chi-squared values (see
 ##'   the `anova` method in [twostage-class]).  If `NULL`,

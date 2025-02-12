@@ -185,7 +185,7 @@ passed via \code{...} to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}
 subsequently to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}.}
 }
 \description{
-This class extends the \linkS4class{lavaanList} class, created by
+This class extends the \link[lavaan:lavaanList-class]{lavaan::lavaanList} class, created by
 fitting a lavaan model to a list of data sets. In this case, the list of
 data sets are multiple imputations of missing data.
 }
@@ -219,7 +219,7 @@ residual covariance matrix of observed variables (\eqn{\Theta}) is
 non-positive-definite.}
 
 \item{\code{lavaanList_slots}}{All remaining slots are from
-\linkS4class{lavaanList}, but \code{\link[=runMI]{runMI()}} only populates a
+\link[lavaan:lavaanList-class]{lavaan::lavaanList}, but \code{\link[=runMI]{runMI()}} only populates a
 subset of the \code{list} slots, two of them with custom information:}
 
 \item{\code{DataList}}{The \code{list} of imputed data sets}
@@ -228,17 +228,17 @@ subset of the \code{list} slots, two of them with custom information:}
 \code{lavInspect(fit, "sampstat")} applied to each fitted
 model}
 
-\item{\code{ParTableList}}{See \linkS4class{lavaanList}}
+\item{\code{ParTableList}}{See \link[lavaan:lavaanList-class]{lavaan::lavaanList}}
 
-\item{\code{vcovList}}{See \linkS4class{lavaanList}}
+\item{\code{vcovList}}{See \link[lavaan:lavaanList-class]{lavaan::lavaanList}}
 
-\item{\code{testList}}{See \linkS4class{lavaanList}}
+\item{\code{testList}}{See \link[lavaan:lavaanList-class]{lavaan::lavaanList}}
 
-\item{\code{h1List}}{See \linkS4class{lavaanList}. An additional element is
+\item{\code{h1List}}{See \link[lavaan:lavaanList-class]{lavaan::lavaanList}. An additional element is
 added to the \code{list}: \verb{$PT} is the "saturated" model's parameter
 table, returned by \code{\link[lavaan:lav_partable]{lavaan::lav_partable_unrestricted()}}.}
 
-\item{\code{baselineList}}{See \linkS4class{lavaanList}}
+\item{\code{baselineList}}{See \link[lavaan:lavaanList-class]{lavaan::lavaanList}}
 }}
 
 \section{Objects from the Class}{

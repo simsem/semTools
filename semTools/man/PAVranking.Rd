@@ -10,12 +10,12 @@ PAVranking(model0, model1, data, parcel.names, item.syntax, nAlloc = 100,
   show.progress = FALSE, iseed = 12345, warn = FALSE)
 }
 \arguments{
-\item{model0, model1}{\code{\link[=lavaan]{lavaan()}} model syntax specifying
+\item{model0, model1}{\code{\link[lavaan:lavaan]{lavaan::lavaan()}} model syntax specifying
 nested models (\code{model0} within \code{model1}) to be fitted
 to the same parceled data.  Note that there can be a mixture of
 items and parcels (even within the same factor), in case certain items
 should never be parceled. Can be a character string or parameter table.
-Also see \code{\link[=lavaanify]{lavaanify()}} for more details.}
+Also see \code{\link[lavaan:model.syntax]{lavaan::lavaanify()}} for more details.}
 
 \item{data}{A \code{data.frame} containing all observed variables appearing
 in \verb{model0=} and \verb{model1=}, as well as those in the \verb{item.syntax=} used to
@@ -29,14 +29,14 @@ parcels created using the same allocation scheme.}
 \item{parcel.names}{\code{character} vector containing names of all parcels
 appearing as indicators in \verb{model0=} or \verb{model1=}.}
 
-\item{item.syntax}{\code{\link[=lavaan]{lavaan()}} model syntax specifying the model
+\item{item.syntax}{\code{\link[lavaan:lavaan]{lavaan::lavaan()}} model syntax specifying the model
 that would be fit to all of the unparceled items, including items that
 should be randomly allocated to parcels appearing in \verb{model0=} and \verb{model1=}.}
 
 \item{nAlloc}{The number of random items-to-parcels allocations to generate.}
 
 \item{fun}{\code{character} string indicating the name of the
-\code{\link[=lavaan]{lavaan()}} function used to fit  \verb{model0=} and \verb{model1=} to \verb{data=}.
+\code{\link[lavaan:lavaan]{lavaan::lavaan()}} function used to fit  \verb{model0=} and \verb{model1=} to \verb{data=}.
 Can only take the values \code{"lavaan"}, \code{"sem"}, \code{"cfa"}, or \code{"growth"}.}
 
 \item{alpha}{Alpha level used as criterion for significance.}

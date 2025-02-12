@@ -51,12 +51,12 @@
 ##' @importFrom lavaan parTable lavListInspect lavaanList
 ##' @importFrom graphics hist
 ##'
-##' @param model0,model1 [lavaan()] model syntax specifying
+##' @param model0,model1 [lavaan::lavaan()] model syntax specifying
 ##'   nested models (`model0` within `model1`) to be fitted
 ##'   to the same parceled data.  Note that there can be a mixture of
 ##'   items and parcels (even within the same factor), in case certain items
 ##'   should never be parceled. Can be a character string or parameter table.
-##'   Also see [lavaanify()] for more details.
+##'   Also see [lavaan::lavaanify()] for more details.
 ##' @param data A `data.frame` containing all observed variables appearing
 ##'   in `model0=` and `model1=`, as well as those in the `item.syntax=` used to
 ##'   create parcels. If the data have missing values, multiple imputation
@@ -67,12 +67,12 @@
 ##'   parcels created using the same allocation scheme.
 ##' @param parcel.names `character` vector containing names of all parcels
 ##'   appearing as indicators in `model0=` or `model1=`.
-##' @param item.syntax [lavaan()] model syntax specifying the model
+##' @param item.syntax [lavaan::lavaan()] model syntax specifying the model
 ##'   that would be fit to all of the unparceled items, including items that
 ##'   should be randomly allocated to parcels appearing in `model0=` and `model1=`.
 ##' @param nAlloc The number of random items-to-parcels allocations to generate.
 ##' @param fun `character` string indicating the name of the
-##'   [lavaan()] function used to fit  `model0=` and `model1=` to `data=`.
+##'   [lavaan::lavaan()] function used to fit  `model0=` and `model1=` to `data=`.
 ##'   Can only take the values `"lavaan"`, `"sem"`, `"cfa"`, or `"growth"`.
 ##' @param alpha Alpha level used as criterion for significance.
 ##' @param bic.crit Criterion for assessing evidence in favor of one model

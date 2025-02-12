@@ -46,7 +46,7 @@
 ##' @importFrom lavaan parTable
 ##'
 ##' @param ... The same arguments as for any lavaan model.  See
-##'   [cfa()] for more information.
+##'   [lavaan::cfa()] for more information.
 ##' @param std.lv If `TRUE`, the fixed-factor method of scale
 ##'   identification is used. If `FALSE`, the first variable for each factor
 ##'   is used as marker variable.

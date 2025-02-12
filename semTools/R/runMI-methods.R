@@ -8,7 +8,7 @@
 
 ##' Class for a lavaan Model Fitted to Multiple Imputations
 ##'
-##' This class extends the [lavaanList-class] class, created by
+##' This class extends the [lavaan::lavaanList-class] class, created by
 ##' fitting a lavaan model to a list of data sets. In this case, the list of
 ##' data sets are multiple imputations of missing data.
 ##'
@@ -42,19 +42,19 @@
 ##'   residual covariance matrix of observed variables (\eqn{\Theta}) is
 ##'   non-positive-definite.
 ##' @slot lavaanList_slots All remaining slots are from
-##'   [lavaanList-class], but [runMI()] only populates a
+##'   [lavaan::lavaanList-class], but [runMI()] only populates a
 ##'   subset of the `list` slots, two of them with custom information:
 ##' @slot DataList The `list` of imputed data sets
 ##' @slot SampleStatsList List of output from
 ##'   `lavInspect(fit, "sampstat")` applied to each fitted
 ##'   model
-##' @slot ParTableList See [lavaanList-class]
-##' @slot vcovList See [lavaanList-class]
-##' @slot testList See [lavaanList-class]
-##' @slot h1List See [lavaanList-class]. An additional element is
+##' @slot ParTableList See [lavaan::lavaanList-class]
+##' @slot vcovList See [lavaan::lavaanList-class]
+##' @slot testList See [lavaan::lavaanList-class]
+##' @slot h1List See [lavaan::lavaanList-class]. An additional element is
 ##'   added to the `list`: `$PT` is the "saturated" model's parameter
 ##'   table, returned by [lavaan::lav_partable_unrestricted()].
-##' @slot baselineList See [lavaanList-class]
+##' @slot baselineList See [lavaan::lavaanList-class]
 ##'
 ##' @param object An object of class `OLDlavaan.mi`
 ##' @param se,ci,level,standardized,rsquare,header,output See

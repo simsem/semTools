@@ -79,16 +79,16 @@ constraint, only specify one parameter in \code{add} or one constraint in
 
 \item{standardized}{If \code{TRUE}, two extra columns (\code{sepc.lv} and
 \code{sepc.all}) in the \verb{$epc} table will contain standardized values
-for the EPCs. See \code{\link[=lavTestScore]{lavTestScore()}}.}
+for the EPCs. See \code{\link[lavaan:lavTestScore]{lavaan::lavTestScore()}}.}
 
-\item{cov.std}{\code{logical}. See \code{\link[=standardizedSolution]{standardizedSolution()}}.}
+\item{cov.std}{\code{logical}. See \code{\link[lavaan:standardizedSolution]{lavaan::standardizedSolution()}}.}
 
 \item{verbose}{\code{logical}. Not used for now.}
 
 \item{warn}{\code{logical}. If \code{TRUE}, print warnings if they occur.}
 
 \item{information}{\code{character} indicating the type of information
-matrix to use (check \code{\link[=lavInspect]{lavInspect()}} for available options).
+matrix to use (check \code{\link[lavaan:lavInspect]{lavaan::lavInspect()}} for available options).
 \code{"expected"} information is the default, which provides better
 control of Type I errors.}
 }

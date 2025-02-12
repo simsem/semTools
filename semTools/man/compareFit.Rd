@@ -17,7 +17,7 @@ nested. See \code{\link[=net]{net()}} for an empirical test of nesting.}
 
 \item{argsLRT}{\code{list} of arguments to pass to
 \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}, as well as to
-\code{\link[lavaan.mi:lavTestLRT.mi]{lavaan.mi::lavTestLRT.mi()}} and \code{\link[=fitMeasures]{fitMeasures()}} when
+\code{\link[lavaan.mi:lavTestLRT.mi]{lavaan.mi::lavTestLRT.mi()}} and \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} when
 comparing \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} models.}
 
 \item{indices}{\code{logical} indicating whether to return fit indices from

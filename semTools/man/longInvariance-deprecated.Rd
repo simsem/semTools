@@ -34,21 +34,21 @@ auto-\emph{covariance} to be equal within the same item across factors.
 For example, the covariance of item 1 in time 1 and time 2 is equal to
 the covariance of item 1 in time 2 and time 3.}
 
-\item{fixed.x}{See \code{\link[=lavOptions]{lavOptions()}}.}
+\item{fixed.x}{See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
-\item{std.lv}{See \code{\link[=lavOptions]{lavOptions()}}.}
+\item{std.lv}{See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
-\item{group}{See \code{\link[=lavaan]{lavaan()}}.}
+\item{group}{See \code{\link[lavaan:lavaan]{lavaan::lavaan()}}.}
 
-\item{group.equal}{See \code{\link[=lavOptions]{lavOptions()}}.}
+\item{group.equal}{See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
-\item{group.partial}{See \code{\link[=lavOptions]{lavOptions()}}.}
+\item{group.partial}{See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
 \item{strict}{If \code{TRUE}, the sequence requires strict invariance. See}
 
-\item{warn}{See See \code{\link[=lavOptions]{lavOptions()}}.}
+\item{warn}{See See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
-\item{debug}{See See \code{\link[=lavOptions]{lavOptions()}}. details for more information.}
+\item{debug}{See See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}. details for more information.}
 
 \item{quiet}{If \code{FALSE} (default), a summary is printed out containing
 an overview of the different models that are fitted, together with some
@@ -63,8 +63,8 @@ nested models.}
 \item{method}{The method used to calculate likelihood ratio test. See
 \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} for available options}
 
-\item{...}{Additional arguments in the \code{\link[=lavaan]{lavaan()}}
-function. See also \code{\link[=lavOptions]{lavOptions()}}}
+\item{...}{Additional arguments in the \code{\link[lavaan:lavaan]{lavaan::lavaan()}}
+function. See also \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}}
 }
 \value{
 Invisibly, all model fits in the sequence are returned as a list.

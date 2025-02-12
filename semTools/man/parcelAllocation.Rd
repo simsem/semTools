@@ -63,7 +63,7 @@ section below). If \code{FALSE}, the items are randomly parceled, but the
 model is not fit; instead, the \code{list} of \code{data.frame}s is
 returned (so assign it to an object).}
 
-\item{return.fit}{If \code{TRUE}, a \linkS4class{lavaanList} object
+\item{return.fit}{If \code{TRUE}, a \link[lavaan:lavaanList-class]{lavaan::lavaanList} object
 is returned with the \code{list} of results across allocations}
 
 \item{warn}{Whether to print warnings when fitting \code{model} to each allocation}
@@ -83,7 +83,7 @@ standard deviation across allocations; the minimum, maximum, and range
 across allocations; and (if the test statistic or RMSEA is included in
 \code{fit.measures}) the proportion of allocations in which each
 test of (exact or close) fit was significant.}
-\item{Model}{A \linkS4class{lavaanList} object containing results
+\item{Model}{A \link[lavaan:lavaanList-class]{lavaan::lavaanList} object containing results
 of the \code{model} fitted to each parcel allocation. Only returned if
 \code{return.fit = TRUE}.}
 }

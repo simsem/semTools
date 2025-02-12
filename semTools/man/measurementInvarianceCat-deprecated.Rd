@@ -10,7 +10,7 @@ measurementInvarianceCat(..., std.lv = FALSE, strict = FALSE,
 }
 \arguments{
 \item{...}{The same arguments as for any lavaan model.  See
-\code{\link[=cfa]{cfa()}} for more information.}
+\code{\link[lavaan:cfa]{lavaan::cfa()}} for more information.}
 
 \item{std.lv}{If \code{TRUE}, the fixed-factor method of scale
 identification is used. If \code{FALSE}, the first variable for each
