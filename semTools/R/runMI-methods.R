@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 12 February 2025
 ### Class and Methods for OLDlavaan.mi object, returned by runMI()
 
 ### DEPRECATED: 16 June 2024
@@ -269,7 +269,7 @@ setMethod("show", "OLDlavaan.mi", function(object) {
 ##' @importFrom stats pt qt pnorm qnorm
 ##' @importFrom lavaan lavListInspect parTable lavNames
 ##' @importFrom methods getMethod
-summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
+summary_OLDlavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               standardized = FALSE, rsquare = FALSE,
                               fmi = FALSE, scale.W = !asymptotic,
                               omit.imps = c("no.conv","no.se"),
@@ -455,7 +455,7 @@ summary.lavaan.mi <- function(object, se = TRUE, ci = FALSE, level = .95,
 ##' @name OLDlavaan.mi-class
 ##' @aliases summary,OLDlavaan.mi-method
 ##' @export
-setMethod("summary", "OLDlavaan.mi", summary.lavaan.mi)
+setMethod("summary", "OLDlavaan.mi", summary_OLDlavaan.mi)
 
 
 ##' @name OLDlavaan.mi-class
@@ -473,7 +473,7 @@ setMethod("nobs", "OLDlavaan.mi", function(object, total = TRUE) {
 
 
 ##' @importFrom lavaan parTable
-coef.lavaan.mi <- function(object, type = "free", labels = TRUE,
+coef_OLDlavaan.mi <- function(object, type = "free", labels = TRUE,
                            omit.imps = c("no.conv","no.se")) {
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -510,13 +510,13 @@ coef.lavaan.mi <- function(object, type = "free", labels = TRUE,
 ##' @name OLDlavaan.mi-class
 ##' @aliases coef,OLDlavaan.mi-method
 ##' @export
-setMethod("coef", "OLDlavaan.mi", coef.lavaan.mi)
+setMethod("coef", "OLDlavaan.mi", coef_OLDlavaan.mi)
 
 
 
 ##' @importFrom stats cov
 ##' @importFrom lavaan lavListInspect parTable
-vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
+vcov_OLDlavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
                            scale.W = TRUE, omit.imps = c("no.conv","no.se")) {
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -583,11 +583,11 @@ vcov.lavaan.mi <- function(object, type = c("pooled","between","within","ariv"),
 ##' @name OLDlavaan.mi-class
 ##' @aliases vcov,OLDlavaan.mi-method
 ##' @export
-setMethod("vcov", "OLDlavaan.mi", vcov.lavaan.mi)
+setMethod("vcov", "OLDlavaan.mi", vcov_OLDlavaan.mi)
 
 
 ##' @importFrom lavaan lavListInspect lavTestLRT
-anova.lavaan.mi <- function(object, ...) {
+anova_OLDlavaan.mi <- function(object, ...) {
   ## save model names
   objname <- deparse(substitute(object))
   dotnames <- as.character(sapply(substitute(list(...))[-1], deparse))
@@ -641,7 +641,7 @@ anova.lavaan.mi <- function(object, ...) {
 ##' @name OLDlavaan.mi-class
 ##' @aliases anova,OLDlavaan.mi-method
 ##' @export
-setMethod("anova", "OLDlavaan.mi", anova.lavaan.mi)
+setMethod("anova", "OLDlavaan.mi", anova_OLDlavaan.mi)
 
 
 ##' @importFrom lavaan lavListInspect lavNames
@@ -720,7 +720,7 @@ getSRMR <- function(object, type = "cor.bentler", level = "within",
 }
 ##' @importFrom lavaan lavNames lavListInspect
 ##' @importFrom stats pchisq uniroot
-fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
+fitMeasures_OLDlavaan.mi <- function(object, fit.measures = "all", baseline.model = NULL,
                            output = "vector", omit.imps = c("no.conv","no.se"),
                            ...) {
 
@@ -1269,18 +1269,18 @@ fitMeasures.mi <- function(object, fit.measures = "all", baseline.model = NULL,
 ##' @aliases fitMeasures,OLDlavaan.mi-method
 ##' @importFrom lavaan fitMeasures
 ##' @export
-setMethod("fitMeasures", "OLDlavaan.mi", fitMeasures.mi)
+setMethod("fitMeasures", "OLDlavaan.mi", fitMeasures_OLDlavaan.mi)
 ## lowercase 'm'
 ##' @name OLDlavaan.mi-class
 ##' @aliases fitmeasures,OLDlavaan.mi-method
 ##' @importFrom lavaan fitmeasures
 ##' @export
-setMethod("fitmeasures", "OLDlavaan.mi", fitMeasures.mi)
+setMethod("fitmeasures", "OLDlavaan.mi", fitMeasures_OLDlavaan.mi)
 
 
 ##' @importFrom lavaan lavListInspect lavNames
 ##' @importFrom methods getMethod
-fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
+fitted_OLDlavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
   if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -1385,19 +1385,19 @@ fitted.lavaan.mi <- function(object, omit.imps = c("no.conv","no.se")) {
 ##' @name OLDlavaan.mi-class
 ##' @aliases fitted,OLDlavaan.mi-method
 ##' @export
-setMethod("fitted", "OLDlavaan.mi", fitted.lavaan.mi)
+setMethod("fitted", "OLDlavaan.mi", fitted_OLDlavaan.mi)
 ##' @name OLDlavaan.mi-class
 ##' @aliases fitted.values,OLDlavaan.mi-method
 ##' @export
-setMethod("fitted.values", "OLDlavaan.mi", fitted.lavaan.mi)
+setMethod("fitted.values", "OLDlavaan.mi", fitted_OLDlavaan.mi)
 
 
 
 ##' @importFrom lavaan lavListInspect
 ##' @importFrom methods getMethod
 ##' @importFrom stats cov2cor
-resid.lavaan.mi <- function(object, type = c("raw","cor"),
-                            omit.imps = c("no.conv","no.se")) {
+resid_OLDlavaan.mi <- function(object, type = c("raw","cor"),
+                               omit.imps = c("no.conv","no.se")) {
   ## @SampleStatsList is (for each imputation) output from:
   ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
   useImps <- rep(TRUE, length(object@DataList))
@@ -1550,11 +1550,11 @@ resid.lavaan.mi <- function(object, type = c("raw","cor"),
 ##' @name OLDlavaan.mi-class
 ##' @aliases residuals,OLDlavaan.mi-method
 ##' @export
-setMethod("residuals", "OLDlavaan.mi", resid.lavaan.mi)
+setMethod("residuals", "OLDlavaan.mi", resid_OLDlavaan.mi)
 ##' @name OLDlavaan.mi-class
 ##' @aliases resid,OLDlavaan.mi-method
 ##' @export
-setMethod("resid", "OLDlavaan.mi", resid.lavaan.mi)
+setMethod("resid", "OLDlavaan.mi", resid_OLDlavaan.mi)
 
 
 
