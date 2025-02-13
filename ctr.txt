@@ -1,4 +1,4 @@
-## Last updated: 8 June 2021
+## Last updated: 12 February 2025
 
 ## List of functions, organized by author(s)
 export(
@@ -63,6 +63,9 @@ export(
 
   ## Ed Merkle
   kd,
+
+  ## Leonard Vanbrabant
+  goricaSEM,
 
   ## Corbin Quick
   splitSample, lisrel2lavaan ## lisrel2lavaan was deprecated, now removed

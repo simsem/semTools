@@ -1,0 +1,59 @@
+List of reverse dependencies that are checked by CRAN when updating semTools
+Last updated: 12 February 2025
+
+Reverse depends
+===============
+
+RSAtools: auxiliary()
+
+
+Reverse imports
+===============
+
+conmet: reliability()
+https://github.com/leander-ds/conmet
+  - emailed 13 Feb 2025 about updating to compRelSEM() and AVE()
+  - he noted that Shiny apps imbed old package upon compilation,
+    so dependency is not as "strong" (removing reliability() will not break it)
+
+FCO: mardiaSkew(), mardiaKurtosis()
+
+kfa: findRMSEAsamplesizenested()
+
+MBESS: reliability()
+
+pwr2ppl: mvrnonnorm()
+https://github.com/chrisaberson/pwr2ppl
+
+semdrw:
+  - Shiny app, so it shouldn't break when semTools changes
+
+silp: compRelSEM()
+https://github.com/TomBJJJ/silp
+
+
+
+
+Reverse suggests
+================
+
+blavaan:
+
+equaltestMI:
+
+FAfA:
+
+manymome:
+
+mnonr:
+
+powerNLSEM:
+
+quest:
+
+semhelpinghands:
+
+simsem:
+
+Statsomat:
+
