@@ -7,6 +7,7 @@
     - `return.syntax=TRUE` will return model syntax for the saturated-correlates parameters, which can be added to the target-model syntax.  This enables adding saturated correlates easily to a `blavaan` model.
 - New `fmi(method="cor")` option, to return the fraction missing information for correlation estimates.
 - Not necessarily a bug fix, but `MASS::mvrnorm()` has been replaced with `mnormt::rmnorm()` throughout the package.  The latter generates data such that a sample of (e.g.) $N=11$ will have the same first 10 observations as when sampling only $N=10$. 
+- New `goricaSEM()` function provided as a wrapper for the `restriktor` package.
 
 
 ## Deprecated Features:
@@ -28,6 +29,7 @@
 - Fixed a bug in `monteCarloCI()`. See issue [#142](https://github.com/simsem/semTools/issues/142)
 - Fixed a bug with `nullRMSEA()` requiring `data=` to be in the global environment; see issue [#133](https://github.com/simsem/semTools/issues/133). Thanks to Brian Keller.
 - `lrv2ord()` now works even with a single-variable model.
+- `parcelAllocation()` now allows for higher-order factors (see [here](https://groups.google.com/g/lavaan/c/sGb2_9EaeWE/m/xTpxNzGvAAAJ)).
 
 
 # semTools 0.5-6 (on CRAN 10 May 2022)

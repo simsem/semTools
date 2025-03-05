@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 5 March 2025
 
 
 ##' Random Allocation of Items to Parcels in a Structural Equation Model
@@ -240,7 +240,8 @@ parcelAllocation <- function(model, data, parcel.names, item.syntax,
               " syntax or a lavaan parameter table.  See ?lavaanify help page.")
 
   ## check that both models specify the same factors
-  factorNames <- lavNames(PT, type = "lv")
+  ## NOTE: lv.names remains unaltered, to omit latent indicators from $items
+  factorNames <- lv.names <- lavNames(PT, type = "lv")
   if (!all(sort(lavNames(item.PT, type = "lv")) == sort(factorNames))) {
     stop("'model' and 'item.syntax' arguments specify different factors.\n",
          "'model' specifies: ", paste(sort(factorNames), collapse = ", "), "\n",
@@ -258,8 +259,8 @@ parcelAllocation <- function(model, data, parcel.names, item.syntax,
     items <- item.PT$rhs[item.PT$lhs == i & item.PT$op == "=~"]
     ## exclude observed indicators from parceling scheme if specified
     ## in parcel-level model
-    assignments[[i]]$parcels <- setdiff(parcels, names(data))
-    assignments[[i]]$items <- setdiff(items, parcels)
+    assignments[[i]]$parcels <- setdiff(parcels, c(names(data), lv.names))
+    assignments[[i]]$items   <- setdiff(items  , c(  parcels  , lv.names))
 
     ## Does this factor have parcels?  If not, omit this factor from next loop
     if (length(assignments[[i]]$parcels) == 0L) {
