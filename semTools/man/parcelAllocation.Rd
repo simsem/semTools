@@ -128,8 +128,8 @@ RNGkind("L'Ecuyer-CMRG")
 
 parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
                  parcel.names = parcel.names, item.syntax = item.syntax,
-                 std.lv = TRUE,       # any addition lavaan arguments
-                 parallel = "snow")   # parallel options
+               # parallel = "multicore",  # parallel available in Mac/Linux
+                 std.lv = TRUE)           # any addition lavaan arguments
 
 
 

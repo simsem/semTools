@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 March 2025
+### Last updated: 12 March 2025
 
 
 ##' Random Allocation of Items to Parcels in a Structural Equation Model
@@ -139,8 +139,8 @@
 ##'
 ##' parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
 ##'                  parcel.names = parcel.names, item.syntax = item.syntax,
-##'                  std.lv = TRUE,       # any addition lavaan arguments
-##'                  parallel = "snow")   # parallel options
+##'                # parallel = "multicore",  # parallel available in Mac/Linux
+##'                  std.lv = TRUE)           # any addition lavaan arguments
 ##'
 ##'
 ##'
