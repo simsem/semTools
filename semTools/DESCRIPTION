@@ -30,12 +30,12 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Steven", family = "Chesnut", role = "ctb", email="Steven.Chesnut@usm.edu"),
 		person(given = "Jarrett", family = "Byrnes", role = "ctb", email="Jarrett.Byrnes@umb.edu"),
 		person(given = c("Jason","D."), family = "Rights", role = "ctb", email="jrights@psych.ubc.ca"),
-		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com", comment = c(func1 = "efa.ekc", func2 = "htmt")),
-		person(given = "Maxwell", family = "Mansolf", role = "ctb", email="mamansolf@gmail.com", comment = c(ORCID = "0000-0001-6861-8657", func = "lavTestScore.mi")),
-		person(given = "Mattan S.", family = "Ben-Shachar", role = "ctb", email="matanshm@post.bgu.ac.il", comment = c(ORCID = "0000-0002-4287-4801", func = "emmeans")),
-		person(given = "Mikko", family = "Rönkkö", role = "ctb", email = "mikko.ronkko@jyu.fi", comment = c(ORCID = "0000-0001-7988-7609", func = "discriminantValidity")),
-		person(given = "Andrew R.", family = "Johnson", role = "ctb", email = "andrew.johnson@curtin.edu.au", comment = c(ORCID = "0000-0001-7000-8065", func = "lrv2ord")),
-		person(given = "Leonard", family = "Vanbrabant", role = "ctb", email = "L.Vanbrabant@ggdwestbrabant.nl", comment = c(func = "goricaSEM"))
+		person(given = "Ylenio", family = "Longo", role = "ctb", email="yleniolongo@gmail.com"),
+		person(given = "Maxwell", family = "Mansolf", role = "ctb", email="mamansolf@gmail.com", comment = c(ORCID = "0000-0001-6861-8657")),
+		person(given = "Mattan S.", family = "Ben-Shachar", role = "ctb", email="matanshm@post.bgu.ac.il", comment = c(ORCID = "0000-0002-4287-4801")),
+		person(given = "Mikko", family = "Rönkkö", role = "ctb", email = "mikko.ronkko@jyu.fi", comment = c(ORCID = "0000-0001-7988-7609")),
+		person(given = "Andrew R.", family = "Johnson", role = "ctb", email = "andrew.johnson@curtin.edu.au", comment = c(ORCID = "0000-0001-7000-8065")),
+		person(given = "Leonard", family = "Vanbrabant", role = "ctb", email = "L.Vanbrabant@ggdwestbrabant.nl")
 		)
 Depends: R(>= 4.0), lavaan(>= 0.6-12), methods
 Imports: graphics, pbivnorm, stats, utils
