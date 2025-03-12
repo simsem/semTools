@@ -116,6 +116,7 @@
 ##'                        append.data = TRUE)
 ##' lapply(fs1, head)
 ##'
+##' \donttest{
 ##' ## To merge factor scores to original data.frame (not just modeled data)
 ##' fs1 <- plausibleValues(fit1, nDraws = 3)
 ##' idx <- lavInspect(fit1, "case.idx")      # row index for each case
@@ -193,6 +194,8 @@
 ##'     }
 ##'   }
 ##'   lapply(impPVs, head)
+##' }
+##'
 ##' }
 ##'
 ##' @export

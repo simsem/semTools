@@ -98,22 +98,12 @@
 ##' out5 <- fmi(HSMiss, method = "cor", return.fit = TRUE)
 ##' summary(out5) # factor loading == SD, covariance = correlation
 ##'
-##' \donttest{
-##' ## ordered-categorical data
-##' data(datCat)
-##' lapply(datCat, class)
-##' ## impose missing values
-##' set.seed(123)
-##' for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
+##' if(requireNamespace("lavaan.mi")){
+##'   ## ordered-categorical data
+##'   data(binHS5imps, package = "lavaan.mi")
 ##'
-##' ## impute data m = 3 times
-##' library(Amelia)
-##' set.seed(456)
-##' impout <- amelia(datCat, m = 5, noms = "g", ords = paste0("u", 1:8), p2s = FALSE)
-##' imps <- impout$imputations
-##'
-##' ## calculate FMI, using list of imputed data sets
-##' fmi(imps, group = "g")
+##'   ## calculate FMI, using list of imputed data sets
+##'   fmi(binHS5imps, group = "school")
 ##' }
 ##'
 ##' @export
@@ -186,11 +176,11 @@ fmi <- function(data, method = "saturated", group = NULL, ords = NULL,
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
 
     if (method == "cor") {
-      fit <- cfa.mi(model, data = data, group = group,
-                    ordered = ordvars, std.lv = TRUE)
+      fit <- lavaan.mi::cfa.mi(model, data = data, group = group,
+                               ordered = ordvars, std.lv = TRUE)
     } else {
-      fit <- lavaan.mi(model, data = data, group = group,
-                       ordered = ordvars, auto.th = TRUE)
+      fit <- lavaan.mi::lavaan.mi(model, data = data, group = group,
+                                  ordered = ordvars, auto.th = TRUE)
     }
     if (return.fit) return(fit)
 
