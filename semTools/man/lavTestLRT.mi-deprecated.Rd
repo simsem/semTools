@@ -83,7 +83,7 @@ models.  To compare several nested models fitted to multiple imputations,
 see examples on the \code{\link[=compareFit]{compareFit()}} help page.
 }
 \examples{
- \dontrun{
+ \donttest{
 library(lavaan.mi)
 data(HS20imps, package = "lavaan.mi")
 

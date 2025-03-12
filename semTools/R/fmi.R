@@ -1,5 +1,5 @@
 ### Mauricio Garnier Villarreal & Terrence D. Jorgensen
-### Last updated: 12 February 2025
+### Last updated: 12 March 2025
 ### This function estimates the Fraction of Missing Information for means and
 ### (co)variances of each variable in a partially observed data set or from
 ### a list of multiple imputed data sets
@@ -93,22 +93,25 @@
 ##' (out2 <- fmi(HSMiss, exclude = "school", method = "null"))
 ##' (out3 <- fmi(HSMiss, varnames = c("x5","x6","x7","x8","x9")))
 ##' (out4 <- fmi(HSMiss, method = "cor", group = "school")) # correlations by group
+##'
 ##' ## significance tests in lavaan(.mi) object
 ##' out5 <- fmi(HSMiss, method = "cor", return.fit = TRUE)
 ##' summary(out5) # factor loading == SD, covariance = correlation
 ##'
-##' \dontrun{
+##' \donttest{
 ##' ## ordered-categorical data
 ##' data(datCat)
 ##' lapply(datCat, class)
 ##' ## impose missing values
 ##' set.seed(123)
 ##' for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
+##'
 ##' ## impute data m = 3 times
 ##' library(Amelia)
 ##' set.seed(456)
 ##' impout <- amelia(datCat, m = 5, noms = "g", ords = paste0("u", 1:8), p2s = FALSE)
 ##' imps <- impout$imputations
+##'
 ##' ## calculate FMI, using list of imputed data sets
 ##' fmi(imps, group = "g")
 ##' }

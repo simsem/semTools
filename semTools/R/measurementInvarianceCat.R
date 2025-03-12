@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, & Terrence D. Jorgensen
-### Last updated: 10 January 2021
+### Last updated: 12 March 2025
 ### automate measurement invariance tests for categorical indicators
 
 
@@ -66,7 +66,7 @@
 ##'
 ##' @examples
 ##'
-##' \dontrun{
+##' \donttest{
 ##' syntax <- ' f1 =~ u1 + u2 + u3 + u4'
 ##'
 ##' measurementInvarianceCat(model = syntax, data = datCat, group = "g",

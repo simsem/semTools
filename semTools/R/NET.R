@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 February 2024
+### Last updated: 12 March 2025
 ### semTools functions for Nesting and Equivalence Testing
 
 
@@ -154,7 +154,6 @@ function(object) {
 ##'
 ##' @examples
 ##'
-##' \dontrun{
 ##' m1 <- ' visual  =~ x1 + x2 + x3
 ##' 	       textual =~ x4 + x5 + x6
 ##' 	       speed   =~ x7 + x8 + x9 '
@@ -172,6 +171,7 @@ function(object) {
 ##' fit2 <- cfa(m2, data = HolzingerSwineford1939) # Not equivalent to or nested in fit1
 ##' fit3 <- cfa(m3, data = HolzingerSwineford1939) # Nested in fit1 and fit1a
 ##'
+##' \donttest{
 ##' tests <- net(fit1, fit1a, fit2, fit3)
 ##' tests
 ##' summary(tests)

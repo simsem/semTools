@@ -278,7 +278,7 @@ permuting the data.
 }
 \examples{
 
-\dontrun{
+\donttest{
 
 ########################
 ## Multiple-Group CFA ##

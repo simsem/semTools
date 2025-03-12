@@ -72,7 +72,7 @@ also implement multiple imputation for a single \code{data.frame} with
 missing observations, using either the Amelia package or the mice package.
 }
 \examples{
- \dontrun{
+ \donttest{
 ## impose missing data for example
 HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
                                       "ageyr","agemo","school")]

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 May 2022
+### Last updated: 12 March 2025
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 
@@ -246,7 +246,6 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ##' Behavioral Research, 44*(6), 741--763. \doi{10.1080/00273170903333590}
 ##' @examples
 ##'
-##' \dontrun{
 ##' dat1 <- HolzingerSwineford1939
 ##' dat1$x5 <- ifelse(dat1$x1 <= quantile(dat1$x1, .3), NA, dat1$x5)
 ##' dat1$x9 <- ifelse(is.na(dat1$x5), NA, dat1$x9)
@@ -260,7 +259,8 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ##'                  missing = "fiml", group = "school")
 ##' summary(targetFit, fit = TRUE, standardized = TRUE)
 ##'
-##' # The number of bootstrap samples should be much higher.
+##' \donttest{
+##' ## The number of bootstrap samples should be much higher than this example
 ##' temp <- bsBootMiss(targetFit, transformation = 1, nBoot = 10, seed = 31415)
 ##'
 ##' temp

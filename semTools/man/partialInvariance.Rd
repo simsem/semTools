@@ -201,7 +201,7 @@ weak <- cfa(weak, data = HolzingerSwineford1939, group="school", group.equal="lo
 models <- list(fit.configural = configural, fit.loadings = weak)
 partialInvariance(models, "metric")
 
-\dontrun{
+\donttest{
 partialInvariance(models, "metric", free = "x5") # "x5" is free across groups in advance
 partialInvariance(models, "metric", fix = "x4") # "x4" is fixed across groups in advance
 

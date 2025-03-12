@@ -355,7 +355,7 @@ anova(fit.config, fit.thresh)
 ##   (metric and scalar invariance, respectively)
 ## simultaneously across groups and repeated measures.
 
-\dontrun{
+\donttest{
 
 ## metric invariance
 syntax.metric <- measEq.syntax(configural.model = mod.cat, data = datCat,

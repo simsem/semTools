@@ -194,7 +194,7 @@ parcels, see Sterba (2011) and Sterba & MacCallum (2010).
 }
 \examples{
 
-\dontrun{
+\donttest{
 ## lavaan syntax: A 2 Correlated
 ## factor CFA model to be fit to parceled data
 

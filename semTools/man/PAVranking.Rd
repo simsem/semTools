@@ -155,14 +155,14 @@ f1 ~~ 0*f2
 ## names of parcels (must apply to BOTH models)
 (parcel.names <- paste0("par", 1:6))
 
-\dontrun{
+\donttest{
 ## override default random-number generator to use parallel options
 RNGkind("L'Ecuyer-CMRG")
 
 PAVranking(model0 = mod0, model1 = mod1, data = simParcel, nAlloc = 100,
            parcel.names = parcel.names, item.syntax = item.syntax,
-           std.lv = TRUE,       # any addition lavaan arguments
-           parallel = "snow")   # parallel options
+           # parallel = "multicore",   # parallel available on Mac/Linux
+           std.lv = TRUE)       # any addition lavaan arguments
 
 
 
@@ -170,16 +170,20 @@ PAVranking(model0 = mod0, model1 = mod1, data = simParcel, nAlloc = 100,
 ## Details provided in Sterba & Rights (2016); see ?poolMAlloc.
 
 ## save list of data sets instead of fitting model yet
-dataList <- parcelAllocation(mod.parcels, data = simParcel, nAlloc = 100,
+dataList <- parcelAllocation(mod0, # or mod1 (either uses same allocations)
+                             data = simParcel, nAlloc = 100,
                              parcel.names = parcel.names,
                              item.syntax = item.syntax,
                              do.fit = FALSE)
 ## now fit each model to each data set
-library(lavaan.mi)
-fit0 <- cfa.mi(mod0, data = dataList, std.lv = TRUE)
-fit1 <- cfa.mi(mod1, data = dataList, std.lv = TRUE)
-anova(fit0, fit1)           # Pooled test statistic comparing models.
-help(package = "lavaan.mi") # Find more methods for pooling results.
+if(requireNamespace("lavaan.mi")){
+  library(lavaan.mi)
+  fit0 <- cfa.mi(mod0, data = dataList, std.lv = TRUE)
+  fit1 <- cfa.mi(mod1, data = dataList, std.lv = TRUE)
+  anova(fit0, fit1)           # Pooled test statistic comparing models.
+  help(package = "lavaan.mi") # Find more methods for pooling results.
+}
+
 }
 
 }

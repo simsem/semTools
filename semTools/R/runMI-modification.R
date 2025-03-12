@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 16 June 2024
+### Last updated: 12 March 2025
 ### adaptation of lavaan::modindices() for OLDlavaan.mi-class objects
 
 ### DEPRECATED: 16 June 2024
@@ -118,7 +118,7 @@
 ##'   \doi{10.1037/met0000243}
 ##'
 ##' @examples
-##'  \dontrun{
+##'  \donttest{
 ##' library(lavaan.mi)
 ##' data(HS20imps, package = "lavaan.mi")
 ##'

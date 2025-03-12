@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 February 2025
+### Last updated: 12 March 2025
 ### function to draw plausible values of factor scores from lavPredict
 
 
@@ -136,11 +136,11 @@
 ##'
 ##' ## subsequent path analysis
 ##' path.model <- ' visual ~ c(t1, t2)*textual + c(s1, s2)*speed '
-##' \dontrun{
-##' library(lavaan.mi)
-##' step2 <- sem.mi(path.model, data = PV.list, group = "school")
-##' ## test equivalence of both slopes across groups
-##' lavTestWald.mi(step2, constraints = 't1 == t2 ; s1 == s2')
+##' if(requireNamespace("lavaan.mi")){
+##'   library(lavaan.mi)
+##'   step2 <- sem.mi(path.model, data = PV.list, group = "school")
+##'   ## test equivalence of both slopes across groups
+##'   lavTestWald.mi(step2, constraints = 't1 == t2 ; s1 == s2')
 ##' }
 ##'
 ##'
@@ -165,36 +165,34 @@
 ##'
 ##'
 ##'
-##' ## example with 10 multiple imputations of missing data:
-##'
-##' \dontrun{
-##' library(lavaan.mi)
-##' data(HS20imps, package = "lavaan.mi")
-##'
-##' ## specify CFA model from lavaan's ?cfa help page
-##' HS.model <- '
-##'   visual  =~ x1 + x2 + x3
-##'   textual =~ x4 + x5 + x6
-##'   speed   =~ x7 + x8 + x9
-##' '
-##' out2 <- cfa.mi(HS.model, data = HS20imps)
-##' PVs <- plausibleValues(out2, nDraws = nPVs)
-##'
-##' idx <- out2@@Data@@case.idx # can't use lavInspect() on lavaan.mi
-##' ## empty list to hold expanded imputations
-##' impPVs <- list()
+##' ## example with 20 multiple imputations of missing data:
 ##' nPVs <- 5
-##' nImps <- 10
-##' for (m in 1:nImps) {
-##'   HS20imps[[m]]["case.idx"] <- idx
-##'   for (i in 1:nPVs) {
-##'     impPVs[[ nPVs*(m - 1) + i ]] <- merge(HS20imps[[m]],
-##'                                           PVs[[ nPVs*(m - 1) + i ]],
-##'                                           by = "case.idx")
-##'   }
-##' }
-##' lapply(impPVs, head)
+##' nImps <- 20
 ##'
+##' if(requireNamespace("lavaan.mi")){
+##'   data(HS20imps, package = "lavaan.mi")
+##'
+##'   ## specify CFA model from lavaan's ?cfa help page
+##'   HS.model <- '
+##'     visual  =~ x1 + x2 + x3
+##'     textual =~ x4 + x5 + x6
+##'     speed   =~ x7 + x8 + x9
+##'   '
+##'   out2 <- cfa.mi(HS.model, data = HS20imps)
+##'   PVs <- plausibleValues(out2, nDraws = nPVs)
+##'
+##'   idx <- out2@@Data@@case.idx # can't use lavInspect() on lavaan.mi
+##'   ## empty list to hold expanded imputations
+##'   impPVs <- list()
+##'   for (m in 1:nImps) {
+##'     HS20imps[[m]]["case.idx"] <- idx
+##'     for (i in 1:nPVs) {
+##'       impPVs[[ nPVs*(m - 1) + i ]] <- merge(HS20imps[[m]],
+##'                                             PVs[[ nPVs*(m - 1) + i ]],
+##'                                             by = "case.idx")
+##'     }
+##'   }
+##'   lapply(impPVs, head)
 ##' }
 ##'
 ##' @export

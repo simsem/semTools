@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 16 June 2024
+### Last updated: 12 March 2025
 ### runMI creates OLDlavaan.mi object, inherits from lavaanList class
 
 ### DEPRECATED: 16 June 2024
@@ -66,7 +66,7 @@
 ##'   New York, NY: Wiley.
 ##'
 ##' @examples
-##'  \dontrun{
+##'  \donttest{
 ##' ## impose missing data for example
 ##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
 ##'                                       "ageyr","agemo","school")]

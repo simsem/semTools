@@ -67,7 +67,7 @@ parameterization in Millsap and Yun-Tein (2004).
 }
 \examples{
 
-\dontrun{
+\donttest{
 syntax <- ' f1 =~ u1 + u2 + u3 + u4'
 
 measurementInvarianceCat(model = syntax, data = datCat, group = "g",

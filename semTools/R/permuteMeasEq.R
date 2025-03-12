@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 November 2023
+### Last updated: 12 March 2025
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -682,7 +682,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##'
 ##' @examples
 ##'
-##' \dontrun{
+##' \donttest{
 ##'
 ##' ########################
 ##' ## Multiple-Group CFA ##

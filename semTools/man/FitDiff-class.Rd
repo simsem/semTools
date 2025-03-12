@@ -69,7 +69,7 @@ summary(measEqOut)
 summary(measEqOut, fit.measures = "all")
 summary(measEqOut, fit.measures = c("aic", "bic"))
 
-\dontrun{
+if(interactive()){
 ## Save results to a file
 saveFile(measEqOut, file = "measEq.txt")
 

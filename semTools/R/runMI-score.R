@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 16 June 2024
+### Last updated: 12 March 2025
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -149,7 +149,7 @@
 ##' @seealso [lavaan::lavTestScore()]
 ##'
 ##' @examples
-##'  \dontrun{
+##'  \donttest{
 ##' library(lavaan.mi)
 ##' data(HS20imps, package = "lavaan.mi")
 ##'

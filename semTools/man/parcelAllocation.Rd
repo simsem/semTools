@@ -122,7 +122,7 @@ f2 =~ par4 + par5 + par6
 ## names of parcels
 (parcel.names <- paste0("par", 1:6))
 
-\dontrun{
+\donttest{
 ## override default random-number generator to use parallel options
 RNGkind("L'Ecuyer-CMRG")
 

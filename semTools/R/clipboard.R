@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 12 February 2025
+### Last updated: 12 March 2025
 ### Copy or save each aspect of the lavaan object into a clipboard or a file
 
 
@@ -46,7 +46,6 @@
 ##'
 ##' @examples
 ##'
-##' \dontrun{
 ##' library(lavaan)
 ##' HW.model <- ' visual  =~ x1 + c1*x2 + x3
 ##'               textual =~ x4 + c1*x5 + x6
@@ -54,6 +53,7 @@
 ##'
 ##' fit <- cfa(HW.model, data = HolzingerSwineford1939, group = "school")
 ##'
+##' if(interactive()){
 ##' # Copy the summary of the lavaan object
 ##' clipboard(fit)
 ##'

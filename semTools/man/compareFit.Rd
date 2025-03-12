@@ -81,7 +81,7 @@ summary(measEqOut, fit.measures = "all")
 summary(measEqOut, fit.measures = c("aic", "bic", "sic", "ibic"))
 
 
-\dontrun{
+\donttest{
 ## also applies to lavaan.mi objects (fit model to multiple imputations)
 library(lavaan.mi)
 data("HS20imps", package = "lavaan.mi") # example data: 20 imputations

@@ -1,7 +1,7 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
 ### Last updated: 27 May      2020
-###   DEPRECATED  24 November 2022
-###   REMOVED     10 June     2024
+###   DEPRECATED  24 November 2022 (after 0.5-6 was on CRAN)
+###   REMOVED     next time!
 ### fit and rotate EFA models in lavaan
 
 
@@ -54,7 +54,7 @@
 ##'
 ##' @examples
 ##'
-##' \dontrun{
+##' \donttest{
 ##'
 ##' unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
 ##'                          varList = paste0("x", 1:9), estimator = "mlr")
@@ -244,7 +244,7 @@ efaUnrotate <- function(data = NULL, nf, varList = NULL,
 ##' \code{\link{oblqRotate}}
 ##' @examples
 ##'
-##' \dontrun{
+##' \donttest{
 ##'
 ##' unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
 ##'                          varList = paste0("x", 1:9), estimator = "mlr")
@@ -337,7 +337,7 @@ setMethod("summary", signature(object = "EFA"),
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##' @examples
 ##'
-##' \dontrun{
+##' \donttest{
 ##'
 ##' unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
 ##'                          varList = paste0("x", 1:9), estimator = "mlr")

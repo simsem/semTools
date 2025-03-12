@@ -51,7 +51,7 @@ orthogonal rotation is used.}
 
 \examples{
 
-\dontrun{
+\donttest{
 
 unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
                          varList = paste0("x", 1:9), estimator = "mlr")

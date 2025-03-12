@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 12 February 2025
+### Last updated: 12 March 2025
 ### source code for compareFit() function and FitDiff class
 
 
@@ -55,7 +55,7 @@
 ##' summary(measEqOut, fit.measures = "all")
 ##' summary(measEqOut, fit.measures = c("aic", "bic"))
 ##'
-##' \dontrun{
+##' if(interactive()){
 ##' ## Save results to a file
 ##' saveFile(measEqOut, file = "measEq.txt")
 ##'
@@ -292,7 +292,7 @@ saveFileFitDiff <- function(object, file, what = "summary",
 ##' summary(measEqOut, fit.measures = c("aic", "bic", "sic", "ibic"))
 ##'
 ##'
-##' \dontrun{
+##' \donttest{
 ##' ## also applies to lavaan.mi objects (fit model to multiple imputations)
 ##' library(lavaan.mi)
 ##' data("HS20imps", package = "lavaan.mi") # example data: 20 imputations

@@ -88,7 +88,7 @@ the \code{link[lavaan]{model.syntax}}. Names of defined parameters
 (using the ":=" operator) can be included too.
 }
 \examples{
- \dontrun{
+ \donttest{
 library(lavaan.mi)
 data(HS20imps, package = "lavaan.mi")
 

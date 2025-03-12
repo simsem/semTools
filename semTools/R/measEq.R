@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 February 2025
+### Last updated: 12 March 2025
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -177,7 +177,7 @@ measEq <- function(configural.model,
 ## ## Here, we illustrate how measEq.syntax() objects can be used in
 ## ## tandem with MplusAutomation.
 ##
-## \dontrun{
+## \donttest{
 ## ## borrow example data from Mplus user guide
 ## myData <- read.table("http://www.statmodel.com/usersguide/chap5/ex5.16.dat")
 ## names(myData) <- c("u1","u2","u3","u4","u5","u6","x1","x2","x3","g")
@@ -194,18 +194,20 @@ measEq <- function(configural.model,
 ##               group = "g", longFacNames = longFacNames,
 ##               group.equal = c("thresholds","loadings","intercepts"),
 ##               long.equal = c("thresholds","loadings","intercepts"))
-## library(MplusAutomation)
-## mpInp <- mplusObject(rdata = myData, TITLE = "Scalar Invariance",
-##                      VARIABLE = "GROUPING = g (1=g1 2=g2);",
-##                      usevariables = c(paste0("u", 1:6), "g"),
-##                      ANALYSIS = "ESTIMATOR = WLSMV;",
-##                 ## model specification from measEq.syntax():
-##                      MODEL = as.character(syntax.scalar, package = "mplus"))
-## ## add details for Mplus script:
-## mpInp <- update(mpInp, ANALYSIS = ~ . + "PARAMETERIZATION = THETA;",
-##                 VARIABLE = ~ . + "CATEGORICAL = u1 u2 u3 u4 u5 u6;")
-## ## fit model
-## mpOut <- mplusModeler(mpInp, modelout = "scalar.inp", run = 1L)
+##  if(requireNamespace("MplusAutomation")){
+##    library(MplusAutomation)
+##    mpInp <- mplusObject(rdata = myData, TITLE = "Scalar Invariance",
+##                         VARIABLE = "GROUPING = g (1=g1 2=g2);",
+##                         usevariables = c(paste0("u", 1:6), "g"),
+##                         ANALYSIS = "ESTIMATOR = WLSMV;",
+##                    ## model specification from measEq.syntax():
+##                         MODEL = as.character(syntax.scalar, package = "mplus"))
+##    ## add details for Mplus script:
+##    mpInp <- update(mpInp, ANALYSIS = ~ . + "PARAMETERIZATION = THETA;",
+##                    VARIABLE = ~ . + "CATEGORICAL = u1 u2 u3 u4 u5 u6;")
+##    ## fit model
+##    mpOut <- mplusModeler(mpInp, modelout = "scalar.inp", run = 1L)
+##  }
 ## }
 #TODO: add configural and DIFFTEST example
 ##'
@@ -1085,7 +1087,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' ##   (metric and scalar invariance, respectively)
 ##' ## simultaneously across groups and repeated measures.
 ##'
-##' \dontrun{
+##' \donttest{
 ##'
 ##' ## metric invariance
 ##' syntax.metric <- measEq.syntax(configural.model = mod.cat, data = datCat,

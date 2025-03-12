@@ -3,7 +3,7 @@
 ### - based on research from/with Sonya Sterba
 ### - adapted from OLD parcelAllocation() by Corbin Quick and Alexander Schoemann
 ### - additional "indices" argument added by Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 12 March 2025
 
 
 ##' Combine sampling variability with parcel-allocation variability by
@@ -217,7 +217,7 @@
 ##'
 ##' @examples
 ##'
-##' \dontrun{
+##' \donttest{
 ##' ## lavaan syntax: A 2 Correlated
 ##' ## factor CFA model to be fit to parceled data
 ##'

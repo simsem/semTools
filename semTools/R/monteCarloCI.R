@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 February 2025
+### Last updated: 12 March 2025
 
 ## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
 # dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
@@ -180,14 +180,13 @@
 ##' set.seed(1234)
 ##' monteCarloCI(fit, standardized = TRUE)
 ##'
+##' \donttest{
 ##' ## save samples to calculate more precise intervals:
-##' \dontrun{
 ##' set.seed(1234)
 ##' foo <- monteCarloCI(fit, append.samples = TRUE)
-##' library(HDInterval)
-##' hdi(foo$Samples)
+##' # library(HDInterval) # not a dependency; must be installed
+##' # hdi(foo$Samples)
 ##' }
-##'
 ##' ## Parameters can also be obtained from an external analysis
 ##' myParams <- c("a","b","c")
 ##' (coefs <- coef(fit)[myParams]) # names must match those in the "expression"

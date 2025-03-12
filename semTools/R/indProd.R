@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit and Alexander M. Schoemann
-### Last updated: 10 January 2021
+### Last updated: 12 March 2025
 ### prepare product indicators for 2-way and 3-way interactions in SEM
 
 
@@ -84,7 +84,7 @@
 ##'
 ##'
 ##' ## To add product-indicators to multiple-imputed data sets
-##' \dontrun{
+##' \donttest{
 ##' HSMiss <- HolzingerSwineford1939[ , c(paste0("x", 1:9), "ageyr","agemo")]
 ##' set.seed(12345)
 ##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)

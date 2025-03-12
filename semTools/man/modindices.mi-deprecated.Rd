@@ -125,7 +125,7 @@ and SEPCs will be calculated by standardizing the EPCs using model-implied
 (residual) variances.
 }
 \examples{
- \dontrun{
+ \donttest{
 library(lavaan.mi)
 data(HS20imps, package = "lavaan.mi")
 

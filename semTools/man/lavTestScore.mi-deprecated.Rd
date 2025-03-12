@@ -125,7 +125,7 @@ by pooling the complete-data score-test statistics across imputed data sets
 (i.e., "D2"; Li et al., 1991).
 }
 \examples{
- \dontrun{
+ \donttest{
 library(lavaan.mi)
 data(HS20imps, package = "lavaan.mi")
 

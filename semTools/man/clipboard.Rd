@@ -52,7 +52,6 @@ of the output.
 }
 \examples{
 
-\dontrun{
 library(lavaan)
 HW.model <- ' visual  =~ x1 + c1*x2 + x3
               textual =~ x4 + c1*x5 + x6
@@ -60,6 +59,7 @@ HW.model <- ' visual  =~ x1 + c1*x2 + x3
 
 fit <- cfa(HW.model, data = HolzingerSwineford1939, group = "school")
 
+if(interactive()){
 # Copy the summary of the lavaan object
 clipboard(fit)
 

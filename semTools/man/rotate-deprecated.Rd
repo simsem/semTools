@@ -46,7 +46,7 @@ delta method by numerically computing the Jacobian matrix by the
 }
 \examples{
 
-\dontrun{
+\donttest{
 
 unrotated <- efaUnrotate(HolzingerSwineford1939, nf = 3,
                          varList = paste0("x", 1:9), estimator = "mlr")

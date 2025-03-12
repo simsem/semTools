@@ -73,7 +73,7 @@ dat6 <- indProd(attitude[ , -1], var1 = 1:2, var2 = 3:4, var3 = 5:6,
 
 
 ## To add product-indicators to multiple-imputed data sets
-\dontrun{
+\donttest{
 HSMiss <- HolzingerSwineford1939[ , c(paste0("x", 1:9), "ageyr","agemo")]
 set.seed(12345)
 HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
