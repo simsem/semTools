@@ -104,36 +104,8 @@
 ##' @seealso [lavaan::lavTestWald()]
 ##'
 ##' @examples
-##'  \donttest{
-##' library(lavaan.mi)
-##' data(HS20imps, package = "lavaan.mi")
 ##'
-##' ## specify CFA model from lavaan's ?cfa help page
-##' HS.model <- '
-##'   visual  =~ x1 + b1*x2 + x3
-##'   textual =~ x4 + b2*x5 + x6
-##'   speed   =~ x7 + b3*x8 + x9
-##' '
-##'
-##' fit <- cfa.mi(HS.model, data = HS20imps)
-##'
-##' ## Testing whether a single parameter equals zero yields the 'chi-square'
-##' ## version of the Wald z statistic from the summary() output, or the
-##' ## 'F' version of the t statistic from the summary() output, depending
-##' ## whether asymptotic = TRUE or FALSE
-##' lavTestWald.mi(fit, constraints = "b1 == 0")      # default D1 statistic
-##' lavTestWald.mi(fit, constraints = "b1 == 0", test = "D2") # D2 statistic
-##'
-##' ## The real advantage is simultaneously testing several equality
-##' ## constraints, or testing more complex constraints:
-##' con <- '
-##'    2*b1 == b3
-##'    b2 - b3 == 0
-##' '
-##' lavTestWald.mi(fit, constraints = con) # default F statistic
-##' lavTestWald.mi(fit, constraints = con, asymptotic = TRUE) # chi-squared
-##'
-##' }
+##' ## See the new lavaan.mi package
 ##'
 ##' @name lavTestWald.mi-deprecated
 ##' @usage

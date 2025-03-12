@@ -213,7 +213,7 @@
 ##'
 ##' @examples
 ##'
-##' ## See ?runMI help page
+##' ## See the new lavaan.mi package
 ##'
 setClass("OLDlavaan.mi", contains = "lavaanList",
          slots = c(coefList = "list",     # coefficients in matrix format

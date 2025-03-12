@@ -125,23 +125,8 @@ and SEPCs will be calculated by standardizing the EPCs using model-implied
 (residual) variances.
 }
 \examples{
- \donttest{
-library(lavaan.mi)
-data(HS20imps, package = "lavaan.mi")
 
-## specify CFA model from lavaan's ?cfa help page
-HS.model <- '
-  visual  =~ x1 + x2 + x3
-  textual =~ x4 + x5 + x6
-  speed   =~ x7 + x8 + x9
-'
-
-out <- cfa.mi(HS.model, data = HS20imps)
-
-modindices.mi(out) # default: Li et al.'s (1991) "D2" method
-modindices.mi(out, test = "D1") # Li et al.'s (1991) "D1" method
-
-}
+## See the new lavaan.mi package
 
 }
 \references{

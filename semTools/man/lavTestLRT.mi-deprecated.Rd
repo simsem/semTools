@@ -83,30 +83,8 @@ models.  To compare several nested models fitted to multiple imputations,
 see examples on the \code{\link[=compareFit]{compareFit()}} help page.
 }
 \examples{
- \donttest{
-library(lavaan.mi)
-data(HS20imps, package = "lavaan.mi")
 
-## specify CFA model from lavaan's ?cfa help page
-HS.model <- '
-  visual  =~ x1 + b1*x2 + x3
-  textual =~ x4 + b2*x5 + x6
-  speed   =~ x7 + b3*x8 + x9
-'
-
-fit1 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm")
-fit0 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm", orthogonal = TRUE)
-
-## By default, use D3.
-## Must request a chi-squared statistic to be robustified.
-lavTestLRT.mi(fit1, h1 = fit0, asymptotic = TRUE)
-
-## Using D2, you can either robustify the pooled naive statistic ...
-lavTestLRT.mi(fit1, h1 = fit0, asymptotic = TRUE, test = "D2")
-## ... or pool the robust chi-squared statistic
-lavTestLRT.mi(fit1, h1 = fit0, asymptotic = TRUE, test = "D2",
-              pool.robust = TRUE)
-}
+## See the new lavaan.mi package
 
 }
 \references{

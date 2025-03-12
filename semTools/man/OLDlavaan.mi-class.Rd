@@ -247,7 +247,7 @@ table, returned by \code{\link[lavaan:lav_partable]{lavaan::lav_partable_unrestr
 
 \examples{
 
-## See ?runMI help page
+## See the new lavaan.mi package
 
 }
 \references{

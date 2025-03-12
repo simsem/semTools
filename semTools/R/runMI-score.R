@@ -149,28 +149,8 @@
 ##' @seealso [lavaan::lavTestScore()]
 ##'
 ##' @examples
-##'  \donttest{
-##' library(lavaan.mi)
-##' data(HS20imps, package = "lavaan.mi")
 ##'
-##' ## specify CFA model for lavaan's ?cfa help-page data
-##' HS.model <- '
-##'   speed =~ c(L1, L1)*x7 + c(L1, L1)*x8 + c(L1, L1)*x9
-##' '
-##'
-##' out <- cfa.mi(HS.model, data = HS20imps, group = "school", std.lv = TRUE)
-##'
-##' ## Mode 1: Score test for releasing equality constraints
-##'
-##' ## default test: Li et al.'s (1991) "D2" method
-##' lavTestScore.mi(out, cumulative = TRUE)
-##' ## Li et al.'s (1991) "D1" method
-##' lavTestScore.mi(out, test = "D1")
-##'
-##' ## Mode 2: Score test for adding currently fixed-to-zero parameters
-##' lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
-##'
-##' }
+##' ## See the new lavaan.mi package
 ##'
 ##' @name lavTestScore.mi-deprecated
 ##' @usage
