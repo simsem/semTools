@@ -103,12 +103,12 @@ For further information on the Monte Carlo method, see MacKinnon et al.
 The asymptotic covariance matrix can be obtained easily from many popular
 SEM software packages.
 \itemize{
-\item{LISREL: }{Including the EC option on the OU line will print the ACM
+\item{LISREL: Including the EC option on the OU line will print the ACM
 to a seperate file. The file contains the lower triangular elements of
 the ACM in free format and scientific notation.}
-\item{M\emph{plus}: }{Include the command TECH3; in the OUTPUT section.
+\item{M\emph{plus}: Include the command TECH3; in the OUTPUT section.
 The ACM will be printed in the output.}
-\item{\code{lavaan}: }{Use the \code{\link[=vcov]{vcov()}} method on the fitted \link[lavaan:lavaan-class]{lavaan::lavaan}
+\item{\code{lavaan}: Use the \code{\link[=vcov]{vcov()}} method on the fitted \link[lavaan:lavaan-class]{lavaan::lavaan}
 object to return the ACM.}
 }
 }
