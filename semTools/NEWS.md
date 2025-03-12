@@ -32,6 +32,12 @@
 - `parcelAllocation()` now allows for higher-order factors (see [here](https://groups.google.com/g/lavaan/c/sGb2_9EaeWE/m/xTpxNzGvAAAJ)).
 
 
+## Known bugs:
+
+- `compareFit()` not currently working for `lavaan.mi-class` objects.
+
+
+
 # semTools 0.5-6 (on CRAN 10 May 2022)
 
 ## New Features:

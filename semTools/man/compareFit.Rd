@@ -81,28 +81,6 @@ summary(measEqOut, fit.measures = "all")
 summary(measEqOut, fit.measures = c("aic", "bic", "sic", "ibic"))
 
 
-\donttest{
-## also applies to lavaan.mi objects (fit model to multiple imputations)
-library(lavaan.mi)
-data("HS20imps", package = "lavaan.mi") # example data: 20 imputations
-
-## request robust test statistics
-mgfit2 <- cfa.mi(HS.model, data = HS20imps, group = "school", estimator = "mlm")
-mgfit1 <- cfa.mi(HS.model, data = HS20imps, group = "school", estimator = "mlm",
-                 group.equal = "loadings")
-mgfit0 <- cfa.mi(HS.model, data = HS20imps, group = "school", estimator = "mlm",
-                 group.equal = c("loadings","intercepts"))
-
-## request the strictly-positive robust test statistics
-out2 <- compareFit(scalar = mgfit0, metric = mgfit1, config = mgfit2,
-                   argsLRT = list(asymptotic = TRUE,
-                                  method = "satorra.bentler.2010"))
-## note that moreFitIndices() does not work for lavaan.mi objects
-summary(out2, fit.measures = c("crmr","srmr",   "cfi.robust","tli.robust",
-                               "rmsea.robust",
-                               "rmsea.ci.lower.robust",
-                               "rmsea.ci.upper.robust"))
-}
 
 }
 \seealso{
