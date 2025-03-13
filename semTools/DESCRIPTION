@@ -1,6 +1,6 @@
 Encoding: UTF-8
 Package: semTools
-Version: 0.5-7
+Version: 0.5-7.901
 Title: Useful Tools for Structural Equation Modeling
 Description: Provides miscellaneous tools for structural equation modeling, 
              many of which extend the 'lavaan' package. For example, latent
@@ -45,6 +45,6 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/simsem/semTools/wiki
 BugReports: https://github.com/simsem/semTools/issues
-Date: 2025-03-12
+Date: 2025-03-13
 RoxygenNote: 7.3.2
 Roxygen: list(old_usage=TRUE, markdown=TRUE)
