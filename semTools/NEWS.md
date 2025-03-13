@@ -7,7 +7,7 @@
 
 
 
-# semTools 0.5-7 (on CRAN 13 May 2025)
+# semTools 0.5-7 (on CRAN 13 March 2025)
 
 ## New Features:
 
