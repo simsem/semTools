@@ -3,8 +3,10 @@
 ## New Features:
 
 
+
 ## Bug Fixes:
 
+- `compareFit()` would throw an error if `lavaan.mi` package was not installed ([fixed](https://github.com/simsem/semTools/issues/147).
 
 
 # semTools 0.5-7 (on CRAN 13 March 2025)

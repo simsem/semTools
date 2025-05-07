@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 12 March 2025
+### Last updated: 7 May 2025
 ### source code for compareFit() function and FitDiff class
 
 
@@ -386,15 +386,17 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 
 
 	## grab lavaan.mi options, if relevant
-	if (is.null(argsLRT$pool.robust)) {
-	  pool.robust <- formals(lavaan.mi::lavTestLRT.mi)$pool.robust # default value
-	} else {
-	  pool.robust <- argsLRT$pool.robust # user-specified value
-	}
-	if (is.null(argsLRT$pool.method)) {
-	  pool.method <- eval(formals(lavaan.mi::lavTestLRT.mi)$pool.method) # default value
-	} else {
-	  pool.method <- argsLRT$pool.method # user-specified value
+	if (inherits(mods[[1]], "lavaan.mi")) {
+  	if (is.null(argsLRT$pool.robust)) {
+  	  pool.robust <- formals(lavaan.mi::lavTestLRT.mi)$pool.robust # default value
+  	} else {
+  	  pool.robust <- argsLRT$pool.robust # user-specified value
+  	}
+  	if (is.null(argsLRT$pool.method)) {
+  	  pool.method <- eval(formals(lavaan.mi::lavTestLRT.mi)$pool.method) # default value
+  	} else {
+  	  pool.method <- argsLRT$pool.method # user-specified value
+  	}
 	}
 
 	## FIT INDICES
