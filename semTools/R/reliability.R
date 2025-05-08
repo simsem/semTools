@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 12 February 2025
+### Last updated: 8 May 2025
 
 
 
@@ -535,9 +535,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   column when `return.total = TRUE`.
 ##' @param omit.factors `character` vector naming any common factors
 ##'   modeled in `object` whose composite reliability is not of
-##'   interest. For example, higher-order or method factors. Note that
-##'   [reliabilityL2()] should be used to calculate composite
-##'   reliability of a higher-order factor.
+##'   interest. For example, higher-order or method factors.
 ##' @param omit.indicators `character` vector naming any observed variables
 ##'   that should be omitted from the composite whose reliability is calculated.
 ##' @param omit.imps `character` vector specifying criteria for omitting

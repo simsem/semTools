@@ -81,9 +81,7 @@ column when \code{return.total = TRUE}.}
 
 \item{omit.factors}{\code{character} vector naming any common factors
 modeled in \code{object} whose composite reliability is not of
-interest. For example, higher-order or method factors. Note that
-\code{\link[=reliabilityL2]{reliabilityL2()}} should be used to calculate composite
-reliability of a higher-order factor.}
+interest. For example, higher-order or method factors.}
 
 \item{omit.indicators}{\code{character} vector naming any observed variables
 that should be omitted from the composite whose reliability is calculated.}
