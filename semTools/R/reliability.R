@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 8 May 2025
+### Last updated: 23 June 2025
 
 
 
@@ -785,6 +785,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
   threshold <- if (anyCategorical) getThreshold(object, omit.imps = omit.imps) else NULL
   latScales <- if (anyCategorical) getScales(object, omit.imps = omit.imps) else NULL
 
+  ## extract common- and total-variance components
   if (inherits(object, "lavaan")) {
     ## common-factor variance
     PHI <- lavInspect(object, "cov.lv") # ignored if tau.eq
@@ -2644,9 +2645,23 @@ maximalRelia <- function(object, omit.imps = c("no.conv","no.se")) {
 ## Hidden Functions
 ## ----------------
 
-computeAlpha <- function(S) {
+computeAlpha <- function(S, W = NULL) {
   k <- nrow(S)
-  k/(k - 1) * (1.0 - sum(diag(S)) / sum(S))
+
+  if (is.null(W)) {
+    ## Traditional formula
+    ALPHA <- k/(k - 1) * (1.0 - sum(diag(S)) / sum(S))
+
+  } else {
+    stopifnot(length(W) == nrow(S))
+
+    DIAG <- t(W) %*% diag(diag(S)) %*% W
+    ALL  <- t(W) %*%           S   %*% W
+    #FIXME: Is "k" correct in this situation?
+    ALPHA <- k/(k - 1) * (1.0 - DIAG / ALL)[1,1]
+  }
+
+  ALPHA
 }
 
 #' @importFrom stats cov2cor pnorm
