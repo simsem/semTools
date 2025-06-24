@@ -4,15 +4,39 @@
 \alias{compRelSEM}
 \title{Composite Reliability using SEM}
 \usage{
-compRelSEM(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
-  config = character(0), shared = character(0), higher = character(0),
-  return.total = FALSE, dropSingle = TRUE, omit.factors = character(0),
-  omit.indicators = character(0), omit.imps = c("no.conv", "no.se"),
-  return.df = TRUE)
+compRelSEM(object, W = NULL, return.total = FALSE, obs.var = TRUE,
+  tau.eq = FALSE, ord.scale = TRUE, config = character(0),
+  shared = character(0), higher = character(0), dropSingle = TRUE,
+  omit.factors = character(0), omit.indicators = character(0),
+  omit.imps = c("no.conv", "no.se"), return.df = TRUE)
 }
 \arguments{
 \item{object}{A \link[lavaan:lavaan-class]{lavaan::lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object,
 expected to contain only exogenous common factors (i.e., a CFA model).}
+
+\item{W}{Composite weights applied to observed variables prior to summing.
+By default (\code{NULL}), unit-weights are applied to all indicators per factor
+(as well as all modeled indicators when \code{return.total=TRUE}), which is
+equivalent to specifying equal weights of \emph{any} value to each indicator.
+Weights can be a \code{character} string specifying any number of composites
+using \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}}, in the form \code{COMPOSITE <~ weight*indicator}
+(any indicator without a weight is given a unit weight = 1). Alternatively,
+weights can be provided in a named list of named numeric vector(s), where
+the list names indicate the composite names, the vectors contain the
+weights, and indicators are the names of those weights.  For multiple-block
+models (e.g., multiple groups, levels, or both), a list of such lists can
+be provided, although a single list would be repeated across blocks.}
+
+\item{return.total}{\code{logical} indicating whether to return a final
+column containing the reliability of a composite of all indicators (not
+listed in \code{omit.indicators}) of first-order factors not listed in
+\code{omit.factors}.  Ignored in 1-factor models or when specifying \code{W}eights,
+and should only be set \code{TRUE} if all factors represent scale dimensions
+that could be meaningfully collapsed to a single composite (scale sum or
+scale mean).  Setting a negative value (e.g., \code{-1} returns \strong{only} the
+total-composite reliability (excluding coefficients per factor), except
+when requesting Lai's (2021) coefficients for multilevel \code{config}ural
+or \verb{shared=} constructs.}
 
 \item{obs.var}{\code{logical} indicating whether to compute reliability
 using observed variances in the denominator. Setting \code{FALSE} triggers
@@ -62,17 +86,6 @@ higher-order factor, do not use this argument; instead, specify the
 higher-order factor(s) using the \verb{shared=} or \verb{config=} argument
 (\code{compRelSEM} will automatically check whether it includes latent
 indicators and apply the appropriate formula).}
-
-\item{return.total}{\code{logical} indicating whether to return a final
-column containing the reliability of a composite of all indicators (not
-listed in \code{omit.indicators}) of first-order factors not listed in
-\code{omit.factors}.  Ignored in 1-factor models, and should only be set
-\code{TRUE} if all factors represent scale dimensions that could be
-meaningfully collapsed to a single composite (scale sum or scale mean).
-Setting a negative value (e.g., \code{-1} returns \strong{only} the
-total-composite reliability (excluding coefficients per factor), except
-when requesting Lai's (2021) coefficients for multilevel \code{config}ural
-or \verb{shared=} constructs.}
 
 \item{dropSingle}{\code{logical} indicating whether to exclude factors
 defined by a single indicator from the returned results. If \code{TRUE}

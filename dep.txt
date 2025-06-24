@@ -20,7 +20,8 @@ FCO: mardiaSkew(), mardiaKurtosis()
 
 kfa: findRMSEAsamplesizenested()
 
-MBESS: reliability()
+MBESS: ci.reliability()
+  - uses auxiliary()
 
 pwr2ppl: mvrnonnorm()
 https://github.com/chrisaberson/pwr2ppl

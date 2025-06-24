@@ -1,5 +1,6 @@
-### Sunthud Pornprasertmanit, Terrence D. Jorgensen, Yves Rosseel
-### Last updated: 23 June 2025
+### Terrence D. Jorgensen
+###   - deprecated functionality: Sunthud Pornprasertmanit
+### Last updated: 24 June 2025
 
 
 
@@ -476,6 +477,28 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'
 ##' @param object A [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object,
 ##'   expected to contain only exogenous common factors (i.e., a CFA model).
+##' @param W Composite weights applied to observed variables prior to summing.
+##'   By default (`NULL`), unit-weights are applied to all indicators per factor
+##'   (as well as all modeled indicators when `return.total=TRUE`), which is
+##'   equivalent to specifying equal weights of *any* value to each indicator.
+##'   Weights can be a `character` string specifying any number of composites
+##'   using [lavaan::model.syntax()], in the form `COMPOSITE <~ weight*indicator`
+##'   (any indicator without a weight is given a unit weight = 1). Alternatively,
+##'   weights can be provided in a named list of named numeric vector(s), where
+##'   the list names indicate the composite names, the vectors contain the
+##'   weights, and indicators are the names of those weights.  For multiple-block
+##'   models (e.g., multiple groups, levels, or both), a list of such lists can
+##'   be provided, although a single list would be repeated across blocks.
+##' @param return.total `logical` indicating whether to return a final
+##'   column containing the reliability of a composite of all indicators (not
+##'   listed in `omit.indicators`) of first-order factors not listed in
+##'   `omit.factors`.  Ignored in 1-factor models or when specifying `W`eights,
+##'   and should only be set `TRUE` if all factors represent scale dimensions
+##'   that could be meaningfully collapsed to a single composite (scale sum or
+##'   scale mean).  Setting a negative value (e.g., `-1` returns **only** the
+##'   total-composite reliability (excluding coefficients per factor), except
+##'   when requesting Lai's (2021) coefficients for multilevel `config`ural
+##'   or `shared=` constructs.
 ##' @param obs.var `logical` indicating whether to compute reliability
 ##'   using observed variances in the denominator. Setting `FALSE` triggers
 ##'   using model-implied variances in the denominator.
@@ -519,16 +542,6 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   higher-order factor(s) using the `shared=` or `config=` argument
 ##'   (`compRelSEM` will automatically check whether it includes latent
 ##'   indicators and apply the appropriate formula).
-##' @param return.total `logical` indicating whether to return a final
-##'   column containing the reliability of a composite of all indicators (not
-##'   listed in `omit.indicators`) of first-order factors not listed in
-##'   `omit.factors`.  Ignored in 1-factor models, and should only be set
-##'   `TRUE` if all factors represent scale dimensions that could be
-##'   meaningfully collapsed to a single composite (scale sum or scale mean).
-##'   Setting a negative value (e.g., `-1` returns **only** the
-##'   total-composite reliability (excluding coefficients per factor), except
-##'   when requesting Lai's (2021) coefficients for multilevel `config`ural
-##'   or `shared=` constructs.
 ##' @param dropSingle `logical` indicating whether to exclude factors
 ##'   defined by a single indicator from the returned results. If `TRUE`
 ##'   (default), single indicators will still be included in the `total`
@@ -742,10 +755,11 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' compRelSEM(fit.both, shared = "fs", config = "fc")
 ##'
 ##' @export
-compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
+compRelSEM <- function(object, W = NULL, return.total = FALSE,
+                       obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
                        config = character(0), shared = character(0),
                        higher = character(0),
-                       return.total = FALSE, dropSingle = TRUE,
+                       dropSingle = TRUE,
                        omit.factors = character(0),
                        omit.indicators = character(0),
                        omit.imps = c("no.conv","no.se"), return.df = TRUE) {
@@ -779,6 +793,96 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
     block.label <- paste(rep(blk.g.lab, each = nLevels), blk.clus.lab,
                          sep = if (ngroups > 1L && nLevels > 1L) "_" else "")
   } else block.label <- NULL
+
+  ## Check (for) weights
+  if (!is.null(W)) {
+
+    ## if it is a lavaan script, parse the text and assemble vector(s)
+    ## (verify format afterward)
+    if (is.character(W)) {
+      #FIXME: lavaanify() would require checking whether to specify ngroups=
+      #       But lavParseModelString() doesn't
+      wPT <- lavParseModelString(W, as.data.frame. = TRUE)
+
+      ## Translate to vector(s) of weights, per block (remove lists later)
+      wList <- list() # outer list == blocks
+      for (b in unique(wPT$block)) {
+        wList[[b]] <- list() # inner list == composites
+
+        ## isolate rows for this block
+        wPTb <- wPT[wPT$block == b & wPT$op == "<~", ]
+        if (nrow(wPTb) == 0) next  # no composites for this block
+
+        ## loop over composite names
+        for (comp in unique(wPTb$lhs)) {
+          wPTbc <- wPTb[wPTb$lhs == comp, ]
+          wPTbc$fixed[wPTbc$fixed == ""] <- "1"
+          wList[[b]][[comp]] <- setNames(as.numeric(wPTbc$fixed), nm = wPTbc$rhs)
+        }
+      }
+
+      ## only 1 block in the script?
+      if (length(wList) == 1L) {
+        W <- wList[[1]] # to be copied per block below
+      } else W <- wList
+    }
+
+
+    ## now check the format
+    if (is.numeric(W)) {
+      nW <- 1L
+      W <- list(Composite = W) # put 1 composite (named "Composite"), in a list
+      if (nblocks > 1L) {
+        ## repeat same composite per block
+        W  <- setNames(rep( W, nblocks), nm = block.label)
+        nW <- setNames(rep(nW, nblocks), nm = block.label)
+      }
+
+    } else if (is.list(W)) {
+
+      ## is it a list of composites? (per block)
+      if (all(sapply(W, is.numeric))) {
+        if (is.null(names(W))) stop('Use names(W)<- to assign names to the list of composites')
+        ## assume it is the same composite per block
+        ## (variables are checked below)
+        nW <- length(W)
+        W  <- sapply(block.label, function(x) W, simplify = FALSE)
+        nW <- setNames(rep(nW, nblocks), nm = block.label)
+
+        ## or is it per block?  Must be a list:
+      } else if (all(sapply(W, is.list))) {
+        ## verify whether it is 1 per block
+        if (length(W) == nblocks) {
+          names(W) <- block.label
+          ## number of composites can vary across blocks
+          nW <- setNames(sapply(W, length), nm = block.label)
+
+        } else if (length(W) == 1) {
+          ## Why was it in a list in the first place?
+          ## Just assume it applies to all blocks.
+          nW <- length(W)
+          W  <- setNames(rep( W, nblocks), nm = block.label)
+          nW <- setNames(rep(nW, nblocks), nm = block.label)
+
+        } else  {
+          stop('W= is a list with ', length(W),
+               ' elements, but object= has ', nblocks, ' blocks')
+        }
+
+        ## check they are all lists of numeric vectors
+        for (b in nblocks) {
+          if (!all(sapply(W[[b]], is.numeric))) {
+            stop('If W= is a list of lists, each "inner" list must contain numeric vectors')
+          }
+        }
+
+        ## neither a list of composites nor blocks?
+      } else stop("str(W) not an expected format; see help-page description")
+    } else stop("str(W) not an expected format; see help-page description")
+
+    ## end scope of user-supplied W=
+    ##TODO: if is.null(W), must construct vectors of ONEs ad hoc below
+  }
 
   ## check for categorical
   anyCategorical <- lavInspect(object, "categorical")
@@ -941,7 +1045,7 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
   warnTotal <- warnAlpha <- warnOmega <- FALSE
   if (!length(c(config, shared))) {
 
-    rel <- vector("list", length = nblocks)
+    rel <- vector("list", length = nblocks) # W= requires explicitly empty blocks
 
     for (b in 1:nblocks) {
 
@@ -1113,6 +1217,10 @@ compRelSEM <- function(object, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 
     return(out)
   }
+
+  #TODO: warn when "reliability" is (auto)returned for factors with indicators
+  #      that cross-load on other factors.  For true reliability, use W=
+  # if (warnCross) {}
 
   if (warnTotal) {
     message('Cannot return.total when model contains both continuous and ',
