@@ -1042,7 +1042,7 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
     }
   }
 
-  warnTotal <- warnAlpha <- warnOmega <- FALSE
+  warnTotal <- warnAlpha <- warnOmega <- warnCross <- FALSE
   if (!length(c(config, shared))) {
 
     rel <- vector("list", length = nblocks) # W= requires explicitly empty blocks
@@ -1244,7 +1244,8 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
 
 
   ## otherwise, only use Lai's MULTILEVEL coefficients
-  if (nLevels > 1L && length(c(config, shared))) {
+  if (length(c(config, shared))) {
+    if (nLevels < 2L) stop('config= and shared= arguments are for multilevel data')
 
     ## group-level list, each containing 2 coefs per factor/total in data.frame
     rel <- vector("list", length = ngroups)
