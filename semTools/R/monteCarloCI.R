@@ -289,6 +289,7 @@ monteCarloCI <- function(object = NULL, expr, coefs, ACM, nRep = 2e4,
   ## Matrix of sampled values
   # dat <-
   samples <- data.frame(mnormt::rmnorm(n = nRep, mean = coefs, varcov = ACM))
+  colnames(samples) <- names(coefs)
   ## Apply the expression(s) to VECTORS of ESTIMATES
   if (fast) {
     for (i in seq_along(expr)) {
