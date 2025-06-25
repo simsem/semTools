@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
 ###   - deprecated functionality: Sunthud Pornprasertmanit
-### Last updated: 24 June 2025
+### Last updated: 25 June 2025
 
 
 
@@ -1042,8 +1042,9 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
     }
   }
 
-  warnTotal <- warnAlpha <- warnOmega <- warnCross <- FALSE
+  warnTotal <- warnAlpha <- warnOmega <- warnCross <- warnGeldhof <- FALSE
   if (!length(c(config, shared))) {
+    if (nLevels > 1L) warnGeldhof <- TRUE
 
     rel <- vector("list", length = nblocks) # W= requires explicitly empty blocks
 
@@ -1240,6 +1241,15 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
     message('Composite reliability (omega) cannot be computed for factors ',
             'with mixed categorical and continuous indicators, unless a model ',
             'is fitted by treating ordinal indicators as continuous.')
+  }
+  if (warnGeldhof) {
+    message('object= is a multilevel SEM, but you have not used arguments to ',
+            'indicate whether a composite would represent a within- (config=)  ',
+            'or between-level (shared=) construct. Any resulting coefficient ',
+            'is not reliability of an observed composite variable, but rather ',
+            'of latent level-specific components, as proposed by Geldhof et ',
+            'al. (2014).  The config= and shared= arguments provide true ',
+            'composite reliability coefficients proposed by Lai (2021).')
   }
 
 
