@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
 ###   - deprecated functionality: Sunthud Pornprasertmanit
-### Last updated: 25 June 2025
+### Last updated: 26 June 2025
 
 
 
@@ -533,6 +533,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   indicator/measurement error alone (i.e., \eqn{\omega^\textrm{2L}}), the
 ##'   `shared=` construct name(s) can additionally be included in
 ##'   `config=` argument.
+## @param higher Deprecated `character` vector, subplanted by `true=` argument.
 ##' @param higher `character` vector naming any higher-order constructs in
 ##'   `object` for which composite reliability should be calculated.
 ##'   Ignored when `tau.eq=TRUE` because alpha is not based on a CFA model;
@@ -542,6 +543,10 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   higher-order factor(s) using the `shared=` or `config=` argument
 ##'   (`compRelSEM` will automatically check whether it includes latent
 ##'   indicators and apply the appropriate formula).
+##' @param true `character` vector naming any common factors in `object` that
+##'   are considered sources of "true-score variance" in a composite
+##'   defined by the `W=` argument. This can be used to indicate a higher-order
+##'   factor or to obtain "hierarchical omega" with a bifactor model.
 ##' @param dropSingle `logical` indicating whether to exclude factors
 ##'   defined by a single indicator from the returned results. If `TRUE`
 ##'   (default), single indicators will still be included in the `total`
@@ -758,7 +763,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 compRelSEM <- function(object, W = NULL, return.total = FALSE,
                        obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
                        config = character(0), shared = character(0),
-                       higher = character(0),
+                       higher = character(0), true = character(0),
                        dropSingle = TRUE,
                        omit.factors = character(0),
                        omit.indicators = character(0),
@@ -795,6 +800,7 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
   } else block.label <- NULL
 
   ## Check (for) weights
+  #TODO: How to accommodate config=/shared=? Only list() per group
   if (!is.null(W)) {
 
     ## if it is a lavaan script, parse the text and assemble vector(s)
@@ -1043,10 +1049,16 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
   }
 
   warnTotal <- warnAlpha <- warnOmega <- warnCross <- warnGeldhof <- FALSE
-  if (!length(c(config, shared))) {
+
+
+
+  ## If the user supplied no weights, then we guess:
+  ##  - unit-weighted sums
+  ##  - one composite per factor (but warn when there are cross-loadings)
+  if (is.null(W) && !length(c(config, shared))) {
     if (nLevels > 1L) warnGeldhof <- TRUE
 
-    rel <- vector("list", length = nblocks) # W= requires explicitly empty blocks
+    rel <- vector("list", length = nblocks)
 
     for (b in 1:nblocks) {
 
@@ -1254,7 +1266,7 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
 
 
   ## otherwise, only use Lai's MULTILEVEL coefficients
-  if (length(c(config, shared))) {
+  if (is.null(W) && length(c(config, shared))) {
     if (nLevels < 2L) stop('config= and shared= arguments are for multilevel data')
 
     ## group-level list, each containing 2 coefs per factor/total in data.frame

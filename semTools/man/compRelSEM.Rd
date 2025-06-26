@@ -6,9 +6,10 @@
 \usage{
 compRelSEM(object, W = NULL, return.total = FALSE, obs.var = TRUE,
   tau.eq = FALSE, ord.scale = TRUE, config = character(0),
-  shared = character(0), higher = character(0), dropSingle = TRUE,
-  omit.factors = character(0), omit.indicators = character(0),
-  omit.imps = c("no.conv", "no.se"), return.df = TRUE)
+  shared = character(0), higher = character(0), true = character(0),
+  dropSingle = TRUE, omit.factors = character(0),
+  omit.indicators = character(0), omit.imps = c("no.conv", "no.se"),
+  return.df = TRUE)
 }
 \arguments{
 \item{object}{A \link[lavaan:lavaan-class]{lavaan::lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object,
@@ -86,6 +87,11 @@ higher-order factor, do not use this argument; instead, specify the
 higher-order factor(s) using the \verb{shared=} or \verb{config=} argument
 (\code{compRelSEM} will automatically check whether it includes latent
 indicators and apply the appropriate formula).}
+
+\item{true}{\code{character} vector naming any common factors in \code{object} that
+are considered sources of "true-score variance" in a composite
+defined by the \verb{W=} argument. This can be used to indicate a higher-order
+factor or to obtain "hierarchical omega" with a bifactor model.}
 
 \item{dropSingle}{\code{logical} indicating whether to exclude factors
 defined by a single indicator from the returned results. If \code{TRUE}
