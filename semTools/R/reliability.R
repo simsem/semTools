@@ -912,24 +912,21 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
 
     ## total variance
     if (anyCategorical && tau.eq && ord.scale) {
-      ## calculate SIGMA from data for alpha
-      #FIXME when MLSEM available for ordinal indicators
-      #     (Level 2 components available?  Extend conditional?)
-      rawData <- try(lavInspect(object, "data", drop.list.single.group = FALSE),
-                     silent = TRUE)
-      if (inherits(rawData, "try-error"))
-        stop('Error in lavInspect(fit, "data"); tau.eq= and ord.scale= cannot ',
-             'both be TRUE for models fitted to summary statistics of ',
-             'categorial data.')
-      SIGMA <- lapply(rawData, cov)
-      names(SIGMA) <- block.label
-
-    } else {
-      SIGMA <- sapply(lavInspect(object, drop.list.single.group = FALSE,
-                                 what = ifelse(obs.var, "sampstat", "fitted")),
-                      "[[", i = "cov", simplify = FALSE)
-      names(SIGMA) <- block.label
+      stop('Setting both tau.eq=TRUE and ord.scale=TRUE indicates you want ',
+           'coefficient alpha for a composite on the observed ordinal scale. ',
+           'There are 2 options, which are not equivalent:\n\n(1)',
+           ' You can refit the model without specifying variables as ',
+           'ordered=, avoiding the latent-response assumption, so the model ',
+           'parameters are on the observed scale.\n\n(2)',
+           ' You can fit a model that retains the latent-response assumption ',
+           'but imposes tau-equivalence (e.g., set all loadings = 1 and ',
+           'estimate all factor variances), making it unnecessary to set tau.eq=TRUE.')
     }
+    SIGMA <- sapply(lavInspect(object, drop.list.single.group = FALSE,
+                               what = ifelse(obs.var, "sampstat", "fitted")),
+                    "[[", i = "cov", simplify = FALSE)
+    names(SIGMA) <- block.label
+
 
   } else if (inherits(object, "lavaan.mi")) {
     if (!"package:lavaan.mi" %in% search()) attachNamespace("lavaan.mi")
@@ -978,62 +975,36 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
 
     ## total variance
     if (anyCategorical && tau.eq && ord.scale) {
-      ## calculate SIGMA from data for alpha
-      #FIXME when MLSEM available for ordinal indicators
-      #     (Level 2 components available?  Extend conditional?)
-      dataList <- object@DataList[useImps]
+      stop('Setting both tau.eq=TRUE and ord.scale=TRUE indicates you want ',
+           'coefficient alpha for a composite on the observed ordinal scale. ',
+           'There are 2 options, which are not equivalent:\n\n(1)',
+           ' You can refit the model without specifying variables as ',
+           'ordered=, avoiding the latent-response assumption, so the model ',
+           'parameters are on the observed scale.\n\n(2)',
+           ' You can fit a model that retains the latent-response assumption ',
+           'but imposes tau-equivalence (e.g., set all loadings = 1 and ',
+           'estimate all factor variances), making it unnecessary to set tau.eq=TRUE.')
+    }
+    ## use model-implied SIGMA from h0 or h1 model
+    if (obs.var) {
       SIGMA <- vector("list", nblocks)
-      names(SIGMA) <- group.label #FIXME when MLSEMs can have ordinal indicators
-      if (nblocks == 1L) {
-        VV <- lavNames(object, type = "ov")
-        impCovList <- lapply(dataList, function(DD) {
-          dat <- do.call(cbind, sapply(DD[VV], as.numeric, simplify = FALSE))
-          cov(dat)
-        })
-        SIGMA[[1]] <- Reduce("+", impCovList) / length(impCovList)
-
-      } else {
-        ## multigroup models need separate data matrices per group
-        G <- lavInspect(object, "group")
-
-        for (g in seq_along(group.label)) {
-          VV <- lavNames(object, type = "ov",
-                         group = ifelse(length(group.label),
-                                        yes = group.label[g], no = g))
-
-          impCovList <- lapply(dataList, function(DD) {
-            RR <- DD[,G] == ifelse(length(group.label),
-                                   yes = group.label[g], no = g)
-            dat <- do.call(cbind, sapply(DD[RR, VV], as.numeric, simplify = FALSE))
-            cov(dat)
-          })
-          SIGMA[[g]] <- Reduce("+", impCovList) / length(impCovList)
-        } # g
+      names(SIGMA) <- block.label
+      ## loop over blocks to pool saturated-model (observed) matrices
+      for (b in 1:nblocks) {
+        covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
+        SIGMA[[b]] <- Reduce("+", covList) / m
+        ## The slot does not contain dimnames, so add them
+        rownames(SIGMA[[b]]) <- colnames(SIGMA[[b]]) <- lavNames(object, block = b)
       }
-
     } else {
-      ## use model-implied SIGMA from h0 or h1 model
-      if (obs.var) {
-        SIGMA <- vector("list", nblocks)
-        names(SIGMA) <- block.label
-        ## loop over blocks to pool saturated-model (observed) matrices
-        for (b in 1:nblocks) {
-          covList <- lapply(object@h1List[useImps], function(i) i$implied$cov[[b]])
-          SIGMA[[b]] <- Reduce("+", covList) / m
-          ## The slot does not contain dimnames, so add them
-          rownames(SIGMA[[b]]) <- colnames(SIGMA[[b]]) <- lavNames(object, block = b)
-        }
+      ## pooled model-implied matrices
+      if (nblocks == 1L) {
+        SIGMA <- getMethod("fitted", class(object))(object)["cov"] # retain list format
       } else {
-        ## pooled model-implied matrices
-        if (nblocks == 1L) {
-          SIGMA <- getMethod("fitted", class(object))(object)["cov"] # retain list format
-        } else {
-          SIGMA <- sapply(getMethod("fitted", class(object))(object),
-                          "[[", "cov", simplify = FALSE)
-          names(SIGMA) <- block.label
-        }
+        SIGMA <- sapply(getMethod("fitted", class(object))(object),
+                        "[[", "cov", simplify = FALSE)
+        names(SIGMA) <- block.label
       }
-
     }
 
   } # end lavaan vs. lavaan.mi conditional
@@ -1048,7 +1019,9 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
     }
   }
 
-  warnTotal <- warnAlpha <- warnOmega <- warnCross <- warnGeldhof <- FALSE
+  ## flag conditions to warn about
+  warnTotal <- warnGeldhof <- FALSE
+  warnAlpha <- warnOmega <- warnCross <- warnCatWeights <- character(0)
 
 
 
@@ -1120,7 +1093,7 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
           if (tau.eq) {
             if (fMix && !ord.scale) {
               ## can't mix observed and latent scales
-              warnAlpha <- TRUE #TODO
+              warnAlpha <- c(warnAlpha, fn) #TODO
               next
             }
             rel[[b]][fn] <- computeAlpha(totalCov)
@@ -1129,7 +1102,7 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
 
           ## OMEGA
           if (fMix) {
-            warnOmega <- TRUE # can't (yet) mix observed and latent scales
+            warnOmega <-  c(warnOmega, fn) # can't (yet) mix observed and latent scales
             next
           }
           Lf <- subLY[fIndNames, fn, drop = FALSE]
@@ -1233,15 +1206,19 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
 
   #TODO: warn when "reliability" is (auto)returned for factors with indicators
   #      that cross-load on other factors.  For true reliability, use W=
-  # if (warnCross) {}
+  # if (length(warnCross)) {}
 
+  #TODO: warn that Green & Yang's (2009) method is not (yet) available with weights
+  # if (length(warnCatWeights)) {}
+
+  #TODO: update alpha/omega warnings to list problematic composite(s)
   if (warnTotal) {
     message('Cannot return.total when model contains both continuous and ',
             'binary/ordinal observed indicators. Use the ',
             'omit.factors= argument to choose factors with only categorical ',
             'or continuous indicators, if that is a composite of interest.\n')
   }
-  if (warnAlpha) {
+  if (length(warnAlpha)) {
     message('Coefficient alpha cannot be computed for factors as though a ',
             'composite would be calculated using both observed-response scales',
             ' (for continuous indicators) and latent-response scales (for ',
@@ -1249,7 +1226,7 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
             'either set ord.scale=FALSE or fit a model that treats ordinal ',
             'indicators as continuous.')
   }
-  if (warnOmega) {
+  if (length(warnOmega)) {
     message('Composite reliability (omega) cannot be computed for factors ',
             'with mixed categorical and continuous indicators, unless a model ',
             'is fitted by treating ordinal indicators as continuous.')
@@ -2797,6 +2774,8 @@ computeAlpha <- function(S, W = NULL) {
 
 #' @importFrom stats cov2cor pnorm
 omegaCat <- function(truevar, threshold, scales, denom) {
+  #TODO: Figure out how to incorporate weights
+
   ## must be in standardized latent scale
   R <- diag(scales) %*% truevar %*% diag(scales)
 
