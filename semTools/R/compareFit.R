@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 7 May 2025
+### Last updated: 3 December 2025
 ### source code for compareFit() function and FitDiff class
 
 
@@ -401,11 +401,17 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 
 	## FIT INDICES
 	if (indices || moreIndices) {
-	  fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model,
-	                    pool.robust = pool.robust, pool.method = pool.method)
-	  if (moreIndices && modClass == "lavaan") {
-	    moreFitList <- lapply(mods, moreFitIndices, nPrior = nPrior)
-	    fitList <- mapply(c, fitList, moreFitList, SIMPLIFY = FALSE)
+	  if (inherits(mods[[1]], "lavaan.mi")) {
+	    fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model,
+	                      ## extra arguments about pooling
+	                      pool.robust = pool.robust, pool.method = pool.method)
+	  } else {
+	    ## must be a lavaan-class object
+	    fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model)
+	    if (moreIndices) {
+	      moreFitList <- lapply(mods, moreFitIndices, nPrior = nPrior)
+	      fitList <- mapply(c, fitList, moreFitList, SIMPLIFY = FALSE)
+	    }
 	  }
 
 	  if (length(unique(sapply(fitList, length))) > 1L) {
@@ -420,8 +426,14 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	  fit <- as.data.frame(do.call(rbind, fitList))
 
 	} else {
-	  fitList <- lapply(mods, fitMeasures, fit.measures = "df",
-	                    pool.robust = pool.robust, pool.method = pool.method)
+	  ## No fit indices requested, but still call fitMeasures() for df?
+	  if (inherits(mods[[1]], "lavaan.mi")) {
+	    #FIXME: This seems terribly inefficient.  Only need df to sort below.
+	    fitList <- lapply(mods, fitMeasures, fit.measures = "df",
+	                      pool.robust = pool.robust, pool.method = pool.method)
+	  } else {
+	    fitList <- lapply(mods, fitMeasures, fit.measures = "df")
+	  }
 	  ## check for scaled tests
 	  nDF <- sapply(fitList, length)
 	  if (any(nDF != nDF[1])) stop('Some (but not all) models have robust tests,',
