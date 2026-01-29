@@ -420,8 +420,21 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	  fit <- as.data.frame(do.call(rbind, fitList))
 
 	} else {
-	  fitList <- lapply(mods, fitMeasures, fit.measures = "df",
-	                    pool.robust = pool.robust, pool.method = pool.method)
+	  FUNFITMEASURES <- function(lavfit) {
+	    fitMeasuresMethod <- getMethod("fitMeasures", class(lavfit))
+	    fitMeasuresFormal <- names(formals(fitMeasuresMethod))
+	    fitMeasuresArgs <- list(lavfit, 
+	                               fit.measures = "df")
+	    if ("pool.robust" %in% fitMeasuresFormal) {
+	      fitMeasuresArgs$pool.robust <- pool.robust
+	    }
+	    if ("pool.method" %in% fitMeasuresFormal) {
+	      fitMeasuresArgs$pool.method <- pool.method
+	    }
+	    do.call(fitMeasuresMethod, fitMeasuresArgs)
+	  }
+
+	  fitList <- lapply(mods, FUNFITMEASURES)
 	  ## check for scaled tests
 	  nDF <- sapply(fitList, length)
 	  if (any(nDF != nDF[1])) stop('Some (but not all) models have robust tests,',
