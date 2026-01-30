@@ -401,8 +401,24 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 
 	## FIT INDICES
 	if (indices || moreIndices) {
-	  fitList <- lapply(mods, fitMeasures, baseline.model = baseline.model,
-	                    pool.robust = pool.robust, pool.method = pool.method)
+	  FUNFITMEASURES1 <- function(lavfit) {
+	    fitMeasuresMethod <- getMethod("fitMeasures", class(lavfit))
+	    fitMeasuresFormal <- names(formals(fitMeasuresMethod))
+	    fitMeasuresArgs <- list(lavfit)
+	    if ("baseline.model" %in% fitMeasuresFormal) {
+	      fitMeasuresArgs$baseline.model <- baseline.model
+	    }
+	    if ("pool.robust" %in% fitMeasuresFormal) {
+	      fitMeasuresArgs$pool.robust <- pool.robust
+	    }
+	    if ("pool.method" %in% fitMeasuresFormal) {
+	      fitMeasuresArgs$pool.method <- pool.method
+	    }
+	    do.call(fitMeasuresMethod, fitMeasuresArgs)
+	  }
+
+	  fitList <- lapply(mods, FUNFITMEASURES1)
+
 	  if (moreIndices && modClass == "lavaan") {
 	    moreFitList <- lapply(mods, moreFitIndices, nPrior = nPrior)
 	    fitList <- mapply(c, fitList, moreFitList, SIMPLIFY = FALSE)
@@ -420,10 +436,10 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	  fit <- as.data.frame(do.call(rbind, fitList))
 
 	} else {
-	  FUNFITMEASURES <- function(lavfit) {
+	  FUNFITMEASURES2 <- function(lavfit) {
 	    fitMeasuresMethod <- getMethod("fitMeasures", class(lavfit))
 	    fitMeasuresFormal <- names(formals(fitMeasuresMethod))
-	    fitMeasuresArgs <- list(lavfit, 
+	    fitMeasuresArgs <- list(lavfit,
 	                               fit.measures = "df")
 	    if ("pool.robust" %in% fitMeasuresFormal) {
 	      fitMeasuresArgs$pool.robust <- pool.robust
@@ -434,7 +450,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	    do.call(fitMeasuresMethod, fitMeasuresArgs)
 	  }
 
-	  fitList <- lapply(mods, FUNFITMEASURES)
+	  fitList <- lapply(mods, FUNFITMEASURES2)
 	  ## check for scaled tests
 	  nDF <- sapply(fitList, length)
 	  if (any(nDF != nDF[1])) stop('Some (but not all) models have robust tests,',
