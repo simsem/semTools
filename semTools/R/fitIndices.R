@@ -540,10 +540,17 @@ chisqSmallN <- function(fit0, fit1 = NULL,
                                     ' cannot compare lavaan objects to lavaan.mi)')
 
     ## check order of DF
-    suppressMessages(DF0 <- getMethod("fitMeasures", class(fit0))(fit0, fit.measures = "df",
-                                                                  omit.imps = omit.imps)[1])
-    suppressMessages(DF1 <- getMethod("fitMeasures", class(fit1))(fit1, fit.measures = "df",
-                                                                  omit.imps = omit.imps)[1])
+    # suppressMessages(DF0 <- getMethod("fitMeasures", class(fit0))(fit0, fit.measures = "df",
+    #                                                               omit.imps = omit.imps)[1])
+    # suppressMessages(DF1 <- getMethod("fitMeasures", class(fit1))(fit1, fit.measures = "df",
+    #                                                               omit.imps = omit.imps)[1])
+    if (inherits(fit0, "lavaan.mi")) {
+      DF0 <- fitMeasures(fit0, fit.measures = "df", omit.imps = omit.imps)[1]
+      DF1 <- fitMeasures(fit1, fit.measures = "df", omit.imps = omit.imps)[1]
+    } else {
+      DF0 <- fitMeasures(fit0, fit.measures = "df")[1]
+      DF1 <- fitMeasures(fit1, fit.measures = "df")[1]
+    }
     if (DF0 == DF1) stop("Models have the same degrees of freedom.")
     parent <- which.min(c(DF0, DF1))
     if (parent == 1L) {
@@ -587,13 +594,19 @@ chisqSmallN <- function(fit0, fit1 = NULL,
   K <- length(lavNames(fit0, type = "lv")) # count latent factors
 
   if (is.null(fit1)) {
-    FIT <- getMethod("fitMeasures", class(fit0))(fit0,
-                                                 ## lavaan.mi arguments ignored
-                                                 ## for lavaan objects
-                                                 omit.imps = omit.imps,
-                                                 asymptotic = TRUE,
-                                                 fit.measures = c("npar","chisq",
-                                                                  "df","pvalue"))
+    # FIT <- getMethod("fitMeasures", class(fit0))(fit0,
+    #                                              ## lavaan.mi arguments ignored
+    #                                              ## for lavaan objects
+    #                                              omit.imps = omit.imps,
+    #                                              asymptotic = TRUE,
+    #                                              fit.measures = c("npar","chisq",
+    #                                                               "df","pvalue"))
+    if (inherits(fit0, "lavaan.mi")) {
+      FIT <- fitMeasures(fit0, fit.measures = c("npar","chisq","df","pvalue"),
+                         omit.imps = omit.imps, asymptotic = TRUE)
+    } else {
+      FIT <- fitMeasures(fit0, fit.measures = c("npar","chisq","df","pvalue"))
+    }
     scaled <- any(grepl(pattern = "scaled", x = names(FIT)))
     if (scaled) warning('Small-N corrections developed assuming normality, but',
                         ' a scaled test was requested. Applying correction(s) ',
