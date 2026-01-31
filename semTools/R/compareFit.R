@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Sunthud Pornprasertmanit
-### Last updated: 3 December 2025
+### Last updated: 31 January 2026
 ### source code for compareFit() function and FitDiff class
 
 
@@ -438,8 +438,11 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	  nDF <- sapply(fitList, length)
 	  if (any(nDF != nDF[1])) stop('Some (but not all) models have robust tests,',
 	                               ' so they cannot be compared as nested models.')
-	  fit <- data.frame(df = sapply(fitList, "[",
-	                                i = if (any(nDF > 1L)) 2L else 1L))
+	  ## started failing with R 4.6.0:
+	  # fit <- data.frame(df = sapply(fitList, "[", i = if (any(nDF > 1L)) 2L else 1L))
+	  fit <- data.frame(df = mapply(function(x, i) x[[i]],
+	                                x = fitList,
+	                                i = ifelse(nDF > 1L, 2L, 1L)))
 	}
 
 
@@ -471,7 +474,7 @@ compareFit <- function(..., nested = TRUE, argsLRT = list(), indices = TRUE,
 	  diffTab <- as.data.frame(do.call(cbind, lapply(fitTab, diff)))
 	  rownames(diffTab) <- paste(names(mods)[-1], "-", names(mods)[-length(names(mods))])
 
-	} else diffTab <- data.frame(df = diff(fit))
+	} else diffTab <- data.frame(df = diff(fit$df))
 
 	new("FitDiff", name = names(mods), model.class = modClass,
 	    nested = nestedout, fit = fit, fit.diff = diffTab)
