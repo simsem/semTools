@@ -499,12 +499,12 @@ sic <- function(f, lresults = NULL) {
 ##'     textual =~ x4 + b2*x5 + x6
 ##'     speed   =~ x7 + b3*x8 + x9
 ##' '
-##' fit1 <- cfa(HS.model, data = HolzingerSwineford1939[101:150,])
+##' fit1 <- cfa(HS.model, data = HolzingerSwineford1939[1:50,])
 ##' ## test a single model (implicitly compared to a saturated model)
 ##' chisqSmallN(fit1)
 ##'
 ##' ## fit a more constrained model
-##' fit0 <- cfa(HS.model, data = HolzingerSwineford1939[101:150,],
+##' fit0 <- cfa(HS.model, data = HolzingerSwineford1939[1:50,],
 ##'             orthogonal = TRUE)
 ##' ## compare 2 models
 ##' chisqSmallN(fit1, fit0)
@@ -540,21 +540,10 @@ chisqSmallN <- function(fit0, fit1 = NULL,
                                     ' cannot compare lavaan objects to lavaan.mi)')
 
     ## check order of DF
-    fitMeasuresMethod0 <- getMethod("fitMeasures", class(fit0))
-    fitMeasuresFormal0 <- names(formals(fitMeasuresMethod0))
-    fitMeasuresArgs0 <- list(fit0, fit.measures = "df")
-    if ("omit.imps" %in% fitMeasuresFormal0) {
-      fitMeasuresArgs0$omit.imps <- omit.imps
-    }
-    suppressMessages(DF0 <- do.call(fitMeasuresMethod0, fitMeasuresArgs0)[1])
-
-    fitMeasuresMethod1 <- getMethod("fitMeasures", class(fit1))
-    fitMeasuresFormal1 <- names(formals(fitMeasuresMethod1))
-    fitMeasuresArgs1 <- list(fit1, fit.measures = "df")
-    if ("omit.imps" %in% fitMeasuresFormal1) {
-      fitMeasuresArgs1$omit.imps <- omit.imps
-    }
-    suppressMessages(DF1 <- do.call(fitMeasuresMethod1, fitMeasuresArgs1)[1])
+    suppressMessages(DF0 <- getMethod("fitMeasures", class(fit0))(fit0, fit.measures = "df",
+                                                                  omit.imps = omit.imps)[1])
+    suppressMessages(DF1 <- getMethod("fitMeasures", class(fit1))(fit1, fit.measures = "df",
+                                                                  omit.imps = omit.imps)[1])
     if (DF0 == DF1) stop("Models have the same degrees of freedom.")
     parent <- which.min(c(DF0, DF1))
     if (parent == 1L) {
@@ -598,18 +587,13 @@ chisqSmallN <- function(fit0, fit1 = NULL,
   K <- length(lavNames(fit0, type = "lv")) # count latent factors
 
   if (is.null(fit1)) {
-    fitMeasuresMethod0_2 <- getMethod("fitMeasures", class(fit0))
-    fitMeasuresFormal0_2 <- names(formals(fitMeasuresMethod0_2))
-    fitMeasuresArgs0_2 <- list(fit0, 
-                               fit.measures = c("npar","chisq","df","pvalue"))
-    if ("omit.imps" %in% fitMeasuresFormal0_2) {
-      fitMeasuresArgs0_2$omit.imps <- omit.imps
-    }
-    if ("asymptotic" %in% fitMeasuresFormal0_2) {
-      fitMeasuresArgs0_2$asymptotic <- TRUE
-    }
-    suppressMessages(FIT <- do.call(fitMeasuresMethod0_2, fitMeasuresArgs0_2))
-    
+    FIT <- getMethod("fitMeasures", class(fit0))(fit0,
+                                                 ## lavaan.mi arguments ignored
+                                                 ## for lavaan objects
+                                                 omit.imps = omit.imps,
+                                                 asymptotic = TRUE,
+                                                 fit.measures = c("npar","chisq",
+                                                                  "df","pvalue"))
     scaled <- any(grepl(pattern = "scaled", x = names(FIT)))
     if (scaled) warning('Small-N corrections developed assuming normality, but',
                         ' a scaled test was requested. Applying correction(s) ',
