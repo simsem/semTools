@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
-###   - deprecated functionality: Sunthud Pornprasertmanit
-### Last updated: 26 June 2025
+###   - omegaCat() and deprecated functionality: Sunthud Pornprasertmanit
+### Last updated: 4 February 2026
 
 
 
@@ -317,13 +317,10 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' leaving it to the user to decide on a label in their report.  But we do
 ##' use the symbols \eqn{\alpha} and \eqn{\omega} in the formulas below in order
 ##' to distinguish coefficients that do (not) assume essential tau-equivalence.
-##' For higher-order constructs with latent indicators, only \eqn{\omega} is
-##' available. Lai's (2021) multilevel coefficients are labeled in accordance
-##' with the symbols used in that article (more details below).
 ##'
 ##' Bentler (1968) first introduced factor-analysis reliability for a
 ##' unidimensional factor model with congeneric indicators, labeling the
-##' coeficients \eqn{\alpha}.  McDonald (1999) later referred to this
+##' coefficients \eqn{\alpha}.  McDonald (1999) later referred to this
 ##' *and other reliability coefficients*, first as \eqn{\theta} (in 1970),
 ##' then as \eqn{\omega}, which is a source of confusion when reporting
 ##' coefficients (Cho, 2021).  Coefficients based on factor models were later
@@ -331,37 +328,51 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' cross-loadings) and correlated errors. The general \eqn{\omega} formula
 ##' implemented in this function is:
 ##'
-##' \deqn{ \omega = \frac{\left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
-##' Var\left( \psi \right)}{\bold{1}^\prime \hat{\Sigma} \bold{1}}, }
+##' \deqn{\omega=\frac{\bold{w}^{\prime} \Lambda \Phi \Lambda^{\prime} \bold{w}
+##'                  }{ \bold{w}^{\prime} \hat{\Sigma} \bold{w}}, }
 ##'
 ##' where \eqn{\hat{\Sigma}} can be the model-implied covariance matrix from
 ##' either the saturated model (i.e., the "observed" covariance matrix, used by
-##' default) or from the hypothesized CFA model, controlled by the
-##' `obs.var` argument. A \eqn{k}-dimensional vector \eqn{\bold{1}} is used
-##' to sum elements in the matrix. Note that if the model includes any directed
-##' effects (latent regression slopes), all coefficients are calculated
-##' from **total** factor variances: `lavInspect(object, "cov.lv")`.
+##' default) or from the hypothesized CFA model, controlled by the `obs.var=`
+##' argument. All elements of matrices in the numerator and denominator are
+##' effectively summed by the multiplication of the outer terms \eqn{\bold{w}},
+##' a \eqn{k}-dimensional vector of composite weights typically consisting of 1s
+##' (\eqn{\bold{1}}), unless otherwise specified with the `W=` argument), and
+##' \eqn{k} is the number of variables in the composite. For unidimensional
+##' constructs with simple structure, the equation above is often simplified to
+##' a scalar representation (e.g., McDonald, 1999, Eq. 6.20b):
 ##'
-##' Assuming (essential) tau-equivalence (`tau.eq=TRUE`) makes \eqn{\omega}
-##' equivalent to coefficient \eqn{\alpha} from classical test theory
+##' \deqn{ \omega = \frac{        \left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
+##'   Var\left( \psi \right)  }{  \left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
+##'   Var\left( \psi \right) + \sum^{k}_{i = 1} \theta_{ii} }, }
+##'
+##' Note that all coefficients are calculated from *total* factor variances:
+##' `lavInspect(object, "cov.lv")`, which assumes the fitted `object=` is a CFA,
+##' not a full SEM with latent regression slopes.  If there is a Beta matrix, it
+##' should only contain higher-order factor loadings (see details below).
+##'
+##'
+##' When the fitted CFA imposes constraints consistent with (essential)
+##' tau-equivalence, \eqn{\omega} is equivalent to coefficient \eqn{\alpha}
 ##' (Cronbach, 1951):
 ##'
 ##' \deqn{ \alpha = \frac{k}{k - 1}\left[ 1 - \frac{\sum^{k}_{i = 1}
 ##' \sigma_{ii}}{\sum^{k}_{i = 1} \sigma_{ii} + 2\sum_{i < j} \sigma_{ij}}
 ##' \right],}
 ##'
-##' where \eqn{k} is the number of items in a factor's composite,
-##' \eqn{\sigma_{ii}} signifies item *i*'s variance, and \eqn{\sigma_{ij}}
-##' signifies the covariance between items *i* and *j*. Again, the
-##' `obs.var` argument controls whether \eqn{\alpha} is calculated using
-##' the observed or model-implied covariance matrix.
+##' where \eqn{k} is the number of items in the composite, \eqn{\sigma_{ii}} is
+##' item \eqn{i}'s variance, and \eqn{\sigma_{ij}} is the covariance between
+##' items \eqn{k} and \eqn{j}. Setting `tau.eq=TRUE` triggers the application of
+##' this formula (rather than \eqn{\omega} above) to the model-implied or
+##' observed covariance matrix (again controlled by the `obs.var=` argument).
 ##'
-##' By setting `return.total=TRUE`, one can estimate reliability for a
-##' single composite calculated using all indicators in a multidimensional
-##' CFA (Bentler, 1972, 2009). Setting `return.total = -1` will return
-##' **only** the total-composite reliability (not per factor).
 ##'
 ##' **Higher-Order Factors**:
+##'
+##' For higher-order constructs with latent indicators, only \eqn{\omega} is
+##' available because \eqn{\alpha} was not derived from CFA parameters (although
+##' it can be expressed in a particular restricted CFA specification).
+##'
 ##' The reliability of a composite that represents a higher-order construct
 ##' requires partitioning the model-implied factor covariance matrix \eqn{\Phi}
 ##' in order to isolate the common-factor variance associated only with the
@@ -384,48 +395,90 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' use the full \eqn{\bold{B}} matrix and full model-implied \eqn{\Phi} matrix
 ##' (i.e., including all latent factors) because the zeros in \eqn{\bold{B}}
 ##' will cancel out unwanted components of \eqn{\Phi}. Thus, we can calculate
-##' the proportion of variance of a composite score calculated from the observed
-##' indicators (e.g., a total score or scale mean) that is attributable to the
-##' second-order factor (i.e., coefficient \eqn{\omega}):
+##' the proportion of variance of a composite score that is attributable to the
+##' second-order factor:
 ##'
-##' \deqn{\omega=\frac{\bold{1}^{\prime} \Lambda \bold{B} \Phi \bold{B}^{\prime}
-##'   \Lambda^{\prime} \bold{1} }{ \bold{1}^{\prime} \hat{\Sigma} \bold{1}}, }
+##' \deqn{\omega=\frac{\bold{w}^{\prime} \Lambda \bold{B} \Phi \bold{B}^{\prime}
+##'   \Lambda^{\prime} \bold{w} }{ \bold{w}^{\prime} \hat{\Sigma} \bold{w}}, }
 ##'
-##' where \eqn{\bold{1}} is the *k*-dimensional vector of 1s and *k*
-##' is the number of observed indicators in the composite. Note that if a
-##' higher-order factor also has observed indicators, it is necessary to model
-##' the observed indicators as single-indicator constructs, so that all of the
-##' higher-order factor indicators are latent (with loadings in the Beta matrix,
-##' not Lambda).
+##' where \eqn{\bold{w}}, \eqn{\hat{\Sigma}}, and \eqn{k} are defined as above.
+##' **Note** that if a higher-order factor also has observed indicators, it is
+##' necessary to model the observed indicators as single-indicator lower-order
+##' constructs, so that all of the higher-order factor indicators are latent
+##' (with loadings in the Beta matrix, not Lambda); otherwise, higher-order
+##' factor variance in the observed indicator is not captured in the numerator.
+##'
+##'
+##' **Bifactor or Multitrait--Multimethod (MTMM) Models**:
+##'
+##' These multidimensional models partition sources of common variance that are
+##' due to the factor of interest (e.g., a trait) as well as non-target factors
+##' (e.g., "method factors", such as item wording or type of respondent).
+##' The latter can be considered as systematic (i.e., non-random) sources of
+##' error, to be excluded from the numerator of a reliability coefficient,
+##' yielding so-called "hierarchical omega" (\eqn{\omega_\textrm{H}}). On the
+##' other hand, non-target variance that can be expected in repeated measurement
+##' meets the classical test theory definition of reliability. Including method
+##' factors in the numerator yields so-called "omega total"
+##' (\eqn{\omega_\textrm{T}}), which is the default approach in `compRelSEM()`
+##' because it is consistent with the classical test theory definition of
+##' reliability. However, users can obtain \eqn{\omega_\textrm{H}} for a
+##' composite by using the `true=` argument to specify any factor(s) to be
+##' treated as representing true scores.  The same approach can be taken to
+##' obtain the proportion of a (sub)scale composite's variance due to method
+##' factors (by listing those in `true=`), if that is of interest.
 ##'
 ##' **Categorical Indicators**:
-##' When all indicators (per composite) are ordinal, the `ord.scale`
-##' argument controls whether the coefficient is calculated on the
-##' latent-response scale (`FALSE`) or on the observed ordinal scale
-##' (`TRUE`, the default).  For \eqn{\omega}-type coefficients
-##' (`tau.eq=FALSE`), Green and Yang's (2009, formula 21) approach is used
-##' to transform factor-model results back to the ordinal response scale. When
-##' `ord.scale=TRUE` and `tau.eq=TRUE`, coefficient \eqn{\alpha} is
-##' calculated using the covariance matrix calculated from the integer-valued
-##' numeric weights for ordinal categories, consistent with its definition
-##' (Chalmers, 2018) and the `alpha` function in the `psych` package;
-##' this implies `obs.var=TRUE`, so `obs.var=FALSE` will be ignored
-##' When `ord.scale=FALSE`, the standard \eqn{\alpha} formula is applied to
-##' the polychoric correlation matrix ("ordinal \eqn{\alpha}"; Zumbo et al., 2007),
-##' estimated from the saturated or hypothesized model (see `obs.var`),
-##' and \eqn{\omega} is calculated from CFA results without applying Green and
-##' Yang's (2009) correction (see Zumbo & Kroc, 2019, for a rationalization).
-##' No method analogous to Green and Yang (2009) has been proposed for
-##' calculating reliability with a mixture of categorical and continuous
-##' indicators, so an error is returned if `object` includes factors with a
-##' mixture of indicator types (unless omitted using `omit.factors`). If
-##' categorical indicators load on a different factor(s) than continuous
-##' indicators, then reliability will still be calculated separately for those
-##' factors, but `return.total` must be `FALSE` (unless
-##' `omit.factors` is used to isolate factors with indicators of the same
-##' type).
+##'
+##' When all indicators (per composite) are ordinal, a CFA can be fitted that
+##' includes a threshold model (sometimes called Item Factor Analysis: IFA),
+##' which assumes a normally distributed latent response underlies each observed
+##' ordinal response.  Despite making this assumption, a composite of ordinal
+##' items can only be calculated by assigning numerical values to the ordinal
+##' categories, so that the pseudo-numerical variables can be summed into a
+##' composite variable that is more approximately continuous than its items.
+##'
+##' Applying the formulas above to the CFA parameters provides the
+##' *hypothetical* reliability of a composite of latent responses: a composite
+##' which cannot be calculated in practice.  Nonetheless, this hypothetical
+##' reliability can be interpreted as an estimate of what reliability *could* be
+##' if a more approximately continuous response scale were used (e.g., with
+##' sufficiently many response categories that the standardized solutions are
+##' equivalent between a fitted IFA and a CFA fitted that treats the ordinal
+##' responses as numeric; Chalmers, 2018). This can be requested by setting
+##' `ord.scale=FALSE`, in which case \eqn{\hat\Sigma} in the formulas above
+##' is a *polychoric* correlation matrix.
+##' When `ord.scale=FALSE` and `tau.eq=TRUE`, this results in what Zumbo et al.
+##' (2007) termed "ordinal \eqn{\alpha}" (see criticisms by Chalmers, 2018, and
+##' and a rejoinder by Zumbo & Kroc, 2019).
+##'
+##' Alternatively, Green and Yang (2009, Eq. 21) derived a method to calculate
+##' model-based reliability (\eqn{\omega}) from IFA parameters (i.e.,
+##' incorporating the latent-response assumption) but that applies to the actual
+##' (i.e., ordinal) observed response scale (the default: `ord.scale=TRUE`).
+##' Lu et al. (2020) showed how to incorporate unequal weights into Green and
+##' Yang's (2009) formula, so `W=` can be used to estimate the (maximal)
+##' reliability of a weighted composite of ordinal variables.
+##' However, combining `ord.scale=TRUE` with `tau.eq=TRUE` is not available.
+##' For \eqn{\alpha} to be interpretable on the observed ordinal scale,
+##' users must choose whether to (a) release the latent-response assumption, by
+##' fitting a CFA without a threshold model, or (b) fit an IFA model with
+##' constraints consistent with the assumption of (essential) tau-equivalence
+##' (i.e., equal factor loadings).
+##'
+##' No method analogous to Green and Yang (2009, Eq. 21) has yet been proposed
+##' to calculate reliability with a mixture of categorical and continuous
+##' indicators, so any such composite is skipped with a warning.
+##'
 ##'
 ##' **Multilevel Measurement Models**:
+##'
+  #TODO: incorporate `W=` details:
+##   multilevel SEMs, the syntax should include level-specific blocks,
+##   where the same composite name can be specified at both levels to calculate
+##   Lai's (2021) indices for observed-variable composites; otherwise, Geldhof
+##   et al.'s (2014) indices for level-specific latent composites
+
 ##' Under the default settings, `compRelSEM()` will apply the same formula
 ##' in each "block" (group and/or level of analysis). In the case of multilevel
 ##' (ML-)SEMs, this yields "reliability" for latent within- and between-level
@@ -483,83 +536,92 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   equivalent to specifying equal weights of *any* value to each indicator.
 ##'   Weights can be a `character` string specifying any number of composites
 ##'   using [lavaan::model.syntax()], in the form `COMPOSITE <~ weight*indicator`
-##'   (any indicator without a weight is given a unit weight = 1). Alternatively,
-##'   weights can be provided in a named list of named numeric vector(s), where
-##'   the list names indicate the composite names, the vectors contain the
-##'   weights, and indicators are the names of those weights.  For multiple-block
-##'   models (e.g., multiple groups, levels, or both), a list of such lists can
-##'   be provided, although a single list would be repeated across blocks.
-##' @param return.total `logical` indicating whether to return a final
-##'   column containing the reliability of a composite of all indicators (not
-##'   listed in `omit.indicators`) of first-order factors not listed in
-##'   `omit.factors`.  Ignored in 1-factor models or when specifying `W`eights,
-##'   and should only be set `TRUE` if all factors represent scale dimensions
-##'   that could be meaningfully collapsed to a single composite (scale sum or
-##'   scale mean).  Setting a negative value (e.g., `-1` returns **only** the
-##'   total-composite reliability (excluding coefficients per factor), except
-##'   when requesting Lai's (2021) coefficients for multilevel `config`ural
-##'   or `shared=` constructs.
+##'   (any indicator without a numeric `weight` is given a unit weight = 1).
+##'   See **Details** and **Examples** about complicated CFAs (e.g., multilevel,
+##'   higher-order, or bifactor).
+##' @param return.total Only relevant for multidimensional CFAs, this `logical`
+##'   indicates whether to return a final index for the reliability of a
+##'   composite of all modeled indicators (labeled `.TOTAL.`). This is redundant
+##'   whenever there is already a common factor indicated by all items (e.g.,
+##'   the general factor in a bifactor model). This argument is ignored when
+##'   using the `W=` argument to specify composites (optionally with weights).
+##'   Setting a negative value (e.g., `-1` returns **only** the `.TOTAL.`
+##'   composite reliability (i.e., excluding coefficients per factor).
 ##' @param obs.var `logical` indicating whether to compute reliability
-##'   using observed variances in the denominator. Setting `FALSE` triggers
-##'   using model-implied variances in the denominator.
+##'   using observed (co)variances to compute the denominator. Setting `FALSE`
+##'   triggers using model-implied (co)variances to compute the denominator.
 ##' @param tau.eq `logical` indicating whether to assume (essential)
-##'   tau-equivalence, yielding a coefficient analogous to \eqn{\alpha}.
-##'   Setting `FALSE` yields an \eqn{\omega}-type coefficient.
-##' @param ord.scale `logical` indicating whether to apply Green and Yang's
-##'   (2009, formula 21) correction, so that reliability is calculated for the
-##'   actual ordinal response scale (ignored for factors with continuous
-##'   indicators).  Setting `FALSE` yields coefficients that are
-##'   only applicable to the continuous latent-response scale.
-##' @param config `character` vector naming any configural constructs in
-##'   a multilevel CFA. For these constructs (and optional total composite),
-##'   Lai's (2021) coefficients \eqn{\omega^\textrm{W}} and \eqn{\omega^\textrm{2L}}
-##'   are returned (or corresponding \eqn{\alpha} coefficients when
-##'   `tau.eq=TRUE`), rather than Geldhof et al.'s (2014) coefficients for
-##'   hypothetical composites of latent components (although the same formula
-##'   is used for \eqn{\omega^\textrm{W}} in either case). Note that the same name
-##'   must be used for the factor component represented at each level of the
-##'   model.
-##' @param shared `character` vector naming any shared constructs in
-##'   a multilevel CFA. For these constructs (and optional total composite),
-##'   Lai's (2021) coefficient \eqn{\omega^\textrm{B}} or \eqn{\alpha^\textrm{B}} is
-##'   returned, rather than Geldhof et al.'s (2014) between-level coefficient
-##'   for hypothetical composites of latent cluster means. Lai's (2021)
-##'   coefficient quantifies reliability relative to error associated with both
-##'   indicators (measurement error) and subjects (sampling error), like a
-##'   generalizability coefficient.  Given that subjects can be considered as
-##'   raters of their cluster's shared construct, an interrater reliability
-##'   (IRR) coefficient is also returned, quantifying reliability relative to
-##'   rater/sampling error alone.  To quantify reliability relative to
-##'   indicator/measurement error alone (i.e., \eqn{\omega^\textrm{2L}}), the
-##'   `shared=` construct name(s) can additionally be included in
-##'   `config=` argument.
-## @param higher Deprecated `character` vector, subplanted by `true=` argument.
-##' @param higher `character` vector naming any higher-order constructs in
-##'   `object` for which composite reliability should be calculated.
-##'   Ignored when `tau.eq=TRUE` because alpha is not based on a CFA model;
-##'   instead, users must fit a CFA with tau-equivalence constraints.
-##'   To obtain Lai's (2021) multilevel composite-reliability indices for a
-##'   higher-order factor, do not use this argument; instead, specify the
-##'   higher-order factor(s) using the `shared=` or `config=` argument
-##'   (`compRelSEM` will automatically check whether it includes latent
-##'   indicators and apply the appropriate formula).
-##' @param true `character` vector naming any common factors in `object` that
-##'   are considered sources of "true-score variance" in a composite
-##'   defined by the `W=` argument. This can be used to indicate a higher-order
-##'   factor or to obtain "hierarchical omega" with a bifactor model.
-##' @param dropSingle `logical` indicating whether to exclude factors
-##'   defined by a single indicator from the returned results. If `TRUE`
-##'   (default), single indicators will still be included in the `total`
-##'   column when `return.total = TRUE`.
-##' @param omit.factors `character` vector naming any common factors
-##'   modeled in `object` whose composite reliability is not of
-##'   interest. For example, higher-order or method factors.
-##' @param omit.indicators `character` vector naming any observed variables
-##'   that should be omitted from the composite whose reliability is calculated.
+##'   tau-equivalence by calculating coefficient \eqn{\alpha} (on observed or
+##'   model-implied (co)variances, depending on `obs.var=`).
+##'   Triggers error if requested in combination with unequal weights in `W=`.
+##'   Setting `FALSE` (default) yields an "\eqn{\omega}"-type coefficient.
+##'   Optionally, a `character` vector of composite names can specify
+##'   calculating coefficient \eqn{\alpha} for a subset of all composites.
+##' @param ord.scale `logical` relevant only for composites of discrete items.
+##'   Setting `TRUE` (default) applies Green and Yang's (2009, formula 21)
+##'   method to calculate reliability of the actual composite (i.e., on the
+##'   actual ordinal response scale).  Setting `FALSE` yields coefficients that
+##'   are only interpretable on the continuous latent-response scale, which can
+##'   be interpreted as the upper bound of reliability if items were more
+##'   approximately continuous.
+##'   Ignored for factors with continuous indicators.
+##'   Reliability cannot currently be calculated for composites of both
+##'   discrete and continuous indicators.
+##' @param config Deprecated `character` vector.
+#                                               naming any configural constructs
+#      in a multilevel CFA. For these constructs (and optional total composite),
+#      Lai's (2021) coefficients \eqn{\omega^\textrm{W}} and \eqn{\omega^\textrm{2L}}
+#      are returned (or corresponding \eqn{\alpha} coefficients when
+#      `tau.eq=TRUE`), rather than Geldhof et al.'s (2014) coefficients for
+#      hypothetical composites of latent components (although the same formula
+#      is used for \eqn{\omega^\textrm{W}} in either case). Note that the same name
+#      must be used for the factor component represented at each level of the
+#      model.
+##' @param shared `character` vector of **composite names**, to be interpreted
+##'   as representing (perhaps multidimensional) shared construct(s).
+##'   Lai's (2021) coefficient \eqn{\omega^\textrm{B}} or \eqn{\alpha^\textrm{B}}
+##'   is calculated to quantify reliability relative to error associated with
+##'   both indicators (measurement error) and subjects (sampling error), like a
+##'   generalizability coefficient. For purely *scale* reliability (relative
+##'   to item/measurement error alone, i.e., Lai's \eqn{\omega^\textrm{2L}}),
+##'   omit the composite(s) from the `shared=` argument.
+##' @param add.IRR `logical` indicating whether to calculate an additional
+##'   reliability coefficient for any composite listed in `shared=`. Given that
+##'   subjects can be considered as raters of their cluster's shared construct,
+##'   an interrater reliability (IRR) coefficient can quantify reliability
+##'   relative to rater/sampling error alone.
+##' @param higher Deprecated, supplanted by using the `true=` argument.
+#   @param higher `character` vector naming any higher-order constructs in
+#         `object` for which composite reliability should be calculated.
+#         Ignored when `tau.eq=TRUE` because alpha is not based on a CFA model;
+#         instead, users must fit a CFA with tau-equivalence constraints.
+#         To obtain Lai's (2021) multilevel composite-reliability indices for a
+#         higher-order factor, do not use this argument; instead, specify the
+#         higher-order factor(s) using the `shared=` or `config=` argument
+#         (`compRelSEM` will automatically check whether it includes latent
+#         indicators and apply the appropriate formula).
+##' @param true Optional `list` of `character` vectors, with list-element names
+##'   corresponding to composite names.  Each composite can have a `character`
+##'   vector with names of any common factor(s) that should be considered the
+##'   source(s) of "true-score variance" in that composite. For any composite
+##'   with a specification in `true=`, the default is to consider all common
+##'   factors to contribute true-score variance to any items in the composite.
+##'   Specifying a composite in `true=` is only necessary to deviate from this
+##'   default, for example, to specify the "general" factor in a bifactor model,
+##'   in order to obtain "hierarchical omega" (\eqn{\omega_\textrm{H}}).
+##'   A shortcut for this is available when `W=NULL`, by specifying a single
+##'   `character` string (one of `"omegaH"`, `"omega.h"`, or `"omega_h"`)
+##'   instead of a `list`.
+##' @param dropSingle When `W=NULL`, this `logical` indicates whether to exclude
+##'   single-indicator factors from the list of default composites.
+##'   Even when `TRUE` (default), single indicators are still included in
+##'   the `.TOTAL.` composite when `return.total = TRUE`.
+##' @param omit.factors Deprecated, supplanted by using the `true=` argument.
+##' @param omit.indicators Deprecated, supplanted by using the `W=` argument.
 ##' @param omit.imps `character` vector specifying criteria for omitting
-##'   imputations from pooled results.  Can include any of
-##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
-##'   default setting, which excludes any imputations that did not
+##'   imputations from pooled results (using [lavaan.mi::lavaan.mi-class]).
+##'   Can include any of `c("no.conv", "no.se", "no.npd")`, the first 2 of which
+##'   are the default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
 ##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
@@ -567,46 +629,69 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   as Heywood cases.  NPD solutions are not excluded by default because
 ##'   they are likely to occur due to sampling error, especially in small
 ##'   samples.  However, gross model misspecification could also cause
-##'   NPD solutions, users can compare pooled results with and without
+##'   NPD solutions.  Users can compare pooled results with and without
 ##'   this setting as a sensitivity analysis to see whether some
 ##'   imputations warrant further investigation.
-##' @param return.df `logical` indicating whether to return reliability
-##'   coefficients in a `data.frame` (one row per group/level), which is
-##'   possible when every model block includes the same factors (after excluding
-##'   those in `omit.factors` and applying `dropSingle`).
+##' @param return.df Deprecated `logical` argument, replaced by `simplify=`.
+##' @param simplify `logical` indicating whether to return reliability
+##'   coefficients in a `numeric` vector (for single-group model) or `data.frame`
+##'   (one row per group, or per level in some cases).
+##'   Specifying a negative number (`simplify = -1L`) additionally removes the
+##'   informative headers printed to facilitate interpretation.
 ##'
-##' @return A `numeric` vector of composite reliability coefficients per
-##'   factor, or a `list` of vectors per "block" (group and/or level of
-##'   analysis), optionally returned as a `data.frame` when possible (see
-##'   `return.df=` argument description for caveat). If there are multiple
-##'   factors, whose multidimensional indicators combine into a single
-##'   composite, users can request `return.total=TRUE` to add a column
-##'   including a reliability coefficient for the total composite, or
-##'   `return.total = -1` to return **only** the total-composite
-##'   reliability (ignored when `config=` or `shared=` is specified
-##'   because each factor's specification must be checked across levels).
+##' @return By default (`simplify=FALSE`) a `list` of `numeric` vectors (1 per
+##'         composite). In multigroup CFAs, each vector will have one index of
+##'         reliability per group (among groups whose models include relevant
+##'         items in the composite). For each composite, its vector has a
+##'         `attr(..., "header")` with information to facilitate interpretation:
+##'         \itemize{
+##'           \item{The variables in the composite, which determine the
+##'                 composite's total variance (denominator of reliability)}
+##'           \item{Whether the variables in the composite are (a transformation
+##'                 of) observed variables, or whether they are *latent*
+##'                 (components of) variables. The latter (e.g., latent responses
+##'                 assumed to underlie observed ordinal indicators, or latent
+##'                 level-specific components of variables in a multilevel CFA)
+##'                 cannot be used to calculated an observed composite variable,
+##'                 so the resulting coefficient should be cautiously interpreted
+##'                 as a "hypothetical reliability" (Chalmers, 2018; Lai, 2021).}
+##'           \item{Whether that total variance (denominator) is determined from
+##'                 the restricted model (i.e., CFA parameters) or unrestricted
+##'                 model (i.e., freely estimated covariance matrix)}
+##'           \item{The latent variables that contribute common-factor variance
+##'                 to the composite, which determine the composite's
+##'                 "true-score" variance (numerator of reliability)}
+##'           \item{Which reliability formula was used: model-based reliability
+##'                 (so-called "omega") or coefficient alpha (a model-free
+##'                 lower-bound estimate of true reliability, equivalent to
+##'                 a model-based reliability that assumes tau-equivalence)}
+##'           \item{The observed variables in the composite, which determine the
+##'                 composite's total variance (denominator of reliability)}
+##'         }
+##'         This head will be printed immediately above each composite's
+##'         reliability coefficient.  When multiple reliability coefficients are
+##'         returned, **and** each vector in the list has the same length, then
+##'         setting `simplify=TRUE` will collect the list of *single*
+##'         coefficients into a vector, or the list of *multiple* coefficients
+##'         into a `data.frame`, and their headers will be concatenated to be
+##'         printed above the coefficients.  Setting `simplify = -1L` (or any
+##'         negative number) will omit the informative headers.
 ##'
 ##' @author
 ##' Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
-##'   Uses hidden functions written by Sunthud Pornprasertmanit
-##'   (\email{psunthud@@gmail.com}) for the old `reliability()` function.
+##'   Uses hidden functions to implement Green & Yang's (2009) reliability for
+##'   categorical indicators, written by Sunthud Pornprasertmanit
+##'   (\email{psunthud@@gmail.com}) for the deprecated `reliability()` function.
 ##'
 ##' @seealso
 ##' [maximalRelia()] for the maximal reliability of weighted composite
 ##'
 ##' @references
+##'
 ##' Bentler, P. M. (1968). Alpha-maximized factor analysis (alphamax): Its
 ##' relation to alpha and canonical factor analysis. *Psychometrika, 33*(3),
 ##' 335--345. \doi{10.1007/BF02289328}
-##'
-##' Bentler, P. M. (1972). A lower-bound method for the dimension-free
-##' measurement of internal consistency. *Social Science Research, 1*(4),
-##' 343--357. \doi{10.1016/0049-089X(72)90082-8}
-##'
-##' Bentler, P. M. (2009). Alpha, dimension-free, and model-based internal
-##' consistency reliability. *Psychometrika, 74*(1), 137--143.
-##' \doi{10.1007/s11336-008-9100-1}
 ##'
 ##' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of
 ##' ordinal alpha. *Educational and Psychological Measurement, 78*(6),
@@ -635,6 +720,12 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' observed scores and construct meanings. *Psychological Methods, 26*(1),
 ##' 90--102. \doi{10.1037/met0000287}
 ##'
+##' Lu, Z., Hong, M., & Kim, S. (2020). Formulas of multilevel reliabilities for
+##' tests with ordered categorical responses.
+##' In M. Wiberg, D. Molenaar,  J. González, U.Böckenholt, & J.-S. Kim (Eds.),
+##' *Quantitative psychology: The 85th annual meeting of the Psychometric Society, Virtual*
+##' (pp. 103--112). Springer. \doi{10.1007/978-3-030-74772-5_10}
+##'
 ##' Lüdtke, O., Marsh, H. W., Robitzsch, A., & Trautwein, U. (2011).
 ##' A 2 \eqn{\times} 2 taxonomy of multilevel latent contextual models:
 ##' Accuracy--bias trade-offs in full and partial error correction models.
@@ -655,7 +746,6 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'
 ##'
 ##' @examples
-##'
 ##' data(HolzingerSwineford1939)
 ##' HS9 <- HolzingerSwineford1939[ , c("x7","x8","x9")]
 ##' HSbinary <- as.data.frame( lapply(HS9, cut, 2, labels=FALSE) )
@@ -671,21 +761,28 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' ## works for factors with exclusively continuous OR categorical indicators
 ##' compRelSEM(fit)
 ##'
-##' ## reliability for ALL indicators only available when they are
-##' ## all continuous or all categorical
-##' compRelSEM(fit, omit.factors = "speed", return.total = TRUE)
+##' ## reliability for composite of ALL indicators only available when they are
+##' ## all continuous or all categorical.  The example below calculates a
+##' ## composite of continuous items from 2 factors (visual and textual)
+##' ## using the custom-weights syntax (note the "<~" operator)
+##' w.tot <- '
+##'   visual  <~ x1 + x2 + x3
+##'   textual <~                x4 + x5 + x6
+##'   total   <~ x1 + x2 + x3 + x4 + x5 + x6
+##' '
+##' compRelSEM(fit, W = w.tot)
 ##'
 ##'
-##' ## loop over visual indicators to calculate alpha if one indicator is removed
-##' for (i in paste0("x", 1:3)) {
-##'   cat("Drop ", i, ":\n", sep = "")
-##'   print(compRelSEM(fit, omit.factors = c("textual","speed"),
-##'                    omit.indicators = i, tau.eq = TRUE))
-##' }
-##' ## item-total correlations obtainable by adding a composite to the data
-##' HS$Visual <- HS$x1 + HS$x2 + HS$x3
-##' cor(HS$Visual, y = HS[paste0("x", 1:3)])
-##' ## comparable to psych::alpha(HS[paste0("x", 1:3)])
+##         ## loop over visual indicators to calculate alpha if one indicator is removed
+##         for (i in paste0("x", 1:3)) {
+##           cat("Drop ", i, ":\n", sep = "")
+##           print(compRelSEM(fit, omit.factors = c("textual","speed"),
+##                            omit.indicators = i, tau.eq = TRUE))
+##         }
+##         ## item-total correlations obtainable by adding a composite to the data
+##         HS$Visual <- HS$x1 + HS$x2 + HS$x3
+##         cor(HS["Visual"], y = HS[paste0("x", 1:3)])
+##         ## comparable to psych::alpha(HS[paste0("x", 1:3)])
 ##'
 ##' ## Reliability of a composite that represents a higher-order factor
 ##' mod.hi <- ' visual  =~ x1 + x2 + x3
@@ -694,85 +791,62 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'             general =~ visual + textual + speed '
 ##'
 ##' fit.hi <- cfa(mod.hi, data = HolzingerSwineford1939)
-##' compRelSEM(fit.hi, higher = "general")
-##' ## reliabilities for lower-order composites also returned
+##' ## "general" is the factor representing "true scores", but it has no
+##' ## observed indicators.  Must use custom-weights syntax:
+##' compRelSEM(fit.hi, W = 'g <~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9')
 ##'
 ##'
-##' ## works for multigroup models and for multilevel models (and both)
-##' data(Demo.twolevel)
-##' ## assign clusters to arbitrary groups
-##' Demo.twolevel$g <- ifelse(Demo.twolevel$cluster %% 2L, "type1", "type2")
-##' model2 <- ' group: type1
-##'   level: 1
-##'     f1 =~ y1 + L2*y2 + L3*y3
-##'     f2 =~ y4 + L5*y5 + L6*y6
-##'   level: 2
-##'     f1 =~ y1 + L2*y2 + L3*y3
-##'     f2 =~ y4 + L5*y5 + L6*y6
-##'
-##' group: type2
-##'   level: 1
-##'     f1 =~ y1 + L2*y2 + L3*y3
-##'     f2 =~ y4 + L5*y5 + L6*y6
-##'   level: 2
-##'     f1 =~ y1 + L2*y2 + L3*y3
-##'     f2 =~ y4 + L5*y5 + L6*y6
-##' '
-##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster", group = "g")
-##' compRelSEM(fit2) # Geldhof's indices (hypothetical, for latent components)
-##'
-##' ## Lai's (2021) indices for Level-1 and configural constructs
-##' compRelSEM(fit2, config = c("f1","f2"))
-##' ## Lai's (2021) indices for shared (Level-2) constructs
-##' ## (also an interrater reliability coefficient)
-##' compRelSEM(fit2, shared = c("f1","f2"))
-##'
-##'
-##' ## Shared construct using saturated within-level model
-##' mod.sat1 <- ' level: 1
-##'   y1 ~~ y1 + y2 + y3 + y4 + y5 + y6
-##'   y2 ~~ y2 + y3 + y4 + y5 + y6
-##'   y3 ~~ y3 + y4 + y5 + y6
-##'   y4 ~~ y4 + y5 + y6
-##'   y5 ~~ y5 + y6
-##'   y6 ~~ y6
-##'
-##'   level: 2
-##'   f1 =~ y1 + L2*y2 + L3*y3
-##'   f2 =~ y4 + L5*y5 + L6*y6
-##' '
-##' fit.sat1 <- sem(mod.sat1, data = Demo.twolevel, cluster = "cluster")
-##' compRelSEM(fit.sat1, shared = c("f1","f2"))
-##'
-##'
-##' ## Simultaneous shared-and-configural model (Stapleton et al, 2016, 2019),
-##' ## not recommended, but possible by omitting shared or configural factor.
-##' mod.both <- ' level: 1
-##'     fc =~ y1 + L2*y2 + L3*y3 + L4*y4 + L5*y5 + L6*y6
-##'   level: 2
-##'   ## configural construct
-##'     fc =~ y1 + L2*y2 + L3*y3 + L4*y4 + L5*y5 + L6*y6
-##'   ## orthogonal shared construct
-##'     fs =~ NA*y1 + y2 + y3 + y4 + y5 + y6
-##'     fs ~~ 1*fs + 0*fc
-##' '
-##' fit.both <- sem(mod.both, data = Demo.twolevel, cluster = "cluster")
-##' compRelSEM(fit.both, shared = "fs", config = "fc")
 ##'
 ##' @export
-compRelSEM <- function(object, W = NULL, return.total = FALSE,
+compRelSEM <- function(object, W = NULL,
+                       return.total = FALSE,
                        obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
-                       config = character(0), shared = character(0),
-                       higher = character(0), true = character(0),
-                       dropSingle = TRUE,
-                       omit.factors = character(0),
-                       omit.indicators = character(0),
-                       omit.imps = c("no.conv","no.se"), return.df = TRUE) {
+                       shared = character(0), config = character(0), # deprecate (only shared= needed)
+                       add.IRR = FALSE, # only for shared constructs
+                       higher = character(0), # deprecate (always used when found)
+                       true = list(), # character(0) per composite
+                       dropSingle = TRUE, # ignored when !is.null(W)
+                       omit.factors = character(0), # deprecate (use true=)
+                       omit.indicators = character(0), # deprecate (use W=)
+                       omit.imps = c("no.conv","no.se"),
+                       ## simplify= replaces (deprecated) return.df=
+                       simplify = FALSE, return.df = simplify) {
+  ## warn about deprecated arguments following introduction of W= and true=
+  if (length(config)) {
+    warning('Argument config= is deprecated.  Composites including both within- ',
+            'and between-level variance are assumed by default to represent ',
+            'configural constructs (unless listed in the shared= argument).')
+  }
+  if (length(higher)) {
+    warning('Argument higher= is deprecated. Higher-order constructs are ',
+            'automatically detected by nonzero elements in the Beta matrix, ',
+            'and are always assumed to represent true scores, whereas the ',
+            'residuals of its indicators (lower-order factors) are considered ',
+            'sources of error.')
+  }
+  if (length(omit.indicators)) {
+    warning('Argument omit.indicators= is deprecated. Specify custom composites ',
+            'with W= argument.')
+  }
+  if (length(omit.factors)) {
+    warning('Argument omit.factors= is deprecated. By default, all common ',
+            'factors are assumed to represent true-score variance. To treat ',
+            'a subset of factors as true-score variance (e.g., to calculate ',
+            '"omega_hierarchical"), use the true= argument.')
+  }
+  if (!is.null(match.call()$return.df)) {
+    warning('Argument return.df= is deprecated, replaced by simplify= argument.')
+  }
+
+
   ## numbers of blocks
   ngroups <- lavInspect(object, "ngroups")
   nLevels <- lavInspect(object, "nlevels")
   nblocks <- ngroups*nLevels #FIXME: always true?
-  return.total <- rep(return.total, nblocks)
+  #FIXME: necessary in rewrite?    return.total <- rep(return.total, nblocks)
+
+  ## extract parameter table
+  PT <- parTable(object)
 
   ## labels for groups
   if (ngroups > 1L) {
@@ -785,7 +859,7 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
   if (nLevels > 1L) {
     #FIXME? lavInspect(object, "level.label") is always ==
     #       c("within", lavInspect(object, "cluster"))
-    PT <- parTable(object)
+    #       which can differ from unique(parTable(object)$level)
     clus.label <- unique(PT$level)
     clus.label <- clus.label[which(clus.label != "")]
     clus.label <- clus.label[which(clus.label != 0)]
@@ -800,95 +874,81 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
   } else block.label <- NULL
 
   ## Check (for) weights
-  #TODO: How to accommodate config=/shared=? Only list() per group
-  if (!is.null(W)) {
+  if (is.null(W)) {
+    ## construct default weights
+    wPT        <- PT[PT$op == "=~", ] # isolate factor definitions
+    wPT$op     <- "<~"
+    wPT$ustart <- 1L                  # default weights == 1
 
-    ## if it is a lavaan script, parse the text and assemble vector(s)
-    ## (verify format afterward)
-    if (is.character(W)) {
-      #FIXME: lavaanify() would require checking whether to specify ngroups=
-      #       But lavParseModelString() doesn't
-      wPT <- lavParseModelString(W, as.data.frame. = TRUE)
+    ## add total composite?
+    if (return.total) {
+      ## loop over blocks to add a total score
+      for (b in 1:nblocks) {
+        ov.names    <- lavNames(object, type = "ov.ind", block = b)
+        ind.idx     <- unique(match(wPT$rhs, table = ov.names))
+        totalPT     <- wPT[ind.idx, ]
+        totalPT$lhs <- ".TOTAL."
+        if (return.total < 0L) {
+          ## only for the total composite
+          wPT <- totalPT
 
-      ## Translate to vector(s) of weights, per block (remove lists later)
-      wList <- list() # outer list == blocks
-      for (b in unique(wPT$block)) {
-        wList[[b]] <- list() # inner list == composites
+          ## add the total composite
+        } else wPT <- rbind(wPT, totalPT)
 
-        ## isolate rows for this block
-        wPTb <- wPT[wPT$block == b & wPT$op == "<~", ]
-        if (nrow(wPTb) == 0) next  # no composites for this block
-
-        ## loop over composite names
-        for (comp in unique(wPTb$lhs)) {
-          wPTbc <- wPTb[wPTb$lhs == comp, ]
-          wPTbc$fixed[wPTbc$fixed == ""] <- "1"
-          wList[[b]][[comp]] <- setNames(as.numeric(wPTbc$fixed), nm = wPTbc$rhs)
-        }
+        ## end loop over blocks
       }
+    }
+    ## default composite names (each factor, and/or total)
+    allComps   <- unique(wPT$lhs)
 
-      ## only 1 block in the script?
-      if (length(wList) == 1L) {
-        W <- wList[[1]] # to be copied per block below
-      } else W <- wList
+    ## Option to preserve old default behavior (partial numerator). Only
+    ## available when we know composite names == factor names (W=NULL).
+    if (is.character(true)) {
+      if (tolower(true[1]) %in% paste0("omega", c("h",".h","_h")) ) {
+        ## for each composite (factor), only that factor is true-score variance
+        true <- setNames(as.list(allComps), nm = allComps)
+      }
     }
 
+  } else {
+    ## user supplied W=
 
-    ## now check the format
-    if (is.numeric(W)) {
-      nW <- 1L
-      W <- list(Composite = W) # put 1 composite (named "Composite"), in a list
-      if (nblocks > 1L) {
-        ## repeat same composite per block
-        W  <- setNames(rep( W, nblocks), nm = block.label)
-        nW <- setNames(rep(nW, nblocks), nm = block.label)
-      }
+    ## turn off the dropSingle= argument
+    dropSingle <- FALSE
 
-    } else if (is.list(W)) {
+    ## Take 2:  ONLY accept a lavaan script
+    stopifnot(is.character(W))
 
-      ## is it a list of composites? (per block)
-      if (all(sapply(W, is.numeric))) {
-        if (is.null(names(W))) stop('Use names(W)<- to assign names to the list of composites')
-        ## assume it is the same composite per block
-        ## (variables are checked below)
-        nW <- length(W)
-        W  <- sapply(block.label, function(x) W, simplify = FALSE)
-        nW <- setNames(rep(nW, nblocks), nm = block.label)
+    PTw <- lavaan::lavaanify(W,
+                             ngroups = ngroups, #FIXME?
+                             as.data.frame. = TRUE)
+    ## Check for multilevel (if absent from W= syntax)
+    if (is.null(PTw$level)  &&  nLevels > 1L) {
+      ## repeat syntax per level (implies Lai's (2021) indices by default)
+      PTw <- lavaan::lavaanify(c('level: 1 \n', W, 'level: 2 \n', W),
+                               ngroups = ngroups, #FIXME?
+                               as.data.frame. = TRUE)
+    }
 
-        ## or is it per block?  Must be a list:
-      } else if (all(sapply(W, is.list))) {
-        ## verify whether it is 1 per block
-        if (length(W) == nblocks) {
-          names(W) <- block.label
-          ## number of composites can vary across blocks
-          nW <- setNames(sapply(W, length), nm = block.label)
-
-        } else if (length(W) == 1) {
-          ## Why was it in a list in the first place?
-          ## Just assume it applies to all blocks.
-          nW <- length(W)
-          W  <- setNames(rep( W, nblocks), nm = block.label)
-          nW <- setNames(rep(nW, nblocks), nm = block.label)
-
-        } else  {
-          stop('W= is a list with ', length(W),
-               ' elements, but object= has ', nblocks, ' blocks')
-        }
-
-        ## check they are all lists of numeric vectors
-        for (b in nblocks) {
-          if (!all(sapply(W[[b]], is.numeric))) {
-            stop('If W= is a list of lists, each "inner" list must contain numeric vectors')
-          }
-        }
-
-        ## neither a list of composites nor blocks?
-      } else stop("str(W) not an expected format; see help-page description")
-    } else stop("str(W) not an expected format; see help-page description")
-
-    ## end scope of user-supplied W=
-    ##TODO: if is.null(W), must construct vectors of ONEs ad hoc below
+    if (length(group.label)) {
+      ## replace default integers with labels
+      PTw$group[PTw$group > 0L] <- group.label[PTw$group]
+    }
+    PTw$ustart[is.na(PTw$ustart)] <- 1L # replace missing weights with 1
+    wPT      <- PTw[PTw$op == "<~", ]   # isolate composite definitions
+    allComps <- unique(wPT$lhs)         # extract composite names
   }
+
+  ## apply tau.eq= to all composites?
+  if (is.logical(tau.eq)) {
+    if (tau.eq) {
+      tau.eq <- allComps
+    } else tau.eq <- character(0)
+
+  } else if (!is.character(tau.eq)) {
+    stop('tau.eq= must be logical or a character vector of composite names')
+  }
+
 
   ## check for categorical
   anyCategorical <- lavInspect(object, "categorical")
@@ -911,17 +971,6 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
     names(BETA)   <- block.label
 
     ## total variance
-    if (anyCategorical && tau.eq && ord.scale) {
-      stop('Setting both tau.eq=TRUE and ord.scale=TRUE indicates you want ',
-           'coefficient alpha for a composite on the observed ordinal scale. ',
-           'There are 2 options, which are not equivalent:\n\n(1)',
-           ' You can refit the model without specifying variables as ',
-           'ordered=, avoiding the latent-response assumption, so the model ',
-           'parameters are on the observed scale.\n\n(2)',
-           ' You can fit a model that retains the latent-response assumption ',
-           'but imposes tau-equivalence (e.g., set all loadings = 1 and ',
-           'estimate all factor variances), making it unnecessary to set tau.eq=TRUE.')
-    }
     SIGMA <- sapply(lavInspect(object, drop.list.single.group = FALSE,
                                what = ifelse(obs.var, "sampstat", "fitted")),
                     "[[", i = "cov", simplify = FALSE)
@@ -974,19 +1023,8 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
     }
 
     ## total variance
-    if (anyCategorical && tau.eq && ord.scale) {
-      stop('Setting both tau.eq=TRUE and ord.scale=TRUE indicates you want ',
-           'coefficient alpha for a composite on the observed ordinal scale. ',
-           'There are 2 options, which are not equivalent:\n\n(1)',
-           ' You can refit the model without specifying variables as ',
-           'ordered=, avoiding the latent-response assumption, so the model ',
-           'parameters are on the observed scale.\n\n(2)',
-           ' You can fit a model that retains the latent-response assumption ',
-           'but imposes tau-equivalence (e.g., set all loadings = 1 and ',
-           'estimate all factor variances), making it unnecessary to set tau.eq=TRUE.')
-    }
-    ## use model-implied SIGMA from h0 or h1 model
     if (obs.var) {
+      ## pool model-implied SIGMA from h1 model
       SIGMA <- vector("list", nblocks)
       names(SIGMA) <- block.label
       ## loop over blocks to pool saturated-model (observed) matrices
@@ -996,8 +1034,9 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
         ## The slot does not contain dimnames, so add them
         rownames(SIGMA[[b]]) <- colnames(SIGMA[[b]]) <- lavNames(object, block = b)
       }
+
     } else {
-      ## pooled model-implied matrices
+      ## pool model-implied SIGMA from h0 model
       if (nblocks == 1L) {
         SIGMA <- getMethod("fitted", class(object))(object)["cov"] # retain list format
       } else {
@@ -1019,559 +1058,563 @@ compRelSEM <- function(object, W = NULL, return.total = FALSE,
     }
   }
 
-  ## flag conditions to warn about
-  warnTotal <- warnGeldhof <- FALSE
-  warnAlpha <- warnOmega <- warnCross <- warnCatWeights <- character(0)
+  ## flag conditions to warn about (listing problematic composites)
+  warnLRV <- character(0)
+
+  rel <- list() # coefficient(s) per composite
+  ## loop over composites
+  for (cc in allComps) {
+    ## extract rows for this composite
+    cPT <- wPT[wPT$lhs == cc, ]
+
+    ## loop over groups
+    for (g in 1:ngroups) {
+      ## without labels, PT$group will be integers (even with 1 group)
+      g.idx <- ifelse(length(group.label), yes = group.label[g], no = g)
+      ## group-specific rows
+      if (!is.null(cPT$group)) {
+        cPTg <- cPT[cPT$group == g.idx, ]
+      } else cPTg <- cPT # only 1 group
 
 
+      ## check whether all weights are zero (so skip this composite)
+      allWts0 <- all(sapply(cPTg$ustart, function(target) {
+        isTRUE(all.equal(target, current = 0))
+      }))
+      if (allWts0) next
 
-  ## If the user supplied no weights, then we guess:
-  ##  - unit-weighted sums
-  ##  - one composite per factor (but warn when there are cross-loadings)
-  if (is.null(W) && !length(c(config, shared))) {
-    if (nLevels > 1L) warnGeldhof <- TRUE
+      ## Determine block indices (when multilevel)
 
-    rel <- vector("list", length = nblocks)
+      compositeHas2Levels <- FALSE
+      ## Either the user didn't specify levels in W= ...
+      if (nLevels > 1L && is.null(wPT$level)) compositeHas2Levels <- TRUE
+      ## ... or they are in cPTg
+      if (length(unique(cPTg$level)) > 1L) compositeHas2Levels <- TRUE
 
-    for (b in 1:nblocks) {
+      ## Same composite (factor?) name across levels?
+      isWithin  <- FALSE
+      isBetween <- FALSE
+      if (compositeHas2Levels) {
+        ## Then we need to distinguish levels in the same index
+        b.idx  <- (g - 1L)*nLevels + 1
+        b.idx2 <- (g - 1L)*nLevels + 2
+        #FIXME if cross-classification or nLevels > 2 are implemented
 
-      LY <- LAMBDA[[b]]
+        ## Still multilevel?  Implies a level-specific name
+      } else if (nLevels > 1L) {
+        ## which level is this?
+        isWithin  <- as.logical(unique(cPTg$block) %% 2) # is it an odd block?
+        isBetween <- !isWithin
+        b.idx  <- ifelse(isWithin,
+                         yes = b.idx <- (g - 1L)*nLevels + 1, # within
+                         no  = b.idx <- (g - 1L)*nLevels + 2) # between
+        b.idx2 <- NULL
+        #FIXME? eventually possible to model partial clustering?
+
+      } else {
+        ## SINGLE LEVEL model (block == group)
+        b.idx  <- g.idx
+        b.idx2 <- NULL
+      }
+
+
+      ## skip single-indicator construct?
+      if (dropSingle && nrow(cPTg) == 1L) next
+      ## same logic applies across 2 levels:
+      if (isTRUE(unique(cPTg$level) > 1L)) {
+        if (dropSingle && nrow(cPTg) == 2L) next
+      }
+
+
+      ## extract Lambda
+      LY <- LAMBDA[[b.idx]]
+      ## checks names of modeled indicators against each composite below
       allIndNames <- rownames(LY)
       allFacNames <- colnames(LY)
-      myFacNames <- setdiff(allFacNames, omit.factors)
-      if (dropSingle) {
-        multInd <- sapply(myFacNames, function(fn) sum(LY[,fn] != 0) > 1L)
-        myFacNames <- myFacNames[multInd]
-      }
-      subLY <- LY[ , myFacNames, drop = FALSE]
-      myIndNames <- rownames(subLY)[apply(subLY, 1L, function(x) any(x != 0))]
-      ## remove unwanted indicators
-      myIndNames <- setdiff(myIndNames, omit.indicators)
-      subLY <- subLY[myIndNames, , drop = FALSE]
 
-      ## distinguish between categorical, continuous, and latent indicators
+      ## assign default weights == 0
+      wt <- setNames(rep(0, length(allIndNames)), nm = allIndNames)
+      ## loop over indicators ...
+      for (i in allIndNames) {
+        ## ... to check whether to assign any nonzero weights
+        if (isTRUE(cPTg$ustart[cPTg$rhs == i & cPTg$block == b.idx] != 0)) {
+          wt[i] <- cPTg$ustart[cPTg$rhs == i & cPTg$block == b.idx]
+        }
+      }
+      ## save names of indicators with nonzero weights (for header/footer)
+      myIndNames <- names(wt[wt != 0])
+      if (!length(myIndNames)) next
+
+      ## verify equal weights for alpha
+      non0wts <- wt[wt != 0]
+      if (cc %in% tau.eq  &&  length(unique(non0wts)) > 1L) {
+        stop('Cannot calculate coefficient alpha for composite `', cc,
+             '` with unequal weights')
+      }
+
+      ## check factor names in true=
+      if (length(true[[cc]])) {
+        ## Isolate the factors considered "true" variance
+        myFacNames <- intersect(true[[cc]], allFacNames)
+      } else myFacNames <- allFacNames # defaults to all, but adjust below
+
+      ## factor loadings for this composite:
+      if (is.null(BETA[[b.idx]])) {
+        theseRtrue <- apply(LY[myIndNames, myFacNames, drop = FALSE],
+                            MARGIN = 2, FUN = function(x) !all(x == 0))
+      } else {
+        ## Assume higher-order constructs represent true scores
+        #FIXME? check PT$op == "=~", compare to BETA predictors
+        L1 <- LY
+        L2 <- BETA[[b.idx]][ , myFacNames, drop = FALSE]
+        LY <- L1 %*% L2
+
+        theseRtrue <- apply(LY[myIndNames, myFacNames, drop = FALSE],
+                            MARGIN = 2, FUN = function(x) !all(x == 0))
+        if (!any(theseRtrue)) {
+          ## No higher-order factor(s) identified for this composite.
+          ## Just use lower-order Lambda to identify true-score variance
+          LY <- L1
+          theseRtrue <- apply(LY[myIndNames, myFacNames, drop = FALSE],
+                              MARGIN = 2, FUN = function(x) !all(x == 0))
+        }
+      }
+
+      ## perhaps no Level-1 factors for shared constructs,
+      ## so only total variance at within-level necessary
+      if ( !( any(theseRtrue)  |  cc %in% shared) ) {
+        stop('No common factors identified for composite `', cc, '`')
+      }
+      myFacNames <- myFacNames[theseRtrue]
+
+      L <- LY[, myFacNames, drop = FALSE]
+
+      ## TRUE (co)variance among indicators in this composite:
+      Phi <- PHI[[b.idx]][myFacNames, myFacNames, drop = FALSE]
+      commonCov <- L %*% Phi %*% t(L)
+
+      ## TOTAL (co)variance among indicators
+      totalCov  <- SIGMA[[b.idx]]
+
+
+
+      ## Second level too?  Do it all again!
+      if (is.null(b.idx2)) {
+        myIndNames2 <- myFacNames2 <- NULL
+        commonCov2  <- totalCov2   <- NULL
+      } else {
+        ## extract Level-2 Lambda
+        LY2 <- LAMBDA[[b.idx2]]
+        ## checks names of modeled indicators against each composite below
+        allIndNames2 <- rownames(LY2)
+        allFacNames2 <- colnames(LY2)
+
+        ## assign default weights == 0
+        wt2 <- setNames(rep(0, length(allIndNames2)), nm = allIndNames2)
+        ## loop over indicators ...
+        for (i in allIndNames2) {
+          ## ... to check whether to assign any nonzero weights
+          if (isTRUE(cPTg$ustart[cPTg$rhs == i & cPTg$block == b.idx2] != 0)) {
+            wt2[i] <- cPTg$ustart[cPTg$rhs == i & cPTg$block == b.idx2]
+          }
+        }
+        ## save names of indicators with nonzero weights (for header/footer)
+        myIndNames2 <- names(wt2[wt2 != 0])
+
+        ## verify equal weights for alpha
+        non0wts2 <- wt2[wt2 != 0]
+        if (cc %in% tau.eq  &&  length(unique(non0wts2)) > 1L) {
+          stop('Cannot calculate coefficient alpha for composite `', cc,
+               '` with unequal weights')
+        }
+        ## verify weights match across levels
+        for (i in names(wt)) {
+          L1wt <- wt[i]
+          L2wt <- wt2[i]
+          if (is.na(L2wt)) next # Level-1 variable not decomposed?
+          if (L1wt != L2wt) stop('Weights in W= do not match across levels for',
+                                 ' indicator ', i, ' of composite `', cc, '`')
+        }
+
+        ## check factor names in true=
+        if (length(true[[cc]])) {
+          ## Isolate the factors considered "true" variance
+          myFacNames2 <- intersect(true[[cc]], allFacNames2)
+        } else myFacNames2 <- allFacNames2
+
+        ## factor loadings for this composite:
+        if (is.null(BETA[[b.idx2]])) {
+          # L <- LY2[, myFacNames2, drop = FALSE]
+          theseRtrue <- apply(LY2[myIndNames2, myFacNames2, drop = FALSE],
+                              MARGIN = 2, FUN = function(x) !all(x == 0))
+        } else {
+          ## Assume higher-order constructs
+          #FIXME? check PT$op == "=~", compare to BETA predictors
+          L1  <- LY2
+          L2  <- BETA[[b.idx2]][ , myFacNames2, drop = FALSE]
+          LY2 <- L1 %*% L2
+
+          theseRtrue <- apply(LY2[myIndNames2, myFacNames2, drop = FALSE],
+                              MARGIN = 2, FUN = function(x) !all(x == 0))
+          if (!any(theseRtrue)) {
+            ## No higher-order factor(s) identified for this composite.
+            ## Just use lower-order Lambda to identify true-score variance
+            LY2 <- L1
+            theseRtrue <- apply(LY2[myIndNames2, myFacNames2, drop = FALSE],
+                                MARGIN = 2, FUN = function(x) !all(x == 0))
+          }
+        }
+
+        if (!any(theseRtrue)) {
+          stop('No common factors identified for composite `', cc, '`')
+        }
+        myFacNames2 <- myFacNames2[theseRtrue]
+
+        L <- LY2[, myFacNames2, drop = FALSE]
+
+        ## TRUE (co)variance among indicators in this composite:
+        Phi <- PHI[[b.idx2]][myFacNames2, myFacNames2, drop = FALSE]
+        commonCov2 <- L %*% Phi %*% t(L)
+
+        ## TOTAL (co)variance among indicators
+        totalCov2  <- SIGMA[[b.idx2]]
+      }
+
+
+
+      ## distinguish between categorical & continuous indicators
       nameArgs <- list(object = object)
-      if (nblocks > 1L) nameArgs$block <- b
-      ordNames <- do.call(lavNames, c(nameArgs, list(type = "ov.ord")))
-      numNames <- do.call(lavNames, c(nameArgs, list(type = "ov.num")))
+      if (nblocks > 1L) nameArgs$block <- c(b.idx, b.idx2)
+      ## in case lavNames returns a list (multiple blocks),
+      ## Reduce() with union() to save unique names
+      ordNames <- Reduce(union, do.call(lavNames, c(nameArgs, list(type = "ov.ord"))))
+      numNames <- Reduce(union, do.call(lavNames, c(nameArgs, list(type = "ov.num"))))
       if (anyCategorical) {
-        ## identify when the (sub)set of factors are all categorical
-        blockCat <- all(myIndNames %in% ordNames)
-        ## identify when the (sub)set of factors have mixed indicators, so no total
+        #FIXME? Add second block when ML-SEM is implemented for categorical
+
+        ## Are ALL these indicators categorical?
+        allCat <- all(myIndNames %in% ordNames)
+        ## Are only SOME of these indicators categorical? (mixed indicators)
         mix <- any(myIndNames %in% ordNames) && any(myIndNames %in% numNames)
       } else {
-        blockCat <- FALSE
+        allCat <- FALSE
         mix <- FALSE
       }
-
-      if (mix && return.total[b]) {
-        return.total[b] <- FALSE
-        if (!(tau.eq && ord.scale)) warnTotal <- TRUE
+      ## can't (yet) mix observed and latent scales
+      if (mix) {
+        warning('Reliability cannot be computed for composite `', cc,
+               '` because it has both categorical and continuous indicators. ',
+               'A model can be fitted by treating ordinal indicators as continuous.')
+        next
       }
 
-      ## compute reliability per factor?
-      if (return.total[b] >= 0) {
 
-        ## set result missing by default
-        rel[[b]] <- setNames(rep(NA, length(myFacNames)), nm = myFacNames)
 
-        for (fn in myFacNames) {
-          ## names of indicators with nonzero loadings
-          fIndNames <- myIndNames[which(subLY[,fn] != 0)]
+      ## Calculate RELIABILITY for composite(s) of ordinal indicators
+      if (allCat && ord.scale) {
 
-          ## check for ANY indicators
-          if (length(fIndNames) == 0L) next
-          ## check for single indicators
-          if (dropSingle && length(fIndNames) == 1L) next
-          ## check for categorical (or mixed) indicators
-          fCat <- any(fIndNames %in% ordNames)
-          ## identify when this factor has mixed indicators, so no omegas
-          fMix <- fCat && any(fIndNames %in% numNames)
+        if (cc %in% tau.eq) {
+          stop('Setting ord.scale=TRUE and including composite `', cc,
+               '` in tau.eq= indicates you want to calculate coefficient ',
+               'alpha for a composite on the observed ordinal scale',
+               ' (not hypothetical alpha on the latent scale).\n',
+               'There are 2 options, which are not equivalent:\n\n(1)',
+               ' You can refit the model without specifying variables as ',
+               'ordered=, avoiding the latent-response assumption, so the model ',
+               'parameters are on the observed scale, making it unnecessary to ',
+               'set ord.scale=TRUE.\n\n(2)',
+               ' You can fit a model that retains the latent-response assumption ',
+               'but imposes tau-equivalence (e.g., set all loadings = 1 and ',
+               'estimate all factor variances), making it unnecessary to ',
+               'include composite `', cc, '` in tau.eq='
+               )
+        }
+
+        ## Green & Yang (2009)
+        relCat <- omegaCat(truevar   = commonCov[myIndNames, myIndNames],
+                           denom     =  totalCov[myIndNames, myIndNames],
+                           #FIXME? Where will thresholds for L2-only variables be?
+                           threshold = threshold[[b.idx]][myIndNames],
+                           scales    = latScales[[b.idx]][myIndNames],
+                           wt        = wt[myIndNames])
+        ## the same composite name NEVER yields level-specific coefficients,
+        ## so only assign using group index
+        rel[[cc]][g.idx] <- relCat
+        next
+      } else {
+        ## all continuous or all LRV-scale?
+        if (allCat) warnLRV <- union(warnLRV, cc)
+      }
+
+      ## else, calculate RELIABILITY for composite(s) of continuous indicators
+
+      ## could be multilevel (not if categorical, calculated above)
+      isShared <- FALSE
+      isConfig <- FALSE
+
+      ## calculate ALPHA?
+      if (cc %in% tau.eq) {
+        # FIXME?  Weights are currently ignored
+
+        if (cc %in% shared) {
+          isShared <- TRUE
+          ## calculate manually using Lai (2021, Eq. 24)
+          nI <- length(myIndNames2)
+          if (nI == 1L) {
+            stop('Coefficient alpha is undefined for a single indicator. ',
+                 'Set tau.eq=FALSE (or specify a subset of composites ',
+                 'excluding single-indcator factors) or set dropSingle=TRUE')
+          }
+          kw <- nI / (nI-1) # weight for alpha based on number of items
+
+          ## (reciprocal of) harmonic-mean cluster size
+          N_bar <- mean(lavInspect(object, "cluster.size",
+                                   drop.list.single.group = FALSE)[[g.idx]])
+          Ns <- mean(1 / lavInspect(object, "cluster.size",
+                                    drop.list.single.group = FALSE)[[g.idx]])
+          ## isolate "true score" component(s) at Level 2
+          onlyCov2 <- totalCov2
+          diag(onlyCov2) <- 0
 
           ## ALPHA
-          totalCov  <- SIGMA[[b]][fIndNames, fIndNames, drop = FALSE]
-          if (tau.eq) {
-            if (fMix && !ord.scale) {
-              ## can't mix observed and latent scales
-              warnAlpha <- c(warnAlpha, fn) #TODO
-              next
-            }
-            rel[[b]][fn] <- computeAlpha(totalCov)
-            next
-          } # else compute omega
+          rel[[cc]][g.idx] <- kw*sum(onlyCov2) / sum(totalCov * Ns, totalCov2)
 
-          ## OMEGA
-          if (fMix) {
-            warnOmega <-  c(warnOmega, fn) # can't (yet) mix observed and latent scales
-            next
-          }
-          Lf <- subLY[fIndNames, fn, drop = FALSE]
-          commonCov <- Lf %*% PHI[[b]][fn, fn] %*% t(Lf)
-          if (fCat && ord.scale) {
-            ## Green & Yang (2009)
-            rel[[b]][fn] <- omegaCat(truevar = commonCov, denom = totalCov,
-                                     threshold = threshold[[b]][fIndNames],
-                                     scales = latScales[[b]][fIndNames])
-            next
-          } # else, all continuous or all LRV-scale
-          rel[[b]][fn] <- sum(commonCov) / sum(totalCov)
-        } # end loop over factors
-      } else rel[[b]] <- c(total = as.numeric(NA))
-
-      ## compute for total composite?
-      if (return.total[b] && length(myFacNames) > 1L) {
-
-        ## ALPHA
-        totalCov  <- SIGMA[[b]][myIndNames, myIndNames, drop = FALSE]
-        if (tau.eq) {
-          rel[[b]]["total"] <- computeAlpha(totalCov)
-          next
-        } # else compute omega
-
-        ## OMEGA
-        commonCov <- subLY %*% PHI[[b]][myFacNames, myFacNames] %*% t(subLY)
-        if (blockCat && ord.scale) {
-          ## Green & Yang (2009)
-          rel[[b]]["total"] <- omegaCat(truevar = commonCov, denom = totalCov,
-                                        threshold = threshold[[b]][myIndNames],
-                                        scales = latScales[[b]][myIndNames])
-          next
-        } # else, all continuous or all LRV-scale
-        rel[[b]]["total"] <- sum(commonCov) / sum(totalCov)
-      }
-
-      ## composite(s) representing higher-order factor(s)?
-      for (hf in higher) {
-        ## find latent indicators
-        L2 <- BETA[[b]][,hf]
-        latInds <- setdiff(names(L2)[L2 != 0], omit.factors)
-        ## find observed indicators
-        indList <- lapply(c(hf, latInds), function(i) names(LY[,i])[ LY[,i] != 0])
-        myIndNames <- setdiff(unique(do.call(c, indList)), omit.indicators)
-
-        totalCov  <- SIGMA[[b]][myIndNames, myIndNames] # no need for drop = FALSE
-        L <- LY[myIndNames, c(hf, latInds)]
-        B <- BETA[[b]][c(hf, latInds), c(hf, latInds)]
-        Phi <- PHI[[b]][c(hf, latInds), c(hf, latInds)]
-        commonCov <- L %*% B %*% Phi %*% t(B) %*% t(L)
-        if (blockCat && ord.scale) {
-          ## Green & Yang (2009)
-          rel[[b]][hf] <- omegaCat(truevar = commonCov, denom = totalCov,
-                                   threshold = threshold[[b]][myIndNames],
-                                   scales = latScales[[b]][myIndNames])
-          next
-        } # else, all continuous or all LRV-scale
-        rel[[b]][hf] <- sum(commonCov) / sum(totalCov)
-
-      }
-
-    }
-
-    ## drop list structure
-    if (nblocks == 1L) {
-      rel <- rel[[1]]
-      class(rel) <- c("lavaan.vector","numeric")
-      return(rel)
-
-    } else {
-      facList <- lapply(rel, names)
-      sameNames <- all(sapply(2:nblocks, function(i) {
-        isTRUE(all.equal(facList[[1]], facList[[i]]))
-      } ))
-      if (!(sameNames && return.df)) {
-        ## can't simplify, return as a list
-        for (i in seq_along(rel)) class(rel[[i]]) <- c("lavaan.vector","numeric")
-        names(rel) <- block.label
-        return(rel)
-      }
-    }
-
-    ## concatenate each factor's reliability across blocks
-    facRel <- sapply(facList[[1]], simplify = FALSE, FUN = function(nn) {
-      sapply(rel, "[[", i = nn, USE.NAMES = FALSE) # extract reliability for factor i
-    })
-    if (ngroups > 1L && nLevels > 1L) {
-      out <- data.frame(group = rep(blk.g.lab, each = nLevels),
-                        level = rep(blk.clus.lab, times = ngroups),
-                        facRel)
-    } else if (ngroups > 1L) {
-      out <- data.frame(group = blk.g.lab, facRel)
-    } else if (nLevels > 1L) {
-      out <- data.frame(level = blk.clus.lab, facRel)
-    }
-    class(out) <- c("lavaan.data.frame","data.frame")
-
-    return(out)
-  }
-
-  #TODO: warn when "reliability" is (auto)returned for factors with indicators
-  #      that cross-load on other factors.  For true reliability, use W=
-  # if (length(warnCross)) {}
-
-  #TODO: warn that Green & Yang's (2009) method is not (yet) available with weights
-  # if (length(warnCatWeights)) {}
-
-  #TODO: update alpha/omega warnings to list problematic composite(s)
-  if (warnTotal) {
-    message('Cannot return.total when model contains both continuous and ',
-            'binary/ordinal observed indicators. Use the ',
-            'omit.factors= argument to choose factors with only categorical ',
-            'or continuous indicators, if that is a composite of interest.\n')
-  }
-  if (length(warnAlpha)) {
-    message('Coefficient alpha cannot be computed for factors as though a ',
-            'composite would be calculated using both observed-response scales',
-            ' (for continuous indicators) and latent-response scales (for ',
-            'categorical indicators).  If you want to assume tau-equivalence, ',
-            'either set ord.scale=FALSE or fit a model that treats ordinal ',
-            'indicators as continuous.')
-  }
-  if (length(warnOmega)) {
-    message('Composite reliability (omega) cannot be computed for factors ',
-            'with mixed categorical and continuous indicators, unless a model ',
-            'is fitted by treating ordinal indicators as continuous.')
-  }
-  if (warnGeldhof) {
-    message('object= is a multilevel SEM, but you have not used arguments to ',
-            'indicate whether a composite would represent a within- (config=)  ',
-            'or between-level (shared=) construct. Any resulting coefficient ',
-            'is not reliability of an observed composite variable, but rather ',
-            'of latent level-specific components, as proposed by Geldhof et ',
-            'al. (2014).  The config= and shared= arguments provide true ',
-            'composite reliability coefficients proposed by Lai (2021).')
-  }
-
-
-  ## otherwise, only use Lai's MULTILEVEL coefficients
-  if (is.null(W) && length(c(config, shared))) {
-    if (nLevels < 2L) stop('config= and shared= arguments are for multilevel data')
-
-    ## group-level list, each containing 2 coefs per factor/total in data.frame
-    rel <- vector("list", length = ngroups)
-
-    for (g in 1:ngroups) {
-
-      gLab <- ifelse(length(group.label), yes = group.label[g], no = g)
-      nameArgs <- list(object = object, type = "lv")
-      if (ngroups > 1L) nameArgs$group <- gLab
-      lv.names1 <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
-      lv.names2 <- do.call(lavNames, c(nameArgs, list(level = clus.label[2L])))
-      nameArgs$type <- "ov"
-      ov.names1 <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
-      ov.names2 <- do.call(lavNames, c(nameArgs, list(level = clus.label[2L])))
-      nameArgs$type <- "lv.ind"
-      allLatInds <- do.call(lavNames, c(nameArgs, list(level = clus.label[1L])))
-
-      ## erase higher= argument, use it to collect factor names for later checks
-      higher <- character(0)
-
-      PT <- parTable(object)
-      PT <- PT[PT$op == "=~", ]
-      if (ngroups > 1L) PT <- PT[PT$group == gLab, ]
-
-      ## block indices for 2 levels in this group
-      #FIXME: eventually possible to model partial clustering?
-      idx1 <- 1 + (g-1)*2 # within
-      idx2 <- 2 + (g-1)*2 # cluster
-
-      ## configural construct(s) defined at both levels this group?
-      for (fn in config) {
-        if (fn %in% omit.factors) {
-          ## why would they do this?
-          config <- setdiff(config, omit.factors)
-          next
-        }
-        if (fn %in% lv.names1 && fn %in% lv.names2) {
-          ## same indicators for this construct at both levels?
-          indNames1 <- setdiff(PT$rhs[PT$lhs == fn & PT$level == clus.label[1L]],
-                               omit.indicators)
-          indNames2 <- setdiff(PT$rhs[PT$lhs == fn & PT$level == clus.label[2L]],
-                               omit.indicators)
-          if (!all.equal(indNames1, indNames2)) {
-            stop('After removing omit.indicators=, the indicators of factor ',
-                 fn, ' do not match across levels',
-                 ifelse(ngroups > 1L, paste(' in group', gLab), ""))
-          }
-          if (dropSingle && length(indNames1) == 1L) next
-          ## is it a higher-order factor?
-          latInds1 <- intersect(indNames1, allLatInds)
-          if (length(latInds1)) {
-            lowList <- lapply(latInds1, function(fn1) {
-              indNames1 <- setdiff(PT$rhs[PT$lhs == fn1 & PT$level == clus.label[1L]],
-                                   omit.indicators)
-              indNames2 <- setdiff(PT$rhs[PT$lhs == fn1 & PT$level == clus.label[2L]],
-                                   omit.indicators)
-              ## check indicators also match for lower-order factors
-              if (!all.equal(indNames1, indNames2)) {
-                stop('After removing omit.indicators=, the indicators of factor ',
-                     fn1, ' do not match across levels',
-                     ifelse(ngroups > 1L, paste(' in group', gLab), ""))
-              }
-              ## check indicators of lower-order factors are not also latent
-              lowerLatent <- intersect(indNames1, allLatInds)
-              if (length(lowerLatent))
-                stop('Indicators of lower-order factor ', fn1,
-                     ifelse(ngroups > 1L, paste(' in group', gLab), ""),
-                     ' cannot also be latent')
-              indNames1
-            })
-            ## update indicator list to only include relevant observed variables
-            indNames1 <- intersect(c(indNames1, do.call(c, lowList)), ov.names1)
-            ## update list of higher-order factors
-            higher <- c(higher, fn)
-          }
-
-          Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
-          Sigma2 <- SIGMA[[idx2]][indNames1, indNames1, drop = FALSE]
-
-          if (tau.eq) {
-            if (fn %in% higher) {
-              warning('Cannot apply alpha (tau.eq=TRUE) to higher-order factor ',
-                      fn, '. Instead, fit a higher-order CFA that imposes ',
-                      'tau-equivalence constraints.')
-            } else {
-              ## ALPHA
-              rel[[g]]$config[[fn]] <- c(`alpha_W`  = computeAlpha(Sigma1),
-                                         `alpha_2L` = computeAlpha(Sigma1 + Sigma2))
-            }
-
-          } else {
-            ## OMEGA
-            lam1 <- LAMBDA[[idx1]][indNames1, c(fn, latInds1), drop = FALSE]
-            lam2 <- LAMBDA[[idx2]][indNames1, c(fn, latInds1), drop = FALSE]
-            if (!isTRUE(all.equal(lam1, lam2)))
-              warning('Unequal observed-indicator loadings across levels ',
-                      'detected among factors (', paste(c(fn, latInds1), collapse = ","),
-                      ifelse(ngroups > 1L, paste(') in group', gLab), ")"),
-                      '. omega_2L for configural constructs assumes invariance.')
-            phi1 <-  PHI[[idx1]][c(fn, latInds1), c(fn, latInds1), drop = FALSE]
-            phi2 <-  PHI[[idx2]][c(fn, latInds1), c(fn, latInds1), drop = FALSE]
-
-            if (length(latInds1)) {
-              bet1 <- BETA[[idx1]][c(fn, latInds1), c(fn, latInds1), drop = FALSE]
-              bet2 <- BETA[[idx2]][c(fn, latInds1), c(fn, latInds1), drop = FALSE]
-              if (!isTRUE(all.equal(bet1, bet2)))
-                warning('Unequal higher-order loadings detected across levels ',
-                        'detected for factor ', fn,
-                        ifelse(ngroups > 1L, paste(' in group', gLab), ""),
-                        '. omega_2L for configural constructs assumes invariance.')
-              commonCov1 <- lam1 %*% bet1 %*% phi1 %*% t(bet1) %*% t(lam1)
-              commonCov2 <- lam2 %*% bet2 %*% phi2 %*% t(bet2) %*% t(lam2)
-            } else {
-              commonCov1 <- lam1 %*% phi1 %*% t(lam1)
-              commonCov2 <- lam2 %*% phi2 %*% t(lam2)
-            }
-
-            rel[[g]]$config[[fn]] <- c(`omega_W`  = sum(commonCov1)              / sum(Sigma1),
-                                       `omega_2L` = sum(commonCov1 + commonCov2) / sum(Sigma1 + Sigma2))
+          if (add.IRR) {
+            numerator   <- sum(totalCov2)
+            denominator <- sum(totalCov * Ns, totalCov2)
+            rel[[paste0("IRR_of_", cc)]][g.idx] <- numerator / denominator
+            ## Add header
+            HEAD <- paste0('Composite `', cc, '` represents a shared construct, ',
+                           'formed by summing not only over items but over ',
+                           '(on average ', round(N_bar, 2), ') responses within ',
+                           'each cluster (', dQuote(lavInspect(object, "cluster")),
+                           '). Cluster members can therefore be interpreted as ',
+                           '"raters" of the cluster-level shared construct.\n\n',
+                           'The interrater reliability (IRR) of that construct is:')
+            attr( rel[[paste0("IRR_of_", cc)]], "header") <- HEAD
+            class(rel[[paste0("IRR_of_", cc)]]) <- c("lavaan.vector","numeric")
           }
 
         } else {
-          warning('Configural factor ', fn, 'not detected at both levels of ',
-                  'analysis, so removed from config= list.  Please use the ',
-                  'same name for the within- and between-level component of a ',
-                  'configural construct in your syntax.')
-          config <- setdiff(config, fn) # rm non-configural construct
-        }
-      }
-      ## after removing ineligible config, still multiple for total?
-      if (length(config) > 1L) {
-        ## only possible if NONE of config= are higher-order factors, or if
-        ## the first-order factors in config= are not latent indicators of any
-        ## higher-order factors in config=
-        if (return.total[idx1] && !(length(higher) && any(config %in% allLatInds))) {
-
-          indNames1 <- setdiff(PT$rhs[PT$lhs %in% config & PT$level == clus.label[1]],
-                               omit.indicators)
-          ## include observed indicators of any latent indicators
-          latInds1 <- intersect(indNames1, allLatInds)
-          indNames1 <- setdiff(PT$rhs[PT$lhs %in% c(config, latInds1) & PT$level == clus.label[1]],
-                               omit.indicators)
-
-          Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
-          Sigma2 <- SIGMA[[idx2]][indNames1, indNames1, drop = FALSE]
-
-          if (tau.eq) {
-            if (any(config %in% higher)) {
-              warning('Cannot apply alpha (tau.eq=TRUE) to total composite ',
-                      'that includes higher-order configural factor(s):\n',
-                      paste(intersect(shared, higher), collapse = ", "),
-                      '\nInstead, impose tau-equiv. in a higher-order CFA')
-            } else {
-              ## ALPHA
-              rel[[g]]$config$total <- c(`alpha_W`  = computeAlpha(Sigma1),
-                                         `alpha_2L` = computeAlpha(Sigma1 + Sigma2))
-            }
-
-          } else {
-            ## OMEGA
-            lam1 <- LAMBDA[[idx1]][indNames1, c(config, latInds1), drop = FALSE]
-            lam2 <- LAMBDA[[idx2]][indNames1, c(config, latInds1), drop = FALSE]
-            phi1 <-  PHI[[idx1]][c(config, latInds1), c(config, latInds1), drop = FALSE]
-            phi2 <-  PHI[[idx2]][c(config, latInds1), c(config, latInds1), drop = FALSE]
-            if (length(latInds1)) {
-              bet1 <- BETA[[idx1]][c(config, latInds1), c(config, latInds1), drop = FALSE]
-              bet2 <- BETA[[idx2]][c(config, latInds1), c(config, latInds1), drop = FALSE]
-              commonCov1 <- lam1 %*% bet1 %*% phi1 %*% t(bet1) %*% t(lam1)
-              commonCov2 <- lam2 %*% bet2 %*% phi2 %*% t(bet2) %*% t(lam2)
-            } else {
-              commonCov1 <- lam1 %*% phi1 %*% t(lam1)
-              commonCov2 <- lam2 %*% phi2 %*% t(lam2)
-            }
-            rel[[g]]$config$total <- c(`omega_W`  = sum(commonCov1)              / sum(Sigma1),
-                                       `omega_2L` = sum(commonCov1 + commonCov2) / sum(Sigma1 + Sigma2))
-          }
+          ## use built-in function
+          rel[[cc]][g.idx] <- computeAlpha(totalCov, W = wt)
         }
 
-        ## collect 2 coefs for multiple composites into a matrix
-        rel[[g]]$config <- do.call(cbind, rel[[g]]$config)
+        next
       }
 
+      ## else, calculate model-based RELIABILITY
 
-      ## (reciprocal of) harmonic-mean cluster size
-      Ns <- mean(1 / lavInspect(object, "cluster.size",
-                                drop.list.single.group = FALSE)[[g]])
-      ## reset higher= argument for later checks
-      higher <- character(0)
+      denominator <- t(wt) %*%  totalCov %*% wt
 
-      ## shared construct(s) defined at between level in this group?
-      for (fn in shared) {
-        if (fn %in% omit.factors) {
-          ## why would they do this?
-          shared <- setdiff(shared, omit.factors)
-          next
-        }
-        if (fn %in% lv.names2) {
-          indNames2 <- setdiff(PT$rhs[PT$lhs == fn & PT$level == clus.label[2L]],
-                               omit.indicators)
-          ## only Level-2 single-indicator factors are relevant to drop
-          if (dropSingle && length(indNames2) == 1L) next
-          ## is it a higher-order factor?
-          latInds2 <- intersect(indNames2, allLatInds)
-          if (length(latInds2)) {
-            lowList <- lapply(latInds2, function(fn2) {
-              indNames2 <- setdiff(PT$rhs[PT$lhs == fn2 & PT$level == clus.label[2L]],
-                                   omit.indicators)
-              ## check indicators of lower-order factors are not also latent
-              lowerLatent <- intersect(indNames2, allLatInds)
-              if (length(lowerLatent))
-                stop('Indicators of lower-order factor ', fn2,
-                     ifelse(ngroups > 1L, paste(' in group', gLab), ""),
-                     ' cannot also be latent')
-              indNames2
-            })
-            ## update indicator list to only include relevant observed variables
-            indNames2 <- intersect(c(indNames2, do.call(c, lowList)), ov.names2)
-            ## update list of higher-order factors
-            higher <- c(higher, fn)
-          }
-          ## capture within-level variance components of same indicators
-          ## (make sure none are Level-2 only)
-          indNames1 <- intersect(indNames2, ov.names1)
+      if (!is.null(b.idx2)) {
+        if (cc %in% shared) {
+          isShared <- TRUE
+          ## (reciprocal of) harmonic-mean cluster size
+          N_bar <- mean(lavInspect(object, "cluster.size",
+                                   drop.list.single.group = FALSE)[[g.idx]])
+          Ns <- mean(1 / lavInspect(object, "cluster.size",
+                                    drop.list.single.group = FALSE)[[g.idx]])
 
-          Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
-          Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
+          ## only Level 2 is true-score variance (Level-1 is error)
+          numerator <- t(wt2) %*% commonCov2 %*% wt2
+          ## Level-1 error is reduced by (harmonic-mean) cluster size
+          denominator <- sum(denominator * Ns, t(wt2) %*%  totalCov2 %*% wt2)
 
-          if (tau.eq) {
-            if (fn %in% higher) {
-              warning('Cannot apply alpha (tau.eq=TRUE) to higher-order factor ',
-                      fn, '. Instead, fit a higher-order CFA that imposes ',
-                      'tau-equivalence constraints.')
-            } else {
-              nI <- length(indNames2)
-              if (nI == 1L) {
-                stop('Coefficient alpha is undefined for a single indicator. ',
-                     'Set tau.eq=FALSE or dropSingle=TRUE')
-              }
-              kw <- nI / (nI-1) # weight for alpha based on number of items
-              ## ALPHA
-              onlyCov2 <- Sigma2
-              diag(onlyCov2) <- 0
-
-              rel[[g]]$shared[[fn]] <- c(`alpha_B` = kw*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
-                                         `IRR`     =    sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
-            }
-
-          } else {
-            ## OMEGA
-            lam2 <- LAMBDA[[idx2]][indNames2, c(fn, latInds2), drop = FALSE]
-            phi2 <- PHI[[idx2]][c(fn, latInds2), c(fn, latInds2), drop = FALSE]
-            if (length(latInds2)) {
-              bet2 <- BETA[[idx2]][c(fn, latInds2), c(fn, latInds2), drop = FALSE]
-              commonCov2 <- lam2 %*% bet2 %*% phi2 %*% t(bet2) %*% t(lam2)
-            } else commonCov2 <- lam2 %*% phi2 %*% t(lam2)
-
-            rel[[g]]$shared[[fn]] <- c(`omega_B` = sum(commonCov2) / sum(Sigma1*Ns, Sigma2),
-                                       `IRR`     = sum(  Sigma2  ) / sum(Sigma1*Ns, Sigma2))
-          }
-
-        } else shared <- setdiff(shared, fn) # rm non-shared construct
-      }
-      ## after removing ineligible shared, still multiple for total?
-      if (length(shared) > 1L) {
-        ## only possible if NONE of shared= are higher-order factors, or if
-        ## the first-order factors in shared= are not latent indicators of any
-        ## higher-order factors in shared=
-        if (return.total[idx2] && !(length(higher) && any(shared %in% allLatInds))) {
-          indNames2 <- setdiff(PT$rhs[PT$lhs %in% shared & PT$level == clus.label[2]],
-                               omit.indicators)
-          ## include observed indicators of any latent indicators
-          latInds2 <- intersect(indNames2, allLatInds)
-          indNames2 <- setdiff(PT$rhs[PT$lhs %in% c(shared, latInds2) & PT$level == clus.label[2]],
-                               omit.indicators)
-          ## capture within-level variance components of same indicators
-          ## (make sure none are Level-2 only)
-          indNames1 <- intersect(indNames2, ov.names1)
-
-          Sigma1 <- SIGMA[[idx1]][indNames1, indNames1, drop = FALSE]
-          Sigma2 <- SIGMA[[idx2]][indNames2, indNames2, drop = FALSE]
-
-          if (tau.eq) {
-            if (any(shared %in% higher)) {
-              warning('Cannot apply alpha (tau.eq=TRUE) to total composite ',
-                      'that includes higher-order shared factor(s):\n',
-                      paste(intersect(shared, higher), collapse = ", "),
-                      '\nInstead, impose tau-equiv. in a higher-order CFA')
-            } else {
-              ## ALPHA
-              nI <- length(indNames2) #TODO: justify when > length(indNames1)
-                                      #     (Level-1 component exists with SD=0)
-              kw <- nI / (nI-1) # weight for alpha based on number of items
-              onlyCov2 <- Sigma2
-              diag(onlyCov2) <- 0
-
-              rel[[g]]$shared$total <- c(`alpha_B` = kw*sum(onlyCov2) / sum(Sigma1*Ns, Sigma2),
-                                         `IRR`     =    sum( Sigma2 ) / sum(Sigma1*Ns, Sigma2))
-            }
-
-          } else {
-            ## OMEGA
-            lam2 <- LAMBDA[[idx2]][indNames2, c(shared, latInds2), drop = FALSE]
-            phi2 <- PHI[[idx2]][c(shared, latInds2), c(shared, latInds2), drop = FALSE]
-            if (length(latInds1)) {
-              bet2 <- BETA[[idx2]][c(shared, latInds2), c(shared, latInds2), drop = FALSE]
-              commonCov2 <- lam2 %*% bet2 %*% phi2 %*% t(bet2) %*% t(lam2)
-            } else commonCov2 <- lam2 %*% phi2 %*% t(lam2)
-            rel[[g]]$shared$total <- c(`omega_B` = sum(commonCov2) / sum(Sigma1*Ns, Sigma2),
-                                       `IRR`     = sum(  Sigma2  ) / sum(Sigma1*Ns, Sigma2))
-          }
+        } else {
+          isConfig <- TRUE
+          ## Level 1 has true-score variance, but accumulates at Level 2
+          numerator <- sum( t(wt ) %*% commonCov  %*% wt  ,
+                            t(wt2) %*% commonCov2 %*% wt2 )
+          denominator <- sum(denominator, t(wt2) %*%  totalCov2 %*% wt2)
         }
 
-        ## collect 2 coefs for multiple composites into a matrix
-        rel[[g]]$shared <- do.call(cbind, rel[[g]]$shared)
+      } else {
+        ## single block
+        numerator <- t(wt) %*% commonCov %*% wt
       }
 
+      ## OMEGA
+      rel[[cc]][g.idx] <- as.numeric(numerator / denominator)
 
-    } # end loop over groups
 
-    ## drop list structure?
-    if (ngroups == 1L) {
-      rel <- rel[[1]]
-    } else names(rel) <- group.label
+      if (isShared && add.IRR) {
+        numerator   <- sum( t(wt2) %*%  totalCov2 %*% wt2)
+        denominator <- sum( t(wt ) %*%  totalCov  %*% wt ) * Ns + numerator
+        rel[[paste0("IRR_of_", cc)]][g.idx] <- numerator / denominator
+        ## Add header
+        HEAD <- paste0('Composite `', cc, '` represents a shared construct, ',
+                       'formed by summing not only over items but over ',
+                       '(on average ', round(N_bar, 2), ') responses within ',
+                       'each cluster (', dQuote(lavInspect(object, "cluster")),
+                       '). Cluster members can therefore be interpreted as ',
+                       '"raters" of the cluster-level shared construct.\n\n',
+                       'The interrater reliability (IRR) of composite `', cc,
+                       '` is:')
+        attr( rel[[paste0("IRR_of_", cc)]], "header") <- HEAD
+        class(rel[[paste0("IRR_of_", cc)]]) <- c("lavaan.vector","numeric")
+      }
 
+      ## end loop over groups
+    }
+
+    ## in case this composite was skipped
+    ## (e.g., no observed indicators in any groups)
+    if (is.null(rel[[cc]])) next
+
+    class(rel[[cc]]) <- c("lavaan.vector","numeric")
+
+    ## determine type of composite for header
+    compType <- ifelse(cc %in% warnLRV,
+                       'latent responses underlying binary/ordinal variables:\n\t',
+                ifelse(isWithin,
+                       'cluster-mean-centered observed (or latent Level-1 components of) 2-level variables:\n\t',
+                ifelse(isBetween,
+                       'latent Level-2 components of 2-level variables:\n\t',
+                ifelse(isShared,
+                       '(cluster means of) observed variables:\n\t',
+                       'observed variables:\n\t'))))
+
+    ## Check for indicators ONLY in Level-2 model
+    #TODO: enable this in lavaan:  myIndNames2only <- lavNames(object, "ov.between")
+    #     if (isBetween && length(myIndNames2only)) {
+    #       myIndNames2from1 <- setdiff(union(myIndNames, myIndNames2), myIndNames2only)
+    #       ## assemble 2 indicator lists, separated by further description
+    #       indicatorList <- paste0(paste(myIndNames2from1, collapse = ', '),
+    #                               '\nand observed Level-2 variables:\n\t',
+    #                               paste(myIndNames2only, collapse = ', '))
+    #     } else
+    indicatorList <- paste(union(myIndNames, myIndNames2), collapse = ', ')
+
+    ## alpha or omega?
+    relType <- ifelse(cc %in% tau.eq  &&  cc %in% warnLRV,
+                      paste0('The latent polychoric correlation matrix was used ',
+                             'to calculate a hypothetical coefficient alpha:'),
+               ifelse(cc %in% tau.eq && isWithin,
+                      paste0('The latent Level-1 covariance matrix was used ',
+                             'to calculate coefficient alpha:'),
+               ifelse(cc %in% tau.eq && isBetween,
+                      paste0('The latent Level-2 covariance matrix was used ',
+                             'to calculate a hypothetical coefficient alpha:'),
+               ifelse(cc %in% tau.eq && isShared,
+                      paste0('Coefficient alpha was calculated using ',
+                             'Lai (2021, Eq. 24):'),
+               ifelse(cc %in% tau.eq,
+                      paste0('Coefficient alpha would be:'),
+               ## else OMEGA
+               paste('The proportion attributable to "true" scores is its',
+                     'model-based estimate of reliability ("omega"):'))))))
+    trueVar <- ifelse(cc %in% tau.eq, yes = '',
+                      paste0('\nTrue-score variance is represented by',
+                             ifelse(isShared | isBetween,
+                                    ' (between-level components of) ',
+                                    ifelse(isWithin,
+                                           ' (within-level components of) ',
+                                           ' ')),
+                             'common factor(s):\n\t',
+                             paste(union(myFacNames, myFacNames2), collapse = ', ')))
+
+    HEAD <- paste0('Composite `', cc,'` is composed of ',
+                   compType, indicatorList,
+                   ## alpha or omega?     ## What's the denominator?
+                   trueVar,               '\nTotal variance of composite `', cc,
+                   '`\ determined from the ',
+                   ifelse(obs.var, 'un', ''), 'restricted model.\n',
+                   ## alpha or omega?
+                   relType)
+    attr(rel[[cc]], "header") <- HEAD
+
+    if (isConfig) {
+      ## message about scale reliability?
+      # attr(rel[[cc]], "footer") <-
+
+    }
+
+    ## end loop over composites
   }
 
-  rel
+
+  ## simplify structure at all? (NOTE: simplify < 0L reproduces old behavior)
+  ## only if there are multiple composites
+  if (simplify) {
+    if (length(rel) == 1L) {
+      REL <- rel[[1L]]
+      ## drop header?
+      if (simplify < 0L)  attr(REL, "header") <- NULL
+
+    } else if (length(rel) > 1L) {
+
+      ## Check there are just as many indices for each composite
+      nComps <- unique(sapply(rel, length))
+      if (length(nComps) > 1L) {
+        message('Not all composites yield the same number of indices, so the ',
+                'object (a list) cannot be simplified to a data.frame')
+        REL <- rel
+        ## drop headers?
+        if (simplify < 0L)  for (i in seq_along(REL)) {
+          attr(REL[[i]], "header") <- NULL
+        }
+
+      } else if (nComps == 1L) {
+        ## Only 1 index per composite, so a single-group model.
+        ## This automatically assigns list names to concatenated vector
+        REL <- do.call(c, rel) # drops header (can replace below)
+        class(REL) <- c("lavaan.vector","numeric")
+
+      } else {
+        ## Multiple indices per composite, so a multiple-group model.
+
+        ## Check the indices have the same (group) names.
+        ## NOTE: The same composite name NEVER yields level-specific coefficients.
+        nameList <- lapply(rel, names)
+        sameNames <- all(sapply(2:length(nameList), function(i) {
+          isTRUE(all.equal(nameList[[1]], nameList[[i]]))
+        } ))
+        if (!sameNames) {
+          ## can't simplify, return as a list
+          message('Not all composites have the same names for indices, so the ',
+                  'object (a list) cannot be simplified to a data.frame')
+          REL <- rel
+          ## drop headers?
+          if (simplify < 0L)  for (i in seq_along(REL)) {
+            attr(REL[[i]], "header") <- NULL
+          }
+        }
+
+        #TODO: verify this preserves row/colnames
+        REL <- as.data.frame(do.call(rbind, rel)) # drops header (can replace below)
+        class(REL) <- c("lavaan.data.frame","data.frame")
+      }
+
+      if (simplify > 0L) {
+        ## concatenate(?) headers separated by this:
+        divL <- paste(c("\n\n", rep("-", 10)), collapse = "")
+        divR <- paste(c(rep("-", 10), "\n\n"), collapse = "")
+
+        allHeaders <- lapply(rel, attr, which = "header")
+        divH <- paste0(divL, names(rel), divR, allHeaders, "\n\n", collapse = "")
+        attr(REL, "header") <- paste0('Information about each composite is ',
+                                      'provided below, followed by reliability ',
+                                      'coefficients.', divH)
+
+        # feet <- which(sapply(rel, function(x) !is.null(attr(x, "footer"))))
+        #
+        # allFooters <- lapply(rel, attr, which = "footer")
+        # hasFeet <- sapply(allFooters, length) > 0L
+        # if (any(hasFeet)) {
+        #   divF <- paste0(divL, names(rel[hasFeet]), divR,
+        #                  allFooters[hasFeet], "\n\n", collapse = "")
+        #   attr(REL, "footer") <- paste0('Additional information is available for ',
+        #                                 'the following composite(s):', divF)
+        # }
+      }
+
+    }
+
+    ## end if (simplify)
+  } else REL <- rel
+
+  return(REL)
 }
 
 
@@ -2758,23 +2801,30 @@ computeAlpha <- function(S, W = NULL) {
 
   if (is.null(W)) {
     ## Traditional formula
-    ALPHA <- k/(k - 1) * (1.0 - sum(diag(S)) / sum(S))
+    ALPHA <- k/(k - 1) * (1 - sum(diag(S)) / sum(S))
 
   } else {
     stopifnot(length(W) == nrow(S))
 
-    DIAG <- t(W) %*% diag(diag(S)) %*% W
-    ALL  <- t(W) %*%           S   %*% W
-    #FIXME: Is "k" correct in this situation?
-    ALPHA <- k/(k - 1) * (1.0 - DIAG / ALL)[1,1]
+    #TODO? Develop theory for unequal weights.
+    #      For now, force equal weights (when nonzero).
+    wt <- W != 0
+    k <- sum(wt)
+    #FIXME? Should k = sum(wt) even with unequal weights?
+
+    DIAG <- t(wt) %*% diag(diag(S)) %*% wt
+    ALL  <- t(wt) %*%           S   %*% wt
+    ALPHA <- k/(k - 1) * (1 - DIAG / ALL)[1,1]
   }
 
   ALPHA
 }
 
-#' @importFrom stats cov2cor pnorm
-omegaCat <- function(truevar, threshold, scales, denom) {
-  #TODO: Figure out how to incorporate weights
+##' @importFrom stats cov2cor pnorm
+omegaCat <- function(truevar, threshold, scales, denom, wt = 1) {
+  #TODO: How to incorporate varying distances between category weights
+  #      (e.g., 0 = never, 0.5 = <1, 1.5 = 1-2, 4 = 3-5, 6 = >5)
+  #TODO: How to adapt for composites of continuous & categorical items?
 
   ## must be in standardized latent scale
   R <- diag(scales) %*% truevar %*% diag(scales)
@@ -2786,6 +2836,9 @@ omegaCat <- function(truevar, threshold, scales, denom) {
 	denom <- cov2cor(denom)
 
 	nitem <- ncol(denom)
+	if (length(wt) == 1L) {
+	  wt <- rep(wt, nitem)
+	}
 	## initialize sums of cumulative probabilities
 	sumnum <- 0 # numerator
 	addden <- 0 # denominator
@@ -2806,8 +2859,8 @@ omegaCat <- function(truevar, threshold, scales, denom) {
   		}
   		sumprobn1 <- sum(pnorm(t1))
   		sumprobn1p <- sum(pnorm(t2))
-  		sumnum <- sumnum + (sumprobn2 - sumprobn1 * sumprobn1p)
-  		addden <- addden + (addprobn2 - sumprobn1 * sumprobn1p)
+  		sumnum <- sumnum + wt[j] * wt[jp] * (sumprobn2 - sumprobn1 * sumprobn1p)
+  		addden <- addden + wt[j] * wt[jp] * (addprobn2 - sumprobn1 * sumprobn1p)
   	}
 	}
 	reliab <- sumnum / addden
