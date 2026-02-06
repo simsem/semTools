@@ -123,13 +123,16 @@ informative headers printed to facilitate interpretation.}
 }
 \value{
 By default (\code{simplify=FALSE}) a \code{list} of \code{numeric} vectors (1 per
-composite). In multigroup CFAs, each vector will have one index of
-reliability per group (among groups whose models include relevant
-items in the composite). For each composite, its vector has a
-\code{attr(..., "header")} with information to facilitate interpretation:
+composite) is returned. In multigroup CFA, the vector contains a reliability
+index for each group in which the composite can be computed.
+Each composite's vector has a \code{attr(..., "header")} with information to
+facilitate interpretation of that index:
 \itemize{
-\item{The variables in the composite, which determine the
+\item{A list of variables in the composite, which determines the
 composite's total variance (denominator of reliability)}
+\item{Whether that total variance (denominator) is determined from
+the restricted model (i.e., CFA parameters) or unrestricted
+model (i.e., a freely estimated covariance matrix)}
 \item{Whether the variables in the composite are (a transformation
 of) observed variables, or whether they are \emph{latent}
 (components of) variables. The latter (e.g., latent responses
@@ -138,9 +141,6 @@ level-specific components of variables in a multilevel CFA)
 cannot be used to calculated an observed composite variable,
 so the resulting coefficient should be cautiously interpreted
 as a "hypothetical reliability" (Chalmers, 2018; Lai, 2021).}
-\item{Whether that total variance (denominator) is determined from
-the restricted model (i.e., CFA parameters) or unrestricted
-model (i.e., freely estimated covariance matrix)}
 \item{The latent variables that contribute common-factor variance
 to the composite, which determine the composite's
 "true-score" variance (numerator of reliability)}
@@ -148,10 +148,8 @@ to the composite, which determine the composite's
 (so-called "omega") or coefficient alpha (a model-free
 lower-bound estimate of true reliability, equivalent to
 a model-based reliability that assumes tau-equivalence)}
-\item{The observed variables in the composite, which determine the
-composite's total variance (denominator of reliability)}
 }
-This head will be printed immediately above each composite's
+This header will be printed immediately above each composite's
 reliability coefficient.  When multiple reliability coefficients are
 returned, \strong{and} each vector in the list has the same length, then
 setting \code{simplify=TRUE} will collect the list of \emph{single}
@@ -183,18 +181,20 @@ cross-loadings) and correlated errors. The general \eqn{\omega} formula
 implemented in this function is:
 
 \deqn{\omega=\frac{\bold{w}^{\prime} \Lambda \Phi \Lambda^{\prime} \bold{w}
-                 }{ \bold{w}^{\prime} \hat{\Sigma} \bold{w}}, }
+                 }{ \bold{w}^{\prime} \hat{\Sigma} \bold{w} }, }
 
 where \eqn{\hat{\Sigma}} can be the model-implied covariance matrix from
 either the saturated model (i.e., the "observed" covariance matrix, used by
 default) or from the hypothesized CFA model, controlled by the \verb{obs.var=}
 argument. All elements of matrices in the numerator and denominator are
 effectively summed by the multiplication of the outer terms \eqn{\bold{w}},
-a \eqn{k}-dimensional vector of composite weights typically consisting of 1s
-(\eqn{\bold{1}}), unless otherwise specified with the \verb{W=} argument), and
-\eqn{k} is the number of variables in the composite. For unidimensional
-constructs with simple structure, the equation above is often simplified to
-a scalar representation (e.g., McDonald, 1999, Eq. 6.20b):
+a \eqn{k}-dimensional vector of composite weights typically consisting of
+\eqn{\bold{1}}s, unless otherwise specified with the \verb{W=} argument), and
+\eqn{k} is the number of variables in the composite. Reliability of subscale
+composites (or simply for separate factors in a joint CFA) can be calculated
+by setting omitted-indicator weights to 0.  For unidimensional constructs
+with simple structure, the equation above is often simplified to a scalar
+representation (e.g., McDonald, 1999, Eq. 6.20b):
 
 \deqn{ \omega = \frac{        \left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
   Var\left( \psi \right)  }{  \left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
@@ -209,13 +209,13 @@ When the fitted CFA imposes constraints consistent with (essential)
 tau-equivalence, \eqn{\omega} is equivalent to coefficient \eqn{\alpha}
 (Cronbach, 1951):
 
-\deqn{ \alpha = \frac{k}{k - 1}\left[ 1 - \frac{\sum^{k}_{i = 1}
-\sigma_{ii}}{\sum^{k}_{i = 1} \sigma_{ii} + 2\sum_{i < j} \sigma_{ij}}
+\deqn{ \alpha = \frac{k}{k - 1}\left[ 1 -
+    \frac{ \textrm{tr} \left( \hat{\Sigma} \right)
+        }{ \bold{1}^{\prime} \hat{\Sigma} \bold{1} }
 \right],}
 
-where \eqn{k} is the number of items in the composite, \eqn{\sigma_{ii}} is
-item \eqn{i}'s variance, and \eqn{\sigma_{ij}} is the covariance between
-items \eqn{k} and \eqn{j}. Setting \code{tau.eq=TRUE} triggers the application of
+where \eqn{\textrm{tr} \left( . \right)} is the trace operation (i.e., the
+sum of diagonal elements). Setting \code{tau.eq=TRUE} triggers the application of
 this formula (rather than \eqn{\omega} above) to the model-implied or
 observed covariance matrix (again controlled by the \verb{obs.var=} argument).
 
@@ -289,13 +289,13 @@ items can only be calculated by assigning numerical values to the ordinal
 categories, so that the pseudo-numerical variables can be summed into a
 composite variable that is more approximately continuous than its items.
 
-Applying the formulas above to the CFA parameters provides the
+Applying the formulas above to IFA parameters provides the
 \emph{hypothetical} reliability of a composite of latent responses: a composite
 which cannot be calculated in practice.  Nonetheless, this hypothetical
 reliability can be interpreted as an estimate of what reliability \emph{could} be
 if a more approximately continuous response scale were used (e.g., with
 sufficiently many response categories that the standardized solutions are
-equivalent between a fitted IFA and a CFA fitted that treats the ordinal
+equivalent between a fitted IFA and a fitted CFA that treats the ordinal
 responses as numeric; Chalmers, 2018). This can be requested by setting
 \code{ord.scale=FALSE}, in which case \eqn{\hat\Sigma} in the formulas above
 is a \emph{polychoric} correlation matrix.
@@ -323,50 +323,90 @@ indicators, so any such composite is skipped with a warning.
 
 \strong{Multilevel Measurement Models}:
 
-Under the default settings, \code{compRelSEM()} will apply the same formula
-in each "block" (group and/or level of analysis). In the case of multilevel
-(ML-)SEMs, this yields "reliability" for latent within- and between-level
-components, as proposed by Geldhof et al. (2014).  Although this works fine
-to calculate reliability per group, this is not recommended for ML-SEMs
-because the coefficients do not correspond to actual composites that would
-be calculated from the observed data.  Lai (2021) proposed coefficients for
-reliability of actual composites, depending on the type of construct, which
-requires specifying the names of constructs for which reliability is desired
-(or multiple constructs whose indicators would compose a multidimensional
-composite). Configural (\verb{config=}) and/or \verb{shared=} constructs
-can be specified; the same construct can be specified in both arguments, so
-that overall scale-reliability can be estimated for a shared construct by
-including it in \code{config}.  Instead of organizing the output by block
-(the default), specifying \verb{config=} and/or \verb{shared=} will prompt
-organizing the list of output by \verb{$config} and/or \verb{$shared}.
+How to define reliability coefficients for scales employed in nested designs
+is an ongoing topic of methodological development, with some ongoing
+controversies about best practice when the target of measurement is the
+"cluster" or between-level (i.e., Level 2 in a 2-level design).
+Geldhof et al. (2014) proposed applying the standard formulas above to each
+level's CFA parameters and/or (model-implied) covariance matrix, whereas
+Lai (2021) proposed different formulas that account for all sources of
+variance in composites of observed variables.
 
-\itemize{
-\item The overall (\verb{_2L}) scale reliability for \code{config}ural
-constructs is returned, along with the reliability of a purely
-individual-level composite (\verb{_W}, calculated by cluster-mean
-centering).
-\item The reliability for a \code{shared} construct quantifies
-generalizability across both indicators and raters (i.e., subjects rating
-their cluster's construct).  Lüdtke et al. (2011) refer to these as
-measurement error and sampling error, respectively.  An interrater
-reliability (IRR) coefficient is also returned, quantifying
-generalizability across rater/sampling-error only. To obtain a
-scale-reliability coefficient (quantifying a shared construct's
-generalizability across indicator/measurement-error only), include the
-same factor name in \verb{config=}.  Jak et al. (2021) recommended
-modeling components of the same construct at both levels, but users may
-also saturate the within-level model (Lai, 2021).
-}
+There is no controversy about how to define a within-level reliability,
+coefficient, which can be interpreted as the reliability of a composite
+calculated by first centering each indicator around its cluster mean, then
+calculating the composite from the cluster-mean-centered items. Equivalently
+(i.e., the same formula), this can be interpreted as the \emph{hypothetical}
+reliability of a composite of the items' latent Level-1 components. This
+coefficient can be requested with \link[lavaan:model.syntax]{lavaan::model.syntax} (to pass to the
+\verb{W=} argument) that specifies a composite in a Level-1 "block", which not
+have the same name as any composite in the Level-2 block.  If users do not
+use \verb{W=} (i.e., calculate a reliability index per modeled common factor),
+then this can be accomplished by using unique factor names across levels.
 
-Be careful about including Level-2 variables in the model, especially
-whether it makes sense to include them in a total composite for a Level-2
-construct.  \code{dropSingle=TRUE} only prevents estimating reliability for
-a single-indicator construct, not from including such an indicator in a
-total composite.  It is permissible for \verb{shared=} constructs to have
-additional indicators at Level-2 only.  If it is necessary to model other
-Level-2 variables (e.g., to justify the missing-at-random assumption when
-using \verb{missing="FIML" estimation}), they should be placed in the
-\verb{omit.indicators=} argument to exclude them from total composites.
+This contrasts with reliability indices for between-level composites:
+The reliability of a \emph{hypothetical} composite of items' latent between-level
+components (using formulas proposed by Geldhof et al., 2014) is \strong{not}
+equivalent to the coefficient for a composite of items' observed cluster
+means, using generalizations of formulas proposed by Lai (2021):
+
+\deqn{ \omega^\textrm{B} =
+    \frac{\bold{w}^{\prime} \Lambda^\textrm{B} \Phi^\textrm{B} \Lambda^{\textrm{B}\prime} \bold{w}
+        }{ \bold{w}^{\prime} \hat{\Sigma}^\textrm{B} \bold{w} +
+          \frac{1}{\tilde{n}_\textrm{clus}} \left(
+            \bold{w}^{\prime} \hat{\Sigma}^\textrm{W} \bold{w} \right) }, }
+
+\deqn{ \alpha^\textrm{B} = \frac{2k}{k - 1}\left[
+    \frac{ \sum^{k}_{i=2} \sum^{i-1}_{j=1} \hat\sigma^\textrm{B}_{ij}
+        }{ \bold{1}^{\prime} \hat\Sigma^\textrm{B} \bold{1} +
+           \frac{1}{\tilde{n}_\textrm{clus}} \left(
+           \bold{1}^{\prime} \hat\Sigma^\textrm{W} \bold{1} \right) }
+  \right],}
+
+where \eqn{\tilde{n}_\textrm{clus}} is the harmonic-mean cluster size, and
+superscripts B and W indicate between- and within-level parameters.
+Obtaining these estimates of composite reliability requires fitting a
+2-level CFA that provides the same factor structure and factor names in
+the models at both levels (following the advice of Jak et al., 2021), as
+well as the same composite name in both levels/blocks of syntax passed to
+\verb{W=} (if used).  Furthermore, the between-level composite name must be
+passed to the \verb{shared=} argument; otherwise, the same factor/composite name
+across levels will yield Lai's (2021) coefficient for a configural construct
+(see \strong{Examples}):
+
+\deqn{ \omega^\textrm{2L} =
+    \frac{\bold{w}^{\prime} \left(
+          \Lambda^\textrm{W} \Phi^\textrm{W} \Lambda^{\textrm{W}\prime} +
+          \Lambda^\textrm{B} \Phi^\textrm{B} \Lambda^{\textrm{B}\prime}
+          \right) \bold{w}
+        }{ \bold{w}^{\prime} \hat\Sigma^\textrm{B} \bold{w} +
+           \bold{w}^{\prime} \hat\Sigma^\textrm{W} \bold{w} }, }
+
+\deqn{ \alpha^\textrm{2L} = \frac{2k}{k - 1}\left[
+    \frac{ \sum^{k}_{i=2} \sum^{i-1}_{j=1} \left( \hat\sigma^\textrm{W}_{ij} +
+                                           \hat\sigma^\textrm{B}_{ij} \right)
+        }{ \bold{1}^{\prime} \hat\Sigma^\textrm{B} \bold{1} +
+           \bold{1}^{\prime} \hat\Sigma^\textrm{W} \bold{1} }
+  \right],}
+
+This can be interpreted as the scale-reliability coefficient ignoring the
+nested design, as both the common-factor variance of the Level-1 factor
+\emph{and} of its Level-2 cluster means are treated as true-score variance.
+
+\strong{Note} that Lai's (2021) between-level reliability coefficients for a
+\code{shared} construct quantify generalizability across both indicators and
+raters (i.e., subjects rating their cluster's construct).
+Lüdtke et al. (2011) refer to these as measurement error and sampling error,
+respectively.  From this perspective (and following from generalizability
+theory), an IRR coefficient can also be calculated:
+
+\deqn{ \textrm{IRR} =
+    \frac{\bold{w}^{\prime} \left( \hat{\Sigma}^\textrm{B} \right) \bold{w}
+        }{ \bold{w}^{\prime} \hat\Sigma^\textrm{B} \bold{w} +
+           \bold{w}^{\prime} \hat\Sigma^\textrm{W} \bold{w} }, }
+
+which quantifies generalizability across rater/sampling-error only, and can
+be returned for any \verb{shared=} construct's composite by setting \code{add.IRR=TRUE}.
 }
 \examples{
 data(HolzingerSwineford1939)
@@ -396,6 +436,9 @@ w.tot <- '
 compRelSEM(fit, W = w.tot)
 
 
+## ----------------------
+## Higher-order construct
+## ----------------------
 
 ## Reliability of a composite that represents a higher-order factor
 mod.hi <- ' visual  =~ x1 + x2 + x3
@@ -408,6 +451,58 @@ fit.hi <- cfa(mod.hi, data = HolzingerSwineford1939)
 ## observed indicators.  Must use custom-weights syntax:
 compRelSEM(fit.hi, W = 'g <~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9')
 
+
+## ----------------------
+## Hierarchical omega
+## and omega Total
+## ----------------------
+
+mod.bi <- ' visual  =~ x1 + x2 + x3
+            textual =~ x4 + x5 + x6
+            speed   =~ x7 + x8 + x9
+            general =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 '
+fit.bi <- cfa(mod.bi, data = HolzingerSwineford1939,
+              orthogonal = TRUE, std.lv = TRUE)
+compRelSEM(fit.bi, return.total = -1) # omega_Total
+compRelSEM(fit.bi, return.total = -1, # omega_Hierarchical
+           true = list(.TOTAL. = "general"))
+
+
+## ----------------------
+## Multilevel Constructs
+## ----------------------
+
+## Same factor structure with metric invariance across levels (Jak et al., 2021)
+model2 <- '
+  level: 1
+    f1 =~ y1 + L2*y2 + L3*y3
+    f2 =~ y4 + L5*y5 + L6*y6
+  level: 2
+    f1 =~ y1 + L2*y2 + L3*y3
+    f2 =~ y4 + L5*y5 + L6*y6
+'
+fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster")
+
+## Lai's (2021, Eq. 13) omega index for a configural (Level-1) construct,
+## treating common-factor variance at both levels as "true" variance
+compRelSEM(fit2)
+
+## Lai's (2021, Eq. 17) omega index for a shared (Level-2) construct
+## (also its interrater reliability coefficient)
+compRelSEM(fit2, shared = c("f1","f2"), add.IRR = TRUE)
+
+## Geldhof et al.'s (2014) level-specific indices imply a different
+## composite (hypothetically) calculated per level.  Thus, use
+## unique composite names per level.
+
+W2.Geldhof <- ' level: 1
+  F1w <~ y1 + y2 + y3
+  F2w <~ y4 + y5 + y6
+level: 2
+  F1b <~ y1 + y2 + y3
+  F2b <~ y4 + y5 + y6
+'
+compRelSEM(fit2, W = W2.Geldhof)
 
 
 }

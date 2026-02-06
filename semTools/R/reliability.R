@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
 ###   - omegaCat() and deprecated functionality: Sunthud Pornprasertmanit
-### Last updated: 4 February 2026
+### Last updated: 6 February 2026
 
 
 
@@ -329,18 +329,20 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' implemented in this function is:
 ##'
 ##' \deqn{\omega=\frac{\bold{w}^{\prime} \Lambda \Phi \Lambda^{\prime} \bold{w}
-##'                  }{ \bold{w}^{\prime} \hat{\Sigma} \bold{w}}, }
+##'                  }{ \bold{w}^{\prime} \hat{\Sigma} \bold{w} }, }
 ##'
 ##' where \eqn{\hat{\Sigma}} can be the model-implied covariance matrix from
 ##' either the saturated model (i.e., the "observed" covariance matrix, used by
 ##' default) or from the hypothesized CFA model, controlled by the `obs.var=`
 ##' argument. All elements of matrices in the numerator and denominator are
 ##' effectively summed by the multiplication of the outer terms \eqn{\bold{w}},
-##' a \eqn{k}-dimensional vector of composite weights typically consisting of 1s
-##' (\eqn{\bold{1}}), unless otherwise specified with the `W=` argument), and
-##' \eqn{k} is the number of variables in the composite. For unidimensional
-##' constructs with simple structure, the equation above is often simplified to
-##' a scalar representation (e.g., McDonald, 1999, Eq. 6.20b):
+##' a \eqn{k}-dimensional vector of composite weights typically consisting of
+##' \eqn{\bold{1}}s, unless otherwise specified with the `W=` argument), and
+##' \eqn{k} is the number of variables in the composite. Reliability of subscale
+##' composites (or simply for separate factors in a joint CFA) can be calculated
+##' by setting omitted-indicator weights to 0.  For unidimensional constructs
+##' with simple structure, the equation above is often simplified to a scalar
+##' representation (e.g., McDonald, 1999, Eq. 6.20b):
 ##'
 ##' \deqn{ \omega = \frac{        \left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
 ##'   Var\left( \psi \right)  }{  \left( \sum^{k}_{i = 1} \lambda_i \right)^{2}
@@ -356,13 +358,13 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' tau-equivalence, \eqn{\omega} is equivalent to coefficient \eqn{\alpha}
 ##' (Cronbach, 1951):
 ##'
-##' \deqn{ \alpha = \frac{k}{k - 1}\left[ 1 - \frac{\sum^{k}_{i = 1}
-##' \sigma_{ii}}{\sum^{k}_{i = 1} \sigma_{ii} + 2\sum_{i < j} \sigma_{ij}}
+##' \deqn{ \alpha = \frac{k}{k - 1}\left[ 1 -
+##'     \frac{ \textrm{tr} \left( \hat{\Sigma} \right)
+##'         }{ \bold{1}^{\prime} \hat{\Sigma} \bold{1} }
 ##' \right],}
 ##'
-##' where \eqn{k} is the number of items in the composite, \eqn{\sigma_{ii}} is
-##' item \eqn{i}'s variance, and \eqn{\sigma_{ij}} is the covariance between
-##' items \eqn{k} and \eqn{j}. Setting `tau.eq=TRUE` triggers the application of
+##' where \eqn{\textrm{tr} \left( . \right)} is the trace operation (i.e., the
+##' sum of diagonal elements). Setting `tau.eq=TRUE` triggers the application of
 ##' this formula (rather than \eqn{\omega} above) to the model-implied or
 ##' observed covariance matrix (again controlled by the `obs.var=` argument).
 ##'
@@ -438,13 +440,13 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' categories, so that the pseudo-numerical variables can be summed into a
 ##' composite variable that is more approximately continuous than its items.
 ##'
-##' Applying the formulas above to the CFA parameters provides the
+##' Applying the formulas above to IFA parameters provides the
 ##' *hypothetical* reliability of a composite of latent responses: a composite
 ##' which cannot be calculated in practice.  Nonetheless, this hypothetical
 ##' reliability can be interpreted as an estimate of what reliability *could* be
 ##' if a more approximately continuous response scale were used (e.g., with
 ##' sufficiently many response categories that the standardized solutions are
-##' equivalent between a fitted IFA and a CFA fitted that treats the ordinal
+##' equivalent between a fitted IFA and a fitted CFA that treats the ordinal
 ##' responses as numeric; Chalmers, 2018). This can be requested by setting
 ##' `ord.scale=FALSE`, in which case \eqn{\hat\Sigma} in the formulas above
 ##' is a *polychoric* correlation matrix.
@@ -479,50 +481,92 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##   Lai's (2021) indices for observed-variable composites; otherwise, Geldhof
 ##   et al.'s (2014) indices for level-specific latent composites
 
-##' Under the default settings, `compRelSEM()` will apply the same formula
-##' in each "block" (group and/or level of analysis). In the case of multilevel
-##' (ML-)SEMs, this yields "reliability" for latent within- and between-level
-##' components, as proposed by Geldhof et al. (2014).  Although this works fine
-##' to calculate reliability per group, this is not recommended for ML-SEMs
-##' because the coefficients do not correspond to actual composites that would
-##' be calculated from the observed data.  Lai (2021) proposed coefficients for
-##' reliability of actual composites, depending on the type of construct, which
-##' requires specifying the names of constructs for which reliability is desired
-##' (or multiple constructs whose indicators would compose a multidimensional
-##' composite). Configural (`config=`) and/or `shared=` constructs
-##' can be specified; the same construct can be specified in both arguments, so
-##' that overall scale-reliability can be estimated for a shared construct by
-##' including it in `config`.  Instead of organizing the output by block
-##' (the default), specifying `config=` and/or `shared=` will prompt
-##' organizing the list of output by `$config` and/or `$shared`.
+##' How to define reliability coefficients for scales employed in nested designs
+##' is an ongoing topic of methodological development, with some ongoing
+##' controversies about best practice when the target of measurement is the
+##' "cluster" or between-level (i.e., Level 2 in a 2-level design).
+##' Geldhof et al. (2014) proposed applying the standard formulas above to each
+##' level's CFA parameters and/or (model-implied) covariance matrix, whereas
+##' Lai (2021) proposed different formulas that account for all sources of
+##' variance in composites of observed variables.
 ##'
-##' \itemize{
-##'   \item The overall (`_2L`) scale reliability for `config`ural
-##'   constructs is returned, along with the reliability of a purely
-##'   individual-level composite (`_W`, calculated by cluster-mean
-##'   centering).
-##'   \item The reliability for a `shared` construct quantifies
-##'   generalizability across both indicators and raters (i.e., subjects rating
-##'   their cluster's construct).  Lüdtke et al. (2011) refer to these as
-##'   measurement error and sampling error, respectively.  An interrater
-##'   reliability (IRR) coefficient is also returned, quantifying
-##'   generalizability across rater/sampling-error only. To obtain a
-##'   scale-reliability coefficient (quantifying a shared construct's
-##'   generalizability across indicator/measurement-error only), include the
-##'   same factor name in `config=`.  Jak et al. (2021) recommended
-##'   modeling components of the same construct at both levels, but users may
-##'   also saturate the within-level model (Lai, 2021).
-##' }
+##' There is no controversy about how to define a within-level reliability,
+##' coefficient, which can be interpreted as the reliability of a composite
+##' calculated by first centering each indicator around its cluster mean, then
+##' calculating the composite from the cluster-mean-centered items. Equivalently
+##' (i.e., the same formula), this can be interpreted as the *hypothetical*
+##' reliability of a composite of the items' latent Level-1 components. This
+##' coefficient can be requested with [lavaan::model.syntax] (to pass to the
+##' `W=` argument) that specifies a composite in a Level-1 "block", which not
+##' have the same name as any composite in the Level-2 block.  If users do not
+##' use `W=` (i.e., calculate a reliability index per modeled common factor),
+##' then this can be accomplished by using unique factor names across levels.
 ##'
-##' Be careful about including Level-2 variables in the model, especially
-##' whether it makes sense to include them in a total composite for a Level-2
-##' construct.  `dropSingle=TRUE` only prevents estimating reliability for
-##' a single-indicator construct, not from including such an indicator in a
-##' total composite.  It is permissible for `shared=` constructs to have
-##' additional indicators at Level-2 only.  If it is necessary to model other
-##' Level-2 variables (e.g., to justify the missing-at-random assumption when
-##' using `missing="FIML" estimation`), they should be placed in the
-##' `omit.indicators=` argument to exclude them from total composites.
+##' This contrasts with reliability indices for between-level composites:
+##' The reliability of a *hypothetical* composite of items' latent between-level
+##' components (using formulas proposed by Geldhof et al., 2014) is **not**
+##' equivalent to the coefficient for a composite of items' observed cluster
+##' means, using generalizations of formulas proposed by Lai (2021):
+##'
+##' \deqn{ \omega^\textrm{B} =
+##'     \frac{\bold{w}^{\prime} \Lambda^\textrm{B} \Phi^\textrm{B} \Lambda^{\textrm{B}\prime} \bold{w}
+##'         }{ \bold{w}^{\prime} \hat{\Sigma}^\textrm{B} \bold{w} +
+##'           \frac{1}{\tilde{n}_\textrm{clus}} \left(
+##'             \bold{w}^{\prime} \hat{\Sigma}^\textrm{W} \bold{w} \right) }, }
+##'
+##' \deqn{ \alpha^\textrm{B} = \frac{2k}{k - 1}\left[
+##'     \frac{ \sum^{k}_{i=2} \sum^{i-1}_{j=1} \hat\sigma^\textrm{B}_{ij}
+##'         }{ \bold{1}^{\prime} \hat\Sigma^\textrm{B} \bold{1} +
+##'            \frac{1}{\tilde{n}_\textrm{clus}} \left(
+##'            \bold{1}^{\prime} \hat\Sigma^\textrm{W} \bold{1} \right) }
+##'   \right],}
+##'
+##' where \eqn{\tilde{n}_\textrm{clus}} is the harmonic-mean cluster size, and
+##' superscripts B and W indicate between- and within-level parameters.
+##' Obtaining these estimates of composite reliability requires fitting a
+##' 2-level CFA that provides the same factor structure and factor names in
+##' the models at both levels (following the advice of Jak et al., 2021), as
+##' well as the same composite name in both levels/blocks of syntax passed to
+##' `W=` (if used).  Furthermore, the between-level composite name must be
+##' passed to the `shared=` argument; otherwise, the same factor/composite name
+##' across levels will yield Lai's (2021) coefficient for a configural construct
+##' (see **Examples**):
+##'
+##' \deqn{ \omega^\textrm{2L} =
+##'     \frac{\bold{w}^{\prime} \left(
+##'           \Lambda^\textrm{W} \Phi^\textrm{W} \Lambda^{\textrm{W}\prime} +
+##'           \Lambda^\textrm{B} \Phi^\textrm{B} \Lambda^{\textrm{B}\prime}
+##'           \right) \bold{w}
+##'         }{ \bold{w}^{\prime} \hat\Sigma^\textrm{B} \bold{w} +
+##'            \bold{w}^{\prime} \hat\Sigma^\textrm{W} \bold{w} }, }
+##'
+##' \deqn{ \alpha^\textrm{2L} = \frac{2k}{k - 1}\left[
+##'     \frac{ \sum^{k}_{i=2} \sum^{i-1}_{j=1} \left( \hat\sigma^\textrm{W}_{ij} +
+##'                                            \hat\sigma^\textrm{B}_{ij} \right)
+##'         }{ \bold{1}^{\prime} \hat\Sigma^\textrm{B} \bold{1} +
+##'            \bold{1}^{\prime} \hat\Sigma^\textrm{W} \bold{1} }
+##'   \right],}
+##'
+##' This can be interpreted as the scale-reliability coefficient ignoring the
+##' nested design, as both the common-factor variance of the Level-1 factor
+##' *and* of its Level-2 cluster means are treated as true-score variance.
+##'
+##' **Note** that Lai's (2021) between-level reliability coefficients for a
+##' `shared` construct quantify generalizability across both indicators and
+##' raters (i.e., subjects rating their cluster's construct).
+##' Lüdtke et al. (2011) refer to these as measurement error and sampling error,
+##' respectively.  From this perspective (and following from generalizability
+##' theory), an IRR coefficient can also be calculated:
+##'
+##' \deqn{ \textrm{IRR} =
+##'     \frac{\bold{w}^{\prime} \left( \hat{\Sigma}^\textrm{B} \right) \bold{w}
+##'         }{ \bold{w}^{\prime} \hat\Sigma^\textrm{B} \bold{w} +
+##'            \bold{w}^{\prime} \hat\Sigma^\textrm{W} \bold{w} }, }
+##'
+##' which quantifies generalizability across rater/sampling-error only, and can
+##' be returned for any `shared=` construct's composite by setting `add.IRR=TRUE`.
+##'
+##'
 ##'
 ##'
 ##' @importFrom lavaan lavInspect lavNames parTable
@@ -639,14 +683,18 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   Specifying a negative number (`simplify = -1L`) additionally removes the
 ##'   informative headers printed to facilitate interpretation.
 ##'
-##' @return By default (`simplify=FALSE`) a `list` of `numeric` vectors (1 per
-##'         composite). In multigroup CFAs, each vector will have one index of
-##'         reliability per group (among groups whose models include relevant
-##'         items in the composite). For each composite, its vector has a
-##'         `attr(..., "header")` with information to facilitate interpretation:
+##' @return
+##' By default (`simplify=FALSE`) a `list` of `numeric` vectors (1 per
+##' composite) is returned. In multigroup CFA, the vector contains a reliability
+##' index for each group in which the composite can be computed.
+##' Each composite's vector has a `attr(..., "header")` with information to
+##' facilitate interpretation of that index:
 ##'         \itemize{
-##'           \item{The variables in the composite, which determine the
+##'           \item{A list of variables in the composite, which determines the
 ##'                 composite's total variance (denominator of reliability)}
+##'           \item{Whether that total variance (denominator) is determined from
+##'                 the restricted model (i.e., CFA parameters) or unrestricted
+##'                 model (i.e., a freely estimated covariance matrix)}
 ##'           \item{Whether the variables in the composite are (a transformation
 ##'                 of) observed variables, or whether they are *latent*
 ##'                 (components of) variables. The latter (e.g., latent responses
@@ -655,9 +703,6 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'                 cannot be used to calculated an observed composite variable,
 ##'                 so the resulting coefficient should be cautiously interpreted
 ##'                 as a "hypothetical reliability" (Chalmers, 2018; Lai, 2021).}
-##'           \item{Whether that total variance (denominator) is determined from
-##'                 the restricted model (i.e., CFA parameters) or unrestricted
-##'                 model (i.e., freely estimated covariance matrix)}
 ##'           \item{The latent variables that contribute common-factor variance
 ##'                 to the composite, which determine the composite's
 ##'                 "true-score" variance (numerator of reliability)}
@@ -665,10 +710,8 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'                 (so-called "omega") or coefficient alpha (a model-free
 ##'                 lower-bound estimate of true reliability, equivalent to
 ##'                 a model-based reliability that assumes tau-equivalence)}
-##'           \item{The observed variables in the composite, which determine the
-##'                 composite's total variance (denominator of reliability)}
 ##'         }
-##'         This head will be printed immediately above each composite's
+##'         This header will be printed immediately above each composite's
 ##'         reliability coefficient.  When multiple reliability coefficients are
 ##'         returned, **and** each vector in the list has the same length, then
 ##'         setting `simplify=TRUE` will collect the list of *single*
@@ -773,16 +816,9 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' compRelSEM(fit, W = w.tot)
 ##'
 ##'
-##         ## loop over visual indicators to calculate alpha if one indicator is removed
-##         for (i in paste0("x", 1:3)) {
-##           cat("Drop ", i, ":\n", sep = "")
-##           print(compRelSEM(fit, omit.factors = c("textual","speed"),
-##                            omit.indicators = i, tau.eq = TRUE))
-##         }
-##         ## item-total correlations obtainable by adding a composite to the data
-##         HS$Visual <- HS$x1 + HS$x2 + HS$x3
-##         cor(HS["Visual"], y = HS[paste0("x", 1:3)])
-##         ## comparable to psych::alpha(HS[paste0("x", 1:3)])
+##' ## ----------------------
+##' ## Higher-order construct
+##' ## ----------------------
 ##'
 ##' ## Reliability of a composite that represents a higher-order factor
 ##' mod.hi <- ' visual  =~ x1 + x2 + x3
@@ -796,18 +832,70 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' compRelSEM(fit.hi, W = 'g <~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9')
 ##'
 ##'
+##' ## ----------------------
+##' ## Hierarchical omega
+##' ## and omega Total
+##' ## ----------------------
+##'
+##' mod.bi <- ' visual  =~ x1 + x2 + x3
+##'             textual =~ x4 + x5 + x6
+##'             speed   =~ x7 + x8 + x9
+##'             general =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 '
+##' fit.bi <- cfa(mod.bi, data = HolzingerSwineford1939,
+##'               orthogonal = TRUE, std.lv = TRUE)
+##' compRelSEM(fit.bi, return.total = -1) # omega_Total
+##' compRelSEM(fit.bi, return.total = -1, # omega_Hierarchical
+##'            true = list(.TOTAL. = "general"))
+##'
+##'
+##' ## ----------------------
+##' ## Multilevel Constructs
+##' ## ----------------------
+##'
+##' ## Same factor structure with metric invariance across levels (Jak et al., 2021)
+##' model2 <- '
+##'   level: 1
+##'     f1 =~ y1 + L2*y2 + L3*y3
+##'     f2 =~ y4 + L5*y5 + L6*y6
+##'   level: 2
+##'     f1 =~ y1 + L2*y2 + L3*y3
+##'     f2 =~ y4 + L5*y5 + L6*y6
+##' '
+##' fit2 <- sem(model2, data = Demo.twolevel, cluster = "cluster")
+##'
+##' ## Lai's (2021, Eq. 13) omega index for a configural (Level-1) construct,
+##' ## treating common-factor variance at both levels as "true" variance
+##' compRelSEM(fit2)
+##'
+##' ## Lai's (2021, Eq. 17) omega index for a shared (Level-2) construct
+##' ## (also its interrater reliability coefficient)
+##' compRelSEM(fit2, shared = c("f1","f2"), add.IRR = TRUE)
+##'
+##' ## Geldhof et al.'s (2014) level-specific indices imply a different
+##' ## composite (hypothetically) calculated per level.  Thus, use
+##' ## unique composite names per level.
+##'
+##' W2.Geldhof <- ' level: 1
+##'   F1w <~ y1 + y2 + y3
+##'   F2w <~ y4 + y5 + y6
+##' level: 2
+##'   F1b <~ y1 + y2 + y3
+##'   F2b <~ y4 + y5 + y6
+##' '
+##' compRelSEM(fit2, W = W2.Geldhof)
+##'
 ##'
 ##' @export
 compRelSEM <- function(object, W = NULL,
                        return.total = FALSE,
                        obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
-                       shared = character(0), config = character(0), # deprecate (only shared= needed)
+                       shared = character(0), config = character(0), # deprecated (only shared= needed)
                        add.IRR = FALSE, # only for shared constructs
-                       higher = character(0), # deprecate (always used when found)
+                       higher = character(0), # deprecated (always used when found)
                        true = list(), # character(0) per composite
                        dropSingle = TRUE, # ignored when !is.null(W)
-                       omit.factors = character(0), # deprecate (use true=)
-                       omit.indicators = character(0), # deprecate (use W=)
+                       omit.factors = character(0), # deprecated (use true=)
+                       omit.indicators = character(0), # deprecated (use W=)
                        omit.imps = c("no.conv","no.se"),
                        ## simplify= replaces (deprecated) return.df=
                        simplify = FALSE, return.df = simplify) {
@@ -1354,11 +1442,9 @@ compRelSEM <- function(object, W = NULL,
 
       ## calculate ALPHA?
       if (cc %in% tau.eq) {
-        # FIXME?  Weights are currently ignored
 
-        if (cc %in% shared) {
-          isShared <- TRUE
-          ## calculate manually using Lai (2021, Eq. 24)
+        if (!is.null(b.idx2)) {
+          ## calculate manually using Lai (2021, Eq. 23 or 24)
           nI <- length(myIndNames2)
           if (nI == 1L) {
             stop('Coefficient alpha is undefined for a single indicator. ',
@@ -1367,36 +1453,57 @@ compRelSEM <- function(object, W = NULL,
           }
           kw <- nI / (nI-1) # weight for alpha based on number of items
 
-          ## (reciprocal of) harmonic-mean cluster size
-          N_bar <- mean(lavInspect(object, "cluster.size",
-                                   drop.list.single.group = FALSE)[[g.idx]])
-          Ns <- mean(1 / lavInspect(object, "cluster.size",
-                                    drop.list.single.group = FALSE)[[g.idx]])
-          ## isolate "true score" component(s) at Level 2
+          ## numerator of shared or configural coefficient
           onlyCov2 <- totalCov2
           diag(onlyCov2) <- 0
 
-          ## ALPHA
-          rel[[cc]][g.idx] <- kw*sum(onlyCov2) / sum(totalCov * Ns, totalCov2)
+          ## additional information depends on shared or configural
+          if (cc %in% shared) {
+            isShared <- TRUE
 
-          if (add.IRR) {
-            numerator   <- sum(totalCov2)
-            denominator <- sum(totalCov * Ns, totalCov2)
-            rel[[paste0("IRR_of_", cc)]][g.idx] <- numerator / denominator
-            ## Add header
-            HEAD <- paste0('Composite `', cc, '` represents a shared construct, ',
-                           'formed by summing not only over items but over ',
-                           '(on average ', round(N_bar, 2), ') responses within ',
-                           'each cluster (', dQuote(lavInspect(object, "cluster")),
-                           '). Cluster members can therefore be interpreted as ',
-                           '"raters" of the cluster-level shared construct.\n\n',
-                           'The interrater reliability (IRR) of that construct is:')
-            attr( rel[[paste0("IRR_of_", cc)]], "header") <- HEAD
-            class(rel[[paste0("IRR_of_", cc)]]) <- c("lavaan.vector","numeric")
+            ## (reciprocal of) harmonic-mean cluster size
+            N_bar <- mean(lavInspect(object, "cluster.size",
+                                     drop.list.single.group = FALSE)[[g.idx]])
+            Ns <- mean(1 / lavInspect(object, "cluster.size",
+                                      drop.list.single.group = FALSE)[[g.idx]])
+
+            ## numerator only sums Level-2 covariances
+            numerator   <- t(wt2) %*% onlyCov2 %*% wt2
+            denominator <- sum(Ns * (t(wt)  %*% totalCov  %*% wt),
+                                     t(wt2) %*% totalCov2 %*% wt2)
+            ## ALPHA
+            rel[[cc]][g.idx] <- kw*numerator / denominator
+
+            if (add.IRR) {
+              numerator <- t(wt2) %*% totalCov2 %*% wt2 # same denominator
+              rel[[paste0("IRR_of_", cc)]][g.idx] <- numerator / denominator
+              ## Add header
+              HEAD <- paste0('Composite `', cc, '` represents a shared construct, ',
+                             'formed by summing not only over items but over ',
+                             '(on average ', round(N_bar, 2), ') responses within ',
+                             'each cluster (', dQuote(lavInspect(object, "cluster")),
+                             '). Cluster members can therefore be interpreted as ',
+                             '"raters" of the cluster-level shared construct.\n\n',
+                             'The interrater reliability (IRR) of that construct is:')
+              attr( rel[[paste0("IRR_of_", cc)]], "header") <- HEAD
+              class(rel[[paste0("IRR_of_", cc)]]) <- c("lavaan.vector","numeric")
+            }
+
+          } else {
+            isConfig <- TRUE
+            ## numerator sums covariances at both levels
+            onlyCov1 <- totalCov
+            diag(onlyCov1) <- 0
+            numerator   <- sum(t(wt)  %*% onlyCov1  %*% wt,
+                               t(wt2) %*% onlyCov2  %*% wt2)
+            denominator <- sum(t(wt)  %*% totalCov  %*% wt,
+                               t(wt2) %*% totalCov2 %*% wt2)
+            ## ALPHA
+            rel[[cc]][g.idx] <- kw*numerator / denominator
           }
 
         } else {
-          ## use built-in function
+          ## use built-in function for single-level model
           rel[[cc]][g.idx] <- computeAlpha(totalCov, W = wt)
         }
 
@@ -1408,6 +1515,8 @@ compRelSEM <- function(object, W = NULL,
       denominator <- t(wt) %*%  totalCov %*% wt
 
       if (!is.null(b.idx2)) {
+        ## 2-level model, what kind of construct?
+
         if (cc %in% shared) {
           isShared <- TRUE
           ## (reciprocal of) harmonic-mean cluster size
@@ -1491,7 +1600,7 @@ compRelSEM <- function(object, W = NULL,
                       paste0('The latent polychoric correlation matrix was used ',
                              'to calculate a hypothetical coefficient alpha:'),
                ifelse(cc %in% tau.eq && isWithin,
-                      paste0('The latent Level-1 covariance matrix was used ',
+                      paste0('The (latent) Level-1 covariance matrix was used ',
                              'to calculate coefficient alpha:'),
                ifelse(cc %in% tau.eq && isBetween,
                       paste0('The latent Level-2 covariance matrix was used ',
@@ -1499,11 +1608,14 @@ compRelSEM <- function(object, W = NULL,
                ifelse(cc %in% tau.eq && isShared,
                       paste0('Coefficient alpha was calculated using ',
                              'Lai (2021, Eq. 24):'),
+               ifelse(cc %in% tau.eq && isConfig,
+                      paste0('Coefficient alpha was calculated using ',
+                             'Lai (2021, Eq. 23):'),
                ifelse(cc %in% tau.eq,
                       paste0('Coefficient alpha would be:'),
                ## else OMEGA
                paste('The proportion attributable to "true" scores is its',
-                     'model-based estimate of reliability ("omega"):'))))))
+                     'model-based estimate of reliability ("omega"):')))))))
     trueVar <- ifelse(cc %in% tau.eq, yes = '',
                       paste0('\nTrue-score variance is represented by',
                              ifelse(isShared | isBetween,
@@ -1899,7 +2011,7 @@ NULL
 ##' The original `reliability` function was suboptimally designed.
 ##' For example, AVE was returned, which is not a reliability index. Also,
 ##' alpha and several omega-type coefficients were returned, including the
-##' original formula that was in appropriate for models with complex structure.
+##' original formula that was inappropriate for models with complex structure.
 ##' Some features could be controlled by the user for one but not both types of
 ##' index  For example, alpha for categorical indicators was returned on both
 ##' the observed and latent-response scales, but this was not an option for any
@@ -1907,10 +2019,9 @@ NULL
 ##' model-implied covariance matrix was used in the denominator, but alpha was
 ##' only computed using the observed matrix.  These inconsistencies have been
 ##' resolved in the new [compRelSEM()] function, which returns only
-##' one reliability index (per factor, optionally total score) according to the
-##' user's requested features, for which there is much more flexibility.
-##' Average variance extracted is now available in a dedicated [AVE()]
-##' function.
+##' one reliability index per composite, tailored to the user's requested
+##' features, for which there is much more flexibility. The average variance
+##' extracted is now available in a dedicated [AVE()] function.
 ##'
 ##' @export
 reliability <- function(object,
@@ -2849,16 +2960,17 @@ omegaCat <- function(truevar, threshold, scales, denom, wt = 1) {
   		sumprobn2 <- 0
   		addprobn2 <- 0
   		## for each pair of items, loop over all their thresholds
-  		t1 <- threshold[[j]]  * scales[j] # on standardized latent scale
-  		t2 <- threshold[[jp]] * scales[jp] #FIXME: subtract intercept (or marginal mean?)
+  		t1 <- threshold[[j ]] * scales[j ] # on standardized latent scale
+  		t2 <- threshold[[jp]] * scales[jp] #FIXME? subtract intercept (or marginal mean?)
   		for (c in 1:length(t1)) {
     		for (cp in 1:length(t2)) {
     			sumprobn2 <- sumprobn2 + p2(t1[c], t2[cp], R[j, jp])
     			addprobn2 <- addprobn2 + p2(t1[c], t2[cp], denom[j, jp])
     		}
   		}
-  		sumprobn1 <- sum(pnorm(t1))
+  		sumprobn1  <- sum(pnorm(t1))
   		sumprobn1p <- sum(pnorm(t2))
+  		## Add item weights (see Lu et al., 2020, doi:10.1037/met0000287)
   		sumnum <- sumnum + wt[j] * wt[jp] * (sumprobn2 - sumprobn1 * sumprobn1p)
   		addden <- addden + wt[j] * wt[jp] * (addprobn2 - sumprobn1 * sumprobn1p)
   	}
