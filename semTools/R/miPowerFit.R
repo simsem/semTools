@@ -64,11 +64,19 @@
 #'
 #' @return A data frame with one row per fixed parameter, containing:
 #' \enumerate{
-#'   \item Parameter identifiers (\code{lhs}, \code{op}, \code{rhs}, \code{group})
-#'   \item Modification index and EPC estimates
-#'   \item Standardized and unstandardized SESOI values
-#'   \item Power-based decision (\code{decision.pow})
-#'   \item CI-based decision (\code{decision.ci})
+#'   \item Parameter identifiers: \code{lhs}, \code{op}, \code{rhs}, and \code{group}.
+#'   \item Modification index (\code{mi}) and expected parameter change estimates (\code{epc}).
+#'   \item Unstandardized and standardized smallest effect size of interest values
+#'   (\code{sesoi}, \code{std.sesoi}).
+#'   \item Power-based decision (\code{decision.pow}) and related diagnostics, including
+#'   whether the modification index is statistically significant
+#'   (\code{significant.mi}) and whether the misfit at the SESOI has power greater than 0.80
+#'   (\code{high.power}).
+#'   \item EPC-related statistics, including the standard error of the EPC
+#'   (\code{se.epc}), confidence interval bounds for the EPC
+#'   (\code{lower.epc}, \code{upper.epc}), and confidence interval bounds for the
+#'   standardized EPC (\code{lower.std.epc}, \code{upper.std.epc}).
+#'   \item Confidence-interval–based equivalence decision (\code{decision.ci}).
 #' }
 #'
 #' @references
@@ -81,6 +89,8 @@
 #' @importFrom stats qchisq pchisq qnorm
 #' @importFrom lavaan modificationIndices lavNames fitMeasures
 #'
+#' @aliases epcEquivFit miPowerFit
+#'
 #' @examples
 #'
 #' library(lavaan)
@@ -90,26 +100,6 @@
 #' out <- epcEquivFit(fit)
 #' out
 #' summary(out)
-#'
-#' model <- '
-#'   # latent variable definitions
-#'      ind60 =~ x1 + x2 + x3
-#'      dem60 =~ y1 + a*y2 + b*y3 + c*y4
-#'      dem65 =~ y5 + a*y6 + b*y7 + c*y8
-#'
-#'   # regressions
-#'     dem60 ~ ind60
-#'     dem65 ~ ind60 + dem60
-#'
-#'   # residual correlations
-#'     y1 ~~ y5
-#'     y2 ~~ y4 + y6
-#'     y3 ~~ y7
-#'     y4 ~~ y8
-#'     y6 ~~ y8
-#' '
-#' fit2 <- sem(model, data = PoliticalDemocracy, meanstructure = TRUE)
-#' epcEquivFit(fit2, stdLoad = 0.3, cor = 0.2, stdBeta = 0.2, intcept = 0.5)
 #'
 #' @export
 epcEquivFit <- function(lavaanObj,
@@ -223,40 +213,10 @@ epcEquivFit <- function(lavaanObj,
   return(result)
 }
 
-#' @rdname semTools-deprecated
-#' @section EPC equivalence testing:
-#' The original \code{miPowerFit()} function was suboptimally named and
-#' conceptually too narrow. Although the function included a
-#' power-based decision rule relying on modification indices, following
-#' the framework of Saris, Satorra, and van der Veld (2009), this approach
-#' was never intended to be the primary inferential target.
-#'
-#' Instead, the central inferential goal is to evaluate the magnitude of
-#' expected parameter changes (EPCs) relative to a smallest effect size
-#' of interest (SESOI). This goal is more directly addressed by an
-#' equivalence-testing framework that compares confidence intervals of
-#' EPCs against a predefined trivial-misspecification region.
-#'
-#' Ongoing methodological work (Pornprasertmanit, Sriutaisuk, Heene, and
-#' Wu, in preparation) has shown that CI-based EPC equivalence testing
-#' yields more stable and informative decisions than power-based rules
-#' alone across a wide range of conditions. As a result, the emphasis
-#' implied by the name \code{miPowerFit()} no longer reflects the scope or
-#' priorities of the implemented methodology.
-#'
-#' These issues are addressed in \code{\link{epcEquivFit}}, which centers
-#' inference on EPC magnitude and equivalence testing, with power-based
-#' diagnostics treated as secondary information. \code{miPowerFit()} is
-#' retained only for backward compatibility and will be removed in a
-#' future release.
-#'
-#' @export
+#FIXME: Remove after a few version updates
 miPowerFit <- function(...) {
-  warning(
-    "'miPowerFit()' is deprecated; use 'epcEquivFit()' instead.",
-    call. = FALSE
-  )
-  epcEquivFit(...)
+  .Defunct("epcEquivFit",
+           msg = "miPowerFit() has been replaced by epcEquivFit()")
 }
 
 #' EPC Equivalence Feasibility Check for Standardized Parameters
@@ -332,26 +292,6 @@ miPowerFit <- function(...) {
 #' \donttest{
 #' epcEquivCheck(fit)
 #' }
-#'
-#' model <- '
-#'   # latent variable definitions
-#'      ind60 =~ x1 + x2 + x3
-#'      dem60 =~ y1 + a*y2 + b*y3 + c*y4
-#'      dem65 =~ y5 + a*y6 + b*y7 + c*y8
-#'
-#'   # regressions
-#'     dem60 ~ ind60
-#'     dem65 ~ ind60 + dem60
-#'
-#'   # residual correlations
-#'     y1 ~~ y5
-#'     y2 ~~ y4 + y6
-#'     y3 ~~ y7
-#'     y4 ~~ y8
-#'     y6 ~~ y8
-#' '
-#' fit2 <- sem(model, data = PoliticalDemocracy, meanstructure = TRUE)
-#' epcEquivCheck(fit2, stdLoad = 0.3, cor = 0.2, stdBeta = 0.2)
 #'
 #' @export
 epcEquivCheck <- function(lavaanObj,

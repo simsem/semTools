@@ -2,6 +2,7 @@
 % Please edit documentation in R/miPowerFit.R
 \name{epcEquivFit}
 \alias{epcEquivFit}
+\alias{miPowerFit}
 \alias{summary.epcequivfit.data.frame}
 \title{EPC Equivalence Fit Evaluation Using Modification Indices}
 \usage{
@@ -57,11 +58,19 @@ CI-based equivalence testing.}
 \value{
 A data frame with one row per fixed parameter, containing:
 \enumerate{
-\item Parameter identifiers (\code{lhs}, \code{op}, \code{rhs}, \code{group})
-\item Modification index and EPC estimates
-\item Standardized and unstandardized SESOI values
-\item Power-based decision (\code{decision.pow})
-\item CI-based decision (\code{decision.ci})
+\item Parameter identifiers: \code{lhs}, \code{op}, \code{rhs}, and \code{group}.
+\item Modification index (\code{mi}) and expected parameter change estimates (\code{epc}).
+\item Unstandardized and standardized smallest effect size of interest values
+(\code{sesoi}, \code{std.sesoi}).
+\item Power-based decision (\code{decision.pow}) and related diagnostics, including
+whether the modification index is statistically significant
+(\code{significant.mi}) and whether the misfit at the SESOI has power greater than 0.80
+(\code{high.power}).
+\item EPC-related statistics, including the standard error of the EPC
+(\code{se.epc}), confidence interval bounds for the EPC
+(\code{lower.epc}, \code{upper.epc}), and confidence interval bounds for the
+standardized EPC (\code{lower.std.epc}, \code{upper.std.epc}).
+\item Confidence-interval–based equivalence decision (\code{decision.ci}).
 }
 }
 \description{
@@ -106,26 +115,6 @@ fit <- cfa(one.model, data = HolzingerSwineford1939)
 out <- epcEquivFit(fit)
 out
 summary(out)
-
-model <- '
-  # latent variable definitions
-     ind60 =~ x1 + x2 + x3
-     dem60 =~ y1 + a*y2 + b*y3 + c*y4
-     dem65 =~ y5 + a*y6 + b*y7 + c*y8
-
-  # regressions
-    dem60 ~ ind60
-    dem65 ~ ind60 + dem60
-
-  # residual correlations
-    y1 ~~ y5
-    y2 ~~ y4 + y6
-    y3 ~~ y7
-    y4 ~~ y8
-    y6 ~~ y8
-'
-fit2 <- sem(model, data = PoliticalDemocracy, meanstructure = TRUE)
-epcEquivFit(fit2, stdLoad = 0.3, cor = 0.2, stdBeta = 0.2, intcept = 0.5)
 
 }
 \references{
