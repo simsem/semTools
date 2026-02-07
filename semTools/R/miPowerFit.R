@@ -213,10 +213,11 @@ epcEquivFit <- function(lavaanObj,
   return(result)
 }
 
-#FIXME: Remove after a few version updates
+#FIXME: Change to .Defunct after a few version updates
 miPowerFit <- function(...) {
-  .Defunct("epcEquivFit",
-           msg = "miPowerFit() has been replaced by epcEquivFit()")
+  .Deprecated("epcEquivFit",
+              msg = "miPowerFit() has been replaced by epcEquivFit().")
+  epcEquivFit(...)
 }
 
 #' EPC Equivalence Feasibility Check for Standardized Parameters
