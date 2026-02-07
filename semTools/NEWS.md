@@ -2,7 +2,17 @@
 
 ## New Features:
 
-
+- `compRelSEM()` and its documentation received a massive overhaul:
+    - New argument `W=` available for users to supply custom weights via `lavaan` syntax
+    - `omit.indicators=` argument deprecated in favor of using `W=`
+    - All common-factor variance contributed to items in a composite is now (by default) considered true-score variance.
+    - `higher=` argument deprecated.  New general formula (see documentation **Details**) assumes any higher-order factor(s) to be the source of true-score variance.
+    - New argument `true=` available for users to indicate which common factor(s) should be considered true-score variance
+    - `omit.factors=` argument deprecated in favor of using `true=`
+    - `return.df=` argument replaced by `simplify=`
+    - Coefficients now returned (by default) in a list, with headers indicating how to appropriately interpret each coefficient. 
+      The verbose headers can be suppressed (mimicking old behavior) by setting `simplify = -1L`
+- TODO: Sunthud's update
 
 ## Bug Fixes:
 

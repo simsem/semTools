@@ -169,7 +169,7 @@ future release.
 The original \code{reliability} function was suboptimally designed.
 For example, AVE was returned, which is not a reliability index. Also,
 alpha and several omega-type coefficients were returned, including the
-original formula that was in appropriate for models with complex structure.
+original formula that was inappropriate for models with complex structure.
 Some features could be controlled by the user for one but not both types of
 index  For example, alpha for categorical indicators was returned on both
 the observed and latent-response scales, but this was not an option for any
@@ -177,10 +177,9 @@ omega-type indices.  The omegas differed in terms of whether the observed or
 model-implied covariance matrix was used in the denominator, but alpha was
 only computed using the observed matrix.  These inconsistencies have been
 resolved in the new \code{\link[=compRelSEM]{compRelSEM()}} function, which returns only
-one reliability index (per factor, optionally total score) according to the
-user's requested features, for which there is much more flexibility.
-Average variance extracted is now available in a dedicated \code{\link[=AVE]{AVE()}}
-function.
+one reliability index per composite, tailored to the user's requested
+features, for which there is much more flexibility. The average variance
+extracted is now available in a dedicated \code{\link[=AVE]{AVE()}} function.
 }
 
 \section{Higher-Order Reliability}{
