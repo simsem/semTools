@@ -25,13 +25,13 @@ using \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}}, in the form \co
 See \strong{Details} and \strong{Examples} about complicated CFAs (e.g., multilevel,
 higher-order, or bifactor).}
 
-\item{return.total}{Only relevant for multidimensional CFAs, this \code{logical}
+\item{return.total}{For multidimensional CFAs, this \code{logical} value
 indicates whether to return a final index for the reliability of a
 composite of all modeled indicators (labeled \code{.TOTAL.}). This is redundant
 whenever there is already a common factor indicated by all items (e.g.,
 the general factor in a bifactor model). This argument is ignored when
 using the \verb{W=} argument to specify composites (optionally with weights).
-Setting a negative value (e.g., \code{-1} returns \strong{only} the \code{.TOTAL.}
+Setting a negative value (e.g., \code{-1}) returns \strong{only} the \code{.TOTAL.}
 composite reliability (i.e., excluding coefficients per factor).}
 
 \item{obs.var}{\code{logical} indicating whether to compute reliability

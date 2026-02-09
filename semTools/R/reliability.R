@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
 ###   - omegaCat() and deprecated functionality: Sunthud Pornprasertmanit
-### Last updated: 6 February 2026
+### Last updated: 10 February 2026
 
 
 
@@ -475,12 +475,6 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'
 ##' **Multilevel Measurement Models**:
 ##'
-  #TODO: incorporate `W=` details:
-##   multilevel SEMs, the syntax should include level-specific blocks,
-##   where the same composite name can be specified at both levels to calculate
-##   Lai's (2021) indices for observed-variable composites; otherwise, Geldhof
-##   et al.'s (2014) indices for level-specific latent composites
-
 ##' How to define reliability coefficients for scales employed in nested designs
 ##' is an ongoing topic of methodological development, with some ongoing
 ##' controversies about best practice when the target of measurement is the
@@ -583,13 +577,13 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'   (any indicator without a numeric `weight` is given a unit weight = 1).
 ##'   See **Details** and **Examples** about complicated CFAs (e.g., multilevel,
 ##'   higher-order, or bifactor).
-##' @param return.total Only relevant for multidimensional CFAs, this `logical`
+##' @param return.total For multidimensional CFAs, this `logical` value
 ##'   indicates whether to return a final index for the reliability of a
 ##'   composite of all modeled indicators (labeled `.TOTAL.`). This is redundant
 ##'   whenever there is already a common factor indicated by all items (e.g.,
 ##'   the general factor in a bifactor model). This argument is ignored when
 ##'   using the `W=` argument to specify composites (optionally with weights).
-##'   Setting a negative value (e.g., `-1` returns **only** the `.TOTAL.`
+##'   Setting a negative value (e.g., `-1`) returns **only** the `.TOTAL.`
 ##'   composite reliability (i.e., excluding coefficients per factor).
 ##' @param obs.var `logical` indicating whether to compute reliability
 ##'   using observed (co)variances to compute the denominator. Setting `FALSE`
@@ -934,7 +928,6 @@ compRelSEM <- function(object, W = NULL,
   ngroups <- lavInspect(object, "ngroups")
   nLevels <- lavInspect(object, "nlevels")
   nblocks <- ngroups*nLevels #FIXME: always true?
-  #FIXME: necessary in rewrite?    return.total <- rep(return.total, nblocks)
 
   ## extract parameter table
   PT <- parTable(object)
@@ -975,19 +968,25 @@ compRelSEM <- function(object, W = NULL,
     if (return.total) {
       ## loop over blocks to add a total score
       for (b in 1:nblocks) {
-        ov.names    <- lavNames(object, type = "ov.ind", block = b)
-        ind.idx     <- unique(match(wPT$rhs, table = ov.names))
-        totalPT     <- wPT[ind.idx, ]
-        totalPT$lhs <- ".TOTAL."
-        if (return.total < 0L) {
-          ## only for the total composite
-          wPT <- totalPT
+        wPTb         <- wPT[wPT$block == b, ]
+        ov.names     <- lavNames(object, type = "ov.ind", block = b)
+        ind.idx      <- unique(match(wPTb$rhs, table = ov.names))
+        totalPTb     <- wPTb[ind.idx, ]
+        totalPTb$lhs <- ".TOTAL."
 
-          ## add the total composite
-        } else wPT <- rbind(wPT, totalPT)
-
+        if (b == 1L) {
+          totalPT <- totalPTb
+        } else totalPT <- rbind(totalPT, totalPTb)
         ## end loop over blocks
       }
+
+      if (return.total < 0L) {
+        ## only the total composite
+        wPT <- totalPT
+
+        ## add the total composite
+      } else wPT <- rbind(wPT, totalPT)
+
     }
     ## replace default integers with labels for groups
     if (length(group.label) && is.integer(wPT$group)) {
