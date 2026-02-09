@@ -74,20 +74,15 @@ dat6 <- indProd(attitude[ , -1], var1 = 1:2, var2 = 3:4, var3 = 5:6,
 
 ## To add product-indicators to multiple-imputed data sets
 \donttest{
-HSMiss <- HolzingerSwineford1939[ , c(paste0("x", 1:9), "ageyr","agemo")]
-set.seed(12345)
-HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-age <- HSMiss$ageyr + HSMiss$agemo/12
-HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-library(Amelia)
-set.seed(12345)
-HS.amelia <- amelia(HSMiss, m = 3, p2s = FALSE)
-imps <- HS.amelia$imputations # extract a list of imputations
-## apply indProd() to the list of data.frames
-imps2 <- lapply(imps, indProd,
-                var1 = c("x1","x2","x3"), var2 = c("x4","x5","x6"))
-## verify:
-lapply(imps2, head)
+if (requireNamespace("lavaan.mi")) {
+  data(HS20imps, package = "lavaan.mi")
+
+  ## apply indProd() to the list of data.frames
+  imps2 <- lapply(HS20imps, indProd,
+                  var1 = c("x1","x2","x3"), var2 = c("x4","x5","x6"))
+  ## verify:
+  lapply(imps2, head)
+}
 }
 
 }

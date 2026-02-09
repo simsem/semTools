@@ -153,7 +153,7 @@ lapply(mlPV2, head)
 nPVs <- 5
 nImps <- 20
 
-if(requireNamespace("lavaan.mi")){
+if (requireNamespace("lavaan.mi")) {
   data(HS20imps, package = "lavaan.mi")
 
   ## specify CFA model from lavaan's ?cfa help page
