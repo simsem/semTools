@@ -1,8 +1,7 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
 ### Last updated: 27 May      2020
 ###   DEPRECATED  24 November 2022 (after 0.5-6 was on CRAN)
-###   DEFUNCT      9 February 2026 (after 0.5-8 was on CRAN)
-###   REMOVED     next time!
+###   REMOVED      9 February 2026 (from 0.5-8)
 ### fit and rotate EFA models in lavaan
 
 
