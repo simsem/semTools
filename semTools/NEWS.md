@@ -1,4 +1,4 @@
-# semTools 0.5-8 (in development)
+# semTools 0.5-8 (submitted to CRAN 9 February 2026)
 
 ## New Features:
 
@@ -12,11 +12,25 @@
     - `return.df=` argument replaced by `simplify=`
     - Coefficients now returned (by default) in a list, with headers indicating how to appropriately interpret each coefficient. 
       The verbose headers can be suppressed (mimicking old behavior) by setting `simplify = -1L`
-- TODO: Sunthud's update
+- `miPowerFit()` has been renamed `epcEquivFit()` and enhanced by a new `epcEquivCheck()` function
+  to assess whether trivial misspecification is difficult to establish for a given model under the
+  EPC equivalence testing framework (see [PR #151](https://github.com/simsem/semTools/pull/151)).
+
+## Removed Features:
+
+- `runMI()` was deprecated in 2024, now defunct. Use the new R package `lavaan.mi`
+- `efaUnrotate()`, `orthRotate()`, `oblqRotate()`, and `funRotate()`
+  have been deprecated since 2022 and are now defunct.
+- `measurementInvariance()`, `measurementInvarianceCat()`, and `longInvariance()`
+  have been deprecated since 2022 and are now removed.
 
 ## Bug Fixes:
 
-- `compareFit()` would throw an error if `lavaan.mi` package was not installed ([fixed](https://github.com/simsem/semTools/issues/147).
+- `compareFit()` would throw an error if `lavaan.mi` package was not installed
+  ([fixed](https://github.com/simsem/semTools/issues/147).
+- `monteCarloCI()` would lose parameter names in `coefs=` argument if there were
+  no `dimnames` in `ACM=` argument. Fixed by [PR #149](https://github.com/simsem/semTools/pull/149).
+
 
 
 # semTools 0.5-7 (on CRAN 13 March 2025)
