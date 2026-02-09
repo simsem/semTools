@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 2 June 2022
+### Last updated: 9 February 2026
 
 
 ##' Single Parameter Test Divided from Nested Model Comparison
@@ -50,7 +50,9 @@
 ##' If `return.fit = TRUE`, a list with two elements are provided. The
 ##' first element is the tabular result. The second element is the submodels
 ##' used in the `free` and `fix` methods.
+##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
+##'
 ##' @examples
 ##'
 ##' library(lavaan)
@@ -235,5 +237,181 @@ refit <- function(pt, object, resetstart = TRUE) {
 	# previousCall$model <- pt
 	# eval(previousCall)
 }
+
+
+
+## MOVED FROM lonInvariance.R when it was removed from semTools 0.5-8 (9 Feb 2026)
+
+
+
+# freeParTable: Free elements in parameter table
+# also used in partialInvariance
+freeParTable <- function(parTable, lhs, op, rhs, group, ustart = NA) {
+  parTable$start <- parTable$est <- parTable$se <- NULL
+  target <- cbind(lhs, op, rhs, group)
+  for (i in 1:nrow(target)) {
+    targetElem <- matchElement(parTable = parTable, vec = target[i,])
+    ptargetElem <- parTable$plabel[targetElem]
+    if ((length(targetElem) == 0) || is.na(targetElem)) {
+      newline <- list(lhs = as.character(target[i, 1]),
+                      op = as.character(target[i, 2]),
+                      rhs = as.character(target[i, 3]),
+                      group = as.integer(target[i, 4]),
+                      free = as.integer(max(parTable$free) + 1),
+                      ustart = as.numeric(NA))
+      parTable <- patMerge(pt1 = parTable, pt2 = newline)
+    } else {
+      if (parTable$free[targetElem] == 0) {
+        parTable$ustart[targetElem] <- ustart
+        parTable$user[targetElem] <- 1
+        parTable$free[targetElem] <- max(parTable$free) + 1
+      }
+      equalelement <- which(parTable$op == "==")
+      rmelem <- intersect(union(match(ptargetElem, parTable$lhs),
+                                match(ptargetElem, parTable$rhs)),
+                          equalelement)
+      if (length(rmelem) > 0) parTable <- removeEqCon(parTable, rmelem)
+    }
+  }
+  parTable <- rearrangept(parTable)
+  parTable
+}
+
+# fixParTable: Fix elements in parameter table
+# also used in partialInvariance
+fixParTable <- function(parTable, lhs, op, rhs, group, ustart = NA) {
+  parTable$start <- parTable$est <- parTable$se <- NULL
+  target <- cbind(lhs, op, rhs, group)
+  element <- apply(target, 1, matchElement, parTable=parTable)
+  for (i in 1:nrow(target)) {
+    ## Why was Sunthud printing warnings? (originally used warnings(), not warning()...)
+    # if (parTable$free[element[i]] == 0) warning('The parameter ', lhs, op, rhs,
+    #                                             ' in group ', group,
+    #                                             ' is already fixed.')
+
+    # equalelement <- which(parTable$op == "==")
+    # targetElem <- matchElement(parTable = parTable, vec = target[i,])
+    # ptargetElem <- parTable$plabel[targetElem]
+    # rmelem <- intersect(union(match(ptargetElem, parTable$lhs), match(ptargetElem, parTable$rhs)), equalelement)
+    # if(length(rmelem) > 0) parTable <- removeEqCon(parTable, rmelem)
+
+    parTable$ustart[element[i]] <- ustart
+    parTable$user[element[i]] <- 1
+    parTable$free[element[i]] <- 0
+  }
+  parTable <- rearrangept(parTable)
+  # rearrangePlabel with change all equality constraints
+  parTable
+}
+
+
+# removeEqCon: Remove equality constraints
+removeEqCon <- function(pt, element) {
+  pt <- lapply(pt, "[", -element)
+  pt$id <- seq_along(pt$id)
+  pt
+}
+
+patMerge <- function (pt1 = NULL, pt2 = NULL, remove.duplicated = FALSE,
+                      fromLast = FALSE, warn = TRUE) {
+  pt1 <- as.data.frame(pt1, stringsAsFactors = FALSE)
+  pt2 <- as.data.frame(pt2, stringsAsFactors = FALSE)
+  stopifnot(!is.null(pt1$lhs), !is.null(pt1$op), !is.null(pt1$rhs),
+            !is.null(pt2$lhs), !is.null(pt2$op), !is.null(pt2$rhs))
+  if (is.null(pt1$group) && is.null(pt2$group)) {
+    TMP <- rbind(pt1[, c("lhs", "op", "rhs", "group")],
+                 pt2[, c("lhs", "op", "rhs", "group")])
+  }
+  else {
+    if (is.null(pt1$group) && !is.null(pt2$group)) {
+      pt1$group <- rep(1L, length(pt1$lhs))
+    }
+    else if (is.null(pt2$group) && !is.null(pt1$group)) {
+      pt2$group <- rep(1L, length(pt2$lhs))
+    }
+    TMP <- rbind(pt1[, c("lhs", "op", "rhs", "group")],
+                 pt2[, c("lhs", "op", "rhs", "group")])
+  }
+  if (is.null(pt1$user) && !is.null(pt2$user)) {
+    pt1$user <- rep(0L, length(pt1$lhs))
+  }
+  else if (is.null(pt2$user) && !is.null(pt1$user)) {
+    pt2$user <- rep(0L, length(pt2$lhs))
+  }
+  if (is.null(pt1$free) && !is.null(pt2$free)) {
+    pt1$free <- rep(0L, length(pt1$lhs))
+  }
+  else if (is.null(pt2$free) && !is.null(pt1$free)) {
+    pt2$free <- rep(0L, length(pt2$lhs))
+  }
+  if (is.null(pt1$ustart) && !is.null(pt2$ustart)) {
+    pt1$ustart <- rep(0, length(pt1$lhs))
+  }
+  else if (is.null(pt2$ustart) && !is.null(pt1$ustart)) {
+    pt2$ustart <- rep(0, length(pt2$lhs))
+  }
+  if (is.null(pt1$exo) && !is.null(pt2$exo)) {
+    pt1$exo <- rep(0L, length(pt1$lhs))
+  }
+  else if (is.null(pt2$exo) && !is.null(pt1$exo)) {
+    pt2$exo <- rep(0L, length(pt2$lhs))
+  }
+  if (is.null(pt1$label) && !is.null(pt2$label)) {
+    pt1$label <- rep("", length(pt1$lhs))
+  }
+  else if (is.null(pt2$label) && !is.null(pt1$label)) {
+    pt2$label <- rep("", length(pt2$lhs))
+  }
+  if (is.null(pt1$plabel) && !is.null(pt2$plabel)) {
+    pt1$plabel <- rep("", length(pt1$lhs))
+  }
+  else if (is.null(pt2$plabel) && !is.null(pt1$plabel)) {
+    pt2$plabel <- rep("", length(pt2$lhs))
+  }
+  if (is.null(pt1$start) && !is.null(pt2$start)) {
+    pt1$start <- rep(as.numeric(NA), length(pt1$lhs))
+  }
+  else if (is.null(pt2$start) && !is.null(pt1$start)) {
+    pt2$start <- rep(as.numeric(NA), length(pt2$lhs))
+  }
+  if (!is.null(pt1$est)) pt1$est <- NULL
+  if (!is.null(pt2$est)) pt2$est <- NULL
+  if (!is.null(pt1$se)) pt1$se <- NULL
+  if (!is.null(pt2$se)) pt2$se <- NULL
+  if (remove.duplicated) {
+    idx <- which(duplicated(TMP, fromLast = fromLast))
+    if (length(idx)) {
+      if (warn) {
+        warning("lavaan WARNING: duplicated parameters are ignored:\n",
+                paste(apply(pt1[idx, c("lhs", "op", "rhs")],
+                            1, paste, collapse = " "), collapse = "\n"))
+      }
+      if (fromLast) {
+        pt1 <- pt1[-idx, ]
+      }
+      else {
+        idx <- idx - nrow(pt1)
+        pt2 <- pt2[-idx, ]
+      }
+    }
+  } else if (!is.null(pt1$start) && !is.null(pt2$start)) {
+    for (i in 1:length(pt1$lhs)) {
+      idx <- which(pt2$lhs == pt1$lhs[i] & pt2$op == pt1$op[i] &
+                     pt2$rhs == pt1$rhs[i] & pt2$group == pt1$group[i])
+      pt2$start[idx] <- pt1$start[i]
+    }
+  }
+  if (is.null(pt1$id) && !is.null(pt2$id)) {
+    nid <- max(pt2$id)
+    pt1$id <- (nid + 1L):(nid + nrow(pt1))
+  }
+  else if (is.null(pt2$id) && !is.null(pt1$id)) {
+    nid <- max(pt1$id)
+    pt2$id <- (nid + 1L):(nid + nrow(pt2))
+  }
+  NEW <- base::merge(pt1, pt2, all = TRUE, sort = FALSE)
+  NEW
+}
+
 
 

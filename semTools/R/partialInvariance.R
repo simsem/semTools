@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit
-### Last updated: 12 March 2025
+### Last updated: 9 February 2026
 
 
 ##' Partial Measurement Invariance Testing Across Groups
@@ -14,19 +14,19 @@
 ##' There are four types of partial invariance testing:
 ##'
 ##' \itemize{
-##'  \item Partial weak invariance. The model named 'fit.configural'
-##' from the list of models is compared with the model named 'fit.loadings'.
+##'  \item Partial weak invariance. The model named `fit.configural`
+##' from the list of models is compared with the model named `fit.loadings`.
 ##' Each loading will be freed or fixed from the metric and configural
 ##' invariance models respectively. The modified models are compared with the
 ##' original model. Note that the objects in the list of models must have the
-##' names of "fit.configural" and "fit.loadings". Users may use "metric",
+##' names of `"fit.configural"` and `"fit.loadings"`. Users may use "metric",
 ##' "weak", "loading", or "loadings" in the `type` argument. Note that, for
 ##' testing invariance on marker variables, other variables will be assigned as
 ##' marker variables automatically.
 ##'
 ##'  \item Partial strong invariance. The model
-##' named 'fit.loadings' from the list of models is compared with the model
-##' named either 'fit.intercepts' or 'fit.thresholds'. Each intercept will be
+##' named `fit.loadings` from the list of models is compared with the model
+##' named either `fit.intercepts` or 'fit.thresholds'. Each intercept will be
 ##' freed or fixed from the scalar and metric invariance models respectively.
 ##' The modified models are compared with the original model. Note that the
 ##' objects in the list of models must have the names of "fit.loadings" and
@@ -94,10 +94,7 @@
 ##' @aliases partialInvariance partialInvarianceCat
 ##'
 ##' @param fit A list of models for invariance testing. Each model should be
-##'   assigned by appropriate names (see details). The result from
-##'   [measurementInvariance()] or
-##'   [measurementInvarianceCat()] could be used in this argument
-##'   directly.
+##'   assigned by appropriate names (see details).
 ##' @param type The types of invariance testing: "metric", "scalar", "strict",
 ##'   or "means"
 ##' @param free A vector of variable names that are free across groups in
@@ -158,11 +155,6 @@
 ##'
 ##' @author Sunthud Pornprasertmanit (\email{psunthud@@gmail.com})
 ##'
-##' @seealso [measurementInvariance()] for measurement invariance for
-##' continuous variables; [measurementInvarianceCat()] for measurement
-##' invariance for categorical variables; [lavaan::lavTestWald()] for
-##' multivariate Wald test
-##'
 ##' @references Millsap, R. E., & Olivera-Aguilar, M. (2012). Investigating
 ##' measurement invariance using confirmatory factor analysis. In R. H. Hoyle
 ##' (Ed.), *Handbook of structural equation modeling* (pp. 380--392). New
@@ -194,102 +186,91 @@
 ##' models <- list(fit.configural = configural, fit.loadings = weak)
 ##' partialInvariance(models, "metric")
 ##'
-##' \donttest{
-##' partialInvariance(models, "metric", free = "x5") # "x5" is free across groups in advance
-##' partialInvariance(models, "metric", fix = "x4") # "x4" is fixed across groups in advance
-##'
-##' ## Use the result from the measurementInvariance function
-##' HW.model <- ' visual =~ x1 + x2 + x3
-##'               textual =~ x4 + x5 + x6
-##'               speed =~ x7 + x8 + x9 '
-##'
-##' models2 <- measurementInvariance(model = HW.model, data=HolzingerSwineford1939,
-##'                                  group="school")
-##' partialInvariance(models2, "scalar")
-##'
-##' ## Conduct weak invariance testing manually by using fixed-factor
-##' ## method of scale identification for dichotomous variables
-##'
-##' f <- rnorm(1000, 0, 1)
-##' u1 <- 0.9*f + rnorm(1000, 1, sqrt(0.19))
-##' u2 <- 0.8*f + rnorm(1000, 1, sqrt(0.36))
-##' u3 <- 0.6*f + rnorm(1000, 1, sqrt(0.64))
-##' u4 <- 0.7*f + rnorm(1000, 1, sqrt(0.51))
-##' u1 <- as.numeric(cut(u1, breaks = c(-Inf, 0, Inf)))
-##' u2 <- as.numeric(cut(u2, breaks = c(-Inf, 0.5, Inf)))
-##' u3 <- as.numeric(cut(u3, breaks = c(-Inf, 0, Inf)))
-##' u4 <- as.numeric(cut(u4, breaks = c(-Inf, -0.5, Inf)))
-##' g <- rep(c(1, 2), 500)
-##' dat2 <- data.frame(u1, u2, u3, u4, g)
-##'
-##' configural2 <- "
-##' f1 =~ NA*u1 + u2 + u3 + u4
-##' u1 | c(t11, t11)*t1
-##' u2 | c(t21, t21)*t1
-##' u3 | c(t31, t31)*t1
-##' u4 | c(t41, t41)*t1
-##' f1 ~~ c(1, 1)*f1
-##' f1 ~ c(0, NA)*1
-##' u1 ~~ c(1, 1)*u1
-##' u2 ~~ c(1, NA)*u2
-##' u3 ~~ c(1, NA)*u3
-##' u4 ~~ c(1, NA)*u4
-##' "
-##'
-##' outConfigural2 <- cfa(configural2, data = dat2, group = "g",
-##'                       parameterization = "theta", estimator = "wlsmv",
-##'                       ordered = c("u1", "u2", "u3", "u4"))
-##'
-##' weak2 <- "
-##' f1 =~ NA*u1 + c(f11, f11)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4
-##' u1 | c(t11, t11)*t1
-##' u2 | c(t21, t21)*t1
-##' u3 | c(t31, t31)*t1
-##' u4 | c(t41, t41)*t1
-##' f1 ~~ c(1, NA)*f1
-##' f1 ~ c(0, NA)*1
-##' u1 ~~ c(1, 1)*u1
-##' u2 ~~ c(1, NA)*u2
-##' u3 ~~ c(1, NA)*u3
-##' u4 ~~ c(1, NA)*u4
-##' "
-##'
-##' outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization = "theta",
-##'                 estimator = "wlsmv", ordered = c("u1", "u2", "u3", "u4"))
-##' modelsCat <- list(fit.configural = outConfigural2, fit.loadings = outWeak2)
-##'
-##' partialInvarianceCat(modelsCat, type = "metric")
-##'
-##' partialInvarianceCat(modelsCat, type = "metric", free = "u2")
-##' partialInvarianceCat(modelsCat, type = "metric", fix = "u3")
-##'
-##' ## Use the result from the measurementInvarianceCat function
-##'
-##' model <- ' f1 =~ u1 + u2 + u3 + u4
-##'            f2 =~ u5 + u6 + u7 + u8'
-##'
-##' modelsCat2 <- measurementInvarianceCat(model = model, data = datCat, group = "g",
-##' 	                                      parameterization = "theta",
-##' 	                                      estimator = "wlsmv", strict = TRUE)
-##'
-##' partialInvarianceCat(modelsCat2, type = "scalar")
-##' }
+# \donttest{
+# partialInvariance(models, "metric", free = "x5") # "x5" is free across groups in advance
+# partialInvariance(models, "metric", fix = "x4") # "x4" is fixed across groups in advance
+#
+# ## Use the result from the measurementInvariance function
+# HW.model <- ' visual =~ x1 + x2 + x3
+#               textual =~ x4 + x5 + x6
+#               speed =~ x7 + x8 + x9 '
+#
+# models2 <- measurementInvariance(model = HW.model, data=HolzingerSwineford1939,
+#                                  group="school")
+# partialInvariance(models2, "scalar")
+#
+# ## Conduct weak invariance testing manually by using fixed-factor
+# ## method of scale identification for dichotomous variables
+#
+# f <- rnorm(1000, 0, 1)
+# u1 <- 0.9*f + rnorm(1000, 1, sqrt(0.19))
+# u2 <- 0.8*f + rnorm(1000, 1, sqrt(0.36))
+# u3 <- 0.6*f + rnorm(1000, 1, sqrt(0.64))
+# u4 <- 0.7*f + rnorm(1000, 1, sqrt(0.51))
+# u1 <- as.numeric(cut(u1, breaks = c(-Inf, 0, Inf)))
+# u2 <- as.numeric(cut(u2, breaks = c(-Inf, 0.5, Inf)))
+# u3 <- as.numeric(cut(u3, breaks = c(-Inf, 0, Inf)))
+# u4 <- as.numeric(cut(u4, breaks = c(-Inf, -0.5, Inf)))
+# g <- rep(c(1, 2), 500)
+# dat2 <- data.frame(u1, u2, u3, u4, g)
+#
+# configural2 <- "
+# f1 =~ NA*u1 + u2 + u3 + u4
+# u1 | c(t11, t11)*t1
+# u2 | c(t21, t21)*t1
+# u3 | c(t31, t31)*t1
+# u4 | c(t41, t41)*t1
+# f1 ~~ c(1, 1)*f1
+# f1 ~ c(0, NA)*1
+# u1 ~~ c(1, 1)*u1
+# u2 ~~ c(1, NA)*u2
+# u3 ~~ c(1, NA)*u3
+# u4 ~~ c(1, NA)*u4
+# "
+#
+# outConfigural2 <- cfa(configural2, data = dat2, group = "g",
+#                       parameterization = "theta", estimator = "wlsmv",
+#                       ordered = c("u1", "u2", "u3", "u4"))
+#
+# weak2 <- "
+# f1 =~ NA*u1 + c(f11, f11)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4
+# u1 | c(t11, t11)*t1
+# u2 | c(t21, t21)*t1
+# u3 | c(t31, t31)*t1
+# u4 | c(t41, t41)*t1
+# f1 ~~ c(1, NA)*f1
+# f1 ~ c(0, NA)*1
+# u1 ~~ c(1, 1)*u1
+# u2 ~~ c(1, NA)*u2
+# u3 ~~ c(1, NA)*u3
+# u4 ~~ c(1, NA)*u4
+# "
+#
+# outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization = "theta",
+#                 estimator = "wlsmv", ordered = c("u1", "u2", "u3", "u4"))
+# modelsCat <- list(fit.configural = outConfigural2, fit.loadings = outWeak2)
+#
+# partialInvarianceCat(modelsCat, type = "metric")
+#
+# partialInvarianceCat(modelsCat, type = "metric", free = "u2")
+# partialInvarianceCat(modelsCat, type = "metric", fix = "u3")
+#
+# ## Use the result from the measurementInvarianceCat function
+#
+# model <- ' f1 =~ u1 + u2 + u3 + u4
+#            f2 =~ u5 + u6 + u7 + u8'
+#
+# modelsCat2 <- measurementInvarianceCat(model = model, data = datCat, group = "g",
+# 	                                      parameterization = "theta",
+# 	                                      estimator = "wlsmv", strict = TRUE)
+#
+# partialInvarianceCat(modelsCat2, type = "scalar")
+# }
 ##'
 ##' @export
 partialInvariance <- function(fit, type, free = NULL, fix = NULL, refgroup = 1,
                               poolvar = TRUE, p.adjust = "none", fbound = 2,
                               return.fit = FALSE, method = "satorra.bentler.2001") {
-	# fit <- measurementInvariance(HW.model, data=HolzingerSwineford1939, group="school", strict = TRUE)
-	# type <- "weak"
-	# free <- NULL
-	# fix <- "x1"
-	# refgroup <- 1
-	# poolvar <- TRUE
-	# p.adjust <- "none"
-	# return.fit <- FALSE
-	# fbound <- 2
-	# method <- "satorra.bentler.2001"
-
 
 	type <- tolower(type)
 	numType <- 0
@@ -978,20 +959,6 @@ partialInvarianceCat <- function(fit, type, free = NULL, fix = NULL,
                                  refgroup = 1, poolvar = TRUE,
                                  p.adjust = "none", return.fit = FALSE,
                                  method = "satorra.bentler.2001") {
-  # model <- ' f1 =~ u1 + u2 + u3 + u4
-  # f2 =~ u5 + u6 + u7 + u8'
-
-  # modelsCat2 <- measurementInvarianceCat(model, data = datCat, group = "g", parameterization="theta",
-  # estimator="wlsmv", strict = TRUE)
-  # fit <- modelsCat2
-  # type <- "weak"
-  # free <- NULL
-  # fix <- NULL
-  # refgroup <- 1
-  # poolvar <- TRUE
-  # p.adjust <- "none"
-  # return.fit <- FALSE
-  # method = "satorra.bentler.2001"
 
   type <- tolower(type)
   numType <- 1
@@ -1769,8 +1736,9 @@ poolVariance <- function(var, n) {
 
 deltacfi <- function(parent, nested) lavaan::fitmeasures(nested)["cfi"] - lavaan::fitmeasures(parent)["cfi"]
 
-## For categorical.    FIXME: Why is this even necessary?
-##                            Did Sunthud not know implied Sigma is available?
+## For categorical.
+## FIXME: Why is this even necessary?
+##        Did Sunthud not know implied Sigma is available?
 #' @importFrom lavaan lavInspect
 thetaImpliedTotalVar <- function(object) {
   # param <- lavInspect(object, "est")
@@ -1796,4 +1764,47 @@ thetaImpliedTotalVar <- function(object) {
   if (lavInspect(object, "ngroups") == 1L) return(list(lavInspect(object, "cov.ov")))
   lavInspect(object, "cov.ov")
 }
+
+
+
+
+## MOVED FROM lonInvariance.R when it was removed from semTools 0.5-8 (9 Feb 2026)
+
+
+# constrainParTable: Impose equality constraints in any set of elements in the parameter table
+constrainParTable <- function(parTable, lhs, op, rhs, group) {
+  parTable$start <- parTable$est <- parTable$se <- NULL
+  target <- cbind(lhs, op, rhs, group)
+  element <- apply(target, 1, matchElement, parTable=parTable)
+
+  #     id lhs  op rhs user group free ustart exo label plabel  start
+  for (i in 2:length(element)) {
+    len <- length(parTable$id)
+    newline <- list(lhs = parTable$plabel[element[1]], op = "==",
+                    rhs = parTable$plabel[element[i]])
+    if (!any(parTable$lhs == newline$lhs & parTable$op == newline$op &
+             parTable$rhs == newline$rhs)) parTable <- patMerge(pt1 = parTable, pt2 = newline)
+  }
+  parTable
+}
+
+# matchElement: Find the number of row that have the specification in vec (lhs, op, rhs, group)
+matchElement <- function(parTable, vec) {
+  if (is.null(parTable$group)) {
+    return(which((parTable$lhs == vec[1]) & (parTable$op == vec[2]) & (parTable$rhs == vec[3])))
+  } else {
+    return(which((parTable$lhs == vec[1]) & (parTable$op == vec[2]) & (parTable$rhs == vec[3]) & (parTable$group == vec[4])))
+  }
+}
+
+getValue <- function(parTable, est, lhs, op, rhs, group) {
+  target <- cbind(lhs, op, rhs, group)
+  element <- apply(target, 1, matchElement, parTable = parTable)
+  free <- parTable$free[element]
+  out <- parTable$ustart[element]
+  out[free != 0] <- est[free[free != 0]]
+  out
+}
+
+
 

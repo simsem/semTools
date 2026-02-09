@@ -15,10 +15,7 @@ partialInvarianceCat(fit, type, free = NULL, fix = NULL, refgroup = 1,
 }
 \arguments{
 \item{fit}{A list of models for invariance testing. Each model should be
-assigned by appropriate names (see details). The result from
-\code{\link[=measurementInvariance]{measurementInvariance()}} or
-\code{\link[=measurementInvarianceCat]{measurementInvarianceCat()}} could be used in this argument
-directly.}
+assigned by appropriate names (see details).}
 
 \item{type}{The types of invariance testing: "metric", "scalar", "strict",
 or "means"}
@@ -99,19 +96,19 @@ variable. The \code{partialInvarianceCat} is used for categorical variables.
 There are four types of partial invariance testing:
 
 \itemize{
-\item Partial weak invariance. The model named 'fit.configural'
-from the list of models is compared with the model named 'fit.loadings'.
+\item Partial weak invariance. The model named \code{fit.configural}
+from the list of models is compared with the model named \code{fit.loadings}.
 Each loading will be freed or fixed from the metric and configural
 invariance models respectively. The modified models are compared with the
 original model. Note that the objects in the list of models must have the
-names of "fit.configural" and "fit.loadings". Users may use "metric",
+names of \code{"fit.configural"} and \code{"fit.loadings"}. Users may use "metric",
 "weak", "loading", or "loadings" in the \code{type} argument. Note that, for
 testing invariance on marker variables, other variables will be assigned as
 marker variables automatically.
 
 \item Partial strong invariance. The model
-named 'fit.loadings' from the list of models is compared with the model
-named either 'fit.intercepts' or 'fit.thresholds'. Each intercept will be
+named \code{fit.loadings} from the list of models is compared with the model
+named either \code{fit.intercepts} or 'fit.thresholds'. Each intercept will be
 freed or fixed from the scalar and metric invariance models respectively.
 The modified models are compared with the original model. Note that the
 objects in the list of models must have the names of "fit.loadings" and
@@ -201,86 +198,6 @@ weak <- cfa(weak, data = HolzingerSwineford1939, group="school", group.equal="lo
 models <- list(fit.configural = configural, fit.loadings = weak)
 partialInvariance(models, "metric")
 
-\donttest{
-partialInvariance(models, "metric", free = "x5") # "x5" is free across groups in advance
-partialInvariance(models, "metric", fix = "x4") # "x4" is fixed across groups in advance
-
-## Use the result from the measurementInvariance function
-HW.model <- ' visual =~ x1 + x2 + x3
-              textual =~ x4 + x5 + x6
-              speed =~ x7 + x8 + x9 '
-
-models2 <- measurementInvariance(model = HW.model, data=HolzingerSwineford1939,
-                                 group="school")
-partialInvariance(models2, "scalar")
-
-## Conduct weak invariance testing manually by using fixed-factor
-## method of scale identification for dichotomous variables
-
-f <- rnorm(1000, 0, 1)
-u1 <- 0.9*f + rnorm(1000, 1, sqrt(0.19))
-u2 <- 0.8*f + rnorm(1000, 1, sqrt(0.36))
-u3 <- 0.6*f + rnorm(1000, 1, sqrt(0.64))
-u4 <- 0.7*f + rnorm(1000, 1, sqrt(0.51))
-u1 <- as.numeric(cut(u1, breaks = c(-Inf, 0, Inf)))
-u2 <- as.numeric(cut(u2, breaks = c(-Inf, 0.5, Inf)))
-u3 <- as.numeric(cut(u3, breaks = c(-Inf, 0, Inf)))
-u4 <- as.numeric(cut(u4, breaks = c(-Inf, -0.5, Inf)))
-g <- rep(c(1, 2), 500)
-dat2 <- data.frame(u1, u2, u3, u4, g)
-
-configural2 <- "
-f1 =~ NA*u1 + u2 + u3 + u4
-u1 | c(t11, t11)*t1
-u2 | c(t21, t21)*t1
-u3 | c(t31, t31)*t1
-u4 | c(t41, t41)*t1
-f1 ~~ c(1, 1)*f1
-f1 ~ c(0, NA)*1
-u1 ~~ c(1, 1)*u1
-u2 ~~ c(1, NA)*u2
-u3 ~~ c(1, NA)*u3
-u4 ~~ c(1, NA)*u4
-"
-
-outConfigural2 <- cfa(configural2, data = dat2, group = "g",
-                      parameterization = "theta", estimator = "wlsmv",
-                      ordered = c("u1", "u2", "u3", "u4"))
-
-weak2 <- "
-f1 =~ NA*u1 + c(f11, f11)*u1 + c(f21, f21)*u2 + c(f31, f31)*u3 + c(f41, f41)*u4
-u1 | c(t11, t11)*t1
-u2 | c(t21, t21)*t1
-u3 | c(t31, t31)*t1
-u4 | c(t41, t41)*t1
-f1 ~~ c(1, NA)*f1
-f1 ~ c(0, NA)*1
-u1 ~~ c(1, 1)*u1
-u2 ~~ c(1, NA)*u2
-u3 ~~ c(1, NA)*u3
-u4 ~~ c(1, NA)*u4
-"
-
-outWeak2 <- cfa(weak2, data = dat2, group = "g", parameterization = "theta",
-                estimator = "wlsmv", ordered = c("u1", "u2", "u3", "u4"))
-modelsCat <- list(fit.configural = outConfigural2, fit.loadings = outWeak2)
-
-partialInvarianceCat(modelsCat, type = "metric")
-
-partialInvarianceCat(modelsCat, type = "metric", free = "u2")
-partialInvarianceCat(modelsCat, type = "metric", fix = "u3")
-
-## Use the result from the measurementInvarianceCat function
-
-model <- ' f1 =~ u1 + u2 + u3 + u4
-           f2 =~ u5 + u6 + u7 + u8'
-
-modelsCat2 <- measurementInvarianceCat(model = model, data = datCat, group = "g",
-	                                      parameterization = "theta",
-	                                      estimator = "wlsmv", strict = TRUE)
-
-partialInvarianceCat(modelsCat2, type = "scalar")
-}
 
 }
 \references{
@@ -288,12 +205,6 @@ Millsap, R. E., & Olivera-Aguilar, M. (2012). Investigating
 measurement invariance using confirmatory factor analysis. In R. H. Hoyle
 (Ed.), \emph{Handbook of structural equation modeling} (pp. 380--392). New
 York, NY: Guilford.
-}
-\seealso{
-\code{\link[=measurementInvariance]{measurementInvariance()}} for measurement invariance for
-continuous variables; \code{\link[=measurementInvarianceCat]{measurementInvarianceCat()}} for measurement
-invariance for categorical variables; \code{\link[lavaan:lavTestWald]{lavaan::lavTestWald()}} for
-multivariate Wald test
 }
 \author{
 Sunthud Pornprasertmanit (\email{psunthud@gmail.com})

@@ -1,6 +1,8 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, and Terrence D. Jorgensen
 ### Last updated: 12 June 2024
 ### DEPRECATED:    9 May  2022
+### REMOVED 9 February 2026 (semTools 0.5-8)
+###         (also measInvCat and longInv)
 
 
 ##' Measurement Invariance Tests

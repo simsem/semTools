@@ -1,5 +1,6 @@
 ### Sunthud Pornprasertmanit, Yves Rosseel, & Terrence D. Jorgensen
 ### Last updated: 12 March 2025
+### Deprecated for years, removed 9 February 2026 (semTools 0.5-8)
 ### automate measurement invariance tests for categorical indicators
 
 
