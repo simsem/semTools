@@ -145,5 +145,6 @@ Behavioral Research, 44}(6), 741--763. \doi{10.1080/00273170903333590}
 Terrence D. Jorgensen (University of Amsterdam;
 \email{TJorgensen314@gmail.com})
 
-Syntax for transformations borrowed from http://www2.psych.ubc.ca/~vsavalei/
+Syntax for transformations borrowed from supplementary materials
+in Savalei & Yuan (2009)
 }

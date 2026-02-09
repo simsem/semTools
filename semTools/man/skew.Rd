@@ -46,9 +46,9 @@ skew(1:5)
 
 }
 \references{
-Weisstein, Eric W. (n.d.). \emph{Skewness}. Retrived from
+Weisstein, Eric W. (n.d.). \emph{Skewness}. Retrieved from
 \emph{MathWorld}--A Wolfram Web Resource:
-\url{http://mathworld.wolfram.com/Skewness.html}
+\url{https://mathworld.wolfram.com/Skewness.html}
 }
 \seealso{
 \itemize{

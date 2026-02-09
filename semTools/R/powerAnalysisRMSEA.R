@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit, Alexander M. Schoemann, Kristopher J. Preacher, Donna Coffman
-### Last updated: 22 April 2022
+### Last updated: 9 February 2026
 
 
 ##' Plot power curves for RMSEA
@@ -12,7 +12,7 @@
 ##' sample size and the sample size between each estimate ("step size") We
 ##' strongly urge the user to read the sources below (see References) before
 ##' proceeding.  A web version of this function is available at:
-##' <http://quantpsy.org/rmsea/rmseaplot.htm>. This function is also
+##' <https://quantpsy.org/rmsea/rmseaplot.htm>. This function is also
 ##' implemented in the web application "power4SEM":
 ##' <https://sjak.shinyapps.io/power4SEM/>
 ##'

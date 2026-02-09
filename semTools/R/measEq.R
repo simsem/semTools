@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 March 2025
+### Last updated: 9 February 2026
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -179,7 +179,7 @@ measEq <- function(configural.model,
 ##
 ## \donttest{
 ## ## borrow example data from Mplus user guide
-## myData <- read.table("http://www.statmodel.com/usersguide/chap5/ex5.16.dat")
+## myData <- read.table("https://www.statmodel.com/usersguide/chap5/ex5.16.dat")
 ## names(myData) <- c("u1","u2","u3","u4","u5","u6","x1","x2","x3","g")
 ## bin.mod <- '
 ##   FU1 =~ u1 + u2 + u3
@@ -438,7 +438,7 @@ setMethod("summary", "measEq.syntax", function(object, verbose = TRUE) {
     } else if (object@call$ID.cat == "lisrel") {
       ID.cat.author <- 'used by default in the LISREL software. '
     }
-    if (object@call$ID.cat != "wu") ID.cat.DOI <- 'http://dx.doi.org/10.1207/S15327906MBR3903_4 \n\n'
+    if (object@call$ID.cat != "wu") ID.cat.DOI <- 'https://doi.org/10.1207/S15327906MBR3903_4 \n\n'
     cat('The location and scale of each latent item-response underlying ', nOrd,
         ' ordinal indicators were identified using the "', object@parameterization,
         '" parameterization, and the identification constraints ',
@@ -1169,7 +1169,7 @@ setMethod("update", "measEq.syntax", updateMeasEqSyntax)
 ##' ## -----------------
 ##'
 ##' ## borrow example data from Mplus user guide
-##' myData <- read.table("http://www.statmodel.com/usersguide/chap5/ex5.16.dat")
+##' myData <- read.table("https://www.statmodel.com/usersguide/chap5/ex5.16.dat")
 ##' names(myData) <- c("u1","u2","u3","u4","u5","u6","x1","x2","x3","g")
 ##' bin.mod <- '
 ##'   FU1 =~ u1 + u2 + u3

@@ -48,7 +48,7 @@ kurtosis(1:5)
 \references{
 Weisstein, Eric W. (n.d.). \emph{Kurtosis.} Retrieved from
 \emph{MathWorld}--A Wolfram Web Resource:
-\url{http://mathworld.wolfram.com/Kurtosis.html}
+\url{https://mathworld.wolfram.com/Kurtosis.html}
 }
 \seealso{
 \itemize{

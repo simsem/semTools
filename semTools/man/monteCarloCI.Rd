@@ -115,7 +115,7 @@ object to return the ACM.}
 \examples{
 
 ## From the mediation tutorial:
-## http://lavaan.ugent.be/tutorial/mediation.html
+## https://lavaan.ugent.be/tutorial/mediation.html
 
 set.seed(1234)
 X <- rnorm(100)
@@ -176,7 +176,7 @@ for the indirect effect: Distribution of the product and resampling methods.
 Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method
 for assessing multilevel mediation: An interactive tool for creating
 confidence intervals for indirect effects in 1-1-1 multilevel models.
-Computer software available from \url{http://quantpsy.org/}.
+Computer software available from \url{https://quantpsy.org/}.
 
 Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
 intervals for indirect effects. \emph{Communication Methods and Measures, 6}(2),
@@ -185,7 +185,7 @@ intervals for indirect effects. \emph{Communication Methods and Measures, 6}(2),
 Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 assessing mediation: An interactive tool for creating confidence intervals
 for indirect effects. Computer software available from
-\url{http://quantpsy.org/}.
+\url{https://quantpsy.org/}.
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

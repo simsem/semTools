@@ -1,8 +1,8 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 March 2025
+### Last updated: 9 February 2026
 
-## from http://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
-# dd <- read.table("http://www.statmodel.com/examples/shortform/4cat%20m.dat",
+## from https://www.da.ugent.be/cvs/pages/en/Presentations/Presentation%20Yves%20Rosseel.pdf
+# dd <- read.table("https://www.statmodel.com/examples/shortform/4cat%20m.dat",
 #                  col.names = c("intention", "intervention", "ciguse", "w"))
 # myData <- do.call(rbind, lapply(1:nrow(dd), function(RR) {
 #   data.frame(rep(1, dd$w[RR]) %*% as.matrix(dd[RR, 1:3]))
@@ -133,7 +133,7 @@
 ##' Preacher, K. J., & Selig, J. P. (2010, July). Monte Carlo method
 ##' for assessing multilevel mediation: An interactive tool for creating
 ##' confidence intervals for indirect effects in 1-1-1 multilevel models.
-##' Computer software available from <http://quantpsy.org/>.
+##' Computer software available from <https://quantpsy.org/>.
 ##'
 ##' Preacher, K. J., & Selig, J. P. (2012). Advantages of Monte Carlo confidence
 ##' intervals for indirect effects. *Communication Methods and Measures, 6*(2),
@@ -142,14 +142,14 @@
 ##' Selig, J. P., & Preacher, K. J. (2008, June). Monte Carlo method for
 ##' assessing mediation: An interactive tool for creating confidence intervals
 ##' for indirect effects. Computer software available from
-##' <http://quantpsy.org/>.
+##' <https://quantpsy.org/>.
 ##'
 ##' @aliases monteCarloCI monteCarloMed
 ##'
 ##' @examples
 ##'
 ##' ## From the mediation tutorial:
-##' ## http://lavaan.ugent.be/tutorial/mediation.html
+##' ## https://lavaan.ugent.be/tutorial/mediation.html
 ##'
 ##' set.seed(1234)
 ##' X <- rnorm(100)

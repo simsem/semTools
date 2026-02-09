@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
 ###          Aaron Boulton, Ruben Arslan, Mauricio Garnier-Villarreal
-### Last updated: 31 January 2026
+### Last updated: 9 February 2026
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -347,7 +347,7 @@ moreFitIndices <- function(object, fit.measures = "all", nPrior = 1) {
 ##' RMSEA for the null model is less than 0.158, an incremental measure of fit
 ##' may not be that informative."
 ##'
-##' See also <http://davidakenny.net/cm/fit.htm>
+##' See also the paper cited in **References**.
 ##'
 ##'
 ##' @importFrom lavaan lavInspect

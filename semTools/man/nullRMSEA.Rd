@@ -40,7 +40,7 @@ a TLI of .90, implies that the RMSEA of the null model is 0.158.  If the
 RMSEA for the null model is less than 0.158, an incremental measure of fit
 may not be that informative."
 
-See also \url{http://davidakenny.net/cm/fit.htm}
+See also the paper cited in \strong{References}.
 }
 \examples{
 

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 March 2025
+### Last updated: 9 February 2026
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 
@@ -233,8 +233,11 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##' \email{TJorgensen314@@gmail.com})
 ##'
-##' Syntax for transformations borrowed from http://www2.psych.ubc.ca/~vsavalei/
+##' Syntax for transformations borrowed from supplementary materials
+##' in Savalei & Yuan (2009)
+##'
 ##' @seealso [BootMiss-class]
+##'
 ##' @references
 ##'
 ##' Bollen, K. A., & Stine, R. A. (1992). Bootstrapping goodness-of-fit measures
@@ -244,6 +247,7 @@ function(x, ..., alpha = .05, nd = 2, printLegend = TRUE,
 ##' Savalei, V., & Yuan, K.-H. (2009). On the model-based bootstrap with missing
 ##' data: Obtaining a p-value for a test of exact fit. *Multivariate
 ##' Behavioral Research, 44*(6), 741--763. \doi{10.1080/00273170903333590}
+##'
 ##' @examples
 ##'
 ##' dat1 <- HolzingerSwineford1939

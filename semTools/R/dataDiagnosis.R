@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
-### Last updated: 2 October 2024
+### Last updated: 9 February 2026
 ### Higher-order moments. Initial version from the simsem package.
 
 
@@ -45,9 +45,9 @@
 ##'   \item [mardiaKurtosis()] Find the Mardia's multivariate
 ##'    kurtosis of a set of variables
 ##'  }
-##' @references Weisstein, Eric W. (n.d.). *Skewness*. Retrived from
+##' @references Weisstein, Eric W. (n.d.). *Skewness*. Retrieved from
 ##'  *MathWorld*--A Wolfram Web Resource:
-##'  <http://mathworld.wolfram.com/Skewness.html>
+##'  <https://mathworld.wolfram.com/Skewness.html>
 ##' @examples
 ##'
 ##' skew(1:5)
@@ -116,7 +116,7 @@ skew <- function(object, population = FALSE) {
 ##' }
 ##' @references Weisstein, Eric W. (n.d.). *Kurtosis.* Retrieved from
 ##' *MathWorld*--A Wolfram Web Resource:
-##' <http://mathworld.wolfram.com/Kurtosis.html>
+##' <https://mathworld.wolfram.com/Kurtosis.html>
 ##'
 ##' @examples
 ##'

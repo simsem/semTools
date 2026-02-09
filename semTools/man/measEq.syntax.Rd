@@ -437,7 +437,7 @@ summary(evalMeasEq)
 ## -----------------
 
 ## borrow example data from Mplus user guide
-myData <- read.table("http://www.statmodel.com/usersguide/chap5/ex5.16.dat")
+myData <- read.table("https://www.statmodel.com/usersguide/chap5/ex5.16.dat")
 names(myData) <- c("u1","u2","u3","u4","u5","u6","x1","x2","x3","g")
 bin.mod <- '
   FU1 =~ u1 + u2 + u3

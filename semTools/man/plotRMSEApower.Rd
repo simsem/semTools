@@ -41,7 +41,7 @@ vertical axis. The user should indicate the lower and upper values for
 sample size and the sample size between each estimate ("step size") We
 strongly urge the user to read the sources below (see References) before
 proceeding.  A web version of this function is available at:
-\url{http://quantpsy.org/rmsea/rmseaplot.htm}. This function is also
+\url{https://quantpsy.org/rmsea/rmseaplot.htm}. This function is also
 implemented in the web application "power4SEM":
 \url{https://sjak.shinyapps.io/power4SEM/}
 }
