@@ -799,10 +799,13 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'               textual =~ x4 + x5 + x6
 ##'               speed   =~ y7 + y8 + y9 '
 ##'
-##' fit <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
+##' fit  <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
+##' fitg <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE,
+##'             group = "school")
 ##'
 ##' ## works for factors with exclusively continuous OR categorical indicators
 ##' compRelSEM(fit)
+##' compRelSEM(fitg)
 ##'
 ##' ## reliability for composite of ALL indicators only available when they are
 ##' ## all continuous or all categorical.  The example below calculates a
@@ -986,6 +989,11 @@ compRelSEM <- function(object, W = NULL,
         ## end loop over blocks
       }
     }
+    ## replace default integers with labels for groups
+    if (length(group.label) && is.integer(wPT$group)) {
+      wPT$group[wPT$group > 0L] <- group.label[wPT$group]
+    }
+
     ## default composite names (each factor, and/or total)
     allComps   <- unique(wPT$lhs)
 
@@ -1194,14 +1202,15 @@ compRelSEM <- function(object, W = NULL,
         isWithin  <- as.logical(unique(cPTg$block) %% 2) # is it an odd block?
         isBetween <- !isWithin
         b.idx  <- ifelse(isWithin,
-                         yes = b.idx <- (g - 1L)*nLevels + 1, # within
-                         no  = b.idx <- (g - 1L)*nLevels + 2) # between
+                         yes = (g - 1L)*nLevels + 1, # within
+                         no  = (g - 1L)*nLevels + 2) # between
         b.idx2 <- NULL
         #FIXME? eventually possible to model partial clustering?
 
       } else {
         ## SINGLE LEVEL model (block == group)
-        b.idx  <- g.idx
+        ## but b.idx MUST be integer(s)
+        b.idx  <- g # so NOT g.idx (which is character for MG-CFA)
         b.idx2 <- NULL
       }
 
@@ -1302,7 +1311,7 @@ compRelSEM <- function(object, W = NULL,
         ## loop over indicators ...
         for (i in allIndNames2) {
           ## ... to check whether to assign any nonzero weights
-          if (isTRUE(cPTg$ustart[cPTg$rhs == i & cPTg$block == b.idx2] != 0)) {
+          if (isTRUE( cPTg$ustart[cPTg$rhs == i & cPTg$block == b.idx2] != 0)) {
             wt2[i] <- cPTg$ustart[cPTg$rhs == i & cPTg$block == b.idx2]
           }
         }
