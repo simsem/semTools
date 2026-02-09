@@ -152,8 +152,8 @@
 ##'
 ##' @seealso
 ##' \itemize{
-##' \item [miPowerFit()] For the modification indices and their
-##'        power approach for model fit evaluation
+##' \item [epcEquivFit()] For the equivalence testing based on expected
+##'   parameter changes for model fit evaluation
 ##' \item [nullRMSEA()] For RMSEA of the default independence model
 ##' }
 ##'

@@ -17,14 +17,14 @@ saveFile(object, file, what = "summary", tableFormat = FALSE,
 
 \item{what}{The attributes of the \code{lavaan} object to be copied in the
 clipboard. \code{"summary"} is to copy the screen provided from the
-\code{summary} function. \code{"mifit"} is to copy the result from the
-\code{\link[=miPowerFit]{miPowerFit()}} function. Other attributes listed in the
+\code{summary} function. \code{"epceqfit"} is to copy the result from the
+\code{\link[=epcEquivFit]{epcEquivFit()}} function. Other attributes listed in the
 \code{inspect} method in the \link[lavaan:lavaan-class]{lavaan::lavaan} could also be
 used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and
 so on.  Ignored for \linkS4class{FitDiff}-class objects.}
 
 \item{\dots}{Additional arguments when passing a \code{lavaan} object to the
-\code{summary} or \code{\link[=miPowerFit]{miPowerFit()}} function.}
+\code{summary} or \code{\link[=epcEquivFit]{epcEquivFit()}} function.}
 
 \item{file}{A file name used for saving the result.}
 
@@ -66,8 +66,8 @@ clipboard(fit)
 # pass additional arguments to summary() method for class?lavaan
 clipboard(fit, rsquare = TRUE, standardized = TRUE, fit.measures = TRUE)
 
-# Copy modification indices and fit stats from the miPowerFit() function
-clipboard(fit, "mifit")
+# Copy the EPC equivalence testing results from the epcEquivFit() function
+clipboard(fit, "epceqfit")
 
 # Copy the parameter estimates
 clipboard(fit, "coef")
@@ -84,8 +84,8 @@ clipboard(fit, "fit")
 # Save the summary of the lavaan object
 saveFile(fit, "out.txt")
 
-# Save modification indices and fit stats from the miPowerFit() function
-saveFile(fit, "out.txt", "mifit")
+# Save the EPC equivalence testing results from the epcEquivFit() function
+saveFile(fit, "out.txt", "epceqfit")
 
 # Save the parameter estimates
 saveFile(fit, "out.txt", "coef")

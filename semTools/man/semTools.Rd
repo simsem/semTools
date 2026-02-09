@@ -15,7 +15,7 @@ functions a \emph{suite}. Our suites include:
 \code{\link[=moreFitIndices]{moreFitIndices()}},
 \code{\link[=nullRMSEA]{nullRMSEA()}},
 \code{\link[=singleParamTest]{singleParamTest()}},
-\code{\link[=miPowerFit]{miPowerFit()}}, and
+\code{\link[=epcEquivFit]{epcEquivFit()}}, and
 \code{\link[=chisqSmallN]{chisqSmallN()}}}
 \item{Measurement Invariance:
 \code{\link[=measEq.syntax]{measEq.syntax()}},
