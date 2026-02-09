@@ -241,6 +241,48 @@ refit <- function(pt, object, resetstart = TRUE) {
 ## MOVED FROM lonInvariance.R when it was removed from semTools 0.5-8 (9 Feb 2026)
 
 
+# rearrangeFreeElement: Rearrange the number listed in 'free' in parameter tables
+rearrangeFreeElement <- function(vec) {
+  vec2 <- vec
+  vec <- vec[vec != 0]
+  uvec <- unique(vec)
+  newvec <- 1:length(unique(vec))
+  vec2[vec2 != 0] <- newvec[match(vec, uvec)]
+  class(vec2) <- "integer"
+  vec2
+}
+
+# rearrangept: Rearrange parameter table and plabel
+rearrangept <- function(pt) {
+
+  createplabel <- function(num) {
+    result <- paste0(".p", num, ".")
+    result[num == 0] <- ""
+    result
+  }
+
+  oldfree <- pt$free
+  newfree <- rearrangeFreeElement(oldfree)
+  oldplabel <- pt$plabel
+  newplabel <- createplabel(seq_along(pt$op))
+  eqpos <- which(pt$op == "==")
+  newplabel[eqpos] <- ""
+  if (length(eqpos) > 0) {
+    eqlhs <- pt$lhs[eqpos]
+    eqrhs <- pt$rhs[eqpos]
+    matchlhs <- match(eqlhs, oldplabel)
+    matchrhs <- match(eqrhs, oldplabel)
+    neweqlhs <- newplabel[matchlhs]
+    neweqrhs <- newplabel[matchrhs]
+    neweqlhs[is.na(matchlhs)] <- eqlhs[is.na(matchlhs)]
+    neweqrhs[is.na(matchrhs)] <- eqrhs[is.na(matchrhs)]
+    pt$lhs[eqpos] <- neweqlhs
+    pt$rhs[eqpos] <- neweqrhs
+  }
+  pt$free <- newfree
+  pt$plabel <- newplabel
+  pt
+}
 
 # freeParTable: Free elements in parameter table
 # also used in partialInvariance
