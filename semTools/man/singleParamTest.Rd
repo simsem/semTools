@@ -79,20 +79,18 @@ m2 <- cfa(HS.model2, data = HolzingerSwineford1939, std.lv = TRUE,
 anova(m1, m2)
 singleParamTest(m1, m2)
 
-## Nested model comparison from the measurementInvariance function
-HW.model <- ' visual =~ x1 + x2 + x3
+
+## Nested models to test measurement invariance
+HW.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
-              speed =~ x7 + x8 + x9 '
+              speed   =~ x7 + x8 + x9 '
 
-models <- measurementInvariance(model = HW.model, data = HolzingerSwineford1939,
-                                group = "school")
-singleParamTest(models[[1]], models[[2]])
+mod.config <- cfa(model = HW.model, data = HolzingerSwineford1939,
+                  group = "school")
+mod.metric <- cfa(model = HW.model, data = HolzingerSwineford1939,
+                  group = "school", group.equal = "loadings")
+singleParamTest(mod.config, mod.metric)
 
-## Note that the comparison between metric (Model 2) and scalar invariance
-## (Model 3) cannot be done by this function because the metric invariance
-## model fixes factor means as 0 in Group 2 but the strong invariance model
-## frees the factor means in Group 2. Users may use this function to compare
-## scalar invariance (Model 3) to a homogeneous-means model.
 
 }
 \author{

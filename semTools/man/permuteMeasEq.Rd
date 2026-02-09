@@ -243,8 +243,7 @@ model (\code{con}) using the function \code{\link[lavaan:lavTestScore]{lavaan::l
 For multiple-group CFA models, the multiparameter omnibus null hypothesis of
 measurement equivalence/invariance is that there are no group differences in
 any measurement parameters (of a particular type). This can be tested using
-the \code{anova} method on nested \code{lavaan} objects, as seen in the
-output of \code{\link[=measurementInvariance]{measurementInvariance()}}, or by inspecting
+the \code{anova} method on nested \code{lavaan} objects, or by inspecting
 the change in alternative fit indices (AFIs) such as the CFI. The
 permutation randomization method employed by \code{permuteMeasEq} generates
 an empirical distribution of any \code{AFIs} under the null hypothesis, so
@@ -499,9 +498,7 @@ incremental fit indices in structural equation modeling. \emph{Psychological
 Methods, 8}(1), 16--37. \doi{10.1037/1082-989X.8.1.16}
 }
 \seealso{
-\code{\link[stats:TukeyHSD]{stats::TukeyHSD()}}, \code{\link[lavaan:lavTestScore]{lavaan::lavTestScore()}},
-\code{\link[=measurementInvariance]{measurementInvariance()}},
-\code{\link[=measurementInvarianceCat]{measurementInvarianceCat()}}
+\code{\link[stats:TukeyHSD]{stats::TukeyHSD()}}, \code{\link[lavaan:lavTestScore]{lavaan::lavTestScore()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

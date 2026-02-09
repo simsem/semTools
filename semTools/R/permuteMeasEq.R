@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 March 2025
+### Last updated: 9 February 2026
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -426,8 +426,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' For multiple-group CFA models, the multiparameter omnibus null hypothesis of
 ##' measurement equivalence/invariance is that there are no group differences in
 ##' any measurement parameters (of a particular type). This can be tested using
-##' the `anova` method on nested `lavaan` objects, as seen in the
-##' output of [semTools::measurementInvariance()], or by inspecting
+##' the `anova` method on nested `lavaan` objects, or by inspecting
 ##' the change in alternative fit indices (AFIs) such as the CFI. The
 ##' permutation randomization method employed by `permuteMeasEq` generates
 ##' an empirical distribution of any `AFIs` under the null hypothesis, so
@@ -638,9 +637,7 @@ setMethod("hist", "permuteMeasEq", function(x, ..., AFI, alpha = .05, nd = 3,
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##' \email{TJorgensen314@@gmail.com})
 ##'
-##' @seealso [stats::TukeyHSD()], [lavaan::lavTestScore()],
-##'   [semTools::measurementInvariance()],
-##'   [semTools::measurementInvarianceCat()]
+##' @seealso [stats::TukeyHSD()], [lavaan::lavTestScore()]
 ##'
 ##' @references
 ##'
