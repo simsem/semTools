@@ -1,6 +1,7 @@
 ### Sunthud Pornprasertmanit & Terrence D. Jorgensen
 ### Last updated: 27 May      2020
 ###   DEPRECATED  24 November 2022 (after 0.5-6 was on CRAN)
+###   DEFUNCT      9 February 2026 (after 0.5-8 was on CRAN)
 ###   REMOVED     next time!
 ### fit and rotate EFA models in lavaan
 
@@ -90,8 +91,7 @@ NULL
 efaUnrotate <- function(data = NULL, nf, varList = NULL,
                         start = TRUE, aux = NULL, ...) {
 
-  .Deprecated(msg = c("The efaUnrotate function is deprecated, and it will ",
-                      "cease to be included in future versions of semTools. ",
+  .Defunct(msg = c("The efaUnrotate() function has been removed from semTools. ",
                       "The lavaan package itself now provides EFA support. ",
                       "See help('semTools-deprecated) for details."))
 
@@ -384,10 +384,9 @@ NULL
 ##' @export
 orthRotate <- function(object, method = "varimax", ...) {
 
-  .Deprecated(msg = c("The orthRotate function is deprecated, and it will ",
-                      "cease to be included in future versions of semTools. ",
-                      "The lavaan package itself now provides support EFA. ",
-                      "See help('semTools-deprecated) for details."))
+  .Defunct(msg = c("The orthRotate() function has been removed from semTools. ",
+                   "The lavaan package itself now provides support EFA. ",
+                   "See help('semTools-deprecated) for details."))
 
 	requireNamespace("GPArotation")
 	if (!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
@@ -416,10 +415,9 @@ orthRotate <- function(object, method = "varimax", ...) {
 ##' @export
 oblqRotate <- function(object, method = "quartimin", ...) {
 
-  .Deprecated(msg = c("The oblqRotate function is deprecated, and it will ",
-                      "cease to be included in future versions of semTools. ",
-                      "The lavaan package itself now provides support EFA. ",
-                      "See help('semTools-deprecated) for details."))
+  .Defunct(msg = c("The oblqRotate() function has been removed from semTools. ",
+                   "The lavaan package itself now provides support EFA. ",
+                   "See help('semTools-deprecated) for details."))
 
   requireNamespace("GPArotation")
 	if (!("package:GPArotation" %in% search())) attachNamespace("GPArotation")
@@ -448,10 +446,9 @@ oblqRotate <- function(object, method = "quartimin", ...) {
 ##' @export
 funRotate <- function(object, fun, ...) {
 
-  .Deprecated(msg = c("The funRotate function is deprecated, and it will ",
-                      "cease to be included in future versions of semTools. ",
-                      "The lavaan package itself now provides support EFA. ",
-                      "See help('semTools-deprecated) for details."))
+  .Defunct(msg = c("The funRotate() function has been removed from semTools. ",
+                   "The lavaan package itself now provides support EFA. ",
+                   "See help('semTools-deprecated) for details."))
 
   stopifnot(is.character(fun))
 	requireNamespace("GPArotation")
