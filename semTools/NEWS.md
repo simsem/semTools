@@ -24,7 +24,7 @@
 
 ## Removed Features:
 
-- `runMI()` was deprecated in 2024, now defunct. Use the new R package `lavaan.mi`
+- `runMI()` was deprecated in 2024, now removed. Use the new R package `lavaan.mi`
 - `efaUnrotate()`, `orthRotate()`, `oblqRotate()`, and `funRotate()`
   have been deprecated since 2022 and are now defunct.
 - `measurementInvariance()`, `measurementInvarianceCat()`, and `longInvariance()`
