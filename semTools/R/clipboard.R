@@ -18,8 +18,8 @@
 ##'   [FitDiff-class].
 ##' @param what The attributes of the `lavaan` object to be copied in the
 ##'   clipboard. `"summary"` is to copy the screen provided from the
-##'   `summary` function. `"mifit"` is to copy the result from the
-##'   [miPowerFit()] function. Other attributes listed in the
+##'   `summary` function. `"epceqfit"` is to copy the result from the
+##'   [epcEquivFit()] function. Other attributes listed in the
 ##'   `inspect` method in the [lavaan::lavaan-class] could also be
 ##'   used, such as `"coef"`, `"se"`, `"fit"`, `"samp"`, and
 ##'   so on.  Ignored for [FitDiff-class]-class objects.
@@ -33,7 +33,7 @@
 ##' @param writeArgs `list` of additional arguments to be passed to
 ##'   [utils::write.table()]
 ##' @param \dots Additional arguments when passing a `lavaan` object to the
-##'   `summary` or [miPowerFit()] function.
+##'   `summary` or [epcEquivFit()] function.
 ##'
 ##' @return The resulting output will be saved into a clipboard or a file. If
 ##'   using the `clipboard` function, users may paste it in the other
@@ -60,8 +60,8 @@
 ##' # pass additional arguments to summary() method for class?lavaan
 ##' clipboard(fit, rsquare = TRUE, standardized = TRUE, fit.measures = TRUE)
 ##'
-##' # Copy modification indices and fit stats from the miPowerFit() function
-##' clipboard(fit, "mifit")
+##' # Copy the EPC equivalence testing results from the epcEquivFit() function
+##' clipboard(fit, "epceqfit")
 ##'
 ##' # Copy the parameter estimates
 ##' clipboard(fit, "coef")
@@ -78,8 +78,8 @@
 ##' # Save the summary of the lavaan object
 ##' saveFile(fit, "out.txt")
 ##'
-##' # Save modification indices and fit stats from the miPowerFit() function
-##' saveFile(fit, "out.txt", "mifit")
+##' # Save the EPC equivalence testing results from the epcEquivFit() function
+##' saveFile(fit, "out.txt", "epceqfit")
 ##'
 ##' # Save the parameter estimates
 ##' saveFile(fit, "out.txt", "coef")
@@ -162,13 +162,13 @@ saveFileLavaan <- function(object, file, what = "summary", tableFormat = FALSE,
 		  writeArgs$x <- paste(utils::capture.output(summary(object, ...)),
 		                       collapse = "\n")
 		}
-	} else if (what == "mifit") {
+	} else if (what %in% c("epceqfit", "mifit")) { # "mifit" retained for backward compatibility
 		if (tableFormat) {
-		  writeArgs$x <- miPowerFit(object, ...)
+		  writeArgs$x <- epcEquivFit(object, ...)
 		  if (is.null(writeArgs$row.names)) writeArgs$row.names <- FALSE
 		  if (is.null(writeArgs$col.names)) writeArgs$col.names <- TRUE
 		} else {
-		  writeArgs$x <- paste(utils::capture.output(miPowerFit(object, ...)),
+		  writeArgs$x <- paste(utils::capture.output(epcEquivFit(object, ...)),
 		                       collapse = "\n")
 		}
 	} else {

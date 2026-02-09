@@ -15,7 +15,7 @@
 ##'   [moreFitIndices()],
 ##'   [nullRMSEA()],
 ##'   [singleParamTest()],
-##'   [miPowerFit()], and
+##'   [epcEquivFit()], and
 ##'   [chisqSmallN()]}
 ##' \item{Measurement Invariance:
 ##'   [measEq.syntax()],

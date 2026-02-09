@@ -188,8 +188,8 @@ structural equation modeling} (pp. 209--231). New York, NY: Guilford.
 }
 \seealso{
 \itemize{
-\item \code{\link[=miPowerFit]{miPowerFit()}} For the modification indices and their
-power approach for model fit evaluation
+\item \code{\link[=epcEquivFit]{epcEquivFit()}} For the equivalence testing based on expected
+parameter changes for model fit evaluation
 \item \code{\link[=nullRMSEA]{nullRMSEA()}} For RMSEA of the default independence model
 }
 }

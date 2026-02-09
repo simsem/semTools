@@ -12,9 +12,15 @@
     - `return.df=` argument replaced by `simplify=`
     - Coefficients now returned (by default) in a list, with headers indicating how to appropriately interpret each coefficient. 
       The verbose headers can be suppressed (mimicking old behavior) by setting `simplify = -1L`
-- `miPowerFit()` has been renamed `epcEquivFit()` and enhanced by a new `epcEquivCheck()` function
-  to assess whether trivial misspecification is difficult to establish for a given model under the
-  EPC equivalence testing framework (see [PR #151](https://github.com/simsem/semTools/pull/151)).
+- `miPowerFit()` has been renamed to `epcEquivFit()` and its functionality has been substantially extended
+   (see [PR #151](https://github.com/simsem/semTools/pull/151)).
+    - The output of `epcEquivFit()` now has its own class, `epcequivfit.data.frame`. A dedicated `summary()` method is provided, which reports both local classifications of fixed parameters and the resulting global equivalence decision.
+    - By default, `epcEquivFit()` focuses on equivalence testing based on expected parameter changes (EPCs). The Saris, Satorra, and van der Veld (2009) decision rule based on modification indices and power is retained but is no longer treated as the primary result, as simulation results favor the EPC equivalence-testing approach.
+    - The equivalence-testing procedure has been extended to include an underpowered classification when the EPC confidence interval (CI) is wider than the smallest effect size of interest (SESOI) region.
+    - The arguments and the resulting column names with `target.epc` has been renamed to reflect the smallest effect size of interest (SESOI), consistent with terminology in the equivalence-testing literature.
+    - Standardized EPCs for indicator residual covariances are now computed by scaling residual covariances by residual variances, rather than by total indicator variances as in `lavaan` and other SEM packages, providing a more appropriate effect-size representation for residual relationships.
+    - A new function, `epcEquivCheck()`, is introduced to assess whether trivial misspecification is difficult to establish for a given model under the EPC equivalence-testing framework.
+    - Clipboard utilities have been updated to accommodate these changes, and all relevant documentation has been revised to reflect the transition from `miPowerFit()` to `epcEquivFit()`.
 
 ## Removed Features:
 
