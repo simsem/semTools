@@ -37,7 +37,7 @@ Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("
 		person(given = "Andrew R.", family = "Johnson", role = "ctb", email = "andrew.johnson@curtin.edu.au", comment = c(ORCID = "0000-0001-7000-8065")),
 		person(given = "Leonard", family = "Vanbrabant", role = "ctb", email = "L.Vanbrabant@ggdwestbrabant.nl")
 		)
-Depends: R(>= 4.0), lavaan(>= 0.6-22), methods
+Depends: R(>= 4.0), lavaan(>= 0.6-21), methods
 Imports: graphics, pbivnorm, stats, utils
 Suggests: blavaan, emmeans, lavaan.mi, MASS, mice, mnormt, parallel, restriktor, testthat
 License: GPL (>= 2)
