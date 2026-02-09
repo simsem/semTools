@@ -1674,7 +1674,7 @@ compRelSEM <- function(object, W = NULL,
         ## drop headers?
         if (simplify < 0L)  for (i in seq_along(REL)) {
           attr(REL[[i]], "header") <- NULL
-        }
+        } else simplify <- FALSE
 
       } else if (nComps == 1L) {
         ## Only 1 index per composite, so a single-group model.
@@ -1699,7 +1699,7 @@ compRelSEM <- function(object, W = NULL,
           ## drop headers?
           if (simplify < 0L)  for (i in seq_along(REL)) {
             attr(REL[[i]], "header") <- NULL
-          }
+          } else simplify <- FALSE
         }
 
         #TODO: verify this preserves row/colnames
