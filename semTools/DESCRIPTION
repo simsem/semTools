@@ -10,7 +10,7 @@ Description: Provides miscellaneous tools for structural equation modeling,
              <doi:10.3758/s13428-020-01479-0>); and scale reliability
              can be estimated based on estimated factor-model parameters.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
-		person(given = "Sunthud", family = "Pornprasertmanit", role = "aut", email = "psunthud@gmail.com"),
+		person(given = "Sunthud", family = "Pornprasertmanit", role = "aut", email = "psunthud@gmail.com", comment = c(ORCID = "0009-0006-6887-9930")),
 		person(given = c("Alexander","M."), family = "Schoemann", role = "aut", email="schoemanna@ecu.edu", comment = c(ORCID = "0000-0002-8479-8798")),
 		person(given = "Yves", family = "Rosseel", role = "aut", email="Yves.Rosseel@UGent.be", comment = c(ORCID = "0000-0002-4129-4477")),
 		person(given = "Patrick", family = "Miller", role = "ctb", email="pmille13@nd.edu"),
