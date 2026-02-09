@@ -1683,10 +1683,10 @@ compRelSEM <- function(object, W = NULL,
         class(REL) <- c("lavaan.vector","numeric")
 
       } else {
-        ## Multiple indices per composite, so a multiple-group model.
+        ## Multiple indices per composite, so a multiple-group model
 
         ## Check the indices have the same (group) names.
-        ## NOTE: The same composite name NEVER yields level-specific coefficients.
+        ## NOTE: The same composite name NEVER yields level-specific coefficients
         nameList <- lapply(rel, names)
         sameNames <- all(sapply(2:length(nameList), function(i) {
           isTRUE(all.equal(nameList[[1]], nameList[[i]]))
@@ -1701,9 +1701,8 @@ compRelSEM <- function(object, W = NULL,
             attr(REL[[i]], "header") <- NULL
           } else simplify <- FALSE
         }
-
-        #TODO: verify this preserves row/colnames
-        REL <- as.data.frame(do.call(rbind, rel)) # drops header (can replace below)
+        ## bind composites into rows (groups in columns)
+        REL <- as.data.frame(do.call(cbind, rel)) # drops header (can replace below)
         class(REL) <- c("lavaan.data.frame","data.frame")
       }
 

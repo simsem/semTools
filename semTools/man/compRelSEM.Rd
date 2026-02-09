@@ -419,10 +419,13 @@ HS.model <- ' visual  =~ x1 + x2 + x3
               textual =~ x4 + x5 + x6
               speed   =~ y7 + y8 + y9 '
 
-fit <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
+fit  <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE)
+fitg <- cfa(HS.model, data = HS, ordered = c("y7","y8","y9"), std.lv = TRUE,
+            group = "school")
 
 ## works for factors with exclusively continuous OR categorical indicators
 compRelSEM(fit)
+compRelSEM(fitg)
 
 ## reliability for composite of ALL indicators only available when they are
 ## all continuous or all categorical.  The example below calculates a
