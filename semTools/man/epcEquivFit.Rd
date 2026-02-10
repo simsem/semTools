@@ -59,18 +59,29 @@ CI-based equivalence testing.}
 A data frame with one row per fixed parameter, containing:
 \enumerate{
 \item Parameter identifiers: \code{lhs}, \code{op}, \code{rhs}, and \code{group}.
-\item Modification index (\code{mi}) and expected parameter change estimates (\code{epc}).
+\item Modification index (\code{mi}) and expected parameter change estimates
+(\code{epc}).
 \item Unstandardized and standardized smallest effect size of interest values
 (\code{sesoi}, \code{std.sesoi}).
 \item Power-based decision (\code{decision.pow}) and related diagnostics, including
 whether the modification index is statistically significant
-(\code{significant.mi}) and whether the misfit at the SESOI has power greater than 0.80
-(\code{high.power}).
+(\code{significant.mi}) and whether the misfit at the SESOI has power greater
+than 0.80 (\code{high.power}). Decision labels are:
+M = Substantially Misspecified,
+I = Inconclusive,
+NM = Trivially Misspecified,
+EPC:M = Substantially Misspecified based on EPC information,
+EPC:NM = Trivially Misspecified based on EPC information.
 \item EPC-related statistics, including the standard error of the EPC
 (\code{se.epc}), confidence interval bounds for the EPC
 (\code{lower.epc}, \code{upper.epc}), and confidence interval bounds for the
 standardized EPC (\code{lower.std.epc}, \code{upper.std.epc}).
-\item Confidence-interval–based equivalence decision (\code{decision.ci}).
+\item Confidence-interval–based equivalence decision (\code{decision.ci}), with
+labels:
+M = Substantially Misspecified (EPC exceeds the SESOI),
+I = Inconclusive,
+NM = Trivially Misspecified,
+U = Underpowered (CI too wide to evaluate equivalence relative to the SESOI).
 }
 }
 \description{
@@ -91,7 +102,7 @@ not misspecified, or inconclusive.
 \strong{Method 2 (CI-based equivalence testing).}
 Confidence intervals of EPCs are compared against a trivial
 misspecification region defined by the SESOI to determine whether
-fixed parameters are severely misspecified, trivially misspecified,
+fixed parameters are substantially misspecified, trivially misspecified,
 underpowered, or inconclusive.
 
 The resulting local classifications are returned in a single data
