@@ -20,7 +20,7 @@
 #' \strong{Method 2 (CI-based equivalence testing).}
 #' Confidence intervals of EPCs are compared against a trivial
 #' misspecification region defined by the SESOI to determine whether
-#' fixed parameters are severely misspecified, trivially misspecified,
+#' fixed parameters are substantially misspecified, trivially misspecified,
 #' underpowered, or inconclusive.
 #'
 #' The resulting local classifications are returned in a single data
@@ -65,18 +65,29 @@
 #' @return A data frame with one row per fixed parameter, containing:
 #' \enumerate{
 #'   \item Parameter identifiers: \code{lhs}, \code{op}, \code{rhs}, and \code{group}.
-#'   \item Modification index (\code{mi}) and expected parameter change estimates (\code{epc}).
+#'   \item Modification index (\code{mi}) and expected parameter change estimates
+#'   (\code{epc}).
 #'   \item Unstandardized and standardized smallest effect size of interest values
 #'   (\code{sesoi}, \code{std.sesoi}).
 #'   \item Power-based decision (\code{decision.pow}) and related diagnostics, including
 #'   whether the modification index is statistically significant
-#'   (\code{significant.mi}) and whether the misfit at the SESOI has power greater than 0.80
-#'   (\code{high.power}).
+#'   (\code{significant.mi}) and whether the misfit at the SESOI has power greater
+#'   than 0.80 (\code{high.power}). Decision labels are:
+#'   M = Substantially Misspecified,
+#'   I = Inconclusive,
+#'   NM = Trivially Misspecified,
+#'   EPC:M = Substantially Misspecified based on EPC information,
+#'   EPC:NM = Trivially Misspecified based on EPC information.
 #'   \item EPC-related statistics, including the standard error of the EPC
 #'   (\code{se.epc}), confidence interval bounds for the EPC
 #'   (\code{lower.epc}, \code{upper.epc}), and confidence interval bounds for the
 #'   standardized EPC (\code{lower.std.epc}, \code{upper.std.epc}).
-#'   \item Confidence-interval–based equivalence decision (\code{decision.ci}).
+#'   \item Confidence-interval–based equivalence decision (\code{decision.ci}), with
+#'   labels:
+#'   M = Substantially Misspecified (EPC exceeds the SESOI),
+#'   I = Inconclusive,
+#'   NM = Trivially Misspecified,
+#'   U = Underpowered (CI too wide to evaluate equivalence relative to the SESOI).
 #' }
 #'
 #' @references
@@ -874,7 +885,7 @@ decisionMIPow <- function(sigMI, highPow, epc, trivialEpc) {
 # Core decision rule for CI-based EPC classification.
 # Given an EPC confidence interval and a smallest effect size of
 # interest (SESOI), this function classifies the parameter as
-# Severe (M), Not Misspecified (NM), Inconclusive (I), or Underpowered (U).
+# Substantial (M), Not Misspecified (NM), Inconclusive (I), or Underpowered (U).
 decisionCIEpc <- function(targetval, lower, upper, positiveonly = FALSE) {
   if(is.na(lower) | is.na(upper)) return(NA)
   if(positiveonly) {
@@ -990,7 +1001,7 @@ cor2cov_safe <- function(R, sd) {
 # ------------------------------------------------------------------
 # Internal helper used by epcEquivCheck().
 # Extracts and formats combinations of perturbed and resulting fixed
-# parameters that yield Severe (M) EPC decisions. The function maps
+# parameters that yield Substantial (M) EPC decisions. The function maps
 # row–column indices from a decision matrix back to the corresponding
 # parameter labels in the \code{epcEquivFit} output and returns a tidy summary
 # table for reporting purposes only.
@@ -1096,7 +1107,7 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
     any_M = any(miout$decision.ci == "M", na.rm = TRUE)
   )
 
-  # Severe EPCs
+  # Substantially Misspecified EPCs
   top_M <- miout[miout$decision.ci == "M", ]
   top_M <- top_M[is.finite(top_M$severity), ]
   top_M <- top_M[order(top_M$severity, decreasing = TRUE), ]
@@ -1116,7 +1127,7 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
     any_M = any(miout$decision.pow %in% c("M", "EPC:M"), na.rm = TRUE)
   )
 
-  # Severe SSV
+  # Substantially Misspecified SSV
   top_M_pow <- miout[miout$decision.pow == "M", ]
   top_M_pow <- top_M_pow[is.finite(top_M_pow$severity), ]
   top_M_pow <- top_M_pow[order(top_M_pow$severity, decreasing = TRUE), ]
@@ -1145,7 +1156,7 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
 # global_localfit_decision()
 # ------------------------------------------------------------------
 # Internal decision utility used by print.summaryEpcEquivFit().
-# Aggregates local fixed-parameter classifications (e.g., Severe,
+# Aggregates local fixed-parameter classifications (e.g., Substantial,
 # Inconclusive, Underpowered, Not Misspecified) into a single global
 # decision using a conservative priority rule.
 global_localfit_decision <- function(n_M, n_I, n_U, n_NM) {
@@ -1155,7 +1166,7 @@ global_localfit_decision <- function(n_M, n_I, n_U, n_NM) {
   }
 
   if (n_M > 0) {
-    return("SEVERE MISSPECIFICATION")
+    return("SUBSTANTIAL MISSPECIFICATION")
   }
 
   if (n_I > 0) {
@@ -1186,7 +1197,7 @@ print.summaryEpcEquivFit <- function(x, ...) {
 
   ## ---- EPC equivalence testing (primary) ----
   cat("[1. EPC Equivalence Testing: CI-based]\n")
-  cat("Severe (M):",  x$epc_equivalence$n_M,  "\n")
+  cat("Substantially Misspecified (M):",  x$epc_equivalence$n_M,  "\n")
   cat("Inconclusive (I):",    x$epc_equivalence$n_I,  "\n")
   cat("CI-Underpowered (U):",      x$epc_equivalence$n_U,  "\n")
   cat("Trivial / Not Misspecified (NM):", x$epc_equivalence$n_NM, "\n\n")
@@ -1201,7 +1212,7 @@ print.summaryEpcEquivFit <- function(x, ...) {
   cat("Global EPC Equivalence Decision:", global_epc, "\n\n")
 
   if (x$epc_equivalence$n_M > 0) {
-    cat("1.1 Top Severe EPCs (ranked by |std.epc / SESOI|):\n")
+    cat("1.1 Top Substantially Misspecified EPCs (ranked by |std.epc / SESOI|):\n")
     print(
       x$top_non_equiv[
         , c("lhs","op","rhs","std.epc","std.sesoi","severity"),
@@ -1226,7 +1237,7 @@ print.summaryEpcEquivFit <- function(x, ...) {
   if(isTRUE(x$show_ssv)) {
     ## ---- SSV / power-based diagnostics (secondary) ----
     cat("[2. Saris, Satorra, Van der Veld (2009) / Power-based Diagnostics]\n")
-    cat("Severe (M, EPC:M):",   x$ssv$n_M,  "\n")
+    cat("Substantially Misspecified (M, EPC:M):",   x$ssv$n_M,  "\n")
     cat("Inconclusive (I):", x$ssv$n_I,  "\n")
     cat("Trivial / Not Misspecified (NM, EPC:NM):", x$ssv$n_NM, "\n\n")
 
@@ -1240,7 +1251,7 @@ print.summaryEpcEquivFit <- function(x, ...) {
     cat("Global SSV / Power-based Decision:", global_ssv, "\n\n")
 
     if (x$ssv$n_M > 0) {
-      cat("2.1 Top severe EPCs (ranked by |std.epc / SESOI|):\n")
+      cat("2.1 Top Substantially Misspecified EPCs (ranked by |std.epc / SESOI|):\n")
       print(
         x$top_non_pow[
           , c("lhs","op","rhs","std.epc","std.sesoi","severity"),
