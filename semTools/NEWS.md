@@ -1,4 +1,11 @@
-# semTools 0.5-8 (submitted to CRAN 9 February 2026)
+# semTools 0.5-9 (in development)
+
+## New Features:
+
+## Bug Fixes:
+
+
+# semTools 0.5-8 (on CRAN 14 February 2026)
 
 ## New Features:
 
@@ -33,7 +40,7 @@
 ## Bug Fixes:
 
 - `compareFit()` would throw an error if `lavaan.mi` package was not installed
-  ([fixed](https://github.com/simsem/semTools/issues/147).
+  ([fixed](https://github.com/simsem/semTools/issues/147)).
 - `monteCarloCI()` would lose parameter names in `coefs=` argument if there were
   no `dimnames` in `ACM=` argument. Fixed by [PR #149](https://github.com/simsem/semTools/pull/149).
 

@@ -757,7 +757,7 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##' observed scores and construct meanings. *Psychological Methods, 26*(1),
 ##' 90--102. \doi{10.1037/met0000287}
 ##'
-##' Lu, Z., Hong, M., & Kim, S. (2020). Formulas of multilevel reliabilities for
+##' Lu, Z., Hong, M., & Kim, S. (2021). Formulas of multilevel reliabilities for
 ##' tests with ordered categorical responses.
 ##' In M. Wiberg, D. Molenaar,  J. González, U.Böckenholt, & J.-S. Kim (Eds.),
 ##' *Quantitative psychology: The 85th annual meeting of the Psychometric Society, Virtual*
