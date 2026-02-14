@@ -783,10 +783,11 @@ AVE <- function(object, obs.var = TRUE, omit.imps = c("no.conv","no.se"),
 ##'
 ##'
 ##' @examples
+##'
 ##' data(HolzingerSwineford1939)
-##' HS9 <- HolzingerSwineford1939[ , c("x7","x8","x9")]
+##' HS9 <- HolzingerSwineford1939[ , paste0("x",1:9)]
 ##' HSbinary <- as.data.frame( lapply(HS9, cut, 2, labels=FALSE) )
-##' names(HSbinary) <- c("y7","y8","y9")
+##' names(HSbinary) <- paste0("y",1:9)
 ##' HS <- cbind(HolzingerSwineford1939, HSbinary)
 ##'
 ##' HS.model <- ' visual  =~ x1 + x2 + x3
@@ -1407,6 +1408,10 @@ compRelSEM <- function(object, W = NULL,
 
 
 
+      ## could be multilevel (not if categorical, checked next)
+      isShared <- FALSE
+      isConfig <- FALSE
+
       ## Calculate RELIABILITY for composite(s) of ordinal indicators
       if (allCat && ord.scale) {
 
@@ -1442,12 +1447,7 @@ compRelSEM <- function(object, W = NULL,
         ## all continuous or all LRV-scale?
         if (allCat) warnLRV <- union(warnLRV, cc)
       }
-
       ## else, calculate RELIABILITY for composite(s) of continuous indicators
-
-      ## could be multilevel (not if categorical, calculated above)
-      isShared <- FALSE
-      isConfig <- FALSE
 
       ## calculate ALPHA?
       if (cc %in% tau.eq) {

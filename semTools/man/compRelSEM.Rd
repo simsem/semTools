@@ -409,10 +409,11 @@ which quantifies generalizability across rater/sampling-error only, and can
 be returned for any \verb{shared=} construct's composite by setting \code{add.IRR=TRUE}.
 }
 \examples{
+
 data(HolzingerSwineford1939)
-HS9 <- HolzingerSwineford1939[ , c("x7","x8","x9")]
+HS9 <- HolzingerSwineford1939[ , paste0("x",1:9)]
 HSbinary <- as.data.frame( lapply(HS9, cut, 2, labels=FALSE) )
-names(HSbinary) <- c("y7","y8","y9")
+names(HSbinary) <- paste0("y",1:9)
 HS <- cbind(HolzingerSwineford1939, HSbinary)
 
 HS.model <- ' visual  =~ x1 + x2 + x3
@@ -541,7 +542,7 @@ Lai, M. H. C. (2021). Composite reliability of multilevel data: It’s about
 observed scores and construct meanings. \emph{Psychological Methods, 26}(1),
 90--102. \doi{10.1037/met0000287}
 
-Lu, Z., Hong, M., & Kim, S. (2020). Formulas of multilevel reliabilities for
+Lu, Z., Hong, M., & Kim, S. (2021). Formulas of multilevel reliabilities for
 tests with ordered categorical responses.
 In M. Wiberg, D. Molenaar,  J. González, U.Böckenholt, & J.-S. Kim (Eds.),
 \emph{Quantitative psychology: The 85th annual meeting of the Psychometric Society, Virtual}
