@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
 ###   - omegaCat() and deprecated functionality: Sunthud Pornprasertmanit
-### Last updated: 10 February 2026
+### Last updated: 14 February 2026
 
 
 
@@ -921,6 +921,7 @@ compRelSEM <- function(object, W = NULL,
   }
   if (!is.null(match.call()$return.df)) {
     warning('Argument return.df= is deprecated, replaced by simplify= argument.')
+    if (return.df) simplify <- -1L
   }
 
 
