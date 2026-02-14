@@ -920,7 +920,7 @@ compRelSEM <- function(object, W = NULL,
             '"omega_hierarchical"), use the true= argument.')
   }
   if (!is.null(match.call()$return.df)) {
-    warning('Argument return.df= is deprecated, replaced by simplify= argument.')
+    message('Argument return.df= is deprecated, replaced by simplify= argument.')
     if (return.df) simplify <- -1L
   }
 
