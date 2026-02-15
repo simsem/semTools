@@ -1067,11 +1067,11 @@ print.epcEquivCheckStd <- function(x, ...) {
 
   cat("Feasible standardized population:", x$feasible, "\n")
 
-  if(!x$feasible) {
+  if(x$feasible) {
     cat("Any EPC exceeding SESOI:", x$any_M, "\n")
     cat("Compensatory Effect:", x$compensatory, "\n\n")
-    return(invisible(x))
   }
+
   if (x$compensatory == "PRONOUNCED") {
     cat("EPCs exceeding SESOI under tested perturbations (summary):\n")
     print(x$M_table)
