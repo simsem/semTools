@@ -1120,7 +1120,7 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
 
   # ---- Derived quantities ----
   miout$severity <- abs(miout$std.epc / miout$std.sesoi)
-
+  miout$ci_width <- with(miout, abs(upper.std.epc -  lower.std.epc))
   miout$ci_gap <- with(miout, pmin(
     abs(lower.std.epc -  std.sesoi),
     abs(upper.std.epc -  std.sesoi),
@@ -1150,6 +1150,12 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
   top_I_ci <- top_I_ci[order(top_I_ci$ci_gap, decreasing = TRUE), ]
   if (nrow(top_I_ci) > top) top_I_ci <- top_I_ci[1:top, ]
 
+  # CI-underpowered EPCs (exclude NM)
+  top_U_ci <- miout[miout$decision.ci == "U", ]
+  top_U_ci <- top_U_ci[is.finite(top_U_ci$ci_gap), ]
+  top_U_ci <- top_U_ci[order(top_U_ci$ci_width, decreasing = TRUE), ]
+  if (nrow(top_U_ci) > top) top_U_ci <- top_U_ci[1:top, ]
+
   # ---- SSV / power-based diagnostics (secondary) ----
   ssv_out <- list(
     n_M  = sum(miout$decision.pow %in% c("M", "EPC:M"),  na.rm = TRUE),
@@ -1175,6 +1181,7 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
     ssv = ssv_out,
     top_non_equiv = top_M,
     top_inconclusive_ci = top_I_ci,
+    top_underpowered_ci = top_U_ci,
     top_non_pow = top_M_pow,
     top_inconclusive_pow = top_I_pow,
     show_ssv = ssv
@@ -1259,6 +1266,18 @@ print.summaryEpcEquivFit <- function(x, ...) {
     print(
       x$top_inconclusive_ci[
         , c("lhs","op","rhs","lower.std.epc","upper.std.epc","ci_gap"),
+        drop = FALSE
+      ]
+    )
+    cat("\n")
+  }
+
+  if (x$epc_equivalence$n_U > 0) {
+    cat("1.3 Top CI-underpowered EPCs\n")
+    cat("(ranked by CI width):\n")
+    print(
+      x$top_underpowered_ci[
+        , c("lhs","op","rhs","lower.std.epc","upper.std.epc","ci_width"),
         drop = FALSE
       ]
     )
