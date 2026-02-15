@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit; with contributions by Terrence D. Jorgensen
-### Last updated: 3 February 2026
+### Last updated: 15 February 2026
 
 
 #' EPC Equivalence Fit Evaluation Using Modification Indices
@@ -50,6 +50,16 @@
 #'   arguments.
 #' @param cilevel Confidence level for EPC confidence intervals used in
 #'   CI-based equivalence testing.
+#' @param mialpha Significance level used for evaluating modification
+#'   indices in the power-based decision rule (Method 1). Default is 0.05.
+#' @param mipower Desired statistical power for detecting a misspecification
+#'   of the specified SESOI in the power-based decision rule. Default is 0.80.
+#' @param adjust.method Multiplicity adjustment method applied to both
+#'   modification index tests and EPC confidence intervals. Currently
+#'   supported options are \code{"none"} (no adjustment) and
+#'   \code{"bonferroni"}. When \code{"bonferroni"} is used, the MI
+#'   significance level and CI level are adjusted across all evaluated
+#'   fixed parameters.
 #' @param \dots Additional arguments passed to
 #'   \code{\link[lavaan]{modificationIndices}}.
 #'
@@ -58,6 +68,10 @@
 #' to traditional exact-fit evaluation. It is designed to assess whether
 #' fixed parameters are substantively misspecified relative to a SESOI,
 #' rather than whether a model fits exactly.
+#'
+#' When \code{adjust.method = "bonferroni"}, familywise error control
+#' is applied across all evaluated fixed parameters by adjusting the
+#' MI significance threshold and widening EPC confidence intervals.
 #'
 #' Models with categorical indicators or unsupported constraints may
 #' not be fully supported.
@@ -122,8 +136,14 @@ epcEquivFit <- function(lavaanObj,
                        stdIntcept = 0.2,
                        stdSesoi = NULL,
                        sesoi = NULL,
-                       cilevel = 0.90, ...) {
+                       cilevel = 0.90,
+                       mialpha = 0.05,
+                       mipower = 0.80,
+                       adjust.method = "none", ...) {
   dots <- list(...)
+
+  adjustmethodargs <- c("none", "bonferroni")
+  adjust.method <- match.arg(adjust.method, adjustmethodargs)
 
   df_model <- lavaan::fitMeasures(lavaanObj, "df")
 
@@ -175,35 +195,40 @@ epcEquivFit <- function(lavaanObj,
                                 corLatent = corLatent, corResidual = corResidual,
                                 stdBeta = stdBeta, stdIntcept = stdIntcept)
     if (length(stdSesoi) == 1) stdSesoi <- rep(stdSesoi, nrow(mi))
-    sesoi <- unstandardizeEpc(mi, stdSesoi, lavInspectTotalVar(lavaanObj), lavInspectResidualVar(lavaanObj))
+    sesoi <- unstandardizeFixedParam(mi, stdSesoi, lavInspectTotalVar(lavaanObj), lavInspectResidualVar(lavaanObj))
   }
-  if (length(sesoi) == 1) sesoi <- rep(sesoi, nrow(mi))
+  m <- nrow(mi)
+  if (length(sesoi) == 1) sesoi <- rep(sesoi, m)
   ncp <- (sesoi / sigma)^2
-  alpha <- 0.05
-  desiredPow <- 0.80
+  ncp[!is.finite(ncp)] <- NA_real_
+  alpha <- ifelse(adjust.method=="bonferroni", mialpha/m, mialpha)
   cutoff <- stats::qchisq(1 - alpha, df = 1)
   pow <- 1 - stats::pchisq(cutoff, df = 1, ncp = ncp)
   sigMI <- mi[,"mi"] > cutoff
-  highPow <- pow > desiredPow
+  highPow <- pow > mipower
   group <- rep(1, nrow(mi))
   if ("group" %in% colnames(mi)) group <- mi[ , "group"]
   decision <- mapply(decisionMIPow, sigMI = sigMI, highPow = highPow,
                      epc = mi[ , "epc"], trivialEpc = sesoi)
-  if (is.null(stdSesoi)) stdSesoi <- standardizeEpc(mi, lavInspectTotalVar(lavaanObj),
+  if (is.null(stdSesoi)) stdSesoi <- standardizeFixedParam(mi, lavInspectTotalVar(lavaanObj),
                                                     lavInspectResidualVar(lavaanObj),
-                                                    sesoi = sesoi)
+                                                    value = sesoi)
   result <- cbind(mi[ , 1:3], group, as.numeric(mi[ , "mi"]), mi[ , "epc"],
                   sesoi, mi[ , "sepc.all"],
                   stdSesoi, sigMI, highPow, decision)
-  # New method
-  crit <- abs(stats::qnorm((1 - cilevel)/2))
-  seepc <- abs(result[,6]) / sqrt(abs(result[,5]))
-  lowerepc <- result[,6] - crit * seepc
-  upperepc <- result[,6] + crit * seepc
-  stdlowerepc <- standardizeEpc(mi, lavInspectTotalVar(lavaanObj),
-                                lavInspectResidualVar(lavaanObj), sesoi = lowerepc)
-  stdupperepc <- standardizeEpc(mi, lavInspectTotalVar(lavaanObj),
-                                lavInspectResidualVar(lavaanObj), sesoi = upperepc)
+  alpha_ci <- 1 - cilevel
+  if (adjust.method == "bonferroni") {
+    alpha_ci <- alpha_ci / m
+  }
+  crit <- stats::qnorm(1 - alpha_ci/2)
+  seepc <- abs(sigma)
+  seepc[!is.finite(seepc)] <- NA_real_
+  lowerepc <- mi[,"epc"] - crit * seepc
+  upperepc <- mi[,"epc"] + crit * seepc
+  stdlowerepc <- standardizeFixedParam(mi, lavInspectTotalVar(lavaanObj),
+                                lavInspectResidualVar(lavaanObj), value = lowerepc)
+  stdupperepc <- standardizeFixedParam(mi, lavInspectTotalVar(lavaanObj),
+                                lavInspectResidualVar(lavaanObj), value = upperepc)
   isVar <- mi[,"op"] == "~~" & mi[,"lhs"] == mi[,"rhs"]
   decisionci <- mapply(decisionCIEpc, targetval = as.numeric(stdSesoi),
                        lower = stdlowerepc, upper = stdupperepc,
@@ -759,15 +784,12 @@ getTrivialEpc <- function(
 }
 
 
-# unstandardizeEpc()
+# unstandardizeFixedParam()
 # ------------------------------------------------------------------
 # Internal utility used by epcEquivFit() and related EPC diagnostics.
-# Converts standardized effect-size thresholds (SESOI) back to the
-# unstandardized EPC scale using total and residual variances of the
-# involved variables. The transformation is operator-specific
-# (e.g., loadings, regressions, covariances, intercepts) and provides
-# unstandardized quantities required for EPC evaluation.
-unstandardizeEpc <- function(mi, sesoi, totalVar, residualVar) {
+# Converts standardized fixed-parameter values (e.g., standardized
+# SESOI thresholds or CI bounds) back to the unstandardized EPC scale.
+unstandardizeFixedParam <- function(mi, value, totalVar, residualVar) {
   name <- names(totalVar[[1]])
   lhsPos <- match(mi[,"lhs"], name)
   rhsPos <- match(mi[,"rhs"], name)
@@ -780,41 +802,38 @@ unstandardizeEpc <- function(mi, sesoi, totalVar, residualVar) {
   lhsVarRes <- mapply(getVarRes, pos=lhsPos, group=group)
   rhsVarRes <- mapply(getVarRes, pos=rhsPos, group=group)
 
-  FUN <- function(op, lhsVar, rhsVar, lhsVarRes, rhsVarRes, sesoi) {
+  FUN <- function(op, lhsVar, rhsVar, lhsVarRes, rhsVarRes, value) {
     if(op == "|") return(NA)
     lhsSD <- sqrt(lhsVar)
     rhsSD <- sqrt(rhsVar)
     lhsSDRes <- sqrt(lhsVarRes)
     rhsSDRes <- sqrt(rhsVarRes)
-    if(!is.numeric(sesoi)) sesoi <- as.numeric(sesoi)
+    if(!is.numeric(value)) value <- as.numeric(value)
     if(op == "=~") {
-      return((rhsSD * sesoi) / lhsSD)
+      return((rhsSD * value) / lhsSD)
     } else if (op == "~~") {
-      return(lhsSDRes * sesoi * rhsSDRes)
+      return(lhsSDRes * value * rhsSDRes)
     } else if (op == "~1") {
-      return(lhsSD * sesoi)
+      return(lhsSD * value)
     } else if (op == "~") {
-      return((lhsSD * sesoi) / rhsSD)
+      return((lhsSD * value) / rhsSD)
     } else {
       return(NA)
     }
   }
-  sesoi <- mapply(FUN, op=mi[,"op"], lhsVar=lhsVar, rhsVar=rhsVar,
-                       lhsVarRes=lhsVarRes, rhsVarRes=rhsVarRes, sesoi=sesoi)
-  return(sesoi)
+  unstdValue <- mapply(FUN, op=mi[,"op"], lhsVar=lhsVar, rhsVar=rhsVar,
+                       lhsVarRes=lhsVarRes, rhsVarRes=rhsVarRes, value=value)
+  return(unstdValue)
 }
 
-# standardizeEpc()
+# standardizeFixedParam()
 # ------------------------------------------------------------------
 # Internal utility used by epcEquivFit() and related EPC diagnostics.
-# Transforms unstandardized EPCs or SESOI values into standardized
-# effect-size metrics based on total and residual variances of the
-# involved variables. The standardization is operator-specific
-# (e.g., loadings, regressions, covariances, intercepts) and produces
-# standardized quantities suitable for comparison against standardized
-# SESOI thresholds.
-standardizeEpc <- function(mi, totalVar, residualVar, sesoi = NULL) {
-  if(is.null(sesoi)) sesoi <- mi[,"epc"]
+# Converts unstandardized values of fixed parameters (e.g., EPCs,
+# SESOI thresholds, or CI bounds) into standardized effect-size
+# metrics.
+standardizeFixedParam <- function(mi, totalVar, residualVar, value = NULL) {
+  if(is.null(value)) value <- mi[,"epc"]
   name <- names(totalVar[[1]])
   lhsPos <- match(mi[,"lhs"], name)
   rhsPos <- match(mi[,"rhs"], name)
@@ -826,31 +845,31 @@ standardizeEpc <- function(mi, totalVar, residualVar, sesoi = NULL) {
   rhsVar <- mapply(getVar, pos=rhsPos, group=group)
   lhsVarRes <- mapply(getVarRes, pos=lhsPos, group=group)
   rhsVarRes <- mapply(getVarRes, pos=rhsPos, group=group)
-  FUN <- function(op, lhsVar, rhsVar, lhsVarRes, rhsVarRes, sesoi) {
+  FUN <- function(op, lhsVar, rhsVar, lhsVarRes, rhsVarRes, value) {
     lhsSD <- sqrt(lhsVar)
     rhsSD <- sqrt(rhsVar)
     lhsSDRes <- sqrt(lhsVarRes)
     rhsSDRes <- sqrt(rhsVarRes)
-    if(!is.numeric(sesoi)) sesoi <- as.numeric(sesoi)
+    if(!is.numeric(value)) value <- as.numeric(value)
     if(op == "=~") {
       #stdload = beta * sdlatent / sdindicator = beta * lhs / rhs
-      return((sesoi / rhsSD) * lhsSD)
+      return((value / rhsSD) * lhsSD)
     } else if (op == "~~") {
       #r = cov / (sd1 * sd2)
-      return(sesoi / (lhsSDRes * rhsSDRes))
+      return(value / (lhsSDRes * rhsSDRes))
     } else if (op == "~1") {
       #d = meanDiff/sd
-      return(sesoi / lhsSD)
+      return(value / lhsSD)
     } else if (op == "~") {
       #beta = b * sdX / sdY = b * rhs / lhs
-      return((sesoi / lhsSD) * rhsSD)
+      return((value / lhsSD) * rhsSD)
     } else {
       return(NA)
     }
   }
-  stdSesoi <- mapply(FUN, op=mi[,"op"], lhsVar=lhsVar, rhsVar=rhsVar,
-                     lhsVarRes=lhsVarRes, rhsVarRes=rhsVarRes, sesoi=sesoi)
-  return(stdSesoi)
+  stdValue <- mapply(FUN, op=mi[,"op"], lhsVar=lhsVar, rhsVar=rhsVar,
+                     lhsVarRes=lhsVarRes, rhsVarRes=rhsVarRes, value=value)
+  return(stdValue)
 }
 
 # decisionMIPow()
