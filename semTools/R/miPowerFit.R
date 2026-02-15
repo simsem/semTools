@@ -256,17 +256,22 @@ miPowerFit <- function(...) {
   epcEquivFit(...)
 }
 
-#' EPC Equivalence Feasibility Check for Standardized Parameters
+#' EPC Equivalence Compensatory-Effect Check for Standardized Parameters
 #'
-#' Performs an EPC-based feasibility check to assess whether a set of
-#' standardized population parameters defines a valid population
-#' covariance matrix and whether trivially misspecified parameters
-#' remain within a user-defined smallest effect size of interest (SESOI).
-#' Feasibility is evaluated by constructing implied population models
-#' under targeted parameter perturbations and examining EPC behavior
-#' using \code{\link{epcEquivFit}}.
+#' Performs an EPC-based compensatory-effect diagnostic to assess whether
+#' standardized population parameters define a valid population covariance
+#' matrix and whether trivially misspecified parameters (relative to a
+#' smallest effect size of interest; SESOI) can generate EPCs exceeding
+#' the SESOI.
 #'
-#' This function focuses on standardized parameters and supports
+#' The compensatory effect is evaluated by constructing implied population
+#' models under targeted standardized parameter perturbations and examining
+#' resulting EPC behavior. If EPCs exceed the SESOI under perturbations that
+#' are trivial in magnitude (e.g., 75% of the SESOI), substantial EPC
+#' classifications may reflect inflation due to compensatory distortions
+#' rather than genuine substantive misspecification.
+#'
+#' This function operates on standardized parameters and currently supports
 #' recursive SEMs with continuous indicators only.
 #'
 #' @param lavaanObj A fitted \code{lavaan} object representing the target model.
@@ -274,7 +279,8 @@ miPowerFit <- function(...) {
 #'   magnitude of the standardized perturbation to be evaluated. The
 #'   default value of 0.75 indicates that perturbations equal to 75\% of
 #'   the SESOI are treated as trivial. If EPCs exceed the SESOI under
-#'   such perturbations, EPC equivalence testing is not recommended.
+#'   such perturbations, the compensatory effect is classified as
+#'   \code{"PRONOUNCED"}.
 #' @param stdLoad Standardized factor loading used to define the SESOI
 #'   for loading misspecifications.
 #' @param cor Standardized correlation used as a default SESOI for
@@ -291,25 +297,29 @@ miPowerFit <- function(...) {
 #'   the SESOI for structural misspecifications.
 #'
 #' @details
-#' The procedure first checks whether the standardized parameters imply
-#' a positive definite population covariance matrix. It then evaluates
-#' EPC behavior under both positive and negative trivial
-#' misspecifications by repeatedly constructing implied population
-#' covariance matrices with perturbed parameters
-#' (\code{minRelEffect} \eqn{\times} SESOI), refitting the model, and
-#' re-evaluating EPCs.
+#' The procedure first verifies whether the standardized parameter values
+#' imply a positive definite population covariance matrix. It then evaluates
+#' EPC behavior under both positive and negative trivial misspecifications
+#' by repeatedly constructing implied population covariance matrices with
+#' perturbed parameters (\code{minRelEffect} \eqn{\times} SESOI), refitting
+#' the model, and re-evaluating EPC classifications.
 #'
-#' Models with categorical indicators, formative indicators, or
-#' multiple-group structures are not supported.
+#' If at least one trivial perturbation produces an EPC exceeding the SESOI,
+#' the compensatory effect is labeled \code{"PRONOUNCED"}. Otherwise, it is
+#' labeled \code{"NOT PRONOUNCED"}.
+#'
+#' Models with categorical indicators, formative indicators, mean structures,
+#' or multiple-group structures are not supported.
 #'
 #' @return An object of class \code{"epcEquivCheckStd"} containing:
 #' \itemize{
 #'   \item \code{feasible}: Logical indicator of whether a valid
 #'     standardized population model exists.
 #'   \item \code{any_M}: Logical indicator of whether any EPC exceeded
-#'     the SESOI under the evaluated misspecifications.
-#'   \item \code{recommendation}: Character string summarizing feasibility
-#'     (e.g., \code{"RECOMMENDED"}, \code{"NOT RECOMMENDED"}).
+#'     the SESOI under the evaluated perturbations.
+#'   \item \code{compensatory}: Character string summarizing the presence
+#'     of the compensatory effect (e.g., \code{"NOT PRONOUNCED"},
+#'     \code{"PRONOUNCED"}, or \code{"NOT APPLICABLE"}).
 #'   \item \code{M_table}: Data frame summarizing EPCs exceeding the SESOI,
 #'     if any.
 #'   \item \code{testeffect}: Data frame reporting the smallest tested
@@ -321,7 +331,6 @@ miPowerFit <- function(...) {
 #' @seealso \code{\link{epcEquivFit}}
 #'
 #' @examples
-#'
 #' library(lavaan)
 #'
 #' one.model <- ' onefactor  =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 '
@@ -345,7 +354,7 @@ epcEquivCheck <- function(lavaanObj,
     out <- list(
       feasible = FALSE,
       any_M = NA,
-      recommendation = "NOT APPLICABLE",
+      compensatory = "NOT APPLICABLE",
       reason = reason,
       M_table = NULL,
       testeffect = NULL
@@ -657,18 +666,18 @@ epcEquivCheck <- function(lavaanObj,
   feasible <- TRUE
   any_M <- any(resultall == "M", na.rm = TRUE)
 
-  recommendation <- if (!feasible) {
+  compensatory <- if (!feasible) {
     "NOT APPLICABLE"
   } else if (any_M) {
-    "NOT RECOMMENDED"
+    "PRONOUNCED"
   } else {
-    "RECOMMENDED"
+    "NOT PRONOUNCED"
   }
 
   out <- list(
     feasible = feasible,
     any_M = any_M,
-    recommendation = recommendation,
+    compensatory = compensatory,
     M_table = M_all,
     testeffect = T_all
   )
@@ -1048,23 +1057,26 @@ extract_M_table <- function(result_mat, miout, sepc_mat, direction) {
 # print.epcEquivCheckStd()
 # ------------------------------------------------------------------
 # Internal print method for epcEquivCheckStd objects.
-# Formats and displays feasibility and recommendation results from
+# Formats and displays feasibility and compensatory-effect results from
 # standardized-parameter EPC equivalence checks.
 
 #' @export
 print.epcEquivCheckStd <- function(x, ...) {
-  cat("EPC Equivalence Feasibility (Standardized Parameters)\n")
+  cat("EPC Equivalence Compensatory Effect (Standardized Parameters)\n")
   cat("----------------------------------------------------\n")
 
   cat("Feasible standardized population:", x$feasible, "\n")
-  cat("Any EPC exceeding SESOI:", x$any_M, "\n")
-  cat("Recommendation:", x$recommendation, "\n\n")
 
-  if (x$recommendation == "NOT RECOMMENDED") {
-    cat("Non-equivalent EPCs detected (summary):\n")
+  if(!x$feasible) {
+    cat("Any EPC exceeding SESOI:", x$any_M, "\n")
+    cat("Compensatory Effect:", x$compensatory, "\n\n")
+    return(invisible(x))
+  }
+  if (x$compensatory == "PRONOUNCED") {
+    cat("EPCs exceeding SESOI under tested perturbations (summary):\n")
     print(x$M_table)
-  } else if (x$recommendation == "RECOMMENDED") {
-    cat("No EPC exceeded the SESOI under tested misspecifications.\n")
+  } else if (x$compensatory == "NOT PRONOUNCED") {
+    cat("No EPC exceeded the SESOI under tested perturbations.\n")
   } else {
     cat("Standardized parameters do not define a valid population model.\n")
   }
