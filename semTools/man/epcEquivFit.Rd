@@ -8,7 +8,8 @@
 \usage{
 epcEquivFit(lavaanObj, stdLoad = 0.4, cor = 0.1, corLatent = NULL,
   corResidual = NULL, stdBeta = 0.1, stdIntcept = 0.2, stdSesoi = NULL,
-  sesoi = NULL, cilevel = 0.9, ...)
+  sesoi = NULL, cilevel = 0.9, mialpha = 0.05, mipower = 0.8,
+  adjust.method = "none", ...)
 
 \method{summary}{epcequivfit.data.frame}(object, ..., top = 5, ssv = FALSE)
 }
@@ -45,6 +46,19 @@ arguments.}
 
 \item{cilevel}{Confidence level for EPC confidence intervals used in
 CI-based equivalence testing.}
+
+\item{mialpha}{Significance level used for evaluating modification
+indices in the power-based decision rule (Method 1). Default is 0.05.}
+
+\item{mipower}{Desired statistical power for detecting a misspecification
+of the specified SESOI in the power-based decision rule. Default is 0.80.}
+
+\item{adjust.method}{Multiplicity adjustment method applied to both
+modification index tests and EPC confidence intervals. Currently
+supported options are \code{"none"} (no adjustment) and
+\code{"bonferroni"}. When \code{"bonferroni"} is used, the MI
+significance level and CI level are adjusted across all evaluated
+fixed parameters.}
 
 \item{\dots}{Additional arguments passed to
 \code{\link[lavaan]{modificationIndices}}.}
@@ -113,6 +127,10 @@ This function provides a local-to-global equivalence-based alternative
 to traditional exact-fit evaluation. It is designed to assess whether
 fixed parameters are substantively misspecified relative to a SESOI,
 rather than whether a model fits exactly.
+
+When \code{adjust.method = "bonferroni"}, familywise error control
+is applied across all evaluated fixed parameters by adjusting the
+MI significance threshold and widening EPC confidence intervals.
 
 Models with categorical indicators or unsupported constraints may
 not be fully supported.

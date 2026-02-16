@@ -1,5 +1,5 @@
 ### Sunthud Pornprasertmanit; with contributions by Terrence D. Jorgensen
-### Last updated: 3 February 2026
+### Last updated: 15 February 2026
 
 
 #' EPC Equivalence Fit Evaluation Using Modification Indices
@@ -50,6 +50,16 @@
 #'   arguments.
 #' @param cilevel Confidence level for EPC confidence intervals used in
 #'   CI-based equivalence testing.
+#' @param mialpha Significance level used for evaluating modification
+#'   indices in the power-based decision rule (Method 1). Default is 0.05.
+#' @param mipower Desired statistical power for detecting a misspecification
+#'   of the specified SESOI in the power-based decision rule. Default is 0.80.
+#' @param adjust.method Multiplicity adjustment method applied to both
+#'   modification index tests and EPC confidence intervals. Currently
+#'   supported options are \code{"none"} (no adjustment) and
+#'   \code{"bonferroni"}. When \code{"bonferroni"} is used, the MI
+#'   significance level and CI level are adjusted across all evaluated
+#'   fixed parameters.
 #' @param \dots Additional arguments passed to
 #'   \code{\link[lavaan]{modificationIndices}}.
 #'
@@ -58,6 +68,10 @@
 #' to traditional exact-fit evaluation. It is designed to assess whether
 #' fixed parameters are substantively misspecified relative to a SESOI,
 #' rather than whether a model fits exactly.
+#'
+#' When \code{adjust.method = "bonferroni"}, familywise error control
+#' is applied across all evaluated fixed parameters by adjusting the
+#' MI significance threshold and widening EPC confidence intervals.
 #'
 #' Models with categorical indicators or unsupported constraints may
 #' not be fully supported.
@@ -122,8 +136,14 @@ epcEquivFit <- function(lavaanObj,
                        stdIntcept = 0.2,
                        stdSesoi = NULL,
                        sesoi = NULL,
-                       cilevel = 0.90, ...) {
+                       cilevel = 0.90,
+                       mialpha = 0.05,
+                       mipower = 0.80,
+                       adjust.method = "none", ...) {
   dots <- list(...)
+
+  adjustmethodargs <- c("none", "bonferroni")
+  adjust.method <- match.arg(adjust.method, adjustmethodargs)
 
   df_model <- lavaan::fitMeasures(lavaanObj, "df")
 
@@ -175,35 +195,40 @@ epcEquivFit <- function(lavaanObj,
                                 corLatent = corLatent, corResidual = corResidual,
                                 stdBeta = stdBeta, stdIntcept = stdIntcept)
     if (length(stdSesoi) == 1) stdSesoi <- rep(stdSesoi, nrow(mi))
-    sesoi <- unstandardizeEpc(mi, stdSesoi, lavInspectTotalVar(lavaanObj), lavInspectResidualVar(lavaanObj))
+    sesoi <- unstandardizeFixedParam(mi, stdSesoi, lavInspectTotalVar(lavaanObj), lavInspectResidualVar(lavaanObj))
   }
-  if (length(sesoi) == 1) sesoi <- rep(sesoi, nrow(mi))
+  m <- nrow(mi)
+  if (length(sesoi) == 1) sesoi <- rep(sesoi, m)
   ncp <- (sesoi / sigma)^2
-  alpha <- 0.05
-  desiredPow <- 0.80
+  ncp[!is.finite(ncp)] <- NA_real_
+  alpha <- ifelse(adjust.method=="bonferroni", mialpha/m, mialpha)
   cutoff <- stats::qchisq(1 - alpha, df = 1)
   pow <- 1 - stats::pchisq(cutoff, df = 1, ncp = ncp)
   sigMI <- mi[,"mi"] > cutoff
-  highPow <- pow > desiredPow
+  highPow <- pow > mipower
   group <- rep(1, nrow(mi))
   if ("group" %in% colnames(mi)) group <- mi[ , "group"]
   decision <- mapply(decisionMIPow, sigMI = sigMI, highPow = highPow,
                      epc = mi[ , "epc"], trivialEpc = sesoi)
-  if (is.null(stdSesoi)) stdSesoi <- standardizeEpc(mi, lavInspectTotalVar(lavaanObj),
+  if (is.null(stdSesoi)) stdSesoi <- standardizeFixedParam(mi, lavInspectTotalVar(lavaanObj),
                                                     lavInspectResidualVar(lavaanObj),
-                                                    sesoi = sesoi)
+                                                    value = sesoi)
   result <- cbind(mi[ , 1:3], group, as.numeric(mi[ , "mi"]), mi[ , "epc"],
                   sesoi, mi[ , "sepc.all"],
                   stdSesoi, sigMI, highPow, decision)
-  # New method
-  crit <- abs(stats::qnorm((1 - cilevel)/2))
-  seepc <- abs(result[,6]) / sqrt(abs(result[,5]))
-  lowerepc <- result[,6] - crit * seepc
-  upperepc <- result[,6] + crit * seepc
-  stdlowerepc <- standardizeEpc(mi, lavInspectTotalVar(lavaanObj),
-                                lavInspectResidualVar(lavaanObj), sesoi = lowerepc)
-  stdupperepc <- standardizeEpc(mi, lavInspectTotalVar(lavaanObj),
-                                lavInspectResidualVar(lavaanObj), sesoi = upperepc)
+  alpha_ci <- 1 - cilevel
+  if (adjust.method == "bonferroni") {
+    alpha_ci <- alpha_ci / m
+  }
+  crit <- stats::qnorm(1 - alpha_ci/2)
+  seepc <- abs(sigma)
+  seepc[!is.finite(seepc)] <- NA_real_
+  lowerepc <- mi[,"epc"] - crit * seepc
+  upperepc <- mi[,"epc"] + crit * seepc
+  stdlowerepc <- standardizeFixedParam(mi, lavInspectTotalVar(lavaanObj),
+                                lavInspectResidualVar(lavaanObj), value = lowerepc)
+  stdupperepc <- standardizeFixedParam(mi, lavInspectTotalVar(lavaanObj),
+                                lavInspectResidualVar(lavaanObj), value = upperepc)
   isVar <- mi[,"op"] == "~~" & mi[,"lhs"] == mi[,"rhs"]
   decisionci <- mapply(decisionCIEpc, targetval = as.numeric(stdSesoi),
                        lower = stdlowerepc, upper = stdupperepc,
@@ -231,17 +256,22 @@ miPowerFit <- function(...) {
   epcEquivFit(...)
 }
 
-#' EPC Equivalence Feasibility Check for Standardized Parameters
+#' EPC Equivalence Compensatory-Effect Check for Standardized Parameters
 #'
-#' Performs an EPC-based feasibility check to assess whether a set of
-#' standardized population parameters defines a valid population
-#' covariance matrix and whether trivially misspecified parameters
-#' remain within a user-defined smallest effect size of interest (SESOI).
-#' Feasibility is evaluated by constructing implied population models
-#' under targeted parameter perturbations and examining EPC behavior
-#' using \code{\link{epcEquivFit}}.
+#' Performs an EPC-based compensatory-effect diagnostic to assess whether
+#' standardized population parameters define a valid population covariance
+#' matrix and whether trivially misspecified parameters (relative to a
+#' smallest effect size of interest; SESOI) can generate EPCs exceeding
+#' the SESOI.
 #'
-#' This function focuses on standardized parameters and supports
+#' The compensatory effect is evaluated by constructing implied population
+#' models under targeted standardized parameter perturbations and examining
+#' resulting EPC behavior. If EPCs exceed the SESOI under perturbations that
+#' are trivial in magnitude (e.g., 75% of the SESOI), substantial EPC
+#' classifications may reflect inflation due to compensatory distortions
+#' rather than genuine substantive misspecification.
+#'
+#' This function operates on standardized parameters and currently supports
 #' recursive SEMs with continuous indicators only.
 #'
 #' @param lavaanObj A fitted \code{lavaan} object representing the target model.
@@ -249,7 +279,8 @@ miPowerFit <- function(...) {
 #'   magnitude of the standardized perturbation to be evaluated. The
 #'   default value of 0.75 indicates that perturbations equal to 75\% of
 #'   the SESOI are treated as trivial. If EPCs exceed the SESOI under
-#'   such perturbations, EPC equivalence testing is not recommended.
+#'   such perturbations, the compensatory effect is classified as
+#'   \code{"PRONOUNCED"}.
 #' @param stdLoad Standardized factor loading used to define the SESOI
 #'   for loading misspecifications.
 #' @param cor Standardized correlation used as a default SESOI for
@@ -266,25 +297,29 @@ miPowerFit <- function(...) {
 #'   the SESOI for structural misspecifications.
 #'
 #' @details
-#' The procedure first checks whether the standardized parameters imply
-#' a positive definite population covariance matrix. It then evaluates
-#' EPC behavior under both positive and negative trivial
-#' misspecifications by repeatedly constructing implied population
-#' covariance matrices with perturbed parameters
-#' (\code{minRelEffect} \eqn{\times} SESOI), refitting the model, and
-#' re-evaluating EPCs.
+#' The procedure first verifies whether the standardized parameter values
+#' imply a positive definite population covariance matrix. It then evaluates
+#' EPC behavior under both positive and negative trivial misspecifications
+#' by repeatedly constructing implied population covariance matrices with
+#' perturbed parameters (\code{minRelEffect} \eqn{\times} SESOI), refitting
+#' the model, and re-evaluating EPC classifications.
 #'
-#' Models with categorical indicators, formative indicators, or
-#' multiple-group structures are not supported.
+#' If at least one trivial perturbation produces an EPC exceeding the SESOI,
+#' the compensatory effect is labeled \code{"PRONOUNCED"}. Otherwise, it is
+#' labeled \code{"NOT PRONOUNCED"}.
+#'
+#' Models with categorical indicators, formative indicators, mean structures,
+#' or multiple-group structures are not supported.
 #'
 #' @return An object of class \code{"epcEquivCheckStd"} containing:
 #' \itemize{
 #'   \item \code{feasible}: Logical indicator of whether a valid
 #'     standardized population model exists.
 #'   \item \code{any_M}: Logical indicator of whether any EPC exceeded
-#'     the SESOI under the evaluated misspecifications.
-#'   \item \code{recommendation}: Character string summarizing feasibility
-#'     (e.g., \code{"RECOMMENDED"}, \code{"NOT RECOMMENDED"}).
+#'     the SESOI under the evaluated perturbations.
+#'   \item \code{compensatory}: Character string summarizing the presence
+#'     of the compensatory effect (e.g., \code{"NOT PRONOUNCED"},
+#'     \code{"PRONOUNCED"}, or \code{"NOT APPLICABLE"}).
 #'   \item \code{M_table}: Data frame summarizing EPCs exceeding the SESOI,
 #'     if any.
 #'   \item \code{testeffect}: Data frame reporting the smallest tested
@@ -296,7 +331,6 @@ miPowerFit <- function(...) {
 #' @seealso \code{\link{epcEquivFit}}
 #'
 #' @examples
-#'
 #' library(lavaan)
 #'
 #' one.model <- ' onefactor  =~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 '
@@ -320,7 +354,7 @@ epcEquivCheck <- function(lavaanObj,
     out <- list(
       feasible = FALSE,
       any_M = NA,
-      recommendation = "NOT APPLICABLE",
+      compensatory = "NOT APPLICABLE",
       reason = reason,
       M_table = NULL,
       testeffect = NULL
@@ -632,18 +666,18 @@ epcEquivCheck <- function(lavaanObj,
   feasible <- TRUE
   any_M <- any(resultall == "M", na.rm = TRUE)
 
-  recommendation <- if (!feasible) {
+  compensatory <- if (!feasible) {
     "NOT APPLICABLE"
   } else if (any_M) {
-    "NOT RECOMMENDED"
+    "PRONOUNCED"
   } else {
-    "RECOMMENDED"
+    "NOT PRONOUNCED"
   }
 
   out <- list(
     feasible = feasible,
     any_M = any_M,
-    recommendation = recommendation,
+    compensatory = compensatory,
     M_table = M_all,
     testeffect = T_all
   )
@@ -759,15 +793,12 @@ getTrivialEpc <- function(
 }
 
 
-# unstandardizeEpc()
+# unstandardizeFixedParam()
 # ------------------------------------------------------------------
 # Internal utility used by epcEquivFit() and related EPC diagnostics.
-# Converts standardized effect-size thresholds (SESOI) back to the
-# unstandardized EPC scale using total and residual variances of the
-# involved variables. The transformation is operator-specific
-# (e.g., loadings, regressions, covariances, intercepts) and provides
-# unstandardized quantities required for EPC evaluation.
-unstandardizeEpc <- function(mi, sesoi, totalVar, residualVar) {
+# Converts standardized fixed-parameter values (e.g., standardized
+# SESOI thresholds or CI bounds) back to the unstandardized EPC scale.
+unstandardizeFixedParam <- function(mi, value, totalVar, residualVar) {
   name <- names(totalVar[[1]])
   lhsPos <- match(mi[,"lhs"], name)
   rhsPos <- match(mi[,"rhs"], name)
@@ -780,41 +811,38 @@ unstandardizeEpc <- function(mi, sesoi, totalVar, residualVar) {
   lhsVarRes <- mapply(getVarRes, pos=lhsPos, group=group)
   rhsVarRes <- mapply(getVarRes, pos=rhsPos, group=group)
 
-  FUN <- function(op, lhsVar, rhsVar, lhsVarRes, rhsVarRes, sesoi) {
+  FUN <- function(op, lhsVar, rhsVar, lhsVarRes, rhsVarRes, value) {
     if(op == "|") return(NA)
     lhsSD <- sqrt(lhsVar)
     rhsSD <- sqrt(rhsVar)
     lhsSDRes <- sqrt(lhsVarRes)
     rhsSDRes <- sqrt(rhsVarRes)
-    if(!is.numeric(sesoi)) sesoi <- as.numeric(sesoi)
+    if(!is.numeric(value)) value <- as.numeric(value)
     if(op == "=~") {
-      return((rhsSD * sesoi) / lhsSD)
+      return((rhsSD * value) / lhsSD)
     } else if (op == "~~") {
-      return(lhsSDRes * sesoi * rhsSDRes)
+      return(lhsSDRes * value * rhsSDRes)
     } else if (op == "~1") {
-      return(lhsSD * sesoi)
+      return(lhsSD * value)
     } else if (op == "~") {
-      return((lhsSD * sesoi) / rhsSD)
+      return((lhsSD * value) / rhsSD)
     } else {
       return(NA)
     }
   }
-  sesoi <- mapply(FUN, op=mi[,"op"], lhsVar=lhsVar, rhsVar=rhsVar,
-                       lhsVarRes=lhsVarRes, rhsVarRes=rhsVarRes, sesoi=sesoi)
-  return(sesoi)
+  unstdValue <- mapply(FUN, op=mi[,"op"], lhsVar=lhsVar, rhsVar=rhsVar,
+                       lhsVarRes=lhsVarRes, rhsVarRes=rhsVarRes, value=value)
+  return(unstdValue)
 }
 
-# standardizeEpc()
+# standardizeFixedParam()
 # ------------------------------------------------------------------
 # Internal utility used by epcEquivFit() and related EPC diagnostics.
-# Transforms unstandardized EPCs or SESOI values into standardized
-# effect-size metrics based on total and residual variances of the
-# involved variables. The standardization is operator-specific
-# (e.g., loadings, regressions, covariances, intercepts) and produces
-# standardized quantities suitable for comparison against standardized
-# SESOI thresholds.
-standardizeEpc <- function(mi, totalVar, residualVar, sesoi = NULL) {
-  if(is.null(sesoi)) sesoi <- mi[,"epc"]
+# Converts unstandardized values of fixed parameters (e.g., EPCs,
+# SESOI thresholds, or CI bounds) into standardized effect-size
+# metrics.
+standardizeFixedParam <- function(mi, totalVar, residualVar, value = NULL) {
+  if(is.null(value)) value <- mi[,"epc"]
   name <- names(totalVar[[1]])
   lhsPos <- match(mi[,"lhs"], name)
   rhsPos <- match(mi[,"rhs"], name)
@@ -826,31 +854,31 @@ standardizeEpc <- function(mi, totalVar, residualVar, sesoi = NULL) {
   rhsVar <- mapply(getVar, pos=rhsPos, group=group)
   lhsVarRes <- mapply(getVarRes, pos=lhsPos, group=group)
   rhsVarRes <- mapply(getVarRes, pos=rhsPos, group=group)
-  FUN <- function(op, lhsVar, rhsVar, lhsVarRes, rhsVarRes, sesoi) {
+  FUN <- function(op, lhsVar, rhsVar, lhsVarRes, rhsVarRes, value) {
     lhsSD <- sqrt(lhsVar)
     rhsSD <- sqrt(rhsVar)
     lhsSDRes <- sqrt(lhsVarRes)
     rhsSDRes <- sqrt(rhsVarRes)
-    if(!is.numeric(sesoi)) sesoi <- as.numeric(sesoi)
+    if(!is.numeric(value)) value <- as.numeric(value)
     if(op == "=~") {
       #stdload = beta * sdlatent / sdindicator = beta * lhs / rhs
-      return((sesoi / rhsSD) * lhsSD)
+      return((value / rhsSD) * lhsSD)
     } else if (op == "~~") {
       #r = cov / (sd1 * sd2)
-      return(sesoi / (lhsSDRes * rhsSDRes))
+      return(value / (lhsSDRes * rhsSDRes))
     } else if (op == "~1") {
       #d = meanDiff/sd
-      return(sesoi / lhsSD)
+      return(value / lhsSD)
     } else if (op == "~") {
       #beta = b * sdX / sdY = b * rhs / lhs
-      return((sesoi / lhsSD) * rhsSD)
+      return((value / lhsSD) * rhsSD)
     } else {
       return(NA)
     }
   }
-  stdSesoi <- mapply(FUN, op=mi[,"op"], lhsVar=lhsVar, rhsVar=rhsVar,
-                     lhsVarRes=lhsVarRes, rhsVarRes=rhsVarRes, sesoi=sesoi)
-  return(stdSesoi)
+  stdValue <- mapply(FUN, op=mi[,"op"], lhsVar=lhsVar, rhsVar=rhsVar,
+                     lhsVarRes=lhsVarRes, rhsVarRes=rhsVarRes, value=value)
+  return(stdValue)
 }
 
 # decisionMIPow()
@@ -1029,23 +1057,26 @@ extract_M_table <- function(result_mat, miout, sepc_mat, direction) {
 # print.epcEquivCheckStd()
 # ------------------------------------------------------------------
 # Internal print method for epcEquivCheckStd objects.
-# Formats and displays feasibility and recommendation results from
+# Formats and displays feasibility and compensatory-effect results from
 # standardized-parameter EPC equivalence checks.
 
 #' @export
 print.epcEquivCheckStd <- function(x, ...) {
-  cat("EPC Equivalence Feasibility (Standardized Parameters)\n")
+  cat("EPC Equivalence Compensatory Effect (Standardized Parameters)\n")
   cat("----------------------------------------------------\n")
 
   cat("Feasible standardized population:", x$feasible, "\n")
-  cat("Any EPC exceeding SESOI:", x$any_M, "\n")
-  cat("Recommendation:", x$recommendation, "\n\n")
 
-  if (x$recommendation == "NOT RECOMMENDED") {
-    cat("Non-equivalent EPCs detected (summary):\n")
+  if(x$feasible) {
+    cat("Any EPC exceeding SESOI:", x$any_M, "\n")
+    cat("Compensatory Effect:", x$compensatory, "\n\n")
+  }
+
+  if (x$compensatory == "PRONOUNCED") {
+    cat("EPCs exceeding SESOI under tested perturbations (summary):\n")
     print(x$M_table)
-  } else if (x$recommendation == "RECOMMENDED") {
-    cat("No EPC exceeded the SESOI under tested misspecifications.\n")
+  } else if (x$compensatory == "NOT PRONOUNCED") {
+    cat("No EPC exceeded the SESOI under tested perturbations.\n")
   } else {
     cat("Standardized parameters do not define a valid population model.\n")
   }
@@ -1089,7 +1120,7 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
 
   # ---- Derived quantities ----
   miout$severity <- abs(miout$std.epc / miout$std.sesoi)
-
+  miout$ci_width <- with(miout, abs(upper.std.epc -  lower.std.epc))
   miout$ci_gap <- with(miout, pmin(
     abs(lower.std.epc -  std.sesoi),
     abs(upper.std.epc -  std.sesoi),
@@ -1119,6 +1150,12 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
   top_I_ci <- top_I_ci[order(top_I_ci$ci_gap, decreasing = TRUE), ]
   if (nrow(top_I_ci) > top) top_I_ci <- top_I_ci[1:top, ]
 
+  # CI-underpowered EPCs (exclude NM)
+  top_U_ci <- miout[miout$decision.ci == "U", ]
+  top_U_ci <- top_U_ci[is.finite(top_U_ci$ci_gap), ]
+  top_U_ci <- top_U_ci[order(top_U_ci$ci_width, decreasing = TRUE), ]
+  if (nrow(top_U_ci) > top) top_U_ci <- top_U_ci[1:top, ]
+
   # ---- SSV / power-based diagnostics (secondary) ----
   ssv_out <- list(
     n_M  = sum(miout$decision.pow %in% c("M", "EPC:M"),  na.rm = TRUE),
@@ -1144,6 +1181,7 @@ summary.epcequivfit.data.frame <- function(object, ..., top = 5, ssv = FALSE) {
     ssv = ssv_out,
     top_non_equiv = top_M,
     top_inconclusive_ci = top_I_ci,
+    top_underpowered_ci = top_U_ci,
     top_non_pow = top_M_pow,
     top_inconclusive_pow = top_I_pow,
     show_ssv = ssv
@@ -1228,6 +1266,18 @@ print.summaryEpcEquivFit <- function(x, ...) {
     print(
       x$top_inconclusive_ci[
         , c("lhs","op","rhs","lower.std.epc","upper.std.epc","ci_gap"),
+        drop = FALSE
+      ]
+    )
+    cat("\n")
+  }
+
+  if (x$epc_equivalence$n_U > 0) {
+    cat("1.3 Top CI-underpowered EPCs\n")
+    cat("(ranked by CI width):\n")
+    print(
+      x$top_underpowered_ci[
+        , c("lhs","op","rhs","lower.std.epc","upper.std.epc","ci_width"),
         drop = FALSE
       ]
     )
