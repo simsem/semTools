@@ -7,6 +7,7 @@
 - `compRelSEM()` failed whenever the first composite had `ordered=` indicators
   ([fixed](https://github.com/simsem/semTools/issues/154) on 14 February 2026,
    unfortunately right *after* it was available on CRAN).
+- `compRelSEM()` failed for `lavaan.mi` objects without higher-order loadings.
 
 
 # semTools 0.5-8 (on CRAN 14 February 2026)

@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
 ###   - omegaCat() and deprecated functionality: Sunthud Pornprasertmanit
-### Last updated: 14 February 2026
+### Last updated: 7 May 2026
 
 
 
@@ -1104,7 +1104,7 @@ compRelSEM <- function(object, W = NULL,
       LAMBDA <- list(Reduce("+", lamList) / length(lamList))
 
       betList <- lapply(object@coefList[useImps], "[[", i = "beta")
-      if (length(betList)) {
+      if (length(betList[[1]])) {
         BETA <- list(Reduce("+", betList) / length(betList))
       } else BETA <- list(NULL)
 
@@ -1115,7 +1115,9 @@ compRelSEM <- function(object, W = NULL,
         lamList <- lapply(object@coefList[useImps], function(i) i[[b]]$lambda)
         LAMBDA[[b]] <- Reduce("+", lamList) / length(lamList)
         betList <- lapply(object@coefList[useImps], function(i) i[[b]]$beta  )
-        BETA[[b]]   <- Reduce("+", betList) / length(betList)
+        if (length(betList[[1]])) {
+          BETA[[b]] <- Reduce("+", betList) / length(betList)
+        } # else BETA[[b]] is already NULL
       }
     }
 
