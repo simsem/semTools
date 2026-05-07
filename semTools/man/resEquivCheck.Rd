@@ -20,7 +20,7 @@ magnitude of imposed misspecification to be evaluated. The default value
 of 1.25 indicates that perturbations producing residual-correlation
 changes of 125 percent of the SESOI are evaluated.}
 
-\item{rsesoi}{Smallest residual correlation of interest. Residual
+\item{rsesoi}{Smallest effect size of interest. Residual
 correlations smaller than this value in absolute magnitude are treated
 as trivially misspecified. Default is 0.10.}
 
@@ -75,26 +75,24 @@ perturbations, imposed values, and residual-equivalence decisions.
 Performs a residual-correlation compensatory-effect diagnostic to assess
 whether standardized population parameters define a valid population
 covariance matrix and whether imposed local misspecifications can produce
-residual correlations classified as trivial relative to a smallest residual
-correlation of interest (SESOI).
-}
-\details{
-The compensatory effect is evaluated by constructing implied population
+residual correlations classified as trivial relative to a smallest effect
+size of interest (SESOI) in residual correlation scale. The compensatory
+effect is evaluated by constructing implied population
 models under targeted standardized parameter perturbations and examining
 resulting residual-correlation equivalence decisions. If residual
 correlations are classified as trivially misspecified under perturbations
-larger than the SESOI (e.g., 125\\% of the SESOI), the compensatory effect
-is classified as \code{"PRONOUNCED"}.
-
-This function operates on standardized parameters and currently supports
-recursive SEMs with continuous indicators only.
-
+larger than the SESOI (e.g., 125 percent of the SESOI), the compensatory
+effect is classified as \code{"PRONOUNCED"}. This function operates on
+standardized parameters and currently supports recursive SEMs with
+continuous indicators only.
+}
+\details{
 The procedure first verifies whether the standardized parameter values
 imply a positive definite population covariance matrix. It then evaluates
 residual-correlation equivalence decisions under imposed misspecifications
 by constructing population covariance matrices with added cross-loadings
-or extra-factor loadings, refitting the target model, and applying
-\code{\link{resEquivFit}}.
+or extra-factor loadings (with the size of \code{maxRelEffect*rsesoi}),
+refitting the target model, and applying \code{\link{resEquivFit}}.
 
 Cross-loading misspecifications are evaluated in both positive and negative
 directions. Extra-factor misspecifications are evaluated using the loading
@@ -102,7 +100,7 @@ pattern that the magnitude of loadings is equal and the signs of loadings
 are the same as the primary loadings.
 
 If at least one imposed misspecification produces a residual-correlation
-decision of \code{"NM"}, the compensatory effect is labeled
+global decision of \code{"NM"}, the compensatory effect is labeled
 \code{"PRONOUNCED"}. Otherwise, it is labeled
 \code{"NOT PRONOUNCED"}.
 

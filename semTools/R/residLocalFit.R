@@ -5,17 +5,16 @@
 #' Evaluates model fit from an equivalence-testing perspective by
 #' applying equivalence tests to model residual correlations. The
 #' procedure compares each observed residual correlation against a
-#' smallest residual correlation of interest (SESOI) and classifies
-#' local residual correlations as substantially misspecified,
-#' trivially misspecified, inconclusive, or underpowered.
-#'
+#' smallest effect size of interest (SESOI; i.e., in residual correlation
+#' such as .10) and classifies local residual correlations as substantially
+#' misspecified, trivially misspecified, inconclusive, or underpowered.
 #' The resulting local classifications can be summarized to yield a
-#' global residual-correlation equivalence-style fit evaluation.
+#' global residual-correlation equivalence-test fit evaluation.
 #'
 #' @param lavaanObj A fitted \code{lavaan} object used to evaluate model fit.
-#' @param rsesoi Smallest residual correlation of interest. Residual
-#'   correlations smaller than this value in absolute magnitude are treated
-#'   as trivially misspecified. Default is 0.10.
+#' @param rsesoi Smallest effect size of interest in residual correlation.
+#'   Residual correlations smaller than this value in absolute magnitude
+#'   are treated as trivially misspecified. Default is 0.10.
 #' @param method Method used to construct confidence intervals. Available
 #'   options are \code{"wald"}, \code{"fisherwald"}, \code{"boot"}, and
 #'   \code{"all"}. \code{"wald"} uses residual correlations directly,
@@ -972,25 +971,23 @@ print.summaryResEquivFit <- function(x, ...) {
 #' Performs a residual-correlation compensatory-effect diagnostic to assess
 #' whether standardized population parameters define a valid population
 #' covariance matrix and whether imposed local misspecifications can produce
-#' residual correlations classified as trivial relative to a smallest residual
-#' correlation of interest (SESOI).
-#'
-#' The compensatory effect is evaluated by constructing implied population
+#' residual correlations classified as trivial relative to a smallest effect
+#' size of interest (SESOI) in residual correlation scale. The compensatory
+#' effect is evaluated by constructing implied population
 #' models under targeted standardized parameter perturbations and examining
 #' resulting residual-correlation equivalence decisions. If residual
 #' correlations are classified as trivially misspecified under perturbations
-#' larger than the SESOI (e.g., 125\% of the SESOI), the compensatory effect
-#' is classified as \code{"PRONOUNCED"}.
-#'
-#' This function operates on standardized parameters and currently supports
-#' recursive SEMs with continuous indicators only.
+#' larger than the SESOI (e.g., 125 percent of the SESOI), the compensatory
+#' effect is classified as \code{"PRONOUNCED"}. This function operates on
+#' standardized parameters and currently supports recursive SEMs with
+#' continuous indicators only.
 #'
 #' @param lavaanObj A fitted \code{lavaan} object representing the target model.
 #' @param maxRelEffect A scalar greater than 1 specifying the relative
 #'   magnitude of imposed misspecification to be evaluated. The default value
 #'   of 1.25 indicates that perturbations producing residual-correlation
 #'   changes of 125 percent of the SESOI are evaluated.
-#' @param rsesoi Smallest residual correlation of interest. Residual
+#' @param rsesoi Smallest effect size of interest. Residual
 #'   correlations smaller than this value in absolute magnitude are treated
 #'   as trivially misspecified. Default is 0.10.
 #' @param cilevel Confidence level used in residual-correlation equivalence
@@ -1016,8 +1013,8 @@ print.summaryResEquivFit <- function(x, ...) {
 #' imply a positive definite population covariance matrix. It then evaluates
 #' residual-correlation equivalence decisions under imposed misspecifications
 #' by constructing population covariance matrices with added cross-loadings
-#' or extra-factor loadings, refitting the target model, and applying
-#' \code{\link{resEquivFit}}.
+#' or extra-factor loadings (with the size of \code{maxRelEffect*rsesoi}),
+#' refitting the target model, and applying \code{\link{resEquivFit}}.
 #'
 #' Cross-loading misspecifications are evaluated in both positive and negative
 #' directions. Extra-factor misspecifications are evaluated using the loading
@@ -1025,7 +1022,7 @@ print.summaryResEquivFit <- function(x, ...) {
 #' are the same as the primary loadings.
 #'
 #' If at least one imposed misspecification produces a residual-correlation
-#' decision of \code{"NM"}, the compensatory effect is labeled
+#' global decision of \code{"NM"}, the compensatory effect is labeled
 #' \code{"PRONOUNCED"}. Otherwise, it is labeled
 #' \code{"NOT PRONOUNCED"}.
 #'

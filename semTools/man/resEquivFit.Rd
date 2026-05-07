@@ -75,14 +75,13 @@ to the SESOI.}
 Evaluates model fit from an equivalence-testing perspective by
 applying equivalence tests to model residual correlations. The
 procedure compares each observed residual correlation against a
-smallest residual correlation of interest (SESOI) and classifies
-local residual correlations as substantially misspecified,
-trivially misspecified, inconclusive, or underpowered.
+smallest effect size of interest (SESOI; i.e., in residual correlation
+such as .10) and classifies local residual correlations as substantially
+misspecified, trivially misspecified, inconclusive, or underpowered.
+The resulting local classifications can be summarized to yield a
+global residual-correlation equivalence-test fit evaluation.
 }
 \details{
-The resulting local classifications can be summarized to yield a
-global residual-correlation equivalence-style fit evaluation.
-
 This function provides a residual-based equivalence-testing alternative
 to traditional fit-index interpretation. Instead of asking whether the
 model fits exactly, it evaluates whether each residual correlation is

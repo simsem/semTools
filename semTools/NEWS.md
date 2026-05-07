@@ -2,6 +2,15 @@
 
 ## New Features:
 
+- New functions, `resEquivFit()` and `resEquivCheck()`, have been introduced for residual-correlation-based equivalence testing and compensatory-effect diagnostics in SEM residual structures.
+    - `resEquivFit()` evaluates model fit from an equivalence-testing perspective by applying equivalence tests to residual correlations.
+    - The residual-based equivalence test can globally classify a fitted model into substantially misspecified (`"M"`), trivially misspecified (`"NM"`), inconclusive (`"I"`), and underpowered (`"U"`) categories based on confidence intervals relative to a smallest effect size of interest (SESOI).
+    - `resEquivFit()` supports multiple inference methods, including Wald confidence intervals on the residual-correlation scale (`method = "wald"`), Wald confidence intervals on the Fisher-z scale (`"fisherwald"`), bootstrap confidence intervals (`"boot"`), and simultaneous evaluation of all methods (`"all"`).
+    - Multiplicity adjustments are available through `adjust.method`, including Bonferroni-adjusted confidence intervals and bootstrap-max confidence intervals for simultaneous residual-correlation inference.
+    - `summary.resEquivFit()` provides global residual-equivalence decisions based on the collection of local residual-correlation classifications and highlights the largest substantial and inconclusive residual correlations.
+    - `update.resEquivFit()` allows users to recompute residual-equivalence decisions under different SESOI values or confidence levels without rerunning estimation procedures.
+    - `resEquivCheck()` assesses whether compensatory effects are pronounced by determining whether perturbations in cross-loadings and extra factors larger than the SESOI can still produce globally trivial residual-equivalence decisions.
+
 ## Bug Fixes:
 
 - `compRelSEM()` failed whenever the first composite had `ordered=` indicators
