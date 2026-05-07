@@ -491,10 +491,12 @@ resEquivFit <- function(
 #' @param object An object returned by \code{\link{resEquivFit}}.
 #' @param rsesoi Smallest residual correlation of interest.
 #' @param cilevel Confidence level used for equivalence-testing confidence intervals.
+#' @param ... Additional arguments.
 #' @export
 update.resEquivFit <- function(object,
                                rsesoi = NULL,
-                               cilevel = NULL) {
+                               cilevel = NULL,
+                               ...) {
 
   if (!inherits(object, "resEquivFit")) {
     stop("object must be of class 'resEquivFit'")
@@ -698,20 +700,21 @@ update.resEquivFit <- function(object,
 # ------------------------------------------------------------------
 # Internal print method for resEquivFit objects.
 
-#' @method update resEquivFit
+#' @method print resEquivFit
 #' @rdname resEquivFit
-#' @param object An object returned by \code{\link{resEquivFit}}.
+#' @param x An object returned by \code{\link{resEquivFit}}.
 #' @param digits Shown decimal digits.
+#' @param ... Additional arguments.
 #' @export
-print.resEquivFit <- function(object, digits = 3, ...) {
+print.resEquivFit <- function(x, digits = 3, ...) {
 
   cat("Residual Correlation Equivalence Testing\n")
   cat("========================================\n\n")
 
-  cat("SESOI (r):", round(object$rsesoi, digits), "\n")
-  cat("CI level  :", round(object$cilevel, digits), "\n")
-  cat("Method    :", object$method, "\n")
-  cat("Adjustment:", object$adjust.method, "\n\n")
+  cat("SESOI (r):", round(x$rsesoi, digits), "\n")
+  cat("CI level  :", round(x$cilevel, digits), "\n")
+  cat("Method    :", x$method, "\n")
+  cat("Adjustment:", x$adjust.method, "\n\n")
 
   format_table <- function(df) {
     df_out <- df
@@ -727,31 +730,31 @@ print.resEquivFit <- function(object, digits = 3, ...) {
   ## -------------------------
   ## Wald
   ## -------------------------
-  if (!is.null(object$wald)) {
+  if (!is.null(x$wald)) {
     cat("---- Wald CI on residual correlation ----\n")
-    print(format_table(object$wald))
+    print(format_table(x$wald))
     cat("\n")
   }
 
   ## -------------------------
   ## Fisher Wald
   ## -------------------------
-  if (!is.null(object$fisherwald)) {
+  if (!is.null(x$fisherwald)) {
     cat("---- Wald CI on Fisher-z residual ----\n")
-    print(format_table(object$fisherwald))
+    print(format_table(x$fisherwald))
     cat("\n")
   }
 
   ## -------------------------
   ## Bootstrap
   ## -------------------------
-  if (!is.null(object$boot)) {
+  if (!is.null(x$boot)) {
     cat("---- Bootstrap CI ----\n")
-    print(format_table(object$boot))
+    print(format_table(x$boot))
     cat("\n")
   }
 
-  invisible(object)
+  invisible(x)
 }
 
 # summary.resEquivFit()
@@ -856,7 +859,7 @@ summary.resEquivFit <- function(
     sumout[[i]] <- tempresult
   }
 
-  lastavailmethod <- tail(names(sumout)[lengths(sumout) > 0], 1)
+  lastavailmethod <- utils::tail(names(sumout)[lengths(sumout) > 0], 1)
   if(is.null(method)) method <- lastavailmethod
   methodargs <- c("wald", "fisherwald", "boot", "all")
   method       <- match.arg(method, methodargs)
@@ -866,7 +869,7 @@ summary.resEquivFit <- function(
   } else {
     availmult <- names(sumout[[method]])
   }
-  if (is.null(adjust.method)) adjust.method <- tail(availmult, 1)
+  if (is.null(adjust.method)) adjust.method <- utils::tail(availmult, 1)
   adjustmethodargs <- c("none", "bonferroni", "max", "all")
   adjust.method <- match.arg(adjust.method, adjustmethodargs)
 
@@ -920,7 +923,7 @@ print.summaryResEquivFit <- function(x, ...) {
   cat("Multiplicity adjustment:", adjustment_label, "\n\n")
 
   cat("[1. CI-based Equivalence Testing]\n")
-  cat("Severe (M):",  x$equivalence$n_M,  "\n")
+  cat("Substantial (M):",  x$equivalence$n_M,  "\n")
   cat("Inconclusive (I):", x$equivalence$n_I, "\n")
   cat("Underpowered (U):", x$equivalence$n_U, "\n")
   cat("Trivial / Equivalent (NM):", x$equivalence$n_NM, "\n\n")
@@ -935,7 +938,7 @@ print.summaryResEquivFit <- function(x, ...) {
   cat("Global Residual Correlation Decision:", global_decision, "\n\n")
 
   if (x$equivalence$n_M > 0) {
-    cat("1.1 Top Severe Residual Correlations\n")
+    cat("1.1 Top Substantial Residual Correlations\n")
     cat("(ranked by |residual| / SESOI width):\n")
     print(
       x$equivalence$top_non_equiv[
@@ -986,7 +989,7 @@ print.summaryResEquivFit <- function(x, ...) {
 #' @param maxRelEffect A scalar greater than 1 specifying the relative
 #'   magnitude of imposed misspecification to be evaluated. The default value
 #'   of 1.25 indicates that perturbations producing residual-correlation
-#'   changes of 125\% of the SESOI are evaluated.
+#'   changes of 125 percent of the SESOI are evaluated.
 #' @param rsesoi Smallest residual correlation of interest. Residual
 #'   correlations smaller than this value in absolute magnitude are treated
 #'   as trivially misspecified. Default is 0.10.
@@ -1049,6 +1052,8 @@ print.summaryResEquivFit <- function(x, ...) {
 #' }
 #'
 #' @importFrom lavaan lavaan lavNames lavInspect modificationIndices standardizedSolution
+#' @importFrom stats optimize
+#' @importFrom utils combn head tail
 #'
 #' @seealso \code{\link{resEquivFit}}
 #'
@@ -1216,7 +1221,7 @@ resEquivCheck <- function(lavaanObj,
         fobs <- atanh(obs[idx])
         (max(abs(fimplied - fobs)) - k*rsesoi)^2
       }
-      opt <- optimize(FUN, interval = c(0, 1))
+      opt <- stats::optimize(FUN, interval = c(0, 1))
       lambda2 <- lambda
       lambda2[row$rhs, row$lhs] <- opt$minimum
       testeffectcrossload[i, 1] <- opt$minimum
@@ -1245,7 +1250,7 @@ resEquivCheck <- function(lavaanObj,
       }
 
       # Negative Side
-      optneg <- optimize(FUN, interval = c(-1, 0))
+      optneg <- stats::optimize(FUN, interval = c(-1, 0))
       lambda2 <- lambda
       lambda2[row$rhs, row$lhs] <- optneg$minimum
       testeffectcrossload[i, 2] <- optneg$minimum
@@ -1300,15 +1305,15 @@ resEquivCheck <- function(lavaanObj,
       items_by_factor <- split(stdtable$rhs, stdtable$lhs)
 
       # choose two factors, then choose two items from each factor
-      factor_pairs <- combn(names(items_by_factor), 2, simplify = FALSE)
+      factor_pairs <- utils::combn(names(items_by_factor), 2, simplify = FALSE)
 
       extra_factor_table <- do.call(rbind, lapply(factor_pairs, function(fp) {
 
         f1 <- fp[1]
         f2 <- fp[2]
 
-        comb1 <- combn(items_by_factor[[f1]], 2, simplify = FALSE)
-        comb2 <- combn(items_by_factor[[f2]], 2, simplify = FALSE)
+        comb1 <- utils::combn(items_by_factor[[f1]], 2, simplify = FALSE)
+        comb2 <- utils::combn(items_by_factor[[f2]], 2, simplify = FALSE)
 
         out <- expand.grid(
           i = seq_along(comb1),
@@ -1355,7 +1360,7 @@ resEquivCheck <- function(lavaanObj,
           fobs <- atanh(obs[idx])
           (max(abs(fimplied - fobs)) - k*rsesoi)^2
         }
-        opt <- optimize(FUN, interval = c(0, 1))
+        opt <- stats::optimize(FUN, interval = c(0, 1))
         lambda2 <- cbind(lambda, 0)
         lambda2[row, posextrafac] <- signvec*opt$minimum
         testeffectextrafactor[i, 1] <- opt$minimum
@@ -1442,8 +1447,9 @@ resEquivCheck <- function(lavaanObj,
 # Internal print method for resEquivCheckStd objects.
 
 #' @method print resEquivCheckStd
-#' @rdname resEquivCheckStd
-#' @param object An object returned by \code{\link{resEquivCheck}}.
+#' @rdname resEquivCheck
+#' @param x An object returned by \code{\link{resEquivCheck}}.
+#' @param ... Additional arguments.
 #' @param max.print The number of imposed misspecification shown in the output
 #' @export
 print.resEquivCheckStd <- function(x, ..., max.print = 6L) {
@@ -1470,7 +1476,7 @@ print.resEquivCheckStd <- function(x, ..., max.print = 6L) {
           , !colnames(tempclpos) %in% c("decision_neg", "imposed_val_neg"),
           drop = FALSE
         ]
-        print(head(tempclpos_print, n = max.print))
+        print(utils::head(tempclpos_print, n = max.print))
         if(nrow(tempclpos) > max.print) printmaxprint <- TRUE
       }
       if(nrow(tempclneg) > 0) {
@@ -1479,7 +1485,7 @@ print.resEquivCheckStd <- function(x, ..., max.print = 6L) {
           , !colnames(tempclneg) %in% c("decision_pos", "imposed_val_pos"),
           drop = FALSE
         ]
-        print(head(tempclneg_print, n = max.print))
+        print(utils::head(tempclneg_print, n = max.print))
         if(nrow(tempclneg) > max.print) printmaxprint <- TRUE
       }
     }
