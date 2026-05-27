@@ -1412,22 +1412,37 @@ permuteOnce.mgcfa <- function(i, d, G, con, uncon, null, param, freeParam,
     availableArgs$con <- out0
     if (exists("out1")) availableArgs$uncon <- out1
     if (exists("out.null")) availableArgs$null <- out.null
-    AFI <- do.call(getAFIs, availableArgs)
+    # Wrap getAFIs so a failure doesn't kill the worker
+    AFI <- tryCatch(
+      do.call(getAFIs, availableArgs),
+      error = function(e) {
+        allAFIs <- c(AFIs, moreAFIs)
+        out <- rep(NA_real_, sum(!is.na(allAFIs)))
+        names(out) <- allAFIs[!is.na(allAFIs)]
+        out
+      }
+    )
     ## save max(MI) if !is.null(param)
     if (is.null(param)) {
       MI <- NULL
     } else {
-      MI <- max(do.call(getMIs, c(availableArgs, modelType = "mgcfa"))$X2)
+      # Wrap getMIs so a failure doesn't kill the worker
+      MI <- tryCatch(
+        max(do.call(getMIs, c(availableArgs, modelType = "mgcfa"))$X2),
+        error = function(e) NA_real_
+      )
     }
     ## anything extra?
     if (!is.null(extra)) {
-      extraArgs <- formals(extra)
-      neededArgs <- intersect(names(extraArgs), names(availableArgs))
-      extraArgs <- do.call(c, lapply(neededArgs, function(nn) availableArgs[nn]))
-      extraOut <- do.call(extra, extraArgs)
-      ## coerce extraOut to data.frame
-      if (!is.list(extraOut)) extraOut <- as.list(extraOut)
-      extra.obs <- data.frame(extraOut)
+      extra.obs <- tryCatch({
+        extraArgs <- formals(extra)
+        neededArgs <- intersect(names(extraArgs), names(availableArgs))
+        extraArgs <- do.call(c, lapply(neededArgs, function(nn) availableArgs[nn]))
+        extraOut <- do.call(extra, extraArgs)
+        ## coerce extraOut to data.frame
+        if (!is.list(extraOut)) extraOut <- as.list(extraOut)
+        data.frame(extraOut)
+      }, error = function(e) NA)
     } else extra.obs <- data.frame(NULL)
   }
   options(warn = old_warn)
@@ -1509,21 +1524,36 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
   } else {
     availableArgs$con <- out0
     if (exists("out.null")) availableArgs$null <- out.null
-    AFI <- do.call(getAFIs, availableArgs)
+    # Wrap get AFIs so errrors don't kill call
+    AFI <- tryCatch(
+      do.call(getAFIs, availableArgs),
+      error = function(e) {
+        allAFIs <- c(AFIs, moreAFIs)
+        out <- rep(NA_real_, sum(!is.na(allAFIs)))
+        names(out) <- allAFIs[!is.na(allAFIs)]
+        out
+      }
+    )
     if (is.null(param)) {
       MI <- NULL
     } else {
-      MI <- max(do.call(getMIs, c(availableArgs, modelType = "mimic"))$X2)
+      # wrap getMIs so the whole thing doesn't crash if this fails
+      MI <- tryCatch(
+        max(do.call(getMIs, c(availableArgs, modelType = "mimic"))$X2),
+        error = function(e) NA_real_
+      )
     }
     ## anything extra?
     if (!is.null(extra)) {
-      extraArgs <- formals(extra)
-      neededArgs <- intersect(names(extraArgs), names(availableArgs))
-      extraArgs <- do.call(c, lapply(neededArgs, function(nn) availableArgs[nn]))
-      extraOut <- do.call(extra, extraArgs)
-      ## coerce extraOut to data.frame
-      if (!is.list(extraOut)) extraOut <- as.list(extraOut)
-      extra.obs <- data.frame(extraOut)
+      extra.obs <- tryCatch({
+        extraArgs <- formals(extra)
+        neededArgs <- intersect(names(extraArgs), names(availableArgs))
+        extraArgs <- do.call(c, lapply(neededArgs, function(nn) availableArgs[nn]))
+        extraOut <- do.call(extra, extraArgs)
+        ## coerce extraOut to data.frame
+        if (!is.list(extraOut)) extraOut <- as.list(extraOut)
+        data.frame(extraOut)
+      }, error = function(e) NA)
     } else extra.obs <- data.frame(NULL)
   }
   options(warn = old_warn)
