@@ -1524,7 +1524,7 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
   } else {
     availableArgs$con <- out0
     if (exists("out.null")) availableArgs$null <- out.null
-    # Wrap get AFIs so errrors don't kill call
+    # Wrap getAFIs so errors don't kill worker
     AFI <- tryCatch(
       do.call(getAFIs, availableArgs),
       error = function(e) {
@@ -1537,7 +1537,7 @@ permuteOnce.mimic <- function(i, d, G, con, uncon, null, param, freeParam,
     if (is.null(param)) {
       MI <- NULL
     } else {
-      # wrap getMIs so the whole thing doesn't crash if this fails
+      # wrap getMIs so errors don't kill worker
       MI <- tryCatch(
         max(do.call(getMIs, c(availableArgs, modelType = "mimic"))$X2),
         error = function(e) NA_real_
