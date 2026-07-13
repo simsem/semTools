@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 March 2025
+### Last updated: 13 July 2026
 
 
 ##' Random Allocation of Items to Parcels in a Structural Equation Model
@@ -224,6 +224,8 @@ parcelAllocation <- function(model, data, parcel.names, item.syntax,
   if (is.character(model)) {
     ## default lavaanify arguments
     ptArgs <- formals(lavaanify)
+    ## remove formal "..." argument, if it is there (from lavaan 0.7-1)
+    if ("..." %in% names(ptArgs)) ptArgs[["..."]] <- NULL
     ## arguments passed to lavaan by user
     fitArgs <- lavInspect(item.fit, "call")[-1]
     ## overwrite defaults with user's values
