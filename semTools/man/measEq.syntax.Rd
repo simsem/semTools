@@ -128,7 +128,7 @@ will specify residual covariances among all possible lags per repeatedly
 measured indicator in \code{longIndNames}.}
 
 \item{warn, debug}{\code{logical}. Passed to \code{\link[lavaan:lavaan]{lavaan::lavaan()}}
-and \code{\link[lavaan:model.syntax]{lavaan::lavParseModelString()}}.
+and \code{\link[lavaan:lavParseModelString]{lavaan::lavParseModelString()}}.
 See \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.}
 
 \item{return.fit}{\code{logical} indicating whether the generated syntax
@@ -142,7 +142,7 @@ were provided, this must be \code{FALSE}. If \code{TRUE}, the generated
 \verb{@external} slot, accessible by \code{fit@external$measEq.syntax}.}
 }
 \value{
-By default, an object of class \linkS4class{measEq.syntax}.
+By default, an object of class \link[=measEq.syntax-class]{measEq.syntax}.
 If \code{return.fit = TRUE}, a fitted \code{\link[lavaan:lavaan]{lavaan::lavaan()}}
 model, with the \code{measEq.syntax} object stored in the
 \verb{@external} slot, accessible by \code{fit@external$measEq.syntax}.

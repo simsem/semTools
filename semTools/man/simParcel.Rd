@@ -31,7 +31,7 @@ A \code{data.frame} with 800 observations of 18 variables.
 Data were generated using the \code{simsem} package.
 }
 \usage{
-simParcel
+data(simParcel)
 }
 \description{
 A simulated data set with 2 factors with 9 indicators for each factor

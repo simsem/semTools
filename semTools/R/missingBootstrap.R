@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 February 2026
+### Last updated: 13 July 2026
 ### Savalei & Yuan's (2009) model-based bootstrap for missing data
 
 
@@ -13,8 +13,7 @@
 ##'
 ##'
 ##' @name BootMiss-class
-##' @aliases BootMiss-class show,BootMiss-method summary,BootMiss-method
-##' hist,BootMiss-method
+##' @aliases BootMiss-class show,BootMiss-method summary,BootMiss-method hist,BootMiss-method
 ##' @docType class
 ##' @section Objects from the Class: Objects can be created via the
 ##' [bsBootMiss()] function.

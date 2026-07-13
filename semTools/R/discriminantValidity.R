@@ -1,5 +1,5 @@
 ### Mikko Rönkkö   (Roxygen edits by TDJ)
-### Last updated: 12 February 2025
+### Last updated: 13 July 2026
 
 
 ##' Calculate discriminant validity statistics
@@ -55,8 +55,7 @@
 ##'   ratio tests.
 ##' @param merge Whether the constrained models should be constructed by merging
 ##'   two factors as one. Implies `cutoff` = 1.
-##'
-##' @inheritParams lavaan::parameterEstimates
+##' @param level,boot.ci.type Passed to [lavaan::parameterEstimates]
 ##'
 ##' @return A `data.frame` of latent variable correlation estimates, their
 ##' confidence intervals, and a likelihood ratio tests against constrained models.

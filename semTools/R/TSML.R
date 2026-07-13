@@ -1,5 +1,5 @@
 ## Terrence D. Jorgensen
-### Last updated: 12 February 2025
+### Last updated: 13 July 2026
 ### semTools function to implement 2-stage ML
 
 
@@ -20,9 +20,9 @@
 ##'
 ##' @name twostage-class
 ##' @aliases twostage-class show,twostage-method summary,twostage-method
-##' anova,twostage-method vcov,twostage-method coef,twostage-method
-##' fitted.values,twostage-method fitted,twostage-method
-##' residuals,twostage-method resid,twostage-method nobs,twostage-method
+##' @aliases anova,twostage-method vcov,twostage-method coef,twostage-method
+##' @aliases fitted.values,twostage-method fitted,twostage-method
+##' @aliases residuals,twostage-method resid,twostage-method nobs,twostage-method
 ##' @docType class
 ##'
 ##' @slot saturated A fitted [lavaan::lavaan-class] object containing the

@@ -23,7 +23,7 @@ A \code{data.frame} with 200 observations of 10 variables.
 Data were generated using the \code{simsem} package.
 }
 \usage{
-exLong
+data(exLong)
 }
 \description{
 A simulated data set with 1 factors with 3 indicators in three timepoints

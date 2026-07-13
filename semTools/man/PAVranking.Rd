@@ -15,7 +15,7 @@ nested models (\code{model0} within \code{model1}) to be fitted
 to the same parceled data.  Note that there can be a mixture of
 items and parcels (even within the same factor), in case certain items
 should never be parceled. Can be a character string or parameter table.
-Also see \code{\link[lavaan:model.syntax]{lavaan::lavaanify()}} for more details.}
+Also see \code{\link[lavaan:lavaanify]{lavaan::lavaanify()}} for more details.}
 
 \item{data}{A \code{data.frame} containing all observed variables appearing
 in \verb{model0=} and \verb{model1=}, as well as those in the \verb{item.syntax=} used to

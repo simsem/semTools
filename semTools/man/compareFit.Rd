@@ -23,12 +23,12 @@ comparing \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} models.}
 \item{indices}{\code{logical} indicating whether to return fit indices from
 the \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} function. Selecting particular
 indices is controlled in the \code{summary} method; see
-\linkS4class{FitDiff}.}
+\link[=FitDiff-class]{FitDiff}.}
 
 \item{moreIndices}{\code{logical} indicating whether to return fit indices
 from the \code{\link[=moreFitIndices]{moreFitIndices()}} function. Selecting particular
 indices is controlled in the \code{summary} method; see
-\linkS4class{FitDiff}.}
+\link[=FitDiff-class]{FitDiff}.}
 
 \item{baseline.model}{optional fitted \link[lavaan:lavaan-class]{lavaan::lavaan} model passed to
 \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to calculate incremental fit indices.}
@@ -36,7 +36,7 @@ indices is controlled in the \code{summary} method; see
 \item{nPrior}{passed to \code{\link[=moreFitIndices]{moreFitIndices()}}, if relevant}
 }
 \value{
-A \linkS4class{FitDiff} object that saves model fit
+A \link[=FitDiff-class]{FitDiff} object that saves model fit
 comparisons across multiple models. If the models are not nested, only
 fit indices for each model are returned. If the models are nested, the
 differences in fit indices are additionally returned, as well as test
@@ -84,7 +84,7 @@ summary(measEqOut, fit.measures = c("aic", "bic", "sic", "ibic"))
 
 }
 \seealso{
-\linkS4class{FitDiff}, \code{\link[=clipboard]{clipboard()}}
+\link[=FitDiff-class]{FitDiff}, \code{\link[=clipboard]{clipboard()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

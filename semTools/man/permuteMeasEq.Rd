@@ -72,7 +72,7 @@ the user would consider freeing (i.e., exclude anchor items). If
 the multivariate test statistic will be saved for each list element instead
 of 1-\emph{df} modification indices for each individual parameter, and
 \code{names(param)} will name the rows of the \code{MI.obs} slot (see
-\linkS4class{permuteMeasEq}). Set \code{param = NULL} (default) to avoid
+\link[=permuteMeasEq-class]{permuteMeasEq}). Set \code{param = NULL} (default) to avoid
 collecting modification indices for any follow-up tests.}
 
 \item{freeParam}{An optional character vector, silently ignored when
@@ -192,16 +192,16 @@ call. If a valid \code{\link[parallel:makeCluster]{parallel::makeCluster()}} obj
 silently set to \code{length(cl)}.}
 
 \item{iseed}{Integer: Only used to set the states of the RNG when using
-parallel options, in which case \code{\link[base:Random]{base::RNGkind()}} is set to
+parallel options, in which case \code{\link[base:RNGkind]{base::RNGkind()}} is set to
 \code{"L'Ecuyer-CMRG"} with a message. See
-\code{\link[parallel:RngStream]{parallel::clusterSetRNGStream()}} and Section 6 of
+\code{\link[parallel:clusterSetRNGStream]{parallel::clusterSetRNGStream()}} and Section 6 of
 \code{vignette("parallel", "parallel")} for more details. If user supplies
 an invalid value, \code{iseed} is silently set to the default (12345). To
 set the state of the RNG when not using parallel options, call
-\code{\link[base:Random]{base::set.seed()}} before calling \code{permuteMeasEq}.}
+\code{\link[base:set.seed]{base::set.seed()}} before calling \code{permuteMeasEq}.}
 }
 \value{
-The \linkS4class{permuteMeasEq} object representing the results of
+The \link[=permuteMeasEq-class]{permuteMeasEq} object representing the results of
 testing measurement equivalence (the multiparameter omnibus test) and DIF
 (modification indices), as well as diagnostics and any \code{extra} output.
 }

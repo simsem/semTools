@@ -9,7 +9,7 @@ mardiaKurtosis(dat, use = "everything")
 \arguments{
 \item{dat}{The target matrix or data frame with multiple variables}
 
-\item{use}{Missing data handling method from the \code{\link[stats:cor]{stats::cov()}}
+\item{use}{Missing data handling method from the \code{\link[stats:cov]{stats::cov()}}
 function.}
 }
 \value{

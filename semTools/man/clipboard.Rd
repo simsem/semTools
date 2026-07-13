@@ -13,7 +13,7 @@ saveFile(object, file, what = "summary", tableFormat = FALSE,
 }
 \arguments{
 \item{object}{An object of class \link[lavaan:lavaan-class]{lavaan::lavaan} or
-\linkS4class{FitDiff}.}
+\link[=FitDiff-class]{FitDiff}.}
 
 \item{what}{The attributes of the \code{lavaan} object to be copied in the
 clipboard. \code{"summary"} is to copy the screen provided from the
@@ -21,7 +21,7 @@ clipboard. \code{"summary"} is to copy the screen provided from the
 \code{\link[=epcEquivFit]{epcEquivFit()}} function. Other attributes listed in the
 \code{inspect} method in the \link[lavaan:lavaan-class]{lavaan::lavaan} could also be
 used, such as \code{"coef"}, \code{"se"}, \code{"fit"}, \code{"samp"}, and
-so on.  Ignored for \linkS4class{FitDiff}-class objects.}
+so on.  Ignored for \link[=FitDiff-class]{FitDiff}-class objects.}
 
 \item{\dots}{Additional arguments when passing a \code{lavaan} object to the
 \code{summary} or \code{\link[=epcEquivFit]{epcEquivFit()}} function.}
@@ -34,7 +34,7 @@ printed in the R console.}
 
 \item{fit.measures}{\code{character} vector specifying names of fit measures
 returned by \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to be copied/saved.  Only
-relevant if \code{object} is class \linkS4class{FitDiff}.}
+relevant if \code{object} is class \link[=FitDiff-class]{FitDiff}.}
 
 \item{writeArgs}{\code{list} of additional arguments to be passed to
 \code{\link[utils:write.table]{utils::write.table()}}}
@@ -45,7 +45,7 @@ using the \code{clipboard} function, users may paste it in the other
 applications.
 }
 \description{
-Copy or save the result of \code{lavaan} or \linkS4class{FitDiff}
+Copy or save the result of \code{lavaan} or \link[=FitDiff-class]{FitDiff}
 object into a clipboard or a file. From the clipboard, users may paste the
 result into the Microsoft Excel or spreadsheet application to create a table
 of the output.

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 February 2026
+### Last updated: 13 July 2026
 ### permutation randomization test for measurement equivalence and DIF
 
 
@@ -16,7 +16,7 @@
 ##'
 ##' @name permuteMeasEq-class
 ##' @aliases permuteMeasEq-class show,permuteMeasEq-method
-##' summary,permuteMeasEq-method hist,permuteMeasEq-method
+##' @aliases summary,permuteMeasEq-method hist,permuteMeasEq-method
 ##' @docType class
 ##'
 ##' @slot PT A `data.frame` returned by a call to

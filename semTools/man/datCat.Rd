@@ -22,7 +22,7 @@ A \code{data.frame} with 200 observations of 9 variables.
 Data were generated using the \code{lavaan} package.
 }
 \usage{
-datCat
+data(datCat)
 }
 \description{
 A simulated data set with 2 factors with 4 indicators each separated into

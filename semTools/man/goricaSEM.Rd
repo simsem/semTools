@@ -10,7 +10,7 @@ goricaSEM(object, ..., hypotheses = NULL, comparison = NULL,
 \arguments{
 \item{object}{A \link[lavaan:lavaan-class]{lavaan::lavaan} object.}
 
-\item{...}{Additional arguments passed to \code{\link[restriktor:goric]{restriktor::goric.lavaan()}}.}
+\item{...}{Additional arguments passed to \code{\link[restriktor:goric.lavaan]{restriktor::goric.lavaan()}}.}
 
 \item{hypotheses}{A named \code{list} of hypotheses to test. See \strong{Details} for
 information on how to specify hypotheses.}
@@ -39,13 +39,13 @@ including:
 }
 }
 \description{
-The \code{goricaSEM()} function is an interface to \code{\link[restriktor:goric]{restriktor::goric.lavaan()}},
+The \code{goricaSEM()} function is an interface to \code{\link[restriktor:goric.lavaan]{restriktor::goric.lavaan()}},
 allowing users to perform generalized order-restricted information criterion
 approximation (GORICA) analysis specifically for structural equation
 models fitted using the \pkg{lavaan} package.
 }
 \details{
-This function is designed as a wrapper for the \code{\link[restriktor:goric]{restriktor::goric.lavaan()}}
+This function is designed as a wrapper for the \code{\link[restriktor:goric.lavaan]{restriktor::goric.lavaan()}}
 function. It calculates GORICA values and weights, which can be used to
 compare models or hypotheses under inequality constraints.
 
@@ -105,7 +105,7 @@ information criterion with an application to facial burn injury.
 \emph{Psychological Methods, 25}(2), 129--142. \doi{10.1037/met0000238}
 }
 \seealso{
-\code{\link[restriktor:goric]{restriktor::goric.lavaan()}}
+\code{\link[restriktor:goric.lavaan]{restriktor::goric.lavaan()}}
 }
 \author{
 Leonard Vanbrabant and Rebecca Kuiper

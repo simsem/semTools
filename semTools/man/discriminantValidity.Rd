@@ -17,16 +17,7 @@ ratio tests.}
 \item{merge}{Whether the constrained models should be constructed by merging
 two factors as one. Implies \code{cutoff} = 1.}
 
-\item{level}{The confidence level required.}
-
-\item{boot.ci.type}{If bootstrapping was used, the type of interval required.
-  The value should be one of \code{"norm"}, \code{"basic"}, \code{"perc"},
-  or \code{"bca.simple"}. For the first three options, see the help page of
-  the \code{boot.ci} function in the boot package. The
-  \code{"bca.simple"} option produces intervals using the adjusted bootstrap
-  percentile (BCa) method, but with no correction for acceleration (only for
-  bias). Note that the p-value is still computed assuming that the z-statistic
-  follows a standard normal distribution.}
+\item{level, boot.ci.type}{Passed to \link[lavaan:parameterEstimates]{lavaan::parameterEstimates}}
 }
 \value{
 A \code{data.frame} of latent variable correlation estimates, their

@@ -76,7 +76,7 @@ while fitting models to bootstrap samples.}
 function. See also \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}}
 }
 \value{
-As a default, this function returns a \linkS4class{BootMiss}
+As a default, this function returns a \link[=BootMiss-class]{BootMiss}
 object containing the results of the bootstrap samples. Use \code{show},
 \code{summary}, or \code{hist} to examine the results. Optionally, the
 transformed data set is returned if \code{transDataOnly = TRUE}. Optionally,
@@ -139,7 +139,7 @@ data: Obtaining a p-value for a test of exact fit. \emph{Multivariate
 Behavioral Research, 44}(6), 741--763. \doi{10.1080/00273170903333590}
 }
 \seealso{
-\linkS4class{BootMiss}
+\link[=BootMiss-class]{BootMiss}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;

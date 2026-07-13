@@ -14,7 +14,7 @@ parcelAllocation(model, data, parcel.names, item.syntax, nAlloc = 100,
 fit to (at least some) parceled data. Note that there can be a mixture of
 items and parcels (even within the same factor), in case certain items
 should never be parceled. Can be a character string or parameter table.
-Also see \code{\link[lavaan:model.syntax]{lavaan::lavaanify()}} for more details.}
+Also see \code{\link[lavaan:lavaanify]{lavaan::lavaanify()}} for more details.}
 
 \item{data}{A \code{data.frame} containing all observed variables appearing
 in the \code{model}, as well as those in the \code{item.syntax} used to

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 9 February 2026
+### Last updated: 13 July 2026
 ### lavaan model syntax-writing engine for new measEq() to replace
 ### measurementInvariance(), measurementInvarianceCat(), and longInvariance()
 
@@ -74,8 +74,8 @@ measEq <- function(configural.model,
 ##'
 ##' @name measEq.syntax-class
 ##' @aliases measEq.syntax-class show,measEq.syntax-method
-##'   summary,measEq.syntax-method as.character,measEq.syntax-method
-##'   update,measEq.syntax-method
+##' @aliases  summary,measEq.syntax-method as.character,measEq.syntax-method
+##' @aliases  update,measEq.syntax-method
 ##' @docType class
 ##'
 ##' @slot package `character` indicating the software package used to

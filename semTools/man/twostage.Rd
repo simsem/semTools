@@ -37,17 +37,17 @@ Step-2 hypothesized model (\code{"cfa"}, \code{"sem"}, \code{"growth"}, or
 \code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} for a user-specified baseline model.
 Interested users can use the fitted baseline model to calculate incremental
 fit indices (e.g., CFI and TLI) using the corrected chi-squared values (see
-the \code{anova} method in \linkS4class{twostage}).  If \code{NULL},
+the \code{anova} method in \link[=twostage-class]{twostage}).  If \code{NULL},
 the default "independence model" (i.e., freely estimated means and
 variances, but all covariances constrained to zero) will be specified
 internally.}
 }
 \value{
-The \linkS4class{twostage} object contains 3 fitted lavaan
+The \link[=twostage-class]{twostage} object contains 3 fitted lavaan
 models (saturated, target/hypothesized, and baseline) as well as the names
 of auxiliary variables.  None of the individual models provide the correct
 model results (except the point estimates in the target model are unbiased).
-Use the methods in \linkS4class{twostage} to extract corrected
+Use the methods in \link[=twostage-class]{twostage} to extract corrected
 \emph{SE}s and test statistics.
 }
 \description{
@@ -131,7 +131,7 @@ robust full information maximum likelihood with incomplete nonnormal data.
 \doi{10.1080/10705511.2014.882692}
 }
 \seealso{
-\linkS4class{twostage}
+\link[=twostage-class]{twostage}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
