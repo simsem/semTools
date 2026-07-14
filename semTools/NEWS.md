@@ -1,6 +1,12 @@
-# semTools 0.5-9 (in development)
+# semTools 0.5-10 (in development)
 
 ## New Features:
+
+## Bug Fixes:
+
+
+
+# semTools 0.5-9 (on CRAN 14 July 2026)
 
 ## Bug Fixes:
 
@@ -8,6 +14,7 @@
   ([fixed](https://github.com/simsem/semTools/issues/154) on 14 February 2026,
    unfortunately right *after* it was available on CRAN).
 - `compRelSEM()` failed for `lavaan.mi` objects without higher-order loadings.
+
 
 
 # semTools 0.5-8 (on CRAN 14 February 2026)
