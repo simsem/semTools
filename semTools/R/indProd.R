@@ -99,7 +99,6 @@
 ##' @export
 indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
                     residualC = FALSE, doubleMC = TRUE, namesProd = NULL) {
-  # Get all variable names
   if (all(is.numeric(var1)))
     var1 <- colnames(data)[var1]
   if (all(is.numeric(var2)))
@@ -109,7 +108,6 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
   dat2 <- data[, var2]
   dat3 <- NULL
   if (!is.null(var3)) dat3 <- data[, var3]
-
   # Mean centering on the original indicators
   if (meanC) {
     dat1 <- scale(dat1, scale = FALSE)
@@ -124,7 +122,6 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
     if (!is.null(var3) && (length(var1) != length(var3)))
       stop("If the match-paired approach is used, the number of",
            " variables in all three sets must be equal.")
-    datProd <- NULL
     if (is.null(var3)) {
       # Two-way interaction
       datProd <- dat1 * dat2
@@ -145,22 +142,27 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
       if (residualC) {
         notmissing2way <- which(!apply(datProd2way, 1, function(x) any(is.na(x))))
         colnames(datProd2way) <- paste("interaction2Product", 1:ncol(datProd2way), sep = "")
-
+        
         # Write the expression for linear model and residualize the two-way products
         temp2 <- data.frame(datProd2way, dat1, dat2, dat3)
         express2 <- paste("cbind(", paste(colnames(datProd2way), collapse = ", "),
                           ") ~ ", paste(c(colnames(dat1), colnames(dat2),
                                           colnames(dat3)), collapse = " + "), sep = "")
         datProd2way[notmissing2way,] <- lm(express2, data = temp2)$residuals
-
+        
         # Making all possible products to residualize the 3-way interaction
-        datProd2wayFull <- matrix(0, nrow(data), 1)
-        for (i in 1:length(var1)) datProd2wayFull <- data.frame(datProd2wayFull, matrix(rep(dat1[, i], length(var2)), ncol = length(var2)) * dat2)
-        for (i in 1:length(var1)) datProd2wayFull <- data.frame(datProd2wayFull, matrix(rep(dat1[, i], length(var3)), ncol = length(var3)) * dat3)
-        for (i in 1:length(var2)) datProd2wayFull <- data.frame(datProd2wayFull, matrix(rep(dat2[, i], length(var3)), ncol = length(var3)) * dat3)
-        datProd2wayFull <- datProd2wayFull[, -1]
+        datProd2wayFull_12 <- lapply(1:length(var1), function(x) matrix(rep(dat1[, x], length(var2)), ncol = length(var2)) * dat2 ) |> 
+          unlist(x = _)
+        datProd2wayFull_13 <- lapply(1:length(var1), function(x) matrix(rep(dat1[, x], length(var3)), ncol = length(var2)) * dat3 ) |> 
+          unlist(x = _)
+        datProd2wayFull_23 <- lapply(1:length(var2), function(x) matrix(rep(dat1[, x], length(var3)), ncol = length(var2)) * dat3 ) |> 
+          unlist(x = _)
+        
+        datProd2wayFull <- list(datProd2wayFull_12, datProd2wayFull_13, datProd2wayFull_23) |>
+          Reduce(cbind, x=_)
+                                     
         colnames(datProd2wayFull) <- paste("interaction2Product", 1:ncol(datProd2wayFull), sep = "")
-
+        
         notmissing3way <- which(!apply(datProd3way, 1, function(x) any(is.na(x))))
         colnames(datProd3way) <- paste("interaction3Product", 1:ncol(datProd3way), sep = "")
         # Write the expression for linear model and residualize the three-way products
@@ -174,7 +176,7 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
     }
     ## Mean-centering the final product
     if (doubleMC) datProd <- scale(datProd, scale = FALSE)
-
+    
     ## Rename the obtained product terms
     if (is.null(namesProd)) {
       if (is.null(var3)) {
@@ -189,12 +191,17 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
       colnames(datProd) <- namesProd
     }
   } else {
-    datProd <- NULL
     if (is.null(var3)) {
       # Create all possible combinations of the products of indicators
-      datProd <- matrix(0, nrow(data), 1)
-      for (i in 1:length(var1)) datProd <- data.frame(datProd, matrix(rep(dat1[, i], length(var2)), ncol = length(var2)) * dat2)
-      datProd <- datProd[, -1]
+      datProd <- lapply(1:length(var1), function(x){
+        res <- matrix(rep(dat1[, x], length(var2)), ncol = length(var2))*dat2
+        }
+      ) |> 
+        Reduce(cbind, x = _) 
+      # for(i in 1:length(var1)) datProd[[i]] <- (matrix(rep(dat1[, i], length(var2)), ncol = length(var2))*dat2)
+      # datProd <- matrix(0, nrow(data), 1)
+      # for (i in 1:length(var1)) datProd <- data.frame(datProd, matrix(rep(dat1[, i], length(var2)), ncol = length(var2)) * dat2)
+      # datProd <- datProd[, -1]
       if (residualC) {
         notmissing <- which(!apply(datProd, 1, function(x) any(is.na(x))))
         colnames(datProd) <- paste("interactionProduct", 1:ncol(datProd), sep = "")
@@ -207,18 +214,37 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
       }
     } else {
       # Create all possible combinations of the products of indicators
-      datProd2way <- matrix(0, nrow(data), 1)
-      for (i in 1:length(var1)) datProd2way <- data.frame(datProd2way, matrix(rep(dat1[, i], length(var2)), ncol = length(var2)) * dat2)
-      for (i in 1:length(var1)) datProd2way <- data.frame(datProd2way, matrix(rep(dat1[, i], length(var3)), ncol = length(var3)) * dat3)
-      for (i in 1:length(var2)) datProd2way <- data.frame(datProd2way, matrix(rep(dat2[, i], length(var3)), ncol = length(var3)) * dat3)
-      datProd3way <- matrix(0, nrow(data), 1)
-      for (i in 1:length(var1)) {
-        for(j in 1:length(var2)) {
-          datProd3way <- data.frame(datProd3way, matrix(rep(dat1[, i], length(var3)), ncol = length(var3)) * matrix(rep(dat2[, j], length(var3)), ncol = length(var3)) * dat3)
-        }
+      datProd2way_12 <- lapply(1:length(var1), function(x){
+        res <- matrix(rep(dat1[, x], length(var2)), ncol = length(var2))*dat2
       }
-      datProd2way <- datProd2way[, -1]
-      datProd3way <- datProd3way[, -1]
+      ) |> 
+        Reduce(cbind, x = _)
+      
+      datProd2way_13 <- lapply(1:length(var1), function(x){
+        res <- matrix(rep(dat1[, x], length(var2)), ncol = length(var3))*dat3
+      }
+      ) |> 
+        Reduce(cbind, x = _)
+      
+      datProd2way_23 <- lapply(1:length(var2), function(x){
+        res <- matrix(rep(dat2[, x], length(var3)), ncol = length(var3))*dat3
+      }
+      ) |> 
+        Reduce(cbind, x = _)
+      
+      datProd2way <- list(datProd2way_12, datProd2way_13, datProd2way_23) |> 
+        Reduce(cbind, x = _)
+      
+      datProd3way <- matrix(0, nrow(data), 1)
+      datProd3way <- lapply(1:length(var1),function(i){
+        lapply(1:length(var2), function(j){
+          matrix(rep(dat1[, i], length(var3)), 
+                 ncol = length(var3)) * matrix(rep(dat2[, j], length(var3)), 
+                                               ncol = length(var3)) * dat3
+        })
+      }) |>
+        unlist(x = _, recursive = FALSE) |>
+        Reduce(cbind, x = _)
       if (residualC) {
         notmissing2way <- which(!apply(datProd2way, 1, function(x) any(is.na(x))))
         colnames(datProd2way) <- paste("interaction2Product", 1:ncol(datProd2way), sep = "")
@@ -242,21 +268,22 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
     }
     ## Double-mean centering
     if (doubleMC) datProd <- scale(datProd, scale = FALSE)
-
     ## Name the resulting product terms
     if (is.null(namesProd)) {
-      temp <- NULL
       if (is.null(var3)) {
-        for (i in 1:length(var1)) temp <- c(temp, paste(var1[i], var2, sep = "."))
+        temp <- lapply(1:length(var1), function(x) paste(var1[x], var2, sep = ".")) |> unlist(x = _)
       } else {
-        for (i in 1:length(var1)) temp <- c(temp, paste(var1[i], var2, sep = "."))
-        for (i in 1:length(var1)) temp <- c(temp, paste(var1[i], var3, sep = "."))
-        for (i in 1:length(var2)) temp <- c(temp, paste(var2[i], var3, sep = "."))
-        for (i in 1:length(var1)) {
-          for(j in 1:length(var2)) {
-            temp <- c(temp, paste(var1[i], var2[j], var3, sep = "."))
+        temp_2way_12 <- lapply(1:length(var1), function(x) paste(var1[x], var2, sep = ".")) |> unlist(x = _)
+        temp_2way_13 <- lapply(1:length(var1), function(x) paste(var1[x], var3, sep = ".")) |> unlist(x = _)
+        temp_2way_23 <- lapply(1:length(var2), function(x) paste(var2[x], var3, sep = ".")) |> unlist(x = _)
+        temp_3way <- lapply(1:length(var1), function(i){
+          unlist(lapply(1:length(var2), function(j) {
+            paste(var1[i], var2[j], var3, sep = ".")
+            }))
           }
-        }
+        ) |>
+          unlist(x = _)
+        temp <- c(temp_2way_12, temp_2way_13, temp_2way_23, temp_3way)
       }
       colnames(datProd) <- temp
     } else {
@@ -266,7 +293,7 @@ indProd <- function(data, var1, var2, var3 = NULL, match = TRUE, meanC = TRUE,
   ## Bind the products back to the original data
   data.frame(data, datProd)
 }
-
+                               
 ##' @rdname indProd
 ##' @export
 orthogonalize <- function(data, var1, var2, var3 = NULL,
