@@ -1,7 +1,7 @@
 ### Title: Compute more fit indices
 ### Authors: Terrence D. Jorgensen, Sunthud Pornprasertmanit,
 ###          Aaron Boulton, Ruben Arslan, Mauricio Garnier-Villarreal
-### Last updated: 9 February 2026
+### Last updated: 2 October 2026
 ### Description: Calculations for promising alternative fit indices
 
 
@@ -439,12 +439,12 @@ sic <- function(f, lresults = NULL) {
 
 
 
-##' Small-*N* correction for \eqn{chi^2} test statistic
+##' Small-*N* correction for \eqn{\chi^2} test statistics
 ##'
-##' Calculate small-*N* corrections for \eqn{chi^2} model-fit test
+##' Calculate small-*N* corrections for \eqn{\chi^2} model-fit test
 ##' statistic to adjust for small sample size (relative to model size).
 ##'
-##' Four finite-sample adjustments to the chi-squared statistic are currently
+##' Four finite-sample adjustments to the \eqn{\chi^2} statistic are currently
 ##' available, all of which are described in Shi et al. (2018). These all
 ##' assume normally distributed data, and may not work well with severely
 ##' nonnormal data. Deng et al. (2018, section 4) review proposed small-*N*
@@ -457,7 +457,13 @@ sic <- function(f, lresults = NULL) {
 ##' @importFrom stats pchisq
 ##' @importFrom methods getMethod
 ##'
-##' @param fit0,fit1 [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object(s)
+##' @param fit0,fit1
+##'   [lavaan::lavaan-class] or [lavaan.mi::lavaan.mi-class] object(s)
+##' @param standard.test,scaled.test When `is.null(fit1)`,
+##'   `character` options passed to [lavaan::fitMeasures()].  Ignored when
+##'   `!is.null(fit1)`, in which case users can instead pass alternatives to
+##'   `"standard"` as the `type=` argument, which is passed via \dots
+##'   to [lavaan::lavTestLRT()].
 ##' @param smallN.method `character` indicating the small-*N*
 ##'   correction method to use. Multiple may be chosen (all of which assume
 ##'   normality), as described in Shi et al. (2018):
@@ -511,6 +517,7 @@ sic <- function(f, lresults = NULL) {
 ##'
 ##' @export
 chisqSmallN <- function(fit0, fit1 = NULL,
+                        standard.test = "default", scaled.test = "default",
                         smallN.method = if (is.null(fit1)) c("swain","yuan.2015") else "yuan.2005",
                         ..., omit.imps = c("no.conv","no.se")) {
   if ("all" %in% smallN.method) smallN.method <- c("swain","yuan.2015",
@@ -602,10 +609,14 @@ chisqSmallN <- function(fit0, fit1 = NULL,
     #                                              fit.measures = c("npar","chisq",
     #                                                               "df","pvalue"))
     if (inherits(fit0, "lavaan.mi")) {
-      FIT <- fitMeasures(fit0, fit.measures = c("npar","chisq","df","pvalue"),
+      FIT <- fitMeasures(fit0, fit_measures = list(standard.test = standard.test,
+                                                   scaled.test   = scaled.test,
+                               fit_measures ="all"),
                          omit.imps = omit.imps, asymptotic = TRUE)
     } else {
-      FIT <- fitMeasures(fit0, fit.measures = c("npar","chisq","df","pvalue"))
+      FIT <- fitMeasures(fit0, fit_measures = list(standard.test = standard.test,
+                                                   scaled.test   = scaled.test,
+                               fit_measures = "all"))
     }
     scaled <- any(grepl(pattern = "scaled", x = names(FIT)))
     if (scaled) warning('Small-N corrections developed assuming normality, but',
@@ -616,6 +627,10 @@ chisqSmallN <- function(fit0, fit1 = NULL,
     chi <- FIT[[if (scaled) "chisq.scaled" else "chisq"]]
     DF  <- FIT[[if (scaled) "df.scaled" else "df"]]
     PV  <- FIT[[if (scaled) "pvalue.scaled" else "pvalue"]]
+
+    ## record selected test (if indicated)
+    ATTR <- attr(FIT, "standard.test")
+    TEST <- ifelse(is.null(ATTR), "standard", ATTR)
 
   } else {
     ## Compare to a second model. Check matching stats.
@@ -657,13 +672,23 @@ chisqSmallN <- function(fit0, fit1 = NULL,
       PV  <- AOV@nested[1, 3]
     }
 
+    ## record selected test (if indicated)
+    ATTR <- attr(AOV@nested, "heading")
+    isBrowne <- grepl("browne", tolower(ATTR))
+    if (isBrowne && grepl("(nt)", tolower(ATTR))) {
+      TEST <- "browne.residual.nt"
+    } else if (isBrowne && grepl("(nt, m)", tolower(ATTR))) {
+      TEST <- "browne.residual.nt.model"
+    } else if (isBrowne && grepl("(adf)", tolower(ATTR))) {
+      TEST <- "browne.residual.adf"
+    } else TEST <- "standard" #FIXME: other options possible
+
   }
 
 
   ## empty list to store correction(s)
   out <- list()
-  out[[ lavInspect(fit0, "options")$test ]] <- c(chisq = chi, df = DF,
-                                                 pvalue = PV)
+  out[[TEST]] <- c(chisq = chi, df = DF, pvalue = PV)
   class(out[[1]]) <- c("lavaan.vector","numeric")
 
   ## calculate Swain's (1975) correction
@@ -709,7 +734,7 @@ chisqSmallN <- function(fit0, fit1 = NULL,
     class(out[["bartlett"]]) <- c("lavaan.vector","numeric")
   }
 
-  out[c(lavInspect(fit0, "options")$test, smallN.method)]
+  out[c(TEST, smallN.method)]
 }
 
 

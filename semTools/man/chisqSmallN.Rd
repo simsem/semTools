@@ -2,14 +2,20 @@
 % Please edit documentation in R/fitIndices.R
 \name{chisqSmallN}
 \alias{chisqSmallN}
-\title{Small-\emph{N} correction for \eqn{chi^2} test statistic}
+\title{Small-\emph{N} correction for \eqn{\chi^2} test statistics}
 \usage{
-chisqSmallN(fit0, fit1 = NULL, smallN.method = if (is.null(fit1))
-  c("swain", "yuan.2015") else "yuan.2005", ..., omit.imps = c("no.conv",
-  "no.se"))
+chisqSmallN(fit0, fit1 = NULL, standard.test = "default",
+  scaled.test = "default", smallN.method = if (is.null(fit1)) c("swain",
+  "yuan.2015") else "yuan.2005", ..., omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
 \item{fit0, fit1}{\link[lavaan:lavaan-class]{lavaan::lavaan} or \link[lavaan.mi:lavaan.mi-class]{lavaan.mi::lavaan.mi} object(s)}
+
+\item{standard.test, scaled.test}{When \code{is.null(fit1)},
+\code{character} options passed to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.  Ignored when
+\code{!is.null(fit1)}, in which case users can instead pass alternatives to
+\code{"standard"} as the \verb{type=} argument, which is passed via \dots
+to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}.}
 
 \item{smallN.method}{\code{character} indicating the small-\emph{N}
 correction method to use. Multiple may be chosen (all of which assume
@@ -35,11 +41,11 @@ The adjusted chi-squared statistic(s) also include(s) the scaling factor
 for the small-\emph{N} adjustment.
 }
 \description{
-Calculate small-\emph{N} corrections for \eqn{chi^2} model-fit test
+Calculate small-\emph{N} corrections for \eqn{\chi^2} model-fit test
 statistic to adjust for small sample size (relative to model size).
 }
 \details{
-Four finite-sample adjustments to the chi-squared statistic are currently
+Four finite-sample adjustments to the \eqn{\chi^2} statistic are currently
 available, all of which are described in Shi et al. (2018). These all
 assume normally distributed data, and may not work well with severely
 nonnormal data. Deng et al. (2018, section 4) review proposed small-\emph{N}
