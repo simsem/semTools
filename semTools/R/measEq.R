@@ -3415,16 +3415,23 @@ char2update <- function(object, model, return.object = TRUE) {
 
   values.DF <- data.frame(NULL)
   labels.DF <- data.frame(NULL)
+  ## can only check labels if there are any in the model=
+  ## (otherwise, the PT has no $label column)
   for (RR in 1:nrow(PT)) {
     ## check whether numbers match
-    if (nValues[RR] > 1L && nValues[RR] != nBlocks) {
-      stop('Number of fixed/free values (', nValues[RR],
-           ') specified for parameter "', PT$lhs[RR], PT$op[RR], PT$rhs[RR],
-           '" does not match the number of groups (', nBlocks, ')')
+
+    if (!is.null(PT$fixed)) {
+      ## can only check fixed/free values if there are any in the model=
+      ## (otherwise, the PT has no $fixed column)
+      if (nValues[RR] > 1L && nValues[RR] != nBlocks) {
+        stop('Number of fixed/free values (', nValues[RR],
+             ') specified for parameter "', PT$lhs[RR], PT$op[RR], PT$rhs[RR],
+             '" does not match the number of groups (', nBlocks, ')')
+        }
     }
-    ## can only check labels if there are any in the model=
-    ## (otherwise, the PT has no $label column)
     if (!is.null(PT$label)) {
+      ## can only check labels if there are any in the model=
+      ## (otherwise, the PT has no $label column)
       if (nLabels[RR] > 1L && nLabels[RR] != nBlocks) {
         stop('Number of labels (', nLabels[RR],
              ') specified for parameter "', PT$lhs[RR], PT$op[RR], PT$rhs[RR],
@@ -3499,29 +3506,33 @@ char2update <- function(object, model, return.object = TRUE) {
       #FIXME? anything that does not match is simply ignored (no error messages)
 
       ## change labels?
-      if (BB > 1L && nLabels[RR] == 1L) {
+      if (!is.null(PT$label)) {
+        if (BB > 1L && nLabels[RR] == 1L) {
 
-        if (labels[[RR]] != "") {
-          labels.DF <- rbind(labels.DF, cbind(DF, stringsAsFactors = FALSE,
-                                              replacement = labels[[RR]]))
+          if (labels[[RR]] != "") {
+            labels.DF <- rbind(labels.DF, cbind(DF, stringsAsFactors = FALSE,
+                                                replacement = labels[[RR]]))
+          }
+
+        } else if (labels[[RR]][BB] != "") {
+            labels.DF <- rbind(labels.DF, cbind(DF, stringsAsFactors = FALSE,
+                                                replacement = labels[[RR]][BB]))
         }
-
-      } else if (labels[[RR]][BB] != "") {
-          labels.DF <- rbind(labels.DF, cbind(DF, stringsAsFactors = FALSE,
-                                              replacement = labels[[RR]][BB]))
       }
 
       ## change fixed/free values?
-      if (BB > 1L && nValues[RR] == 1L) {
+      if (!is.null(PT$fixed)) {
+          if (BB > 1L && nValues[RR] == 1L) {
 
-        if (values[[RR]] != "") {
+          if (values[[RR]] != "") {
+            values.DF <- rbind(values.DF, cbind(DF, stringsAsFactors = FALSE,
+                                                replacement = values[[RR]]))
+          }
+
+        } else if (values[[RR]][BB] != "") {
           values.DF <- rbind(values.DF, cbind(DF, stringsAsFactors = FALSE,
-                                              replacement = values[[RR]]))
+                                              replacement = values[[RR]][BB]))
         }
-
-      } else if (values[[RR]][BB] != "") {
-        values.DF <- rbind(values.DF, cbind(DF, stringsAsFactors = FALSE,
-                                            replacement = values[[RR]][BB]))
       }
 
     } # end loop over blocks
