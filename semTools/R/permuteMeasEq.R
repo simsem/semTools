@@ -973,7 +973,7 @@ permuteMeasEq <- function(nPermute, modelType = c("mgcfa","mimic"),
     argList$cl <- cl
     argList$X <- 1:nPermute
     argList$fun <- paste("permuteOnce", modelType, sep = ".")
-    parallel::clusterExport(cl, varlist = c(argList$fun, "getAFIs","getMIs")) #FIXME: need update?
+    parallel::clusterExport(cl, varlist = c(argList$fun, "getAFIs","getMIs"), envir = asNamespace("semTools"))
 	tempppl <- function(...) { parallel::parLapply(...) }
     permuDist <- do.call(tempppl, args = argList)
     if (stopTheCluster) parallel::stopCluster(cl)
