@@ -4,6 +4,8 @@
 
 ## Bug Fixes:
 
+- The `update()` method for `measEq.syntax()` would fail to update if only values or labels were changed (worked fine when both were changed).
+- Some potential errors could crash parallel workers when using `permuteMeasEq()` with `snow`. Potential fixes contributed by [PR #158](https://github.com/simsem/semTools/pull/158) and [PR #160](https://github.com/simsem/semTools/pull/160).
 
 
 # semTools 0.5-9 (on CRAN 14 July 2026)
