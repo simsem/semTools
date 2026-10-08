@@ -1,11 +1,20 @@
-# semTools 0.5-10 (in development)
+# semTools 0.5-11 (in development)
 
 ## New Features:
 
 ## Bug Fixes:
 
+
+
+# semTools 0.5-10 (on CRAN 7 October 2026)
+
+This is a very minor release, in order to prevent being broken by changes in `lavaan` 0.7-3
+
+## Bug Fixes:
+
 - The `update()` method for `measEq.syntax()` would fail to update if only values or labels were changed (worked fine when both were changed).
 - Some potential errors could crash parallel workers when using `permuteMeasEq()` with `snow`. Potential fixes contributed by [PR #158](https://github.com/simsem/semTools/pull/158) and [PR #160](https://github.com/simsem/semTools/pull/160).
+
 
 
 # semTools 0.5-9 (on CRAN 14 July 2026)
