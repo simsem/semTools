@@ -972,8 +972,7 @@ compRelSEM <- function(object, W = NULL,
       for (b in 1:nblocks) {
         wPTb         <- wPT[wPT$block == b, ]
         ov.names     <- lavNames(object, type = "ov.ind", block = b)
-        ind.idx      <- unique(match(wPTb$rhs, table = ov.names))
-        totalPTb     <- wPTb[ind.idx, ]
+        totalPTb     <- wPTb[wPTb$rhs %in% ov.names & !duplicated(wPTb$rhs), ]
         totalPTb$lhs <- ".TOTAL."
 
         if (b == 1L) {

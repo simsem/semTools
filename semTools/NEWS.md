@@ -3,6 +3,8 @@
 ## New Features:
 
 ## Bug Fixes:
+- `compRelSEM(return.total = TRUE)` now includes each observed indicator once
+  in the total composite, including in higher-order and cross-loading models.
 
 
 
